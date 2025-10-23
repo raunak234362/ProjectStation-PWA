@@ -25,7 +25,7 @@ interface Staff {
 
 interface UserState {
   token: string | boolean;
-  userData: UserData | null;
+  userDetail: UserData | null;
   departmentData: Department[];
   teamData: Team[];
   staffData: Staff[];
@@ -34,7 +34,7 @@ interface UserState {
 // Initial state
 const initialState: UserState = {
   token: false,
-  userData: null,
+  userDetail: null,
   departmentData: [],
   teamData: [],
   staffData: [],
@@ -46,7 +46,7 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action: PayloadAction<UserData & { token?: string }>) => {
-      state.userData = action.payload;
+      state.userDetail = action.payload;
       const token = (action.payload as any).token;
       if (token) {
         state.token = token;
@@ -55,7 +55,7 @@ const userSlice = createSlice({
     },
     setUserData: (state, action: PayloadAction<UserData>) => {
       // state.token = action.payload.token || false;
-      state.userData = action.payload;
+      state.userDetail = action.payload;
     },
     addStaff: (state, action: PayloadAction<Staff>) => {
       state.staffData.push(action.payload);
@@ -94,7 +94,7 @@ const userSlice = createSlice({
     },
     logout: (state) => {
       state.token = false;
-      state.userData = null;
+      state.userDetail = null;
       sessionStorage.removeItem("token");
     },
     updatetoken: (state, action: PayloadAction<{ token: string }>) => {

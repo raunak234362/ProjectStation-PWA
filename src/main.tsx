@@ -1,22 +1,20 @@
 /* eslint-disable no-unused-vars */
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import routes from './routes/routes';
-import store from './store/store';
-import './index.css';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./store/store";
+import routes from "./routes/routes";
+
 
 // Define the router configuration
 const router = createBrowserRouter(routes);
 
-// Ensure root element exists
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById("root");
 if (!rootElement) {
-  throw new Error('Root element not found');
+  throw new Error("Root element not found");
 }
-
-// Render the application
 createRoot(rootElement).render(
   <StrictMode>
     <Provider store={store}>

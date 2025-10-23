@@ -1,11 +1,16 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import routes from "./routes/routes";
-import "./App.css";
+import React from "react";
+import { Provider } from "react-redux";
+import store from "./store/store";
+import Layout from "./layout/DashboardLayout";
 
-const router = createBrowserRouter(routes);
-
-function App() {
-  return <RouterProvider router={router} />;
-}
+const App = () => {
+  return (
+    <div>
+      <Provider store={store}>
+        <Layout />
+      </Provider>
+    </div>
+  );
+};
 
 export default App;
