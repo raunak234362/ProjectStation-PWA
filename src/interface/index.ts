@@ -3,6 +3,7 @@ export interface AuthInterface {
   password: string;
 }
 
+// Signed-in User Data Interface
 export interface UserData {
   id: string;
   username: string;
@@ -26,4 +27,18 @@ export interface UserData {
   isFirstLogin: boolean;
   createdAt: string; // ISO timestamp
   updatedAt: string; // ISO timestamp
+}
+
+// Adding Employee Payload Interface
+export interface EmployeePayload {
+  username: string;
+  password: string;
+  email: string;
+  firstName: string;
+  middleName?: string | null;
+  lastName: string;
+  phone: string;
+  designation: string;
+  role: "ADMIN" | "MANAGER" | "STAFF" | "EMPLOYEE" | string;
+  departmentId: string;
 }

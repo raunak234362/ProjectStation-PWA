@@ -16,7 +16,7 @@ class AuthService {
         },
       });
       console.log("response of Sign-in:-", response);
-      return response;
+      return response?.data;
     } catch (error) {
       alert(error);
       console.log("Error while sign-in", error);

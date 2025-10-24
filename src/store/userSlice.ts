@@ -42,7 +42,7 @@ const initialState: UserState = {
 
 // Slice
 const userSlice = createSlice({
-  name: "userdata",
+  name: "userDetail",
   initialState,
   reducers: {
     login: (state, action: PayloadAction<UserData & { token?: string }>) => {
