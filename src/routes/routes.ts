@@ -7,7 +7,7 @@ import TeamPage from "../pages/TeamPage";
 // import Layout from "../layout/DashboardLayout";
 const routes = [
   { path: "/", Component: Login },
-  { path: "/change-password", element: "Password Change" },
+  { path: "/change-password", Component: "Password Change" },
   {
     Component: RequireAuth,
     children: [
