@@ -15,7 +15,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
         <Button onClick={toggleSidebar}>
           {isMinimized ? <Menu size={20} /> : <ChevronLeft size={20} />}
         </Button>
-        <p className="text-sm md:text-2xl font-semibold bg-linear-to-r from-emerald-200 to-teal-600 bg-clip-text text-transparent uppercase">
+        <p className="text-sm md:text-2xl font-bold bg-linear-to-r from-emerald-200 to-teal-600 bg-clip-text text-transparent uppercase">
           Whiteboard Engineering
         </p>
       </div>

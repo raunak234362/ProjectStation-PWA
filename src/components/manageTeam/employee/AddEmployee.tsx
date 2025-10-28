@@ -6,10 +6,13 @@ import { toast } from "react-toastify";
 import Button from "../../fields/Button";
 import Service from "../../../api/Service";
 import Input from "../../fields/input";
+import Select from "../../fields/Select";
 const AddEmployee: React.FC = () => {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<EmployeePayload>({
     defaultValues: {
@@ -30,21 +33,34 @@ const AddEmployee: React.FC = () => {
     try {
       const response = await Service.AddEmployee(data);
       console.log(response);
+      // reset();
 
       toast.success("Employee created successfully!");
-      // reset();
     } catch (error) {
       console.error("Error creating employee:", error);
       toast.error("Failed to create employee");
     }
   };
 
-  return (
-    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-200">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        Add New Employee
-      </h2>
+  const roleOption = [
+    { label: "STAFF", value: "STAFF" },
+    { label: "ADMIN", value: "ADMIN" },
+    { label: "OPERATION_EXECUTIVE", value: "OPERATION_EXECUTIVE" },
+    { label: "PROJECT_MANAGER_OFFICER", value: "PMO" },
+    { label: "DEPUTY_MANAGER", value: "Deputy Manager" },
+    { label: "DEPT_MANAGER", value: "Department Manager" },
+    { label: "PROJECT_MANAGER", value: "Project Manager" },
+    { label: "TEAM_LEAD", value: "Team Lead" },
+    { label: "SALES_MANAGER", value: "Sales Manager" },
+    { label: "SALES_PERSON", value: "Sales Person" },
+    { label: "SYSTEM_ADMIN", value: "System Admin" },
+    { label: "ESTIMATION_HEAD", value: "Estimation Head" },
+    { label: "ESTIMATOR", value: "Estimator" },
+    { label: "HUMAN_RESOURCE", value: "Humar Resource" },
+  ];
 
+  return (
+    <div className="w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-200">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -163,20 +179,12 @@ const AddEmployee: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700">
             Role
           </label>
-          <select
-            {...register("role", { required: "Role is required" })}
+          <Select
+            options={roleOption}
+            value={watch("role")}
+            onChange={(value: string) => setValue("role", value, { shouldValidate: true })}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
-          >
-            <option value="STAFF">STAFF</option>
-            <option value="EMPLOYEE">EMPLOYEE</option>
-            <option value="MANAGER">MANAGER</option>
-            <option value="ADMIN">ADMIN</option>
-          </select>
-          {errors.role && (
-            <p className="text-red-500 text-xs mt-1">
-              {String(errors.role.message)}
-            </p>
-          )}
+          />
         </div>
 
         {/* Department */}

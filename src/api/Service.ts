@@ -28,9 +28,27 @@ class Service {
         },
       });
       console.log(response);
+      return response
     } catch (error) {
       alert(error);
       console.log("Error while adding New User", error);
+    }
+  }
+
+  //Fetch All Employee
+  static async FetchAllEmployee(){
+    try {
+      const response = await api.get(`employee`,{
+        headers:{
+          "Content-Type": "application/json"
+        }
+      })
+      console.log(response);
+      return response.data
+    } catch (error) {
+      alert(error);
+      console.log("Error fetching all Employee");
+      
     }
   }
 }
