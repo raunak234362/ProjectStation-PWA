@@ -7,6 +7,7 @@ import GetEmployeeByID from "./GetEmployeeByID";
 import type { ColumnDef } from "@tanstack/react-table";
 const AllEmployee = () => {
   const [employees, setEmployees] = useState<UserData[]>([]);
+  const [employeeID, setEmployeeID] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -49,10 +50,10 @@ const AllEmployee = () => {
   };
 
   const handleRowClick = (row: UserData) => {
-    // Example: open a modal, push to a detail page, etc.
-    alert(`You clicked employee ${row.id} – ${row.firstName}`);
+    setEmployeeID(row.id)
     // router.push(`/employees/${row.id}`);
   };
+  console.log(employeeID)
 
   const columns: ColumnDef<UserData>[] = [
     { accessorKey: "username", header: "Username" },
@@ -84,8 +85,8 @@ const AllEmployee = () => {
       <DataTable
         columns={columns}
         data={employees}
-        onRowClick={handleRowClick} // <-- open modal / page
-        detailComponent={GetEmployeeByID} // <-- inline expand
+        onRowClick={handleRowClick}
+        detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
         onDelete={handleDelete}
         searchPlaceholder="Search employees..."
         pageSizeOptions={[5, 10, 25]}
