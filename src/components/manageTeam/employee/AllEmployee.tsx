@@ -49,9 +49,9 @@ const AllEmployee = () => {
   };
 
   const handleRowClick = (row: UserData) => {
-    // Example: open a modal, push to a detail page, etc.
+    
     alert(`You clicked employee ${row.id} – ${row.firstName}`);
-    // router.push(`/employees/${row.id}`);
+    
   };
 
   const columns: ColumnDef<UserData>[] = [
