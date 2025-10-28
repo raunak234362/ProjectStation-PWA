@@ -1,4 +1,4 @@
-import type { EmployeePayload } from "../interface";
+import type { EmployeePayload, FabricatorPayload } from "../interface";
 import api from "./api";
 const token = sessionStorage.getItem("token");
 class Service {
@@ -31,6 +31,21 @@ class Service {
     } catch (error) {
       alert(error);
       console.log("Error while adding New User", error);
+    }
+  }
+
+  //Add New Employee
+  static async AddFabricator(fabricatorData: FabricatorPayload) {
+    try {
+      const response = await api.post(`fabricator`, fabricatorData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+    } catch (error) {
+      alert(error);
+      console.log("Error while adding New Fabricator", error);
     }
   }
 }
