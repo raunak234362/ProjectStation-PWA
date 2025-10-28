@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 "use client";
 
 import React, {
@@ -6,6 +5,7 @@ import React, {
   useRef,
   useEffect,
   forwardRef,
+  type ChangeEvent,
 } from "react";
 import { Search } from "lucide-react";
 
@@ -20,6 +20,7 @@ interface SelectProps {
   name?: string;
   className?: string;
   placeholder?: string;
+  value?: string;
   onChange?: (name: string, value: string) => void;
 }
 
@@ -31,7 +32,7 @@ const Select = (
     className = "",
     onChange,
     placeholder,
-    ...props
+    value,
   }: SelectProps,
   // ref: ForwardedRef<HTMLDivElement>   // Removed ref, as it is unused
 ) => {
@@ -50,6 +51,14 @@ const Select = (
   useEffect(() => {
     setFilteredOptions(options);
   }, [options]);
+
+  // Sync selected option when controlled value changes
+  useEffect(() => {
+    if (typeof value !== "undefined") {
+      const match = options.find((o) => o.value === value) || null;
+      setSelectedOption(match);
+    }
+  }, [value, options]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -122,7 +131,6 @@ const Select = (
         className={`flex items-center justify-between p-2 text-sm border rounded-md bg-white cursor-pointer transition-all ${
           isOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-300"
         } ${className}`}
-        {...props}
       >
         <div className="flex-1">
           {isOpen ? (
