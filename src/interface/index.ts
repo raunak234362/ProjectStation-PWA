@@ -48,3 +48,11 @@ export interface FabricatorPayload {
   drive?: string;
   files?: File | string | "";
 }
+
+export interface Fabricator {
+  id: string;
+  fabName: string;
+  website?: string;
+  drive?: string;
+  files?: string;
+}

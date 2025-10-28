@@ -1,4 +1,4 @@
-import type { EmployeePayload, FabricatorPayload } from "../interface";
+import type { EmployeePayload, FabricatorPayload, Fabricator } from "../interface";
 import api from "./api";
 const token = sessionStorage.getItem("token");
 class Service {
@@ -70,19 +70,37 @@ class Service {
       throw error;
     }
   }
-  static async GetAllFabricators() {
+  // static async GetAllFabricators() {
+  //   try {
+  //     const response = await api.get(`fabricator`, {
+  //       headers: {
+  //         " Accept": "application/json",
+  //       },
+  //     });
+  //     console.log(" All Fabricators fetched:", response.data.data);
+  //     return response.data.data;
+  //   } catch (error) {
+  //     console.error("cannot find fabricators", error);
+  //     throw error;
+  //   }
+  // }
+
+  static async GetAllFabricators(){
     try {
       const response = await api.get(`fabricator`, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All Fabricators fetched:", response.data);
+
+      console.log("✅ All Fabricators fetched:", response.data.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find fabricators", error);
+      console.error("Cannot fetch fabricators:", error);
+      throw error;
     }
   }
+
   //Fetch All Employee
   static async FetchAllEmployee() {
     try {
