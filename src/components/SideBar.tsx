@@ -254,7 +254,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <p className="text-xs text-gray-500">
               {userData?.role?.toUpperCase() || userRole.toUpperCase()}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Version - 1.4.0</p>
+            <p className="text-xs text-gray-500 mt-1">Version - 2.0.0</p>
           </div>
         )}
 

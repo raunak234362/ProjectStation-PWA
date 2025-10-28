@@ -4,6 +4,7 @@ import Service from "../../../api/Service";
 import type { UserData } from "../../../interface";
 import { Loader2, AlertCircle } from "lucide-react";
 import Button from "../../fields/Button";
+import EditEmployee from "./EditEmployee";
 
 interface GetEmployeeByIDProps {
   id: string;
@@ -155,12 +156,18 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           onClick={() => handleModel(employee)}
           className="py-1 px-2 text-lg"
         >
+        Employee Progress Status
+        </Button>
+        <Button
+          onClick={() => handleModel(employee)}
+          className="py-1 px-2 text-lg"
+        >
           Edit Profile
         </Button>
         <Button className="py-1 px-2 text-lg">Disable Profile</Button>
       </div>
       {editModel && (
-        <>Hello</>
+        <EditEmployee />
       )}
     </div>
   );
