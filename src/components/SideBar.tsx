@@ -50,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: <Home />,
       roles: [
         "admin",
+        "staff",
         "department-manager",
         "deputy-manager",
         "project-manager",
@@ -84,6 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         "admin",
         "department-manager",
         "deputy-manager",
+        "staff",
         "project-manager",
         "user",
         "human-resource",
@@ -95,6 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: <ChartCandlestick />,
       roles: [
         "admin",
+        "staff",
         "department-manager",
         "deputy-manager",
         "project-manager",
@@ -129,6 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: <MessageSquare />,
       roles: [
         "admin",
+        "staff",
         "department-manager",
         "project-manager",
         "deputy-manager",
@@ -143,6 +147,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       roles: [
         "admin",
         "user",
+        "staff",
         "client",
         "estimator",
         "sales",

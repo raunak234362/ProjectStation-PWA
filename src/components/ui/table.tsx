@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// components/DataTable.tsx
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -24,9 +25,46 @@ import {
 import { Button } from "./button";
 import Select from "../fields/Select";
 
+// ---------------------------------------------------------------
+// 1. Filter UI Components
+// ---------------------------------------------------------------
 type FilterOption = { label: string; value: string };
 
-/* ──────────────────────────────── FILTER UI ──────────────────────────────── */
+// Indeterminate checkbox component for header select-all
+function IndeterminateCheckbox({
+  checked,
+  indeterminate,
+  onChange,
+  className,
+  title,
+  ariaLabel,
+}: {
+  checked: boolean;
+  indeterminate: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
+  title?: string;
+  ariaLabel?: string;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.indeterminate = indeterminate;
+    }
+  }, [indeterminate]);
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      className={className}
+      aria-label={ariaLabel}
+      title={title}
+    />
+  );
+}
+
 function TextFilter({ column }: { column: any }) {
   const value = column.getFilterValue() as string | undefined;
   return (
@@ -35,20 +73,17 @@ function TextFilter({ column }: { column: any }) {
         type="text"
         value={value ?? ""}
         onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-        placeholder="Filter..."
+        placeholder={`Filter...`}
         className="w-full pl-8 pr-7 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 outline-none"
       />
       <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
       {value && (
-        <button
+        <Button
           onClick={() => column.setFilterValue(undefined)}
           className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          type="button"
-          title="Clear filter"
-          aria-label="Clear filter"
         >
           <X className="w-4 h-4" />
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -62,13 +97,14 @@ function SelectFilter({
   options: FilterOption[];
 }) {
   const value = column.getFilterValue() as string | undefined;
+
   return (
     <div className="mt-1">
       <Select
         name={column.id}
         options={options}
         value={value}
-        onChange={(_, v) => column.setFilterValue(v || undefined)}
+        onChange={(_, value) => column.setFilterValue(value || undefined)}
         placeholder="All"
         className="text-xs"
       />
@@ -112,7 +148,9 @@ function MultiSelectFilter({
   );
 }
 
-/* ──────────────────────────────── EXTENDED DEF ──────────────────────────────── */
+// ---------------------------------------------------------------
+// 2. Column Definition Extensions
+// ---------------------------------------------------------------
 export type ExtendedColumnDef<T> = ColumnDef<T> & {
   filterType?: "text" | "select" | "multiselect";
   filterOptions?: FilterOption[];
@@ -120,7 +158,9 @@ export type ExtendedColumnDef<T> = ColumnDef<T> & {
   enableColumnFilter?: boolean;
 };
 
-/* ──────────────────────────────── MAIN COMPONENT ──────────────────────────────── */
+// ---------------------------------------------------------------
+// 3. Main Table Component
+// ---------------------------------------------------------------
 interface DataTableProps<T extends object> {
   columns: ExtendedColumnDef<T>[];
   data: T[];
@@ -152,24 +192,21 @@ export default function DataTable<T extends object>({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
 
-  /* ────── 1. Build columns (selection column + user columns) ────── */
+  // Add selection column
   const columns = useMemo<ExtendedColumnDef<T>[]>(() => {
     const selectionColumn: ExtendedColumnDef<T> = {
       id: "select",
       header: ({ table }) => (
-        <input
-          type="checkbox"
-                title="Select row"
+        <IndeterminateCheckbox
           checked={table.getIsAllPageRowsSelected()}
-          ref={el => {
-            if (el) {
-              el.indeterminate =
-                table.getIsSomePageRowsSelected() &&
-                !table.getIsAllPageRowsSelected();
-            }
-          }}
+          indeterminate={
+            table.getIsSomePageRowsSelected() &&
+            !table.getIsAllPageRowsSelected()
+          }
           onChange={(e) => table.toggleAllPageRowsSelected(e.target.checked)}
           className="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500"
+          ariaLabel="Select all rows on page"
+          title="Select all rows on page"
         />
       ),
       cell: ({ row }) => (
@@ -187,18 +224,10 @@ export default function DataTable<T extends object>({
       enableColumnFilter: false,
       size: 50,
     };
+
     return [selectionColumn, ...userColumns];
   }, [userColumns]);
 
-  /* ────── 2. Reset visibility when columns change ────── */
-  useEffect(() => {
-    const allIds = columns
-      .filter((c) => c.id && c.id !== "select")
-      .reduce((acc, c) => ({ ...acc, [c.id!]: true }), {});
-    setColumnVisibility(allIds);
-  }, [columns]);
-
-  /* ────── 3. TanStack Table instance ────── */
   const table = useReactTable({
     data,
     columns,
@@ -207,45 +236,51 @@ export default function DataTable<T extends object>({
       sorting,
       columnFilters,
       rowSelection,
-      columnVisibility, // ← important
+      columnVisibility,
     },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
-    onColumnVisibilityChange: setColumnVisibility, // ← THIS WAS MISSING
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  /* ────── 4. Helpers ────── */
   const selectedCount = Object.keys(rowSelection).length;
   const selectedRows = table
     .getSelectedRowModel()
     .flatRows.map((r) => r.original);
+
   const handleDelete = () => {
     onDelete?.(selectedRows);
     setRowSelection({});
     setShowDeleteModal(false);
   };
+
   const toggleRowExpand = (rowId: string) => {
     setExpandedRowId((prev) => (prev === rowId ? null : rowId));
   };
 
-  /* ────── 5. Render filter only when requested ────── */
+  // Render filter based on column config
   const renderFilter = (column: any) => {
     const def = column.columnDef as ExtendedColumnDef<T>;
 
+    // 1. Explicitly disabled → no filter
     if (def.enableColumnFilter === false) return null;
+
+    // 2. No filterType AND enableColumnFilter not true → no filter
     if (!def.filterType && def.enableColumnFilter !== true) return null;
 
+    // 3. Custom component
     if (def.filterComponent) {
       const Comp = def.filterComponent;
       return <Comp column={column} />;
     }
 
+    // 4. Built-in filters
     switch (def.filterType) {
       case "select":
         return (
@@ -259,11 +294,11 @@ export default function DataTable<T extends object>({
           />
         );
       default:
+        // text filter (default when enableColumnFilter: true)
         return <TextFilter column={column} />;
     }
   };
 
-  /* ────── 6. UI ────── */
   return (
     <>
       {/* Toolbar */}
@@ -279,7 +314,6 @@ export default function DataTable<T extends object>({
             />
           </div>
 
-          {/* ── Column toggle (show/hide) ── */}
           {showColumnToggle && (
             <div className="relative group">
               <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -310,7 +344,6 @@ export default function DataTable<T extends object>({
           )}
         </div>
 
-        {/* Bulk delete */}
         {selectedCount > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
@@ -358,7 +391,7 @@ export default function DataTable<T extends object>({
                       ) : null}
                     </div>
 
-                    {/* Filter (only when requested) */}
+                    {/* Filter */}
                     {renderFilter(header.column)}
                   </th>
                 ))}
@@ -382,7 +415,7 @@ export default function DataTable<T extends object>({
                 return (
                   <React.Fragment key={row.id}>
                     <tr
-                      className={`hover:bg-gray-100 transition-colors ${
+                      className={`hover:bg-teal-50 transition-colors ${
                         onRowClick ? "cursor-pointer" : ""
                       }`}
                       onClick={() => {
@@ -401,6 +434,7 @@ export default function DataTable<T extends object>({
                           )}
                         </td>
                       ))}
+                      
                       {DetailComponent && (
                         <td className="px-2 py-4">
                           <ChevronRight
@@ -412,7 +446,6 @@ export default function DataTable<T extends object>({
                       )}
                     </tr>
 
-                    {/* Inline detail row */}
                     {DetailComponent && isExpanded && (
                       <tr>
                         <td
@@ -433,6 +466,7 @@ export default function DataTable<T extends object>({
           </tbody>
         </table>
       </div>
+
       {/* Pagination */}
       <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-4">
         <div className="flex items-center gap-2 text-sm text-gray-700">
@@ -441,8 +475,12 @@ export default function DataTable<T extends object>({
             <strong>{table.getPageCount()}</strong>
           </span>
           <span>|</span>
+          <label htmlFor="page-size-select" className="sr-only">
+            Rows per page
+          </label>
           <select
-          title="select page"
+            id="page-size-select"
+            aria-label="Rows per page"
             value={table.getState().pagination.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
             className="border border-gray-300 rounded px-2 py-1"

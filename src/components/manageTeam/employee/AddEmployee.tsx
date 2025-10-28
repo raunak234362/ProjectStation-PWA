@@ -30,14 +30,19 @@ const AddEmployee: React.FC = () => {
 
   const onSubmit = async (data: EmployeePayload) => {
     console.log(data);
+    const payload = {
+      ...data,
+      username: data?.username?.toUpperCase(),
+    };
+    
     try {
-      const response = await Service.AddEmployee(data);
+      const response = await Service.AddEmployee(payload);
       console.log(response);
       // reset();
 
       toast.success("Employee created successfully!");
     } catch (error) {
-      console.error("Error creating employee:", error);
+      console.error("Error creating employee:", error); 
       toast.error("Failed to create employee");
     }
   };
@@ -45,7 +50,7 @@ const AddEmployee: React.FC = () => {
   const roleOption = [
     { label: "STAFF", value: "STAFF" },
     { label: "ADMIN", value: "ADMIN" },
-    { label: "OPERATION_EXECUTIVE", value: "OPERATION_EXECUTIVE" },
+    { label: "OPERATION_EXECUTIVE", value: "Operation Executive" },
     { label: "PROJECT_MANAGER_OFFICER", value: "PMO" },
     { label: "DEPUTY_MANAGER", value: "Deputy Manager" },
     { label: "DEPT_MANAGER", value: "Department Manager" },
