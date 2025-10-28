@@ -62,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       label: "Fabricator",
-      to: "/fabricator",
+      to: "fabricator",
       icon: <LucideComponent />,
       roles: [
         "admin",

@@ -1,9 +1,25 @@
-
+import { useEffect, useState } from "react";
+import Service from "../../../api/Service";
 
 const AllFabricator = () => {
-  return (
-    <div>AllFabricator</div>
-  )
-}
+  const [fabricators, setFabricators] = useState([]);
 
-export default AllFabricator
+  useEffect(() => {
+    const fetchFabricators = async () => {
+      try {
+        const data = await Service.GetAllFabricators();
+        setFabricators(data);
+      } catch (error) {
+        console.error("Failed to fetch fabricators:", error);
+      }
+    };
+
+    fetchFabricators();
+  }, []);
+
+  return (
+    <div></div>
+  );
+};
+
+export default AllFabricator;
