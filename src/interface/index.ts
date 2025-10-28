@@ -50,7 +50,7 @@ export interface FabricatorPayload {
 }
 
 export interface Fabricator {
-  id: string;
+  id?: string;
   fabName: string;
   website?: string;
   drive?: string;

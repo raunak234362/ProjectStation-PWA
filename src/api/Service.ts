@@ -85,15 +85,15 @@ class Service {
   //   }
   // }
 
-  static async GetAllFabricators(){
+  static async GetAllFabricators() {
     try {
-      const response = await api.get(`fabricator`, {
+      const response = await api.get(`fabricator/all`, {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      console.log("✅ All Fabricators fetched:", response.data.data);
+      console.log("✅ All Fabricators fetched:", response);
       return response.data;
     } catch (error) {
       console.error("Cannot fetch fabricators:", error);
@@ -111,6 +111,22 @@ class Service {
       });
       console.log(response);
       return response.data;
+    } catch (error) {
+      alert(error);
+      console.log("Error fetching all Employee");
+    }
+  }
+
+  //Fetch Fabricator By ID
+  static async FetchFabricatorById (id:string) {
+    try {
+      const response = await api.get(`fabricator/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response;
     } catch (error) {
       alert(error);
       console.log("Error fetching all Employee");

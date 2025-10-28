@@ -4,9 +4,15 @@ import type { Fabricator } from "../../../interface";
 import { toast } from "react-toastify";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
+import GetFabricatorByID from "./GetFabricatorByID";
+
+interface GetFabricatorID{
+
+}
 
 const AllFabricator = () => {
-  const [fabricators, setFabricators] = useState<Fabricator>();
+  const [fabricators, setFabricators] = useState<Fabricator[]>([]);
+  const [fabricatorId, setFabricatorId] = useState<string | "">();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,9 +23,9 @@ const AllFabricator = () => {
         setLoading(true);
         setError(null);
         const response = await Service.GetAllFabricators();
-
+console.log (response)
         // Adjust based on your backend response
-        const data = response?.data?.fabricators || response || {};
+        const data = response.data || [];
         setFabricators(data);
       } catch (err) {
         console.error("Failed to fetch fabricators:", err);
@@ -32,6 +38,8 @@ const AllFabricator = () => {
 
     fetchFabricators();
   }, []);
+  console.log(fabricators);
+  
 
   // // Handle delete action
   // const handleDelete = async (selectedRows: Fabricator[]) => {
@@ -53,53 +61,14 @@ const AllFabricator = () => {
 
   // Handle row click (optional)
   const handleRowClick = (row: Fabricator) => {
-    alert(`You clicked fabricator: ${row.fabName}`);
+    alert(`You clicked fabricator: ${row.id}`);
+    setFabricatorId (row.id );
   };
 
   // Define columns for DataTable
   const columns: ColumnDef<Fabricator>[] = [
     { accessorKey: "fabName", header: "Fabricator Name" },
-    {
-      accessorKey: "website",
-      header: "Website",
-      cell: ({ row }) => (
-        <a
-          href={row.original.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-teal-600 hover:underline"
-        >
-          {row.original.website || "—"}
-        </a>
-      ),
-    },
-    {
-      accessorKey: "drive",
-      header: "Drive Link",
-      cell: ({ row }) =>
-        row.original.drive ? (
-          <a
-            href={row.original.drive}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            Drive
-          </a>
-        ) : (
-          "—"
-        ),
-    },
-    {
-      accessorKey: "files",
-      header: "Files",
-      cell: ({ row }) =>
-        row.original.files ? (
-          <span className="text-gray-700">{row.original.files}</span>
-        ) : (
-          "—"
-        ),
-    },
+    
   ];
 
   // Loading and error states
@@ -113,7 +82,7 @@ const AllFabricator = () => {
         columns={columns}
         data={fabricators}
         onRowClick={handleRowClick}
-       
+        detailComponent={({ row }) => <GetFabricatorByID id={ row.id} />}
         searchPlaceholder="Search fabricators..."
         pageSizeOptions={[5, 10, 25]}
       />
