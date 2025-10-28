@@ -42,3 +42,9 @@ export interface EmployeePayload {
   role: "ADMIN" | "MANAGER" | "STAFF" | "EMPLOYEE" | string;
   departmentId: string;
 }
+export interface FabricatorPayload {
+  fabName: string;
+  website?: string;
+  drive?: string;
+  files?: File | string | "";
+}
