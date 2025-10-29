@@ -1,4 +1,9 @@
-import type { EmployeePayload, FabricatorPayload } from "../interface";
+import type {
+  DepartmentPayload,
+  EditEmployeePayload,
+  EmployeePayload,
+  FabricatorPayload,
+} from "../interface";
 import api from "./api";
 const token = sessionStorage.getItem("token");
 class Service {
@@ -28,7 +33,7 @@ class Service {
         },
       });
       console.log(response);
-      return response;
+      return response?.data;
     } catch (error) {
       alert(error);
       console.log("Error while adding New User", error);
@@ -51,20 +56,82 @@ class Service {
     }
   }
 
-  // Fetch Employee by ID
-  static async FetchEmployeeByID(id : string){
+  //Fetch Employee by ROLE
+  static async FetchEmployeeByRole(role: string) {
     try {
-      const response = await api.get(`employee/${id}`,{
-        headers:{
-          "Content-Type":"application/json"
-        }
+      const response = await api.get(`employee/role/${role}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      console.log(response)
-      return response.data
+      console.log(response);
+      return response.data;
     } catch (error) {
-      alert(error)
+      alert(error);
+      console.log("Error fetching all Employee");
+    }
+  }
+
+  // Fetch Employee by ID
+  static async FetchEmployeeByID(id: string) {
+    try {
+      const response = await api.get(`employee/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      alert(error);
       console.log("Error fetching Employee by ID");
-      
+    }
+  }
+
+  //Edit Employee By ID
+  static async EditEmployeeByID(id: string, data: EditEmployeePayload) {
+    try {
+      const response = await api.put(`employee/update/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      alert(error);
+      console.log("Error fetching Employee by ID");
+    }
+  }
+
+  //Add Department
+  static async AddDepartment(departmentData:DepartmentPayload) {
+    try {
+      const response = await api.post(`department`, departmentData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response?.data;
+    } catch (error) {
+      alert(error);
+      console.log("Error while adding New User", error);
+    }
+  }
+  //All Departments
+  static async AllDepartments(){
+    try {
+      const response = await api.get(`department`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      alert(error);
+      console.log("Error fetching all Employee");
     }
   }
 

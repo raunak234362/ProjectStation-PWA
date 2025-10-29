@@ -1,62 +1,54 @@
 import { useState } from "react";
-import { AddEmployee } from "../components";
-import EmployeeLayout from "../layout/EmployeeLayout";
-import DepartmentLayout from "../layout/DepartmentLayout";
+import { AddEmployee, AllEmployee } from "../components";
+import AddDepartment from "../components/manageTeam/department/AddDepartment";
 
-const TeamPage = () => {
+const DepartmentLayout = () => {
   //   console.log("RFQ Component Rendered with projectData:", projectData);
   const [activeTab, setActiveTab] = useState("allEmployee");
   const userRole = sessionStorage.getItem("userRole");
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
-        <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-md ">
-          <h1 className="text-2xl py-2 font-bold text-white">Team Detail</h1>
+        <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-t-md ">
           <div className="flex w-full overflow-x-auto">
             <button
-              onClick={() => setActiveTab("teamDashboard")}
+              onClick={() => setActiveTab("alldepartment")}
               className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                activeTab === "teamDashboard"
+                activeTab === "alldepartment"
                   ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                   : "md:text-base text-sm text-white font-semibold"
               }`}
             >
-              Team Dashboard
+              All Department
             </button>
-            <button
-              onClick={() => setActiveTab("manageEmployee")}
-              className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                activeTab === "manageEmployee"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm text-white font-semibold"
-              }`}
-            >
-              Manage Employee
-            </button>
+
             {(userRole === "ADMIN" || userRole === "human-resource") && (
               <>
                 <button
-                  onClick={() => setActiveTab("manageDepartment")}
+                  onClick={() => setActiveTab("addDepartment")}
                   className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                    activeTab === "manageDepartment"
+                    activeTab === "addDepartment"
                       ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                       : "md:text-base text-sm text-white font-semibold"
                   }`}
                 >
-                  Manage Department
+                  Add Department
                 </button>
               </>
             )}
           </div>
         </div>
-        <div className="flex-grow py-2 h-[85vh] overflow-y-auto">
-          {activeTab === "manageEmployee" && (
+        <div className="flex-grow p-2 bg-white rounded-b-2xl">
+          {activeTab === "alldepartment" && (
             <div>
-              <EmployeeLayout />
+              <AllEmployee />
             </div>
           )}
-          {activeTab === "manageDepartment" && (
-            <div> <DepartmentLayout/></div>
+          {activeTab === "addDepartment" && (
+            <div>
+              {" "}
+              <AddDepartment />
+            </div>
           )}
           {activeTab === "addEmployee" && (
             <div>
@@ -76,4 +68,4 @@ const TeamPage = () => {
   );
 };
 
-export default TeamPage;
+export default DepartmentLayout;

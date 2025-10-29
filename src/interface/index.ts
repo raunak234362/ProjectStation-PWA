@@ -42,6 +42,36 @@ export interface EmployeePayload {
   role: "ADMIN" | "MANAGER" | "STAFF" | "EMPLOYEE" | string;
   departmentId: string;
 }
+
+export interface EditEmployeePayload {
+  username?: string;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  altPhone?: string;
+  designation?: string;
+  role?: "ADMIN" | "STAFF" | "MANAGER" | "INTERN";
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zipCode?: string;
+  landline?: string;
+  altLandline?: string;
+}
+
+export interface Department {
+  id?: string;
+  name?: string;
+  managerIDs?: string;
+}
+
+export interface DepartmentPayload {
+  name?: string;
+  managerIds?: string[] | [];
+}
 export interface FabricatorPayload {
   fabName: string;
   website?: string;

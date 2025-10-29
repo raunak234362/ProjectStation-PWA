@@ -1,36 +1,19 @@
-import { useEffect, useState } from "react";
-import Service from "../../../api/Service";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import type { UserData } from "../../../interface";
 import { toast } from "react-toastify";
 import DataTable from "../../ui/table";
 import GetEmployeeByID from "./GetEmployeeByID";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useSelector } from "react-redux";
 const AllEmployee = () => {
-  const [employees, setEmployees] = useState<UserData[]>([]);
+  const staffData = useSelector((state:any)=>state.userInfo.staffData)
+  const [employees, setEmployees] = useState<UserData[]>(staffData);
   const [employeeID, setEmployeeID] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    const fetchAllEmployee = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await Service.FetchAllEmployee();
+  const [loading] = useState(false);
+  const [error] = useState<string | null>(null);
 
-        // Adjust based on your API response structure
-        const data = response?.data.employees || [];
-        setEmployees(data);
-      } catch (err) {
-        console.error("Failed to fetch employees:", err);
-        setError("Failed to load employees");
-        toast.error("Failed to load employees");
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchAllEmployee();
-  }, []);
 
   console.log(employees);
   const handleDelete = async (selectedRows: UserData[]) => {

@@ -44,6 +44,9 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
     console.log(employee);
     setEditModel(employee);
   };
+  const handleModelClose= ()=>{
+    setEditModel(null)
+  }
 
   if (loading) {
     return (
@@ -167,7 +170,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         <Button className="py-1 px-2 text-lg">Disable Profile</Button>
       </div>
       {editModel && (
-        <EditEmployee />
+        <EditEmployee employeeData={employee} onClose={handleModelClose}/>
       )}
     </div>
   );
