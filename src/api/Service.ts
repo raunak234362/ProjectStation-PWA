@@ -172,6 +172,21 @@ class Service {
       throw error;
     }
   }
+  // static async GetAllFabricators() {
+  //   try {
+  //     const response = await api.get(`fabricator`, {
+  //       headers: {
+  //         " Accept": "application/json",
+  //       },
+  //     });
+  //     console.log(" All Fabricators fetched:", response.data.data);
+  //     return response.data.data;
+  //   } catch (error) {
+  //     console.error("cannot find fabricators", error);
+  //     throw error;
+  //   }
+  // }
+
   static async GetAllFabricators() {
     try {
       const response = await api.get(`fabricator`, {
