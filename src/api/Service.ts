@@ -105,7 +105,7 @@ class Service {
   }
 
   //Add Department
-  static async AddDepartment(departmentData:DepartmentPayload) {
+  static async AddDepartment(departmentData: DepartmentPayload) {
     try {
       const response = await api.post(`department`, departmentData, {
         headers: {
@@ -120,7 +120,7 @@ class Service {
     }
   }
   //All Departments
-  static async AllDepartments(){
+  static async AllDepartments() {
     try {
       const response = await api.get(`department`, {
         headers: {
@@ -132,6 +132,22 @@ class Service {
     } catch (error) {
       alert(error);
       console.log("Error fetching all Employee");
+    }
+  }
+
+  // Fetch Department by ID
+  static async FetchDepartmentByID(id: string) {
+    try {
+      const response = await api.get(`department/department/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      alert(error);
+      console.log("Error fetching Employee by ID");
     }
   }
 
@@ -167,6 +183,42 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Fetch All Chats
+  static async AllChats() {
+    try {
+      const response = await api.get(`chat`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Fabricators fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Fetch Chats by Group ID
+  static async ChatByGroupID(groupId: string, lastId?: string) {
+    try {
+      const params: Record<string, string> = { groupId };
+      if (lastId) {
+        params.lastId = lastId;
+      }
+      const response = await api.get(`chat`, {
+        params,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Chats by Group ID fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Cannot find chats by group ID", error);
+      throw error;
     }
   }
 }

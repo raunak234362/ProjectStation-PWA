@@ -3,6 +3,8 @@ export interface AuthInterface {
   password: string;
 }
 
+export type Role = "ADMIN" | "STAFF" | "DEPT_MANAGER" | string ;
+
 // Signed-in User Data Interface
 export interface UserData {
   id: string;
@@ -65,7 +67,16 @@ export interface EditEmployeePayload {
 export interface Department {
   id?: string;
   name?: string;
-  managerIDs?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  managerIds?:
+    | string
+    | []
+    | {
+        firstName?: string;
+        lastName?: string;
+        middleName?: string;
+      };
 }
 
 export interface DepartmentPayload {
@@ -77,4 +88,45 @@ export interface FabricatorPayload {
   website?: string;
   drive?: string;
   files?: File | string | "";
+}
+
+
+
+export interface User {
+  id: string;
+  f_name: string;
+  l_name: string;
+  role?: Role;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+}
+
+export interface ChatItem {
+  id: string;
+  group: Group;
+  lastMessage?: string;
+  updatedAt: string;
+  unread?: number;
+}
+
+export interface Message {
+  id: string;
+  groupId: string;
+  senderId: string;
+  content: string;
+  createdAt: string;
+  isTagged?: boolean;
+  sender?: User;
+}
+
+export interface SocketMessage {
+  id: string;
+  groupId: string;
+  senderId: string;
+  content: string;
+  createdAt: string;
+  isTagged?: boolean;
 }

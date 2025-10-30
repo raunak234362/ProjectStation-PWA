@@ -1,60 +1,76 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Provider, useDispatch } from "react-redux";
 import store from "./store/store";
 import Layout from "./layout/DashboardLayout";
 import Service from "./api/Service";
 import { setUserData, showStaff } from "./store/userSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import socket, { connectSocket } from "./socket";
 
-const App = () => {
+const AppContent = () => {
   const dispatch = useDispatch();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Fetch current user
   const fetchSignedinUser = async () => {
-    const response = await Service.GetUserByToken();
-    const userDetail = response?.data?.user;
-    console.log(userDetail);
-    dispatch(setUserData(userDetail));
+    try {
+      const response = await Service.GetUserByToken();
+      const userDetail = response?.data?.user;
+      if (!userDetail?.id) throw new Error("Invalid user");
+
+      sessionStorage.setItem("userId", userDetail.id);
+      sessionStorage.setItem("username", userDetail.username);
+
+      setUserId(userDetail.id);
+      dispatch(setUserData(userDetail));
+
+      // Connect socket after user is set
+      connectSocket(userDetail.id);
+    } catch (err) {
+      console.error("User fetch failed:", err);
+      toast.error("Failed to load user");
+    }
   };
 
   useEffect(() => {
+    // Fetch user once on mount
+    fetchSignedinUser();
+
+    // Fetch all employees
     const fetchAllEmployee = async () => {
       try {
         const response = await Service.FetchAllEmployee();
-
-        // Adjust based on your API response structure
-        const data = response?.data.employees || [];
-        dispatch(showStaff(data))
-        console.log(data)
+        const data = response?.data?.employees || [];
+        dispatch(showStaff(data));
       } catch (err) {
         console.error("Failed to fetch employees:", err);
         toast.error("Failed to load employees");
       }
     };
     fetchAllEmployee();
-  }, []);
 
-  useEffect(() => {
-    fetchSignedinUser();
-  }, []);
+    // Cleanup socket on unmount
+    return () => {
+      if (socket.connected) {
+        socket.disconnect();
+        console.log("🧹 Socket disconnected on unmount");
+      }
+    };
+  }, [dispatch]);
 
   return (
-    <div>
-      <Provider store={store}>
-        <ToastContainer
-          position="top-right"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-        <Layout />
-      </Provider>
-    </div>
+    <>
+      <ToastContainer position="top-right" autoClose={2000} />
+      <Layout />
+    </>
   );
 };
+
+const App = () => (
+  <Provider store={store}>
+    <AppContent />
+  </Provider>
+);
 
 export default App;

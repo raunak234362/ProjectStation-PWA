@@ -1,75 +1,86 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import { AddEmployee } from "../components";
 import EmployeeLayout from "../layout/EmployeeLayout";
 import DepartmentLayout from "../layout/DepartmentLayout";
+import Service from "../api/Service";
+import { useDispatch } from "react-redux";
+import { showDepartment } from "../store/userSlice";
 
 const TeamPage = () => {
-  //   console.log("RFQ Component Rendered with projectData:", projectData);
+  const dispatch = useDispatch();
+
   const [activeTab, setActiveTab] = useState("allEmployee");
   const userRole = sessionStorage.getItem("userRole");
+
+  // ✅ Fetch ALL departments on mount
+  useEffect(() => {
+    const fetchDepartment = async () => {
+      try {
+        const response = await Service.AllDepartments();
+        dispatch(showDepartment(response?.data));
+      } catch (error) {
+        console.log("Error fetching departments", error);
+      }
+    };
+
+    fetchDepartment();
+  }, [dispatch]);
+
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
-        <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-md ">
+        {/* ---------- TOP TABS ---------- */}
+        <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-md">
           <h1 className="text-2xl py-2 font-bold text-white">Team Detail</h1>
+
           <div className="flex w-full overflow-x-auto">
             <button
               onClick={() => setActiveTab("teamDashboard")}
-              className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
+              className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "teamDashboard"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm text-white font-semibold"
+                  ? "bg-white/70 text-gray-800 font-bold"
+                  : "text-white font-semibold"
               }`}
             >
               Team Dashboard
             </button>
+
             <button
               onClick={() => setActiveTab("manageEmployee")}
-              className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
+              className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "manageEmployee"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm text-white font-semibold"
+                  ? "bg-white/70 text-gray-800 font-bold"
+                  : "text-white font-semibold"
               }`}
             >
               Manage Employee
             </button>
+
             {(userRole === "ADMIN" || userRole === "human-resource") && (
-              <>
-                <button
-                  onClick={() => setActiveTab("manageDepartment")}
-                  className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                    activeTab === "manageDepartment"
-                      ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                      : "md:text-base text-sm text-white font-semibold"
-                  }`}
-                >
-                  Manage Department
-                </button>
-              </>
+              <button
+                onClick={() => setActiveTab("manageDepartment")}
+                className={`px-1.5 md:px-4 py-2 rounded-lg ${
+                  activeTab === "manageDepartment"
+                    ? "bg-white/70 text-gray-800 font-bold"
+                    : "text-white font-semibold"
+                }`}
+              >
+                Manage Department
+              </button>
             )}
           </div>
         </div>
+
+        {/* ---------- TAB CONTENT ---------- */}
         <div className="flex-grow py-2 h-[85vh] overflow-y-auto">
-          {activeTab === "manageEmployee" && (
-            <div>
-              <EmployeeLayout />
-            </div>
-          )}
+          {activeTab === "manageEmployee" && <EmployeeLayout />}
+
           {activeTab === "manageDepartment" && (
-            <div> <DepartmentLayout/></div>
+            <DepartmentLayout/>
           )}
-          {activeTab === "addEmployee" && (
-            <div>
-              {" "}
-              <AddEmployee />{" "}
-            </div>
-          )}
-          {activeTab === "allDepartment" && (
-            <div> {/* <AllDepartment />{" "} */}</div>
-          )}
-          {activeTab === "teamDashboard" && (
-            <div> {/* <TeamDashboard />{" "} */}</div>
-          )}
+
+          {activeTab === "teamDashboard" && <AddEmployee />}
         </div>
       </div>
     </div>

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { AddEmployee, AllEmployee } from "../components";
-import AddDepartment from "../components/manageTeam/department/AddDepartment";
+import { AddDepartment, AllDepartments } from "../components";
+
 
 const DepartmentLayout = () => {
-  //   console.log("RFQ Component Rendered with projectData:", projectData);
-  const [activeTab, setActiveTab] = useState("allEmployee");
+  
+  const [activeTab, setActiveTab] = useState("alldepartment");
   const userRole = sessionStorage.getItem("userRole");
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
@@ -41,7 +41,7 @@ const DepartmentLayout = () => {
         <div className="flex-grow p-2 bg-white rounded-b-2xl">
           {activeTab === "alldepartment" && (
             <div>
-              <AllEmployee />
+              <AllDepartments />
             </div>
           )}
           {activeTab === "addDepartment" && (
@@ -49,18 +49,6 @@ const DepartmentLayout = () => {
               {" "}
               <AddDepartment />
             </div>
-          )}
-          {activeTab === "addEmployee" && (
-            <div>
-              {" "}
-              <AddEmployee />{" "}
-            </div>
-          )}
-          {activeTab === "allDepartment" && (
-            <div> {/* <AllDepartment />{" "} */}</div>
-          )}
-          {activeTab === "teamDashboard" && (
-            <div> {/* <TeamDashboard />{" "} */}</div>
           )}
         </div>
       </div>
