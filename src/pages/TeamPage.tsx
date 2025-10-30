@@ -10,7 +10,7 @@ import { showDepartment } from "../store/userSlice";
 const TeamPage = () => {
   const dispatch = useDispatch();
 
-  const [activeTab, setActiveTab] = useState("allEmployee");
+  const [activeTab, setActiveTab] = useState("manageEmployee");
   const userRole = sessionStorage.getItem("userRole");
 
   // ✅ Fetch ALL departments on mount

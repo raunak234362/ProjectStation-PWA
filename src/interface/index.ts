@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AuthInterface {
   username: string;
   password: string;
 }
 
-export type Role = "ADMIN" | "STAFF" | "DEPT_MANAGER" | string ;
+export type Role = "ADMIN" | "STAFF" | "DEPT_MANAGER" | string;
 
 // Signed-in User Data Interface
 export interface UserData {
@@ -90,7 +91,22 @@ export interface FabricatorPayload {
   files?: File | string | "";
 }
 
-
+export interface Fabricator {
+  id: string;
+  fabName: string;
+  website: string;
+  drive: string;
+  files: {
+    id: string;
+    path: string;
+    originalName: string;
+  }[];
+  branches: any[];
+  project: any[];
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+}
 
 export interface User {
   id: string;

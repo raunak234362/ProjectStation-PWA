@@ -26,7 +26,8 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
         setError(null);
 
         const response = await Service.FetchDepartmentByID(id);
-        setDepartment(response?.data?.department || null);
+        console.log(response);
+        setDepartment(response?.data || null);
       } catch (err) {
         const msg = "Failed to load department details";
         setError(msg);
@@ -57,16 +58,16 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
     );
   }
 
-//   const formatDate = (dateString: string) =>
-//     new Date(dateString).toLocaleString("en-IN", {
-//       dateStyle: "medium",
-//       timeStyle: "short",
-//     });
+  //   const formatDate = (dateString: string) =>
+  //     new Date(dateString).toLocaleString("en-IN", {
+  //       dateStyle: "medium",
+  //       timeStyle: "short",
+  //     });
 
   const managers = department.managerIds || [];
 
   return (
-    <div className="bg-linear-to-br from-orange-50 to-yellow-50 p-6 rounded-xl shadow-inner">
+    <div className="bg-linear-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner">
       {/* Header */}
       {/* <div className="flex items-center justify-between mb-5">
         <h3 className="text-xl font-bold text-orange-800">{department.name}</h3>
@@ -84,7 +85,7 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
         {/* Left Column */}
         <div className="space-y-3">
-          <InfoRow label="Department ID" value={department.id} />
+          <InfoRow label="Department Name" value={department.name} />
           {/* <InfoRow label="Created" value={formatDate(department?.createdAt)} />
           <InfoRow label="Updated" value={formatDate(department?.updatedAt)} /> */}
           {/* <InfoRow label="Created By" value={department.createdById || "—"} /> */}
@@ -98,13 +99,19 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
               {Array.isArray(managers) && managers?.length > 0
                 ? managers
                     .map(
-                      (m: { firstName?: string; middleName?: string; lastName?: string }) =>
-                        `${m.firstName || ""} ${m.middleName || ""} ${m.lastName || ""}`.replace(/\s+/g, " ").trim()
+                      (m: {
+                        firstName?: string;
+                        middleName?: string;
+                        lastName?: string;
+                      }) =>
+                        `${m.firstName || ""} ${m.middleName || ""} ${
+                          m.lastName || ""
+                        }`
+                          .replace(/\s+/g, " ")
+                          .trim()
                     )
                     .join(", ")
                 : "No Managers Assigned"}
-                  
-                  
             </div>
           </div>
         </div>

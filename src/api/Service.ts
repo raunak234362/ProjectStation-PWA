@@ -172,24 +172,25 @@ class Service {
       throw error;
     }
   }
-  // static async GetAllFabricators() {
-  //   try {
-  //     const response = await api.get(`fabricator`, {
-  //       headers: {
-  //         " Accept": "application/json",
-  //       },
-  //     });
-  //     console.log(" All Fabricators fetched:", response.data.data);
-  //     return response.data.data;
-  //   } catch (error) {
-  //     console.error("cannot find fabricators", error);
-  //     throw error;
-  //   }
-  // }
 
   static async GetAllFabricators() {
     try {
-      const response = await api.get(`fabricator`, {
+      const response = await api.get(`fabricator/all`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Fabricators fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Fetch Fabricator by ID
+  static async GetFabricatorByID(id:string){
+    try {
+      const response = await api.get(`fabricator/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },

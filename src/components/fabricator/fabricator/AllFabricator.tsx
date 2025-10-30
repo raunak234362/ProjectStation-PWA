@@ -1,14 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import Service from "../../../api/Service";
-import type { Fabricator } from "../../../interface";
 import { toast } from "react-toastify";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetFabricatorByID from "./GetFabricatorByID";
-
-interface GetFabricatorID{
-
-}
+import type { Fabricator } from "../../../interface";
 
 const AllFabricator = () => {
   const [fabricators, setFabricators] = useState<Fabricator[]>([]);
@@ -23,7 +21,7 @@ const AllFabricator = () => {
         setLoading(true);
         setError(null);
         const response = await Service.GetAllFabricators();
-console.log (response)
+        console.log(response);
         // Adjust based on your backend response
         const data = response.data || [];
         setFabricators(data);
@@ -39,7 +37,6 @@ console.log (response)
     fetchFabricators();
   }, []);
   console.log(fabricators);
-  
 
   // // Handle delete action
   // const handleDelete = async (selectedRows: Fabricator[]) => {
@@ -61,14 +58,14 @@ console.log (response)
 
   // Handle row click (optional)
   const handleRowClick = (row: Fabricator) => {
-    alert(`You clicked fabricator: ${row.id}`);
-    setFabricatorId (row.id );
+    const fabricatorUniqueId = (row as any).id ?? (row as any).fabId ?? "";
+    // alert(`You clicked fabricator: ${fabricatorUniqueId}`);
+    setFabricatorId(fabricatorUniqueId);
   };
 
   // Define columns for DataTable
   const columns: ColumnDef<Fabricator>[] = [
     { accessorKey: "fabName", header: "Fabricator Name" },
-    
   ];
 
   // Loading and error states
@@ -82,7 +79,10 @@ console.log (response)
         columns={columns}
         data={fabricators}
         onRowClick={handleRowClick}
-        detailComponent={({ row }) => <GetFabricatorByID id={ row.id} />}
+        detailComponent={({ row }) => {
+          const fabricatorUniqueId = (row as any).id ?? (row as any).fabId ?? "";
+          return <GetFabricatorByID id={fabricatorUniqueId} />;
+        }}
         searchPlaceholder="Search fabricators..."
         pageSizeOptions={[5, 10, 25]}
       />
