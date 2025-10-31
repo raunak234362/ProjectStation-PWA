@@ -90,17 +90,19 @@ export interface FabricatorPayload {
   drive?: string;
   files?: File | string | "";
 }
+export interface FabricatorEditPayload {
+  fabName: string;
+  website?: string;
+  drive?: string;
+  files?: File | [] | "";
+}
 
 export interface Fabricator {
   id: string;
   fabName: string;
   website: string;
   drive: string;
-  files: {
-    id: string;
-    path: string;
-    originalName: string;
-  }[];
+  files: File | [];
   branches: any[];
   project: any[];
   createdAt: string;

@@ -37,7 +37,7 @@ const FabricatorLayout = () => {
           </div>
         </div>
       </div>
-      <div className="flex-grow bg-white p-2 rounded-b-2xl h-[82.3vh] overflow-y-hidden">
+      <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
         {activeTab === "allFabricator" && (
           <div>
             <AllFabricator />

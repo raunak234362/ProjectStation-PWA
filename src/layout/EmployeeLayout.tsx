@@ -20,7 +20,7 @@ const EmployeeLayout = () => {
             >
               All Employee
             </button>
-            
+
             {(userRole === "ADMIN" || userRole === "human-resource") && (
               <>
                 <button
@@ -37,7 +37,7 @@ const EmployeeLayout = () => {
             )}
           </div>
         </div>
-        <div className="flex-grow p-2 bg-white rounded-b-2xl">
+        <div className="flex-1 min-h-0 overflow-y-auto p-2 bg-white rounded-b-2xl">
           {activeTab === "allEmployee" && (
             <div>
               <AllEmployee />

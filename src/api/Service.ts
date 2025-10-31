@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type {
   DepartmentPayload,
   EditEmployeePayload,
@@ -191,6 +192,21 @@ class Service {
   static async GetFabricatorByID(id:string){
     try {
       const response = await api.get(`fabricator/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Fabricators fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Update Fabricator by ID
+  static async EditFabricatorByID(id:string, data:any){
+    try {
+      const response = await api.put(`fabricator/update/${id}`,data, {
         headers: {
           "Content-Type": "application/json",
         },

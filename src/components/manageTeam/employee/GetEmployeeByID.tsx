@@ -73,7 +73,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
     });
 
   return (
-    <div className="bg-gradient-to-br from-teal-50 to-blue-50 p-6 rounded-xl shadow-inner">
+    <div className="bg-linear-to-br from-teal-50 to-blue-50 p-6 rounded-xl shadow-inner">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-xl font-bold text-teal-800">

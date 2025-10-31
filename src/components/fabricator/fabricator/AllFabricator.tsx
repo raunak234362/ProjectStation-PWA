@@ -74,13 +74,14 @@ const AllFabricator = () => {
 
   // Render DataTable
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-sm">
+    <div className=" bg-white p-4 rounded-2xl shadow-sm">
       <DataTable
         columns={columns}
         data={fabricators}
         onRowClick={handleRowClick}
         detailComponent={({ row }) => {
-          const fabricatorUniqueId = (row as any).id ?? (row as any).fabId ?? "";
+          const fabricatorUniqueId =
+            (row as any).id ?? (row as any).fabId ?? "";
           return <GetFabricatorByID id={fabricatorUniqueId} />;
         }}
         searchPlaceholder="Search fabricators..."

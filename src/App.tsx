@@ -7,6 +7,7 @@ import { setUserData, showStaff } from "./store/userSlice";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import socket, { connectSocket } from "./socket";
+import PWABadge from "./PWABadge";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -62,6 +63,7 @@ const AppContent = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={2000} />
+
       <Layout />
     </>
   );
@@ -70,6 +72,7 @@ const AppContent = () => {
 const App = () => (
   <Provider store={store}>
     <AppContent />
+    <PWABadge />
   </Provider>
 );
 

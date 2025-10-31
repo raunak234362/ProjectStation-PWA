@@ -3,6 +3,8 @@ import Service from "../../../api/Service";
 import { Loader2, AlertCircle, Link2, FileText, Link } from "lucide-react";
 import Button from "../../fields/Button";
 import type { Fabricator } from "../../../interface";
+import { openFileSecurely } from "../../../utils/openFileSecurely";
+import EditFabricator from "./EditFabricator";
 
 interface GetFabricatorIDProps {
   id: string;
@@ -15,7 +17,7 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   const [fabricator, setFabricator] = useState<Fabricator | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [editModel, setEditModel] = useState<Fabricator | null>(null);
   useEffect(() => {
     const fetchFab = async () => {
       if (!id) {
@@ -39,6 +41,14 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
 
     fetchFab();
   }, [id]);
+
+  const handleModel = (fabricator: Fabricator) => {
+    console.log(fabricator);
+    setEditModel(fabricator);
+  };
+  const handleModelClose = () => {
+    setEditModel(null);
+  };
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleString("en-IN", {
@@ -68,7 +78,7 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
     <div className="bg-gradient-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner text-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold text-blue-800">
+        <h3 className="text-xl font-bold text-teal-800">
           {fabricator.fabName}
         </h3>
         <span
@@ -123,45 +133,61 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
         <div className="space-y-3">
           <InfoRow label="Created" value={formatDate(fabricator.createdAt)} />
           <InfoRow label="Updated" value={formatDate(fabricator.updatedAt)} />
-          <InfoRow label="Total Files" value={fabricator.files?.length || 0} />
+          <InfoRow
+            label="Total Files"
+            value={
+              Array.isArray(fabricator.files) ? fabricator.files.length : 0
+            }
+          />
         </div>
       </div>
 
       {/* Files Section */}
-      {fabricator.files && fabricator.files.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-blue-200">
-          <h4 className="font-semibold text-blue-700 mb-2 flex items-center gap-1">
+      {Array.isArray(fabricator.files) && fabricator.files.length > 0 && (
+        <div className="mt-6 pt-5 border-t border-teal-200">
+          <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
             <FileText className="w-4 h-4" /> Files
           </h4>
           <ul className="text-gray-700 space-y-1">
-            {fabricator.files.map((file) => (
-              <li
-                key={file.id}
-                className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
-              >
-                <span>{file.originalName}</span>
-                <a
-                  className="text-blue-600 text-sm flex items-center gap-1 hover:underline"
-                  href={file.path}
-                  target="_blank"
-                  rel="noopener noreferrer"
+            {(fabricator.files as { id: string; originalName: string }[]).map(
+              (file) => (
+                <li
+                  key={file.id}
+                  className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
                 >
-                  <Link2 className="w-3 h-3" /> Open
-                </a>
-              </li>
-            ))}
+                  <span>{file.originalName}</span>
+                  <a
+                    className="text-teal-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
+                    onClick={() => openFileSecurely("fabricator", id, file.id)}
+                  >
+                    <Link2 className="w-3 h-3" /> Open
+                  </a>
+                </li>
+              )
+            )}
           </ul>
         </div>
       )}
-
       {/* Buttons */}
       <div className="py-3 flex gap-3">
+        <Button className="py-1 px-2 text-lg">View Branches</Button>
         <Button className="py-1 px-2 text-lg">View Projects</Button>
-        <Button className="py-1 px-2 text-lg">Edit Fabricator</Button>
+        <Button
+          onClick={() => handleModel(fabricator)}
+          className="py-1 px-2 text-lg"
+        >
+          Edit Fabricator
+        </Button>
         <Button className="py-1 px-2 text-lg bg-red-200 text-red-700">
           Disable
         </Button>
       </div>
+      {editModel && (
+        <EditFabricator
+          fabricatorData={fabricator}
+          onClose={handleModelClose}
+        />
+      )}
     </div>
   );
 };
@@ -181,7 +207,7 @@ const InfoRow = ({
     {href ? (
       <a
         href={href}
-        className="text-blue-600 hover:underline hover:text-blue-800 transition-colors"
+        className="text-teal-600 hover:underline hover:text-teal-800 transition-colors"
         target="_blank"
         rel="noopener noreferrer"
       >
