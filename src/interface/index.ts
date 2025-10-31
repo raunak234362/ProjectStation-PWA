@@ -97,18 +97,36 @@ export interface FabricatorEditPayload {
   files?: File | [] | "";
 }
 
+// ↓ New Branch Interface
+export interface Branch {
+  id?: string;
+  fabricatorId: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  phone: string;
+  email: string;
+  isHeadquarters: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Updated Fabricator Interface
 export interface Fabricator {
   id: string;
   fabName: string;
   website: string;
   drive: string;
-  files: File | [];
-  branches: any[];
+  files: File[] | [];
+  branches: Branch[]; // ✅ Updated
   project: any[];
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
-}
+} 
 
 export interface User {
   id: string;

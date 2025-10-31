@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import socket, { connectSocket } from "./socket";
 import PWABadge from "./PWABadge";
+import { loadFabricator } from "./store/fabricatorSlice";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -49,6 +50,19 @@ const AppContent = () => {
         toast.error("Failed to load employees");
       }
     };
+    // Fetch all fabricator
+    const fetchAllFabricator = async () => {
+      try {
+        const response = await Service.GetAllFabricators();
+        const data = response.data || [];
+        dispatch(loadFabricator(data));
+      } catch (err) {
+        console.error("Failed to fetch employees:", err);
+        toast.error("Failed to load employees");
+      }
+    };
+
+    fetchAllFabricator();
     fetchAllEmployee();
 
     // Cleanup socket on unmount

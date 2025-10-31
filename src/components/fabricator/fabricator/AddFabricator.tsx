@@ -5,8 +5,11 @@ import { toast } from "react-toastify";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
 import MultipleFileUpload from "../../fields/MultipleFileUpload"; // Make sure this path is correct
+import { useDispatch } from "react-redux";
+import { addFabricator } from "../../../store/fabricatorSlice";
 
 const AddFabricator = () => {
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -31,7 +34,7 @@ const AddFabricator = () => {
       }
 
       const response = await Service.AddFabricator(formData);
-
+      dispatch(addFabricator(response?.data));
       console.log("Fabricator added:", response);
       toast.success("Fabricator created successfully");
       reset(); // Reset form to default values

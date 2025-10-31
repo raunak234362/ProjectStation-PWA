@@ -44,9 +44,9 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
     console.log(employee);
     setEditModel(employee);
   };
-  const handleModelClose= ()=>{
-    setEditModel(null)
-  }
+  const handleModelClose = () => {
+    setEditModel(null);
+  };
 
   if (loading) {
     return (
@@ -159,7 +159,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           onClick={() => handleModel(employee)}
           className="py-1 px-2 text-lg"
         >
-        Employee Progress Status
+          Employee Progress Status
         </Button>
         <Button
           onClick={() => handleModel(employee)}
@@ -170,7 +170,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         <Button className="py-1 px-2 text-lg">Disable Profile</Button>
       </div>
       {editModel && (
-        <EditEmployee employeeData={employee} onClose={handleModelClose}/>
+        <EditEmployee employeeData={employee} onClose={handleModelClose} />
       )}
     </div>
   );
@@ -186,7 +186,7 @@ const InfoRow = ({
   value: React.ReactNode;
   href?: string;
 }) => (
-  <div className="flex justify-between">
+  <div className="flex md:justify-between gap-5">
     <span className="font-bold text-gray-600">{label}:</span>
     {href ? (
       <a

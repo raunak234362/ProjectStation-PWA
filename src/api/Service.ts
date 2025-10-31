@@ -189,14 +189,14 @@ class Service {
   }
 
   // Fetch Fabricator by ID
-  static async GetFabricatorByID(id:string){
+  static async GetFabricatorByID(id: string) {
     try {
       const response = await api.get(`fabricator/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All Fabricators fetched:", response.data);
+      console.log(" Fabricator fetched by ID:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find fabricators", error);
@@ -204,9 +204,24 @@ class Service {
   }
 
   // Update Fabricator by ID
-  static async EditFabricatorByID(id:string, data:any){
+  static async EditFabricatorByID(id: string, data: any) {
     try {
-      const response = await api.put(`fabricator/update/${id}`,data, {
+      const response = await api.put(`fabricator/update/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Fabricators Edited:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Add branch by Fabricator ID
+  static async AddBranchByFabricator(data: any) {
+    try {
+      const response = await api.post(`fabricator/branch`, data, {
         headers: {
           "Content-Type": "application/json",
         },

@@ -7,35 +7,37 @@ import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetFabricatorByID from "./GetFabricatorByID";
 import type { Fabricator } from "../../../interface";
+import { useSelector } from "react-redux";
 
 const AllFabricator = () => {
-  const [fabricators, setFabricators] = useState<Fabricator[]>([]);
+  // const [fabricators, setFabricators] = useState<Fabricator[]>([]);
   const [fabricatorId, setFabricatorId] = useState<string | "">();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch all fabricators on component mount
-  useEffect(() => {
-    const fetchFabricators = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await Service.GetAllFabricators();
-        console.log(response);
-        // Adjust based on your backend response
-        const data = response.data || [];
-        setFabricators(data);
-      } catch (err) {
-        console.error("Failed to fetch fabricators:", err);
-        setError("Failed to load fabricators");
-        toast.error("Failed to load fabricators");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fabricators= useSelector((state:any)=>state.fabricatorInfo?.fabricatorData)
 
-    fetchFabricators();
-  }, []);
+  // Fetch all fabricators on component mount
+  // useEffect(() => {
+  //   const fetchFabricators = async () => {
+  //     try {
+  //       setLoading(true);
+  //       setError(null);
+  //       const response = await Service.GetAllFabricators();
+  //       console.log(response);
+  //       const data = response.data || [];
+  //       setFabricators(data);
+  //     } catch (err) {
+  //       console.error("Failed to fetch fabricators:", err);
+  //       setError("Failed to load fabricators");
+  //       toast.error("Failed to load fabricators");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchFabricators();
+  // }, []);
   console.log(fabricators);
 
   // // Handle delete action
@@ -69,8 +71,8 @@ const AllFabricator = () => {
   ];
 
   // Loading and error states
-  if (loading) return <div className="p-8 text-center">Loading…</div>;
-  if (error) return <div className="p-8 text-red-600">{error}</div>;
+  // if (loading) return <div className="p-8 text-center">Loading…</div>;
+  // if (error) return <div className="p-8 text-red-600">{error}</div>;
 
   // Render DataTable
   return (

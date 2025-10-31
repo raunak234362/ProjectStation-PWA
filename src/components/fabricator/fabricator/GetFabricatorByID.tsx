@@ -5,6 +5,7 @@ import Button from "../../fields/Button";
 import type { Fabricator } from "../../../interface";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
 import EditFabricator from "./EditFabricator";
+import AllBranches from "../branches/AllBranches";
 
 interface GetFabricatorIDProps {
   id: string;
@@ -18,6 +19,7 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<Fabricator | null>(null);
+  const [branch, setBranch] = useState<Fabricator | null>(null);
   useEffect(() => {
     const fetchFab = async () => {
       if (!id) {
@@ -49,6 +51,14 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   const handleModelClose = () => {
     setEditModel(null);
   };
+
+  const handleBranch = (fabricator: Fabricator) => {
+    console.log(fabricator);
+    setBranch(fabricator);
+  };
+  const handleBranchClose= ()=>{
+    setBranch(null)
+  }
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleString("en-IN", {
@@ -170,8 +180,13 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
       )}
       {/* Buttons */}
       <div className="py-3 flex gap-3">
-        <Button className="py-1 px-2 text-lg">View Branches</Button>
-        <Button className="py-1 px-2 text-lg">View Projects</Button>
+        <Button
+          onClick={() => handleBranch(fabricator)}
+          className="py-1 px-2 text-lg"
+        >
+          View Branches
+        </Button>
+        <Button className="py-1 px-2 text-lg">View POC</Button>
         <Button
           onClick={() => handleModel(fabricator)}
           className="py-1 px-2 text-lg"
@@ -187,6 +202,9 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
           fabricatorData={fabricator}
           onClose={handleModelClose}
         />
+      )}
+      {branch && (
+        <AllBranches fabricator={fabricator} onClose = {handleBranchClose}/>
       )}
     </div>
   );
