@@ -6,6 +6,7 @@ import type { Fabricator } from "../../../interface";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
 import EditFabricator from "./EditFabricator";
 import AllBranches from "../branches/AllBranches";
+import AllClients from "../clients/AllClients";
 
 interface GetFabricatorIDProps {
   id: string;
@@ -20,6 +21,7 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<Fabricator | null>(null);
   const [branch, setBranch] = useState<Fabricator | null>(null);
+  const [poc, setPoc] = useState<Fabricator | null>(null);
   useEffect(() => {
     const fetchFab = async () => {
       if (!id) {
@@ -56,9 +58,17 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
     console.log(fabricator);
     setBranch(fabricator);
   };
-  const handleBranchClose= ()=>{
-    setBranch(null)
-  }
+  const handleBranchClose = () => {
+    setBranch(null);
+  };
+
+  const handlePoc = (fabricator: Fabricator) => {
+    console.log(fabricator);
+    setPoc(fabricator);
+  };
+  const handlePocClose = () => {
+    setPoc(null);
+  };
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleString("en-IN", {
@@ -186,7 +196,12 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
         >
           View Branches
         </Button>
-        <Button className="py-1 px-2 text-lg">View POC</Button>
+        <Button
+          onClick={() => handlePoc(fabricator)}
+          className="py-1 px-2 text-lg"
+        >
+          View POC
+        </Button>
         <Button
           onClick={() => handleModel(fabricator)}
           className="py-1 px-2 text-lg"
@@ -204,8 +219,9 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
         />
       )}
       {branch && (
-        <AllBranches fabricator={fabricator} onClose = {handleBranchClose}/>
+        <AllBranches fabricator={fabricator} onClose={handleBranchClose} />
       )}
+      {poc && <AllClients fabricator={fabricator} onClose={handlePocClose} />}
     </div>
   );
 };

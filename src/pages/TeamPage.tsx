@@ -6,6 +6,7 @@ import DepartmentLayout from "../layout/DepartmentLayout";
 import Service from "../api/Service";
 import { useDispatch } from "react-redux";
 import { showDepartment } from "../store/userSlice";
+import TeamLayout from "../layout/TeamLayout";
 
 const TeamPage = () => {
   const dispatch = useDispatch();
@@ -69,6 +70,19 @@ const TeamPage = () => {
                 Manage Department
               </button>
             )}
+            {(userRole === "ADMIN" || userRole === "DEPT_MANAGER" || userRole === "human-resource") && (
+              <button
+                onClick={() => setActiveTab("manageTeam")}
+                className={`px-1.5 md:px-4 py-2 rounded-lg ${
+                  activeTab === "manageTeam"
+                    ? "bg-white/70 text-gray-800 font-bold"
+                    : "text-white font-semibold"
+                }`}
+              >
+                Manage Team
+              </button>
+            )}
+
           </div>
         </div>
 
@@ -78,6 +92,7 @@ const TeamPage = () => {
 
           {activeTab === "manageDepartment" && <DepartmentLayout />}
 
+          {activeTab === "manageTeam" && <TeamLayout />}
           {activeTab === "teamDashboard" && <AddEmployee />}
         </div>
       </div>

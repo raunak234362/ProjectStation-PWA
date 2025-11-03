@@ -27,6 +27,7 @@ export interface UserData {
   role: "ADMIN" | "MANAGER" | "STAFF" | "EMPLOYEE" | string; // extendable
   departmentId: string;
   isActive: boolean;
+  branchId?: string;
   isFirstLogin: boolean;
   createdAt: string; // ISO timestamp
   updatedAt: string; // ISO timestamp
@@ -41,6 +42,7 @@ export interface EmployeePayload {
   middleName?: string | null;
   lastName: string;
   phone: string;
+  branchId?: string;
   designation: string;
   role: "ADMIN" | "MANAGER" | "STAFF" | "EMPLOYEE" | string;
   departmentId: string;
@@ -108,6 +110,7 @@ export interface Branch {
   country: string;
   zipCode: string;
   phone: string;
+  branchId?: string;
   email: string;
   isHeadquarters: boolean;
   createdAt?: string;
@@ -128,6 +131,11 @@ export interface Fabricator {
   isDeleted: boolean;
 } 
 
+export interface TeamPayload{
+  name: string;
+  managerID?: string| string[] | [] ;
+  departmentID?: string;
+}
 export interface User {
   id: string;
   f_name: string;

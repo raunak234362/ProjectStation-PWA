@@ -233,6 +233,36 @@ class Service {
     }
   }
 
+  // Add Client by Fabricator ID
+  static async AddClientByFabricator(fabricatorId: string, data: any) {
+    try {
+      const response = await api.post(`client/${fabricatorId}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Client added by Fabricator ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Fetch All Clients by Fabricator ID
+  static async FetchAllClientsByFabricatorID(fabricatorId: string) {
+    try {
+      const response = await api.get(`client/byFabricator/${fabricatorId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Clients fetched by Fabricator ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find clients", error);
+    }
+  }
+
   // Fetch All Chats
   static async AllChats() {
     try {
