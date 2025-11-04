@@ -14,7 +14,7 @@ const AllDepartments = () => {
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
 
-  console.log(departments);
+  // console.log(departments);
 
   const handleRowClick = (row:Department)=>{
     setDepartmentID(row.id)
@@ -27,12 +27,33 @@ console.log(departmentID)
       accessorKey: "managerIds",
       header: "Department Manager",
       cell: ({ row }) => {
-        const managers = row.original.managerIds || [];
-        const firstManager = managers[0];
+        const managers = row.original.managerIds;
 
-        return firstManager
-          ? `${firstManager.firstName} ${firstManager.lastName}`
-          : "No Manager Assigned";
+        // managerIds can be string | [] | { firstName?, lastName? }
+        if (Array.isArray(managers)) {
+          const first = (managers as any[])[0];
+          if (first && (first.firstName || first.lastName)) {
+            return `${first.firstName ?? ""} ${first.lastName ?? ""}`.trim() ||
+              "No Manager Assigned";
+          }
+          return "No Manager Assigned";
+        }
+
+        if (
+          managers &&
+          typeof managers === "object" &&
+          (managers as any).firstName !== undefined
+        ) {
+          const m = managers as { firstName?: string; lastName?: string };
+          return `${m.firstName ?? ""} ${m.lastName ?? ""}`.trim() ||
+            "No Manager Assigned";
+        }
+
+        if (typeof managers === "string") {
+          return managers || "No Manager Assigned";
+        }
+
+        return "No Manager Assigned";
       },
     },
   ];
@@ -46,7 +67,7 @@ console.log(departmentID)
         columns={columns}
         data={departments}
         onRowClick={handleRowClick}
-        detailComponent={({ row }) => <GetDepartmentById id={row.id} />}
+        detailComponent={({ row }) => <GetDepartmentById id={row.id || ""} />}
         // onDelete={handleDelete}
         searchPlaceholder="Search employees..."
         pageSizeOptions={[5, 10, 25]}

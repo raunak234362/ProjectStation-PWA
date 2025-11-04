@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { AddEmployee } from "../components";
 import EmployeeLayout from "../layout/EmployeeLayout";
 import DepartmentLayout from "../layout/DepartmentLayout";
-import Service from "../api/Service";
-import { useDispatch } from "react-redux";
-import { showDepartment } from "../store/userSlice";
 import TeamLayout from "../layout/TeamLayout";
+import Service from "../api/Service";
+import { useDispatch, useSelector } from "react-redux";
+import { showDepartment, showTeam } from "../store/userSlice";
 
 const TeamPage = () => {
   const dispatch = useDispatch();
@@ -14,19 +14,41 @@ const TeamPage = () => {
   const [activeTab, setActiveTab] = useState("manageEmployee");
   const userRole = sessionStorage.getItem("userRole");
 
-  // ✅ Fetch ALL departments on mount
-  useEffect(() => {
-    const fetchDepartment = async () => {
-      try {
-        const response = await Service.AllDepartments();
-        dispatch(showDepartment(response?.data));
-      } catch (error) {
-        console.log("Error fetching departments", error);
-      }
-    };
+  const departmentDatas = useSelector(
+    (state: any) => state?.userInfo?.departmentData
+  );
+  const teamDatas = useSelector((state: any) => state?.userInfo?.teamData);
 
-    fetchDepartment();
-  }, [dispatch]);
+  // ✅ Fetch Departments only when data is null or empty
+  const fetchDepartment = async () => {
+    try {
+      const response = await Service.AllDepartments();
+      dispatch(showDepartment(response?.data));
+    } catch (error) {
+      console.log("Error fetching departments", error);
+    }
+  };
+
+  // ✅ Fetch Teams only when data is null or empty
+  const fetchTeam = async () => {
+    try {
+      const response = await Service.AllTeam();
+      dispatch(showTeam(response?.data));
+    } catch (error) {
+      console.log("Error fetching teams", error);
+    }
+  };
+
+  // useEffect(() => {
+  //   // ✅ Only call if no data exists
+  //   if (!departmentDatas || departmentDatas.length === 0) {
+  //     fetchDepartment();
+  //   }
+
+  //   if (!teamDatas || teamDatas.length === 0) {
+  //     fetchTeam();
+  //   }
+  // }, [departmentDatas, teamDatas]);
 
   return (
     <div className="w-full overflow-y-auto overflow-x-hidden">
@@ -70,7 +92,10 @@ const TeamPage = () => {
                 Manage Department
               </button>
             )}
-            {(userRole === "ADMIN" || userRole === "DEPT_MANAGER" || userRole === "human-resource") && (
+
+            {(userRole === "ADMIN" ||
+              userRole === "DEPT_MANAGER" ||
+              userRole === "human-resource") && (
               <button
                 onClick={() => setActiveTab("manageTeam")}
                 className={`px-1.5 md:px-4 py-2 rounded-lg ${
@@ -82,16 +107,13 @@ const TeamPage = () => {
                 Manage Team
               </button>
             )}
-
           </div>
         </div>
 
         {/* ---------- TAB CONTENT ---------- */}
         <div className="flex-1 min-h-0 py-2 overflow-y-auto">
           {activeTab === "manageEmployee" && <EmployeeLayout />}
-
           {activeTab === "manageDepartment" && <DepartmentLayout />}
-
           {activeTab === "manageTeam" && <TeamLayout />}
           {activeTab === "teamDashboard" && <AddEmployee />}
         </div>

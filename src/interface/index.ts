@@ -129,12 +129,33 @@ export interface Fabricator {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
-} 
+}
 
-export interface TeamPayload{
+export interface Manager {
+  id: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+
+export interface TeamPayload {
   name: string;
-  managerID?: string| string[] | [] ;
+  managerID?: string | string[] | [];
   departmentID?: string;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  managerID: string;
+  departmentID: string;
+  isDeleted: boolean;
+  manager: Manager;
+  department: Department;
+  members: any[]; // You can type this better if needed
+  project: any[];
 }
 export interface User {
   id: string;

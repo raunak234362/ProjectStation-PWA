@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { toast } from "react-toastify";
 import type {
   DepartmentPayload,
   EditEmployeePayload,
   EmployeePayload,
   FabricatorPayload,
+  TeamPayload,
 } from "../interface";
 import api from "./api";
 const token = sessionStorage.getItem("token");
@@ -20,7 +22,7 @@ class Service {
       console.log("Signed In User detail-", response);
       return response.data;
     } catch (error) {
-      alert(error);
+      //alert(error);
       console.log("Error while fetching logged-in user Detail", error);
     }
   }
@@ -36,7 +38,7 @@ class Service {
       console.log(response);
       return response?.data;
     } catch (error) {
-      alert(error);
+      //alert(error);
       console.log("Error while adding New User", error);
     }
   }
@@ -52,8 +54,8 @@ class Service {
       console.log(response);
       return response.data;
     } catch (error) {
-      alert(error);
-      console.log("Error fetching all Employee");
+      //alert(error);
+      console.log("Error fetching all Employee",error);
     }
   }
 
@@ -68,8 +70,8 @@ class Service {
       console.log(response);
       return response.data;
     } catch (error) {
-      alert(error);
-      console.log("Error fetching all Employee");
+      // //alert(error);
+      console.log("Error fetching all Employee", error);
     }
   }
 
@@ -84,8 +86,8 @@ class Service {
       console.log(response);
       return response.data;
     } catch (error) {
-      alert(error);
-      console.log("Error fetching Employee by ID");
+      //alert(error);
+      console.log("Error fetching Employee by ID",error);
     }
   }
 
@@ -100,8 +102,8 @@ class Service {
       console.log(response);
       return response.data;
     } catch (error) {
-      alert(error);
-      console.log("Error fetching Employee by ID");
+      //alert(error);
+      console.log("Error fetching Employee by ID",error);
     }
   }
 
@@ -116,7 +118,7 @@ class Service {
       console.log(response);
       return response?.data;
     } catch (error) {
-      alert(error);
+      //alert(error);
       console.log("Error while adding New User", error);
     }
   }
@@ -131,8 +133,8 @@ class Service {
       console.log(response);
       return response.data;
     } catch (error) {
-      alert(error);
-      console.log("Error fetching all Employee");
+      //alert(error);
+      console.log("Error fetching all Employee",error);
     }
   }
 
@@ -147,24 +149,54 @@ class Service {
       console.log(response);
       return response.data;
     } catch (error) {
-      alert(error);
-      console.log("Error fetching Employee by ID");
+      //alert(error);
+      console.log("Error fetching Employee by ID",error);
     }
   }
 
+  // Add team
+  static async AddTeam(teamDataPayload: TeamPayload) {
+    try {
+      const response = await api.post(`team`, teamDataPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(response?.data);
+      toast.success("Successfully added Team");
+    } catch (error) {
+      //alert(error);
+      console.log("Error adding team", error);
+    }
+  }
+
+  // Fetch All Team
+  static async AllTeam() {
+    try {
+      const response = await api.get(`team`);
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error Fetching All Team",error);
+    }
+  }
+
+  //Fetch team by Id
+  static async GetTeamByID(id: string) {
+    try {
+      const response = await api.get(`team/${id}`);
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error Fetching All Team",error);
+    }
+  }
+
+  // Add fabricator
   static async AddFabricator(fabricatorData: FormData | FabricatorPayload) {
     try {
-      let headers = {};
-
-      // If we're sending FormData (for file uploads)
-      if (fabricatorData instanceof FormData) {
-        headers = { "Content-Type": "multipart/form-data" };
-      } else {
-        headers = { "Content-Type": "application/json" };
-      }
-
       const response = await api.post(`fabricator`, fabricatorData, {
-        headers,
+        headers: { "Content-Type": "multipart/form-data" },
       });
       console.log(" Fabricator API Response:", response);
       return response.data;

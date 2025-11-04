@@ -26,7 +26,7 @@ const TeamLayout = () => {
                 <button
                   onClick={() => setActiveTab("addTeam")}
                   className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                    activeTab === "addDepartment"
+                    activeTab === "addTeam"
                       ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                       : "md:text-base text-sm text-white font-semibold"
                   }`}

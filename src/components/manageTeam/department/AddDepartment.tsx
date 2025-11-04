@@ -6,7 +6,6 @@ import Input from "../../fields/input";
 import Button from "../../fields/Button";
 import Service from "../../../api/Service";
 
-
 type ManagerOption = {
   label: string;
   value: string;
@@ -32,15 +31,17 @@ const AddDepartment: React.FC = () => {
   // ── Fetch admins & department managers ──
   const fetchManagers = async () => {
     try {
-      setLoading(true);
       const response = await Service.FetchEmployeeByRole("ADMIN");
       const employees = response?.data?.employees || [];
 
       // Also fetch department managers if needed
       const deptMgrRes = await Service.FetchEmployeeByRole("DEPT_MANAGER");
       const deptMgrs = deptMgrRes?.data?.employees || [];
-
-      setStaffs([...employees, ...deptMgrs]);
+      const pmoRes = await Service.FetchEmployeeByRole(
+        "PROJECT_MANAGER_OFFICER"
+      );
+      const pmoMgrs = pmoRes?.data?.employees || [];
+      setStaffs([...employees, ...deptMgrs, ...pmoMgrs]);
     } catch (err) {
       console.error("Failed to fetch managers:", err);
     } finally {
@@ -57,7 +58,11 @@ const AddDepartment: React.FC = () => {
     return staffs
       .filter((user) => {
         const role = user.role?.toUpperCase();
-        return role === "ADMIN" || role === "DEPT_MANAGER";
+        return (
+          role === "ADMIN" ||
+          role === "DEPT_MANAGER" ||
+          role === "PROJECT_MANAGER_OFFICER"
+        );
       })
       .map((user) => ({
         label: `${user.firstName} ${user.lastName}`.trim(),
