@@ -50,6 +50,7 @@ const Login = () => {
             <img src={LOGO} alt="Logo" />
           </div>
         </div>
+        
 
         {/* Login form */}
         <div className="flex items-center bg-black/70 backdrop-blur-lg justify-center">

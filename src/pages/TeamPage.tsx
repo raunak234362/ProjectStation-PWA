@@ -39,16 +39,16 @@ const TeamPage = () => {
     }
   };
 
-  // useEffect(() => {
-  //   // ✅ Only call if no data exists
-  //   if (!departmentDatas || departmentDatas.length === 0) {
-  //     fetchDepartment();
-  //   }
+  useEffect(() => {
+    // ✅ Only call if no data exists
+    if (!departmentDatas || departmentDatas.length === 0) {
+      fetchDepartment();
+    }
 
-  //   if (!teamDatas || teamDatas.length === 0) {
-  //     fetchTeam();
-  //   }
-  // }, [departmentDatas, teamDatas]);
+    if (!teamDatas || teamDatas.length === 0) {
+      fetchTeam();
+    }
+  }, [dispatch]);
 
   return (
     <div className="w-full overflow-y-auto overflow-x-hidden">
