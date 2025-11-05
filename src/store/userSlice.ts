@@ -16,19 +16,13 @@ interface Team {
   [key: string]: any;
 }
 
-interface Staff {
-  id: string;
-  name?: string;
-  [key: string]: any;
-}
-
 
 interface UserState {
   token: string | boolean;
   userDetail: UserData | null;
   departmentData: Department[];
   teamData: Team[];
-  staffData: Staff[];
+  staffData: UserData[];
 }
 
 // Initial state
@@ -57,13 +51,13 @@ const userSlice = createSlice({
       // state.token = action.payload.token || false;
       state.userDetail = action.payload;
     },
-    addStaff: (state, action: PayloadAction<Staff>) => {
+    addStaff: (state, action: PayloadAction<UserData>) => {
       state.staffData.push(action.payload);
     },
-    showStaff: (state, action: PayloadAction<Staff[]>) => {
+    showStaff: (state, action: PayloadAction<UserData[]>) => {
       state.staffData = action.payload;
     },
-    updateStaffData: (state, action: PayloadAction<Staff>) => {
+    updateStaffData: (state, action: PayloadAction<UserData>) => {
       state.staffData = state.staffData.map((staff) =>
         staff.id === action.payload.id ? { ...staff, ...action.payload } : staff
       );

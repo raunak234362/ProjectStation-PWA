@@ -1,45 +1,43 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import type { FabricatorPayload } from "../../../interface";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
+import MultipleFileUpload from "../../fields/MultipleFileUpload"; // Make sure this path is correct
+import { useDispatch } from "react-redux";
+import { addFabricator } from "../../../store/fabricatorSlice";
 
 const AddFabricator = () => {
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<FabricatorPayload>({
-    defaultValues: {
-      fabName: "",
-      website: "",
-      drive: "",
-      files: "",
-    },
-  });
+  } = useForm<FabricatorPayload>();
 
   const onSubmit = async (data: FabricatorPayload) => {
     try {
-     
       const formData = new FormData();
       formData.append("fabName", data.fabName);
       formData.append("website", data.website || "");
       formData.append("drive", data.drive || "");
 
-
-      if (data.files instanceof FileList && data.files.length > 0) {
-        formData.append("files", data.files[0]); // first file
-      } else if (data.files instanceof File) {
-        formData.append("files", data.files);
+      if (Array.isArray(data.files) && data.files.length > 0) {
+        // Append each file to the FormData
+        // The backend should be set up to receive an array for the 'files' field
+        data.files.forEach((file: File) => {
+          formData.append("files", file);
+        });
       }
 
       const response = await Service.AddFabricator(formData);
-
+      dispatch(addFabricator(response?.data));
       console.log("Fabricator added:", response);
       toast.success("Fabricator created successfully");
-      reset();
+      reset(); // Reset form to default values
     } catch (error) {
       console.error(error);
       toast.error("Failed to add the fabricator");
@@ -61,7 +59,7 @@ const AddFabricator = () => {
           <label className="block text-gray-700 font-semibold mb-1">
             Fabricator Name <span className="text-red-500">*</span>
           </label>
-             <Input
+          <Input
             label=""
             type="text"
             {...register("fabName", {
@@ -82,8 +80,8 @@ const AddFabricator = () => {
           <label className="block text-gray-700 font-semibold mb-1">
             Website (optional)
           </label>
-        <Input label=""
-                      
+          <Input
+            label=""
             type="url"
             {...register("website")}
             placeholder="https://example.com"
@@ -96,7 +94,8 @@ const AddFabricator = () => {
           <label className="block text-gray-700 font-semibold mb-1">
             Drive Link (optional)
           </label>
-          <Input label=""
+          <Input
+            label=""
             type="url"
             {...register("drive")}
             placeholder="https://drive.google.com/..."
@@ -104,17 +103,28 @@ const AddFabricator = () => {
           />
         </div>
 
-        {/* File Upload */}
+        {/* File Upload - FIXED */}
+        {/* This container div was missing, and there was a stray </div> */}
         <div className="md:col-span-2">
-          <label className="block text-gray-700 font-semibold mb-1">
-            Upload File (optional)
-          </label>
-          <input
-            type="file"
-            {...register("files")}
-            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-teal-500 focus:border-teal-500"
+          <Controller
+            name="files"
+            control={control}
+            render={({ field }) => (
+              <MultipleFileUpload
+                // When files change, update RHF's state
+                onFilesChange={(files) => {
+                  field.onChange(files);
+                }}
+              />
+            )}
           />
+          {errors.files && (
+            <p className="text-red-500 text-xs mt-1">
+              {String(errors.files.message)}
+            </p>
+          )}
         </div>
+        {/* The stray </div> that was here is now removed */}
 
         {/* Submit Button */}
         <div className="md:col-span-2 flex justify-end mt-4">

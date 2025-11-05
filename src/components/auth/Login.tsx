@@ -27,7 +27,7 @@ const Login = () => {
       dispatch(setUserData(userDetail))
       navigate('/dashboard')
       console.log("Login Successful:", userLogin);
-      alert("Login Successful!");
+      // alert("Login Successful!");
     } catch (error) {
       console.error("Error While Logging in:", error);
       alert("Login failed. Please check your credentials.");
@@ -50,6 +50,7 @@ const Login = () => {
             <img src={LOGO} alt="Logo" />
           </div>
         </div>
+        
 
         {/* Login form */}
         <div className="flex items-center bg-black/70 backdrop-blur-lg justify-center">

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { AddEmployee, AllEmployee } from "../components";
+import AddTeam from "../components/manageTeam/team/AddTeam";
+import AllTeam from "../components/manageTeam/team/AllTeam";
 
-const EmployeeLayout = () => {
-  //   console.log("RFQ Component Rendered with projectData:", projectData);
-  const [activeTab, setActiveTab] = useState("allEmployee");
+const TeamLayout = () => {
+  const [activeTab, setActiveTab] = useState("allTeam");
   const userRole = sessionStorage.getItem("userRole");
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
@@ -11,52 +11,43 @@ const EmployeeLayout = () => {
         <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-t-md ">
           <div className="flex w-full overflow-x-auto">
             <button
-              onClick={() => setActiveTab("allEmployee")}
+              onClick={() => setActiveTab("allTeam")}
               className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                activeTab === "allEmployee"
+                activeTab === "allTeam"
                   ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                   : "md:text-base text-sm text-white font-semibold"
               }`}
             >
-              All Employee
+              All Team
             </button>
 
             {(userRole === "ADMIN" || userRole === "human-resource") && (
               <>
                 <button
-                  onClick={() => setActiveTab("addEmployee")}
+                  onClick={() => setActiveTab("addTeam")}
                   className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                    activeTab === "addEmployee"
+                    activeTab === "addTeam"
                       ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                       : "md:text-base text-sm text-white font-semibold"
                   }`}
                 >
-                  Add Employee
+                  Add Team
                 </button>
               </>
             )}
           </div>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto p-2 bg-white rounded-b-2xl">
-          {activeTab === "allEmployee" && (
+        <div className="grow p-2 bg-white rounded-b-2xl">
+          {activeTab === "allTeam" && (
             <div>
-              <AllEmployee />
+              <AllTeam />
             </div>
           )}
-          {activeTab === "addDepartment" && (
-            <div> {/* <AddDepartment />{" "} */}</div>
-          )}
-          {activeTab === "addEmployee" && (
+          {activeTab === "addTeam" && (
             <div>
               {" "}
-              <AddEmployee />{" "}
+              <AddTeam />
             </div>
-          )}
-          {activeTab === "allDepartment" && (
-            <div> {/* <AllDepartment />{" "} */}</div>
-          )}
-          {activeTab === "teamDashboard" && (
-            <div> {/* <TeamDashboard />{" "} */}</div>
           )}
         </div>
       </div>
@@ -64,4 +55,4 @@ const EmployeeLayout = () => {
   );
 };
 
-export default EmployeeLayout;
+export default TeamLayout;

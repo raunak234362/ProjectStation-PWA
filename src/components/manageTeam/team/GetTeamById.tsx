@@ -1,0 +1,156 @@
+import { useEffect, useState } from "react";
+import type { Team } from "../../../interface";
+import Service from "../../../api/Service";
+import { AlertCircle, Loader2 } from "lucide-react";
+import Button from "../../fields/Button";
+
+interface GetTeamByIDProps {
+  id: string;
+}
+
+const GetTeamByID = ({ id }: GetTeamByIDProps) => {
+  const [team, setTeam] = useState<Team | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      if (!id) {
+        setError("Invalid team ID");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await Service.GetTeamByID(id);
+        // API returns { "0": { …team } }
+        const raw = response?.data;
+        // const teamData = raw ? Object.values(raw)[0] : null;
+        setTeam(raw as Team);
+      } catch (err) {
+        const msg = "Failed to load team details";
+        setError(msg);
+        console.error(msg, err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeam();
+  }, [id]);
+
+  console.log(team);
+
+  // ── Loading ──
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8 text-gray-500">
+        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+        Loading team details...
+      </div>
+    );
+  }
+
+  // ── Error / Not Found ──
+  if (error || !team) {
+    return (
+      <div className="flex items-center justify-center py-8 text-red-600">
+        <AlertCircle className="w-5 h-5 mr-2" />
+        {error || "Team not found"}
+      </div>
+    );
+  }
+
+  // ── Helpers ──
+  const fullManagerName = [
+    team.manager?.firstName,
+    team.manager?.middleName,
+    team.manager?.lastName,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+  const memberCount = team.members?.length ?? 0;
+
+  return (
+    <div className="bg-linear-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner">
+      {/* Header */}
+      <div className="mb-5">
+        <h3 className="text-xl font-bold text-orange-800">{team.name}</h3>
+      </div>
+
+      {/* Two‑column grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
+        {/* Left */}
+        <div className="space-y-3">
+          <InfoRow label="Team Name" value={team.name} />
+          {/* <InfoRow label="Team ID" value={team.id} /> */}
+          <InfoRow label="Department" value={team.department?.name ?? "—"} />
+        </div>
+
+        {/* Right */}
+        <div className="space-y-3">
+          <InfoRow label="Manager" value={fullManagerName || "No Manager"} />
+          {team.manager && (
+            <>
+              <InfoRow
+                label="Email"
+                value={
+                  <a
+                    href={`mailto:${team.manager.email}`}
+                    className="text-teal-600 hover:underline"
+                  >
+                    {team.manager.email}
+                  </a>
+                }
+              />
+              <InfoRow
+                label="Phone"
+                value={
+                  <a
+                    href={`tel:${team.manager.phone}`}
+                    className="text-teal-600 hover:underline"
+                  >
+                    {team.manager.phone}
+                  </a>
+                }
+              />
+            </>
+          )}
+          <InfoRow
+            label="Members"
+            value={`${memberCount} member${memberCount === 1 ? "" : "s"}`}
+          />
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="py-2 flex gap-2 mt-4">
+        <Button className="py-1 px-2 text-lg">Edit Team</Button>
+        <Button className="py-1 px-2 text-lg bg-red-500 hover:bg-red-600">
+          Delete Team
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// ── Reusable InfoRow (same as GetDepartmentById) ──
+const InfoRow = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) => (
+  <div className="flex justify-between">
+    <span className="font-bold text-gray-600">{label}:</span>
+    <span className="text-gray-900 text-right">{value}</span>
+  </div>
+);
+
+export default GetTeamByID;

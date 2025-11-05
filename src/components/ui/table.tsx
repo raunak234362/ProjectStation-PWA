@@ -434,7 +434,7 @@ export default function DataTable<T extends object>({
                           )}
                         </td>
                       ))}
-                      
+
                       {DetailComponent && (
                         <td className="px-2 py-4">
                           <ChevronRight
@@ -453,9 +453,11 @@ export default function DataTable<T extends object>({
                             table.getVisibleFlatColumns().length +
                             (DetailComponent ? 1 : 0)
                           }
-                          className="bg-gray-50 p-4"
+                          className="bg-gray-50 p-0"
                         >
-                          <DetailComponent row={row.original} />
+                          <div className=" overflow-y-auto p-4">
+                            <DetailComponent row={row.original} />
+                          </div>
                         </td>
                       </tr>
                     )}

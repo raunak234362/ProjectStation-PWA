@@ -57,10 +57,7 @@
     background-color: #ffffff;
   }
   a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+    color: #0f9397;
   }
 }
 
@@ -137,6 +134,10 @@
 }
 
 @layer base {
+  html, body, #root {
+    height: 100%;
+    overflow: hidden; /* prevent page-level scroll; app manages its own scroll */
+  }
   * {
     @apply border-border outline-ring/50;
   }

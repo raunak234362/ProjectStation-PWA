@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { AddEmployee, AllEmployee } from "../components";
+import { AddDepartment, AllDepartments } from "../components";
 
-const EmployeeLayout = () => {
-  //   console.log("RFQ Component Rendered with projectData:", projectData);
-  const [activeTab, setActiveTab] = useState("allEmployee");
+
+const DepartmentLayout = () => {
+  
+  const [activeTab, setActiveTab] = useState("alldepartment");
   const userRole = sessionStorage.getItem("userRole");
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
@@ -11,52 +12,43 @@ const EmployeeLayout = () => {
         <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-t-md ">
           <div className="flex w-full overflow-x-auto">
             <button
-              onClick={() => setActiveTab("allEmployee")}
+              onClick={() => setActiveTab("alldepartment")}
               className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                activeTab === "allEmployee"
+                activeTab === "alldepartment"
                   ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                   : "md:text-base text-sm text-white font-semibold"
               }`}
             >
-              All Employee
+              All Department
             </button>
 
             {(userRole === "ADMIN" || userRole === "human-resource") && (
               <>
                 <button
-                  onClick={() => setActiveTab("addEmployee")}
+                  onClick={() => setActiveTab("addDepartment")}
                   className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                    activeTab === "addEmployee"
+                    activeTab === "addDepartment"
                       ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                       : "md:text-base text-sm text-white font-semibold"
                   }`}
                 >
-                  Add Employee
+                  Add Department
                 </button>
               </>
             )}
           </div>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto p-2 bg-white rounded-b-2xl">
-          {activeTab === "allEmployee" && (
+        <div className="flex-grow p-2 bg-white rounded-b-2xl">
+          {activeTab === "alldepartment" && (
             <div>
-              <AllEmployee />
+              <AllDepartments />
             </div>
           )}
           {activeTab === "addDepartment" && (
-            <div> {/* <AddDepartment />{" "} */}</div>
-          )}
-          {activeTab === "addEmployee" && (
             <div>
               {" "}
-              <AddEmployee />{" "}
+              <AddDepartment />
             </div>
-          )}
-          {activeTab === "allDepartment" && (
-            <div> {/* <AllDepartment />{" "} */}</div>
-          )}
-          {activeTab === "teamDashboard" && (
-            <div> {/* <TeamDashboard />{" "} */}</div>
           )}
         </div>
       </div>
@@ -64,4 +56,4 @@ const EmployeeLayout = () => {
   );
 };
 
-export default EmployeeLayout;
+export default DepartmentLayout;

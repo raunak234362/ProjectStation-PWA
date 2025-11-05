@@ -1,4 +1,12 @@
-import type { EmployeePayload, FabricatorPayload, Fabricator } from "../interface";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { toast } from "react-toastify";
+import type {
+  DepartmentPayload,
+  EditEmployeePayload,
+  EmployeePayload,
+  FabricatorPayload,
+  TeamPayload,
+} from "../interface";
 import api from "./api";
 const token = sessionStorage.getItem("token");
 class Service {
@@ -14,7 +22,7 @@ class Service {
       console.log("Signed In User detail-", response);
       return response.data;
     } catch (error) {
-      alert(error);
+      //alert(error);
       console.log("Error while fetching logged-in user Detail", error);
     }
   }
@@ -28,76 +36,10 @@ class Service {
         },
       });
       console.log(response);
-      return response;
+      return response?.data;
     } catch (error) {
-      alert(error);
+      //alert(error);
       console.log("Error while adding New User", error);
-    }
-  }
-
-  //Add New Employee
-  // static async AddFabricator(fabricatorData: FabricatorPayload) {
-  //   try {
-  //     const response = await api.post(`fabricator`, fabricatorData, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     console.log(response);
-  //   } catch (error) {
-  //     alert(error);
-  //     console.log("Error while adding New Fabricator", error);
-  //   }
-  // }
-  static async AddFabricator(fabricatorData: FormData | FabricatorPayload) {
-    try {
-      let headers = {};
-
-      // If we're sending FormData (for file uploads)
-      if (fabricatorData instanceof FormData) {
-        headers = { "Content-Type": "multipart/form-data" };
-      } else {
-        headers = { "Content-Type": "application/json" };
-      }
-
-      const response = await api.post(`fabricator`, fabricatorData, {
-        headers,
-      });
-      console.log(" Fabricator API Response:", response);
-      return response.data;
-    } catch (error) {
-      console.error(" Error while adding New Fabricator:", error);
-      throw error;
-    }
-  }
-  // static async GetAllFabricators() {
-  //   try {
-  //     const response = await api.get(`fabricator`, {
-  //       headers: {
-  //         " Accept": "application/json",
-  //       },
-  //     });
-  //     console.log(" All Fabricators fetched:", response.data.data);
-  //     return response.data.data;
-  //   } catch (error) {
-  //     console.error("cannot find fabricators", error);
-  //     throw error;
-  //   }
-  // }
-
-  static async GetAllFabricators() {
-    try {
-      const response = await api.get(`fabricator/all`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("✅ All Fabricators fetched:", response);
-      return response.data;
-    } catch (error) {
-      console.error("Cannot fetch fabricators:", error);
-      throw error;
     }
   }
 
@@ -112,24 +54,280 @@ class Service {
       console.log(response);
       return response.data;
     } catch (error) {
-      alert(error);
-      console.log("Error fetching all Employee");
+      //alert(error);
+      console.log("Error fetching all Employee",error);
     }
   }
 
-  //Fetch Fabricator By ID
-  static async FetchFabricatorById (id:string) {
+  //Fetch Employee by ROLE
+  static async FetchEmployeeByRole(role: string) {
+    try {
+      const response = await api.get(`employee/role/${role}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      // //alert(error);
+      console.log("Error fetching all Employee", error);
+    }
+  }
+
+  // Fetch Employee by ID
+  static async FetchEmployeeByID(id: string) {
+    try {
+      const response = await api.get(`employee/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error fetching Employee by ID",error);
+    }
+  }
+
+  //Edit Employee By ID
+  static async EditEmployeeByID(id: string, data: EditEmployeePayload) {
+    try {
+      const response = await api.put(`employee/update/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error fetching Employee by ID",error);
+    }
+  }
+
+  //Add Department
+  static async AddDepartment(departmentData: DepartmentPayload) {
+    try {
+      const response = await api.post(`department`, departmentData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error while adding New User", error);
+    }
+  }
+  //All Departments
+  static async AllDepartments() {
+    try {
+      const response = await api.get(`department`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error fetching all Employee",error);
+    }
+  }
+
+  // Fetch Department by ID
+  static async FetchDepartmentByID(id: string) {
+    try {
+      const response = await api.get(`department/department/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error fetching Employee by ID",error);
+    }
+  }
+
+  // Add team
+  static async AddTeam(teamDataPayload: TeamPayload) {
+    try {
+      const response = await api.post(`team`, teamDataPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(response?.data);
+      toast.success("Successfully added Team");
+    } catch (error) {
+      //alert(error);
+      console.log("Error adding team", error);
+    }
+  }
+
+  // Fetch All Team
+  static async AllTeam() {
+    try {
+      const response = await api.get(`team`);
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error Fetching All Team",error);
+    }
+  }
+
+  //Fetch team by Id
+  static async GetTeamByID(id: string) {
+    try {
+      const response = await api.get(`team/${id}`);
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error Fetching All Team",error);
+    }
+  }
+
+  // Add fabricator
+  static async AddFabricator(fabricatorData: FormData | FabricatorPayload) {
+    try {
+      const response = await api.post(`fabricator`, fabricatorData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log(" Fabricator API Response:", response);
+      return response.data;
+    } catch (error) {
+      console.error(" Error while adding New Fabricator:", error);
+      throw error;
+    }
+  }
+
+  static async GetAllFabricators() {
+    try {
+      const response = await api.get(`fabricator/all`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Fabricators fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Fetch Fabricator by ID
+  static async GetFabricatorByID(id: string) {
     try {
       const response = await api.get(`fabricator/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(response);
-      return response;
+      console.log(" Fabricator fetched by ID:", response.data);
+      return response.data;
     } catch (error) {
-      alert(error);
-      console.log("Error fetching all Employee");
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Update Fabricator by ID
+  static async EditFabricatorByID(id: string, data: any) {
+    try {
+      const response = await api.put(`fabricator/update/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Fabricators Edited:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Add branch by Fabricator ID
+  static async AddBranchByFabricator(data: any) {
+    try {
+      const response = await api.post(`fabricator/branch`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Fabricators fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Add Client by Fabricator ID
+  static async AddClientByFabricator(fabricatorId: string, data: any) {
+    try {
+      const response = await api.post(`client/${fabricatorId}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Client added by Fabricator ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Fetch All Clients by Fabricator ID
+  static async FetchAllClientsByFabricatorID(fabricatorId: string) {
+    try {
+      const response = await api.get(`client/byFabricator/${fabricatorId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Clients fetched by Fabricator ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find clients", error);
+    }
+  }
+
+  // Fetch All Chats
+  static async AllChats() {
+    try {
+      const response = await api.get(`chat`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Fabricators fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Fetch Chats by Group ID
+  static async ChatByGroupID(groupId: string, lastId?: string) {
+    try {
+      const params: Record<string, string> = { groupId };
+      if (lastId) {
+        params.lastId = lastId;
+      }
+      const response = await api.get(`chat`, {
+        params,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Chats by Group ID fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Cannot find chats by group ID", error);
+      throw error;
     }
   }
 }
