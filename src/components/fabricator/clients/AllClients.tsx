@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/fabricator/AllClients.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type { Fabricator, UserData } from "../../../interface";
 import Button from "../../fields/Button";
 import { X } from "lucide-react";
 import AddClients from "./AddClient";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
+import DataTable from "../../ui/table"; // Assuming this is the correct path
+import type { ColumnDef } from "@tanstack/react-table"; 
+import GetEmployeeByID from "../../manageTeam/employee/GetEmployeeByID";
 
 interface AllClientProps {
   fabricator: Fabricator;
@@ -80,6 +83,43 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
     fetchAllClientsByFabricatorID(fabricator.id);
   };
 
+  // ── DataTable Columns Definition ──
+  const columns: ColumnDef<UserData>[] = useMemo(
+    () => [
+      {
+        accessorFn: (r) =>
+          [r.firstName, r.middleName, r.lastName].filter(Boolean).join(" "),
+        header: "Name",
+        id: "fullName",
+      },
+      { accessorKey: "email", header: "Email" },
+      { accessorKey: "phone", header: "Phone" },
+      { accessorKey: "designation", header: "Designation" },
+      {
+        accessorFn: (r) => {
+          const parts = [];
+          if (r.address) parts.push(r.address);
+          if (r.city) parts.push(r.city);
+          if (r.state) parts.push(r.state);
+          if (r.zipCode) parts.push(r.zipCode);
+          if (r.country) parts.push(r.country);
+          return parts.join(", ");
+        },
+        header: "Address",
+        id: "fullAddress",
+        cell: ({ row }) => (
+          <span className="text-gray-600">{row.getValue("fullAddress")}</span>
+        ),
+      },
+    ],
+    []
+  );
+
+  const handleRowClick = (row: UserData) => {
+    // Optional: Implement logic to view/edit client details
+    console.log("Client clicked:", row.id);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
@@ -114,52 +154,22 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
           </Button>
         </div>
 
-        {/* Table */}
-        <div className="flex-1 overflow-auto mt-4 border-t">
+        {/* Table/Data Area */}
+        <div className="flex-1 overflow-auto mt-4 border-t p-4">
           {isLoading ? (
             <div className="flex items-center justify-center py-12 text-gray-500">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600 mr-2"></div>
               Loading clients...
             </div>
-          ) : clients.length > 0 ? (
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100 sticky top-0 font-medium">
-                <tr>
-                  <th className="px-4 py-3 text-left">Name</th>
-                  <th className="px-4 py-3 text-left">Email</th>
-                  <th className="px-4 py-3 text-left">Phone</th>
-                  <th className="px-4 py-3 text-left">Designation</th>
-                  <th className="px-4 py-3 text-left">Address</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clients.map((client) => (
-                  <tr
-                    key={client.id}
-                    className="border-b hover:bg-gray-50 transition"
-                  >
-                    <td className="px-4 py-3">
-                      {client.firstName} {client.middleName || ""}{" "}
-                      {client.lastName}
-                    </td>
-                    <td className="px-4 py-3">{client.email}</td>
-                    <td className="px-4 py-3">{client.phone}</td>
-                    <td className="px-4 py-3">{client.designation}</td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {client.address && `${client.address}, `}
-                      {client.city && `${client.city}, `}
-                      {client.state && `${client.state} - `}
-                      {client.zipCode && `${client.zipCode}, `}
-                      {client.country}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           ) : (
-            <div className="text-center py-12 text-gray-500">
-              No clients (POCs) found for this fabricator.
-            </div>
+            <DataTable
+              columns={columns}
+              data={clients}
+              onRowClick={handleRowClick}
+              detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
+              searchPlaceholder="Search POCs..."
+              pageSizeOptions={[5, 10, 25]}
+            />
           )}
         </div>
 

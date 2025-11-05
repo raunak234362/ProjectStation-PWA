@@ -55,7 +55,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching all Employee",error);
+      console.log("Error fetching all Employee", error);
     }
   }
 
@@ -87,7 +87,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching Employee by ID",error);
+      console.log("Error fetching Employee by ID", error);
     }
   }
 
@@ -103,7 +103,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching Employee by ID",error);
+      console.log("Error fetching Employee by ID", error);
     }
   }
 
@@ -134,7 +134,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching all Employee",error);
+      console.log("Error fetching all Employee", error);
     }
   }
 
@@ -150,7 +150,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching Employee by ID",error);
+      console.log("Error fetching Employee by ID", error);
     }
   }
 
@@ -176,7 +176,7 @@ class Service {
       return response?.data;
     } catch (error) {
       //alert(error);
-      console.log("Error Fetching All Team",error);
+      console.log("Error Fetching All Team", error);
     }
   }
 
@@ -188,7 +188,7 @@ class Service {
       return response?.data;
     } catch (error) {
       //alert(error);
-      console.log("Error Fetching All Team",error);
+      console.log("Error Fetching All Team", error);
     }
   }
 
@@ -236,12 +236,10 @@ class Service {
   }
 
   // Update Fabricator by ID
-  static async EditFabricatorByID(id: string, data: any) {
+  static async EditFabricatorByID(id: string, data: FormData) {
     try {
       const response = await api.put(`fabricator/update/${id}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("Fabricators Edited:", response.data);
       return response.data;
@@ -284,6 +282,21 @@ class Service {
   static async FetchAllClientsByFabricatorID(fabricatorId: string) {
     try {
       const response = await api.get(`client/byFabricator/${fabricatorId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Clients fetched by Fabricator ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find clients", error);
+    }
+  }
+
+  // Fetch Client by ID
+  static async FetchClientByID(clientID: string) {
+    try {
+      const response = await api.get(`client/byFabricator/${clientID}`, {
         headers: {
           "Content-Type": "application/json",
         },
