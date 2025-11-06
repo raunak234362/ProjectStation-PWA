@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import type { Team } from "../../../interface";
 import Service from "../../../api/Service";
 import { AlertCircle, Loader2 } from "lucide-react";
 import Button from "../../fields/Button";
+import TeamMember from "./TeamMember";
 
 interface GetTeamByIDProps {
   id: string;
@@ -12,7 +14,7 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
   const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [teamMember, setTeamMember] = useState(false);
   useEffect(() => {
     const fetchTeam = async () => {
       if (!id) {
@@ -41,6 +43,13 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
 
     fetchTeam();
   }, [id]);
+
+const handleTeamMember= (teamMemberData:any) => {
+  setTeamMember(teamMemberData)
+}
+const handleCloseTeamMember= () => {
+  setTeamMember(false)
+}
 
   console.log(team);
 
@@ -80,7 +89,7 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
     <div className="bg-linear-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner">
       {/* Header */}
       <div className="mb-5">
-        <h3 className="text-xl font-bold text-orange-800">{team.name}</h3>
+        <h3 className="text-xl font-bold text-teal-800">{team.name}</h3>
       </div>
 
       {/* Two‑column grid */}
@@ -134,7 +143,13 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
         <Button className="py-1 px-2 text-lg bg-red-500 hover:bg-red-600">
           Delete Team
         </Button>
+        <Button onClick={()=>handleTeamMember(team)} className="py-1 px-2 text-lg bg-red-500 hover:bg-red-600">
+          Team Members
+        </Button>
       </div>
+      {teamMember && (
+        <TeamMember members= {team} onClose={handleCloseTeamMember}/>
+      )}
     </div>
   );
 };

@@ -25,7 +25,7 @@ const AllTeam = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [selectedTeamId, setSelectedTeamId] = useState(false);
 
   // ── Fetch All Teams ──
   useEffect(() => {

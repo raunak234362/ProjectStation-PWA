@@ -5,6 +5,7 @@ import type {
   EditEmployeePayload,
   EmployeePayload,
   FabricatorPayload,
+  TeamMemberPayload,
   TeamPayload,
 } from "../interface";
 import api from "./api";
@@ -189,6 +190,21 @@ class Service {
     } catch (error) {
       //alert(error);
       console.log("Error Fetching All Team", error);
+    }
+  }
+
+  // Add Team Members
+  static async AddTeamMembers(role: string, data: TeamMemberPayload) {
+    try {
+      const response = await api.post(`team/addMembers/${role}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
     }
   }
 

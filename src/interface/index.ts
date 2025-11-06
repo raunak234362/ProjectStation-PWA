@@ -157,6 +157,12 @@ export interface Team {
   members: any[]; // You can type this better if needed
   project: any[];
 }
+
+export interface TeamMemberPayload {
+  teamID: string;
+  userID: string;
+}
+
 export interface User {
   id: string;
   f_name: string;

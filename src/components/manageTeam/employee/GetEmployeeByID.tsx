@@ -155,19 +155,27 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         </div>
       )}
       <div className="py-2 flex gap-2">
-        <Button
-          onClick={() => handleModel(employee)}
-          className="py-1 px-2 text-lg"
-        >
-          Employee Progress Status
-        </Button>
-        <Button
-          onClick={() => handleModel(employee)}
-          className="py-1 px-2 text-lg"
-        >
-          Edit Profile
-        </Button>
-        <Button className="py-1 px-2 text-lg">Disable Profile</Button>
+        {employee?.role !== "CLIENT" &&
+          employee?.role !== "CLIENT_ADMIN" &&
+          employee?.role !== "CLIENT_PROJECT_COORDINATOR" &&
+          employee?.role !== "CLIENT_GENERAL_CONSTRUCTOR" && (
+            <Button
+              onClick={() => handleModel(employee)}
+              className="py-1 px-2 text-lg"
+            >
+              Employee Progress Status
+            </Button>
+          )}
+
+        <>
+          <Button
+            onClick={() => handleModel(employee)}
+            className="py-1 px-2 text-lg"
+          >
+            Edit Profile
+          </Button>
+          <Button className="py-1 px-2 text-lg">Disable Profile</Button>
+        </>
       </div>
       {editModel && (
         <EditEmployee employeeData={employee} onClose={handleModelClose} />
