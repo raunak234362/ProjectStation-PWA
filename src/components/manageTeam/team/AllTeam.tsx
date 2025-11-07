@@ -153,7 +153,7 @@ const AllTeam = () => {
       {selectedTeamId && (
         <div
           className="fixed inset-0 z-40"
-          onClick={() => setSelectedTeamId(null)}
+          onClick={() => setSelectedTeamId(false)}
         />
       )}
     </div>

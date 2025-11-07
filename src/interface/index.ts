@@ -159,8 +159,8 @@ export interface Team {
 }
 
 export interface TeamMemberPayload {
-  teamID: string;
-  userID: string;
+  teamId: string;
+  userId: string;
 }
 
 export interface User {

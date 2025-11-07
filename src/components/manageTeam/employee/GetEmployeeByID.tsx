@@ -166,7 +166,6 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
               Employee Progress Status
             </Button>
           )}
-
         <>
           <Button
             onClick={() => handleModel(employee)}
