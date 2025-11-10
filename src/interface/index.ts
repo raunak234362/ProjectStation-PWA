@@ -163,6 +163,11 @@ export interface TeamMemberPayload {
   userId: string;
 }
 
+export interface UpdateTeamRolePayload{
+  userId:string;
+  newRole:string
+}
+
 export interface User {
   id: string;
   f_name: string;

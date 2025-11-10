@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { X, Trash2 } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../ui/table";
 import Button from "../../fields/Button";
 import AddTeamMembers from "./AddTeamMembers";
+import UpdateRoleByMemberID from "./UpdateRoleByMemberID";
+import Service from "../../../api/Service";
 
 interface AllTeamProps {
   members: any;
@@ -13,27 +15,43 @@ interface AllTeamProps {
 
 const TeamMember = ({ members, onClose }: AllTeamProps) => {
   const [addTeamModal, setAddTeamModal] = useState(false);
+  const [editingMember, setEditingMember] = useState<any>(null);
+  const [teamData, setTeamData] = useState(members);
+
+  const fetchTeamData = async () => {
+    if (members?.id) {
+      const response = await Service.GetTeamByID(members.id);
+      setTeamData(response?.data);
+    }
+  };
 
   const handleOpenAddTeam = () => setAddTeamModal(true);
   const handleCloseAddTeam = () => setAddTeamModal(false);
 
-  const tableData = members?.members || [];
+  // const tableData = members?.members || [];
 
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "name",
+      accessorKey: "member.firstName",
       header: "Name",
-      cell: ({ row }) => (
-        <span className="font-semibold">{row.original.name}</span>
-      ),
+      cell: ({ row }) => {
+        const m = row.original.member;
+        return (
+          <span className="font-semibold">
+            {m.firstName} {m.middleName || ""} {m.lastName}
+          </span>
+        );
+      },
     },
     {
-      accessorKey: "email",
+      accessorKey: "member.email",
       header: "Email",
+      cell: ({ row }) => row.original.member.email,
     },
     {
-      accessorKey: "phone",
+      accessorKey: "member.phone",
       header: "Phone",
+      cell: ({ row }) => row.original.member.phone || "—",
     },
     {
       accessorKey: "role",
@@ -48,12 +66,22 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <Button
-          onClick={() => console.log("DELETE:", row.original.id)}
-          className="text-red-600 hover:text-red-800"
-        >
-          <Trash2 size={18} />
-        </Button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setEditingMember(row.original)}
+            className="text-blue-600 hover:text-blue-800"
+            title="Edit Role"
+          >
+            ✏️
+          </button>
+          <button
+            onClick={() => console.log("DELETE MEMBER:", row.original.id)}
+            className="text-red-600 hover:text-red-800"
+            title="Delete Member"
+          >
+            🗑️
+          </button>
+        </div>
       ),
       enableSorting: false,
     },
@@ -81,7 +109,7 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
         <div className="border rounded-lg">
           <DataTable
             columns={columns}
-            data={tableData}
+            data={teamData?.members || []}
             searchPlaceholder="Search teams..."
             pageSizeOptions={[10, 20, 50]}
           />
@@ -90,6 +118,15 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
         {/* ✅ Add Member Modal */}
         {addTeamModal && (
           <AddTeamMembers teamMember={members} onClose={handleCloseAddTeam} />
+        )}
+
+        {editingMember && (
+          <UpdateRoleByMemberID
+            teamId={members.id}
+            member={editingMember}
+            onClose={() => setEditingMember(null)}
+            onSuccess={fetchTeamData}
+          />
         )}
       </div>
     </div>

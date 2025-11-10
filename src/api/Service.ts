@@ -7,6 +7,7 @@ import type {
   FabricatorPayload,
   TeamMemberPayload,
   TeamPayload,
+  UpdateTeamRolePayload,
 } from "../interface";
 import api from "./api";
 const token = sessionStorage.getItem("token");
@@ -197,6 +198,24 @@ class Service {
   static async AddTeamMembers(role: string, data: TeamMemberPayload) {
     try {
       const response = await api.post(`team/addMembers/${role}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Update role of Team Member
+  static async UpdateTeamMemberRole(
+    teamId: string,
+    MemberData: UpdateTeamRolePayload
+  ) {
+    try {
+      const response = await api.put(`team/updateRole/${teamId}`, MemberData, {
         headers: {
           "Content-Type": "application/json",
         },

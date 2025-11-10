@@ -44,12 +44,12 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
     fetchTeam();
   }, [id]);
 
-const handleTeamMember= (teamMemberData:any) => {
-  setTeamMember(teamMemberData)
-}
-const handleCloseTeamMember= () => {
-  setTeamMember(false)
-}
+  const handleTeamMember = (teamMemberData: any) => {
+    setTeamMember(teamMemberData);
+  };
+  const handleCloseTeamMember = () => {
+    setTeamMember(false);
+  };
 
   console.log(team);
 
@@ -143,12 +143,15 @@ const handleCloseTeamMember= () => {
         <Button className="py-1 px-2 text-lg bg-red-500 hover:bg-red-600">
           Delete Team
         </Button>
-        <Button onClick={()=>handleTeamMember(team)} className="py-1 px-2 text-lg bg-red-500 hover:bg-red-600">
+        <Button
+          onClick={() => handleTeamMember(team)}
+          className="py-1 px-2 text-lg bg-red-500 hover:bg-red-600"
+        >
           Team Members
         </Button>
       </div>
       {teamMember && (
-        <TeamMember members= {team} onClose={handleCloseTeamMember}/>
+        <TeamMember members={team} onClose={handleCloseTeamMember} />
       )}
     </div>
   );

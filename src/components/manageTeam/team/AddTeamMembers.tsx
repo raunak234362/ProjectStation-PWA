@@ -24,6 +24,8 @@ const roles = [
 
 const AddTeamMembers = ({ teamMember, onClose }: AllTeamProps) => {
   const teamId = teamMember?.id || "";
+  console.log(teamMember);
+  
   const staffData = useSelector((state: any) => state.userInfo.staffData);
   const {
     register,
