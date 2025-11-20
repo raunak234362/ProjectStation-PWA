@@ -29,8 +29,8 @@ export interface UserData {
   isActive: boolean;
   branchId?: string;
   isFirstLogin: boolean;
-  createdAt: string; // ISO timestamp
-  updatedAt: string; // ISO timestamp
+  createdAt: string; 
+  updatedAt: string; 
 }
 
 // Adding Employee Payload Interface
@@ -124,7 +124,7 @@ export interface Fabricator {
   website: string;
   drive: string;
   files: File[] | [];
-  branches: Branch[]; // ✅ Updated
+  branches: Branch[];
   project: any[];
   createdAt: string;
   updatedAt: string;
@@ -154,7 +154,7 @@ export interface Team {
   isDeleted: boolean;
   manager: Manager;
   department: Department;
-  members: any[]; // You can type this better if needed
+  members: any[];
   project: any[];
 }
 export interface User {
@@ -194,4 +194,23 @@ export interface SocketMessage {
   content: string;
   createdAt: string;
   isTagged?: boolean;
+}
+export interface RFQpayload {
+  projectNumber: string;
+  projectName: string;
+  senderId: string;
+  recipientId: string;
+ salesPersonId: string|"",
+ subject: string,
+ description:string,
+  status: string;   // 👈 use the Prisma enum here
+ tools: string
+  wbtStatus: string;
+  estimationDate: Date;
+  connectionDesign: boolean;
+  customerDesign: boolean;
+  miscDesign: boolean;
+  createdById: string;
+ files: File[] | []
+
 }

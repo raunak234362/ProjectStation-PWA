@@ -92,6 +92,20 @@ const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
+      label: "RFQ",
+      to: "rfq",
+      icon: <FolderOpenDot />,
+      roles: [
+        "admin",
+        "department-manager",
+        "deputy-manager",
+        "project-manager",
+        "user",
+        "human-resource",
+      ],
+    },
+   
+    {
       label: "Tasks",
       to: "tasks",
       icon: <ChartCandlestick />,
