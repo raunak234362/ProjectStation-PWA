@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from "react";
 import { useForm, type SubmitHandler, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
