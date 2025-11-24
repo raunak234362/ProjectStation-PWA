@@ -40,23 +40,7 @@ const AllFabricator = () => {
   // }, []);
   console.log(fabricators);
 
-  // // Handle delete action
-  // const handleDelete = async (selectedRows: Fabricator[]) => {
-  //   try {
-  //     const ids = selectedRows.map((fab) => fab.id);
-  //     console.log("Deleting fabricators:", ids);
-
-  //     // TODO: Uncomment when Delete API is ready
-  //     // await Service.DeleteFabricators(ids);
-
-  //     // Remove deleted rows from table
-  //     setFabricators((prev) => prev.filter((fab) => !ids.includes(fab.id)));
-  //     toast.success(`${selectedRows.length} fabricator(s) deleted`);
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Failed to delete fabricators");
-  //   }
-  // };
+  
 
   // Handle row click (optional)
   const handleRowClick = (row: Fabricator) => {

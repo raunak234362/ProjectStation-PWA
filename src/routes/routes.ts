@@ -6,6 +6,7 @@ import ProfilePage from "../pages/ProfilePage";
 import TeamPage from "../pages/TeamPage";
 import FabricatorPage from "../pages/FabricatorPage";
 import { ChatPage } from "../pages/ChatPage";
+import RFQPage from "../pages/RFQPage";
 
 // import Layout from "../layout/DashboardLayout";
 const routes = [
@@ -23,6 +24,7 @@ const routes = [
           { path: "manage-team", Component: TeamPage },
           { path: "fabricator", Component: FabricatorPage },
           { path: "chats", Component: ChatPage },
+          { path: "rfq", Component: RFQPage },
         ],
       },
     ],

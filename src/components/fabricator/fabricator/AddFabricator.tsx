@@ -4,7 +4,7 @@ import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
-import MultipleFileUpload from "../../fields/MultipleFileUpload"; // Make sure this path is correct
+import MultipleFileUpload from "../../fields/MultipleFileUpload"; 
 import { useDispatch } from "react-redux";
 import { addFabricator } from "../../../store/fabricatorSlice";
 
