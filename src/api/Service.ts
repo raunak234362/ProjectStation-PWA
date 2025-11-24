@@ -55,11 +55,10 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching all Employee",error);
+      console.log("Error fetching all Employee", error);
     }
   }
-
-  //Fetch Employee by ROLE
+   //Fetch Employee by ROLE
   static async FetchEmployeeByRole(role: string) {
     try {
       const response = await api.get(`employee/role/${role}`, {
@@ -87,7 +86,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching Employee by ID",error);
+      console.log("Error fetching Employee by ID", error);
     }
   }
 
@@ -103,7 +102,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching Employee by ID",error);
+      console.log("Error fetching Employee by ID", error);
     }
   }
 
@@ -134,7 +133,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching all Employee",error);
+      console.log("Error fetching all Employee", error);
     }
   }
 
@@ -150,7 +149,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
-      console.log("Error fetching Employee by ID",error);
+      console.log("Error fetching Employee by ID", error);
     }
   }
 
@@ -176,7 +175,7 @@ class Service {
       return response?.data;
     } catch (error) {
       //alert(error);
-      console.log("Error Fetching All Team",error);
+      console.log("Error Fetching All Team", error);
     }
   }
 
@@ -188,7 +187,7 @@ class Service {
       return response?.data;
     } catch (error) {
       //alert(error);
-      console.log("Error Fetching All Team",error);
+      console.log("Error Fetching All Team", error);
     }
   }
 
@@ -292,6 +291,67 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find clients", error);
+    }
+  }
+
+  //Add new RFQ
+  static async addRFQ(rfqData: FormData) {
+    try {
+      const response = await api.post(`rfq/`, rfqData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(" RFQ added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot add rfq", error);
+    }
+  }
+
+  //Fetch all the RFQ
+  static async FetchAllRFQ(rfqId: string) {
+    try {
+      const response = await api.get(`rfq/${rfqId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Data fetched by RFQ id:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfqs", error);
+    }
+  }
+
+  // api for sents :
+  static async RfqSent() {
+    try {
+      const response = await api.get(`rfq/sents`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" RFQ sents:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfqs", error);
+    }
+  }
+
+  //api for recieved:
+  static async RFQRecieved() {
+    try {
+      const response = await api.get(`rfq/received`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("  RFQ received:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfqs", error);
     }
   }
 

@@ -8,11 +8,8 @@ import React, {
   type ChangeEvent,
 } from "react";
 import { Search } from "lucide-react";
+import type { SelectOption } from "../../interface";
 
-interface SelectOption {
-  label: string;
-  value: string;
-}
 
 interface SelectProps {
   options?: SelectOption[];
