@@ -129,6 +129,7 @@ export interface Fabricator {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
+  pointOfContact?: FabricatorClient[];
 }
 
 export interface Manager {
@@ -195,22 +196,125 @@ export interface SocketMessage {
   createdAt: string;
   isTagged?: boolean;
 }
-export interface RFQpayload {
-  projectNumber: string;
-  projectName: string;
-  senderId: string;
-  recipientId: string;
- salesPersonId: string|"",
- subject: string,
- description:string,
-  status: string;   // 👈 use the Prisma enum here
- tools: string
-  wbtStatus: string;
-  estimationDate: Date;
-  connectionDesign: boolean;
-  customerDesign: boolean;
-  miscDesign: boolean;
-  createdById: string;
- files: File[] | []
+// export interface RFQpayload {
+//   projectNumber: string;
+//   projectName: string;
+//   senderId: string;
+//   recipientId: string;
+//  salesPersonId: string|"",
+//  subject: string,
+//  description:string,
+//   status: string;   // 👈 use the Prisma enum here
+//  tools: string
+//   wbtStatus: string;
+//   estimationDate: Date;
+//   connectionDesign: boolean;
+//   customerDesign: boolean;
+//   miscDesign: boolean;
+//   createdById: string;
 
+
+//rfq interfaces
+
+export interface FabricatorRef {
+  fabName?: string;
 }
+
+export interface UserRef {
+  email?: string;
+  fabricator?: FabricatorRef | null;
+}
+
+
+
+export interface RFQItem {
+  id: string;
+  projectName: string;
+  projectNumber?: string;
+  subject: string;
+  description?: string;
+
+  sender_id?: string;
+  recipient_id?: string;
+  salesPersonId?: string;
+  status: string;                       
+  tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
+  createdAt: string | Date;
+  sender?: UserRef | null;                   
+  recepients?: UserRef | null;            
+  bidPrice?: string;
+  estimationDate?: string;
+  connectionDesign?: boolean;
+  miscDesign?: boolean;
+  customerDesign?: boolean;
+  detailingMain?: boolean;
+  detailingMisc?: boolean;
+  files?: File[] | string[];                   
+}
+
+
+
+export interface AddRFQForm {
+  fabricatorId?: string;     
+  sender_id?: string;         
+  recipients: string;         
+  projectName: string;
+  projectNumber?: string;
+  subject?: string;
+  description?: string;
+  tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
+  otherTool?: string;
+  bidPrice?: string;
+  estimationDate: string;   
+  connectionDesign?: boolean;
+  miscDesign?: boolean;
+  customerDesign?: boolean;
+  detailingMain?: boolean;
+  detailingMisc?: boolean;
+}
+
+
+
+export interface RFQpayload {
+  projectName: string;
+  projectNumber?: string;
+  sender_id?: string;
+  recipient_id: string;
+  salesPersonId: string;
+  subject?: string;
+  description?: string;
+  tools: string;
+  wbtStatus?: string;
+  estimationDate: string | null;
+  connectionDesign?: boolean;
+  miscDesign?: boolean;
+  customerDesign?: boolean;
+  detailingMain?: boolean;
+  detailingMisc?: boolean;
+  fabricatorId: string;
+  bidPrice?: string;
+  files: File[] | string[] | [];
+  createdById?: string;
+}
+export interface Staff {
+  id: string;
+  f_name: string;
+  m_name?: string;
+  l_name: string;
+  is_sales?: boolean;
+  is_superuser?: boolean;
+  fabricatorId?: string;
+}
+export interface FabricatorClient {
+  id: string;
+  f_name: string;
+  m_name?: string;
+  l_name: string;
+}
+export interface SelectOption {
+  label: string;
+  value: string | number;
+}
+
+
+

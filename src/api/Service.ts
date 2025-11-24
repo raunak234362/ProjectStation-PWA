@@ -58,8 +58,7 @@ class Service {
       console.log("Error fetching all Employee", error);
     }
   }
-
-  //Fetch Employee by ROLE
+   //Fetch Employee by ROLE
   static async FetchEmployeeByRole(role: string) {
     try {
       const response = await api.get(`employee/role/${role}`, {
@@ -294,6 +293,22 @@ class Service {
       console.error("cannot find clients", error);
     }
   }
+
+  //Add new RFQ
+  static async addRFQ(rfqData: FormData) {
+    try {
+      const response = await api.post(`rfq/`, rfqData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(" RFQ added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot add rfq", error);
+    }
+  }
+
   //Fetch all the RFQ
   static async FetchAllRFQ(rfqId: string) {
     try {
