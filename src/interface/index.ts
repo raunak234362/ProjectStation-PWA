@@ -266,7 +266,7 @@ export interface RFQItem {
 
 
 export interface AddRFQForm {
-  fabricatorId?: string;     
+  fabricatorId?: string ;     
   sender_id?: string;         
   recipients: string;         
   projectName: string;
@@ -302,7 +302,7 @@ export interface RFQpayload {
   customerDesign?: boolean;
   detailingMain?: boolean;
   detailingMisc?: boolean;
-  fabricatorId: string;
+  fabricatorId?: string | number | undefined;
   bidPrice?: string;
   files: File[] | string[] | [];
   createdById?: string;
@@ -318,9 +318,9 @@ export interface Staff {
 }
 export interface FabricatorClient {
   id: string;
-  f_name: string;
-  m_name?: string;
-  l_name: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
 }
 export interface SelectOption {
   label: string;
