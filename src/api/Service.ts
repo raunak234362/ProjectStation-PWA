@@ -35,6 +35,7 @@ class Service {
       const response = await api.post(`employee`, employeeData, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, 
         },
       });
       console.log(response);
@@ -51,6 +52,7 @@ class Service {
       const response = await api.get(`employee`, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(response);
@@ -61,12 +63,13 @@ class Service {
       console.log("Error fetching all Employee", error);
     }
   }
-   //Fetch Employee by ROLE
+  //Fetch Employee by ROLE
   static async FetchEmployeeByRole(role: string) {
     try {
       const response = await api.get(`employee/role/${role}`, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(response);
@@ -83,6 +86,7 @@ class Service {
       const response = await api.get(`employee/${id}`, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(response);
