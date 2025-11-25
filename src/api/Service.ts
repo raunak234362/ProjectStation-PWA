@@ -5,7 +5,9 @@ import type {
   EditEmployeePayload,
   EmployeePayload,
   FabricatorPayload,
+  TeamMemberPayload,
   TeamPayload,
+  UpdateTeamRolePayload,
 } from "../interface";
 import api from "./api";
 const token = sessionStorage.getItem("token");
@@ -56,6 +58,7 @@ class Service {
     } catch (error) {
       //alert(error);
       console.log("Error fetching all Employee", error);
+      console.log("Error fetching all Employee", error);
     }
   }
    //Fetch Employee by ROLE
@@ -87,6 +90,7 @@ class Service {
     } catch (error) {
       //alert(error);
       console.log("Error fetching Employee by ID", error);
+      console.log("Error fetching Employee by ID", error);
     }
   }
 
@@ -102,6 +106,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
+      console.log("Error fetching Employee by ID", error);
       console.log("Error fetching Employee by ID", error);
     }
   }
@@ -134,6 +139,7 @@ class Service {
     } catch (error) {
       //alert(error);
       console.log("Error fetching all Employee", error);
+      console.log("Error fetching all Employee", error);
     }
   }
 
@@ -149,6 +155,7 @@ class Service {
       return response.data;
     } catch (error) {
       //alert(error);
+      console.log("Error fetching Employee by ID", error);
       console.log("Error fetching Employee by ID", error);
     }
   }
@@ -176,6 +183,7 @@ class Service {
     } catch (error) {
       //alert(error);
       console.log("Error Fetching All Team", error);
+      console.log("Error Fetching All Team", error);
     }
   }
 
@@ -187,6 +195,40 @@ class Service {
       return response?.data;
     } catch (error) {
       //alert(error);
+      console.log("Error Fetching All Team", error);
+    }
+  }
+
+  // Add Team Members
+  static async AddTeamMembers(role: string, data: TeamMemberPayload) {
+    try {
+      const response = await api.post(`team/addMembers/${role}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Update role of Team Member
+  static async UpdateTeamMemberRole(
+    teamId: string,
+    MemberData: UpdateTeamRolePayload
+  ) {
+    try {
+      const response = await api.put(`team/updateRole/${teamId}`, MemberData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
       console.log("Error Fetching All Team", error);
     }
   }
@@ -235,12 +277,10 @@ class Service {
   }
 
   // Update Fabricator by ID
-  static async EditFabricatorByID(id: string, data: any) {
+  static async EditFabricatorByID(id: string, data: FormData) {
     try {
       const response = await api.put(`fabricator/update/${id}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("Fabricators Edited:", response.data);
       return response.data;
@@ -283,6 +323,21 @@ class Service {
   static async FetchAllClientsByFabricatorID(fabricatorId: string) {
     try {
       const response = await api.get(`client/byFabricator/${fabricatorId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Clients fetched by Fabricator ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find clients", error);
+    }
+  }
+
+  // Fetch Client by ID
+  static async FetchClientByID(clientID: string) {
+    try {
+      const response = await api.get(`client/byFabricator/${clientID}`, {
         headers: {
           "Content-Type": "application/json",
         },

@@ -12,7 +12,7 @@ import { loadFabricator } from "./store/fabricatorSlice";
 
 const AppContent = () => {
   const dispatch = useDispatch();
-  const [userId, setUserId] = useState<string | null>(null);
+  const [setUserId] = useState<string | null>(null);
 
   // Fetch current user
   const fetchSignedinUser = async () => {
