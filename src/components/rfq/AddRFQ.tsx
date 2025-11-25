@@ -11,11 +11,10 @@ import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 
 import type {
-  AddRFQForm,
-  RFQpayload,
   Fabricator,
   Staff,
   SelectOption,
+  RFQpayload,
 } from "../../interface";
 
 import SectionTitle from "../ui/SectionTitle";
@@ -44,7 +43,7 @@ const AddRFQ: React.FC = () => {
     watch,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<AddRFQForm>({
+  } = useForm<RFQpayload>({
     defaultValues: {
       tools: "NO_PREFERENCE",
     },
@@ -102,9 +101,9 @@ const AddRFQ: React.FC = () => {
     })) ?? [];
 
   // --- SUBMIT ---
-  const onSubmit: SubmitHandler<AddRFQForm> = async (data) => {
+  const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
     try {
-      const payload: RFQpayload = {
+      const payload = {
         ...data,
         description,
         files,
