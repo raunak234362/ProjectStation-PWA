@@ -5,7 +5,9 @@ import type {
   EditEmployeePayload,
   EmployeePayload,
   FabricatorPayload,
+  TeamMemberPayload,
   TeamPayload,
+  UpdateTeamRolePayload,
 } from "../interface";
 import api from "./api";
 const token = sessionStorage.getItem("token");
@@ -191,6 +193,39 @@ class Service {
     }
   }
 
+  // Add Team Members
+  static async AddTeamMembers(role: string, data: TeamMemberPayload) {
+    try {
+      const response = await api.post(`team/addMembers/${role}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Update role of Team Member
+  static async UpdateTeamMemberRole(
+    teamId: string,
+    MemberData: UpdateTeamRolePayload
+  ) {
+    try {
+      const response = await api.put(`team/updateRole/${teamId}`, MemberData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Add fabricator
   static async AddFabricator(fabricatorData: FormData | FabricatorPayload) {
     try {
@@ -235,12 +270,10 @@ class Service {
   }
 
   // Update Fabricator by ID
-  static async EditFabricatorByID(id: string, data: any) {
+  static async EditFabricatorByID(id: string, data: FormData) {
     try {
       const response = await api.put(`fabricator/update/${id}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("Fabricators Edited:", response.data);
       return response.data;
@@ -294,64 +327,18 @@ class Service {
     }
   }
 
-  //Add new RFQ
-  static async addRFQ(rfqData: FormData) {
+  // Fetch Client by ID
+  static async FetchClientByID(clientID: string) {
     try {
-      const response = await api.post(`rfq/`, rfqData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log(" RFQ added:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot add rfq", error);
-    }
-  }
-
-  //Fetch all the RFQ
-  static async FetchAllRFQ(rfqId: string) {
-    try {
-      const response = await api.get(`rfq/${rfqId}`, {
+      const response = await api.get(`client/byFabricator/${clientID}`, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All Data fetched by RFQ id:", response.data);
+      console.log(" All Clients fetched by Fabricator ID:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find rfqs", error);
-    }
-  }
-
-  // api for sents :
-  static async RfqSent() {
-    try {
-      const response = await api.get(`rfq/sents`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" RFQ sents:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfqs", error);
-    }
-  }
-
-  //api for recieved:
-  static async RFQRecieved() {
-    try {
-      const response = await api.get(`rfq/received`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("  RFQ received:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfqs", error);
+      console.error("cannot find clients", error);
     }
   }
 

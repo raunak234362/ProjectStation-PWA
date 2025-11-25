@@ -25,7 +25,6 @@ const EditEmployee = ({
   const {
     register,
     handleSubmit,
-    formState: { errors },
     setValue,
   } = useForm<EditEmployeePayload>({
     defaultValues: {
@@ -168,7 +167,7 @@ const EditEmployee = ({
             />
 
             {/* Role */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Role
               </label>
@@ -186,7 +185,7 @@ const EditEmployee = ({
                   {errors.role.message}
                 </p>
               )}
-            </div>
+            </div> */}
 
             {/* ── Address ── */}
             <div className="md:col-span-2">
