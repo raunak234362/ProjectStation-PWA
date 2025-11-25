@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useForm, type SubmitHandler, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,13 +11,12 @@ import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 
 import type {
-  AddRFQForm,
-  RFQpayload,
   Fabricator,
-  FabricatorClient,
   Staff,
   SelectOption,
+  RFQpayload,
 } from "../../interface";
+
 import SectionTitle from "../ui/SectionTitle";
 import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
@@ -27,13 +26,11 @@ const AddRFQ: React.FC = () => {
 
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo?.fabricatorData
-  );
+  ) as Fabricator[];
 
-  const staffData = useSelector((state: any) => state.userInfo.staffData);
-
-  const userData = useSelector(
-    (state: any) => state.userData?.profile as Staff | undefined
-  );
+  const staffData = useSelector(
+    (state: any) => state.userInfo.staffData
+  ) as Staff[];
 
   const userType =
     typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
@@ -46,27 +43,24 @@ const AddRFQ: React.FC = () => {
     watch,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<AddRFQForm>({
+  } = useForm<RFQpayload>({
     defaultValues: {
       tools: "NO_PREFERENCE",
     },
   });
 
   const tools = watch("tools");
-  const otherTool = watch("otherTool");
   const selectedFabricatorId = watch("fabricatorId");
- 
-  
-
+  console.log(selectedFabricatorId);
 
   const [files, setFiles] = useState<File[]>([]);
   const [description, setDescription] = useState("");
 
+  // --- FETCH STAFF ONCE ---
   useEffect(() => {
     const loadStaff = async () => {
       try {
-        const res = (await Service.FetchEmployeeByRole("CLIENT")) as Staff[];
-        console.log(res);
+        await Service.FetchEmployeeByRole("CLIENT");
       } catch (err) {
         console.error("Staff Fetch Failed:", err);
       }
@@ -74,69 +68,61 @@ const AddRFQ: React.FC = () => {
     loadStaff();
   }, [dispatch]);
 
-  interface RecipientOption {
-    label: string;
-    value: string;
-  }
+  // --- WBT RECIPIENT OPTIONS ---
+  const recipientOption: SelectOption[] =
+    staffData
+      ?.filter((u) => u.is_sales || u.is_superuser)
+      .map((u) => ({
+        label: `${u.f_name} ${u.m_name ?? ""} ${u.l_name}`,
+        value: String(u.id),
+      })) ?? [];
 
-  const recipientOption: RecipientOption[] = ((staffData as Staff[]) || [])
-    .filter((u: Staff) => u.is_sales || u.is_superuser)
-    .map((u: Staff) => ({
-      label: `${u.f_name} ${u.m_name ?? ""} ${u.l_name}`,
-      value: String(u.id),
-    }));
-
+  // --- RESET OTHER TOOL IF TOOLS != OTHER ---
   useEffect(() => {
-    if (tools !== "OTHER") {
-      setValue("otherTool", "");
-    }
+    if (tools !== "OTHER") setValue("otherTool", "");
   }, [tools, setValue]);
 
-  const onFilesChange = (uploaded: File[]) => {
-    setFiles(uploaded);
-  };
 
+  // --- FABRICATOR OPTIONS ---
   const fabOptions: SelectOption[] =
-    (fabricators as Fabricator[] | undefined)?.map((fab: Fabricator) => ({
+    fabricators?.map((fab) => ({
       label: fab.fabName,
-      value: fab.id,
+      value: String(fab.id),
     })) ?? [];
-  
-const selectedFabricator = (fabricators as Fabricator[])?.find(
-  (fab) => fab.id === selectedFabricatorId
-);
-  console.log(selectedFabricatorId);
-  
 
-const clientOptions: SelectOption[] =
-  selectedFabricator?.pointOfContact?.map((client: FabricatorClient) => ({
-    label: `${client.f_name} ${client.m_name ?? ""} ${client.l_name}`,
-    value: client.id,
-  })) ?? [];
-  console.log(selectedFabricator?.pointOfContact);
-  
+  const selectedFabricator = fabricators?.find(
+    (fab) => String(fab.id) === String(selectedFabricatorId)
+  );
 
-  const onSubmit: SubmitHandler<AddRFQForm> = async (data) => {
+  const clientOptions: SelectOption[] =
+    selectedFabricator?.pointOfContact?.map((client) => ({
+      label: `${client.firstName} ${client.middleName ?? ""} ${client.lastName}`,
+      value: String(client.id),
+    })) ?? [];
+
+  // --- SUBMIT ---
+  const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
     try {
-      const payload: RFQpayload = {
+      const payload = {
         ...data,
         description,
         files,
         wbtStatus: "RECEIVED",
         recipient_id: data.recipients,
         salesPersonId: data.recipients,
-        fabricatorId: data.fabricatorId ?? userData?.fabricatorId!,
+        fabricatorId: data.fabricatorId,
         estimationDate: data.estimationDate
           ? new Date(data.estimationDate).toISOString()
           : null,
       };
 
       const formData = new FormData();
+
       Object.entries(payload).forEach(([key, value]) => {
         if (key === "files" && Array.isArray(value)) {
           value.forEach((file) => formData.append("files", file));
         } else if (value !== undefined && value !== null) {
-          formData.append(key, value as string);
+          formData.append(key, value as any);
         }
       });
 
@@ -144,11 +130,16 @@ const clientOptions: SelectOption[] =
 
       toast.success("RFQ Created Successfully");
       reset();
+      setFiles([]);
+      setDescription("");
     } catch (err) {
       toast.error("Failed to create RFQ");
       console.error(err);
     }
   };
+
+  const selectedFabricatorOption =
+    fabOptions.find((opt) => opt.value === selectedFabricatorId) || null;
 
   return (
     <div className="max-w-5xl mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-lg p-8 my-6">
@@ -160,7 +151,7 @@ const clientOptions: SelectOption[] =
         <SectionTitle title="Project Information" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Fabricator (Not visible to clients) */}
+          {/* FABRICATOR (HIDDEN FOR CLIENTS) */}
           {userType !== "client" && (
             <>
               <div>
@@ -168,19 +159,14 @@ const clientOptions: SelectOption[] =
                   Fabricator *
                 </label>
 
-                <Controller
-                  name="fabricatorId"
-                  control={control}
-                  rules={{ required: "Fabricator is required" }}
-                  render={({ field }) => (
-                    <Select
-                      options={fabOptions}
-                      {...register("fabricatorId")}
-                      onChange={(v: string) => field.onChange(v)}
-                    />
-                  )}
+                <Select
+                  options={fabOptions}
+                  {...register("fabricatorId")}
+                  value={selectedFabricatorOption?.value?.toString()}
+                  onChange={(_, value) =>
+                    setValue("fabricatorId", value ? value.toString() : "")
+                  }
                 />
-
                 {errors.fabricatorId && (
                   <p className="text-red-500 text-xs mt-1">
                     {errors.fabricatorId.message}
@@ -200,10 +186,13 @@ const clientOptions: SelectOption[] =
                   render={({ field }) => (
                     <Select
                       options={clientOptions}
-                      onChange={(v: string) => field.onChange(v)}
+                      {...register("sender_id")}
+                      value={field.value}
+                      onChange={field.onChange}
                     />
                   )}
                 />
+
                 {errors.sender_id && (
                   <p className="text-red-500 text-xs mt-1">
                     {errors.sender_id.message}
@@ -213,7 +202,7 @@ const clientOptions: SelectOption[] =
             </>
           )}
 
-          {/* WBT Point of Contact */}
+          {/* CONTACT */}
           <div className="md:col-span-2">
             <label className="font-semibold text-gray-700 mb-1 block">
               WBT Point of Contact *
@@ -226,7 +215,8 @@ const clientOptions: SelectOption[] =
               render={({ field }) => (
                 <Select
                   options={recipientOption}
-                  onChange={(v: string) => field.onChange(v)}
+                  value={field.value}
+                  onChange={field.onChange}
                 />
               )}
             />
@@ -238,7 +228,7 @@ const clientOptions: SelectOption[] =
             )}
           </div>
 
-          {/* Project Name */}
+          {/* PROJECT NAME */}
           <div className="md:col-span-2">
             <Input
               label="Project Name *"
@@ -247,11 +237,6 @@ const clientOptions: SelectOption[] =
               })}
               placeholder="Enter project name"
             />
-            {errors.projectName && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.projectName.message}
-              </p>
-            )}
           </div>
 
           <Input
@@ -261,12 +246,11 @@ const clientOptions: SelectOption[] =
           />
         </div>
 
-        {/* ------------------- DETAILS ------------------- */}
+        {/* DETAILS */}
         <SectionTitle title="Details" />
 
         <Input label="Subject" {...register("subject")} />
 
-        {/* Description (rich text) */}
         <textarea
           className="w-full border rounded-md p-2"
           rows={4}
@@ -275,11 +259,12 @@ const clientOptions: SelectOption[] =
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        {/* Tools */}
+        {/* TOOLS */}
         <div>
           <label className="font-semibold text-gray-700 mb-1 block">
             Tools *
           </label>
+
           <Controller
             name="tools"
             control={control}
@@ -293,21 +278,17 @@ const clientOptions: SelectOption[] =
                   "NO_PREFERENCE",
                   "OTHER",
                 ].map((t) => ({ label: t, value: t }))}
-                onChange={(v: string) => field.onChange(v)}
+                value={field.value}
+                onChange={field.onChange}
               />
             )}
           />
-          {errors.tools && (
-            <p className="text-red-500 text-xs mt-1">{errors.tools.message}</p>
-          )}
         </div>
 
         {tools === "OTHER" && (
           <Input
             label="Specify Other Tool"
-            {...register("otherTool", {
-              required: "Please specify the tool",
-            })}
+            {...register("otherTool", { required: "Please specify the tool" })}
           />
         )}
 
@@ -317,17 +298,13 @@ const clientOptions: SelectOption[] =
           {...register("bidPrice")}
         />
 
-        {/* Due Date */}
         <Input
           label="Due Date *"
           type="date"
-          {...register("estimationDate", {
-            required: "Due date is required",
-          })}
+          {...register("estimationDate", { required: "Due date is required" })}
         />
 
-        {/* ------------------- SCOPES ------------------- */}
-
+        {/* SCOPES */}
         <SectionTitle title="Connection Design Scope" />
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -343,24 +320,21 @@ const clientOptions: SelectOption[] =
           <Toggle label="Misc Steel" {...register("detailingMisc")} />
         </div>
 
-        {/* ------------------- FILE UPLOAD ------------------- */}
-
+        {/* FILES */}
         <SectionTitle title="Attach Files" />
 
         <Controller
-          name={"files" as any}
-          control={control}
-          render={({ field }) => (
-            <MultipleFileUpload
-              onFilesChange={(uploaded) => {
-                field.onChange(uploaded);
-                onFilesChange(uploaded);
-              }}
-            />
-          )}
-        />
-
-        {/* ------------------- SUBMIT ------------------- */}
+            name="files"
+            control={control}
+            render={({ field }) => (
+              <MultipleFileUpload
+                // When files change, update RHF's state
+                onFilesChange={(files) => {
+                  field.onChange(files);
+                }}
+              />
+            )}
+          />
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>

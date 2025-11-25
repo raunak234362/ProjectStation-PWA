@@ -266,7 +266,7 @@ export interface RFQItem {
 
 
 export interface AddRFQForm {
-  fabricatorId?: string;     
+  fabricatorId?: string ;     
   sender_id?: string;         
   recipients: string;         
   projectName: string;
@@ -287,14 +287,17 @@ export interface AddRFQForm {
 
 
 export interface RFQpayload {
+  fabricatorId?: string;
+  sender_id?: string;
+  recipients: string;
   projectName: string;
   projectNumber?: string;
-  sender_id?: string;
-  recipient_id: string;
-  salesPersonId: string;
   subject?: string;
   description?: string;
-  tools: string;
+  salesPersonId: string;
+  tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
+  otherTool?: string;
+  status: string;
   wbtStatus?: string;
   estimationDate: string | null;
   connectionDesign?: boolean;
@@ -302,9 +305,8 @@ export interface RFQpayload {
   customerDesign?: boolean;
   detailingMain?: boolean;
   detailingMisc?: boolean;
-  fabricatorId: string;
   bidPrice?: string;
-  files: File[] | string[] | [];
+  files?: File[]  ;
   createdById?: string;
 }
 export interface Staff {
@@ -318,9 +320,9 @@ export interface Staff {
 }
 export interface FabricatorClient {
   id: string;
-  f_name: string;
-  m_name?: string;
-  l_name: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
 }
 export interface SelectOption {
   label: string;
