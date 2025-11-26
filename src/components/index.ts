@@ -17,6 +17,11 @@ import AllConnectionDesigner from "./connectionDesigner/designer/AllConnectionDe
 import AddCDEngineer from "./connectionDesigner/engineer/AddCDEngineer";
 import AllCDEngineer from "./connectionDesigner/engineer/AllCDEngineer";
 
+
+// Projects
+import AddProject from "./project/AddProject";
+import AllProjects from "./project/AllProjects";
+
 export {
     Login,
     WBTDashboard,
@@ -28,6 +33,9 @@ export {
     AllCDEngineer,
     AddConnectionDesigner,
     AllConnectionDesigner,
-    AddCDEngineer
+    AddCDEngineer,
+    AddProject,
+    AllProjects
+
 
 }

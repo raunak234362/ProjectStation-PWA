@@ -308,7 +308,6 @@ export interface SelectOption {
   value: string | number;
 }
 
-// src/interface/ConnectionDesignerForm.ts
 export interface ConnectionDesignerForm {
   connectionDesignerName: string;
   website?: string;
@@ -322,4 +321,17 @@ export interface ConnectionDesignerForm {
   };
 }
 
+export interface ConnectionDesigner {
+  id: string;
+  name: string;
+  contactInfo?: string;
+  websiteLink?: string;
+  email?: string;
+  location?: string;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+  state: string[];
+  files?: { id: string; originalName: string }[];
+}
 

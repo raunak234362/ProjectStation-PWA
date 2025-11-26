@@ -401,6 +401,7 @@ class Service {
     try {
       const response = await api.get(`rfq/received`, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -409,6 +410,82 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find rfqs", error);
+    }
+  }
+
+  //Add Connection Designer
+  static async AddConnectionDesigner(data:any){
+    console.log(data);
+    
+    try {
+      const response = await api.post(`connectionDesign`,data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      console.log(response);
+      return response.data;
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+  // Fetch All Connection Designer
+  static async FetchAllConnectionDesigner(){    
+    try {
+      const response = await api.get(`connectionDesign/all`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      console.log(response);
+      return response.data;
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  // Fetch Connection Designer By ID
+  static async FetchConnectionDesignerByID(id:string){    
+    try {
+      const response = await api.get(`connectionDesign/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      console.log(response);
+      return response.data;
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  // Update Connection Designer By ID
+  static async UpdateConnectionDesignerByID(id:string){    
+    try {
+      const response = await api.put(`connectionDesign/update/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      console.log(response);
+      return response.data;
+      
+    } catch (error) {
+      console.log(error);
+      
     }
   }
 
