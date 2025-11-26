@@ -1,9 +1,5 @@
-import React from 'react'
-
 const AllRFQ = () => {
-  return (
-    <div>AllRFQ</div>
-  )
-}
+  return <div>AllRFQ</div>;
+};
 
-export default AllRFQ
+export default AllRFQ;

@@ -3,7 +3,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 
 // Define the props interface for TypeScript
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: React.ReactNode;
   variant?: "default" | "outline" | "filled";
   className?: string;
   type?: string;
@@ -11,7 +11,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label: string;
+  label?: React.ReactNode;
   type?: string;
   variant?: "default" | "outline" | "filled";
   className?: string;
@@ -55,7 +55,6 @@ const Input = React.forwardRef<
           <textarea
             className={`${baseStyles} ${variantStyles[variant]} resize-y min-h-[80px] ${className}`}
             ref={ref as React.Ref<HTMLTextAreaElement>}
-            placeholder={label}
             {...(props as TextareaProps)}
             id={id}
           />
@@ -65,7 +64,6 @@ const Input = React.forwardRef<
               type={showPassword && type === "password" ? "text" : type}
               className={`${baseStyles} ${variantStyles[variant]} ${className}`}
               ref={ref as React.Ref<HTMLInputElement>}
-              placeholder={label}
               {...(props as InputProps)}
               id={id}
             />

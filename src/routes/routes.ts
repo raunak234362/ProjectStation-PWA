@@ -7,11 +7,13 @@ import TeamPage from "../pages/TeamPage";
 import FabricatorPage from "../pages/FabricatorPage";
 import { ChatPage } from "../pages/ChatPage";
 import RFQPage from "../pages/RFQPage";
+import ConnectionPage from "../pages/ConnectionPage";
+import ChangePasswordPage from "../pages/ChangePasswordPage";
 
 // import Layout from "../layout/DashboardLayout";
 const routes = [
   { path: "/", Component: Login },
-  { path: "/change-password", Component: "Password Change" },
+  { path: "/change-password", Component: ChangePasswordPage },
   {
     Component: RequireAuth,
     children: [
@@ -22,6 +24,7 @@ const routes = [
           { path: "", Component: WBTDashboard },
           { path: "profile", Component: ProfilePage },
           { path: "manage-team", Component: TeamPage },
+          { path: "connection-designer", Component: ConnectionPage },
           { path: "fabricator", Component: FabricatorPage },
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },

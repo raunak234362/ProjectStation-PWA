@@ -4,7 +4,7 @@ import store from "./store/store";
 import Layout from "./layout/DashboardLayout";
 import Service from "./api/Service";
 import { setUserData, showStaff } from "./store/userSlice";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import socket, { connectSocket } from "./socket";
 import PWABadge from "./PWABadge";
@@ -12,7 +12,7 @@ import { loadFabricator } from "./store/fabricatorSlice";
 
 const AppContent = () => {
   const dispatch = useDispatch();
-  const [setUserId] = useState<string | null>(null);
+  // const [setUserId] = useState<string | null>(null);
 
   // Fetch current user
   const fetchSignedinUser = async () => {
@@ -24,7 +24,7 @@ const AppContent = () => {
       sessionStorage.setItem("userId", userDetail.id);
       sessionStorage.setItem("username", userDetail.username);
 
-      setUserId(userDetail.id);
+      // setUserId(userDetail.id);
       dispatch(setUserData(userDetail));
 
       // Connect socket after user is set

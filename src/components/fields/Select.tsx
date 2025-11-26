@@ -88,7 +88,7 @@ const Select = (
     setSearchTerm("");
     setIsOpen(false);
     if (onChange && name) {
-      onChange(name, option.value);
+      onChange(name, String(option.value));
     }
   };
 

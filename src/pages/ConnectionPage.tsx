@@ -1,7 +1,8 @@
+import ConnectionLayout from "../layout/ConnectionLayout"
 
 const ConnectionPage = () => {
   return (
-    <div>ConnectionPage</div>
+    <div><ConnectionLayout/></div>
   )
 }
 

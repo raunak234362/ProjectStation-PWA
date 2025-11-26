@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import AllFabricator from "../components/fabricator/fabricator/AllFabricator";
 import AddFabricator from "../components/fabricator/fabricator/AddFabricator";
 

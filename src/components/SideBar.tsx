@@ -12,6 +12,7 @@ import {
   X,
   Group,
   LucideComponent,
+  FactoryIcon,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Button from "./fields/Button";
@@ -104,16 +105,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
-      label: "RFQ",
-      to: "rfq",
-      icon: <FolderOpenDot />,
+      label: "Connection Designer",
+      to: "connection-designer",
+      icon: <FactoryIcon />,
       roles: [
         "admin",
         "department-manager",
         "deputy-manager",
-        "project-manager",
-        "user",
-        "human-resource",
       ],
     },
    

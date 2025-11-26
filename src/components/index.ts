@@ -10,6 +10,13 @@ import AllEmployee from "./manageTeam/employee/AllEmployee";
 //Department Components-
 import AddDepartment from "./manageTeam/department/AddDepartment";
 import AllDepartments from "./manageTeam/department/AllDepartments";
+
+//Connection Designer
+import AddConnectionDesigner from "./connectionDesigner/designer/AddConnectionDesigner";
+import AllConnectionDesigner from "./connectionDesigner/designer/AllConnectionDesigner";
+import AddCDEngineer from "./connectionDesigner/engineer/AddCDEngineer";
+import AllCDEngineer from "./connectionDesigner/engineer/AllCDEngineer";
+
 export {
     Login,
     WBTDashboard,
@@ -17,5 +24,10 @@ export {
     AddEmployee,
     AllEmployee,
     AddDepartment,
-    AllDepartments
+    AllDepartments,
+    AllCDEngineer,
+    AddConnectionDesigner,
+    AllConnectionDesigner,
+    AddCDEngineer
+
 }

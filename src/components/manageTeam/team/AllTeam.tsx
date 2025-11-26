@@ -25,7 +25,7 @@ const AllTeam = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTeamId, setSelectedTeamId] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
 
   // ── Fetch All Teams ──
   useEffect(() => {
@@ -153,7 +153,7 @@ const AllTeam = () => {
       {selectedTeamId && (
         <div
           className="fixed inset-0 z-40"
-          onClick={() => setSelectedTeamId(false)}
+          onClick={() => setSelectedTeamId(null)}
         />
       )}
     </div>
