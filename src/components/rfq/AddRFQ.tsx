@@ -39,7 +39,7 @@ const AddRFQ: React.FC = () => {
     setValue,
     watch,
     formState: { errors, isSubmitting },
-    reset,
+
   } = useForm<RFQpayload>({
     defaultValues: {
       tools: "NO_PREFERENCE",
@@ -101,10 +101,9 @@ const AddRFQ: React.FC = () => {
       const payload = {
         ...data,
         description,
-        files,
         wbtStatus: "RECEIVED",
-        recipientId: data.recipients,
-        salesPersonId: data.recipients,
+        recipientId: data.recipientId,
+        salesPersonId: data.salesPersonId,
         fabricatorId: data.fabricatorId,
         estimationDate: data.estimationDate
           ? new Date(data.estimationDate).toISOString()
@@ -125,7 +124,6 @@ for (const [key, value] of Object.entries(payload)) {
 
       toast.success("RFQ Created Successfully");
       // reset();
-      setFiles([]);
       setDescription("");
     } catch (err) {
       toast.error("Failed to create RFQ");
