@@ -5,6 +5,7 @@ import type {
   EditEmployeePayload,
   EmployeePayload,
   FabricatorPayload,
+  RFQpayload,
   TeamMemberPayload,
   TeamPayload,
   UpdateTeamRolePayload,
@@ -58,10 +59,9 @@ class Service {
     } catch (error) {
       //alert(error);
       console.log("Error fetching all Employee", error);
-      console.log("Error fetching all Employee", error);
     }
   }
-   //Fetch Employee by ROLE
+  //Fetch Employee by ROLE
   static async FetchEmployeeByRole(role: string) {
     try {
       const response = await api.get(`employee/role/${role}`, {
@@ -350,9 +350,10 @@ class Service {
   }
 
   //Add new RFQ
-  static async addRFQ(rfqData: FormData) {
+  static async addRFQ(formData: FormData | RFQpayload) {
+    console.log("RFQ Data in Service:", formData);
     try {
-      const response = await api.post(`rfq/`, rfqData, {
+      const response = await api.post(`rfq/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -365,9 +366,9 @@ class Service {
   }
 
   //Fetch all the RFQ
-  static async FetchAllRFQ(rfqId: string) {
+  static async FetchAllRFQ() {
     try {
-      const response = await api.get(`rfq/${rfqId}`, {
+      const response = await api.get(`rfq/`, {
         headers: {
           "Content-Type": "application/json",
         },

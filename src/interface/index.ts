@@ -207,25 +207,6 @@ export interface SocketMessage {
   createdAt: string;
   isTagged?: boolean;
 }
-// export interface RFQpayload {
-//   projectNumber: string;
-//   projectName: string;
-//   senderId: string;
-//   recipientId: string;
-//  salesPersonId: string|"",
-//  subject: string,
-//  description:string,
-//   status: string;   // 👈 use the Prisma enum here
-//  tools: string
-//   wbtStatus: string;
-//   estimationDate: Date;
-//   connectionDesign: boolean;
-//   customerDesign: boolean;
-//   miscDesign: boolean;
-//   createdById: string;
-
-
-//rfq interfaces
 
 export interface FabricatorRef {
   fabName?: string;
@@ -236,15 +217,12 @@ export interface UserRef {
   fabricator?: FabricatorRef | null;
 }
 
-
-
 export interface RFQItem {
   id: string;
   projectName: string;
   projectNumber?: string;
   subject: string;
   description?: string;
-
   sender_id?: string;
   recipient_id?: string;
   salesPersonId?: string;
@@ -264,39 +242,16 @@ export interface RFQItem {
 }
 
 
-
-export interface AddRFQForm {
-  fabricatorId?: string ;     
-  sender_id?: string;         
-  recipients: string;         
-  projectName: string;
-  projectNumber?: string;
-  subject?: string;
-  description?: string;
-  tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
-  otherTool?: string;
-  bidPrice?: string;
-  estimationDate: string;   
-  connectionDesign?: boolean;
-  miscDesign?: boolean;
-  customerDesign?: boolean;
-  detailingMain?: boolean;
-  detailingMisc?: boolean;
-}
-
-
-
 export interface RFQpayload {
-  fabricatorId?: string;
-  sender_id?: string;
-  recipients: string;
+  fabricatorId?: string ;
+  senderId?: string;
+  recipientId: string;
   projectName: string;
   projectNumber?: string;
   subject?: string;
   description?: string;
   salesPersonId: string;
-  tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
-  otherTool?: string;
+  tools: string;
   status: string;
   wbtStatus?: string;
   estimationDate: string | null;
@@ -306,8 +261,7 @@ export interface RFQpayload {
   detailingMain?: boolean;
   detailingMisc?: boolean;
   bidPrice?: string;
-  files?: File[]  ;
-  createdById?: string;
+  files?: File[];
 }
 export interface Staff {
   id: string;

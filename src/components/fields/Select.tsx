@@ -83,14 +83,17 @@ const Select = (
   };
 
   // Handle option selection
-  const handleSelect = (option: SelectOption) => {
-    setSelectedOption(option);
-    setSearchTerm("");
-    setIsOpen(false);
-    if (onChange && name) {
-      onChange(name, option.value);
-    }
-  };
+ const handleSelect = (option: SelectOption) => {
+   setSelectedOption(option);
+   setSearchTerm("");
+   setIsOpen(false);
+
+   // Send only VALUE, not name
+   if (onChange) {
+     onChange(option.value);
+   }
+ };
+
 
   // Highlight matching text in options
   const highlightMatch = (text: string, highlight: string): React.ReactNode => {
