@@ -55,7 +55,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
     if (!groupId) return;
     setLoading(true);
     try {
-      const res = await Service.ChatByGroupID(groupId, lastId);
+      const res = await Service.ChatByGroupID(groupId, lastId ?? undefined);
       const newMsgs: DisplayMessage[] = res.map((m: Message) => ({
         id: m.id,
         text: m.content,
@@ -169,7 +169,6 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
           <div className="text-center text-sm text-gray-500">Loading...</div>
         )}
         {messages.map((msg) => {
-          const date = new Date(msg.time).toDateString();
           const time = new Date(msg.time).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",

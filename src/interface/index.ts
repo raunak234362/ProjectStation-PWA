@@ -329,5 +329,16 @@ export interface SelectOption {
   value: string | number;
 }
 
+// src/interface/ConnectionDesignerForm.ts
+export interface ConnectionDesignerForm {
+  connectionDesignerName: string;
+  website?: string;
+  drive?: string;
+  headquater: {
+    country: string;
+    states: string[];
+    city?: string;
+  };
+}
 
 

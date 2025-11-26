@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState } from "react";
-// import Service from "../../../api/Service";
-// import { toast } from "react-toastify";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetFabricatorByID from "./GetFabricatorByID";
@@ -11,11 +8,9 @@ import { useSelector } from "react-redux";
 
 const AllFabricator = () => {
   // const [fabricators, setFabricators] = useState<Fabricator[]>([]);
-  const [fabricatorId, setFabricatorId] = useState<string | "">();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fabricators= useSelector((state:any)=>state.fabricatorInfo?.fabricatorData)
+  const fabricators = useSelector(
+    (state: any) => state.fabricatorInfo?.fabricatorData
+  );
 
   // Fetch all fabricators on component mount
   // useEffect(() => {
@@ -45,8 +40,7 @@ const AllFabricator = () => {
   // Handle row click (optional)
   const handleRowClick = (row: Fabricator) => {
     const fabricatorUniqueId = (row as any).id ?? (row as any).fabId ?? "";
-    // alert(`You clicked fabricator: ${fabricatorUniqueId}`);
-    setFabricatorId(fabricatorUniqueId);
+    console.debug("Selected fabricator:", fabricatorUniqueId);
   };
 
   // Define columns for DataTable

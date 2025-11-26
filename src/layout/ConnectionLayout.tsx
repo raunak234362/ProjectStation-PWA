@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { AddDepartment, AllDepartments } from "../components";
-
+import { AddConnectionDesigner, AllConnectionDesigner } from "../components";
 
 const ConnectionLayout = () => {
   
@@ -19,7 +18,7 @@ const ConnectionLayout = () => {
                   : "md:text-base text-sm text-white font-semibold"
               }`}
             >
-              All Department
+              All Connection Designer
             </button>
 
             {(userRole === "ADMIN" || userRole === "human-resource") && (
@@ -32,7 +31,7 @@ const ConnectionLayout = () => {
                       : "md:text-base text-sm text-white font-semibold"
                   }`}
                 >
-                  Add Department
+                  Add Connection Designer
                 </button>
               </>
             )}
@@ -41,13 +40,13 @@ const ConnectionLayout = () => {
         <div className="flex-grow p-2 bg-white rounded-b-2xl">
           {activeTab === "alldepartment" && (
             <div>
-              <AllDepartments />
+              <AllConnectionDesigner />
             </div>
           )}
           {activeTab === "addDepartment" && (
             <div>
               {" "}
-              <AddDepartment />
+              <AddConnectionDesigner />
             </div>
           )}
         </div>

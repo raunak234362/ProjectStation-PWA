@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import AddRFQ from "../components/rfq/AddRFQ";
 import AllRFQ from "../components/rfq/AllRFQ";
 // import GetRFQByID from "../components/rfq/GetRFQByID";
 
 
 const RfqLayout = () => {
-      const [activeTab, setActiveTab] = useState("allRFQ");
+  const [activeTab, setActiveTab] = useState("allRFQ");
 
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
@@ -51,6 +51,6 @@ const RfqLayout = () => {
       </div>
     </div>
   );
-}
+};
 
 export default RfqLayout
