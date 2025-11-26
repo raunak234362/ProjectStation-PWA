@@ -411,6 +411,22 @@ class Service {
       console.error("cannot find rfqs", error);
     }
   }
+  //getting rfqbyID
+
+static async GetRFQbyId(rfqId: string) {
+    try {
+      const response = await api.get(`rfq/${rfqId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All rfq fetched by rfq ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfq", error);
+    }
+  }
+
 
   // Fetch All Chats
   static async AllChats() {

@@ -244,7 +244,6 @@ export interface RFQItem {
   projectNumber?: string;
   subject: string;
   description?: string;
-
   sender_id?: string;
   recipient_id?: string;
   salesPersonId?: string;
