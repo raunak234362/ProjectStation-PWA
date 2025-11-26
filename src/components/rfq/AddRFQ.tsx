@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useForm, type SubmitHandler, Controller } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 import Input from "../fields/input";
@@ -12,7 +12,6 @@ import Service from "../../api/Service";
 
 import type {
   Fabricator,
-  Staff,
   SelectOption,
   RFQpayload,
 } from "../../interface";
@@ -22,15 +21,13 @@ import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
 
 const AddRFQ: React.FC = () => {
-  const dispatch = useDispatch();
-
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo?.fabricatorData
   ) as Fabricator[];
 
   const staffData = useSelector(
     (state: any) => state.userInfo.staffData
-  ) as Staff[];
+  ) ;
 
   const userType =
     typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
@@ -66,21 +63,19 @@ const AddRFQ: React.FC = () => {
       }
     };
     loadStaff();
-  }, [dispatch]);
+  }, []);
 
   // --- WBT RECIPIENT OPTIONS ---
   const recipientOption: SelectOption[] =
     staffData
-      ?.filter((u) => u.is_sales || u.is_superuser)
-      .map((u) => ({
-        label: `${u.f_name} ${u.m_name ?? ""} ${u.l_name}`,
+      ?.filter((u: { role: string }) => u.role === "SALES" || u.role === "ADMIN")
+      .map((u: { firstName: string; middleName?: string; lastName: string; id: number }) => ({
+        label: `${u.firstName} ${u.middleName ?? ""} ${u.lastName}`,
         value: String(u.id),
       })) ?? [];
-
-  // --- RESET OTHER TOOL IF TOOLS != OTHER ---
-  useEffect(() => {
-    if (tools !== "OTHER") setValue("otherTool", "");
-  }, [tools, setValue]);
+  // useEffect(() => {
+  //   if (tools !== "OTHER") setValue("otherTool", "");
+  // }, [tools, setValue]);
 
 
   // --- FABRICATOR OPTIONS ---
@@ -108,7 +103,7 @@ const AddRFQ: React.FC = () => {
         description,
         files,
         wbtStatus: "RECEIVED",
-        recipient_id: data.recipients,
+        recipientId: data.recipients,
         salesPersonId: data.recipients,
         fabricatorId: data.fabricatorId,
         estimationDate: data.estimationDate
@@ -129,7 +124,7 @@ const AddRFQ: React.FC = () => {
       await Service.addRFQ(formData);
 
       toast.success("RFQ Created Successfully");
-      reset();
+      // reset();
       setFiles([]);
       setDescription("");
     } catch (err) {
@@ -159,13 +154,30 @@ const AddRFQ: React.FC = () => {
                   Fabricator *
                 </label>
 
-                <Select
-                  options={fabOptions}
-                  {...register("fabricatorId")}
-                  value={selectedFabricatorOption?.value?.toString()}
-                  onChange={(_, value) =>
-                    setValue("fabricatorId", value ? value.toString() : "")
-                  }
+                <Controller
+                  name="fabricatorId"
+                  control={control}
+                  rules={{ required: "Fabricator is required" }}
+                  render={({ field }) => {
+                    const normalizedValue =
+                      field.value ?? selectedFabricatorOption?.value ?? undefined;
+                    const stringValue =
+                      typeof normalizedValue === "number"
+                        ? String(normalizedValue)
+                        : normalizedValue;
+                    return (
+                      <Select
+                        name={field.name}
+                        options={fabOptions}
+                        value={stringValue}
+                        onChange={(_, value) => {
+                          const sanitized = value ?? "";
+                          field.onChange(sanitized);
+                          setValue("fabricatorId", sanitized);
+                        }}
+                      />
+                    );
+                  }}
                 />
                 {errors.fabricatorId && (
                   <p className="text-red-500 text-xs mt-1">
@@ -185,10 +197,10 @@ const AddRFQ: React.FC = () => {
                   rules={{ required: "Contact is required" }}
                   render={({ field }) => (
                     <Select
+                      name={field.name}
                       options={clientOptions}
-                      {...register("sender_id")}
-                      value={field.value}
-                      onChange={field.onChange}
+                      value={field.value ? String(field.value) : undefined}
+                      onChange={(_, value) => field.onChange(value ?? "")}
                     />
                   )}
                 />
@@ -214,9 +226,10 @@ const AddRFQ: React.FC = () => {
               rules={{ required: "WBT contact is required" }}
               render={({ field }) => (
                 <Select
+                  name={field.name}
                   options={recipientOption}
-                  value={field.value}
-                  onChange={field.onChange}
+                  value={field.value ? String(field.value) : undefined}
+                  onChange={(_, value) => field.onChange(value ?? "")}
                 />
               )}
             />
@@ -271,6 +284,7 @@ const AddRFQ: React.FC = () => {
             rules={{ required: "Tools selection is required" }}
             render={({ field }) => (
               <Select
+                  name={field.name}
                 options={[
                   "TEKLA",
                   "SDS2",
@@ -278,8 +292,8 @@ const AddRFQ: React.FC = () => {
                   "NO_PREFERENCE",
                   "OTHER",
                 ].map((t) => ({ label: t, value: t }))}
-                value={field.value}
-                onChange={field.onChange}
+                  value={field.value}
+                  onChange={(_, value) => field.onChange(value ?? "")}
               />
             )}
           />
