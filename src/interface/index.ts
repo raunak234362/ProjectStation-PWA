@@ -29,8 +29,8 @@ export interface UserData {
   isActive: boolean;
   branchId?: string;
   isFirstLogin: boolean;
-  createdAt: string; 
-  updatedAt: string; 
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Adding Employee Payload Interface
@@ -73,13 +73,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-    | string
-    | []
-    | {
-        firstName?: string;
-        lastName?: string;
-        middleName?: string;
-      };
+  | string
+  | []
+  | {
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+  };
 }
 
 export interface DepartmentPayload {
@@ -164,9 +164,9 @@ export interface TeamMemberPayload {
   userId: string;
 }
 
-export interface UpdateTeamRolePayload{
-  userId:string;
-  newRole:string
+export interface UpdateTeamRolePayload {
+  userId: string;
+  newRole: string
 }
 
 export interface User {
@@ -248,11 +248,11 @@ export interface RFQItem {
   sender_id?: string;
   recipient_id?: string;
   salesPersonId?: string;
-  status: string;                       
+  status: string;
   tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
   createdAt: string | Date;
-  sender?: UserRef | null;                   
-  recepients?: UserRef | null;            
+  sender?: UserRef | null;
+  recepients?: UserRef | null;
   bidPrice?: string;
   estimationDate?: string;
   connectionDesign?: boolean;
@@ -260,54 +260,33 @@ export interface RFQItem {
   customerDesign?: boolean;
   detailingMain?: boolean;
   detailingMisc?: boolean;
-  files?: File[] | string[];                   
+  files?: File[] | string[];
 }
-
-
-
-export interface AddRFQForm {
-  fabricatorId?: string ;     
-  sender_id?: string;         
-  recipients: string;         
-  projectName: string;
-  projectNumber?: string;
-  subject?: string;
-  description?: string;
-  tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
-  otherTool?: string;
-  bidPrice?: string;
-  estimationDate: string;   
-  connectionDesign?: boolean;
-  miscDesign?: boolean;
-  customerDesign?: boolean;
-  detailingMain?: boolean;
-  detailingMisc?: boolean;
-}
-
 
 
 export interface RFQpayload {
-  fabricatorId?: string;
-  sender_id?: string;
-  recipients: string;
+  projectNumber: string;
   projectName: string;
-  projectNumber?: string;
-  subject?: string;
-  description?: string;
-  salesPersonId: string;
-  tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
-  otherTool?: string;
-  status: string;
-  wbtStatus?: string;
-  estimationDate: string | null;
-  connectionDesign?: boolean;
-  miscDesign?: boolean;
-  customerDesign?: boolean;
-  detailingMain?: boolean;
-  detailingMisc?: boolean;
-  bidPrice?: string;
-  files?: File[]  ;
-  createdById?: string;
+  bidPrice: string | null | " ";
+  fabricatorId: string | null | " ";
+  senderId: string | " ";
+  recipientId: string;
+  salesPersonId: string | null | " ";
+  subject: string;
+  description: string;
+  status: boolean
+  tools: string;
+  wbtStatus: boolean | any;
+  estimationDate: Date | any;
+  connectionDesign: boolean;
+  customerDesign: boolean;
+  detailingMain: boolean;
+  detailingMisc: boolean;
+  miscDesign: boolean;
+  createdById: string;
+  files?: File[] | string[];
+
+
 }
 export interface Staff {
   id: string;

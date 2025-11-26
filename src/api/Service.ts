@@ -354,20 +354,18 @@ class Service {
   }
 
   //Add new RFQ
-  static async addRFQ(rfqData: FormData) {
-    try {
-      const response = await api.post(`rfq/`, rfqData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log(" RFQ added:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot add rfq", error);
-    }
-  }
+ static async addRFQ(formData: FormData) {
+  const token = sessionStorage.getItem("token");
 
+  const response = await api.post(`rfq`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+}
   //Fetch all the RFQ
   static async FetchAllRFQ(rfqId: string) {
     try {

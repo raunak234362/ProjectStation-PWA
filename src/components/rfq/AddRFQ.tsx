@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useForm, type SubmitHandler, Controller } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 import Input from "../fields/input";
@@ -12,7 +12,6 @@ import Service from "../../api/Service";
 
 import type {
   Fabricator,
-  Staff,
   SelectOption,
   RFQpayload,
 } from "../../interface";
@@ -22,7 +21,7 @@ import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
 
 const AddRFQ: React.FC = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo?.fabricatorData
@@ -30,7 +29,7 @@ const AddRFQ: React.FC = () => {
 
   const staffData = useSelector(
     (state: any) => state.userInfo.staffData
-  ) as Staff[];
+  );
 
   const userType =
     typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
@@ -49,38 +48,38 @@ const AddRFQ: React.FC = () => {
     },
   });
 
-  const tools = watch("tools");
-  const selectedFabricatorId = watch("fabricatorId");
-  console.log(selectedFabricatorId);
 
-  const [files, setFiles] = useState<File[]>([]);
+  const selectedFabricatorId = watch("fabricatorId");
+
+
+  // const [files, setFiles] = useState<File[]>([]);
   const [description, setDescription] = useState("");
 
   // --- FETCH STAFF ONCE ---
-  useEffect(() => {
-    const loadStaff = async () => {
-      try {
-        await Service.FetchEmployeeByRole("CLIENT");
-      } catch (err) {
-        console.error("Staff Fetch Failed:", err);
-      }
-    };
-    loadStaff();
-  }, [dispatch]);
+  // useEffect(() => {
+  //   const loadStaff = async () => {
+  //     try {
+  //       await Service.FetchEmployeeByRole("CLIENT");
+  //     } catch (err) {
+  //       console.error("Staff Fetch Failed:", err);
+  //     }
+  //   };
+  //   loadStaff();
+  // }, [dispatch]);
 
   // --- WBT RECIPIENT OPTIONS ---
   const recipientOption: SelectOption[] =
     staffData
-      ?.filter((u) => u.is_sales || u.is_superuser)
-      .map((u) => ({
-        label: `${u.f_name} ${u.m_name ?? ""} ${u.l_name}`,
+      ?.filter((u: { role: string; }) => u.role === "SALES" || u.role === "ADMIN")
+      .map((u: { firstName: any; middleName: any; lastName: any; id: any; }) => ({
+        label: `${u.firstName} ${u.middleName ?? ""} ${u.lastName}`,
         value: String(u.id),
       })) ?? [];
 
   // --- RESET OTHER TOOL IF TOOLS != OTHER ---
-  useEffect(() => {
-    if (tools !== "OTHER") setValue("otherTool", "");
-  }, [tools, setValue]);
+  // useEffect(() => {
+  //   if (tools !== "OTHER") setValue("otherTool", "");
+  // }, [tools, setValue]);
 
 
   // --- FABRICATOR OPTIONS ---
@@ -101,42 +100,87 @@ const AddRFQ: React.FC = () => {
     })) ?? [];
 
   // --- SUBMIT ---
-  const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
-    try {
-      const payload = {
-        ...data,
-        description,
-        files,
-        wbtStatus: "RECEIVED",
-        recipient_id: data.recipients,
-        salesPersonId: data.recipients,
-        fabricatorId: data.fabricatorId,
-        estimationDate: data.estimationDate
-          ? new Date(data.estimationDate).toISOString()
-          : null,
-      };
+  // const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
+  //   console.log("88888888888888888888888", data);
 
-      const formData = new FormData();
+  //   try {
+  //     const payload = {
+  //       ...data,
+  //       description,
+  //       files: data.files,
+  //       wbtStatus: "RECEIVED",
+  //       recipientId: data.recipientId,
+  //       salesPersonId: data.salesPersonId,
+  //       fabricatorId: data.fabricatorId,
+  //       estimationDate: data.estimationDate
+  //         ? new Date(data.estimationDate).toISOString()
+  //         : null,
+  //     };
 
-      Object.entries(payload).forEach(([key, value]) => {
-        if (key === "files" && Array.isArray(value)) {
-          value.forEach((file) => formData.append("files", file));
-        } else if (value !== undefined && value !== null) {
-          formData.append(key, value as any);
-        }
-      });
+  //     const formData = new FormData();
 
-      await Service.addRFQ(formData);
+  //     Object.entries(payload).forEach(([key, value]) => {
+  //       if (key === "files" && Array.isArray(value)) {
+  //         value.forEach((file) => formData.append("files", file));
+  //       } else if (value !== undefined && value !== null) {
+  //         formData.append(key, value as any);
+  //       }
+  //     });
 
-      toast.success("RFQ Created Successfully");
-      reset();
-      setFiles([]);
-      setDescription("");
-    } catch (err) {
-      toast.error("Failed to create RFQ");
-      console.error(err);
-    }
-  };
+  //     await Service.addRFQ(formData);
+
+  //     toast.success("RFQ Created Successfully");
+  //     reset();
+
+  //     setDescription("");
+  //   } catch (err) {
+  //     toast.error("Failed to create RFQ");
+  //     console.error(err);
+  //   }
+  // };
+const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
+  try {
+    const payload = {
+  project_name: data.projectName,
+  project_number: data.projectNumber ?? "",
+  sender_id: data.senderId,
+  recipient_id: data.recipientId,
+  sales_person_id: data.recipientId, // mapping rule
+  subject: data.subject ?? "",
+  description,
+  status: "PENDING",
+  wbt_status: "RECEIVED",
+  tools: data.tools,
+  bid_price: data.bidPrice ?? "",
+  estimation_date: data.estimationDate ? new Date(data.estimationDate).toISOString() : null,
+  connection_design: data.connectionDesign ?? false,
+  misc_design: data.miscDesign ?? false,
+  customer_design: data.customerDesign ?? false,
+  detailing_main: data.detailingMain ?? false,
+  detailing_misc: data.detailingMisc ?? false,
+  fabricator_id: data.fabricatorId ?? null,
+  files: data.files ?? [],
+};
+
+
+   const formData = new FormData();
+for (const [key, value] of Object.entries(payload)) {
+  if (key === "files" && Array.isArray(value)) {
+    value.forEach(file => formData.append("files", file));
+  } else if (value !== undefined && value !== null) {
+    formData.append(key, value as string);
+  }
+}
+
+
+    await Service.addRFQ(formData);
+    toast.success("RFQ Created Successfully");
+    reset();
+  } catch (err) {
+    toast.error("Failed to create RFQ");
+    console.error(err);
+  }
+};
 
   const selectedFabricatorOption =
     fabOptions.find((opt) => opt.value === selectedFabricatorId) || null;
@@ -178,24 +222,23 @@ const AddRFQ: React.FC = () => {
                 <label className="font-semibold text-gray-700 mb-1 block">
                   Fabricator Contact *
                 </label>
-
                 <Controller
-                  name="sender_id"
+                  name="senderId"
                   control={control}
-                  rules={{ required: "Contact is required" }}
+                  rules={{ required: "Fabricator contact is required" }}
                   render={({ field }) => (
                     <Select
                       options={clientOptions}
-                      {...register("sender_id")}
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={(value) => field.onChange(value)}
                     />
                   )}
                 />
 
-                {errors.sender_id && (
+
+                {errors.senderId && (
                   <p className="text-red-500 text-xs mt-1">
-                    {errors.sender_id.message}
+                    {errors.senderId.message}
                   </p>
                 )}
               </div>
@@ -209,7 +252,7 @@ const AddRFQ: React.FC = () => {
             </label>
 
             <Controller
-              name="recipients"
+              name="recipientId"
               control={control}
               rules={{ required: "WBT contact is required" }}
               render={({ field }) => (
@@ -221,9 +264,9 @@ const AddRFQ: React.FC = () => {
               )}
             />
 
-            {errors.recipients && (
+            {errors.recipientId && (
               <p className="text-red-500 text-xs mt-1">
-                {errors.recipients.message}
+                {errors.recipientId.message}
               </p>
             )}
           </div>
@@ -285,12 +328,7 @@ const AddRFQ: React.FC = () => {
           />
         </div>
 
-        {tools === "OTHER" && (
-          <Input
-            label="Specify Other Tool"
-            {...register("otherTool", { required: "Please specify the tool" })}
-          />
-        )}
+
 
         <Input
           label="Bid Price (USD)"
@@ -324,17 +362,17 @@ const AddRFQ: React.FC = () => {
         <SectionTitle title="Attach Files" />
 
         <Controller
-            name="files"
-            control={control}
-            render={({ field }) => (
-              <MultipleFileUpload
-                // When files change, update RHF's state
-                onFilesChange={(files) => {
-                  field.onChange(files);
-                }}
-              />
-            )}
-          />
+          name="files"
+          control={control}
+          render={({ field }) => (
+            <MultipleFileUpload
+              // When files change, update RHF's state
+              onFilesChange={(files) => {
+                field.onChange(files);
+              }}
+            />
+          )}
+        />
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
