@@ -103,19 +103,19 @@ const Sidebar: React.FC<SidebarProps> = ({
         "human-resource",
       ],
     },
-    {
-      label: "RFQ",
-      to: "rfq",
-      icon: <FolderOpenDot />,
-      roles: [
-        "admin",
-        "department-manager",
-        "deputy-manager",
-        "project-manager",
-        "user",
-        "human-resource",
-      ],
-    },
+    // {
+    //   label: "RFQ",
+    //   to: "rfq",
+    //   icon: <FolderOpenDot />,
+    //   roles: [
+    //     "admin",
+    //     "department-manager",
+    //     "deputy-manager",
+    //     "project-manager",
+    //     "user",
+    //     "human-resource",
+    //   ],
+    // },
    
     {
       label: "Tasks",

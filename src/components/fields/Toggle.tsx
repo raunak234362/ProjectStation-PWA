@@ -10,7 +10,7 @@ import React, { useId, useState, forwardRef } from "react";
 export interface ToggleChangeEvent {
   target: {
     name?: string;
-    value: boolean;
+    value: boolean | string;
   };
 }
 
