@@ -1,32 +1,17 @@
 // src/pages/Chats.tsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ChatMain from "./ChatMain";
 import ChatSidebar from "./ChatSidebar";
 import useGroupMessages from "../../hooks/userGroupMessages";
 import type { ChatItem } from "../../interface";
-import Service from "../../api/Service";
+import AddChatGroup from "./AddChatGroup";
 
 const Chats = () => {
   const [recentChats, setRecentChats] = useState<ChatItem[]>([]);
   const [activeChat, setActiveChat] = useState<ChatItem | null>(null);
   const [unreadIds, setUnreadIds] = useState<string[]>([]);
-
-  const fetchConversations = async () => {
-    try {
-      const res = await Service.AllChats();
-      const sorted = res.sort(
-        (a: ChatItem, b: ChatItem) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-      setRecentChats(sorted);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchConversations();
-  }, []);
+  const [isAddGroupOpen, setIsAddGroupOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Real‑time updates
   useGroupMessages((msg) => {
@@ -43,10 +28,21 @@ const Chats = () => {
       return [target, ...filtered];
     });
 
-    if (msg.groupId !== activeChat?.group.id) {
+    if (msg.groupId !== activeChat?.group?.id) {
       setUnreadIds((prev) => (prev.includes(msg.groupId) ? prev : [...prev, msg.groupId]));
     }
   });
+
+  const handleAddGroupClick = () => {
+    setActiveChat(null);
+    setIsAddGroupOpen(true);
+  };
+
+  const handleCloseAddGroup = () => setIsAddGroupOpen(false);
+  const handleGroupCreated = () => {
+    setRefreshKey((prev) => prev + 1);
+    setIsAddGroupOpen(false);
+  };
 
   return (
     <div className="flex md:h-[92.5vh] h-[93vh] overflow-y-hidden bg-gray-50 rounded-2xl">
@@ -59,15 +55,16 @@ const Chats = () => {
             unreadChatIds={unreadIds}
             setActiveChat={setActiveChat}
             setUnreadChatIds={setUnreadIds}
+            onAddGroupClick={handleAddGroupClick}
+            setRecentChats={setRecentChats}
+            refreshKey={refreshKey}
           />
         </div>
         <div className="flex-1">
-          {activeChat ? (
-            <ChatMain
-              activeChat={activeChat}
-              setActiveChat={setActiveChat}
-              recentChats={recentChats}
-            />
+          {isAddGroupOpen ? (
+            <AddChatGroup onClose={handleCloseAddGroup} onCreated={handleGroupCreated} />
+          ) : activeChat ? (
+            <ChatMain activeChat={activeChat} setActiveChat={setActiveChat} recentChats={recentChats} />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500">
               Select a chat to start messaging
@@ -78,20 +75,21 @@ const Chats = () => {
 
       {/* Mobile */}
       <div className="md:hidden w-full">
-        {!activeChat ? (
+        {isAddGroupOpen ? (
+          <AddChatGroup onClose={handleCloseAddGroup} onCreated={handleGroupCreated} />
+        ) : !activeChat ? (
           <ChatSidebar
             recentChats={recentChats}
             activeChat={activeChat}
             unreadChatIds={unreadIds}
             setActiveChat={setActiveChat}
             setUnreadChatIds={setUnreadIds}
+            onAddGroupClick={handleAddGroupClick}
+            setRecentChats={setRecentChats}
+            refreshKey={refreshKey}
           />
         ) : (
-          <ChatMain
-            activeChat={activeChat}
-            setActiveChat={setActiveChat}
-            recentChats={recentChats}
-          />
+          <ChatMain activeChat={activeChat} setActiveChat={setActiveChat} recentChats={recentChats} />
         )}
       </div>
     </div>

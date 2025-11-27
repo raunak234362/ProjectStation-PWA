@@ -1,9 +1,21 @@
 // src/components/chat/ChatSidebar.tsx
+import { useEffect } from "react";
 import { MdGroupAdd } from "react-icons/md";
 import { TiUserAdd } from "react-icons/ti";
 import Button from "../fields/Button";
-// import { useState } from "react";
 import type { ChatItem } from "../../interface";
+import Service from "../../api/Service";
+
+type RawChatPayload = {
+  id?: string;
+  group?: ChatItem["group"] & { createdAt?: string; updatedAt?: string };
+  lastMessage?: string | null;
+  updatedAt?: string | null;
+  timestamp?: string | null;
+  createdAt?: string | null;
+  unread?: number | null;
+  unreadCount?: number | null;
+};
 
 interface Props {
   recentChats: ChatItem[];
@@ -11,6 +23,9 @@ interface Props {
   unreadChatIds: string[];
   setActiveChat: (chat: ChatItem) => void;
   setUnreadChatIds: React.Dispatch<React.SetStateAction<string[]>>;
+  onAddGroupClick: () => void;
+  setRecentChats: React.Dispatch<React.SetStateAction<ChatItem[]>>;
+  refreshKey: number;
 }
 
 const ChatSidebar: React.FC<Props> = ({
@@ -19,9 +34,61 @@ const ChatSidebar: React.FC<Props> = ({
   unreadChatIds,
   setActiveChat,
   setUnreadChatIds,
+  onAddGroupClick,
+  setRecentChats,
+  refreshKey,
 }) => {
-//   const [addGroupOpen, setAddGroupOpen] = useState(false);
-//   const [privateChatOpen, setPrivateChatOpen] = useState(false);
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await Service.AllChats();
+        const rawList: unknown = Array.isArray(response)
+          ? response
+          : response?.data;
+        const normalized = (Array.isArray(rawList) ? rawList : [])
+          .map((chat: RawChatPayload): ChatItem | null => {
+            if (!chat?.group?.id || !chat?.group?.name) {
+              return null;
+            }
+            const fallbackTimestamp =
+              chat?.updatedAt ||
+              chat?.timestamp ||
+              chat?.createdAt ||
+              chat?.group?.updatedAt ||
+              chat?.group?.createdAt ||
+              new Date().toISOString();
+            const unread =
+              typeof chat?.unread === "number"
+                ? chat.unread
+                : typeof chat?.unreadCount === "number"
+                ? chat.unreadCount
+                : undefined;
+
+            return {
+              id: chat?.id ?? chat.group.id,
+              group: {
+                id: chat.group.id,
+                name: chat.group.name,
+              },
+              lastMessage: chat?.lastMessage ?? undefined,
+              unread,
+              updatedAt: fallbackTimestamp,
+            };
+          })
+          .filter((chat): chat is ChatItem => Boolean(chat))
+          .sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
+
+        setRecentChats(normalized);
+      } catch (error) {
+        console.error("Failed to fetch chats", error);
+      }
+    };
+
+    fetchChats();
+  }, [setRecentChats, refreshKey]);
 
   const selectChat = (chat: ChatItem) => {
     setActiveChat(chat);
@@ -38,7 +105,7 @@ const ChatSidebar: React.FC<Props> = ({
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {recentChats.map((chat) => {
-          const isActive = activeChat?.group.id === chat.group.id;
+          const isActive = activeChat?.group?.id === chat.group.id;
           const hasUnread =
             unreadChatIds.includes(chat.group.id) || (chat.unread ?? 0) > 0;
 
@@ -79,9 +146,7 @@ const ChatSidebar: React.FC<Props> = ({
         >
           <TiUserAdd className="w-5 h-5" />
         </Button>
-        <Button
-        //   onClick={() => setAddGroupOpen(true)}
-        >
+        <Button onClick={onAddGroupClick}>
           <MdGroupAdd className="w-5 h-5" />
         </Button>
       </div>

@@ -326,6 +326,7 @@ export interface ConnectionDesigner {
   name: string;
   contactInfo?: string;
   websiteLink?: string;
+  CDEngineers?:[]
   email?: string;
   location?: string;
   createdAt: string;

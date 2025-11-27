@@ -4,6 +4,8 @@ import { Loader2, AlertCircle, FileText, Link2, MapPin } from "lucide-react";
 import Button from "../../fields/Button";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
 import type { ConnectionDesigner } from "../../../interface";
+import EditConnectionDesigner from "./EditConnectionDesigner";
+import { AllCDEngineer } from "../..";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
@@ -16,6 +18,10 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   const [designer, setDesigner] = useState<ConnectionDesigner | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editModel, setEditModel] = useState<ConnectionDesigner | null>(null);
+  const [engineerModel, setEnginnerModel] = useState<ConnectionDesigner | null>(
+    null
+  );
 
   // Fetch Connection Designer details
   useEffect(() => {
@@ -41,6 +47,21 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
     fetchDesigner();
   }, [id]);
+
+  const handleModel = (designer: ConnectionDesigner) => {
+    console.log(designer);
+    setEditModel(designer);
+  };
+  const handleModelClose = () => {
+    setEditModel(null);
+  };
+
+  const handleEngineerModel = () => {
+    setEnginnerModel(designer);
+  };
+  const handleEngineerModelClose = () => {
+    setEnginnerModel(null);
+  };
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleString("en-IN", {
@@ -180,7 +201,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       {/* Buttons (future features like Edit, Disable) */}
       <div className="py-3 flex gap-3">
         <Button
-          onClick={() => console.log("Edit", designer)}
+          onClick={() => handleModel(designer)}
           className="py-1 px-2 text-lg"
         >
           Edit
@@ -188,7 +209,29 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         <Button className="py-1 px-2 text-lg bg-red-200 text-red-700">
           Disable
         </Button>
+        <Button
+          onClick={() => handleEngineerModel()}
+          className="py-1 px-2 text-lg"
+        >
+          Connection Designer Engineer
+        </Button>
       </div>
+      {editModel && (
+        <>
+          <EditConnectionDesigner
+            onClose={handleModelClose}
+            designerData={designer}
+          />
+        </>
+      )}
+      {engineerModel && (
+        <>
+          <AllCDEngineer
+            onClose={handleEngineerModelClose}
+            designerData={designer}
+          />
+        </>
+      )}
     </div>
   );
 };

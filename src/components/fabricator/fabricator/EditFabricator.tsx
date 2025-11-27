@@ -68,7 +68,7 @@ const EditFabricator = ({
       fabName: fabricatorData.fabName || "",
       website: fabricatorData.website || "",
       drive: fabricatorData.drive || "",
-      files: null, // Ensure new files field is reset
+      files: null,
     });
     setFilesToKeep((fabricatorData.files as FabricatorFile[]) || []);
   }, [fabricatorData, reset]);

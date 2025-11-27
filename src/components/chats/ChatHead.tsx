@@ -1,9 +1,9 @@
 // src/components/chat/ChatHead.tsx
 import { MoreVertical } from "lucide-react";
 import Button from "../fields/Button";
-// import GroupDetail from "./GroupDetail";
-// import { useState } from "react";
+import { useState } from "react";
 import type { ChatItem } from "../../interface";
+import GroupDetail from "./GroupDetail";
 
 interface Props {
   contact: ChatItem | null;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ChatHead: React.FC<Props> = ({ contact, onBack }) => {
-//   const [detailOpen, setDetailOpen] = useState(false);
+    const [detailOpen, setDetailOpen] = useState(false);
   const group = contact?.group;
 
   return (
@@ -35,9 +35,9 @@ const ChatHead: React.FC<Props> = ({ contact, onBack }) => {
         <MoreVertical size={20} />
       </Button>
 
-      {/* {detailOpen && group && (
+      {detailOpen && group && (
         <GroupDetail group={group} onClose={() => setDetailOpen(false)} />
-      )} */}
+      )}
     </div>
   );
 };
