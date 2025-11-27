@@ -337,6 +337,8 @@ export interface ConnectionDesignerForm {
   connectionDesignerName: string;
   website?: string;
   drive?: string;
+  contactInfo?:string;
+  email?:string;
   headquater: {
     country: string;
     states: string[];
