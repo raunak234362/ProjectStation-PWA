@@ -3,10 +3,14 @@ import Service from "../../api/Service";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RFQItem } from "../../interface";
+import GetRFQByID from "./GetRFQByID";
 
 const AllRFQ = () => {
 
 const [rfq, setRfq] = useState([]);
+const [rfqID,setRfqID] = useState<string | null>(null);
+
+
 const userType = sessionStorage.getItem("userRole");
  const fetchInboxRFQ = async () => {
     try {
@@ -28,7 +32,9 @@ const userType = sessionStorage.getItem("userRole");
    useEffect(() => {
     fetchInboxRFQ();
   }, []);
-console.log(rfq);
+ const handleRowClick = (row: RFQItem) => {
+    setRfqID(row.id)
+  };
 
 
   const columns: ColumnDef<RFQItem>[] = [
@@ -43,8 +49,8 @@ console.log(rfq);
       <DataTable
         columns={columns}
         data={rfq}
-        // onRowClick={handleRowClick}
-        // detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
+        onRowClick={handleRowClick}
+         detailComponent={({ row }) => <GetRFQByID id={row.id} />}
         // onDelete={handleDelete}
         searchPlaceholder="Search employees..."
         pageSizeOptions={[5, 10, 25]}

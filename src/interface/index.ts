@@ -235,6 +235,18 @@ export interface UserRef {
   email?: string;
   fabricator?: FabricatorRef | null;
 }
+export interface RfqResponse {
+  id: string;
+  rfqId: string;
+  userId: string;
+  parentResponseId: string | null;
+  description: string;
+  files?: { id: string; originalName: string; url?: string }[];
+  link?: string | null;
+  createdAt: string;
+  status: string;
+  wbtStatus?: string;
+}
 
 
 
@@ -247,19 +259,20 @@ export interface RFQItem {
   sender_id?: string;
   recipient_id?: string;
   salesPersonId?: string;
-  status: string;
+  status?: string;
   tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
   createdAt: string | Date;
   sender?: UserRef | null;
   recepients?: UserRef | null;
   bidPrice?: string;
-  estimationDate?: string;
-  connectionDesign?: boolean;
-  miscDesign?: boolean;
-  customerDesign?: boolean;
-  detailingMain?: boolean;
-  detailingMisc?: boolean;
+  estimationDate: string;
+  connectionDesign: boolean;
+  miscDesign: boolean;
+  customerDesign: boolean;
+  detailingMain: boolean;
+  detailingMisc: boolean;
   files?: File[] | string[];
+      responses?: RfqResponse[];
 }
 
 
@@ -287,6 +300,18 @@ export interface RFQpayload {
 
 
 }
+//trail response
+export interface RfqResponsePayload {
+  rfqId:string;
+  userId:string;
+  parentResponseId:string|null;
+  description:string;
+  files?: File[] | string[];
+  link?:string|null;
+}
+
+
+
 export interface Staff {
   id: string;
   f_name: string;

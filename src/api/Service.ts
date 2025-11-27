@@ -415,7 +415,7 @@ class Service {
 
 static async GetRFQbyId(rfqId: string) {
     try {
-      const response = await api.get(`rfq/${rfqId}`, {
+      const response = await api.get(`rfq/getById/${rfqId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -426,7 +426,21 @@ static async GetRFQbyId(rfqId: string) {
       console.error("cannot find rfq", error);
     }
   }
+//RESPONSES
+//response post request 
 
+static async addResponse(formData: FormData,rfqId:string) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await api.post(`rfq/${rfqId}/responses`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+}
 
   // Fetch All Chats
   static async AllChats() {
