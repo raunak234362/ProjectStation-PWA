@@ -15,6 +15,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<UserData | null>(null);
+  
   useEffect(() => {
     const fetchEmployee = async () => {
       if (!id) {
