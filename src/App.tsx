@@ -39,6 +39,11 @@ const AppContent = () => {
     // Fetch user once on mount
     fetchSignedinUser();
 
+    // Request notification permission
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
+
     // Fetch all employees
     const fetchAllEmployee = async () => {
       try {
@@ -76,7 +81,7 @@ const AppContent = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} />
+      <ToastContainer position="top-right" autoClose={1000} />
 
       <Layout />
     </>

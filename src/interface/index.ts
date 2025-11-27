@@ -171,8 +171,8 @@ export interface UpdateTeamRolePayload {
 
 export interface User {
   id: string;
-  f_name: string;
-  l_name: string;
+  firstName: string;
+  lastName: string;
   role?: Role;
 }
 

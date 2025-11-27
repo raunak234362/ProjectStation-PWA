@@ -503,6 +503,67 @@ class Service {
     }
   }
 
+
+  // Add Group Members
+  static async AddGroupMembers(data: any) {
+    try {
+      const response = await api.post(`chat/group/members`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Group members added", response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Fetch Group Members
+  static async GetGroupMembers(groupId: string) {
+    try {
+      const response = await api.get(`chat/group/${groupId}/members`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Group members fetched", response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Delete Group Member
+  static async DeleteGroupMember(groupId: string, memberId: string) {
+    try {
+      const response = await api.delete(`chat/group/${groupId}/member/${memberId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Group member deleted", response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Delete Group
+  static async DeleteGroup(groupId: string) {
+    try {
+      const response = await api.delete(`chat/group/${groupId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Group deleted", response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Fetch Chats by Group ID
   static async ChatByGroupID(groupId: string, lastId?: string | undefined) {
     console.log(lastId);

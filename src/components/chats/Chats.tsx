@@ -1,10 +1,11 @@
 // src/pages/Chats.tsx
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import ChatMain from "./ChatMain";
 import ChatSidebar from "./ChatSidebar";
 import useGroupMessages from "../../hooks/userGroupMessages";
-import type { ChatItem } from "../../interface";
+import type { ChatItem, User } from "../../interface";
 import AddChatGroup from "./AddChatGroup";
+import { useSelector } from "react-redux";
 
 const Chats = () => {
   const [recentChats, setRecentChats] = useState<ChatItem[]>([]);
@@ -13,8 +14,12 @@ const Chats = () => {
   const [isAddGroupOpen, setIsAddGroupOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  const userInfo = useSelector(
+    (s: any) => (s.userData?.userData ?? s.userInfo?.userDetail ?? {}) as User
+  );
+
   // Real‑time updates
-  useGroupMessages((msg) => {
+  const handleGroupMessage = useCallback((msg: any) => {
     setRecentChats((prev) => {
       const updated = prev.map((c) =>
         c.group.id === msg.groupId
@@ -31,7 +36,41 @@ const Chats = () => {
     if (msg.groupId !== activeChat?.group?.id) {
       setUnreadIds((prev) => (prev.includes(msg.groupId) ? prev : [...prev, msg.groupId]));
     }
-  });
+
+    // Browser Notification
+    if (
+      "Notification" in window &&
+      Notification.permission === "granted" &&
+      msg.senderId !== userInfo?.id &&
+      (document.hidden || msg.groupId !== activeChat?.group?.id)
+    ) {
+      // Find group name
+      const groupName =
+        recentChats.find((c) => c.group.id === msg.groupId)?.group.name || "Group Chat";
+      
+      new Notification(`New message in ${groupName}`, {
+        body: msg.content,
+        icon: "/pwa-192x192.png", // Assuming this exists or browser default
+      });
+    }
+  }, [activeChat?.group?.id, userInfo?.id, recentChats]);
+
+  useGroupMessages(handleGroupMessage);
+
+  const handleMessageSent = (content: string, groupId: string) => {
+    setRecentChats((prev) => {
+      const updated = prev.map((c) =>
+        c.group.id === groupId
+          ? { ...c, lastMessage: content, updatedAt: new Date().toISOString() }
+          : c
+      );
+      const target = updated.find((c) => c.group.id === groupId);
+      if (!target) return prev;
+
+      const filtered = updated.filter((c) => c.group.id !== groupId);
+      return [target, ...filtered];
+    });
+  };
 
   const handleAddGroupClick = () => {
     setActiveChat(null);
@@ -64,7 +103,12 @@ const Chats = () => {
           {isAddGroupOpen ? (
             <AddChatGroup onClose={handleCloseAddGroup} onCreated={handleGroupCreated} />
           ) : activeChat ? (
-            <ChatMain activeChat={activeChat} setActiveChat={setActiveChat} recentChats={recentChats} />
+            <ChatMain
+              activeChat={activeChat}
+              setActiveChat={setActiveChat}
+              recentChats={recentChats}
+              onMessageSent={handleMessageSent}
+            />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500">
               Select a chat to start messaging
@@ -89,7 +133,12 @@ const Chats = () => {
             refreshKey={refreshKey}
           />
         ) : (
-          <ChatMain activeChat={activeChat} setActiveChat={setActiveChat} recentChats={recentChats} />
+          <ChatMain
+            activeChat={activeChat}
+            setActiveChat={setActiveChat}
+            recentChats={recentChats}
+            onMessageSent={handleMessageSent}
+          />
         )}
       </div>
     </div>

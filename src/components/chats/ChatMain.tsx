@@ -14,6 +14,7 @@ interface Props {
   activeChat: ChatItem | null;
   setActiveChat: (chat: ChatItem | null) => void;
   recentChats: ChatItem[];
+  onMessageSent?: (content: string, groupId: string) => void;
 }
 
 interface DisplayMessage {
@@ -24,7 +25,7 @@ interface DisplayMessage {
   senderName?: string;
 }
 
-const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
+const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent }) => {
   const userInfo = useSelector(
     (s: any) => (s.userData?.userData ?? s.userInfo?.userDetail ?? {}) as User
   );
@@ -53,6 +54,18 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
       taggedUserIds: [] as string[],
     };
     socket.emit("groupMessages", payload);
+
+    // Optimistic update
+    const tempMsg: DisplayMessage = {
+      id: Date.now().toString(), // Temporary ID
+      text: content,
+      time: new Date().toISOString(),
+      sender: "me",
+      senderName: `${userInfo?.firstName} ${userInfo?.lastName}`,
+    };
+    setMessages((prev) => [...prev, tempMsg]);
+    onMessageSent?.(content, groupId);
+
     setInput("");
   };
 
@@ -74,7 +87,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
           sender: m.senderId === userInfo?.id ? "me" : "other",
           senderName:
             m.senderId !== userInfo?.id
-              ? `${m.sender?.f_name ?? ""} ${m.sender?.l_name ?? ""}`.trim()
+              ? `${m.sender?.firstName ?? ""} ${m.sender?.lastName ?? ""}`.trim()
               : undefined,
         }));
 
@@ -114,15 +127,21 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
   useEffect(() => {
     const handler = (msg: any) => {
       if (!groupId || msg.groupId !== groupId) return;
-      const sender = staffData.find((s) => s?.id === msg.senderId);
-      const newMsg: DisplayMessage = {
-        id: msg.id,
-        text: msg.content,
-        time: msg.createdAt,
-        sender: msg.senderId === userInfo?.id ? "me" : "other",
-        senderName: sender ? `${sender.f_name} ${sender.l_name}` : undefined,
-      };
-      setMessages((prev) => [...prev, newMsg]);
+      
+      // Check if message already exists to prevent duplicates
+      setMessages((prev) => {
+        if (prev.some(m => m.id === msg.id)) return prev;
+
+        const sender = staffData.find((s) => s?.id === msg.senderId);
+        const newMsg: DisplayMessage = {
+          id: msg.id,
+          text: msg.content,
+          time: msg.createdAt,
+          sender: msg.senderId === userInfo?.id ? "me" : "other",
+          senderName: sender ? `${sender.firstName} ${sender.lastName}` : undefined,
+        };
+        return [...prev, newMsg];
+      });
     };
     socket.on("receiveGroupMessage", handler);
     return () => {

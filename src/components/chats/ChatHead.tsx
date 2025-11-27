@@ -25,11 +25,16 @@ const ChatHead: React.FC<Props> = ({ contact, onBack }) => {
             Back
           </button>
         )}
-        <h2 className="font-semibold text-lg">{group?.name}</h2>
+        <h2 
+          className="font-semibold text-lg cursor-pointer hover:underline"
+          onClick={() => setDetailOpen(true)}
+        >
+          {group?.name}
+        </h2>
       </div>
 
       <Button
-        // onClick={() => setDetailOpen(true)}
+        onClick={() => setDetailOpen(true)}
         className="rounded-full bg-teal-500 text-white"
       >
         <MoreVertical size={20} />
