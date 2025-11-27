@@ -535,7 +535,7 @@ static async addResponse(formData: FormData,rfqId:string) {
 
 
   // Add Group Members
-  static async AddGroupMembers(data: any) {
+  static async AddGroupMembers(data: any) { 
     try {
       const response = await api.post(`chat/group/members`, data, {
         headers: {
