@@ -517,6 +517,34 @@ class Service {
       console.log(error);
     }
   }
+  // Add Estimation 
+  static async AllEstimation() {
+    try {
+      const response = await api.get(`estimation/estimations`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // Add Estimation 
+  static async GetEstimationById(id: string) {
+    try {
+      const response = await api.get(`estimation/estimations/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // Add Group
   static async AddGroup(data: any) {

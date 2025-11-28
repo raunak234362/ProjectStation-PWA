@@ -1,34 +1,58 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
-import { useForm, Controller, type SubmitHandler } from "react-hook-form";
-
+import React, { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 
 import Input from "../fields/input";
 import Select from "../fields/Select";
 import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import SectionTitle from "../ui/SectionTitle";
-
 import Service from "../../api/Service";
-import type { EstimationPayload, Fabricator, SelectOption } from "../../interface";
-import { useSelector } from "react-redux";
+import type { EstimationPayload, SelectOption } from "../../interface";
+import { setRFQData } from "../../store/rfqSlice";
 
 const EstimationStatusOptions = [
-  { label: "PENDING", value: "PENDING" },
-  { label: "IN_PROGRESS", value: "IN_PROGRESS" },
-  { label: "COMPLETED", value: "COMPLETED" },
-  { label: "APPROVED", value: "APPROVED" },
+  { label: "Pending", value: "PENDING" },
+  { label: "In Progress", value: "IN_PROGRESS" },
+  { label: "Completed", value: "COMPLETED" },
+  { label: "Approved", value: "APPROVED" },
 ];
 
-const AddEstimation: React.FC = () => {
-  const [files, setFiles] = useState<File[]>([]);
-    const rfqData = useSelector((state: any) => state.RFQInfos.RFQData);
-  const fabricators = useSelector(
-    (state: any) => state.fabricatorInfo?.fabricatorData
-  ) as Fabricator[];
+interface AddEstimationProps {
+  initialRfqId?: string | number;
+  onSuccess?: () => void;
+}
 
-  const staffData = useSelector((state: any) => state.userInfo?.staffData);
+const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId, onSuccess }) => {
+  const dispatch = useDispatch();
+  const [files, setFiles] = useState<File[]>([]);
+
+  const rfqData = useSelector((state: any) => state.RFQInfos.RFQData || []);
+  const fabricators = useSelector((state: any) => state.fabricatorInfo?.fabricatorData || []);
+
+  const userType = sessionStorage.getItem("userRole");
+
+  useEffect(() => {
+    const fetchRFQs = async () => {
+      if (rfqData.length === 0) {
+        try {
+          let rfqDetail;
+          if (userType === "CLIENT") {
+            rfqDetail = await Service.RfqSent();
+          } else {
+            rfqDetail = await Service.RFQRecieved();
+          }
+          if (rfqDetail?.data) {
+            dispatch(setRFQData(rfqDetail.data));
+          }
+        } catch (error) {
+          console.error("Error fetching RFQs:", error);
+        }
+      }
+    };
+    fetchRFQs();
+  }, [dispatch, rfqData.length, userType]);
 
   const {
     register,
@@ -46,212 +70,180 @@ const AddEstimation: React.FC = () => {
 
   const selectedRfqId = watch("rfqId");
 
-  React.useEffect(() => {
-    if (selectedRfqId) {
-      const selectedRfq = rfqData?.find((rfq: any) => rfq.id === selectedRfqId);
-      if (selectedRfq) {
-        setValue("projectName", selectedRfq.projectName);
-        setValue("description", selectedRfq.description);
-        setValue("fabricatorId", selectedRfq.fabricatorId);
-        setValue("tools", selectedRfq.tools);
-        if (selectedRfq.estimationDate) {
-          setValue("estimateDate", selectedRfq.estimationDate.split("T")[0]);
-        }
-      }
+  // Auto-fill logic — works for BOTH initialRfqId and manual selection
+  useEffect(() => {
+    if (!selectedRfqId || rfqData.length === 0) return;
+
+    const rfq = rfqData.find((r: any) => String(r.id) === String(selectedRfqId));
+    if (!rfq) return;
+
+    // Auto-fill all fields from selected RFQ
+    setValue("projectName", rfq.projectName || "");
+    setValue("description", rfq.description || "");
+    setValue("fabricatorId", String(rfq.fabricatorId || ""));
+    setValue("tools", rfq.tools || "");
+    if (rfq.estimationDate) {
+      setValue("estimateDate", rfq.estimationDate.split("T")[0]);
     }
   }, [selectedRfqId, rfqData, setValue]);
 
-  // --- RFQ Options ---
-  const rfqOptions: SelectOption[] =
-    rfqData
-      ?.filter((rfq: any) => rfq.wbtStatus === "RECEIVED")
-      .map((rfq: any) => ({
-        label: rfq.projectName + " - " + rfq.fabricator?.fabName,
-        value: String(rfq.id),
-      })) ?? [];
+  // Pre-select RFQ if initialRfqId is passed (runs once on mount)
+  useEffect(() => {
+    if (initialRfqId && rfqData.length > 0 && !selectedRfqId) {
+      const rfqIdStr = String(initialRfqId);
+      setValue("rfqId", rfqIdStr);
+      // Auto-fill will trigger via the effect above
+    }
+  }, [initialRfqId, rfqData, selectedRfqId, setValue]);
 
-  // --- Fabricator Options ---
-  const fabricatorOptions: SelectOption[] =
-    fabricators?.map((fab) => ({
-      label: fab.fabName,
-      value: String(fab.id),
-    })) ?? [];
+  const rfqOptions: SelectOption[] = rfqData
+    .filter((rfq: any) => rfq.wbtStatus === "RECEIVED")
+    .map((rfq: any) => ({
+      label: `${rfq.projectName} - ${rfq.fabricator?.fabName || "N/A"}`,
+      value: String(rfq.id),
+    }));
 
-  // --- On Submit ---
-  const onSubmit: SubmitHandler<EstimationPayload> = async (data) => {
+  const fabricatorOptions: SelectOption[] = fabricators.map((fab: any) => ({
+    label: fab.fabName,
+    value: String(fab.id),
+  }));
+
+  const onSubmit = async (data: EstimationPayload) => {
     try {
       const payload = {
         ...data,
         files,
         status: "DRAFT",
-        estimateDate: data.estimateDate
-          ? new Date(data.estimateDate).toISOString()
-          : null,
-        startDate: data.startDate
-          ? new Date(data.startDate).toISOString()
-          : null,
+        estimateDate: data.estimateDate ? new Date(data.estimateDate).toISOString() : null,
       };
 
       const formData = new FormData();
-      for (const [key, value] of Object.entries(payload)) {
+      Object.entries(payload).forEach(([key, value]) => {
         if (key === "files" && Array.isArray(value)) {
           value.forEach((file) => formData.append("files", file));
-        } else if (value !== undefined && value !== null) {
-          formData.append(key, value as string);
+        } else if (value !== null && value !== undefined && value !== "") {
+          formData.append(key, value as any);
         }
-      }
+      });
 
-      await Service.AddEstimation(formData); // ✅ your backend endpoint
-      toast.success("Estimation created successfully");
+      await Service.AddEstimation(formData);
+      toast.success("Estimation created successfully!");
+      onSuccess?.();
       reset();
       setFiles([]);
-    } catch (error) {
-      console.error("Estimation creation failed:", error);
-      toast.error("Failed to create estimation");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to create estimation");
     }
   };
 
+  const isRfqLocked = !!initialRfqId;
+
   return (
-    <div className="w-full mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-lg p-8 my-6">
-      <h2 className="text-3xl font-bold text-center mb-4 text-gray-800">
-        Add New Estimation
+    <div className="w-full mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-8 my-8">
+      <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
+        {isRfqLocked ? "Create Estimation from RFQ" : "Create New Estimation"}
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        {/* 🔹 Basic Info */}
-        <SectionTitle title="Estimation Info" />
 
+        {/* RFQ Selection */}
+        <SectionTitle title="Select RFQ" />
+        <Controller
+          name="rfqId"
+          control={control}
+          rules={{ required: "RFQ is required" }}
+          render={({ field }) => (
+            <Select
+              label="RFQ *"
+              placeholder={isRfqLocked ? "RFQ pre-selected" : "Search and select an RFQ..."}
+              options={rfqOptions}
+              value={field.value}
+              onChange={(_, val) => field.onChange(val ?? "")}
+            />
+          )}
+        />
+        {errors.rfqId && <p className="text-red-600 text-sm -mt-6">{errors.rfqId.message}</p>}
+
+        {/* Estimation Details */}
+        <SectionTitle title="Estimation Details" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-
-              <h4 className="text-sm font-semibold text-gray-600">RFQ</h4> <Controller
-            name="rfqId"
-            control={control}
-            // rules={{ required: "Fabricator is required" }}
-            render={({ field }) => (
-              <Select
-              label="RFQ "
-                name={field.name}
-                options={rfqOptions}
-                value={field.value}
-                onChange={(_, value) => field.onChange(value ?? "")}
-              />
-            )}
-          />
-              </div>
           <Input
             label="Estimation Number *"
-            {...register("estimationNumber")}
-            placeholder="Enter estimation number"
+            {...register("estimationNumber", { required: "Required" })}
+            placeholder="e.g. EST-2025-089"
           />
-          {errors.estimationNumber && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.estimationNumber.message}
-            </p>
-          )}
+          {errors.estimationNumber && <p className="text-red-500 text-xs">{errors.estimationNumber.message}</p>}
 
           <Input
-            label="Project Name *"
+            label="Project Name"
             {...register("projectName")}
-            placeholder="Enter project name"
+            placeholder="Auto-filled from RFQ"
+            disabled={!!selectedRfqId}
           />
-          {errors.projectName && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.projectName.message}
-            </p>
-          )}
-          <div className="space-y-2">
-
-          <h4 className="text-sm font-semibold text-gray-600">Fabricator</h4>
-          <Controller
-            name="fabricatorId"
-            control={control}
-            rules={{ required: "Fabricator is required" }}
-            render={({ field }) => (
-              <Select
-              label="Fabricator *"
-                name={field.name}
-                options={fabricatorOptions}
-                value={field.value}
-                onChange={(_, value) => field.onChange(value ?? "")}
-              />
-            )}
-          />
-          {errors.fabricatorId && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.fabricatorId.message}
-            </p>
-          )}
-          </div>
         </div>
 
-        {/* 🔹 Description */}
+        <Controller
+          name="fabricatorId"
+          control={control}
+          rules={{ required: "Fabricator is required" }}
+          render={({ field }) => (
+            <Select
+              label="Fabricator *"
+              options={fabricatorOptions}
+              value={field.value}
+              onChange={(_, val) => field.onChange(val ?? "")}
+            />
+          )}
+        />
+        {errors.fabricatorId && <p className="text-red-500 text-xs">{errors.fabricatorId.message}</p>}
+
         <SectionTitle title="Description" />
         <textarea
-          className="w-full border rounded-md p-2"
-          rows={4}
-          placeholder="Enter description..."
           {...register("description")}
+          rows={4}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
+          placeholder="Project scope, special requirements..."
+          disabled={!!selectedRfqId}
         />
 
-        {/* 🔹 Dates */}
-        <SectionTitle title="Dates" />
-
+        <SectionTitle title="Timeline & Tools" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Input
             label="Estimate Date *"
             type="date"
-            {...register("estimateDate")}
+            {...register("estimateDate", { required: "Required" })}
           />
-          {errors.estimateDate && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.estimateDate.message}
-            </p>
-          )}
-      
+          <Input
+            label="Tools / Software"
+            {...register("tools")}
+            placeholder="TEKLA, SDS/2, AutoCAD..."
+            disabled={!!selectedRfqId}
+          />
         </div>
 
-        {/* 🔹 Status, Tools & RFQ */}
-        <SectionTitle title="Details" />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-<h4 className="text-sm font-semibold text-gray-600">Status</h4>
-          <Controller
-            name="status"
-            control={control}
-            render={({ field }) => (
-              <Select
-                name={field.name}
-                options={EstimationStatusOptions}
-                value={field.value}
-                onChange={(_, value) => field.onChange(value ?? "")}
-              />
-            )}
-          />
-            </div>
-
-          <Input label="Tools" {...register("tools")} placeholder="e.g. TEKLA" />
-
-        </div>
-
-        {/* 🔹 Files */}
-        <SectionTitle title="Attach Files" />
+        <SectionTitle title="Status" />
         <Controller
-          name="files"
+          name="status"
           control={control}
           render={({ field }) => (
-            <MultipleFileUpload
-              onFilesChange={(newFiles) => {
-                setFiles(newFiles);
-                field.onChange(newFiles);
-              }}
+            <Select
+              options={EstimationStatusOptions}
+              value={field.value || "PENDING"}
+              onChange={(_, val) => field.onChange(val ?? "PENDING")}
             />
           )}
         />
 
-        {/* 🔹 Submit */}
-        <div className="flex justify-end pt-4">
+        <SectionTitle title="Attach Files" />
+        <MultipleFileUpload onFilesChange={setFiles} />
+        {files.length > 0 && (
+          <p className="text-sm text-gray-600 mt-2">{files.length} file(s) attached</p>
+        )}
+
+        <div className="flex justify-end gap-4 pt-8 border-t border-gray-200">
+          <Button type="button"  onClick={() => { reset(); setFiles([]); }}>
+            Cancel
+          </Button>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Creating..." : "Create Estimation"}
           </Button>
@@ -261,4 +253,4 @@ const AddEstimation: React.FC = () => {
   );
 };
 
-export default AddEstimation;
+export default AddEstimation;   

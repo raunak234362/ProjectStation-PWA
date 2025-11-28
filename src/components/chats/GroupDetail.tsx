@@ -13,10 +13,11 @@ interface Props {
 
 const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
   const allEmployees = useSelector(
-    (state: any) => (state.userData?.staffData ?? state.userInfo?.staffData ?? []) as User[]
+    (state: any) =>
+      (state.userData?.staffData ?? state.userInfo?.staffData ?? []) as User[]
   );
   console.log(allEmployees);
-  
+
   const [activeTab, setActiveTab] = useState<"members" | "add">("members");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [groupMembers, setGroupMembers] = useState<User[]>([]);
@@ -52,10 +53,10 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
         memberIds: selectedUsers,
       });
       console.log(response);
-      
+
       // Simulate delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      
+
       // Reset selection and close or show success
       setSelectedUsers([]);
       setActiveTab("members");
@@ -78,7 +79,12 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
   };
 
   const handleDeleteGroup = async () => {
-    if (!confirm("Are you sure you want to delete this group? This action cannot be undone.")) return;
+    if (
+      !confirm(
+        "Are you sure you want to delete this group? This action cannot be undone."
+      )
+    )
+      return;
     try {
       await Service.DeleteGroup(group.id);
       onClose();
@@ -240,7 +246,7 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
           >
             Delete Group
           </Button>
-          
+
           {activeTab === "add" && (
             <div className="flex gap-3">
               <Button

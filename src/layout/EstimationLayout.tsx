@@ -1,8 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddEstimation, AllEstimation  } from "../components";
+import Service from "../api/Service";
 
 const EstimationLayout = () => {
   const [activeTab, setActiveTab] = useState("allEstimation");
+  const [estmation,setEstimation] = useState<any>([]);
+  const fetchAllEstimation = async () => {
+    try {
+      const response = await Service.AllEstimation();
+      console.log(response?.data);
+      setEstimation(response?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    fetchAllEstimation();
+  }, []);
 
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
@@ -39,7 +53,7 @@ const EstimationLayout = () => {
       <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
         {activeTab === "allEstimation" && (
           <div>
-            <AllEstimation />
+            <AllEstimation estimations={estmation}/>
           </div>
         )}
         {activeTab === "addEstimation" && (

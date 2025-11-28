@@ -1,9 +1,41 @@
-const AllEstimation = () => {
-    return (
-        <div>
-            <h1>All Estimation</h1>
-        </div>
-    );
+import { useState } from "react";
+import DataTable from "../ui/table";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { EstimationPayload } from "../../interface";
+
+const AllEstimation = ({ estimations }: { estimations: EstimationPayload[] }) => {
+  console.log(estimations);
+
+  const [selectedEstimationId, setSelectedEstimationId] = useState<string | null>(null);
+
+  const handleRowClick = (row: EstimationPayload) => {
+    // setSelectedEstimationId(row.id); // Assuming id exists in payload or response
+    console.log("Clicked row:", row);
+  };
+
+  const columns: ColumnDef<EstimationPayload>[] = [
+    { accessorKey: "estimationNumber", header: "Est. Number" },
+    { accessorKey: "projectName", header: "Project Name" },
+    { accessorKey: "fabricator.fabName", header: "Fabricator" }, // Assuming fabricator is populated
+    { accessorKey: "status", header: "Status" },
+    { 
+      accessorKey: "estimateDate", 
+      header: "Date",
+      cell: ({ row }) => row.original.estimateDate ? new Date(row.original.estimateDate).toLocaleDateString() : "-"
+    }
+  ];
+
+  return (
+    <div className="bg-white p-2 rounded-2xl">
+      <DataTable
+        columns={columns}
+        data={estimations || []}
+        onRowClick={handleRowClick}
+        searchPlaceholder="Search estimations..."
+        pageSizeOptions={[5, 10, 25]}
+      />
+    </div>
+  );
 };
 
 export default AllEstimation;
