@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
@@ -51,11 +52,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       </div>
     );
   }
-
-  const columns: ColumnDef<RFQItem>[] = [
-    {accessorKey:"projectName", header:"Project Name"},
-    {accessorKey:"subject", header: "Subject"}
-  ]
 
   const responseColumns: ColumnDef<any>[] = [
   {

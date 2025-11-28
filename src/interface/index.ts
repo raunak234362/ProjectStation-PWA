@@ -360,3 +360,35 @@ export interface ConnectionDesigner {
   files?: { id: string; originalName: string }[];
 }
 
+export interface EstimationTaskPayload {
+  assignedById: string;
+  status: string;
+  startDate: Date;
+  endDate: Date;
+  notes?: string;
+  reviewNotes?: string;
+  estimationId: string;
+  assignedToId: string;
+  reviewedById?: string;
+  files?: any[] | null;
+}
+
+// src/interface/estimation.ts
+
+export interface EstimationPayload {
+  estimationNumber: string;
+  fabricatorName?: string;
+  projectName: string;
+  description?: string;
+  estimateDate: string | Date;   // because React Hook Form passes string from input
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "APPROVED"; // based on your EstimationStatus enum
+  assignedById?: string;
+  finalHours?: number;
+  finalWeeks?: number;
+  finalPrice?: number;
+  files?: File[] | null;
+  rfqId?: string;
+  fabricatorId: string;
+  tools?: string;
+  startDate?: string | Date;
+}

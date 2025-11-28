@@ -414,34 +414,34 @@ class Service {
   }
   //getting rfqbyID
 
-static async GetRFQbyId(rfqId: string) {
-    try {
-      const response = await api.get(`rfq/getById/${rfqId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All rfq fetched by rfq ID:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfq", error);
+  static async GetRFQbyId(rfqId: string) {
+      try {
+        const response = await api.get(`rfq/getById/${rfqId}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log(" All rfq fetched by rfq ID:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("cannot find rfq", error);
+      }
     }
+  //RESPONSES
+  //response post request 
+
+  static async addResponse(formData: FormData,rfqId:string) {
+    const token = sessionStorage.getItem("token");
+
+    const response = await api.post(`rfq/${rfqId}/responses`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
   }
-//RESPONSES
-//response post request 
-
-static async addResponse(formData: FormData,rfqId:string) {
-  const token = sessionStorage.getItem("token");
-
-  const response = await api.post(`rfq/${rfqId}/responses`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
-
-  return response.data;
-}
 
   //Add Connection Designer
   static async AddConnectionDesigner(data: any) {
@@ -494,6 +494,21 @@ static async addResponse(formData: FormData,rfqId:string) {
       const response = await api.put(`connectionDesign/update/${id}`, data, {
         headers: {
           "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Add Estimation 
+  static async AddEstimation(formData: FormData) {
+    try {
+      const response = await api.post(`estimation/estimations`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(response);

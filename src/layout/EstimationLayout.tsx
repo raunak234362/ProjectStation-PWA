@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AddProject, AllProjects } from "../components";
+import { AddEstimation, AllEstimation  } from "../components";
 
 const EstimationLayout = () => {
   const [activeTab, setActiveTab] = useState("allEstimation");
@@ -39,12 +39,12 @@ const EstimationLayout = () => {
       <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
         {activeTab === "allEstimation" && (
           <div>
-            <AllProjects />
+            <AllEstimation />
           </div>
         )}
         {activeTab === "addEstimation" && (
           <div>
-            <AddProject />
+            <AddEstimation />
           </div>
         )}
       </div>

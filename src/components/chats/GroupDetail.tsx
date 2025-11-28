@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { X, Search, UserPlus, Trash2 } from "lucide-react";
 import Button from "../fields/Button";

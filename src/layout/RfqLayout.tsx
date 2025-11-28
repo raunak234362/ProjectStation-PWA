@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddRFQ from "../components/rfq/AddRFQ";
 import AllRFQ from "../components/rfq/AllRFQ";
+import Service from "../api/Service";
+import { useSelector } from "react-redux";
 // import GetRFQByID from "../components/rfq/GetRFQByID";
 
 
 const RfqLayout = () => {
   const [activeTab, setActiveTab] = useState("allRFQ");
-
+  const rfq = useSelector((state: any) => state.RFQInfos.RFQData);
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
@@ -40,7 +42,7 @@ const RfqLayout = () => {
       <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
         {activeTab === "allRFQ" && (
           <div>
-            <AllRFQ />
+            <AllRFQ rfq={rfq}/>
           </div>
         )}
         {activeTab === "addRFQ" && (
