@@ -8,7 +8,7 @@ import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import ResponseDetailsModal from "./ResponseDetailsModal";
 import Button from "../fields/Button";
-import AddEstimation from "../estimation/AddEstimation";
+import { openFileSecurely } from "../../utils/openFileSecurely";
 
 interface GetRfqByIDProps {
   id: string;
@@ -56,7 +56,30 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     );
   }
 
+  const userRole = sessionStorage.getItem("userRole");
+  
+
+
+
   const responseColumns: ColumnDef<any>[] = [
+    {
+      accessorKey: "createdByRole",
+      header: "From",
+      cell: ({ row }) => (
+        <span className="font-medium text-sm">
+          {row.original.createdByRole === "CLIENT" ? "Client" : "WBT Team"}
+        </span>
+      )
+    },
+    // {
+    //   accessorKey: "description",
+    //   header: "Message",
+    //   cell: ({ row }) => (
+    //     <p className="truncate max-w-[180px]">{row.original.description}</p>
+    //   ),
+    // },
+
+
     {
       accessorKey: "description",
       header: "Message",
@@ -90,11 +113,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "OPEN"
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
               ? "bg-green-100 text-green-700"
               : "bg-yellow-100 text-yellow-700"
-          }`}
+            }`}
         >
           {row.original.status}
         </span>
@@ -102,26 +124,25 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     },
   ];
 
+
   return (
     <>
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
           {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
           <div className="bg-gradient-to-br from-teal-50 to-white p-6 rounded-xl shadow-md space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <h3 className="text-2xl font-bold text-teal-700">
-                  {rfq.projectName}
-                </h3>
+                <h3 className="text-2xl font-bold text-teal-700">{rfq.projectName}</h3>
 
                 {/* Status tag */}
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    rfq.status === "RECEIVED"
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${rfq.status === "RECEIVED"
                       ? "bg-yellow-100 text-yellow-700"
                       : "bg-green-100 text-green-700"
-                  }`}
+                    }`}
                 >
                   {rfq.status}
                 </span>
@@ -130,14 +151,35 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               {/* Action buttons */}
               <div className="flex gap-2">
                 {/* EDIT RFQ */}
-                <button
+                <Button
                   onClick={() => alert("Coming soon: Edit RFQ modal")}
                   className="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition text-sm"
                 >
                   Edit
-                </button>
+                </Button>
+
+                {/* DELETE RFQ */}
+                <Button
+                  //   onClick={async () => {
+                  //     if (!confirm("Are you sure you want to delete this RFQ?")) return;
+
+                  //     try {
+                  //       await Service.DeleteRFQ(id);
+                  //       alert("RFQ deleted successfully.");
+
+                  //       // optional → redirect to RFQ list page if router available
+                  //     } catch (err) {
+                  //       console.error(err);
+                  //       alert("Failed to delete RFQ.");
+                  //     }
+                  // }}
+                  className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-sm"
+                >
+                  Delete
+                </Button>
               </div>
             </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Info label="Subject" value={rfq.subject || ""} />
@@ -178,7 +220,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 <ul className="text-gray-800 bg-white p-4 rounded-md shadow">
                   {rfq.files.map((file: any, i) => (
                     <li key={i} className="border-b py-2 last:border-none">
-                      📄 {file.originalName || `File ${i + 1}`}
+                      <span
+                        className="text-teal-700 underline cursor-pointer hover:text-teal-900"
+                        onClick={() => openFileSecurely("rfq", rfq.id, file.id)}
+                      >
+                        {file.originalName || `File ${i + 1}`}
+                      </span>
+
                     </li>
                   ))}
                 </ul>
@@ -190,20 +238,24 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             <Button onClick={() => setShowEstimationModal(true)}>Raise For Estimation</Button>
           </div>
 
+
           {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
           <div className="bg-gradient-to-br from-teal-50 to-white p-6 rounded-xl shadow-md space-y-6">
+
             {/* Header + Add Response Button */}
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-semibold text-teal-700">
-                Responses
-              </h1>
+              <h1 className="text-2xl font-semibold text-teal-700">Responses</h1>
 
-              <button
-                onClick={() => setShowResponseModal(true)}
-                className="px-4 py-2 bg-teal-600 text-white rounded-lg shadow hover:bg-teal-700 transition"
-              >
-                + Add Response
-              </button>
+              {(userRole === "ADMIN" || userRole === "STAFF" || userRole === "USER") && (
+                <Button
+                  onClick={() => setShowResponseModal(true)}
+                  className="px-4 py-2 bg-teal-600 text-white rounded-lg shadow hover:bg-teal-700 transition"
+                >
+                  + Add Response
+                </Button>
+              )}
+
+
             </div>
 
             {/* ---- RESPONSE TABLE ---- */}
@@ -219,6 +271,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               <p className="text-gray-500 italic">No responses yet.</p>
             )}
 
+
             {/* ---- MODAL ---- */}
             {showResponseModal && (
               <ResponseModal
@@ -228,6 +281,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               />
             )}
           </div>
+
         </div>
       </div>
 
@@ -271,14 +325,14 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-md border ${
-      enabled
+    className={`px-3 py-2 rounded-md border ${enabled
         ? "bg-green-100 border-green-400 text-green-700"
         : "bg-gray-100 border-gray-300 text-gray-500"
-    }`}
+      }`}
   >
     {label}
   </div>
+
 );
 
 export default GetRFQByID;

@@ -430,15 +430,15 @@ class Service {
   //RESPONSES
   //response post request 
 
-  static async addResponse(formData: FormData,rfqId:string) {
-    const token = sessionStorage.getItem("token");
+static async addResponse(formData: FormData,responseId:string) {
+  const token = sessionStorage.getItem("token");
 
-    const response = await api.post(`rfq/${rfqId}/responses`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  const response = await api.post(`rfq/${responseId}/responses`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
     return response.data;
   }

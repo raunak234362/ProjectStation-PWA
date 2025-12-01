@@ -27,7 +27,7 @@ const AddRFQ: React.FC = () => {
 
   const staffData = useSelector(
     (state: any) => state.userInfo.staffData
-  ) ;
+  );
 
   const userType =
     typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
@@ -50,7 +50,7 @@ const AddRFQ: React.FC = () => {
   const selectedFabricatorId = watch("fabricatorId");
 
 
-  // const [files, setFiles] = useState<File[]>([]);
+
   const [description, setDescription] = useState("");
 
   // --- FETCH STAFF ONCE ---
@@ -95,41 +95,77 @@ const AddRFQ: React.FC = () => {
       value: String(client.id),
     })) ?? [];
 
+  // selector for the user
+
+  const userDetail = useSelector((state: any) => state.userInfo.userDetail);
+  const userRole = userDetail?.role;
+  const fabricatorId = userDetail?.FabricatorPointOfContacts[0]?.id 
+console.log(userDetail);
+
+
   // --- SUBMIT ---
-  const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
-    try {
-      const payload = {
-        ...data,
-        description,
-        wbtStatus: "RECEIVED",
-        recipientId: data.recipientId,
-        salesPersonId: data.salesPersonId,
-        fabricatorId: data.fabricatorId,
-        estimationDate: data.estimationDate
-          ? new Date(data.estimationDate).toISOString()
-          : null,
+ const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
+  try {
+    const basePayload = {
+      projectNumber: data.projectNumber || "",
+      projectName: data.projectName,
+      subject: data.subject || "",
+      description,
+      tools: data.tools,
+      bidPrice: data.bidPrice,
+      estimationDate: data.estimationDate
+        ? new Date(data.estimationDate).toISOString()
+        : null,
+      status: "IN_REVIEW", 
+      wbtStatus: "RECEIVED",
+      connectionDesign: data.connectionDesign,
+      miscDesign: data.miscDesign,
+      customerDesign: data.customerDesign,
+      detailingMain: data.detailingMain,
+      detailingMisc: data.detailingMisc,
+
+      files: data.files ?? [],
+    };
+
+    let payload;
+
+    if (userRole === "CLIENT") {
+      payload = {
+        ...basePayload,
+        senderId: userDetail?.id,
+        fabricatorId: fabricatorId,
+        recipientId: data.recipientId || "", // must exist
+        salesPersonId: null, // client doesn't assign
       };
-
-   const formData = new FormData();
-for (const [key, value] of Object.entries(payload)) {
-  if (key === "files" && Array.isArray(value)) {
-    value.forEach(file => formData.append("files", file));
-  } else if (value !== undefined && value !== null) {
-    formData.append(key, value as string);
-  }
-}
-
-
-      await Service.addRFQ(formData);
-
-      toast.success("RFQ Created Successfully");
-      // reset();
-      setDescription("");
-    } catch (err) {
-      toast.error("Failed to create RFQ");
-      console.error(err);
+    } else {
+      payload = {
+        ...basePayload,
+        senderId: data.senderId,
+        recipientId: data.recipientId,
+        fabricatorId: data.fabricatorId,
+        salesPersonId: data.salesPersonId ?? null,
+      };
     }
-  };
+
+    // Convert to FormData
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(payload)) {
+      if (key === "files" && Array.isArray(value)) {
+        value.forEach((file) => formData.append("files", file));
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, value as string);
+      }
+    }
+
+    await Service.addRFQ(formData);
+    toast.success("RFQ Created Successfully");
+    setDescription("");
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to create RFQ");
+  }
+};
 
   const selectedFabricatorOption =
     fabOptions.find((opt) => opt.value === selectedFabricatorId) || null;
@@ -145,7 +181,7 @@ for (const [key, value] of Object.entries(payload)) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* FABRICATOR (HIDDEN FOR CLIENTS) */}
-          {userType !== "client" && (
+          {userRole !== "CLIENT" && (
             <>
               <div>
                 <label className="font-semibold text-gray-700 mb-1 block">
@@ -155,6 +191,8 @@ for (const [key, value] of Object.entries(payload)) {
                 <Controller
                   name="fabricatorId"
                   control={control}
+                  disabled={userRole === "CLIENT"}
+
                   rules={{ required: "Fabricator is required" }}
                   render={({ field }) => {
                     const normalizedValue =
@@ -191,6 +229,7 @@ for (const [key, value] of Object.entries(payload)) {
                 <Controller
                   name="senderId"
                   control={control}
+                  disabled={userRole === "CLIENT"}
                   rules={{ required: "Fabricator contact is required" }}
                   render={({ field }) => (
                     <Select
@@ -282,7 +321,7 @@ for (const [key, value] of Object.entries(payload)) {
             rules={{ required: "Tools selection is required" }}
             render={({ field }) => (
               <Select
-                  name={field.name}
+                name={field.name}
                 options={[
                   "TEKLA",
                   "SDS2",
@@ -290,8 +329,8 @@ for (const [key, value] of Object.entries(payload)) {
                   "NO_PREFERENCE",
                   "OTHER",
                 ].map((t) => ({ label: t, value: t }))}
-                  value={field.value}
-                  onChange={(_, value) => field.onChange(value ?? "")}
+                value={field.value}
+                onChange={(_, value) => field.onChange(value ?? "")}
               />
             )}
           />

@@ -4,6 +4,8 @@ import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { X } from "lucide-react";
 import type { RfqResponsePayload } from  "../../interface";
+import Button from "../fields/Button";
+
 
 interface ResponseModalProps {
   rfqId: string;
@@ -27,6 +29,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
       setLoading(true);
 
       const userId = sessionStorage.getItem("userId") || ""; // assuming userId stored in session
+       const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
       const payload: RfqResponsePayload = {
         ...data,
@@ -40,10 +43,12 @@ console.log(payload);
       // Convert to FormData
       const formData = new FormData();
       formData.append("rfqId", payload.rfqId);
-      formData.append("userId", payload.userId);
       formData.append("description", payload.description);
       formData.append("status", "OPEN");
       formData.append("wbtStatus", "OPEN");
+      formData.append("userRole", userRole ?? "");
+      formData.append("userId", userId ?? "");
+
       
       if (payload.link) formData.append("link", payload.link);
 
@@ -69,12 +74,12 @@ console.log(payload);
       <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-lg relative">
 
         {/* Close Button */}
-        <button
+        <Button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
         >
           <X className="w-5 h-5" />
-        </button>
+        </Button>
 
         <h2 className="text-xl font-bold text-teal-700 mb-4">
           Add Response
@@ -137,21 +142,21 @@ console.log(payload);
 
           {/* Submit */}
           <div className="flex justify-end gap-4">
-            <button
+            <Button
               type="button"
               onClick={onClose}
               className="px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-200"
             >
               Cancel
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
               className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition disabled:opacity-50"
             >
               {loading ? "Submitting..." : "Submit Response"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
