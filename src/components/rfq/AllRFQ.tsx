@@ -8,9 +8,7 @@ import GetRFQByID from "./GetRFQByID";
 const AllRFQ = ({rfq}:any) => {
 
 const [rfqID,setRfqID] = useState<string | null>(null);
-
-
-
+const userType = localStorage.getItem("userType");
  const handleRowClick = (row: RFQItem) => {
     setRfqID(row.id)
   };

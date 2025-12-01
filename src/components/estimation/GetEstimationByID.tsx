@@ -294,13 +294,13 @@ const GetEstimationByID = ({ id }: GetEstimationByIDProps) => {
         >
           Estimation Task
         </Button>
-        <Button className="py-1 px-2 text-lg">Edit Estimation</Button>
         <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           View RFQ
         </Button>
-        <Button className="py-1 px-2 text-lg bg-emerald-100 text-emerald-700">
-          View Fabricator
+        <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
+          Add To Project
         </Button>
+        <Button className="py-1 px-2 text-lg">Edit Estimation</Button>
       </div>
       {isEstimationTaskOpen && (
         <AllEstimationTask

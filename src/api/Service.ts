@@ -576,6 +576,21 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+  // Add Project
+  static async AddProject(formData: FormData) {
+    try {
+      const response = await api.post(`project/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Fetch All Chats
   static async AllChats() {
     try {
