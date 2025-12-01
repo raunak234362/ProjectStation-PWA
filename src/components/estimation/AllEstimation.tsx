@@ -2,6 +2,7 @@ import { useState } from "react";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { EstimationPayload } from "../../interface";
+import GetEstimationByID from "./GetEstimationByID";
 
 const AllEstimation = ({ estimations }: { estimations: EstimationPayload[] }) => {
   console.log(estimations);
@@ -31,6 +32,11 @@ const AllEstimation = ({ estimations }: { estimations: EstimationPayload[] }) =>
         columns={columns}
         data={estimations || []}
         onRowClick={handleRowClick}
+           detailComponent={({ row }) => {
+          const estimationUniqueId =
+            (row as any).id ?? (row as any).fabId ?? "";
+          return <GetEstimationByID id={estimationUniqueId} />;
+        }}
         searchPlaceholder="Search estimations..."
         pageSizeOptions={[5, 10, 25]}
       />

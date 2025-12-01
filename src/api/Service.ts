@@ -545,6 +545,22 @@ class Service {
       console.log(error);
     }
   }
+
+  // Add Estimation Task
+  static async AddEstimationTask(formData: FormData) {
+    try {
+      const response = await api.post(`estimation/estimation-tasks`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Add Group
   static async AddGroup(data: any) {
     try {

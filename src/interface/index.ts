@@ -363,8 +363,8 @@ export interface ConnectionDesigner {
 export interface EstimationTaskPayload {
   assignedById: string;
   status: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   notes?: string;
   reviewNotes?: string;
   estimationId: string;
