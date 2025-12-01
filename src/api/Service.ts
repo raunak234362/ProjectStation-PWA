@@ -429,10 +429,10 @@ static async GetRFQbyId(rfqId: string) {
 //RESPONSES
 //response post request 
 
-static async addResponse(formData: FormData,rfqId:string) {
+static async addResponse(formData: FormData,responseId:string) {
   const token = sessionStorage.getItem("token");
 
-  const response = await api.post(`rfq/${rfqId}/responses`, formData, {
+  const response = await api.post(`rfq/${responseId}/responses`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
