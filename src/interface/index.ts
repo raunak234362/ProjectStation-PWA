@@ -272,7 +272,7 @@ export interface RFQItem {
   detailingMain: boolean;
   detailingMisc: boolean;
   files?: File[] | string[];
-      responses?: RfqResponse[];
+  responses?: RfqResponse[];
 }
 
 
@@ -302,12 +302,12 @@ export interface RFQpayload {
 }
 //trail response
 export interface RfqResponsePayload {
-  rfqId:string;
-  userId:string;
-  parentResponseId:string|null;
-  description:string;
+  rfqId: string;
+  userId: string;
+  parentResponseId: string | null;
+  description: string;
   files?: File[] | string[];
-  link?:string|null;
+  link?: string | null;
 }
 
 
@@ -336,8 +336,8 @@ export interface ConnectionDesignerForm {
   connectionDesignerName: string;
   website?: string;
   drive?: string;
-  contactInfo?:string;
-  email?:string;
+  contactInfo?: string;
+  email?: string;
   headquater: {
     country: string;
     states: string[];
@@ -431,3 +431,16 @@ export interface AddProjectPayload {
   files?: File[] | null; // supports direct File objects or a typed File interface
   endDateChangeLog?: string[];
 }
+export interface RFIPayload {
+  fabricator_id: string;
+  project_id: string;
+  recepient_id: string;
+  sender_id: string;
+  status: boolean;
+  subject: string;
+  description: string;
+  isAproovedByAdmin: string;
+  files: File[] | string;
+
+}
+
