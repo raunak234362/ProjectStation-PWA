@@ -477,6 +477,20 @@ static async addResponse(formData: FormData,responseId:string) {
       throw error;
     }
   }
+ //Add new RFI
+ static async addRFI(formData: FormData) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await api.post(`rfi`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+}
+
 }
 
 export default Service;
