@@ -235,8 +235,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             ) : (
               <p className="text-gray-500 italic">No files uploaded</p>
             )}
+<div className="flex gap-2">
 
             <Button onClick={() => setShowEstimationModal(true)}>Raise For Estimation</Button>
+            <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
+          Raise for Connection Designer Quotation
+        </Button>
+</div>
           </div>
 
 
