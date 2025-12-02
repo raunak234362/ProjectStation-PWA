@@ -1,8 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddProject, AllProjects } from "../components";
+import Service from "../api/Service";
+import { useDispatch, useSelector } from "react-redux";
+import { showDepartment, showTeam } from "../store/userSlice";
 
 const ProjectLayout = () => {
   const [activeTab, setActiveTab] = useState("allProject");
+const dispatch = useDispatch();
+const departmentDatas = useSelector((state: any) => state?.userInfo?.departmentData);
+const teamDatas = useSelector((state: any) => state?.userInfo?.teamData);
+   // ✅ Fetch Departments only when data is null or empty
+  const fetchDepartment = async () => {
+    try {
+      const response = await Service.AllDepartments();
+      dispatch(showDepartment(response?.data));
+    } catch (error) {
+      console.log("Error fetching departments", error);
+    }
+  };
+
+  // ✅ Fetch Teams only when data is null or empty
+  const fetchTeam = async () => {
+    try {
+      const response = await Service.AllTeam();
+      dispatch(showTeam(response?.data));
+    } catch (error) {
+      console.log("Error fetching teams", error);
+    }
+  };
+
+  useEffect(() => {
+    // ✅ Only call if no data exists
+    if (!departmentDatas || departmentDatas.length === 0) {
+      fetchDepartment();
+    }
+
+    if (!teamDatas || teamDatas.length === 0) {
+      fetchTeam();
+    }
+  }, [dispatch]);
 
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">

@@ -579,7 +579,7 @@ static async addResponse(formData: FormData,responseId:string) {
   // Add Project
   static async AddProject(formData: FormData) {
     try {
-      const response = await api.post(`project/`, formData, {
+      const response = await api.post(`project/projects`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

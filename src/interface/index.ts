@@ -392,3 +392,42 @@ export interface EstimationPayload {
   tools?: string;
   startDate?: string | Date;
 }
+
+export interface AddProjectPayload {
+  // ── Basic Info ────────────────────────────
+  projectNumber: string;
+  name: string;
+  description: string;
+
+  // ── Relations / IDs ───────────────────────
+  fabricatorID: string;
+  departmentID: string;
+  managerID: string;
+  teamID?: string;
+  rfqId?: string;
+  CDQuataionID?: string;
+  connectionDesignerID?: string;
+  status: "ACTIVE" | "INACTIVE" | "DRAFT";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED";
+  tools: "TEKLA" | "SDS2" | "BOTH";
+  connectionDesign: boolean;
+  miscDesign: boolean;
+  customerDesign: boolean;
+  detailingMain: boolean;
+  detailingMisc: boolean;
+  startDate: string;            // ISO string when sent to backend
+  endDate: string;
+  approvalDate: string;
+  fabricationDate: string;
+  estimatedHours?: number;
+  detailCheckingHours?: number;
+  detailingHours?: number;
+  executionCheckingHours?: number;
+  executionHours?: number;
+  modelCheckingHours?: number;
+  modelingHours?: number;
+  mailReminder: boolean;
+  submissionMailReminder: boolean;
+  files?: File[] | null; // supports direct File objects or a typed File interface
+  endDateChangeLog?: string[];
+}
