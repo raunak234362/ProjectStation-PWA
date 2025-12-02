@@ -9,6 +9,7 @@ import { ChatPage } from "../pages/ChatPage";
 import RFQPage from "../pages/RFQPage";
 import ConnectionPage from "../pages/ConnectionPage";
 import ChangePasswordPage from "../pages/ChangePasswordPage";
+import RFIPage from "../pages/RFIPage";
 
 // import Layout from "../layout/DashboardLayout";
 const routes = [
@@ -28,6 +29,7 @@ const routes = [
           { path: "fabricator", Component: FabricatorPage },
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },
+          { path: "rfi", Component: RFIPage },
         ],
       },
     ],

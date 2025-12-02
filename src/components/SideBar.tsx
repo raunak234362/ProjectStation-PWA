@@ -91,6 +91,18 @@ const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
+      label: "RFI",
+      to: "rfi",
+      icon: <LucideComponent />,
+      roles: [
+        "admin",
+        "deputy-manager",
+        "client",
+        "estimator",
+        "sales",
+      ],
+    },
+    {
       label: "Projects",
       to: "projects",
       icon: <FolderOpenDot />,
