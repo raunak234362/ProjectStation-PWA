@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import { useForm, type SubmitHandler, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Input from "../fields/input";
@@ -9,7 +9,7 @@ import Service from "../../api/Service";
 import type { Fabricator, SelectOption, RFIPayload } from "../../interface";
 import SectionTitle from "../ui/SectionTitle";
 import Select from "react-select";
-import Toggle from "../fields/Toggle";
+
 
 const AddRFI:React.FC = () => {
 
@@ -26,8 +26,7 @@ const {
     handleSubmit,
      control,
     watch,
-    reset ,
-    formState: { errors },
+    reset,
   } = useForm<RFIPayload>();
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<File[]>([]);
