@@ -427,7 +427,22 @@ class Service {
         console.error("cannot find rfq", error);
       }
     }
-  //RESPONSES
+  
+  // Update RFQ by ID
+  static async UpdateRFQById(rfqId: string, data: any) {
+    try {
+      const response = await api.put(`rfq/${rfqId}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("RFQ updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot update rfq", error);
+    }
+  } 
+    //RESPONSES
   //response post request 
 
 static async addResponse(formData: FormData,responseId:string) {

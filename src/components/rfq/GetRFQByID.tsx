@@ -10,6 +10,7 @@ import ResponseDetailsModal from "./ResponseDetailsModal";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import AddEstimation from "../estimation/AddEstimation";
+import QuotationRaise from "../connectionDesigner/QuotationRaise";
 
 interface GetRfqByIDProps {
   id: string;
@@ -22,7 +23,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
   const [showEstimationModal, setShowEstimationModal] = useState(false);
-
+  const [showCDQuotationModal, setShowCDQuotationModal] = useState(false);
   const fetchRfq = async () => {
     try {
       setLoading(true);
@@ -238,7 +239,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 <div className="flex gap-2">
 
             <Button onClick={() => setShowEstimationModal(true)}>Raise For Estimation</Button>
-            <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
+            <Button onClick={() => setShowCDQuotationModal(true)} className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           Raise for Connection Designer Quotation
         </Button>
 </div>
@@ -277,10 +278,8 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               <p className="text-gray-500 italic">No responses yet.</p>
             )}
 
-
-            {/* ---- MODAL ---- */}
-            {showResponseModal && (
-              <ResponseModal
+            {showCDQuotationModal && (
+              <QuotationRaise
                 rfqId={id}
                 onClose={() => setShowResponseModal(false)}
                 onSuccess={fetchRfq} // refresh after submit
