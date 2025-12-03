@@ -5,33 +5,10 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
 
-const AllRFQ = () => {
+const AllRFQ = ({rfq}:any) => {
 
-const [rfq, setRfq] = useState([]);
 const [rfqID,setRfqID] = useState<string | null>(null);
-
-
-const userType = sessionStorage.getItem("userRole");
- const fetchInboxRFQ = async () => {
-    try {
-      let rfqDetail;
-      if (userType === "CLIENT")
-         {
-        rfqDetail = await Service.RfqSent();
-      } else {
-        rfqDetail = await Service.RFQRecieved();
-      }
-      setRfq(rfqDetail.data);
-     console.log(rfqDetail.data);
-     
-    } catch (error) {
-      console.error("Error fetching RFQ:", error);
-    }
-  };
-
-   useEffect(() => {
-    fetchInboxRFQ();
-  }, []);
+const userType = localStorage.getItem("userType");
  const handleRowClick = (row: RFQItem) => {
     setRfqID(row.id)
   };

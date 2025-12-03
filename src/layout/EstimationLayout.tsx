@@ -1,53 +1,64 @@
 import { useEffect, useState } from "react";
-import AddRFQ from "../components/rfq/AddRFQ";
-import AllRFQ from "../components/rfq/AllRFQ";
+import { AddEstimation, AllEstimation  } from "../components";
 import Service from "../api/Service";
-import { useSelector } from "react-redux";
-// import GetRFQByID from "../components/rfq/GetRFQByID";
 
+const EstimationLayout = () => {
+  const [activeTab, setActiveTab] = useState("allEstimation");
+  const [estmation,setEstimation] = useState<any>([]);
+  const fetchAllEstimation = async () => {
+    try {
+      const response = await Service.AllEstimation();
+      console.log(response?.data);
+      setEstimation(response?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    fetchAllEstimation();
+  }, []);
 
-const RfqLayout = () => {
-  const [activeTab, setActiveTab] = useState("allRFQ");
-  const rfq = useSelector((state: any) => state.RFQInfos.RFQData);
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
         <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-t-2xl ">
-          <h1 className="text-2xl py-2 font-bold text-white">RFQ Detail</h1>
+          <h1 className="text-2xl py-2 font-bold text-white">
+            Estimation Detail
+          </h1>
           <div className="flex flex-row w-full">
             <button
-              onClick={() => setActiveTab("allRFQ")}
+              onClick={() => setActiveTab("allEstimation")}
               className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                activeTab === "allRFQ"
+                activeTab === "allEstimation"
                   ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                   : "md:text-base text-sm text-white font-semibold"
               }`}
             >
-              All RFQ
+              All Estimations
             </button>
 
             <button
-              onClick={() => setActiveTab("addRFQ")}
+              onClick={() => setActiveTab("addEstimation")}
               className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                activeTab === "addRFQ"
+                activeTab === "addEstimation"
                   ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
                   : "md:text-base text-sm text-white font-semibold"
               }`}
             >
-              Add RFQ
+              Add Estimation
             </button>
           </div>
         </div>
       </div>
       <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
-        {activeTab === "allRFQ" && (
+        {activeTab === "allEstimation" && (
           <div>
-            <AllRFQ rfq={rfq}/>
+            <AllEstimation estimations={estmation}/>
           </div>
         )}
-        {activeTab === "addRFQ" && (
+        {activeTab === "addEstimation" && (
           <div>
-            <AddRFQ />
+            <AddEstimation />
           </div>
         )}
       </div>
@@ -55,4 +66,4 @@ const RfqLayout = () => {
   );
 };
 
-export default RfqLayout
+export default EstimationLayout;

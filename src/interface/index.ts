@@ -171,8 +171,8 @@ export interface UpdateTeamRolePayload {
 
 export interface User {
   id: string;
-  f_name: string;
-  l_name: string;
+  firstName: string;
+  lastName: string;
   role?: Role;
 }
 
@@ -332,7 +332,6 @@ export interface SelectOption {
   value: string | number;
 }
 
-// src/interface/ConnectionDesignerForm.ts
 export interface ConnectionDesignerForm {
   connectionDesignerName: string;
   website?: string;
@@ -346,6 +345,92 @@ export interface ConnectionDesignerForm {
   };
 }
 
+export interface ConnectionDesigner {
+  id: string;
+  name: string;
+  contactInfo?: string;
+  websiteLink?: string;
+  CDEngineers?:[]
+  email?: string;
+  location?: string;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+  state: string[];
+  files?: { id: string; originalName: string }[];
+}
+
+export interface EstimationTaskPayload {
+  assignedById: string;
+  status: string;
+  startDate: Date | string;
+  endDate: Date | string;
+  notes?: string;
+  reviewNotes?: string;
+  estimationId: string;
+  assignedToId: string;
+  reviewedById?: string;
+  files?: any[] | null;
+}
+
+// src/interface/estimation.ts
+
+export interface EstimationPayload {
+  estimationNumber: string;
+  fabricatorName?: string;
+  projectName: string;
+  description?: string;
+  estimateDate: string | Date;   // because React Hook Form passes string from input
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "APPROVED"; // based on your EstimationStatus enum
+  assignedById?: string;
+  finalHours?: number;
+  finalWeeks?: number;
+  finalPrice?: number;
+  files?: File[] | null;
+  rfqId?: string;
+  fabricatorId: string;
+  tools?: string;
+  startDate?: string | Date;
+}
+
+export interface AddProjectPayload {
+  // ── Basic Info ────────────────────────────
+  projectNumber: string;
+  name: string;
+  description: string;
+
+  // ── Relations / IDs ───────────────────────
+  fabricatorID: string;
+  departmentID: string;
+  managerID: string;
+  teamID?: string;
+  rfqId?: string;
+  CDQuataionID?: string;
+  connectionDesignerID?: string;
+  status: "ACTIVE" | "INACTIVE" | "DRAFT";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED";
+  tools: "TEKLA" | "SDS2" | "BOTH";
+  connectionDesign: boolean;
+  miscDesign: boolean;
+  customerDesign: boolean;
+  detailingMain: boolean;
+  detailingMisc: boolean;
+  startDate: string;            // ISO string when sent to backend
+  endDate: string;
+  approvalDate: string;
+  fabricationDate: string;
+  estimatedHours?: number;
+  detailCheckingHours?: number;
+  detailingHours?: number;
+  executionCheckingHours?: number;
+  executionHours?: number;
+  modelCheckingHours?: number;
+  modelingHours?: number;
+  mailReminder: boolean;
+  submissionMailReminder: boolean;
+  files?: File[] | null; // supports direct File objects or a typed File interface
+  endDateChangeLog?: string[];
+}
 export interface RFIPayload {
   fabricator_id: string;
   project_id: string;

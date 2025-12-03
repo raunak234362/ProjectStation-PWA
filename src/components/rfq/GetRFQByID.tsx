@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
@@ -8,6 +9,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import ResponseDetailsModal from "./ResponseDetailsModal";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
+import AddEstimation from "../estimation/AddEstimation";
 
 interface GetRfqByIDProps {
   id: string;
@@ -19,6 +21,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const [error, setError] = useState<string | null>(null);
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
+  const [showEstimationModal, setShowEstimationModal] = useState(false);
 
   const fetchRfq = async () => {
     try {
@@ -130,22 +133,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
           {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
           <div className="bg-gradient-to-br from-teal-50 to-white p-6 rounded-xl shadow-md space-y-6">
-
-            {/* Header */}
-            {/* <div className="flex justify-between items-center">
-              <h3 className="text-2xl font-bold text-teal-700">{rfq.projectName}</h3>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  rfq.status === "RECEIVED"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-green-100 text-green-700"
-                }`}
-              >
-                {rfq.status}
-              </span>
-
-            </div> */}
-
             {/* Header */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
@@ -200,7 +187,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               <Info label="Project Number" value={rfq.projectNumber || ""} />
               <Info label="Status" value={rfq.status || ""} />
               <Info label="Tools" value={rfq.tools} />
-              <Info label="Due Date" value={new Date(rfq.estimationDate).toLocaleDateString()} />
+              <Info
+                label="Due Date"
+                value={new Date(rfq.estimationDate).toLocaleDateString()}
+              />
               <Info label="Bid Amount (USD)" value={rfq.bidPrice ?? "—"} />
             </div>
 
@@ -245,6 +235,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             ) : (
               <p className="text-gray-500 italic">No files uploaded</p>
             )}
+<div className="flex gap-2">
+
+            <Button onClick={() => setShowEstimationModal(true)}>Raise For Estimation</Button>
+            <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
+          Raise for Connection Designer Quotation
+        </Button>
+</div>
           </div>
 
 
@@ -301,11 +298,29 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
         />
       )}
 
+      {/* Estimation Modal */}
+      {showEstimationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+            <button
+              onClick={() => setShowEstimationModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
+            >
+              ✕
+            </button>
+            <AddEstimation
+              initialRfqId={id}
+              onSuccess={() => {
+                setShowEstimationModal(false);
+                // Optionally refresh RFQ or show success message
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };
-
-
 
 const Info = ({ label, value }: { label: string; value: string | number }) => (
   <div className="space-y-1">
@@ -321,8 +336,6 @@ const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
         : "bg-gray-100 border-gray-300 text-gray-500"
       }`}
   >
-
-
     {label}
   </div>
 

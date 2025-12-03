@@ -3,17 +3,18 @@
 import { Send } from "lucide-react";
 import Button from "../fields/Button";
 import ChatHead from "./ChatHead";
-import ChatBG from "../../assets/background-image.jpg";
 import socket from "../../socket";
 import { useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Service from "../../api/Service";
 import type { ChatItem, Message, User } from "../../interface";
+import "./chatMain.css";
 
 interface Props {
   activeChat: ChatItem | null;
   setActiveChat: (chat: ChatItem | null) => void;
   recentChats: ChatItem[];
+  onMessageSent?: (content: string, groupId: string) => void;
 }
 
 interface DisplayMessage {
@@ -24,9 +25,14 @@ interface DisplayMessage {
   senderName?: string;
 }
 
-const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
-  const userInfo = useSelector((s: any) => s.userData?.userData as User);
-  const staffData = useSelector((s: any) => s.userData?.staffData as User[]);
+const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent }) => {
+  const userInfo = useSelector(
+    (s: any) => (s.userData?.userData ?? s.userInfo?.userDetail ?? {}) as User
+  );
+  const staffData = useSelector(
+    (s: any) => (s.userData?.staffData ?? s.userInfo?.staffData ?? []) as User[]
+  );
+
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -35,88 +41,113 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const groupId = activeChat?.group.id;
+  const groupId = activeChat?.group?.id ?? null;
 
   const sendMessage = () => {
     const content = input.trim();
     if (!content || !groupId) return;
 
     const payload = {
-      senderId: userInfo.id,
+      senderId: userInfo?.id,
       groupId,
       content,
       taggedUserIds: [] as string[],
     };
     socket.emit("groupMessages", payload);
+
+    // Optimistic update
+    const tempMsg: DisplayMessage = {
+      id: Date.now().toString(), // Temporary ID
+      text: content,
+      time: new Date().toISOString(),
+      sender: "me",
+      senderName: `${userInfo?.firstName} ${userInfo?.lastName}`,
+    };
+    setMessages((prev) => [...prev, tempMsg]);
+    onMessageSent?.(content, groupId);
+
     setInput("");
   };
 
-  const fetchMessages = async (lastId: string | null = null) => {
-    if (!groupId) return;
-    setLoading(true);
-    try {
-      const res = await Service.ChatByGroupID(groupId, lastId ?? undefined);
-      const newMsgs: DisplayMessage[] = res.map((m: Message) => ({
-        id: m.id,
-        text: m.content,
-        time: m.createdAt,
-        sender: m.senderId === userInfo.id ? "me" : "other",
-        senderName:
-          m.senderId !== userInfo.id
-            ? `${m.sender?.f_name} ${m.sender?.l_name}`
-            : undefined,
-      }));
+  const fetchMessages = useCallback(
+    async (lastId: string | null = null) => {
+      if (!groupId) return;
+      setLoading(true);
+      try {
+        const res = await Service.ChatByGroupID(groupId, lastId ?? undefined);
+        const list = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+          ? res.data
+          : [];
+        const newMsgs: DisplayMessage[] = list.map((m: Message) => ({
+          id: m.id,
+          text: m.content,
+          time: m.createdAt,
+          sender: m.senderId === userInfo?.id ? "me" : "other",
+          senderName:
+            m.senderId !== userInfo?.id
+              ? `${m.sender?.firstName ?? ""} ${m.sender?.lastName ?? ""}`.trim()
+              : undefined,
+        }));
 
-      if (newMsgs.length === 0) {
-        setHasMore(false);
-        return;
-      }
+        if (newMsgs.length === 0) {
+          setHasMore(false);
+          return;
+        }
 
-      const reversed = newMsgs.reverse();
-      setMessages((prev) => {
+        const reversed = newMsgs.reverse();
+        setMessages((prev) => {
         const existing = new Set(prev.map((m) => m.id));
         const filtered = reversed.filter((m) => !existing.has(m.id));
-        return [...filtered, ...prev];
-      });
+          return [...filtered, ...prev];
+        });
 
-      setOldestId(reversed[0].id);
-      if (newMsgs.length < 20) setHasMore(false);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setOldestId(reversed[0].id);
+        if (newMsgs.length < 20) setHasMore(false);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [groupId, userInfo.id]
+  );
 
   // Load initial
   useEffect(() => {
-    if (activeChat) {
-      setMessages([]);
-      setOldestId(null);
-      setHasMore(true);
-      fetchMessages();
-    }
-  }, [activeChat]);
+    if (!groupId) return;
+    setMessages([]);
+    setOldestId(null);
+    setHasMore(true);
+    fetchMessages();
+  }, [groupId, fetchMessages]);
 
   // Real‑time incoming
   useEffect(() => {
     const handler = (msg: any) => {
-      if (msg.groupId !== groupId) return;
-      const sender = staffData.find((s) => s.id === msg.senderId);
-      const newMsg: DisplayMessage = {
-        id: msg.id,
-        text: msg.content,
-        time: msg.createdAt,
-        sender: msg.senderId === userInfo.id ? "me" : "other",
-        senderName: sender ? `${sender.f_name} ${sender.l_name}` : undefined,
-      };
-      setMessages((prev) => [...prev, newMsg]);
+      if (!groupId || msg.groupId !== groupId) return;
+      
+      // Check if message already exists to prevent duplicates
+      setMessages((prev) => {
+        if (prev.some(m => m.id === msg.id)) return prev;
+
+        const sender = staffData.find((s) => s?.id === msg.senderId);
+        const newMsg: DisplayMessage = {
+          id: msg.id,
+          text: msg.content,
+          time: msg.createdAt,
+          sender: msg.senderId === userInfo?.id ? "me" : "other",
+          senderName: sender ? `${sender.firstName} ${sender.lastName}` : undefined,
+        };
+        return [...prev, newMsg];
+      });
     };
     socket.on("receiveGroupMessage", handler);
     return () => {
       socket.off("receiveGroupMessage", handler);
     };
-  }, [groupId, userInfo.id, staffData]);
+  }, [groupId, userInfo?.id, staffData]);
 
   // Scroll to bottom
   useEffect(() => {
@@ -135,14 +166,14 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
     };
     container.addEventListener("scroll", onScroll);
     return () => container.removeEventListener("scroll", onScroll);
-  }, [oldestId, hasMore, loading, groupId]);
+  }, [oldestId, hasMore, loading, groupId, fetchMessages]);
 
   const formatMessage = (text: string) => {
     const lines = text.split("\n");
     return lines.map((line, i) => {
       const words = line.split(" ");
       return (
-        <p key={i} className="break-words">
+        <p key={i} className="wrap-break-word">
           {words.map((w, j) =>
             w.startsWith("@") ? (
               <span key={j} className="text-blue-600 font-medium">
@@ -157,11 +188,16 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
     });
   };
 
+  if (!groupId || !activeChat?.group) {
+    return (
+      <div className="flex flex-col h-full bg-white rounded-2xl items-center justify-center text-gray-500 text-sm">
+        Select a chat to start messaging
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="flex flex-col h-full bg-cover bg-center"
-      style={{ backgroundImage: `url(${ChatBG})` }}
-    >
+    <div className="chat-main-bg flex flex-col h-full">
       <ChatHead contact={activeChat} onBack={() => setActiveChat(null)} />
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4">
@@ -176,7 +212,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat }) => {
 
           return (
             <div
-              key={msg.id}
+              key={msg?.id}
               className={`flex ${
                 msg.sender === "me" ? "justify-end" : "justify-start"
               } mb-3`}
