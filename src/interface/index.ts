@@ -408,7 +408,7 @@ export interface AddProjectPayload {
   CDQuataionID?: string;
   connectionDesignerID?: string;
   status: "ACTIVE" | "INACTIVE" | "DRAFT";
-  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   miscDesign: boolean;

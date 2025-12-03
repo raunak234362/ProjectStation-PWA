@@ -15,12 +15,13 @@ export interface ToggleChangeEvent {
 }
 
 // Props for the Toggle component
+// Props for the Toggle component
 export interface ToggleProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   label?: React.ReactNode;
   className?: string;
   name?: string;
-  onChange?: (e: ToggleChangeEvent) => void; // RHF-compatible
+  onChange?: React.ChangeEventHandler<HTMLInputElement>; // RHF-compatible
 }
 
 /* ---------------------------------------------------
@@ -32,20 +33,10 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
     const id = useId();
     const [checked, setChecked] = useState(false);
 
-    const handleClick = () => {
-      setChecked((prev) => {
-        const newValue = !prev;
-
-        // Trigger RHF-compatible onChange event
-        onChange?.({
-          target: {
-            name,
-            value: newValue,
-          },
-        });
-
-        return newValue;
-      });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.checked;
+      setChecked(newValue);
+      onChange?.(e);
     };
 
     return (
@@ -67,8 +58,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
           type="checkbox"
           id={id}
           name={name}
-          checked={checked}
-          onClick={handleClick}
+          onChange={handleChange}
           ref={ref}
           {...props}
         />

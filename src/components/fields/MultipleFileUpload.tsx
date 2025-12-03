@@ -34,15 +34,10 @@ function MultipleFileUpload({
     }
 
     const selectedFiles: File[] = Array.from(event.target.files);
+    const updatedFiles = [...files, ...selectedFiles];
 
-    setFiles((prevFiles) => {
-      // Combine previous files with new files
-      const updatedFiles = [...prevFiles, ...selectedFiles];
-
-      // Notify the parent component of the change
-      onFilesChange(updatedFiles);
-      return updatedFiles;
-    });
+    setFiles(updatedFiles);
+    onFilesChange(updatedFiles);
 
     // Clear the input value to allow selecting the same file(s) again
     event.target.value = "";
@@ -52,16 +47,9 @@ function MultipleFileUpload({
    * Removes a file from the list based on its index.
    */
   const removeFile = (indexToRemove: number) => {
-    setFiles((prevFiles) => {
-      // Filter out the file at the specified index
-      const updatedFiles = prevFiles.filter(
-        (_, index) => index !== indexToRemove
-      );
-
-      // Notify the parent component of the change
-      onFilesChange(updatedFiles);
-      return updatedFiles;
-    });
+    const updatedFiles = files.filter((_, index) => index !== indexToRemove);
+    setFiles(updatedFiles);
+    onFilesChange(updatedFiles);
   };
 
   /**

@@ -431,7 +431,7 @@ class Service {
   // Update RFQ by ID
   static async UpdateRFQById(rfqId: string, data: any) {
     try {
-      const response = await api.put(`rfq/${rfqId}`, data, {
+      const response = await api.put(`rfq/update/${rfqId}`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -593,10 +593,12 @@ static async addResponse(formData: FormData,responseId:string) {
 
   // Add Project
   static async AddProject(formData: FormData) {
+    const token = sessionStorage.getItem("token");
     try {
       const response = await api.post(`project/projects`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(response);
