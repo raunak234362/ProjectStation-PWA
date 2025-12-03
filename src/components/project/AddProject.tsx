@@ -81,6 +81,8 @@ const AddProject: React.FC = () => {
 
         if (key === "files" && Array.isArray(value)) {
           value.forEach((file) => formData.append("files", file));
+        } else if (key === "startDate") {
+          formData.append(key, new Date(String(value)).toISOString());
         } else if (typeof value === "boolean") {
           formData.append(key, value ? "true" : "false");
         } else {
@@ -93,7 +95,6 @@ const AddProject: React.FC = () => {
 
       await Service.AddProject(formData);
       toast.success("Project created successfully!");
-      reset();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to create project");
     } finally {
@@ -106,39 +107,7 @@ const AddProject: React.FC = () => {
       <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">Create New Project</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-
-        {/* Project Info */}
-        <SectionTitle title="Project Information" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <Input
-              label="Project Number *"
-              placeholder="e.g. PROJ-2025-001"
-              {...register("projectNumber", { required: "Project number is required" })}
-            />
-            {errors.projectNumber && <p className="text-red-500 text-sm mt-1">{errors.projectNumber.message}</p>}
-          </div>
-
-          <div>
-            <Input
-              label="Project Name *"
-              placeholder="Enter full project name"
-              {...register("name", { required: "Project name is required" })}
-            />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
-          </div>
-
-          <div className="md:col-span-2">
-            <Input
-              label="Description *"
-              placeholder="Brief description of the project scope..."
-              {...register("description", { required: "Description is required" })}
-            />
-            {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
-          </div>
-        </div>
-
-        {/* Associations */}
+{/* Associations */}
         <SectionTitle title="Project Associations" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
@@ -252,6 +221,40 @@ const AddProject: React.FC = () => {
           </div>
         </div>
 
+
+        {/* Project Info */}
+        <SectionTitle title="Project Information" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <Input
+              label="Project Number *"
+              placeholder="e.g. PROJ-2025-001"
+              {...register("projectNumber", { required: "Project number is required" })}
+            />
+            {errors.projectNumber && <p className="text-red-500 text-sm mt-1">{errors.projectNumber.message}</p>}
+          </div>
+
+          <div>
+            <Input
+              label="Project Name *"
+              placeholder="Enter full project name"
+              {...register("name", { required: "Project name is required" })}
+            />
+            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+          </div>
+
+          <div className="md:col-span-2">
+            <Input
+              label="Description *"
+              placeholder="Brief description of the project scope..."
+              {...register("description", { required: "Description is required" })}
+            />
+            {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
+          </div>
+        </div>
+
+        
+
         {/* Schedule & Tools */}
         <SectionTitle title="Schedule & Tools" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -264,21 +267,20 @@ const AddProject: React.FC = () => {
                 <Select
                   options={options.tools}
                   value={options.tools.find((o) => o.value === field.value) || options.tools[0]}
-                  onChange={(opt) => field.onChange(opt?.value || "TEKLA")}
+                  onChange={(opt) => field.onChange(opt?.value || "")}
                 />
               )}
             />
           </div>
 
+          <Input label="Estimated Hours" type="number" {...register("estimatedHours")} />
           <Input label="Start Date *" type="date" {...register("startDate", { required: "Required" })} />
-          <Input label="End Date *" type="date" {...register("endDate", { required: "Required" })} />
-          <Input label="Approval Date" type="date" {...register("approvalDate")} />
         </div>
 
         {/* Design Scope */}
         <SectionTitle title="Design Scope" />
         <div className="bg-gray-50 p-6 rounded-xl space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {[
               { key: "connectionDesign", label: "Main Connection Design" },
               { key: "miscDesign", label: "Misc Design" },

@@ -608,6 +608,36 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+  // Get All Projects
+  static async GetAllProjects() {
+    try {
+      const response = await api.get(`project/projects`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get Project By ID
+  static async GetProjectById(id: string) {
+    try {
+      const response = await api.get(`project/projects/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Fetch All Chats
   static async AllChats() {
     try {
