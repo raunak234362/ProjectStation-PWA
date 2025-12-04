@@ -9,10 +9,11 @@ import { ToastContainer, toast } from "react-toastify";
 import socket, { connectSocket } from "./socket";
 import PWABadge from "./PWABadge";
 import { loadFabricator } from "./store/fabricatorSlice";
+import { setRFQData } from "./store/rfqSlice";
 
 const AppContent = () => {
   const dispatch = useDispatch();
-  // const [setUserId] = useState<string | null>(null);
+  const userType = sessionStorage.getItem("userRole");
 
   // Fetch current user
   const fetchSignedinUser = async () => {
@@ -39,6 +40,11 @@ const AppContent = () => {
     // Fetch user once on mount
     fetchSignedinUser();
 
+    // Request notification permission
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
+
     // Fetch all employees
     const fetchAllEmployee = async () => {
       try {
@@ -62,9 +68,28 @@ const AppContent = () => {
       }
     };
 
+     const fetchInboxRFQ = async () => {
+    try {
+      let rfqDetail;
+      if (userType === "CLIENT")
+         {
+        rfqDetail = await Service.RfqSent();
+      } else {
+        rfqDetail = await Service.RFQRecieved();
+      }
+      // setRfq(rfqDetail.data);
+      dispatch(setRFQData(rfqDetail.data));
+     console.log(rfqDetail.data);
+     
+    } catch (error) {
+      console.error("Error fetching RFQ:", error);
+    }
+  };
+
+
     fetchAllFabricator();
     fetchAllEmployee();
-
+    fetchInboxRFQ();
     // Cleanup socket on unmount
     return () => {
       if (socket.connected) {
@@ -74,9 +99,10 @@ const AppContent = () => {
     };
   }, [dispatch]);
 
+
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} />
+      <ToastContainer position="top-right" autoClose={1000} />
 
       <Layout />
     </>

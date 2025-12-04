@@ -7,6 +7,7 @@ import Button from "../../fields/Button";
 import { State, City } from "country-state-city";
 import type { ConnectionDesignerForm } from "../../../interface";
 import { toast } from "react-toastify";
+import Service from "../../../api/Service";
 // import Service from "../../../api/Service";
 
 const AddConnectionDesigner: React.FC = () => {
@@ -95,7 +96,7 @@ const AddConnectionDesigner: React.FC = () => {
       };
 
       console.log("🚀 Payload to send:", payload);
-      // await Service.addConnectionDesigner(payload); // ✅ Send to backend
+      await Service.AddConnectionDesigner(payload); // ✅ Send to backend
       toast.success("Connection Designer created successfully!");
       reset();
     } catch (error) {

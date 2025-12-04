@@ -253,7 +253,7 @@ const AddClients: React.FC<AddClientProps> = ({
                 Creating...
               </>
             ) : (
-              "Create Employee"
+              "Create POC"
             )}
           </Button>
         </div>

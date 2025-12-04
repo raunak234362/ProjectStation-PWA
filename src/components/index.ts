@@ -17,6 +17,14 @@ import AllConnectionDesigner from "./connectionDesigner/designer/AllConnectionDe
 import AddCDEngineer from "./connectionDesigner/engineer/AddCDEngineer";
 import AllCDEngineer from "./connectionDesigner/engineer/AllCDEngineer";
 
+//Estimation Components-
+import AddEstimation from "./estimation/AddEstimation";
+import AllEstimation from "./estimation/AllEstimation";
+
+// Projects
+import AddProject from "./project/AddProject";
+import AllProjects from "./project/AllProjects";
+
 export {
     Login,
     WBTDashboard,
@@ -28,6 +36,11 @@ export {
     AllCDEngineer,
     AddConnectionDesigner,
     AllConnectionDesigner,
-    AddCDEngineer
+    AddCDEngineer,
+    AddProject,
+    AllProjects,
+    AddEstimation,
+    AllEstimation
+
 
 }

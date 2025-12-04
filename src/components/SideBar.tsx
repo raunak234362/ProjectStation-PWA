@@ -79,6 +79,16 @@ const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
+      label: "Connection Designer",
+      to: "connection-designer",
+      icon: <FactoryIcon />,
+      roles: [
+        "admin",
+        "department-manager",
+        "deputy-manager",
+      ],
+    },
+    {
       label: "RFQ",
       to: "rfq",
       icon: <LucideComponent />,
@@ -90,6 +100,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         "sales",
       ],
     },
+     {
+      label: "Estimations",
+      to: "estimation",
+      icon: <Hourglass />,
+      roles: ["admin", "department-manager", "deputy-manager", "user"],
+    },
+
     {
       label: "RFI",
       to: "rfi",
@@ -116,16 +133,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         "human-resource",
       ],
     },
-    {
-      label: "Connection Designer",
-      to: "connection-designer",
-      icon: <FactoryIcon />,
-      roles: [
-        "admin",
-        "department-manager",
-        "deputy-manager",
-      ],
-    },
    
     {
       label: "Tasks",
@@ -142,13 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         "human-resource",
       ],
     },
-    {
-      label: "Estimations",
-      to: "estimation",
-      icon: <Hourglass />,
-      roles: ["admin", "department-manager", "deputy-manager", "user"],
-    },
-
+   
     {
       label: "Manage Team",
       to: "manage-team",
