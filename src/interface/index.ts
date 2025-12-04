@@ -358,4 +358,51 @@ export interface RFIPayload {
   files: File[] | string;
 
 }
+export interface RFIResponseFile {
+  id: string;
+  originalName: string;
+  path?: string;   }
+
+export interface RFIResponse {
+  id: string;
+  rfiId: string;
+  userId: string;
+  parentResponseId: string | null;
+  description: string;
+  files?: RFIResponseFile[];
+  link?: string | null;
+  status?: string;
+  createdAt: string;
+  childResponses?: RFIResponse[];
+}
+
+export interface RFIItem {
+  id: string;
+  subject: string;
+  description?: string;
+  senderId?: string;
+  sender?: {
+    email?: string;
+    firstName?: string;
+    middleName?: string | null;
+    lastName?: string; } | null;
+  recepient_id?: string;
+  recepients?: {
+    email?: string;
+    firstName?: string;
+    middleName?: string | null;
+    lastName?: string;} | null;
+  fabricator_id?: string;
+  fabricator?: { fabName?: string; } | null;
+  project_id?: string;
+  project?: {name?: string;} | null;
+  status?: boolean | string;
+  isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string
+  createdAt: string | Date;
+  updatedAt?: string | Date;
+  files?: RFIResponseFile[] | string[];
+  responses?: RFIResponse[];
+  date?: string;
+}
+
 
