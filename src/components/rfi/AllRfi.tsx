@@ -10,7 +10,7 @@ const AllRFI = () => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
   const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
 
-  const userRole = sessionStorage.getItem("userRole"); // CLIENT / ADMIN / STAFF
+  const userRole = sessionStorage.getItem("userRole"); 
 
   const fetchRFI = async () => {
     try {
@@ -23,8 +23,18 @@ const AllRFI = () => {
       }
 
       // Some APIs return `{data:[...]}`, some return array directly → normalize:
+      // const arrayData = Array.isArray(result) ? result : result?.data || [];
+      // setRFIs(arrayData);
+
       const arrayData = Array.isArray(result) ? result : result?.data || [];
-      setRFIs(arrayData);
+
+const normalized = arrayData.map((item: any) => ({
+  ...item,
+  createdAt: item.createdAt || item.date || null, // 👈 unify
+}));
+
+setRFIs(normalized);
+
 
     } catch (error) {
       console.error("Error fetching RFI:", error);
@@ -96,7 +106,7 @@ const AllRFI = () => {
         columns={columns}
         data={rfis}
         onRowClick={handleRowClick}
-        // detailComponent={({ row }) => <GetRFIByID id={row.id} />}
+        detailComponent={({ row }) => <GetRFIByID id={row.id} />}
         searchPlaceholder="Search RFIs..."
         pageSizeOptions={[5, 10, 25]}
       />

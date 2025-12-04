@@ -735,7 +735,7 @@ static async addResponse(formData: FormData,responseId:string) {
   }
   static async GetRFIbyId(rfiId: string) {
     try {
-      const response = await api.get(`rfi/${rfiId}`, {
+      const response = await api.get(`rfi/getById/${rfiId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -757,6 +757,33 @@ static async addResponse(formData: FormData,responseId:string) {
       console.error("cannot find RFI", error);
     }
   } 
+//RFI responses
+static async addRFIResponse(formData: FormData,responseId:string) {
+  const token = sessionStorage.getItem("token");
 
+  const response = await api.post(`rfi/${responseId}/responses`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+    return response.data;
+  }
+
+
+static async GetRFIResponsebyId(rfiId: string) {
+      try {
+        const response = await api.get(`rfi/responses/${rfiId}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log(" All rfq fetched by rfq ID:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("cannot find rfq", error);
+      }
+    }
 }
 export default Service;

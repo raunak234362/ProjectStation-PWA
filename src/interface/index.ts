@@ -1,3 +1,5 @@
+
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AuthInterface {
   username: string;
@@ -12,7 +14,6 @@ export interface UserData {
   username: string;
   email: string;
   firstName: string;
-  middleName: string | null;
   lastName: string;
   phone: string;
   landline: string | null;
@@ -288,7 +289,7 @@ export interface RFQpayload {
   description: string;
   status: boolean
   tools: string;
-  wbtStatus: boolean | any;
+  wbtStatus: boolean |  any;
   estimationDate: Date | any;
   connectionDesign: boolean;
   customerDesign: boolean;
@@ -485,9 +486,17 @@ export interface RFIItem {
   isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string
   createdAt: string | Date;
   updatedAt?: string | Date;
-  files?: RFIResponseFile[] | string[];
-  responses?: RFIResponse[];
-  date?: string;
+  files: RFIResponseFile[] | string[];
+  responses: RFIResponse[];
+  date: string;
 }
+export interface RFIResponseSchema
+{
+files?: File[] | string[];
+// responseState:boolean|null;
+wbtStatus?:boolean;
+reason:string;
+rfiId:string;
+parentResponseId:string|null;
 
-
+}
