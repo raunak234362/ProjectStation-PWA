@@ -44,8 +44,25 @@ const GetProjectById = ({
     }
   };
 
+  const AddWBSbyProjectId = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await Service.AddWBSInProject(id);
+    //   setProject(response?.data || null);
+    console.log(response.data);
+    
+    } catch (err) {
+      setError("Failed to load project details");
+      console.error("Error fetching project:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (id) fetchProject();
+    AddWBSbyProjectId();
   }, [id]);
 
   const formatDate = (date?: string) =>

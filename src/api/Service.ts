@@ -683,6 +683,22 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+  // Add WBS in Project
+  static async AddWBSInProject(projectId: string) {
+    try {
+      const response = await api.get(`project/projects/${projectId}/wbs
+`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Fetch All Chats
   static async AllChats() {
     try {
