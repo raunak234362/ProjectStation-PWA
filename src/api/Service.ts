@@ -638,6 +638,51 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+  // Edit Project By ID
+  static async EditProjectById(id: string, data: any) {
+    try {
+      const response = await api.put(`project/projects/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Add Project Milestone
+  static async AddProjectMilestone(data: any) {
+    try {
+      const response = await api.post(`mileStone/`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get Project Milestone By ID
+  static async GetProjectMilestoneById(id: string) {
+    try {
+      const response = await api.get(`mileStone/project/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Fetch All Chats
   static async AllChats() {
     try {

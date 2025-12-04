@@ -207,23 +207,6 @@ export interface SocketMessage {
   createdAt: string;
   isTagged?: boolean;
 }
-// export interface RFQpayload {
-//   projectNumber: string;
-//   projectName: string;
-//   senderId: string;
-//   recipientId: string;
-//  salesPersonId: string|"",
-//  subject: string,
-//  description:string,
-//   status: string;   // 👈 use the Prisma enum here
-//  tools: string
-//   wbtStatus: string;
-//   estimationDate: Date;
-//   connectionDesign: boolean;
-//   customerDesign: boolean;
-//   miscDesign: boolean;
-//   createdById: string;
-
 
 //rfq interfaces
 
@@ -394,12 +377,9 @@ export interface EstimationPayload {
 }
 
 export interface AddProjectPayload {
-  // ── Basic Info ────────────────────────────
   projectNumber: string;
   name: string;
   description: string;
-
-  // ── Relations / IDs ───────────────────────
   fabricatorID: string;
   departmentID: string;
   managerID: string;
@@ -415,7 +395,7 @@ export interface AddProjectPayload {
   customerDesign: boolean;
   detailingMain: boolean;
   detailingMisc: boolean;
-  startDate: string;            // ISO string when sent to backend
+  startDate: string;          
   endDate: string;
   approvalDate: string;
   fabricationDate: string;
@@ -444,3 +424,41 @@ export interface RFIPayload {
 
 }
 
+export interface ProjectData {
+  id: string;
+  name: string;
+  projectNumber: string;
+  description: string;
+  fabricator?: { fabName: string; id: string };
+  department?: { name: string };
+  team?: { name: string };
+  manager?: { firstName: string; lastName: string; username: string };
+  tools: string;
+  connectionDesign: boolean;
+  miscDesign: boolean;
+  customerDesign: boolean;
+  detailingMain: boolean;
+  detailingMisc: boolean;
+  estimatedHours: number;
+  status: string;
+  stage: string;
+  startDate: string;
+  endDate: string;
+  fabricationDate: string;
+  approvalDate: string;
+  files?: { id: string; originalName: string }[];
+  rfqId?: string;
+  createdAt: string;
+  updatedAt?: string;
+  milestones?: ProjectMilestone[];
+}
+
+export interface ProjectMilestone {
+  fabricator_id: string;
+  project_id: string;
+  date: string;
+  approvalDate: string;
+  status: string;
+  subject: string;
+  description: string;
+}

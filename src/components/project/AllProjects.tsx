@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
+import GetProjectById from "./GetProjectById";
 
 
 const AllProjects = () => {
@@ -34,6 +35,11 @@ const AllProjects = () => {
         columns={columns}
         data={projects}
         onRowClick={handleRowClick}
+        detailComponent={({ row }) => {
+          const fabricatorUniqueId =
+            (row as any).id ?? (row as any).fabId ?? "";
+          return <GetProjectById id={fabricatorUniqueId} />;
+        }}
         searchPlaceholder="Search projects..."
         pageSizeOptions={[5, 10, 25]}
       />
