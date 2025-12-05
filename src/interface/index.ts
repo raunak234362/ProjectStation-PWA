@@ -1,3 +1,5 @@
+
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AuthInterface {
   username: string;
@@ -12,7 +14,6 @@ export interface UserData {
   username: string;
   email: string;
   firstName: string;
-  middleName: string | null;
   lastName: string;
   phone: string;
   landline: string | null;
@@ -271,7 +272,7 @@ export interface RFQpayload {
   description: string;
   status: boolean
   tools: string;
-  wbtStatus: boolean | any;
+  wbtStatus: boolean |  any;
   estimationDate: Date | any;
   connectionDesign: boolean;
   customerDesign: boolean;
@@ -423,42 +424,59 @@ export interface RFIPayload {
   files: File[] | string;
 
 }
-
-export interface ProjectData {
+export interface RFIResponseFile {
   id: string;
-  name: string;
-  projectNumber: string;
+  originalName: string;
+  path?: string;   }
+
+export interface RFIResponse {
+  id: string;
+  rfiId: string;
+  userId: string;
+  parentResponseId: string | null;
   description: string;
-  fabricator?: { fabName: string; id: string };
-  department?: { name: string };
-  team?: { name: string };
-  manager?: { firstName: string; lastName: string; username: string };
-  tools: string;
-  connectionDesign: boolean;
-  miscDesign: boolean;
-  customerDesign: boolean;
-  detailingMain: boolean;
-  detailingMisc: boolean;
-  estimatedHours: number;
-  status: string;
-  stage: string;
-  startDate: string;
-  endDate: string;
-  fabricationDate: string;
-  approvalDate: string;
-  files?: { id: string; originalName: string }[];
-  rfqId?: string;
+  files?: RFIResponseFile[];
+  link?: string | null;
+  status?: string;
   createdAt: string;
-  updatedAt?: string;
-  milestones?: ProjectMilestone[];
+  childResponses?: RFIResponse[];
 }
 
-export interface ProjectMilestone {
-  fabricator_id: string;
-  project_id: string;
-  date: string;
-  approvalDate: string;
-  status: string;
+export interface RFIItem {
+  id: string;
   subject: string;
-  description: string;
+  description?: string;
+  senderId?: string;
+  sender?: {
+    email?: string;
+    firstName?: string;
+    middleName?: string | null;
+    lastName?: string; } | null;
+  recepient_id?: string;
+  recepients?: {
+    email?: string;
+    firstName?: string;
+    middleName?: string | null;
+    lastName?: string;} | null;
+  fabricator_id?: string;
+  fabricator?: { fabName?: string; } | null;
+  project_id?: string;
+  project?: {name?: string;} | null;
+  status?: boolean | string;
+  isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string
+  createdAt: string | Date;
+  updatedAt?: string | Date;
+  files: RFIResponseFile[] | string[];
+  responses: RFIResponse[];
+  date: string;
+}
+export interface RFIResponseSchema
+{
+files?: File[] | string[];
+// responseState:boolean|null;
+wbtStatus?:boolean;
+reason:string;
+rfiId:string;
+parentResponseId:string|null;
+
 }
