@@ -17,6 +17,7 @@ import { openFileSecurely } from "../../utils/openFileSecurely";
 import Button from "../fields/Button";
 import type { ProjectData } from "../../interface";
 import AllMileStone from "./mileStone/AllMileStone";
+import AllDocument from "./projectDocument/AllDocument";
 
 
 
@@ -44,16 +45,16 @@ const GetProjectById = ({
     }
   };
 
-  const AddWBSbyProjectId = async () => {
+  const FetchWBSbyProjectId = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await Service.AddWBSInProject(id);
+      const response = await Service.GetWBSByProjectId(id);
     //   setProject(response?.data || null);
-    console.log(response.data);
+    console.log(response);
     
     } catch (err) {
-      setError("Failed to load project details");
+      setError("Failed to load WBS details");
       console.error("Error fetching project:", err);
     } finally {
       setLoading(false);
@@ -62,8 +63,10 @@ const GetProjectById = ({
 
   useEffect(() => {
     if (id) fetchProject();
-    AddWBSbyProjectId();
+    console.log(id);
+    FetchWBSbyProjectId();
   }, [id]);
+
 
   const formatDate = (date?: string) =>
     date
@@ -121,7 +124,6 @@ const GetProjectById = ({
         <div className="flex gap-2 mb-4 border-b overflow-x-auto">
           {[
             { key: "details", label: "Details", icon: ClipboardList },
-            { key: "scope", label: "Design Scope", icon: Settings },
             { key: "files", label: "Files", icon: FileText },
             { key: "milestones", label: "Milestones", icon: FileText },
             { key: "team", label: "Team", icon: Users },
@@ -148,7 +150,16 @@ const GetProjectById = ({
           {/* ✅ Details */}
           {activeTab === "details" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+               <div className="md:col-span-2 mt-6">
+                <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
+                  <FolderOpenDot className="w-4 h-4" /> Description
+                </h4>
+                <p className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
+                  {project.description || "No description available."}
+                </p>
+              </div> 
               <div className="space-y-3">
+                <InfoRow label="Estimated Hours" value={project.estimatedHours || 0} />
                 <InfoRow label="Department" value={project.department?.name || "—"} />
                 <InfoRow label="Team" value={project.team?.name || "—"} />
                 <InfoRow
@@ -161,60 +172,56 @@ const GetProjectById = ({
                 />
                 <InfoRow label="Fabricator" value={project.fabricator?.fabName || "—"} />
                 <InfoRow label="Tools" value={project.tools || "—"} />
-                <InfoRow label="Estimated Hours" value={project.estimatedHours || 0} />
               </div>
 
               <div className="space-y-3">
+                <InfoRow label="Stage" value={project.stage || "—"} />
                 <InfoRow label="Start Date" value={formatDate(project.startDate)} />
-                <InfoRow label="End Date" value={formatDate(project.endDate)} />
-                <InfoRow
-                  label="Fabrication Date"
-                  value={formatDate(project.fabricationDate)}
-                />
                 <InfoRow
                   label="Approval Date"
                   value={formatDate(project.approvalDate)}
                 />
-                <InfoRow label="Stage" value={project.stage || "—"} />
-                <InfoRow label="RFQ ID" value={project.rfqId || "—"} />
+                <InfoRow
+                  label="Fabrication Date"
+                  value={formatDate(project.fabricationDate)}
+                />
+                <InfoRow label="End Date" value={formatDate(project.endDate)} />
+                {/* <InfoRow label="RFQ ID" value={project.rfqId || "—"} /> */}
               </div>
 
-              <div className="md:col-span-2 mt-6">
-                <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
-                  <FolderOpenDot className="w-4 h-4" /> Description
-                </h4>
-                <p className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
-                  {project.description || "No description available."}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* ✅ Design Scope */}
-          {activeTab === "scope" && (
-            <div className="p-4 bg-gray-50 rounded-lg border text-sm">
+             
+               <div className="p-4 bg-gray-50 rounded-lg border text-sm">
               <h4 className="text-lg font-semibold text-teal-700 mb-3 flex items-center gap-1">
-                <Settings className="w-5 h-5" /> Design Scope
+                <Settings className="w-5 h-5" /> Connection Design Scope
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <ScopeTag label="Connection Design" active={project.connectionDesign} />
                 <ScopeTag label="Misc Design" active={project.miscDesign} />
                 <ScopeTag label="Customer Design" active={project.customerDesign} />
+              </div>
+            </div>
+               <div className="p-4 bg-gray-50 rounded-lg border text-sm">
+              <h4 className="text-lg font-semibold text-teal-700 mb-3 flex items-center gap-1">
+                <Settings className="w-5 h-5" /> Detailing Scope
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <ScopeTag label="Detailing Main" active={project.detailingMain} />
                 <ScopeTag label="Detailing Misc" active={project.detailingMisc} />
               </div>
             </div>
+            </div>
           )}
+
 
           {/* ✅ Files */}
           {activeTab === "files" && (
-            <div>
+            <div className="space-y-4">
               {Array.isArray(project.files) && project.files.length > 0 ? (
                 <ul className="text-gray-700 space-y-1">
                   {project.files.map((file) => (
                     <li
-                      key={file.id}
-                      className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm border"
+                    key={file.id}
+                    className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm border"
                     >
                       <span>{file.originalName}</span>
                       <a
@@ -229,6 +236,7 @@ const GetProjectById = ({
               ) : (
                 <p className="text-gray-600 italic">No files attached.</p>
               )}
+              <AllDocument />
             </div>
           )}
           {

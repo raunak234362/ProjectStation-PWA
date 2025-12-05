@@ -27,6 +27,7 @@ const AllProjects = () => {
       const columns: ColumnDef<any>[] = [
         { accessorKey: "name", header: "Project Name" },
         { accessorKey: "stage", header: "Stage" },
+        { accessorKey: "status", header: "Status" },
       ];
     
   return (

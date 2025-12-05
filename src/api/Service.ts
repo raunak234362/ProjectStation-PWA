@@ -686,8 +686,23 @@ static async addResponse(formData: FormData,responseId:string) {
   // Add WBS in Project
   static async AddWBSInProject(projectId: string) {
     try {
-      const response = await api.get(`project/projects/${projectId}/wbs
+      const response = await api.post(`project/projects/${projectId}/wbs
 `, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get WBS By Project ID
+  static async GetWBSByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`project/projects/${projectId}/wbs`, {
         headers: {
           "Content-Type": "application/json",
         },
