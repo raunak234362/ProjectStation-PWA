@@ -1,5 +1,3 @@
-
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AuthInterface {
   username: string;
@@ -412,6 +410,53 @@ export interface AddProjectPayload {
   files?: File[] | null; // supports direct File objects or a typed File interface
   endDateChangeLog?: string[];
 }
+
+// Project Data
+export interface ProjectData {
+  id: string;
+  name: string;
+  description: string;
+  fabricatorID: string;
+  department: {
+    id: string;
+    name: string;
+  };
+  managerID: string;
+  team?: {
+    id: string;
+    name: string;
+  };
+  fabricator?: Fabricator
+  manager?: UserData
+  rfqId?: string;
+  CDQuataionID?: string;
+  connectionDesignerID?: string;
+  projectNumber: string;
+  status: "ACTIVE" | "INACTIVE" | "DRAFT";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
+  tools: "TEKLA" | "SDS2" | "BOTH";
+  connectionDesign: boolean;
+  miscDesign: boolean;
+  customerDesign: boolean;
+  detailingMain: boolean;
+  detailingMisc: boolean;
+  startDate: string;          
+  endDate: string;
+  approvalDate: string;
+  fabricationDate: string;
+  estimatedHours?: number;
+  detailCheckingHours?: number;
+  detailingHours?: number;
+  executionCheckingHours?: number;
+  executionHours?: number;
+  modelCheckingHours?: number;
+  modelingHours?: number;
+  mailReminder: boolean;
+  submissionMailReminder: boolean;
+  files?: File[] | null; // supports direct File objects or a typed File interface
+  endDateChangeLog?: string[];
+}
+
 export interface RFIPayload {
   fabricator_id: string;
   project_id: string;

@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import { CheckCircle, Clock } from "lucide-react";
 import Button from "../../fields/Button";
 import AddMileStone from "./AddMileStone";
-import type { ProjectData } from "../../../interface";
 import Service from "../../../api/Service";
 
 interface AllMileStoneProps {
-  project: ProjectData;
+  project: any;
   onUpdate?: () => void;
 }
 

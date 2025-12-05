@@ -15,9 +15,9 @@ import {
 import Service from "../../api/Service";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import Button from "../fields/Button";
-import type { ProjectData } from "../../interface";
 import AllMileStone from "./mileStone/AllMileStone";
 import AllDocument from "./projectDocument/AllDocument";
+import type { ProjectData } from "../../interface";
 
 
 
@@ -217,7 +217,7 @@ const GetProjectById = ({
             <div className="space-y-4">
               {Array.isArray(project.files) && project.files.length > 0 ? (
                 <ul className="text-gray-700 space-y-1">
-                  {project.files.map((file) => (
+                  {project.files.map((file:any) => (
                     <li
                     key={file.id}
                     className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm border"
@@ -287,9 +287,6 @@ const GetProjectById = ({
           </Button>
           <Button className="py-1 px-3 text-sm bg-amber-100 text-amber-700">
             View Fabricator
-          </Button>
-          <Button className="py-1 px-3 text-sm bg-red-100 text-red-700">
-            Disable Project
           </Button>
         </div>
       </div>
