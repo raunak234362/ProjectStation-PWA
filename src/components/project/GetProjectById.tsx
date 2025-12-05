@@ -18,6 +18,7 @@ import Button from "../fields/Button";
 import AllMileStone from "./mileStone/AllMileStone";
 import AllDocument from "./projectDocument/AllDocument";
 import type { ProjectData } from "../../interface";
+import WBS from "./wbs/WBS";
 
 
 
@@ -45,26 +46,26 @@ const GetProjectById = ({
     }
   };
 
-  const FetchWBSbyProjectId = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await Service.GetWBSByProjectId(id);
-    //   setProject(response?.data || null);
-    console.log(response);
+  // const FetchWBSbyProjectId = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     const response = await Service.GetWBSByProjectId(id);
+  //   //   setProject(response?.data || null);
+  //   console.log(response);
     
-    } catch (err) {
-      setError("Failed to load WBS details");
-      console.error("Error fetching project:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   } catch (err) {
+  //     setError("Failed to load WBS details");
+  //     console.error("Error fetching project:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (id) fetchProject();
     console.log(id);
-    FetchWBSbyProjectId();
+    // FetchWBSbyProjectId();
   }, [id]);
 
 
@@ -125,6 +126,7 @@ const GetProjectById = ({
           {[
             { key: "details", label: "Details", icon: ClipboardList },
             { key: "files", label: "Files", icon: FileText },
+            { key: "wbs", label: "WBS", icon: FileText },
             { key: "milestones", label: "Milestones", icon: FileText },
             { key: "team", label: "Team", icon: Users },
             { key: "timeline", label: "Timeline", icon: Clock },
@@ -273,6 +275,12 @@ const GetProjectById = ({
             <div className="text-gray-600 italic text-center py-10">
               <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" />
               Notes section coming soon.
+            </div>
+          )}
+          {activeTab === "wbs" && (
+            <div className="text-gray-600 italic text-center py-10">
+              {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
+              <WBS id={id} />
             </div>
           )}
         </div>
