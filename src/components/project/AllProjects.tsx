@@ -4,7 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import GetProjectById from "./GetProjectById";
 
-
 const AllProjects = () => {
   const [projects, setProjects] = useState<any[]>([]);
   const fetchAllProjects = async () => {
@@ -18,12 +17,6 @@ const AllProjects = () => {
   }, []);
 
     // Handle row click (optional)
-    const handleRowClick = (row: any) => {
-      const projectUniqueId = (row as any).id ?? (row as any).fabId ?? "";
-      console.debug("Selected project:", projectUniqueId);
-    };
-
-      // Define columns for DataTable
       const columns: ColumnDef<any>[] = [
         { accessorKey: "name", header: "Project Name" },
         { accessorKey: "stage", header: "Stage" },
