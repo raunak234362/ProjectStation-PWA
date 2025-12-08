@@ -494,12 +494,7 @@ export interface RFIItem {
   subject: string;
   description?: string;
   senderId?: string;
-  sender?: {
-    [x: string]: string;
-    email?: string;
-    firstName?: string;
-    middleName?: string | null;
-    lastName?: string; } | null;
+  sender?: any
   recepient_id?: string;
   recepients?: {
     email?: string;
