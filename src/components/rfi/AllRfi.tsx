@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import Service from "../../api/Service";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RFIItem } from "../../interface";

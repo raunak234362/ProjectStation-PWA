@@ -22,6 +22,7 @@ import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import AllRFI from "../rfi/AllRfi";
 import AddRFI from "../rfi/AddRFI";
+import AllSubmittals from "../submittals/AllSubmittals";
 
 
 
@@ -35,6 +36,7 @@ const GetProjectById = ({
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("details");
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
+  const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 const rfiData = useMemo(() => {
   return project?.rfi || [];
@@ -449,13 +451,47 @@ const rfiData = useMemo(() => {
             </div>
           )}
           {activeTab === "submittals" && (
-            <div className="text-gray-600 italic text-center py-10">
-              <DataTable
-              columns={submittalColumns}
-              data={submittalData}
-               searchPlaceholder="Search projects..."
-        pageSizeOptions={[5, 10, 25]}
-              />
+            <div className="space-y-4">
+              {/* Sub-tabs for RFI */}
+              <div className="flex justify-start border-b border-gray-200 mb-4">
+                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                  <button
+                    onClick={() => setSubmittalView("list")}
+                    className={`
+                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                      ${
+                        submittalView === "list"
+                          ? "border-teal-500 text-teal-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }
+                    `}
+                  >
+                    All Submittals
+                  </button>
+                  {userRole !== "client" && (
+                    <button
+                      onClick={() => setSubmittalView("add")}
+                      className={`
+                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                        ${
+                        submittalView === "add"
+                          ? "border-teal-500 text-teal-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }
+                    `}
+                  >
+                    Create Submittal
+                  </button>
+                  )}
+                </nav>
+              </div>
+
+              {/* Submittal Content */}
+              {submittalView === "list" ? (
+                <AllSubmittals subData={submittalData} />
+              ) : (
+                <AddRFI project={project} />
+              )}
             </div>
           )}
         </div>
