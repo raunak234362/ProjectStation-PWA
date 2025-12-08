@@ -71,7 +71,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         "department-manager",
         "deputy-manager",
         "project-manager",
-        "client",
         "system-admin",
         "user",
         "estimator",
@@ -107,18 +106,18 @@ const Sidebar: React.FC<SidebarProps> = ({
       roles: ["admin", "department-manager", "deputy-manager", "user"],
     },
 
-    {
-      label: "RFI",
-      to: "rfi",
-      icon: <LucideComponent />,
-      roles: [
-        "admin",
-        "deputy-manager",
-        "client",
-        "estimator",
-        "sales",
-      ],
-    },
+    // {
+    //   label: "RFI",
+    //   to: "rfi",
+    //   icon: <LucideComponent />,
+    //   roles: [
+    //     "admin",
+    //     "deputy-manager",
+    //     "client",
+    //     "estimator",
+    //     "sales",
+    //   ],
+    // },
     {
       label: "Projects",
       to: "projects",
@@ -128,6 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         "department-manager",
         "deputy-manager",
         "staff",
+        "client",
         "project-manager",
         "user",
         "human-resource",

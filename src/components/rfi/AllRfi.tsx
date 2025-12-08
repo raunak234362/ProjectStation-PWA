@@ -1,71 +1,85 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RFIItem } from "../../interface";
 import GetRFIByID from "./GetRFIByID";
+import { Loader2, Inbox } from "lucide-react";
 
-const AllRFI = () => {
+interface AllRFIProps {
+  rfiData?: RFIItem[];
+}
 
+const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
 
-  const userRole = sessionStorage.getItem("userRole"); 
+  const userRole = sessionStorage.getItem("userRole");
 
-  const fetchRFI = async () => {
-    try {
-      let result;
+  // const fetchRFI = async () => {
+  //   try {
+  //     setLoading(true);
+  //     let result;
 
-      if (userRole === "CLIENT") {
-        result = await Service.RfiSent();
-      } else {
-        result = await Service.RfiRecieved();
-      }
+  //     if (userRole === "CLIENT") {
+  //       result = await Service.RfiSent();
+  //     } else {
+  //       result = await Service.RfiRecieved();
+  //     }
 
-      // Some APIs return `{data:[...]}`, some return array directly → normalize:
-      // const arrayData = Array.isArray(result) ? result : result?.data || [];
-      // setRFIs(arrayData);
+  //     const arrayData = Array.isArray(result) ? result : result?.data || [];
+  //     const normalized = arrayData.map((item: any) => ({
+  //       ...item,
+  //       createdAt: item.createdAt || item.date || null,
+  //     }));
 
-      const arrayData = Array.isArray(result) ? result : result?.data || [];
-
-const normalized = arrayData.map((item: any) => ({
-  ...item,
-  createdAt: item.createdAt || item.date || null, // 👈 unify
-}));
-
-setRFIs(normalized);
-
-
-    } catch (error) {
-      console.error("Error fetching RFI:", error);
-    }
-  };
+  //     setRFIs(normalized);
+  //   } catch (error) {
+  //     console.error("Error fetching RFI:", error);
+  //     setRFIs([]); // fallback to empty
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    fetchRFI();
-  }, []);
+    if (rfiData && rfiData.length > 0) {
+      // ✅ Use passed RFI data
+      const normalized = rfiData.map((item: any) => ({
+        ...item,
+        createdAt: item.createdAt || item.date || null,
+      }));
+      setRFIs(normalized);
+      setLoading(false);
+    } else {
+      // ✅ Fetch from API if prop empty
+      // fetchRFI();
+    }
+  }, [rfiData]);
 
   const handleRowClick = (row: RFIItem) => {
     setSelectedRfiID(row.id);
   };
 
-  
+  // ✅ Define columns
   const columns: ColumnDef<RFIItem>[] = [
     { accessorKey: "subject", header: "Subject" },
-
     {
       accessorKey: "sender",
       header: "Sender",
       cell: ({ row }) => {
         const s = row.original.sender;
         return s
-          ? `${s.firstName ?? ""} ${s.middleName ?? ""} ${s.lastName ?? ""}`.trim()
+          ? `${s.firstName ?? ""} ${s.middleName ?? ""} ${s.lastName ?? ""}`.trim() ||
+              s.username ||
+              "—"
           : "—";
       },
     },
   ];
 
-  // ➕ Only Admin / Staff should see fabricator info
   if (userRole !== "CLIENT") {
     columns.push({
       accessorKey: "fabricator",
@@ -94,12 +108,42 @@ setRFIs(normalized);
       accessorKey: "createdAt",
       header: "Created On",
       cell: ({ row }) =>
-        row.original.date
-          ? new Date(row.original.date).toLocaleDateString()
+        row.original.createdAt
+          ? new Date(row.original.createdAt).toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
           : "—",
     }
   );
 
+  // ✅ Loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+        <Loader2 className="w-6 h-6 animate-spin mb-2" />
+        Loading RFIs...
+      </div>
+    );
+  }
+
+  // ✅ Empty state
+  if (!loading && (!rfis || rfis.length === 0)) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+        <Inbox className="w-10 h-10 mb-3 text-gray-400" />
+        <p className="text-lg font-medium">No RFIs Available</p>
+        <p className="text-sm text-gray-400">
+          {userRole === "CLIENT"
+            ? "You haven’t sent any RFIs yet."
+            : "No RFIs have been received yet."}
+        </p>
+      </div>
+    );
+  }
+
+  // ✅ Render DataTable
   return (
     <div className="bg-white p-2 rounded-2xl shadow-md">
       <DataTable
@@ -111,7 +155,7 @@ setRFIs(normalized);
         pageSizeOptions={[5, 10, 25]}
       />
 
-      {/* Details Modal */}
+      {/* Optional overlay detail modal */}
       {/* {selectedRfiID && (
         <GetRFIByID
           id={selectedRfiID}

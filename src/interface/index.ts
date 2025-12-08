@@ -1,5 +1,3 @@
-
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AuthInterface {
   username: string;
@@ -208,23 +206,6 @@ export interface SocketMessage {
   createdAt: string;
   isTagged?: boolean;
 }
-// export interface RFQpayload {
-//   projectNumber: string;
-//   projectName: string;
-//   senderId: string;
-//   recipientId: string;
-//  salesPersonId: string|"",
-//  subject: string,
-//  description:string,
-//   status: string;   // 👈 use the Prisma enum here
-//  tools: string
-//   wbtStatus: string;
-//   estimationDate: Date;
-//   connectionDesign: boolean;
-//   customerDesign: boolean;
-//   miscDesign: boolean;
-//   createdById: string;
-
 
 //rfq interfaces
 
@@ -395,12 +376,9 @@ export interface EstimationPayload {
 }
 
 export interface AddProjectPayload {
-  // ── Basic Info ────────────────────────────
   projectNumber: string;
   name: string;
   description: string;
-
-  // ── Relations / IDs ───────────────────────
   fabricatorID: string;
   departmentID: string;
   managerID: string;
@@ -409,14 +387,14 @@ export interface AddProjectPayload {
   CDQuataionID?: string;
   connectionDesignerID?: string;
   status: "ACTIVE" | "INACTIVE" | "DRAFT";
-  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   miscDesign: boolean;
   customerDesign: boolean;
   detailingMain: boolean;
   detailingMisc: boolean;
-  startDate: string;            // ISO string when sent to backend
+  startDate: string;          
   endDate: string;
   approvalDate: string;
   fabricationDate: string;
@@ -432,6 +410,55 @@ export interface AddProjectPayload {
   files?: File[] | null; // supports direct File objects or a typed File interface
   endDateChangeLog?: string[];
 }
+
+// Project Data
+export interface ProjectData {
+  id: string;
+  name: string;
+  description: string;
+  fabricatorID: string;
+  department: {
+    id: string;
+    name: string;
+  };
+  managerID: string;
+  team?: {
+    id: string;
+    name: string;
+  };
+  fabricator?: Fabricator
+  manager?: UserData
+  rfqId?: string;
+  CDQuataionID?: string;
+  connectionDesignerID?: string;
+  projectNumber: string;
+  status: "ACTIVE" | "INACTIVE" | "DRAFT";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
+  tools: "TEKLA" | "SDS2" | "BOTH";
+  connectionDesign: boolean;
+  rfi?:any[];
+  submittal?:any[];
+  miscDesign: boolean;
+  customerDesign: boolean;
+  detailingMain: boolean;
+  detailingMisc: boolean;
+  startDate: string;          
+  endDate: string;
+  approvalDate: string;
+  fabricationDate: string;
+  estimatedHours?: number;
+  detailCheckingHours?: number;
+  detailingHours?: number;
+  executionCheckingHours?: number;
+  executionHours?: number;
+  modelCheckingHours?: number;
+  modelingHours?: number;
+  mailReminder: boolean;
+  submissionMailReminder: boolean;
+  files?: File[] | null; // supports direct File objects or a typed File interface
+  endDateChangeLog?: string[];
+}
+
 export interface RFIPayload {
   fabricator_id: string;
   project_id: string;
@@ -468,6 +495,7 @@ export interface RFIItem {
   description?: string;
   senderId?: string;
   sender?: {
+    [x: string]: string;
     email?: string;
     firstName?: string;
     middleName?: string | null;

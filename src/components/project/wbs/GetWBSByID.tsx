@@ -1,0 +1,215 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
+import {
+  Loader2,
+  AlertCircle,
+  Layers,
+  FileText,
+  ClipboardList,
+  ListChecks,
+  Clock,
+  X,
+} from "lucide-react";
+import Service from "../../../api/Service";
+
+interface LineItem {
+  id: string;
+  description: string;
+  unitTime?: number;
+  createdAt?: string;
+}
+
+interface WBSData {
+  id: string;
+  name: string;
+  type: string;
+  stage: string;
+  projectId: string;
+  templateKey: string;
+  totalCheckHr: number;
+  totalCheckHrWithRework: number;
+  totalExecHr: number;
+  totalExecHrWithRework: number;
+  totalQtyNo: number;
+  createdAt: string;
+  updatedAt: string;
+  LineItems?: LineItem[];
+}
+
+const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
+  const [wbs, setWbs] = useState<WBSData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (id) fetchWBSById(id);
+  }, [id]);
+
+  const fetchWBSById = async (id: string) => {
+    try {
+      setLoading(true);
+      const response = await Service.GetWBSById(id);
+      setWbs(response?.data || null);
+    } catch (err: any) {
+      console.error("Error fetching WBS:", err);
+      setError("Failed to load WBS details");
+    } finally {
+      setLoading(false);
+    }
+  };
+console.log(wbs);
+
+  const formatDate = (date?: string) =>
+    date
+      ? new Date(date).toLocaleString("en-IN", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
+      : "—";
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center py-8 text-gray-500">
+        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+        Loading WBS details...
+      </div>
+    );
+
+  if (error || !wbs)
+    return (
+      <div className="flex items-center justify-center py-8 text-red-600">
+        <AlertCircle className="w-5 h-5 mr-2" />
+        {error || "WBS not found"}
+      </div>
+    );
+
+  return (
+    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex justify-center items-center z-50">
+      <div className="bg-white w-11/12 md:w-8/12 max-h-[90vh] overflow-y-auto rounded-xl shadow-lg p-6 border border-gray-100">
+        {/* Header */}
+        <div className="flex justify-between items-center border-b pb-3 mb-5">
+          <div>
+            <h2 className="text-2xl font-semibold text-teal-700 flex items-center gap-2">
+              <Layers className="w-5 h-5 text-teal-600" /> {wbs.name}
+            </h2>
+            <p className="text-sm text-gray-500">
+              WBS ID: <span className="text-gray-800">{wbs.id}</span>
+            </p>
+          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Summary Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm mb-6">
+          <InfoRow label="Type" value={wbs.type} />
+          <InfoRow label="Stage" value={wbs.stage} />
+          <InfoRow label="Template Key" value={wbs.templateKey} />
+          <InfoRow label="Project ID" value={wbs.projectId} />
+          <InfoRow label="Created On" value={formatDate(wbs.createdAt)} />
+          <InfoRow label="Updated On" value={formatDate(wbs.updatedAt)} />
+        </div>
+
+        {/* Totals */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <h4 className="text-teal-700 font-semibold mb-3 flex items-center gap-2">
+            <Clock className="w-4 h-4" /> Total Hours Overview
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+            <Stat label="Total Check Hours" value={wbs.totalCheckHr} />
+            <Stat
+              label="Check Hours with Rework"
+              value={wbs.totalCheckHrWithRework}
+            />
+            <Stat label="Total Exec Hours" value={wbs.totalExecHr} />
+            <Stat
+              label="Exec Hours with Rework"
+              value={wbs.totalExecHrWithRework}
+            />
+            <Stat label="Total Quantity No" value={wbs.totalQtyNo} />
+          </div>
+        </div>
+
+        {/* Line Items */}
+        <div className="border-t pt-4">
+          <h3 className="text-lg font-semibold text-teal-700 flex items-center gap-2 mb-2">
+            <ListChecks className="w-5 h-5" /> Line Items (
+            {wbs.LineItems?.length || 0})
+          </h3>
+
+          {wbs.LineItems && wbs.LineItems.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-gray-200 rounded-lg text-sm">
+                <thead className="bg-gray-100 text-gray-700 text-left">
+                  <tr>
+                    <th className="p-3 border-b">#</th>
+                    <th className="p-3 border-b">Description</th>
+                    <th className="p-3 border-b text-center">Unit Time (hr)</th>
+                    <th className="p-3 border-b">Created At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {wbs.LineItems.map((item, index) => (
+                    <tr
+                      key={item.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="p-3 border-b">{index + 1}</td>
+                      <td className="p-3 border-b text-gray-800">
+                        {item.description}
+                      </td>
+                      <td className="p-3 border-b text-center text-teal-700 font-medium">
+                        {item.unitTime ?? 0}
+                      </td>
+                      <td className="p-3 border-b text-gray-600">
+                        {item.createdAt ? formatDate(item.createdAt) : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-gray-500 italic text-center py-3">
+              No line items found for this WBS.
+            </p>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-6 pt-4 border-t flex justify-end gap-3">
+          <button className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm hover:bg-teal-700">
+            Edit WBS
+          </button>
+          <button className="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm hover:bg-red-200">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ✅ Reusable InfoRow
+const InfoRow = ({ label, value }: { label: string; value: any }) => (
+  <div className="flex justify-between items-center border-b border-gray-100 pb-1">
+    <span className="font-medium text-gray-600">{label}:</span>
+    <span className="text-gray-900">{value || "—"}</span>
+  </div>
+);
+
+// ✅ Reusable Stat Display
+const Stat = ({ label, value }: { label: string; value: number | string }) => (
+  <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+    <p className="text-xs text-gray-500">{label}</p>
+    <p className="text-sm font-semibold text-teal-700">{value ?? 0}</p>
+  </div>
+);
+
+export default GetWBSByID;

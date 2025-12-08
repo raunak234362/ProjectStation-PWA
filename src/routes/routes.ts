@@ -10,6 +10,8 @@ import RFQPage from "../pages/RFQPage";
 import ConnectionPage from "../pages/ConnectionPage";
 import ChangePasswordPage from "../pages/ChangePasswordPage";
 import RFIPage from "../pages/RFIPage";
+import EstimationPage from "../pages/EstimationPage";
+import ProjectPage from "../pages/ProjectPage";
 
 // import Layout from "../layout/DashboardLayout";
 const routes = [
@@ -27,6 +29,8 @@ const routes = [
           { path: "manage-team", Component: TeamPage },
           { path: "connection-designer", Component: ConnectionPage },
           { path: "fabricator", Component: FabricatorPage },
+          { path: "estimation", Component: EstimationPage },
+          { path: "projects", Component: ProjectPage },
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },

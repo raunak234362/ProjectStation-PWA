@@ -10,6 +10,7 @@ import ResponseDetailsModal from "./ResponseDetailsModal";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import AddEstimation from "../estimation/AddEstimation";
+import QuotationRaise from "../connectionDesigner/QuotationRaise";
 
 interface GetRfqByIDProps {
   id: string;
@@ -22,7 +23,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
   const [showEstimationModal, setShowEstimationModal] = useState(false);
-
+  const [showCDQuotationModal, setShowCDQuotationModal] = useState(false);
   const fetchRfq = async () => {
     try {
       setLoading(true);
@@ -33,6 +34,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCDQuotationModal = () => {
+    setShowCDQuotationModal(true);
+  };
+  const handleCDQuotationModalClose = () => {
+    setShowCDQuotationModal(false);
   };
 
   useEffect(() => {
@@ -58,9 +66,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   }
 
   const userRole = sessionStorage.getItem("userRole");
-  
-
-
 
   const responseColumns: ColumnDef<any>[] = [
     {
@@ -70,7 +75,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
         <span className="font-medium text-sm">
           {row.original.createdByRole === "CLIENT" ? "Client" : "WBT Team"}
         </span>
-      )
+      ),
     },
     // {
     //   accessorKey: "description",
@@ -79,7 +84,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     //     <p className="truncate max-w-[180px]">{row.original.description}</p>
     //   ),
     // },
-
 
     {
       accessorKey: "description",
@@ -114,10 +118,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.original.status === "OPEN"
               ? "bg-green-100 text-green-700"
               : "bg-yellow-100 text-yellow-700"
-            }`}
+          }`}
         >
           {row.original.status}
         </span>
@@ -125,25 +130,26 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     },
   ];
 
-
   return (
     <>
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
           {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
           <div className="bg-gradient-to-br from-teal-50 to-white p-6 rounded-xl shadow-md space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <h3 className="text-2xl font-bold text-teal-700">{rfq.projectName}</h3>
+                <h3 className="text-2xl font-bold text-teal-700">
+                  {rfq.projectName}
+                </h3>
 
                 {/* Status tag */}
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${rfq.status === "RECEIVED"
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    rfq.status === "RECEIVED"
                       ? "bg-yellow-100 text-yellow-700"
                       : "bg-green-100 text-green-700"
-                    }`}
+                  }`}
                 >
                   {rfq.status}
                 </span>
@@ -180,7 +186,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 </Button>
               </div>
             </div>
-
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Info label="Subject" value={rfq.subject || ""} />
@@ -227,7 +232,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                       >
                         {file.originalName || `File ${i + 1}`}
                       </span>
-
                     </li>
                   ))}
                 </ul>
@@ -235,24 +239,30 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             ) : (
               <p className="text-gray-500 italic">No files uploaded</p>
             )}
-<div className="flex gap-2">
-
-            <Button onClick={() => setShowEstimationModal(true)}>Raise For Estimation</Button>
-            <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
-          Raise for Connection Designer Quotation
-        </Button>
-</div>
+            <div className="flex gap-2">
+              <Button onClick={() => setShowEstimationModal(true)}>
+                Raise For Estimation
+              </Button>
+              <Button
+                onClick={() => handleCDQuotationModal()}
+                className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+              >
+                Raise for Connection Designer Quotation
+              </Button>
+            </div>
           </div>
-
 
           {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
           <div className="bg-gradient-to-br from-teal-50 to-white p-6 rounded-xl shadow-md space-y-6">
-
             {/* Header + Add Response Button */}
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-semibold text-teal-700">Responses</h1>
+              <h1 className="text-2xl font-semibold text-teal-700">
+                Responses
+              </h1>
 
-              {(userRole === "ADMIN" || userRole === "STAFF" || userRole === "USER") && (
+              {(userRole === "ADMIN" ||
+                userRole === "STAFF" ||
+                userRole === "USER") && (
                 <Button
                   onClick={() => setShowResponseModal(true)}
                   className="px-4 py-2 bg-teal-600 text-white rounded-lg shadow hover:bg-teal-700 transition"
@@ -260,9 +270,14 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                   + Add Response
                 </Button>
               )}
-
-
             </div>
+            {showResponseModal && (
+              <ResponseModal
+                rfqId={id}
+                onClose={() => setShowResponseModal(false)}
+                onSuccess={fetchRfq}
+              />
+            )}
 
             {/* ---- RESPONSE TABLE ---- */}
             {rfq.responses?.length ? (
@@ -276,20 +291,16 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             ) : (
               <p className="text-gray-500 italic">No responses yet.</p>
             )}
-
-
-            {/* ---- MODAL ---- */}
-            {showResponseModal && (
-              <ResponseModal
-                rfqId={id}
-                onClose={() => setShowResponseModal(false)}
-                onSuccess={fetchRfq} // refresh after submit
-              />
-            )}
           </div>
-
         </div>
       </div>
+      {showCDQuotationModal && (
+        <QuotationRaise
+          rfqId={id}
+          onClose={() => handleCDQuotationModalClose()}
+          onSuccess={fetchRfq} // refresh after submit
+        />
+      )}
 
       {selectedResponse && (
         <ResponseDetailsModal
@@ -331,14 +342,14 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-md border ${enabled
+    className={`px-3 py-2 rounded-md border ${
+      enabled
         ? "bg-green-100 border-green-400 text-green-700"
         : "bg-gray-100 border-gray-300 text-gray-500"
-      }`}
+    }`}
   >
     {label}
   </div>
-
 );
 
 export default GetRFQByID;

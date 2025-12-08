@@ -1,283 +1,290 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import Select from "react-select";
+import {
+  Building2, UserCheck, HardHat, Wrench,
+  Sparkles, Zap, Layers
+} from "lucide-react";
 
 import Input from "../fields/input";
 import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
-import Select from "../fields/Select";
-import type { AddProjectPayload } from "../../interface";
 import ToggleField from "../fields/Toggle";
+import type { AddProjectPayload } from "../../interface";
 
 const AddProject: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-
-  // Redux selectors
-  const fabricators = useSelector((state: any) => state.fabricatorInfo?.fabricatorData || []);
-  const departmentDatas = useSelector((state: any) => state?.userInfo?.departmentData || []);
-  const teamDatas = useSelector((state: any) => state?.userInfo?.teamData || []);
-  const users = useSelector((state: any) => state.userInfo?.staffData || []);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [connectionDesigners, setConnectionDesigners] = useState<any[]>([]);
-console.log(connectionDesigners);
 
-  React.useEffect(() => {
-    const fetchConnectionDesigners = async () => {
-      const data = await Service.FetchAllConnectionDesigner();
-      if (data) setConnectionDesigners(data?.data);
-    };
-    fetchConnectionDesigners();
-  }, []);
+  const fabricators = useSelector((state: any) => state.fabricatorInfo?.fabricatorData || []);
+  const departmentDatas = useSelector((state: any) => state.userInfo?.departmentData || []);
+  const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
+  const users = useSelector((state: any) => state.userInfo?.staffData || []);
+  const rfqData = useSelector((state: any) => state.RFQInfos?.RFQData || []);
 
-  // react-hook-form setup
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<AddProjectPayload>({
+  const { register, handleSubmit, control, reset, watch, setValue, formState: { errors } } = useForm<AddProjectPayload>({
     defaultValues: {
       tools: "TEKLA",
-      status: "ACTIVE",
-      stage: "PLANNING",
-      connectionDesign: false,
-      miscDesign: false,
-      customerDesign: false,
-      detailingMain: false,
-      detailingMisc: false,
-      mailReminder: false,
-      submissionMailReminder: false,
+      connectionDesign: false, miscDesign: false, customerDesign: false,
+      detailingMain: false, detailingMisc: false,
+      files: [],
     },
   });
 
-  const onSubmit = async (data: AddProjectPayload) => {
-    console.log(data);
-    
-    try {
-      setLoading(true);
+  useEffect(() => {
+    Service.FetchAllConnectionDesigner()
+      .then((res) => setConnectionDesigners(res?.data || []))
+      .catch(() => toast.error("Failed to load connection designers"));
+  }, []);
 
+  const options = {
+    rfqs: rfqData.map((r: any) => ({ label: `${r.projectName} • ${r.fabricator?.fabName}`, value: String(r.id) })) as { label: string; value: string }[],
+    fabricators: fabricators.map((f: any) => ({ label: f.fabName, value: String(f.id) })) as { label: string; value: string }[],
+    departments: departmentDatas.map((d: any) => ({ label: d.name, value: String(d.id) })) as { label: string; value: string }[],
+    managers: users.map((u: any) => ({ label: `${u.firstName} ${u.lastName}`, value: String(u.id) })) as { label: string; value: string }[],
+    teams: teamDatas.map((t: any) => ({ label: t.name, value: String(t.id) })) as { label: string; value: string }[],
+    connectionDesigners: connectionDesigners.map((c: any) => ({ label: c.connectionDesignerName || c.name, value: String(c.id) })) as { label: string; value: string }[],
+    tools: [
+      { label: "TEKLA", value: "TEKLA" },
+      { label: "SDS2", value: "SDS2" },
+      { label: "Both (TEKLA + SDS2)", value: "BOTH" },
+    ],
+  };
+
+  const selectedRfqId = watch("rfqId");
+  const selectedRfq = rfqData.find((r: any) => String(r.id) === String(selectedRfqId));
+
+  useEffect(() => {
+    if (!selectedRfq) return;
+
+    setValue("name", selectedRfq.projectName || "");
+    setValue("projectNumber", selectedRfq.projectNumber || `PROJ-${new Date().getFullYear()}-${String(rfqData.indexOf(selectedRfq) + 1).padStart(3, '0')}`);
+    setValue("description", selectedRfq.description || "");
+    setValue("fabricatorID", String(selectedRfq.fabricatorId || ""));
+    setValue("tools", selectedRfq.tools || "TEKLA");
+
+    setValue("connectionDesign", !!selectedRfq.connectionDesign);
+    setValue("miscDesign", !!selectedRfq.miscDesign);
+    setValue("customerDesign", !!selectedRfq.customerDesign);
+    setValue("detailingMain", !!selectedRfq.detailingMain);
+    setValue("detailingMisc", !!selectedRfq.detailingMisc);
+
+    toast.success("RFQ data auto-filled!", { icon: <Sparkles className="w-5 h-5" /> });
+  }, [selectedRfq, setValue, rfqData]);
+
+  const onSubmit = async (data: AddProjectPayload) => {
+    try {
+      setIsSubmitting(true);
       const formData = new FormData();
+
       Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (Array.isArray(value)) {
-            value.forEach((v) => formData.append(key, v));
-          } else {
-            formData.append(key, String(value));
-          }
+        if (value === null || value === undefined) return;
+        if (key === "files" && Array.isArray(value)) {
+          value.forEach(file => formData.append("files", file));
+        } else if (typeof value === "boolean") {
+          formData.append(key, value ? "true" : "false");
+        } else {
+          formData.append(key, String(value));
         }
       });
 
+      formData.append("status", "ACTIVE");
+      formData.append("stage", "IFA");
+
       await Service.AddProject(formData);
-      toast.success("Project added successfully!");
+      toast.success("Project launched successfully!");
     } catch (error: any) {
-      console.error("Error adding project:", error);
-      toast.error(error?.response?.data?.message || "Failed to add project");
+      toast.error(error?.response?.data?.message || "Failed to create project");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  // Dropdown options
-  const selectOptions = {
-    fabricatorOptions: fabricators.map((f: any) => ({ label: f.fabName, value: f.id })),
-    departmentOptions: departmentDatas.map((d: any) => ({ label: d.name, value: d.id })),
-    managerOptions: users.map((u: any) => ({
-      label: `${u.firstName} ${u.lastName}`,
-      value: u.id,
-    })),
-    teamOptions: teamDatas.map((t: any) => ({ label: t.name, value: t.id })),
-    connectionDesignerOptions: connectionDesigners?.map((c: any) => ({ label: c.name, value: c.id })),
-  };
-
   return (
-    <div className="w-full mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-lg p-8">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        {/* Project Info */}
-        <SectionTitle title="Project Information" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 ">
+      <div className="w-full mx-auto">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
-            label="Project Number *"
-            {...register("projectNumber", { required: "Project number is required" })}
-          />
-          {errors.projectNumber && (
-            <p className="text-red-500 text-xs">{errors.projectNumber.message}</p>
-          )}
+          <form onSubmit={handleSubmit(onSubmit)} className="p-10 space-y-14">
 
-          <Input
-            label="Project Name *"
-            {...register("name", { required: "Project name is required" })}
-          />
-          {errors.name && (
-            <p className="text-red-500 text-xs">{errors.name.message}</p>
-          )}
-
-          <Input label="Description *" {...register("description", { required: "Description is required" })} />
-        </div>
-
-        {/* Associations */}
-        <SectionTitle title="Associations" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Controller
-            name="fabricatorID"
-            control={control}
-            rules={{ required: "Fabricator is required" }}
-            render={({ field }) => (
-              <Select
-                label="Fabricator"
-                options={selectOptions.fabricatorOptions}
-                value={field.value}
-                onChange={(_, selected) => field.onChange(selected || "")}
+            {/* Link RFQ — Hero Section */}
+            <div className="relative ">
+              <Controller
+                name="rfqId"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    options={options.rfqs}
+                    value={options.rfqs.find(o => o.value === field.value) || null}
+                    onChange={(opt) => field.onChange(opt?.value || "")}
+                    placeholder="Search RFQ by project name or fabricator..."
+                    isClearable
+                    isSearchable
+                    className="text-gray-800"
+                    styles={{
+                      control: (base) => ({ ...base, backgroundColor: "white", borderRadius: "16px", padding: "8px" }),
+                    }}
+                  />
+                )}
               />
+            </div>
+
+            {/* RFQ Preview */}
+            {selectedRfq && (
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-2xl p-8 -mt-6 mb-10 shadow-inner">
+                <div className="flex items-center gap-3 mb-4">
+                  <Zap className="w-7 h-7 text-emerald-600" />
+                  <h3 className="text-2xl font-bold text-emerald-900">RFQ Auto-Filled</h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+                  <div className="bg-white/70 p-4 rounded-xl">
+                    <p className="text-gray-600">Project</p>
+                    <p className="font-bold text-gray-800 truncate">{selectedRfq.projectName}</p>
+                  </div>
+                  <div className="bg-white/70 p-4 rounded-xl">
+                    <p className="text-gray-600">Fabricator</p>
+                    <p className="font-bold">{selectedRfq.fabricator?.fabName}</p>
+                  </div>
+                  <div className="bg-white/70 p-4 rounded-xl">
+                    <p className="text-gray-600">Tool</p>
+                    <p className="font-bold text-purple-700">{selectedRfq.tools || "TEKLA"}</p>
+                  </div>
+                 
+                </div>
+              </div>
             )}
-          />
-          <Controller
-            name="departmentID"
-            control={control}
-            rules={{ required: "Department is required" }}
-            render={({ field }) => (
-              <Select
-                label="Department"
-                options={selectOptions.departmentOptions}
-                value={field.value}
-                onChange={(_, selected) => field.onChange(selected || "")}
-              />
-            )}
-          />
-          <Controller
-            name="managerID"
-            control={control}
-            rules={{ required: "Manager is required" }}
-            render={({ field }) => (
-              <Select
-                label="Manager"
-                options={selectOptions.managerOptions}
-                value={field.value}
-                onChange={(_, selected) => field.onChange(selected || "")}
-              />
-            )}
-          />
-          <Controller
-            name="teamID"
-            control={control}
-            render={({ field }) => (
-              <Select
-                label="Team"
-                options={selectOptions.teamOptions}
-                value={field.value}
-                onChange={(_, selected) => field.onChange(selected || "")}
-              />
-            )}
-          />
-          <Input label="RFQ ID" {...register("rfqId")} />
-          <Input label="CD Quotation ID" {...register("CDQuataionID")} />
-          <Controller
-            name="connectionDesignerID"
-            control={control}
-            render={({ field }) => (
-              <Select
-                label="Connection Designer"
-                options={selectOptions.connectionDesignerOptions}
-                value={field.value}
-                onChange={(_, selected) => field.onChange(selected || "")}
-              />
-            )}
-          />
+
+            {/* Project Info */}
+            <SectionTitle title="Project Details" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Input label="Project Number *" placeholder="PROJ-2025-089" {...register("projectNumber", { required: "Required" })} />
+              <Input label="Project Name *" placeholder="Empire State Tower - Phase II" {...register("name", { required: "Required" })} />
+              <div className="md:col-span-2">
+                <Input label="Description *" placeholder="Full structural steel detailing for 40-story commercial building..." {...register("description", { required: "Required" })} />
+              </div>
+            </div>
+
+            {/* Team Assignment */}
+            <SectionTitle title="Team & Assignments" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
+                  <Building2 className="w-5 h-5 text-blue-600" /> Fabricator *
+                </label>
+                <Controller name="fabricatorID" control={control} rules={{ required: true }} render={({ field }) => (
+                  <Select options={options.fabricators} value={options.fabricators.find(o => o.value === field.value)} onChange={o => field.onChange(o?.value || "")} placeholder="Select..." isSearchable />
+                )} />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
+                  <HardHat className="w-5 h-5 text-amber-600" /> Project Manager *
+                </label>
+                <Controller name="managerID" control={control} rules={{ required: true }} render={({ field }) => (
+                  <Select options={options.managers} value={options.managers.find(o => o.value === field.value)} onChange={o => field.onChange(o?.value || "")} placeholder="Assign manager" isSearchable />
+                )} />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
+                  <UserCheck className="w-5 h-5 text-green-600" /> Department *
+                </label>
+                <Controller name="departmentID" control={control} rules={{ required: true }} render={({ field }) => (
+                  <Select options={options.departments} value={options.departments.find(o => o.value === field.value)} onChange={o => field.onChange(o?.value || "")} placeholder="Select dept" />
+                )} />
+              </div>
+            </div>
+
+            {/* Scope: Connection Design */}
+            <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-3xl p-2 border-2 border-cyan-200">
+              <div className="flex items-center gap-4 mb-8">
+                <Layers className="w-5 h-5 text-cyan-600" />
+                <div>
+                  <h3 className="text-xl font-bold text-cyan-900">Connection Design Scope</h3>
+                  <p className="text-cyan-700">Define connection engineering deliverables</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {["connectionDesign::Main Connection Design", "miscDesign::Misc Design", "customerDesign::Customer Design"].map(item => {
+                  const [key, label] = item.split("::");
+                  return (
+                    <Controller key={key} name={key as keyof AddProjectPayload} control={control} render={({ field }) => (
+                      <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all border border-cyan-100">
+                        <ToggleField label={label} checked={!!field.value} onChange={field.onChange} />
+                      </div>
+                    )} />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Scope: Detailing */}
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-2 border-2 border-amber-200">
+              <div className="flex items-center gap-4 mb-8">
+                <Wrench className="w-5 h-5 text-amber-600" />
+                <div>
+                  <h3 className="text-xl font-bold text-amber-900">Detailing Scope</h3>
+                  <p className="text-amber-700">Shop & erection drawing deliverables</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {["detailingMain::Detailing Main", "detailingMisc::Detailing Misc"].map(item => {
+                  const [key, label] = item.split("::");
+                  return (
+                    <Controller key={key} name={key as keyof AddProjectPayload} control={control} render={({ field }) => (
+                      <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all border border-amber-100">
+                        <ToggleField label={label} checked={!!field.value} onChange={field.onChange} />
+                      </div>
+                    )} />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Tools & Timeline */}
+            <SectionTitle title="Tools & Timeline" />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              <div>
+                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
+                  <Wrench className="w-5 h-5 text-purple-600" /> Tool
+                </label>
+                <Controller name="tools" control={control} render={({ field }) => (
+                  <Select options={options.tools} value={options.tools.find(o => o.value === field.value)} onChange={o => field.onChange(o?.value || "TEKLA")} />
+                )} />
+              </div>
+              <Input label="Estimated Hours" type="number" placeholder="1200" {...register("estimatedHours")} />
+              <Input label="Start Date *" type="date" {...register("startDate", { required: "Required" })} />
+              <Input label="Target End Date" type="date" {...register("endDate")} />
+            </div>
+
+            {/* Attachments */}
+            <SectionTitle title="Project Attachments" />
+            <div className="bg-gray-50/70 border-2 border-dashed border-gray-300 rounded-3xl p-10 text-center">
+              <Controller name="files" control={control} render={({ field }) => (
+                <MultipleFileUpload onFilesChange={(files) => field.onChange(files)} />
+              )} />
+            </div>
+
+            {/* Submit */}
+            <div className="flex justify-end gap-6 pt-10 border-t-2 border-gray-200">
+              <Button className=" flex items-center gap-3" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>Creating Project...</>
+                ) : (
+                  <>
+                    <Sparkles className="w-6 h-6" />
+                    Create Project
+                  </>
+                )}
+              </Button>
+            </div>
+
+          </form>
         </div>
-
-        {/* Tools & Schedule */}
-        <SectionTitle title="Schedule & Tools" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Controller
-            name="tools"
-            control={control}
-            render={({ field }) => (
-              <Select
-                label="Tools"
-                options={[
-                  { label: "TEKLA", value: "TEKLA" },
-                  { label: "SDS2", value: "SDS2" },
-                  { label: "BOTH", value: "BOTH" },
-                ]}
-                value={field.value}
-                onChange={(_, selected) => field.onChange(selected || "")}
-              />
-            )}
-          />
-
-          <Input
-            label="Start Date *"
-            type="date"
-            {...register("startDate", { required: "Start date is required" })}
-          />
-          <Input
-            label="End Date *"
-            type="date"
-            {...register("endDate", { required: "End date is required" })}
-          />
-          <Input
-            label="Approval Date"
-            type="date"
-            {...register("approvalDate")}
-          />
-          <Input
-            label="Fabrication Date"
-            type="date"
-            {...register("fabricationDate")}
-          />
-        </div>
-
-        {/* Design Scopes */}
-        <SectionTitle title="Connection Design Scope" />
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <ToggleField label="Main Design" {...register("connectionDesign")} />
-          <ToggleField label="Misc Design" {...register("miscDesign")} />
-          <ToggleField label="Customer Design" {...register("customerDesign")} />
-          <ToggleField label="Detailing Main" {...register("detailingMain")} />
-          <ToggleField label="Detailing Misc" {...register("detailingMisc")} />
-        </div>
-
-        {/* Hours Section */}
-        <SectionTitle title="Estimation Details" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Input label="Estimated Hours" type="number" {...register("estimatedHours")} />
-          <Input label="Modeling Hours" type="number" {...register("modelingHours")} />
-          <Input label="Detailing Hours" type="number" {...register("detailingHours")} />
-          <Input label="Detail Checking Hours" type="number" {...register("detailCheckingHours")} />
-          <Input label="Execution Checking Hours" type="number" {...register("executionCheckingHours")} />
-          <Input label="Execution Hours" type="number" {...register("executionHours")} />
-          <Input label="Model Checking Hours" type="number" {...register("modelCheckingHours")} />
-        </div>
-
-        {/* File Upload */}
-        <SectionTitle title="Attachments" />
-        <Controller
-          name="files"
-          control={control}
-          render={({ field }) => (
-            <MultipleFileUpload onFilesChange={(files) => field.onChange(files)} />
-          )}
-        />
-
-        {/* Actions */}
-        <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
-          <Button
-            type="button"
-            onClick={() => reset()}
-            className="bg-gray-200 text-gray-800 hover:bg-gray-300"
-          >
-            Reset
-          </Button>
-          <Button type="submit" disabled={isSubmitting || loading}>
-            {loading ? "Creating..." : "Create Project"}
-          </Button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };

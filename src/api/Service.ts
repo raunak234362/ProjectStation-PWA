@@ -427,7 +427,22 @@ class Service {
         console.error("cannot find rfq", error);
       }
     }
-  //RESPONSES
+  
+  // Update RFQ by ID
+  static async UpdateRFQById(rfqId: string, data: any) {
+    try {
+      const response = await api.put(`rfq/update/${rfqId}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("RFQ updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot update rfq", error);
+    }
+  } 
+    //RESPONSES
   //response post request 
 
 static async addResponse(formData: FormData,responseId:string) {
@@ -578,10 +593,133 @@ static async addResponse(formData: FormData,responseId:string) {
 
   // Add Project
   static async AddProject(formData: FormData) {
+    const token = sessionStorage.getItem("token");
     try {
       const response = await api.post(`project/projects`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get All Projects
+  static async GetAllProjects() {
+    try {
+      const response = await api.get(`project/projects`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get Project By ID
+  static async GetProjectById(id: string) {
+    try {
+      const response = await api.get(`project/projects/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Edit Project By ID
+  static async EditProjectById(id: string, data: any) {
+    try {
+      const response = await api.put(`project/projects/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Add Project Milestone
+  static async AddProjectMilestone(data: any) {
+    try {
+      const response = await api.post(`mileStone/`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get Project Milestone By ID
+  static async GetProjectMilestoneById(id: string) {
+    try {
+      const response = await api.get(`mileStone/project/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Add WBS in Project
+  static async AddWBSInProject(projectId: string) {
+    try {
+      const response = await api.post(`project/projects/${projectId}/wbs
+`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get WBS By Project ID
+  static async GetWBSByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`project/projects/${projectId}/wbs`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get WBS By ID
+  static async GetWBSById(id: string) {
+    try {
+      const response = await api.get(`project/wbs/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
         },
       });
       console.log(response);
