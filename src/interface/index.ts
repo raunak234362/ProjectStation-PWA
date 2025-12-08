@@ -436,6 +436,8 @@ export interface ProjectData {
   stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
+  rfi?:any[];
+  submittal?:any[];
   miscDesign: boolean;
   customerDesign: boolean;
   detailingMain: boolean;
@@ -493,6 +495,7 @@ export interface RFIItem {
   description?: string;
   senderId?: string;
   sender?: {
+    [x: string]: string;
     email?: string;
     firstName?: string;
     middleName?: string | null;

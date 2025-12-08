@@ -11,13 +11,15 @@ import SectionTitle from "../ui/SectionTitle";
 import Select from "react-select";
 
 
-const AddRFI:React.FC = () => {
+const AddRFI:React.FC<{project: any}> = ({project}) => {
+console.log(project);
 
  const userDetail = useSelector((state: any) => state.userInfo.userDetail);
   const userRole = userDetail?.role; // CLIENT | ADMIN | STAFF etc.
   const fabricators = useSelector((state: any) => state.fabricatorInfo.fabricatorData);
   const staff = useSelector((state: any) => state.userInfo.staffData);
-
+  const project_id = project?.id;
+  const fabricatorID=project?.fabricatorID;
   console.log("Fabricators from Redux:", fabricators);
 
 const {
@@ -57,9 +59,8 @@ const fabricatorOptions: SelectOption[] =
   })) ?? [];
 
 // Match selected fabricator
-const selectedFab = watch ("fabricator_id");
 const selectedFabricator = fabricators?.find(
-  (f: Fabricator) => String(f.id) === String(selectedFab)
+  (f: Fabricator) => String(f.id) === String(fabricatorID)
 );
 // Correct POC mapping
 const pocOptions: SelectOption[] =
@@ -69,7 +70,6 @@ const pocOptions: SelectOption[] =
     value: String(p.id),
   })) ?? [];
 
-console.log("Selected Fabricator:", selectedFab);
 const projectOptions: SelectOption[] =
   selectedFabricator?.project?.map((p: any) => ({
     label: p.projectName || p.name,
@@ -89,7 +89,7 @@ const projectOptions: SelectOption[] =
     try {
       const payload: RFIPayload = {
         ...data,
-        project_id: String(data.project_id),
+        project_id: project_id,
         recepient_id: data.recepient_id,
         sender_id: userDetail?.id, // always user
         status: true,
@@ -140,29 +140,14 @@ useEffect(() => {
 
   return (
 
-    <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow">
-      <h2 className="text-2xl font-bold mb-4 text-teal-700">Create RFI</h2>
+    <div className="w-full mx-auto bg-white p-2 rounded-xl shadow">
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
         <SectionTitle title="Fabrication & Routing" />
 
         {userRole !== "CLIENT" && (
           <>
-            {/* FABRICATOR */}
-            <Controller
-              name="fabricator_id"
-              control={control}
-              rules={{ required: "Fabricator selection required" }}
-              render={({ field }) => (
-                <Select<SelectOption, false>
-                  placeholder="Select Fabricator"
-                  options={fabricatorOptions}
-                  value={fabricatorOptions.find((o) => o.value === field.value) ?? null}
-                  onChange={(option) => field.onChange(option ? option.value : null)}
-                />
-              )}
-            />
 
             {/* CLIENT CONTACT */}
             <Controller
@@ -177,23 +162,6 @@ useEffect(() => {
                 />
               )}
             />
-
-            {userRole !== "CLIENT" && (
-  <Controller
-    name="project_id"
-    control={control}
-    rules={{ required: "Project is required" }}
-    render={({ field }) => (
-      <Select<SelectOption, false>
-        placeholder="Project *"
-        options={projectOptions}
-        value={projectOptions.find((o) => o.value === field.value) ?? null}
-        onChange={(option) => field.onChange(option ? option.value : null)}
-      />
-    )}
-  />
-)}
-
           </>
         )}
 

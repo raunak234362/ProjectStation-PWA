@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { Loader2, AlertCircle } from "lucide-react";
 import DataTable from "../../ui/table";
 import Service from "../../../api/Service";
+import GetWBSByID from "./GetWBSByID";
 
 const AllWBS = ({id}: {id: string}) => {
   const [wbsList, setWbsList] = useState<any[]>([]);
@@ -131,7 +132,11 @@ const AllWBS = ({id}: {id: string}) => {
         columns={columns}
         data={wbsList}
         onRowClick={handleRowClick}
-        detailComponent={DetailComponent}
+      detailComponent={({ row }) => {
+          const wbsUniqueId =
+            (row as any).id ?? (row as any).fabId ?? "";
+          return <GetWBSByID id={wbsUniqueId} />;
+        }}
         searchPlaceholder="Search WBS by name or type..."
         pageSizeOptions={[10, 25, 50, 100]} 
       />

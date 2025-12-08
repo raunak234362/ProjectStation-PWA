@@ -714,6 +714,21 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+  // Get WBS By ID
+  static async GetWBSById(id: string) {
+    try {
+      const response = await api.get(`project/wbs/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Fetch All Chats
   static async AllChats() {
     try {

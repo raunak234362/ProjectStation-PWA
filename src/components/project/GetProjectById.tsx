@@ -10,7 +10,6 @@ import {
   Users,
   Clock,
   ClipboardList,
-  X,
 } from "lucide-react";
 import Service from "../../api/Service";
 import { openFileSecurely } from "../../utils/openFileSecurely";
@@ -19,6 +18,10 @@ import AllMileStone from "./mileStone/AllMileStone";
 import AllDocument from "./projectDocument/AllDocument";
 import type { ProjectData } from "../../interface";
 import WBS from "./wbs/WBS";
+import DataTable from "../ui/table";
+import type { ColumnDef } from "@tanstack/react-table";
+import AllRFI from "../rfi/AllRfi";
+import AddRFI from "../rfi/AddRFI";
 
 
 
@@ -31,7 +34,11 @@ const GetProjectById = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("details");
-
+  const [rfiView, setRfiView] = useState<"list" | "add">("list");
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+const rfiData = useMemo(() => {
+  return project?.rfi || [];
+}, [project]);
   const fetchProject = async () => {
     try {
       setLoading(true);
@@ -45,6 +52,91 @@ const GetProjectById = ({
       setLoading(false);
     }
   };
+
+  const submittalData = useMemo(() => {
+    return project?.submittal || [];
+  }, [project]);
+
+  const rfiColumns: ColumnDef<any>[] = [
+    { accessorKey: "subject", header: "Subject" },
+    {
+      accessorKey: "sender",
+      header: "Sender",
+      cell: ({ row }) =>
+        `${row.original.sender?.firstName || ""} ${
+          row.original.sender?.lastName || ""
+        }`,
+    },
+    {
+      accessorKey: "recepients",
+      header: "Recipient",
+      cell: ({ row }) =>
+        `${row.original.recepients?.firstName || ""} ${
+          row.original.recepients?.lastName || ""
+        }`,
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.original.status
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {row.original.status ? "Closed" : "Open"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "date",
+      header: "Date",
+      cell: ({ row }) => formatDate(row.original.date),
+    },
+  ];
+
+
+  const submittalColumns: ColumnDef<any>[] = [
+    { accessorKey: "subject", header: "Subject" },
+    {
+      accessorKey: "sender",
+      header: "Sender",
+      cell: ({ row }) =>
+        `${row.original.sender?.firstName || ""} ${
+          row.original.sender?.lastName || ""
+        }`,
+    },
+    {
+      accessorKey: "recepients",
+      header: "Recipient",
+      cell: ({ row }) =>
+        `${row.original.recepients?.firstName || ""} ${
+          row.original.recepients?.lastName || ""
+        }`,
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.original.status
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {row.original.status ? "Closed" : "Open"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "date",
+      header: "Date",
+      cell: ({ row }) => formatDate(row.original.date),
+    },
+  ];  
 
   // const FetchWBSbyProjectId = async () => {
   //   try {
@@ -94,12 +186,11 @@ const GetProjectById = ({
     );
 
   return (
-    <div className="backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-white h-auto overflow-y-auto p-5 md:p-6 rounded-lg shadow-lg w-full relative">
+    <div className="w-full bg-white h-auto p-3 md:p-6 rounded-lg shadow-sm border relative">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3 mb-3">
           <div>
-            <h2 className="text-2xl font-semibold text-teal-700">{project.name}</h2>
+            <h2 className="text-xl md:text-2xl font-semibold text-teal-700">{project.name}</h2>
             <p className="text-gray-500 text-sm">Project No: {project.projectNumber}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -122,29 +213,59 @@ const GetProjectById = ({
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4 border-b overflow-x-auto">
-          {[
-            { key: "details", label: "Details", icon: ClipboardList },
-            { key: "files", label: "Files", icon: FileText },
-            { key: "wbs", label: "WBS", icon: FileText },
-            { key: "milestones", label: "Milestones", icon: FileText },
-            { key: "team", label: "Team", icon: Users },
-            { key: "timeline", label: "Timeline", icon: Clock },
-            { key: "notes", label: "Notes", icon: FolderOpenDot },
-          ].map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm rounded-t-md font-medium ${
-                activeTab === key
-                  ? "bg-teal-600 text-white"
-                  : "text-gray-600 hover:text-teal-700"
-              }`}
+        <div className="mb-4 border-b">
+          {/* Mobile Dropdown */}
+          <div className="block md:hidden mb-2">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
-              <Icon className="w-4 h-4" />
-              {label}
-            </button>
-          ))}
+              {[
+                { key: "details", label: "Details" },
+                { key: "files", label: "Files" },
+                { key: "wbs", label: "WBS" },
+                { key: "milestones", label: "Milestones" },
+                { key: "team", label: "Team" },
+                { key: "timeline", label: "Timeline" },
+                { key: "notes", label: "Notes" },
+                { key: "rfi", label: "RFI" },
+                { key: "submittals", label: "Submittals" },
+              ].map((tab) => (
+                <option key={tab.key} value={tab.key}>
+                  {tab.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Desktop Tabs */}
+          <div className="hidden md:flex gap-2 overflow-x-auto">
+            {[
+              { key: "details", label: "Details", icon: ClipboardList },
+              { key: "files", label: "Files", icon: FileText },
+              { key: "wbs", label: "WBS", icon: FileText },
+              { key: "milestones", label: "Milestones", icon: FileText },
+              { key: "team", label: "Team", icon: Users },
+              { key: "timeline", label: "Timeline", icon: Clock },
+              { key: "notes", label: "Notes", icon: FolderOpenDot },
+              { key: "rfi", label: "RFI", icon: FolderOpenDot },
+              { key: "submittals", label: "Submittals", icon: FolderOpenDot },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`flex items-center gap-2 px-4 py-2 text-sm rounded-t-md font-medium transition-colors whitespace-nowrap ${
+                  activeTab === key
+                    ? "bg-teal-600 text-white"
+                    : "text-gray-600 hover:text-teal-700 hover:bg-gray-50"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Tab Content */}
@@ -283,6 +404,60 @@ const GetProjectById = ({
               <WBS id={id} />
             </div>
           )}
+          {activeTab === "rfi" && (
+            <div className="space-y-4">
+              {/* Sub-tabs for RFI */}
+              <div className="flex justify-start border-b border-gray-200 mb-4">
+                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                  <button
+                    onClick={() => setRfiView("list")}
+                    className={`
+                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                      ${
+                        rfiView === "list"
+                          ? "border-teal-500 text-teal-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }
+                    `}
+                  >
+                    All RFIs
+                  </button>
+                  {userRole !== "client" && (
+                    <button
+                      onClick={() => setRfiView("add")}
+                      className={`
+                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                        ${
+                        rfiView === "add"
+                          ? "border-teal-500 text-teal-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }
+                    `}
+                  >
+                    Create RFI
+                  </button>
+                  )}
+                </nav>
+              </div>
+
+              {/* RFI Content */}
+              {rfiView === "list" ? (
+                <AllRFI rfiData={rfiData} />
+              ) : (
+                <AddRFI project={project} />
+              )}
+            </div>
+          )}
+          {activeTab === "submittals" && (
+            <div className="text-gray-600 italic text-center py-10">
+              <DataTable
+              columns={submittalColumns}
+              data={submittalData}
+               searchPlaceholder="Search projects..."
+        pageSizeOptions={[5, 10, 25]}
+              />
+            </div>
+          )}
         </div>
 
         {/* Footer Buttons */}
@@ -290,14 +465,7 @@ const GetProjectById = ({
           <Button className="py-1 px-3 text-sm bg-teal-600 text-white">
             Edit Project
           </Button>
-          <Button className="py-1 px-3 text-sm bg-blue-100 text-blue-700">
-            View RFQ
-          </Button>
-          <Button className="py-1 px-3 text-sm bg-amber-100 text-amber-700">
-            View Fabricator
-          </Button>
         </div>
-      </div>
     </div>
   );
 };
