@@ -521,5 +521,33 @@ wbtStatus?:boolean;
 reason:string;
 rfiId:string;
 parentResponseId:string|null;
+}
 
+
+export interface LineItem {
+  id: string;
+  description: string;
+  unitTime?: number;
+  CheckUnitTime?: number;
+  checkHr?: number;
+  execHr?: number;
+  updatedAt?: string;
+  QtyNo?: number;
+}
+
+export interface WBSData {
+  id: string;
+  name: string;
+  type: string;
+  stage: string;
+  projectId: string;
+  templateKey: string;
+  totalCheckHr: number;
+  checkHrWithRework: number;
+  totalExecHr: number;
+  execHrWithRework: number;
+  totalQtyNo: number;
+  createdAt: string;
+  updatedAt: string;
+  LineItems?: LineItem[];
 }

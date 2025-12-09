@@ -729,6 +729,21 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+  // Update WBS line-item by ProjectId, wbsId and line-item ID
+  static async UpdateWBSLineItem(projectId: string, wbsId: string, lineItemId: string, data: any) {
+    try {
+      const response = await api.put(`project/projects/${projectId}/work-break-downs/${wbsId}/line-items/${lineItemId}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Fetch All Chats
   static async AllChats() {
     try {
