@@ -23,6 +23,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import AllRFI from "../rfi/AllRfi";
 import AddRFI from "../rfi/AddRFI";
 import AllSubmittals from "../submittals/AllSubmittals";
+import AddSubmittal from "../submittals/AddSubmittals";
 
 
 
@@ -490,7 +491,7 @@ const rfiData = useMemo(() => {
               {submittalView === "list" ? (
                 <AllSubmittals subData={submittalData} />
               ) : (
-                <AddRFI project={project} />
+                <AddSubmittal project={project} />
               )}
             </div>
           )}

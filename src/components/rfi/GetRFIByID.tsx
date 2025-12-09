@@ -1,4 +1,4 @@
-import { set } from "date-fns";
+
 import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import type { RFIItem } from "../../interface";
@@ -7,7 +7,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
-import AddEstimation from "../estimation/AddEstimation";
+
 import RFIResponseModal from "./RFIResponseModal";
 import RFIResponseDetailsModal from "./RFIResponseDetailsModal";
 
@@ -31,6 +31,25 @@ const GetRFIByID = ({ id }:GetRFIByIDProps) => {
 const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
 
 
+const flattenResponses = (responses: any[], parentId: string | null = null) => {
+  let flat: any[] = [];
+
+  responses.forEach(res => {
+    flat.push({
+      ...res,
+      parentResponseId: parentId,
+    });
+
+    if (res.childResponses && res.childResponses.length > 0) {
+      flat = flat.concat(flattenResponses(res.childResponses, res.id));
+    }
+  });
+
+  return flat;
+};
+
+
+
 //   
 const fetchRfi = async () => {
   try {
@@ -42,7 +61,9 @@ const fetchRfi = async () => {
       responses: response.data.responses || response.data.rfiresponse || []
     };
 
-    setRfi(formatted);
+  const flat = flattenResponses(formatted.responses);
+setRfi({ ...formatted, responses: flat });
+
   } catch (err) {
     setError("Failed to load RFI");
   } finally {
@@ -90,7 +111,7 @@ if (error || !rfi) {
       accessorKey: "description",
       header: "Message",
       cell: ({ row }) => (
-        <p className="truncate max-w-[180px]">{row.original.description}</p>
+        <p className="truncate max-w-[180px]">{row.original.reason || row.original.description}</p>
       ),
     },
     {
@@ -114,6 +135,17 @@ if (error || !rfi) {
         </span>
       ),
     },
+
+    {
+  accessorKey: "reason",
+  header: "Message",
+  cell: ({ row }) => (
+    <div style={{ marginLeft: row.original.parentResponseId ? "20px" : "0px" }}>
+      {row.original.reason}
+    </div>
+  ),
+},
+
     {
       accessorKey: "status",
       header: "Status",

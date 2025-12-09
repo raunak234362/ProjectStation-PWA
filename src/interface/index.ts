@@ -523,3 +523,16 @@ rfiId:string;
 parentResponseId:string|null;
 
 }
+export interface SubmittalPayload {
+  fabricator_id: string;
+  project_id: string;
+  mileStoneId:string | null;
+  recepient_id: string;
+  sender_id: string;
+  status: boolean |null;
+  subject: string;
+  description: string;
+  isAproovedByAdmin: string | null;
+files?: File[] | string[];
+
+}

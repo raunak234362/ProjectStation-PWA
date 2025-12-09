@@ -1,9 +1,145 @@
-const AllSubmittals = (subData: any) => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
+import DataTable from "../ui/table";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Loader2, Inbox } from "lucide-react";
+import Service from "../../api/Service";
+import GetSubmittalByID from "./GetSubmittalByID";
+
+interface AllSubmittalProps {
+  submittalData?: any[];
+}
+
+const AllSubmittals = ({ submittalData = [] }: AllSubmittalProps) => {
+  const [submittals, setSubmittals] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const userRole = sessionStorage.getItem("userRole");
+
+
+const fetchSubmittals = async () => {
+  try {
+    setLoading(true);
+    let result;
+
+    if (userRole === "CLIENT") result = await Service.SubmittalSent();
+    else result = await Service.SubmittalRecieved();
+
+    const data = Array.isArray(result?.data) ? result.data : [];
+
+    const normalized = data.map((item: any) => ({
+      ...item,
+      milestone: item.mileStoneBelongsTo || item.milestone || null, 
+      recipient: item.recepients || null,                          
+      sender: item.sender || null,                                  
+      createdAt: item.createdAt || item.date || null,
+      statusLabel:
+        item.isAproovedByAdmin === true
+          ? "APPROVED"
+          : item.isAproovedByAdmin === false
+          ? "REJECTED"
+          : "PENDING",
+    }));
+
+    setSubmittals(normalized);
+  } catch {
+    setSubmittals([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+ useEffect(() => {
+  if (submittalData && submittalData.length > 0) {
+    setSubmittals(submittalData);
+    setLoading(false);
+  } else {
+    fetchSubmittals();
+  }
+ 
+}, []);
+
+
+const columns: ColumnDef<any>[] = [
+  { accessorKey: "subject", header: "Subject" },
+
+  {
+    accessorKey: "sender",
+    header: "Sender",
+    cell: ({ row }) => {
+      const s = row.original.sender;
+      return s ? `${s.firstName ?? ""} ${s.lastName ?? ""}`.trim() : "—";
+    },
+  },
+
+//   {
+//     accessorKey: "milestone",
+//     header: "Milestone",
+//     cell: ({ row }) => row.original.milestone?.subject || row.original.milestone?.description || "—",
+//   },
+
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <span
+        className={`px-2 py-1 text-xs rounded-full ${
+          row.original.statusLabel === "APPROVED"
+            ? "bg-green-100 text-green-700"
+            : row.original.statusLabel === "PENDING"
+            ? "bg-yellow-100 text-yellow-700"
+            : "bg-red-100 text-red-700"
+        }`}
+      >
+        {row.original.statusLabel}
+      </span>
+    ),
+  },
+
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) =>
+      row.original.createdAt
+        ? new Date(row.original.createdAt).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "—",
+  },
+];
+
+
+  if (loading) {
     return (
-        <div>
-            <h1>Submittals</h1>
-        </div>
+      <div className="flex flex-col items-center gap-2 py-12 text-gray-500">
+        <Loader2 className="animate-spin w-6 h-6" /> Loading Submittals...
+      </div>
     );
+  }
+
+  if (!submittals.length) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-16 text-gray-500">
+        <Inbox className="w-10 h-10 text-gray-400" />
+        <p>No Submittals Found</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white p-2 rounded-xl shadow-md">
+      <DataTable
+        columns={columns}
+        data={submittals}
+        detailComponent={({ row }) => <GetSubmittalByID id={row.id} />}
+        searchPlaceholder="Search Submittals..."
+        pageSizeOptions={[5, 10, 25]}
+      />
+    </div>
+  );
 };
 
 export default AllSubmittals;
