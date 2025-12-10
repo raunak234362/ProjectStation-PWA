@@ -23,6 +23,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import AllRFI from "../rfi/AllRfi";
 import AddRFI from "../rfi/AddRFI";
 import AllSubmittals from "../submittals/AllSubmittals";
+import AllNotes from "./notes/AllNotes";
 
 
 
@@ -332,6 +333,13 @@ const rfiData = useMemo(() => {
                 <ScopeTag label="Detailing Misc" active={project.detailingMisc} />
               </div>
             </div>
+
+        {/* Footer Buttons */}
+        <div className="pt-2 flex flex-wrap gap-3">
+          <Button className="py-1 px-3 text-sm bg-teal-600 text-white">
+            Edit Project
+          </Button>
+        </div>
             </div>
           )}
 
@@ -391,12 +399,11 @@ const rfiData = useMemo(() => {
             </div>
           )}
 
+
+
           {/* ✅ Notes */}
           {activeTab === "notes" && (
-            <div className="text-gray-600 italic text-center py-10">
-              <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-              Notes section coming soon.
-            </div>
+            <AllNotes projectId={id} />
           )}
           {activeTab === "wbs" && (
             <div className="text-gray-600 italic text-center py-10">
@@ -494,12 +501,6 @@ const rfiData = useMemo(() => {
           )}
         </div>
 
-        {/* Footer Buttons */}
-        <div className="pt-6 flex flex-wrap gap-3 border-t mt-6">
-          <Button className="py-1 px-3 text-sm bg-teal-600 text-white">
-            Edit Project
-          </Button>
-        </div>
     </div>
   );
 };

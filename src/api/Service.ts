@@ -790,6 +790,8 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+    
+
   // Delete Group Member
   static async DeleteGroupMember(groupId: string, memberId: string) {
     try {
@@ -798,12 +800,46 @@ static async addResponse(formData: FormData,responseId:string) {
           "Content-Type": "application/json",
         },
       });
-      console.log("Group member deleted", response.data);
+      console.log(" Group member deleted", response.data);
       return response.data;
     } catch (error) {
       console.log(error);
     }
   }
+
+  // Get Project Notes
+  static async GetProjectNotes(projectId: string) {
+    try {
+      const response = await api.get(`project/projects/${projectId}/notes`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Project notes fetched", response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Create Project Note
+  static async CreateProjectNote(projectId: string, data: FormData) {
+    const token = sessionStorage.getItem("token");
+    try {
+      const response = await api.post(`project/projects/${projectId}/notes`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(" Project note created", response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  
 
   // Delete Group
   static async DeleteGroup(groupId: string) {

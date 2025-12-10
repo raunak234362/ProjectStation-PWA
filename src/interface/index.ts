@@ -551,3 +551,30 @@ export interface WBSData {
   updatedAt: string;
   LineItems?: LineItem[];
 }
+
+export interface ProjectNote {
+  id: string;
+  content: string;
+  stage: string;
+  projectId: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
+  files?: {
+    id: string;
+    originalName: string;
+    path: string;
+  }[];
+}
+
+export interface CreateProjectNotePayload {
+  content: string;
+  stage: string;
+  projectId: string;
+  files?: File[];
+}
