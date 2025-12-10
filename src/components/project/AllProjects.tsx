@@ -4,6 +4,11 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import GetProjectById from "./GetProjectById";
 
+const ProjectDetailComponent = ({ row }: { row: any }) => {
+  const fabricatorUniqueId = row.id ?? row.fabId ?? "";
+  return <GetProjectById id={fabricatorUniqueId} />;
+};
+
 const AllProjects = () => {
   const [projects, setProjects] = useState<any[]>([]);
   const fetchAllProjects = async () => {
@@ -35,11 +40,7 @@ const AllProjects = () => {
         columns={columns}
         data={projects}
         onRowClick={handleRowClick}
-        detailComponent={({ row }) => {
-          const fabricatorUniqueId =
-            (row as any).id ?? (row as any).fabId ?? "";
-          return <GetProjectById id={fabricatorUniqueId} />;
-        }}
+        detailComponent={ProjectDetailComponent}
         searchPlaceholder="Search projects..."
         pageSizeOptions={[5, 10, 25]}
       />

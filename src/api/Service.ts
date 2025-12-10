@@ -641,11 +641,7 @@ static async addResponse(formData: FormData,responseId:string) {
   // Edit Project By ID
   static async EditProjectById(id: string, data: any) {
     try {
-      const response = await api.put(`project/projects/${id}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.put(`project/projects/${id}`, data);
       console.log(response);
       return response.data;
     } catch (error) {

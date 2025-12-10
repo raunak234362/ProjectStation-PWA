@@ -437,7 +437,7 @@ export interface ProjectData {
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   rfi?:any[];
-  submittal?:any[];
+  submittals?:any[];
   miscDesign: boolean;
   customerDesign: boolean;
   detailingMain: boolean;
