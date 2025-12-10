@@ -6,6 +6,7 @@ import { Loader2, AlertCircle } from "lucide-react";
 import DataTable from "../../ui/table";
 import Service from "../../../api/Service";
 import GetWBSByID from "./GetWBSByID";
+import Button from "../../fields/Button";
 
 const AllWBS = ({ id }: { id: string }) => {
   const [wbsList, setWbsList] = useState<any[]>([]);
@@ -59,19 +60,20 @@ const AllWBS = ({ id }: { id: string }) => {
       ),
     },
     {
-      accessorKey: "totalCheckHr",
-      header: "Total Check Hrs",
-      cell: ({ row }) => (
-        <span className="text-gray-700">{row.original.totalCheckHr || "—"}</span>
-      ),
-    },
-    {
       accessorKey: "totalExecHr",
       header: "Total Exec Hrs",
       cell: ({ row }) => (
         <span className="text-gray-700">{row.original.totalExecHr || "—"}</span>
       ),
     },
+    {
+      accessorKey: "totalCheckHr",
+      header: "Total Check Hrs",
+      cell: ({ row }) => (
+        <span className="text-gray-700">{row.original.totalCheckHr || "—"}</span>
+      ),
+    },
+    
     {
       accessorKey: "createdAt",
       header: "Created On",
@@ -105,6 +107,10 @@ const AllWBS = ({ id }: { id: string }) => {
   // ✅ Render table
   return (
     <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+      <div className="flex justify-between items-center mb-4">  
+
+      <div>
+
       <h2 className="text-lg font-semibold text-gray-800 mb-3">
         Work Breakdown Structure (WBS)
       </h2>
@@ -112,6 +118,9 @@ const AllWBS = ({ id }: { id: string }) => {
         Total Items:{" "}
         <span className="font-semibold text-gray-700">{wbsList.length}</span>
       </p>
+      </div>
+      <div><Button>Add New Line Item</Button></div>
+      </div>
 
       <DataTable
         columns={columns}

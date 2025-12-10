@@ -248,8 +248,6 @@ const rfiData = useMemo(() => {
               { key: "files", label: "Files", icon: FileText },
               { key: "wbs", label: "WBS", icon: FileText },
               { key: "milestones", label: "Milestones", icon: FileText },
-              { key: "team", label: "Team", icon: Users },
-              { key: "timeline", label: "Timeline", icon: Clock },
               { key: "notes", label: "Notes", icon: FolderOpenDot },
               { key: "rfi", label: "RFI", icon: FolderOpenDot },
               { key: "submittals", label: "Submittals", icon: FolderOpenDot },

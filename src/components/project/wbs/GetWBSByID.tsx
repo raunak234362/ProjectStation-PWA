@@ -14,14 +14,20 @@ import {
 import Service from "../../../api/Service";
 import type { WBSData, LineItem } from "../../../interface";
 
-
-
 const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
   const [wbs, setWbs] = useState<WBSData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editQuantity, setEditQuantity] = useState<number>(0);
+  const [editValues, setEditValues] = useState<{
+    QtyNo: number;
+    unitTime: number;
+    CheckUnitTime: number;
+  }>({ QtyNo: 0, unitTime: 0, CheckUnitTime: 0 });
+
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const canEditTime =
+    userRole === "admin" || userRole === "deputy_manager";
 
   useEffect(() => {
     if (id) fetchWBSById(id);
@@ -43,35 +49,41 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
 
   const handleEditClick = (item: LineItem) => {
     setEditingId(item.id);
-    setEditQuantity(item.QtyNo || 0);
+    setEditValues({
+      QtyNo: item.QtyNo || 0,
+      unitTime: item.unitTime || 0,
+      CheckUnitTime: item.CheckUnitTime || 0,
+    });
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEditQuantity(0);
+    setEditValues({ QtyNo: 0, unitTime: 0, CheckUnitTime: 0 });
   };
 
-  const handleSaveQuantity = async (lineItemId: string) => {
+  const handleSaveLineItem = async (lineItemId: string) => {
     if (!wbs) return;
     const item = wbs.LineItems?.find((i) => i.id === lineItemId);
     if (!item) return;
 
-    const quantity = editQuantity;
-    const checkHr = (item.CheckUnitTime || 0) * quantity;
-    const execHr = (item.unitTime || 0) * quantity;
+    const { QtyNo, unitTime, CheckUnitTime } = editValues;
+    const checkHr = CheckUnitTime * QtyNo;
+    const execHr = unitTime * QtyNo;
 
     try {
       await Service.UpdateWBSLineItem(wbs.projectId, wbs.id, lineItemId, {
-        QtyNo: quantity,
-        checkHr: checkHr,
-        execHr: execHr,
+        QtyNo,
+        unitTime,
+        CheckUnitTime,
+        checkHr,
+        execHr,
       });
       // Refresh data
       const response = await Service.GetWBSById(wbs.id);
       setWbs(response || null);
       setEditingId(null);
     } catch (err) {
-      console.error("Error updating quantity:", err);
+      console.error("Error updating line item:", err);
       // You might want to show a toast error here
     }
   };
@@ -178,8 +190,20 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
                     <th className="p-3 border-b">#</th>
                     <th className="p-3 border-b">Description</th>
                     <th className="p-3 border-b text-center">Quantity</th>
-                    <th className="p-3 border-b text-center">Total Check Hours</th>
-                    <th className="p-3 border-b text-center">Total Exec Hours</th>
+                    {canEditTime && (
+                      <>
+                        <th className="p-3 border-b text-center">UnitTime</th>
+                        <th className="p-3 border-b text-center">
+                          Checking UnitTime
+                        </th>
+                      </>
+                    )}
+                    <th className="p-3 border-b text-center">
+                      Total Exec Hours
+                    </th>
+                    <th className="p-3 border-b text-center">
+                      Total Check Hours
+                    </th>
                     <th className="p-3 border-b">Updated At</th>
                     <th className="p-3 border-b text-center">Actions</th>
                   </tr>
@@ -198,9 +222,12 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
                         {editingId === item.id ? (
                           <input
                             type="number"
-                            value={editQuantity}
+                            value={editValues.QtyNo}
                             onChange={(e) =>
-                              setEditQuantity(Number(e.target.value))
+                              setEditValues({
+                                ...editValues,
+                                QtyNo: Number(e.target.value),
+                              })
                             }
                             className="w-20 p-1 border rounded text-center"
                             autoFocus
@@ -209,14 +236,49 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
                           item.QtyNo ?? 0
                         )}
                       </td>
-                      {/* <td className="p-3 border-b text-center text-teal-700 font-medium">
-                        {item.unitTime ?? 0}
-                      </td> */}
-                      <td className="p-3 border-b text-center text-teal-700 font-medium">
-                        {item.checkHr ?? 0}
-                      </td>
+                      {canEditTime && (
+                        <>
+                          <td className="p-3 border-b text-center text-teal-700 font-medium">
+                            {editingId === item.id ? (
+                              <input
+                                type="number"
+                                value={editValues.unitTime}
+                                onChange={(e) =>
+                                  setEditValues({
+                                    ...editValues,
+                                    unitTime: Number(e.target.value),
+                                  })
+                                }
+                                className="w-20 p-1 border rounded text-center"
+                              />
+                            ) : (
+                              item.unitTime ?? 0
+                            )}
+                          </td>
+                          <td className="p-3 border-b text-center text-teal-700 font-medium">
+                            {editingId === item.id ? (
+                              <input
+                                type="number"
+                                value={editValues.CheckUnitTime}
+                                onChange={(e) =>
+                                  setEditValues({
+                                    ...editValues,
+                                    CheckUnitTime: Number(e.target.value),
+                                  })
+                                }
+                                className="w-20 p-1 border rounded text-center"
+                              />
+                            ) : (
+                              item.CheckUnitTime ?? 0
+                            )}
+                          </td>
+                        </>
+                      )}
                       <td className="p-3 border-b text-center text-teal-700 font-medium">
                         {item.execHr ?? 0}
+                      </td>
+                      <td className="p-3 border-b text-center text-teal-700 font-medium">
+                        {item.checkHr ?? 0}
                       </td>
                       <td className="p-3 border-b text-gray-600">
                         {item.updatedAt ? formatDate(item.updatedAt) : "—"}
@@ -225,7 +287,7 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
                         {editingId === item.id ? (
                           <div className="flex justify-center gap-2">
                             <button
-                              onClick={() => handleSaveQuantity(item.id)}
+                              onClick={() => handleSaveLineItem(item.id)}
                               className="text-green-600 hover:text-green-800"
                               title="Save"
                             >
@@ -243,7 +305,7 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
                           <button
                             onClick={() => handleEditClick(item)}
                             className="text-gray-500 hover:text-teal-600"
-                            title="Edit Quantity"
+                            title="Edit"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
