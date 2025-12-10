@@ -10,11 +10,12 @@ interface AllSubmittalProps {
   submittalData?: any[];
 }
 
-const AllSubmittals = ({ submittalData = [] }: AllSubmittalProps) => {
+const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
   const [submittals, setSubmittals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const userRole = sessionStorage.getItem("userRole");
+console.log(submittalData);
 
 
 const fetchSubmittals = async () => {

@@ -57,8 +57,11 @@ const rfiData = useMemo(() => {
   };
 
   const submittalData = useMemo(() => {
-    return project?.submittal || [];
+    return project?.submittals || [];
   }, [project]);
+
+  console.log(submittalData);
+  
 
   const rfiColumns: ColumnDef<any>[] = [
     { accessorKey: "subject", header: "Subject" },
@@ -489,7 +492,7 @@ const rfiData = useMemo(() => {
 
               {/* Submittal Content */}
               {submittalView === "list" ? (
-                <AllSubmittals subData={submittalData} />
+                <AllSubmittals submittalData={submittalData} />
               ) : (
                 <AddSubmittal project={project} />
               )}

@@ -981,7 +981,31 @@ static async GetRFIResponsebyId(rfiId: string) {
       console.error("cannot find submittal", error);
     }
   }
+static async addSubmittalResponse(formData: FormData,SubId:string) {
+  const token = sessionStorage.getItem("token");
 
+  const response = await api.post(`submittal/${SubId}/responses`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+    return response.data;
+  }
+  static async GetSubmittalResponsebyId(subId: string) {
+      try {
+        const response = await api.get(`submittal/responses/${subId}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log(" All submittals fetched by sub ID:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("cannot find sub", error);
+      }
+    }
 
 }
 export default Service;
