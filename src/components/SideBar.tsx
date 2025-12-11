@@ -88,6 +88,17 @@ const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
+      label: "Connection Designing Quotation",
+      to: "connection-designing-quotation",
+      icon: <FactoryIcon />,
+      roles: [
+        "admin",
+        "department-manager",
+        "connection_designer_engineer",
+        "deputy-manager",
+      ],
+    },
+    {
       label: "RFQ",
       to: "rfq",
       icon: <LucideComponent />,
@@ -185,6 +196,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: <User2 />,
       roles: [
         "admin",
+        "connection_designer_engineer",
         "user",
         "staff",
         "client",

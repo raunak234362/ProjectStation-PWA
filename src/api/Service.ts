@@ -503,6 +503,20 @@ static async addResponse(formData: FormData,responseId:string) {
       console.log(error);
     }
   }
+  // Fetch Connection Designer By ID
+  static async FetchConnectionQuotationByDesignerID(id: string) {
+    try {
+      const response = await api.get(`connectionDesignerQuota/designer/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   // Update Connection Designer By ID
   static async UpdateConnectionDesignerByID(id: string, data: any) {
     try {
