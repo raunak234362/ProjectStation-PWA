@@ -1007,5 +1007,47 @@ static async addSubmittalResponse(formData: FormData,SubId:string) {
       }
     }
 
+    //change Order 
+    static async ChangeOrder(formData: FormData) {
+    const token = sessionStorage.getItem("token");
+    try {
+      const response = await api.post(`changeOrder/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async GetChangeOrder(projectId: string) {
+    try {
+      const response = await api.get(`changeOrder/project/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Co fetched by projectID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find CO", error);
+    }
+  }
+  //update Co
+    static async EditCoById(id: string, data: FormData) {
+    try {
+      const response = await api.put(`rfi/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("RFI Edited:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find RFI", error);
+    }
+  } 
+
 }
 export default Service;
