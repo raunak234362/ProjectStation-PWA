@@ -19,7 +19,6 @@ const ResponseDetailsModal = ({ response, onClose }: ResponseDetailsModalProps) 
 
 
 
-const responseId = response.id;
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   // const handleReplySubmit = async () => {
   //   if (!replyMessage.trim()) return;
@@ -52,8 +51,8 @@ const handleReplySubmit = async () => {
   formData.append("parentResponseId", response.id);
   formData.append("rfqId", response.rfqId);
   formData.append("userId", sessionStorage.getItem("userId") || "");
-  formData.append("status", replyStatus);
-  formData.append("wbtStatus", replyStatus);
+  // formData.append("status", replyStatus);
+  // formData.append("wbtStatus", replyStatus);
 
   // Attach files
   replyFiles.forEach(file => formData.append("files", file));
@@ -127,9 +126,7 @@ const handleReplySubmit = async () => {
               {response.files.map((file: any) => (
                 <li key={file.id} className="flex items-center gap-2">
                   <Paperclip size={16} className="text-teal-600" />
-                  {/* <span className="text-sm text-teal-700 underline cursor-pointer">
-                    {file.originalName}
-                  </span> */}
+               
 
                   <span
                     className="text-sm text-teal-700 underline cursor-pointer hover:text-teal-900"
@@ -137,23 +134,7 @@ const handleReplySubmit = async () => {
                   >
                     {file.originalName}
                   </span>
-                  
-                 
-
-                  {/* <span
-                    className="text-sm text-teal-700 underline cursor-pointer hover:text-teal-900"
-                    onClick={() =>
-                      openFileSecurely(
-                        "rfq/response",           // keep this if backend expects rfq always
-                        response.rfqId, // parent id
-                        file.id         // file id
-                      )
-                    }
-                  >
-                    {file.originalName}
-                  </span> */}
-
-
+            
                 </li>
               ))}
             </ul>
@@ -165,36 +146,6 @@ const handleReplySubmit = async () => {
           <CalendarDays size={16} />
           {new Date(response.createdAt).toLocaleString()}
         </div>
-
-        {/* {replyMode && (
-          <div className="mt-4 border-t pt-4">
-            <h3 className="text-md font-semibold mb-2 text-teal-700">Write a Reply</h3>
-
-            <textarea
-              value={replyMessage}
-              onChange={(e) => setReplyMessage(e.target.value)}
-              placeholder="Type your reply..."
-              rows={3}
-              className="w-full border rounded-md p-2"
-            />
-
-            <div className="flex justify-end gap-2 mt-3">
-              <Button
-                onClick={() => setReplyMode(false)}
-                className="px-3 py-2 border rounded-lg text-gray-600 hover:bg-gray-200"
-              >
-                Cancel
-              </Button>
-
-              <Button
-                onClick={handleReplySubmit}
-                className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
-              >
-                Send Reply
-              </Button>
-            </div>
-          </div>
-        )} */}
 
 
           {replyMode && (
@@ -263,12 +214,7 @@ const handleReplySubmit = async () => {
 
         {/* Future  actions */}
         <div className="flex justify-end gap-3 pt-3">
-          {/* <button className="px-4 py-2 rounded-lg bg-red-100 text-red-600 font-medium hover:bg-red-200 transition">
-            Delete
-          </button>
-          <button className="px-4 py-2 rounded-lg bg-teal-600 text-white font-medium hover:bg-teal-700 transition">
-            Edit
-          </button> */}
+        
           {userRole === "client" ? (
             <Button
               onClick={() => setReplyMode(true)}

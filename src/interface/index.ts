@@ -270,7 +270,7 @@ export interface RFQpayload {
   description: string;
   status: boolean
   tools: string;
-  wbtStatus: boolean |  any;
+  wbtStatus: boolean | any;
   estimationDate: Date | any;
   connectionDesign: boolean;
   customerDesign: boolean;
@@ -332,7 +332,7 @@ export interface ConnectionDesigner {
   name: string;
   contactInfo?: string;
   websiteLink?: string;
-  CDEngineers?:[]
+  CDEngineers?: []
   email?: string;
   location?: string;
   createdAt: string;
@@ -394,7 +394,7 @@ export interface AddProjectPayload {
   customerDesign: boolean;
   detailingMain: boolean;
   detailingMisc: boolean;
-  startDate: string;          
+  startDate: string;
   endDate: string;
   approvalDate: string;
   fabricationDate: string;
@@ -442,7 +442,7 @@ export interface ProjectData {
   customerDesign: boolean;
   detailingMain: boolean;
   detailingMisc: boolean;
-  startDate: string;          
+  startDate: string;
   endDate: string;
   approvalDate: string;
   fabricationDate: string;
@@ -474,7 +474,8 @@ export interface RFIPayload {
 export interface RFIResponseFile {
   id: string;
   originalName: string;
-  path?: string;   }
+  path?: string;
+}
 
 export interface RFIResponse {
   id: string;
@@ -500,17 +501,18 @@ export interface RFIItem {
     email?: string;
     firstName?: string;
     middleName?: string | null;
-    lastName?: string;} | null;
+    lastName?: string;
+  } | null;
   fabricator_id?: string;
   fabricator?: { fabName?: string; } | null;
   project_id?: string;
-  project?: {name?: string;} | null;
+  project?: { name?: string; } | null;
   status?: boolean | string;
   isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string
   createdAt: string | Date;
   updatedAt?: string | Date;
   files: RFIResponseFile[] | string[];
-  responses: RFIResponse[];
+  rfiresponse: RFIResponse[];
   date: string;
 }
 export interface RFIResponseSchema

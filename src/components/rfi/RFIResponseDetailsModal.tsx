@@ -1,14 +1,28 @@
 import { X, Paperclip, CalendarDays } from "lucide-react";
-import { useState,type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import Service from "../../api/Service";
+
+// Status dropdown options
+const STATUS_OPTIONS = [
+  { label: "Pending", value: "PENDING" },
+  { label: "Approved", value: "APPROVED" },
+  { label: "Rejected", value: "REJECTED" },
+  { label: "Clarification Required", value: "CLARIFICATION_REQUIRED" },
+];
 
 const RFIResponseDetailsModal = ({ response, onClose }: any) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
-  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const [replyStatus, setReplyStatus] = useState("PENDING");
+
+  const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
+  const userId = sessionStorage.getItem("userId") || "";
+
+  // 🔒 Only Admin/Team can reply (not client)
+  const canReply = ["ADMIN", "STAFF", "MANAGER"].includes(userRole);
 
   const handleReplySubmit = async () => {
     if (!replyMessage.trim()) return;
@@ -17,15 +31,20 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
     formData.append("reason", replyMessage);
     formData.append("rfiId", response.rfiId);
     formData.append("parentResponseId", response.id);
-    formData.append("userId", sessionStorage.getItem("userId") || "");
+    formData.append("userId", userId);
+    formData.append("status", replyStatus); // 👈 send selected status
 
     replyFiles.forEach((file) => formData.append("files", file));
 
     await Service.addRFIResponse(formData, response.rfiId);
 
+    // Reset Form UI
     setReplyMode(false);
-    setReplyFiles([]);
     setReplyMessage("");
+    setReplyFiles([]);
+    setReplyStatus("PENDING");
+
+    // Close to refresh parent UI
     onClose();
   };
 
@@ -33,14 +52,17 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
     <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl space-y-5 relative">
 
-        <Button className="absolute top-3 right-3" onClick={onClose}>
-          <X size={18} />
-        </Button>
+        {/* Close Button */}
+        <button onClick={onClose} className="absolute top-3 right-3">
+          <X size={18} className="text-gray-500 hover:text-red-600" />
+        </button>
 
         <h2 className="text-xl font-bold text-teal-700">Response Details</h2>
 
+        {/* Main message */}
         <p className="bg-gray-100 p-3 rounded-md border">{response.reason}</p>
 
+        {/* Files */}
         {response.files?.length > 0 && (
           <div>
             <h4 className="text-sm text-gray-600 mb-2">Attachments</h4>
@@ -48,7 +70,9 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
               <p
                 key={file.id}
                 className="cursor-pointer text-teal-600 underline"
-                onClick={() => openFileSecurely("rfi/response", response.id, file.id)}
+                onClick={() =>
+                  openFileSecurely("rfi/response", response.id, file.id)
+                }
               >
                 <Paperclip size={16} className="inline-block mr-2" />
                 {file.originalName}
@@ -57,26 +81,51 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
           </div>
         )}
 
-        <CalendarDays className="text-gray-500" size={14} />
-        <span className="text-xs text-gray-500">
+        {/* Timestamp */}
+        <div className="flex gap-2 items-center text-gray-500 text-xs">
+          <CalendarDays size={14} />
           {new Date(response.createdAt).toLocaleString()}
-        </span>
+        </div>
 
-        {userRole === "client" && (
-          <Button className="bg-blue-600 text-white" onClick={() => setReplyMode(true)}>
+        {/* Reply Button — only internal side */}
+        {canReply && !replyMode && (
+          <Button className="bg-blue-600 text-white mt-4" onClick={() => setReplyMode(true)}>
             Reply
           </Button>
         )}
 
+        {/* Reply Form */}
         {replyMode && (
-          <div className="pt-4 space-y-3">
+          <div className="pt-4 space-y-4 border-t">
+            
+            {/* Message */}
             <textarea
               value={replyMessage}
               onChange={(e) => setReplyMessage(e.target.value)}
               rows={3}
               className="w-full border p-2 rounded"
+              placeholder="Type your reply..."
             />
 
+            {/* Status Dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                Response Status
+              </label>
+              <select
+                className="w-full border rounded-md p-2"
+                value={replyStatus}
+                onChange={(e) => setReplyStatus(e.target.value)}
+              >
+                {STATUS_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* File Upload */}
             <input
               type="file"
               multiple
@@ -85,6 +134,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
               }
             />
 
+            {/* Action Buttons */}
             <div className="flex justify-end gap-3">
               <Button onClick={() => setReplyMode(false)}>Cancel</Button>
               <Button className="bg-teal-600 text-white" onClick={handleReplySubmit}>

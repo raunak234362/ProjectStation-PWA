@@ -984,5 +984,131 @@ static async GetRFIResponsebyId(rfiId: string) {
         console.error("cannot find rfq", error);
       }
     }
+//submitals route 
+  static async AddSubmittal(formData: FormData) {
+    const token = sessionStorage.getItem("token");
+    try {
+      const response = await api.post(`submittal/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  //All Submitals
+  static async SubmittalSent() {
+    try {
+      const response = await api.get(`submittal/sent`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Submittals sents:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittals", error);
+    }
+  }
+
+  static async SubmittalRecieved() {
+    try {
+      const response = await api.get(`submittal/received`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("  Submittal received:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittal's", error);
+    }                                                                                                                                                                                                                     
+  }
+  static async GetSubmittalbyId(Id: string) {
+    try {
+      const response = await api.get(`submittal/${Id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All submittal fetched by submittalID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittal", error);
+    }
+  }
+static async addSubmittalResponse(formData: FormData,SubId:string) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await api.post(`submittal/${SubId}/responses`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+    return response.data;
+  }
+  static async GetSubmittalResponsebyId(subId: string) {
+      try {
+        const response = await api.get(`submittal/responses/${subId}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log(" All submittals fetched by sub ID:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("cannot find sub", error);
+      }
+    }
+
+    //change Order 
+    static async ChangeOrder(formData: FormData) {
+    const token = sessionStorage.getItem("token");
+    try {
+      const response = await api.post(`changeOrder/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async GetChangeOrder(projectId: string) {
+    try {
+      const response = await api.get(`changeOrder/project/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Co fetched by projectID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find CO", error);
+    }
+  }
+  //update Co
+    static async EditCoById(id: string, data: FormData) {
+    try {
+      const response = await api.put(`rfi/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("RFI Edited:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find RFI", error);
+    }
+  } 
+
 }
 export default Service;

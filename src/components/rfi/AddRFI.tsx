@@ -90,6 +90,7 @@ const projectOptions: SelectOption[] =
       const payload: RFIPayload = {
         ...data,
         project_id: project_id,
+        fabricator_id: fabricatorID,
         recepient_id: data.recepient_id,
         sender_id: userDetail?.id, // always user
         status: true,

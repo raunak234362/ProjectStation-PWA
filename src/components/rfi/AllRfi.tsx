@@ -17,35 +17,10 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
 
   const userRole = sessionStorage.getItem("userRole");
 
-  // const fetchRFI = async () => {
-  //   try {
-  //     setLoading(true);
-  //     let result;
-
-  //     if (userRole === "CLIENT") {
-  //       result = await Service.RfiSent();
-  //     } else {
-  //       result = await Service.RfiRecieved();
-  //     }
-
-  //     const arrayData = Array.isArray(result) ? result : result?.data || [];
-  //     const normalized = arrayData.map((item: any) => ({
-  //       ...item,
-  //       createdAt: item.createdAt || item.date || null,
-  //     }));
-
-  //     setRFIs(normalized);
-  //   } catch (error) {
-  //     console.error("Error fetching RFI:", error);
-  //     setRFIs([]); // fallback to empty
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   useEffect(() => {
     if (rfiData && rfiData.length > 0) {
-      // ✅ Use passed RFI data
+    
       const normalized = rfiData.map((item: any) => ({
         ...item,
         createdAt: item.createdAt || item.date || null,
@@ -53,8 +28,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
       setRFIs(normalized);
       setLoading(false);
     } else {
-      // ✅ Fetch from API if prop empty
-      // fetchRFI();
+   
     }
   }, [rfiData]);
 
@@ -154,13 +128,6 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
         pageSizeOptions={[5, 10, 25]}
       />
 
-      {/* Optional overlay detail modal */}
-      {/* {selectedRfiID && (
-        <GetRFIByID
-          id={selectedRfiID}
-          onClose={() => setSelectedRfiID(null)}
-        />
-      )} */}
     </div>
   );
 };
