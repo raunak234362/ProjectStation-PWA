@@ -510,6 +510,7 @@ export interface RFIItem {
   status?: boolean | string;
   isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string
   createdAt: string | Date;
+  response?:any;
   updatedAt?: string | Date;
   files: RFIResponseFile[] | string[];
   rfiresponse: RFIResponse[];
