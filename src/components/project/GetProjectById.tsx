@@ -24,6 +24,7 @@ import AddRFI from "../rfi/AddRFI";
 import AllSubmittals from "../submittals/AllSubmittals";
 import AllNotes from "./notes/AllNotes";
 import EditProject from "./EditProject";
+import AddSubmittal from "../submittals/AddSubmittals";
 
 
 
@@ -60,10 +61,7 @@ const rfiData = useMemo(() => {
     const handleEditModel = (project:  ProjectData) => {
       console.log(project);
       setEditModel(project);
-    };
-
-    console.log(editModel);
-    
+    };    
 
     const handleModelClose = () => {
       setEditModel(null);
@@ -74,8 +72,6 @@ const rfiData = useMemo(() => {
     return project?.submittals || [];
     return project?.submittals || [];
   }, [project]);
-
-  console.log(submittalData);
   
 
   const rfiColumns: ColumnDef<any>[] = [

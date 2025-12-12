@@ -14,6 +14,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
+console.log(rfiData);
 
   const userRole = sessionStorage.getItem("userRole");
 

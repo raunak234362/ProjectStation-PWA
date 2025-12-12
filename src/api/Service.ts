@@ -513,7 +513,7 @@ static async addResponse(formData: FormData,responseId:string) {
       });
       console.log(response);
       return response.data;
-    } catch (error) {
+    } catch (error) { 
       console.log(error);
     }
   }

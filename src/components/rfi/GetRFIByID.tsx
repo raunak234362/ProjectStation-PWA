@@ -30,40 +30,12 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
 
-
-  const flattenResponses = (responses: any[], parentId: string | null = null) => {
-    let flat: any[] = [];
-
-    responses.forEach(res => {
-      flat.push({
-        ...res,
-        parentResponseId: parentId,
-      });
-
-      if (res.childResponses && res.childResponses.length > 0) {
-        flat = flat.concat(flattenResponses(res.childResponses, res.id));
-      }
-    });
-
-    return flat;
-  };
-
-
-
   //   
   const fetchRfi = async () => {
     try {
       setLoading(true);
       const response = await Service.GetRFIbyId(id);
-
-      const formatted = {
-        ...response.data,
-        responses: response.data.responses || response.data.rfiresponse || []
-      };
-
-      const flat = flattenResponses(formatted.responses);
-      setRfi({ ...formatted, responses: flat });
-
+      setRfi(response.data);
     } catch (err) {
       setError("Failed to load RFI");
     } finally {
