@@ -18,11 +18,12 @@ import AllMileStone from "./mileStone/AllMileStone";
 import AllDocument from "./projectDocument/AllDocument";
 import type { ProjectData } from "../../interface";
 import WBS from "./wbs/WBS";
-import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import AllRFI from "../rfi/AllRfi";
 import AddRFI from "../rfi/AddRFI";
 import AllSubmittals from "../submittals/AllSubmittals";
+import AllNotes from "./notes/AllNotes";
+import EditProject from "./EditProject";
 import AddSubmittal from "../submittals/AddSubmittals";
 
 
@@ -38,6 +39,7 @@ const GetProjectById = ({
   const [activeTab, setActiveTab] = useState("details");
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
   const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
+  const [editModel, setEditModel] = useState<ProjectData | null>(null);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 const rfiData = useMemo(() => {
   return project?.rfi || [];
@@ -56,11 +58,20 @@ const rfiData = useMemo(() => {
     }
   };
 
+    const handleEditModel = (project:  ProjectData) => {
+      console.log(project);
+      setEditModel(project);
+    };    
+
+    const handleModelClose = () => {
+      setEditModel(null);
+    };
+  
+
   const submittalData = useMemo(() => {
     return project?.submittals || [];
+    return project?.submittals || [];
   }, [project]);
-
-  console.log(submittalData);
   
 
   const rfiColumns: ColumnDef<any>[] = [
@@ -192,6 +203,7 @@ const rfiData = useMemo(() => {
     );
 
   return (
+    <>
     <div className="w-full bg-white h-auto p-3 md:p-6 rounded-lg shadow-sm border relative">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3 mb-3">
@@ -252,8 +264,6 @@ const rfiData = useMemo(() => {
               { key: "files", label: "Files", icon: FileText },
               { key: "wbs", label: "WBS", icon: FileText },
               { key: "milestones", label: "Milestones", icon: FileText },
-              { key: "team", label: "Team", icon: Users },
-              { key: "timeline", label: "Timeline", icon: Clock },
               { key: "notes", label: "Notes", icon: FolderOpenDot },
               { key: "rfi", label: "RFI", icon: FolderOpenDot },
               { key: "submittals", label: "Submittals", icon: FolderOpenDot },
@@ -338,6 +348,13 @@ const rfiData = useMemo(() => {
                 <ScopeTag label="Detailing Misc" active={project.detailingMisc} />
               </div>
             </div>
+
+        {/* Footer Buttons */}
+        <div className="pt-2 flex flex-wrap gap-3">
+          <Button className="py-1 px-3 text-sm bg-teal-600 text-white" onClick={() => handleEditModel(project)}>
+            Edit Project
+          </Button>
+        </div>
             </div>
           )}
 
@@ -397,12 +414,11 @@ const rfiData = useMemo(() => {
             </div>
           )}
 
+
+
           {/* ✅ Notes */}
           {activeTab === "notes" && (
-            <div className="text-gray-600 italic text-center py-10">
-              <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-              Notes section coming soon.
-            </div>
+            <AllNotes projectId={id} />
           )}
           {activeTab === "wbs" && (
             <div className="text-gray-600 italic text-center py-10">
@@ -500,13 +516,18 @@ const rfiData = useMemo(() => {
           )}
         </div>
 
-        {/* Footer Buttons */}
-        <div className="pt-6 flex flex-wrap gap-3 border-t mt-6">
-          <Button className="py-1 px-3 text-sm bg-teal-600 text-white">
-            Edit Project
-          </Button>
-        </div>
     </div>
+    {editModel && (
+      <EditProject
+        projectId={id}
+        onCancel={() => setEditModel(null)}
+        onSuccess={() => {
+          setEditModel(null);
+          fetchProject();
+        }}
+      />
+    )}
+    </>
   );
 };
 

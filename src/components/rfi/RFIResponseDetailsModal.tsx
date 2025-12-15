@@ -20,6 +20,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
 
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
   const userId = sessionStorage.getItem("userId") || "";
+console.log(response);
 
   // 🔒 Only Admin/Team can reply (not client)
   const canReply = ["ADMIN", "STAFF", "MANAGER"].includes(userRole);
@@ -86,6 +87,42 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
           <CalendarDays size={14} />
           {new Date(response.createdAt).toLocaleString()}
         </div>
+
+        {/* Child Responses (Thread) */}
+        {response.childResponses?.length > 0 && (
+          <div className="mt-4 space-y-4 border-t pt-4 max-h-60 overflow-y-auto">
+            <h4 className="text-sm font-semibold text-gray-700">History</h4>
+            {response.childResponses.map((child: any) => (
+              <div key={child.id} className="bg-gray-50 p-3 rounded border text-sm">
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <span className="font-medium text-gray-900">
+                    {child.user?.name || "User"} ({child.user?.role || "N/A"})
+                  </span>
+                  <span>{new Date(child.createdAt).toLocaleString()}</span>
+                </div>
+                <p className="text-gray-800 mb-2">{child.reason}</p>
+
+                {/* Child Files */}
+                {child.files?.length > 0 && (
+                  <div className="space-y-1">
+                    {child.files.map((file: any) => (
+                      <p
+                        key={file.id}
+                        className="cursor-pointer text-teal-600 underline text-xs"
+                        onClick={() =>
+                          openFileSecurely("rfi/response", child.id, file.id)
+                        }
+                      >
+                        <Paperclip size={12} className="inline-block mr-1" />
+                        {file.originalName}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Reply Button — only internal side */}
         {canReply && !replyMode && (

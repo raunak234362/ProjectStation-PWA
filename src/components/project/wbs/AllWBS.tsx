@@ -6,19 +6,21 @@ import { Loader2, AlertCircle } from "lucide-react";
 import DataTable from "../../ui/table";
 import Service from "../../../api/Service";
 import GetWBSByID from "./GetWBSByID";
+import Button from "../../fields/Button";
 
-const AllWBS = ({id}: {id: string}) => {
+const AllWBS = ({ id }: { id: string }) => {
   const [wbsList, setWbsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedWBS, setSelectedWBS] = useState<string | null>(null);
 
   // ✅ Fetch all WBS items
   const fetchAllWBS = async () => {
     try {
       setLoading(true);
       setError(null);
-         const response = await Service.GetWBSByProjectId(id);// 👈 replace with your API function name
-         console.log("Fetched WBS:", response);
+      const response = await Service.GetWBSByProjectId(id);
+      console.log("Fetched WBS:", response);
       setWbsList(response || []);
     } catch (err) {
       console.error("Error fetching WBS:", err);
@@ -58,6 +60,21 @@ const AllWBS = ({id}: {id: string}) => {
       ),
     },
     {
+      accessorKey: "totalExecHr",
+      header: "Total Exec Hrs",
+      cell: ({ row }) => (
+        <span className="text-gray-700">{row.original.totalExecHr || "—"}</span>
+      ),
+    },
+    {
+      accessorKey: "totalCheckHr",
+      header: "Total Check Hrs",
+      cell: ({ row }) => (
+        <span className="text-gray-700">{row.original.totalCheckHr || "—"}</span>
+      ),
+    },
+    
+    {
       accessorKey: "createdAt",
       header: "Created On",
       cell: ({ row }) =>
@@ -65,41 +82,10 @@ const AllWBS = ({id}: {id: string}) => {
     },
   ];
 
-  // ✅ Optional: Detail view for expanded row
-  const DetailComponent = ({ row }: { row: any }) => {
-    const data = row.original;
-    return (
-      <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-sm space-y-1">
-        <p>
-          <span className="font-semibold text-gray-600">ID:</span> {data.id}
-        </p>
-        <p>
-          <span className="font-semibold text-gray-600">Project ID:</span>{" "}
-          {data.projectId}
-        </p>
-        <p>
-          <span className="font-semibold text-gray-600">Total Exec Hr:</span>{" "}
-          {data.totalExecHr}
-        </p>
-        <p>
-          <span className="font-semibold text-gray-600">Total Check Hr:</span>{" "}
-          {data.totalCheckHr}
-        </p>
-        <p>
-          <span className="font-semibold text-gray-600">Total Qty:</span>{" "}
-          {data.totalQtyNo}
-        </p>
-        <p>
-          <span className="font-semibold text-gray-600">Updated On:</span>{" "}
-          {format(new Date(data.updatedAt), "dd MMM yyyy, HH:mm")}
-        </p>
-      </div>
-    );
-  };
-
-  // ✅ Handle row click (optional)
+  // ✅ Handle row click — open details
   const handleRowClick = (row: any) => {
-    console.log("Selected WBS:", row.id, "-", row.name);
+    const wbsId = row.id ?? row.fabId ?? "";
+    if (wbsId) setSelectedWBS(wbsId);
   };
 
   // ✅ Render loading/error states
@@ -121,6 +107,10 @@ const AllWBS = ({id}: {id: string}) => {
   // ✅ Render table
   return (
     <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+      <div className="flex justify-between items-center mb-4">  
+
+      <div>
+
       <h2 className="text-lg font-semibold text-gray-800 mb-3">
         Work Breakdown Structure (WBS)
       </h2>
@@ -128,18 +118,22 @@ const AllWBS = ({id}: {id: string}) => {
         Total Items:{" "}
         <span className="font-semibold text-gray-700">{wbsList.length}</span>
       </p>
+      </div>
+      <div><Button>Add New Line Item</Button></div>
+      </div>
+
       <DataTable
         columns={columns}
         data={wbsList}
         onRowClick={handleRowClick}
-      detailComponent={({ row }) => {
-          const wbsUniqueId =
-            (row as any).id ?? (row as any).fabId ?? "";
-          return <GetWBSByID id={wbsUniqueId} />;
-        }}
         searchPlaceholder="Search WBS by name or type..."
-        pageSizeOptions={[10, 25, 50, 100]} 
+        pageSizeOptions={[10, 25, 50, 100]}
       />
+
+      {/* ✅ Modal for WBS Details */}
+      {selectedWBS && (
+        <GetWBSByID id={selectedWBS} onClose={() => setSelectedWBS(null)} />
+      )}
     </div>
   );
 };

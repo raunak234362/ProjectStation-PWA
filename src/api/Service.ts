@@ -503,6 +503,20 @@ static async addResponse(formData: FormData,responseId:string) {
       console.log(error);
     }
   }
+  // Fetch Connection Designer By ID
+  static async FetchConnectionQuotationByDesignerID(id: string) {
+    try {
+      const response = await api.get(`connectionDesignerQuota/designer/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) { 
+      console.log(error);
+    }
+  }
   // Update Connection Designer By ID
   static async UpdateConnectionDesignerByID(id: string, data: any) {
     try {
@@ -641,11 +655,7 @@ static async addResponse(formData: FormData,responseId:string) {
   // Edit Project By ID
   static async EditProjectById(id: string, data: any) {
     try {
-      const response = await api.put(`project/projects/${id}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.put(`project/projects/${id}`, data);
       console.log(response);
       return response.data;
     } catch (error) {
@@ -729,6 +739,21 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+  // Update WBS line-item by ProjectId, wbsId and line-item ID
+  static async UpdateWBSLineItem(projectId: string, wbsId: string, lineItemId: string, data: any) {
+    try {
+      const response = await api.put(`project/projects/${projectId}/work-break-downs/${wbsId}/line-items/${lineItemId}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Fetch All Chats
   static async AllChats() {
     try {
@@ -775,6 +800,8 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+    
+
   // Delete Group Member
   static async DeleteGroupMember(groupId: string, memberId: string) {
     try {
@@ -783,12 +810,46 @@ static async addResponse(formData: FormData,responseId:string) {
           "Content-Type": "application/json",
         },
       });
-      console.log("Group member deleted", response.data);
+      console.log(" Group member deleted", response.data);
       return response.data;
     } catch (error) {
       console.log(error);
     }
   }
+
+  // Get Project Notes
+  static async GetProjectNotes(projectId: string) {
+    try {
+      const response = await api.get(`project/projects/${projectId}/notes`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Project notes fetched", response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Create Project Note
+  static async CreateProjectNote(projectId: string, data: FormData) {
+    const token = sessionStorage.getItem("token");
+    try {
+      const response = await api.post(`project/projects/${projectId}/notes`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(" Project note created", response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  
 
   // Delete Group
   static async DeleteGroup(groupId: string) {

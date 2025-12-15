@@ -436,8 +436,8 @@ export interface ProjectData {
   stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
-  rfi?: any[];
-  submittals ?: any[];
+  rfi?:any[];
+  submittals?:any[];
   miscDesign: boolean;
   customerDesign: boolean;
   detailingMain: boolean;
@@ -516,35 +516,68 @@ export interface RFIItem {
   rfiresponse: RFIResponse[];
   date: string;
 }
-export interface RFIResponseSchema {
-  files?: File[] | string[];
-  wbtStatus?: boolean;
-  reason: string;
-  rfiId: string;
-  parentResponseId: string | null;
-
+export interface RFIResponseSchema
+{
+files?: File[] | string[];
+// responseState:boolean|null;
+wbtStatus?:boolean;
+reason:string;
+rfiId:string;
+parentResponseId:string|null;
 }
-export interface SubmittalPayload {
-  fabricator_id: string;
-  project_id: string;
-  mileStoneId: string | null;
-  recepient_id: string;
-  sender_id: string;
-  status: boolean | null;
-  subject: string;
+
+
+export interface LineItem {
+  id: string;
   description: string;
-  isAproovedByAdmin: string | null;
-  files?: File[] | string[];
-
+  unitTime?: number;
+  CheckUnitTime?: number;
+  checkHr?: number;
+  execHr?: number;
+  updatedAt?: string;
+  QtyNo?: number;
 }
 
-export interface SubmittalResponsePayload {
-  reason?: string;
-  submittalsId: string;
-  description?: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
-  wbtStatus: "PENDING" | "APPROVED" | "REJECTED";
-  parentResponseId: string;
-  files?: File[] | string[];
+export interface WBSData {
+  id: string;
+  name: string;
+  type: string;
+  stage: string;
+  projectId: string;
+  templateKey: string;
+  totalCheckHr: number;
+  checkHrWithRework: number;
+  totalExecHr: number;
+  execHrWithRework: number;
+  totalQtyNo: number;
+  createdAt: string;
+  updatedAt: string;
+  LineItems?: LineItem[];
+}
 
+export interface ProjectNote {
+  id: string;
+  content: string;
+  stage: string;
+  projectId: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
+  files?: {
+    id: string;
+    originalName: string;
+    path: string;
+  }[];
+}
+
+export interface CreateProjectNotePayload {
+  content: string;
+  stage: string;
+  projectId: string;
+  files?: File[];
 }
