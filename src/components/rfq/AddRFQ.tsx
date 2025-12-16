@@ -27,7 +27,7 @@ const AddRFQ: React.FC = () => {
     (state: any) => state.userInfo.staffData
   );
 
-  const userType =
+  // const userType =
     typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
 
   const {

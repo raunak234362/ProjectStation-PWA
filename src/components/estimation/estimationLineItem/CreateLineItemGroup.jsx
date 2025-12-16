@@ -1,0 +1,121 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import Service from "../../../api/Service";
+import { toast } from "react-toastify";
+import { Loader2, Plus } from "lucide-react";
+import PropTypes from "prop-types";
+
+
+
+const CreateLineItemGroup = ({ estimationId, onGroupCreated }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm({
+        defaultValues: {
+            name: "",
+            description: "",
+            estimationId: estimationId || "",
+        },
+    });
+
+    const onSubmit = async (data) => {
+        setIsSubmitting(true);
+        try {
+            await Service.CreateLineItemGroup(data); // Using CreateLineItemGroup as per user instruction for creation
+            toast.success("Line Item Group created successfully");
+            reset();
+            setIsExpanded(false);
+            if (onGroupCreated) onGroupCreated();
+        } catch (error) {
+            console.error("Error creating line item group:", error);
+            toast.error("Failed to create Line Item Group");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (!estimationId) {
+        return null;
+    }
+
+    return (
+        <div className="w-full mt-6 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+            <div
+                className="p-4 bg-gray-50 flex justify-between items-center cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                <h3 className="text-lg font-semibold text-gray-800">Line Item Groups</h3>
+                <button
+                    className="flex items-center gap-2 text-teal-600 font-medium hover:text-teal-700"
+                >
+                    <Plus size={18} />
+                    {isExpanded ? "Cancel" : "Create New Group"}
+                </button>
+            </div>
+
+            {isExpanded && (
+                <div className="p-6 border-t border-gray-200">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <input type="hidden" {...register("estimationId")} value={estimationId} />
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Group Name <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                {...register("name")}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all ${errors.name ? "border-red-500" : "border-gray-300"
+                                    }`}
+                                placeholder="Enter group name"
+                            />
+                            {errors.name && (
+                                <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Description
+                            </label>
+                            <textarea
+                                {...register("description")}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
+                                rows="3"
+                                placeholder="Enter description (optional)"
+                            ></textarea>
+                            {errors.description && (
+                                <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>
+                            )}
+                        </div>
+
+                        <div className="flex justify-end pt-2">
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="flex items-center gap-2 px-6 py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="animate-spin w-4 h-4" />
+                                        Creating...
+                                    </>
+                                ) : (
+                                    "Create Group"
+                                )}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default CreateLineItemGroup;

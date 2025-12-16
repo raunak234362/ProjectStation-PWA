@@ -9,35 +9,26 @@ import MultipleFileUpload from "../../fields/MultipleFileUpload";
 import SectionTitle from "../../ui/SectionTitle";
 import Service from "../../../api/Service";
 import { useSelector } from "react-redux";
-import type { EstimationTaskPayload } from "../../../interface";
-
-interface AddEstimationTaskProps {
-  estimationId: string;
-  onClose: () => void;
-  onSuccess?: () => void;
-  files?: any[];
-}
-
-const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
+const AddEstimationTask = ({
   estimationId,
   onClose,
   onSuccess,
 }) => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const staffData = useSelector((state: any) => state.userInfo.staffData);
-  const user = useSelector((state: any) => state.userInfo.userDetail);
+  const staffData = useSelector((state) => state.userInfo.staffData);
+  const user = useSelector((state) => state.userInfo.userDetail);
   const currentUserId = user?.id;
 
   // Dropdown options for staff
   const staffOptions =
     staffData
       ?.filter(
-        (staff: any) =>
+        (staff) =>
           ["STAFF", "ESTIMATOR", "ESTIMATION_HEAD"].includes(staff.role)
       )
-      .map((staff: any) => ({
+      .map((staff) => ({
         label: `${staff.firstName} ${staff.lastName}`,
         value: staff.id,
       })) ?? [];
@@ -48,13 +39,13 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<EstimationTaskPayload>({
+  } = useForm({
     defaultValues: {
       status: "ASSIGNED",
     },
   });
 
-  const onSubmit = async (data: EstimationTaskPayload) => {
+  const onSubmit = async (data) => {
     try {
       setLoading(true);
 
@@ -65,7 +56,7 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
       }
 
       // --- Prepare Payload
-      const payload: EstimationTaskPayload = {
+      const payload = {
         ...data,
         assignedById: currentUserId,
         estimationId,
@@ -95,7 +86,7 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
       onClose();
       reset();
       setFiles([]);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating task:", error);
       toast.error(error?.response?.data?.message || "Failed to create task");
     } finally {
@@ -121,8 +112,8 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
               <Select
                 placeholder="Assigned To *"
                 options={staffOptions}
-                value={staffOptions.find((opt: any) => opt.value === field.value) || null}
-                onChange={(option: any) => field.onChange(option?.value)}
+                value={staffOptions.find((opt) => opt.value === field.value) || null}
+                onChange={(option) => field.onChange(option?.value)}
                 menuPortalTarget={document.body}
                 styles={{
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
