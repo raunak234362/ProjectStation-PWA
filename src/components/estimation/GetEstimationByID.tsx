@@ -1,20 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, FileText } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Loader2, AlertCircle } from "lucide-react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import AllEstimationTask from "./estimationTask/AllEstimationTask";
 import LineItemGroup from "./estimationLineItem/LineItemGroup";
 
 import RenderFiles from "../ui/RenderFiles";
+import type { EstimationPayload } from "../../interface";
 
-const truncateText = (text, max = 40) =>
+const truncateText = (text: string, max = 40) =>
   text.length > max ? text.substring(0, max) + "..." : text;
 
-const GetEstimationByID = ({ id }) => {
-  const [estimation, setEstimation] = useState(null);
+interface GetEstimationByIDProps {
+  id: string;
+}
+
+interface Estimation extends EstimationPayload {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  fabricators?: {
+    fabName: string;
+  };
+  rfq?: {
+    projectName: string;
+    projectNumber: string;
+    bidPrice: string;
+  };
+  createdBy?: {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+  };
+  tasks?: any[];
+  estimationTasks?: any[];
+}
+
+const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
+  const [estimation, setEstimation] = useState<Estimation | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [isEstimationTaskOpen, setIsEstimationTaskOpen] = useState(false);
   const [isHoursOpen, setIsHoursOpen] = useState(false);
 
@@ -42,13 +69,13 @@ const GetEstimationByID = ({ id }) => {
     fetchEstimation();
   }, [id]);
 
-  const formatDateTime = (date) =>
+  const formatDateTime = (date: string | Date) =>
     new Date(date).toLocaleString("en-IN", {
       dateStyle: "medium",
       timeStyle: "short",
     });
 
-  const formatDate = (date) =>
+  const formatDate = (date: string | Date) =>
     date
       ? new Date(date).toLocaleDateString("en-IN", {
         year: "numeric",
@@ -103,7 +130,7 @@ const GetEstimationByID = ({ id }) => {
         : "bg-blue-100 text-blue-800";
 
   return (
-    <div className="bg-gradient-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner text-sm">
+    <div className="bg-linear-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
@@ -180,7 +207,7 @@ const GetEstimationByID = ({ id }) => {
             label="Estimate Date"
             value={formatDate(estimateDate)}
           />
-          <InfoRow label="Start Date" value={formatDate(startDate)} />
+          <InfoRow label="Start Date" value={startDate ? formatDate(startDate) : "N/A"} />
           <InfoRow
             label="Created"
             value={formatDateTime(createdAt)}
@@ -208,7 +235,7 @@ const GetEstimationByID = ({ id }) => {
 
       {/* Files Section */}
       <RenderFiles
-        files={files}
+        files={files || []}
         table="estimation"
         parentId={id}
         formatDate={formatDate}
@@ -266,6 +293,9 @@ const GetEstimationByID = ({ id }) => {
 const InfoRow = ({
   label,
   value,
+}: {
+  label: string;
+  value: React.ReactNode;
 }) => (
   <div className="flex justify-between gap-3">
     <span className="font-bold text-gray-600">{label}:</span>

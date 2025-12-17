@@ -9,26 +9,41 @@ import MultipleFileUpload from "../../fields/MultipleFileUpload";
 import SectionTitle from "../../ui/SectionTitle";
 import Service from "../../../api/Service";
 import { useSelector } from "react-redux";
-const AddEstimationTask = ({
+
+interface AddEstimationTaskProps {
+  estimationId: string;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+interface EstimationTaskFormData {
+  assignedToId: string;
+  startDate: string;
+  endDate: string;
+  notes: string;
+  status: string;
+}
+
+const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
   estimationId,
   onClose,
   onSuccess,
 }) => {
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const staffData = useSelector((state) => state.userInfo.staffData);
-  const user = useSelector((state) => state.userInfo.userDetail);
+  const staffData = useSelector((state: any) => state.userInfo.staffData);
+  const user = useSelector((state: any) => state.userInfo.userDetail);
   const currentUserId = user?.id;
 
   // Dropdown options for staff
   const staffOptions =
     staffData
       ?.filter(
-        (staff) =>
+        (staff: any) =>
           ["STAFF", "ESTIMATOR", "ESTIMATION_HEAD"].includes(staff.role)
       )
-      .map((staff) => ({
+      .map((staff: any) => ({
         label: `${staff.firstName} ${staff.lastName}`,
         value: staff.id,
       })) ?? [];
@@ -39,13 +54,13 @@ const AddEstimationTask = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<EstimationTaskFormData>({
     defaultValues: {
       status: "ASSIGNED",
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: EstimationTaskFormData) => {
     try {
       setLoading(true);
 
@@ -86,7 +101,7 @@ const AddEstimationTask = ({
       onClose();
       reset();
       setFiles([]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating task:", error);
       toast.error(error?.response?.data?.message || "Failed to create task");
     } finally {
@@ -112,8 +127,8 @@ const AddEstimationTask = ({
               <Select
                 placeholder="Assigned To *"
                 options={staffOptions}
-                value={staffOptions.find((opt) => opt.value === field.value) || null}
-                onChange={(option) => field.onChange(option?.value)}
+                value={staffOptions.find((opt: any) => opt.value === field.value) || null}
+                onChange={(option: any) => field.onChange(option?.value)}
                 menuPortalTarget={document.body}
                 styles={{
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }),

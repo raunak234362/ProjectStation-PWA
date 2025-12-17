@@ -243,6 +243,7 @@ export interface RFQItem {
   recipientId?: string;
   salesPersonId?: string;
   status?: string;
+  wbtStatus?: string;
   tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
   createdAt: string | Date;
   sender?: UserRef | null;
@@ -364,7 +365,7 @@ export interface EstimationPayload {
   projectName: string;
   description?: string;
   estimateDate: string | Date;   // because React Hook Form passes string from input
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "APPROVED"; // based on your EstimationStatus enum
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "APPROVED" | "DRAFT"; // based on your EstimationStatus enum
   assignedById?: string;
   finalHours?: number;
   finalWeeks?: number;

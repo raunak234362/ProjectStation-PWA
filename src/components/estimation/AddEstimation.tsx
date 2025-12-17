@@ -10,7 +10,7 @@ import MultipleFileUpload from "../fields/MultipleFileUpload";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
 import { setRFQData } from "../../store/rfqSlice";
-import { RFQItem, Fabricator } from "../../interface";
+import type { RFQItem, Fabricator } from "../../interface";
 
 const EstimationStatusOptions = [
   { label: "Pending", value: "PENDING" },

@@ -1,46 +1,74 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import React from "react";
 import DataTable from "../../ui/table";
 import { format } from "date-fns";
 import EstimationTaskByID from "./EstimationTaskByID";
 
-const AllEstimationTask = ({ estimations, onClose }) => {
+interface EstimationTask {
+  id: string;
+  estimationId: string;
+  endDate: string;
+  status: string;
+  estimation?: {
+    projectName: string;
+    fabricators?: {
+      fabName: string;
+    };
+  };
+  assignedTo?: {
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+  };
+  assignedBy?: {
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+  };
+}
+
+interface AllEstimationTaskProps {
+  estimations: EstimationTask[];
+  onClose?: () => void;
+}
+
+const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({ estimations, onClose }) => {
   console.log(estimations);
-  const [selectedTaskId, setSelectedTaskId] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+
+
 
   // ─────────────── Columns ───────────────
   const columns = [
     {
       header: "Project Name",
-      accessorFn: (row) => row.estimation?.projectName || "—",
+      accessorFn: (row: EstimationTask) => row.estimation?.projectName || "—",
     },
     {
       header: "Fabricator Name",
-      accessorFn: (row) =>
+      accessorFn: (row: EstimationTask) =>
         row.estimation?.fabricators?.fabName || "—",
     },
     {
       header: "Assigned To",
-      accessorFn: (row) =>
+      accessorFn: (row: EstimationTask) =>
         `${row.assignedTo?.firstName ?? ""} ${row.assignedTo?.middleName ?? ""} ${row.assignedTo?.lastName ?? ""}`
           .trim() || "—",
     },
     {
       header: "Assigned By",
-      accessorFn: (row) =>
+      accessorFn: (row: EstimationTask) =>
         `${row.assignedBy?.firstName ?? ""} ${row.assignedBy?.middleName ?? ""} ${row.assignedBy?.lastName ?? ""}`
           .trim() || "—",
     },
     {
       header: "End Date",
-      accessorFn: (row) =>
+      accessorFn: (row: EstimationTask) =>
         row.endDate ? format(new Date(row.endDate), "dd MMM yyyy") : "—",
     },
     {
       header: "Status",
-      accessorFn: (row) => row.status,
-      cell: ({ getValue }) => {
+      accessorFn: (row: EstimationTask) => row.status,
+      cell: ({ getValue }: { getValue: () => any }) => {
         const status = getValue();
         const color =
           status === "COMPLETED"
@@ -61,11 +89,10 @@ const AllEstimationTask = ({ estimations, onClose }) => {
   ];
 
   // ─────────────── Row Click Handler ───────────────
-  const handleRowClick = (row) => {
+  const handleRowClick = (row: EstimationTask) => {
     const taskId = row.id ?? row.estimationId;
     if (!taskId) return;
-
-    setSelectedTaskId(taskId);
+    console.log("Selected Task ID:", taskId);
   };
 
   return (
@@ -89,17 +116,12 @@ const AllEstimationTask = ({ estimations, onClose }) => {
       {/* Table */}
       <div className="w-full rounded-xl p-4 ">
         <div className=" rounded-lg">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12 text-gray-500">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600 mr-2"></div>
-              Loading tasks...
-            </div>
-          ) : estimations?.length > 0 ? (
+          {estimations?.length > 0 ? (
             <DataTable
               columns={columns}
               data={estimations}
               onRowClick={handleRowClick}
-              detailComponent={({ row, close }) => {
+              detailComponent={({ row, close }: { row: EstimationTask; close: () => void }) => {
                 console.log("Detail Component Row:", row.id);
                 const estimationUniqueId =
                   row.id ?? row.estimationId ?? "";
