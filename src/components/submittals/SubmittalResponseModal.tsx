@@ -22,8 +22,7 @@ console.log(submittalId);
   const [description, setDescription] = useState("");
 
   // ENUMS
-  const [status, setStatus] = useState<"PENDING" | "APPROVED" | "REJECTED">("PENDING");
-  const [wbtStatus, setWbtStatus] = useState<"PENDING" | "APPROVED" | "REJECTED">("PENDING");
+
 
   const [files, setFiles] = useState<File[]>([]);
 

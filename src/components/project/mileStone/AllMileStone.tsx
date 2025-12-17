@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { CheckCircle, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import Button from "../../fields/Button";
 import AddMileStone from "./AddMileStone";
 import Service from "../../../api/Service";
@@ -40,14 +40,8 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
     if (onUpdate) onUpdate();
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "APPROVED": return "bg-green-100 text-green-800 border-green-200";
-      case "COMPLETED": return "bg-blue-100 text-blue-800 border-blue-200";
-      case "IN_PROGRESS": return "bg-amber-100 text-amber-800 border-amber-200";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
+
+
 
       const columns: ColumnDef<any>[] = [
           { accessorKey: "subject", header: "Subject" },

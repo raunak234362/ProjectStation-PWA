@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Loader2,
   AlertCircle,
@@ -18,7 +18,7 @@ import AllMileStone from "./mileStone/AllMileStone";
 import AllDocument from "./projectDocument/AllDocument";
 import type { ProjectData } from "../../interface";
 import WBS from "./wbs/WBS";
-import type { ColumnDef } from "@tanstack/react-table";
+
 import AllRFI from "../rfi/AllRfi";
 import AddRFI from "../rfi/AddRFI";
 import AllSubmittals from "../submittals/AllSubmittals";
@@ -63,9 +63,7 @@ const rfiData = useMemo(() => {
       setEditModel(project);
     };    
 
-    const handleModelClose = () => {
-      setEditModel(null);
-    };
+
   
 
   const submittalData = useMemo(() => {
@@ -74,86 +72,12 @@ const rfiData = useMemo(() => {
   }, [project]);
   
 
-  const rfiColumns: ColumnDef<any>[] = [
-    { accessorKey: "subject", header: "Subject" },
-    {
-      accessorKey: "sender",
-      header: "Sender",
-      cell: ({ row }) =>
-        `${row.original.sender?.firstName || ""} ${
-          row.original.sender?.lastName || ""
-        }`,
-    },
-    {
-      accessorKey: "recepients",
-      header: "Recipient",
-      cell: ({ row }) =>
-        `${row.original.recepients?.firstName || ""} ${
-          row.original.recepients?.lastName || ""
-        }`,
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status
-              ? "bg-green-100 text-green-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
-          {row.original.status ? "Closed" : "Open"}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "date",
-      header: "Date",
-      cell: ({ row }) => formatDate(row.original.date),
-    },
-  ];
 
 
-  const submittalColumns: ColumnDef<any>[] = [
-    { accessorKey: "subject", header: "Subject" },
-    {
-      accessorKey: "sender",
-      header: "Sender",
-      cell: ({ row }) =>
-        `${row.original.sender?.firstName || ""} ${
-          row.original.sender?.lastName || ""
-        }`,
-    },
-    {
-      accessorKey: "recepients",
-      header: "Recipient",
-      cell: ({ row }) =>
-        `${row.original.recepients?.firstName || ""} ${
-          row.original.recepients?.lastName || ""
-        }`,
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status
-              ? "bg-green-100 text-green-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
-          {row.original.status ? "Closed" : "Open"}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "date",
-      header: "Date",
-      cell: ({ row }) => formatDate(row.original.date),
-    },
-  ];  
+
+
+
+  
 
   // const FetchWBSbyProjectId = async () => {
   //   try {

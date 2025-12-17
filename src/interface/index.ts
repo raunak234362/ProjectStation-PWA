@@ -12,6 +12,7 @@ export interface UserData {
   username: string;
   email: string;
   firstName: string;
+  middleName?: string | null;
   lastName: string;
   phone: string;
   landline: string | null;
@@ -538,6 +539,13 @@ export interface LineItem {
   QtyNo?: number;
 }
 
+export interface CreateLineItemGroupPayload {
+  name?: string;
+  description?: string;
+  estimationId?: string;
+  [key: string]: any;
+}
+
 export interface WBSData {
   id: string;
   name: string;
@@ -579,5 +587,39 @@ export interface CreateProjectNotePayload {
   content: string;
   stage: string;
   projectId: string;
+  files?: File[];
+}
+
+export interface ProjectMilestone {
+  id: string;
+  subject: string;
+  name?: string;
+  date: string;
+  approvalDate?: string;
+  status: string;
+  projectId: string;
+  project_id?: string;
+  fabricator_id?: string;
+  description?: string;
+}
+
+export interface SubmittalPayload {
+  subject: string;
+  description: string;
+  projectId: string;
+  project_id?: string;
+  fabricatorId: string;
+  fabricator_id?: string;
+  sender_id?: string;
+  recepient_id?: string;
+  mileStoneId?: string;
+  status: string;
+  files?: File[];
+}
+
+export interface SubmittalResponsePayload {
+  submittalId: string;
+  response: string;
+  status: string;
   files?: File[];
 }

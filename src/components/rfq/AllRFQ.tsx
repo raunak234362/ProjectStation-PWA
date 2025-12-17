@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import Service from "../../api/Service";
+
+
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RFQItem } from "../../interface";
@@ -7,11 +7,7 @@ import GetRFQByID from "./GetRFQByID";
 
 const AllRFQ = ({rfq}:any) => {
 
-const [rfqID,setRfqID] = useState<string | null>(null);
 const userType = localStorage.getItem("userType");
- const handleRowClick = (row: RFQItem) => {
-    setRfqID(row.id)
-  };
 
 
  
@@ -75,7 +71,6 @@ columns.push(
       <DataTable
         columns={columns}
         data={rfq}
-        onRowClick={handleRowClick}
          detailComponent={({ row }) => <GetRFQByID id={row.id} />}
         // onDelete={handleDelete}
         searchPlaceholder="Search employees..."

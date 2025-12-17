@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import { Loader2, AlertCircle } from "lucide-react";
 import { openFileSecurely } from "../../utils/openFileSecurely";
+
 import Button from "../fields/Button";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import SubmittalResponseModal from "./SubmittalResponseModal";
+
 
 const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div className="mb-2">
@@ -20,6 +22,7 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
   const [error, setError] = useState<string | null>(null);
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
+
 
   const submittalResponseTableData = submittal?.submittalsResponse
   console.log(submittalResponseTableData);
@@ -198,6 +201,18 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
 
     
 
+    
+      {showResponseModal && submittal && (
+        <SubmittalResponseModal
+          submittalId={submittal.id}
+          parentResponseId={selectedResponse?.id}
+          onClose={() => setShowResponseModal(false)}
+          onSuccess={() => {
+            setShowResponseModal(false);
+            fetchData();
+          }}
+        />
+      )}
     </>
   );
 

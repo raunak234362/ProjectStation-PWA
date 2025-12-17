@@ -5,72 +5,19 @@ import Service from "../../api/Service";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import AllEstimationTask from "./estimationTask/AllEstimationTask";
+import LineItemGroup from "./estimationLineItem/LineItemGroup";
 
-interface EstimationFile {
-  id: string;
-  originalName: string;
-  filename?: string;
-  path?: string;
-}
 
-interface EstimationFabricator {
-  id: string;
-  fabName: string;
-  website?: string | null;
-  drive?: string | null;
-}
 
-interface EstimationRFQ {
-  id: string;
-  projectNumber?: string | null;
-  projectName?: string | null;
-  bidPrice?: string | null;
-}
-
-interface EstimationCreatedBy {
-  id: string;
-  username?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-}
-
-export interface Estimation {
-  id: string;
-  estimationNumber: string;
-  projectName: string;
-  description?: string | null;
-  estimateDate: string;
-  startDate?: string | null;
-  status: string;
-  tools?: string | null;
-  fabricatorId: string;
-  fabricatorName?: string | null;
-  rfqId?: string | null;
-  finalHours?: number | null;
-  finalWeeks?: number | null;
-  finalPrice?: number | null;
-  assignedById?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  files?: EstimationFile[];
-  rfq?: EstimationRFQ;
-  fabricators?: EstimationFabricator;
-  createdBy?: EstimationCreatedBy;
-}
-
-interface GetEstimationByIDProps {
-  id: string;
-}
-
-const truncateText = (text: string, max: number = 40) =>
+const truncateText = (text, max = 40) =>
   text.length > max ? text.substring(0, max) + "..." : text;
 
-const GetEstimationByID = ({ id }: GetEstimationByIDProps) => {
-  const [estimation, setEstimation] = useState<Estimation | null>(null);
+const GetEstimationByID = ({ id }) => {
+  const [estimation, setEstimation] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [isEstimationTaskOpen, setIsEstimationTaskOpen] = useState(false);
+  const [isHoursOpen, setIsHoursOpen] = useState(false);
 
   useEffect(() => {
     const fetchEstimation = async () => {
@@ -96,19 +43,19 @@ const GetEstimationByID = ({ id }: GetEstimationByIDProps) => {
     fetchEstimation();
   }, [id]);
 
-  const formatDateTime = (date: string) =>
+  const formatDateTime = (date) =>
     new Date(date).toLocaleString("en-IN", {
       dateStyle: "medium",
       timeStyle: "short",
     });
 
-  const formatDate = (date?: string | null) =>
+  const formatDate = (date) =>
     date
       ? new Date(date).toLocaleDateString("en-IN", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
       : "N/A";
 
   if (loading) {
@@ -153,8 +100,8 @@ const GetEstimationByID = ({ id }: GetEstimationByIDProps) => {
     status === "DRAFT"
       ? "bg-yellow-100 text-yellow-800"
       : status === "COMPLETED"
-      ? "bg-green-100 text-green-800"
-      : "bg-blue-100 text-blue-800";
+        ? "bg-green-100 text-green-800"
+        : "bg-blue-100 text-blue-800";
 
   return (
     <div className="bg-gradient-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner text-sm">
@@ -294,8 +241,8 @@ const GetEstimationByID = ({ id }: GetEstimationByIDProps) => {
         >
           Estimation Task
         </Button>
-        <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
-          View RFQ
+        <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700" onClick={() => setIsHoursOpen(true)}>
+          Estimated Hours/Weeks
         </Button>
         <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           Add To Project
@@ -304,9 +251,31 @@ const GetEstimationByID = ({ id }: GetEstimationByIDProps) => {
       </div>
       {isEstimationTaskOpen && (
         <AllEstimationTask
-          estimation={estimation}
+          // Many APIs return tasks either nested under `tasks` or `estimationTasks`
+          // Fallback to an empty array to avoid runtime errors.
+          estimations={
+            Array.isArray(estimation?.tasks)
+              ? estimation.tasks
+              : Array.isArray(estimation?.estimationTasks)
+                ? estimation.estimationTasks
+                : []
+          }
           onClose={() => setIsEstimationTaskOpen(false)}
         />
+      )}
+      {isHoursOpen && (
+        <div className="mt-6 border-t pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-800">Estimated Hours/Weeks</h3>
+            <button
+              onClick={() => setIsHoursOpen(false)}
+              className="text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
+            >
+              Close
+            </button>
+          </div>
+          <LineItemGroup estimationId={estimation?.id} />
+        </div>
       )}
     </div>
   );
@@ -316,13 +285,10 @@ const GetEstimationByID = ({ id }: GetEstimationByIDProps) => {
 const InfoRow = ({
   label,
   value,
-}: {
-  label: string;
-  value: React.ReactNode;
 }) => (
   <div className="flex justify-between gap-3">
     <span className="font-bold text-gray-600">{label}:</span>
-    <span className="text-gray-900 text-right break-words">{value}</span>
+    <span className="text-gray-900 text-right wrap-break-words">{value}</span>
   </div>
 );
 
