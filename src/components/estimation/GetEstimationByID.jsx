@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, FileText, Link2 } from "lucide-react";
+import { Loader2, AlertCircle, FileText } from "lucide-react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
-import { openFileSecurely } from "../../utils/openFileSecurely";
 import AllEstimationTask from "./estimationTask/AllEstimationTask";
 import LineItemGroup from "./estimationLineItem/LineItemGroup";
 
-
+import RenderFiles from "../ui/RenderFiles";
 
 const truncateText = (text, max = 40) =>
   text.length > max ? text.substring(0, max) + "..." : text;
@@ -208,30 +207,12 @@ const GetEstimationByID = ({ id }) => {
       </div>
 
       {/* Files Section */}
-      {Array.isArray(files) && files.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-teal-200">
-          <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
-            <FileText className="w-4 h-4" /> Files
-          </h4>
-          <ul className="text-gray-700 space-y-1">
-            {files.map((file) => (
-              <li
-                key={file.id}
-                className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
-              >
-                <span>{file.originalName}</span>
-                <button
-                  type="button"
-                  className="text-teal-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
-                  onClick={() => openFileSecurely("estimation", id, file.id)}
-                >
-                  <Link2 className="w-3 h-3" /> Open
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <RenderFiles
+        files={files}
+        table="estimation"
+        parentId={id}
+        formatDate={formatDate}
+      />
 
       {/* Action Buttons (placeholders for future edit/view actions) */}
       <div className="py-3 flex gap-3">

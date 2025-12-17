@@ -4,7 +4,6 @@ import {
   Loader2,
   AlertCircle,
   FileText,
-  Link2,
   Settings,
   FolderOpenDot,
   Users,
@@ -12,7 +11,6 @@ import {
   ClipboardList,
 } from "lucide-react";
 import Service from "../../api/Service";
-import { openFileSecurely } from "../../utils/openFileSecurely";
 import Button from "../fields/Button";
 import AllMileStone from "./mileStone/AllMileStone";
 import AllDocument from "./projectDocument/AllDocument";
@@ -25,6 +23,7 @@ import AllSubmittals from "../submittals/AllSubmittals";
 import AllNotes from "./notes/AllNotes";
 import EditProject from "./EditProject";
 import AddSubmittal from "../submittals/AddSubmittals";
+import RenderFiles from "../ui/RenderFiles";
 
 
 
@@ -285,26 +284,12 @@ const rfiData = useMemo(() => {
           {/* ✅ Files */}
           {activeTab === "files" && (
             <div className="space-y-4">
-              {Array.isArray(project.files) && project.files.length > 0 ? (
-                <ul className="text-gray-700 space-y-1">
-                  {project.files.map((file:any) => (
-                    <li
-                    key={file.id}
-                    className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm border"
-                    >
-                      <span>{file.originalName}</span>
-                      <a
-                        className="text-teal-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
-                        onClick={() => openFileSecurely("project", id, file.id)}
-                      >
-                        <Link2 className="w-3 h-3" /> Open
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-600 italic">No files attached.</p>
-              )}
+              <RenderFiles
+                files={project.files || []}
+                table="project"
+                parentId={id}
+                formatDate={formatDate}
+              />
               <AllDocument />
             </div>
           )}

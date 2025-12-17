@@ -8,8 +8,8 @@ import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import ResponseDetailsModal from "./ResponseDetailsModal";
 import Button from "../fields/Button";
-import { openFileSecurely } from "../../utils/openFileSecurely";
 import AddEstimation from "../estimation/AddEstimation";
+import RenderFiles from "../ui/RenderFiles";
 import QuotationRaise from "../connectionDesigner/QuotationRaise";
 
 interface GetRfqByIDProps {
@@ -218,27 +218,12 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             </div>
 
             {/* Files */}
-            {rfq.files?.length ? (
-              <div>
-                <h4 className="font-semibold text-gray-600 mb-2 flex items-center gap-2">
-                  Files Attached
-                </h4>
-                <ul className="text-gray-800 bg-white p-4 rounded-md shadow">
-                  {rfq.files.map((file: any, i) => (
-                    <li key={i} className="border-b py-2 last:border-none">
-                      <span
-                        className="text-teal-700 underline cursor-pointer hover:text-teal-900"
-                        onClick={() => openFileSecurely("rfq", rfq.id, file.id)}
-                      >
-                        {file.originalName || `File ${i + 1}`}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <p className="text-gray-500 italic">No files uploaded</p>
-            )}
+            <RenderFiles
+              files={rfq.files || []}
+              table="rFQ"
+              parentId={rfq.id}
+              formatDate={(date: string) => new Date(date).toLocaleDateString()}
+            />
             <div className="flex gap-2">
               <Button onClick={() => setShowEstimationModal(true)}>
                 Raise For Estimation
