@@ -16,7 +16,7 @@ const SubmittalResponseModal = ({
 
   parentResponseId = null,
 }: SubmittalResponseModalProps) => {
-console.log(submittalId);
+  console.log(submittalId);
 
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
@@ -111,9 +111,9 @@ console.log(submittalId);
             onChange={(e) => setFiles(Array.from(e.target.files || []))}
             className="w-full border rounded-md p-2 mt-1"
           />
-        </div>               
+        </div>
 
-        {/* ACTIONS */}                                                                                                                                                                                                                            
+        {/* ACTIONS */}
         <div className="flex justify-end gap-2 pt-2">
           <Button onClick={onClose}>Cancel</Button>
           <Button className="bg-teal-600 text-white" onClick={handleSubmit}>
