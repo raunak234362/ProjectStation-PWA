@@ -165,7 +165,7 @@ interface DataTableProps<T extends object> {
   columns: ExtendedColumnDef<T>[];
   data: T[];
   onRowClick?: (row: T) => void;
-  detailComponent?: React.ComponentType<{ row: T }>;
+  detailComponent?: React.ComponentType<{ row: T; close: () => void }>;
   onDelete?: (rows: T[]) => void;
   searchPlaceholder?: string;
   pageSizeOptions?: number[];
@@ -456,7 +456,7 @@ export default function DataTable<T extends object>({
                           className="bg-gray-50 p-0"
                         >
                           <div className=" overflow-y-auto p-4">
-                            <DetailComponent row={row.original} />
+                            <DetailComponent row={row.original} close={() => toggleRowExpand(row.id)} />
                           </div>
                         </td>
                       </tr>
@@ -495,32 +495,32 @@ export default function DataTable<T extends object>({
           </select>
         </div>
 
-        <div className="flex items-center gap-1">
+       <div className="flex items-center gap-1">
           <Button
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="bg-teal-100 text-gray-800 hover:bg-teal-200 px-3 py-1 border rounded disabled:opacity-50"
           >
             {"<<"}
           </Button>
           <Button
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="bg-teal-100 text-gray-800 hover:bg-teal-200 px-3 py-1 border rounded disabled:opacity-50"
           >
             {"<"}
           </Button>
           <Button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="bg-teal-100 text-gray-800 hover:bg-teal-200 px-3 py-1 border rounded disabled:opacity-50"
           >
             {">"}
           </Button>
           <Button
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="bg-teal-100 text-gray-800 hover:bg-teal-200 px-3 py-1 border rounded disabled:opacity-50"
           >
             {">>"}
           </Button>

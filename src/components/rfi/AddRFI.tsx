@@ -11,7 +11,7 @@ import SectionTitle from "../ui/SectionTitle";
 import Select from "react-select";
 
 
-const AddRFI:React.FC<{project: any}> = ({project}) => {
+const AddRFI:React.FC<{project?: any}> = ({project}) => {
 console.log(project);
 
  const userDetail = useSelector((state: any) => state.userInfo.userDetail);
@@ -27,7 +27,6 @@ const {
     setValue,
     handleSubmit,
      control,
-    watch,
     reset,
   } = useForm<RFIPayload>();
   const [description, setDescription] = useState("");
@@ -52,11 +51,7 @@ const {
 //     })) ?? [];
 
 // Fabricator dropdown options
-const fabricatorOptions: SelectOption[] =
-  fabricators?.map((fab: Fabricator) => ({
-    label: fab.fabName,
-    value: String(fab.id),
-  })) ?? [];
+
 
 // Match selected fabricator
 const selectedFabricator = fabricators?.find(

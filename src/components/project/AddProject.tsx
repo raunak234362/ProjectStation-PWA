@@ -27,7 +27,7 @@ const AddProject: React.FC = () => {
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
   const rfqData = useSelector((state: any) => state.RFQInfos?.RFQData || []);
 
-  const { register, handleSubmit, control, reset, watch, setValue, formState: { errors } } = useForm<AddProjectPayload>({
+  const { register, handleSubmit, control, watch, setValue} = useForm<AddProjectPayload>({
     defaultValues: {
       tools: "TEKLA",
       connectionDesign: false, miscDesign: false, customerDesign: false,

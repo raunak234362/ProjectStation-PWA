@@ -9,7 +9,6 @@ import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
-import type { EstimationPayload, SelectOption } from "../../interface";
 import { setRFQData } from "../../store/rfqSlice";
 
 const EstimationStatusOptions = [
@@ -19,17 +18,15 @@ const EstimationStatusOptions = [
   { label: "Approved", value: "APPROVED" },
 ];
 
-interface AddEstimationProps {
-  initialRfqId?: string | number;
-  onSuccess?: () => void;
-}
-
-const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId, onSuccess }) => {
+/**
+ * @param {{ initialRfqId?: string | null, onSuccess?: () => void }} props
+ */
+const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
   const dispatch = useDispatch();
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState([]);
 
-  const rfqData = useSelector((state: any) => state.RFQInfos.RFQData || []);
-  const fabricators = useSelector((state: any) => state.fabricatorInfo?.fabricatorData || []);
+  const rfqData = useSelector((state) => state.RFQInfos.RFQData || []);
+  const fabricators = useSelector((state) => state.fabricatorInfo?.fabricatorData || []);
 
   const userType = sessionStorage.getItem("userRole");
 
@@ -62,7 +59,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId, onSuccess }
     watch,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<EstimationPayload>({
+  } = useForm({
     defaultValues: {
       status: "PENDING",
     },
@@ -74,7 +71,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId, onSuccess }
   useEffect(() => {
     if (!selectedRfqId || rfqData.length === 0) return;
 
-    const rfq = rfqData.find((r: any) => String(r.id) === String(selectedRfqId));
+    const rfq = rfqData.find((r) => String(r.id) === String(selectedRfqId));
     if (!rfq) return;
 
     // Auto-fill all fields from selected RFQ
@@ -96,19 +93,19 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId, onSuccess }
     }
   }, [initialRfqId, rfqData, selectedRfqId, setValue]);
 
-  const rfqOptions: SelectOption[] = rfqData
-    .filter((rfq: any) => rfq.wbtStatus === "RECEIVED")
-    .map((rfq: any) => ({
+  const rfqOptions = rfqData
+    .filter((rfq) => rfq.wbtStatus === "RECEIVED")
+    .map((rfq) => ({
       label: `${rfq.projectName} - ${rfq.fabricator?.fabName || "N/A"}`,
       value: String(rfq.id),
     }));
 
-  const fabricatorOptions: SelectOption[] = fabricators.map((fab: any) => ({
+  const fabricatorOptions = fabricators.map((fab) => ({
     label: fab.fabName,
     value: String(fab.id),
   }));
 
-  const onSubmit = async (data: EstimationPayload) => {
+  const onSubmit = async (data) => {
     try {
       const payload = {
         ...data,
@@ -122,7 +119,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId, onSuccess }
         if (key === "files" && Array.isArray(value)) {
           value.forEach((file) => formData.append("files", file));
         } else if (value !== null && value !== undefined && value !== "") {
-          formData.append(key, value as any);
+          formData.append(key, value);
         }
       });
 
@@ -131,7 +128,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId, onSuccess }
       onSuccess?.();
       reset();
       setFiles([]);
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error?.message || "Failed to create estimation");
     }
   };

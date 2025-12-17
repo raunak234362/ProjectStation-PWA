@@ -13,7 +13,7 @@ interface AllRFIProps {
 const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
+  // const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
 console.log(rfiData);
 
   const userRole = sessionStorage.getItem("userRole");
@@ -33,9 +33,9 @@ console.log(rfiData);
     }
   }, [rfiData]);
 
-  const handleRowClick = (row: RFIItem) => {
-    setSelectedRfiID(row.id);
-  };
+  // const handleRowClick = (row: RFIItem) => {
+  //   // setSelectedRfiID(row.id);
+  // };
 
   // ✅ Define columns
   const columns: ColumnDef<RFIItem>[] = [
@@ -123,7 +123,7 @@ console.log(rfiData);
       <DataTable
         columns={columns}
         data={rfis}
-        onRowClick={handleRowClick}
+
         detailComponent={({ row }) => <GetRFIByID id={row.id} />}
         searchPlaceholder="Search RFIs..."
         pageSizeOptions={[5, 10, 25]}
