@@ -81,34 +81,26 @@ const columns: ColumnDef<any>[] = [
 //   },
 
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <span
-        className={`px-2 py-1 text-xs rounded-full ${
-          row.original.statusLabel === "APPROVED"
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
             ? "bg-green-100 text-green-700"
-            : row.original.statusLabel === "PENDING"
-            ? "bg-yellow-100 text-yellow-700"
-            : "bg-red-100 text-red-700"
-        }`}
-      >
-        {row.original.statusLabel}
-      </span>
-    ),
-  },
+            : "bg-yellow-100 text-yellow-700"
+            }`}
+        >
+          {row.original.status}
+        </span>
+      ),
+    },
 
+    
   {
     accessorKey: "createdAt",
     header: "Created",
     cell: ({ row }) =>
-      row.original.createdAt
-        ? new Date(row.original.createdAt).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
-        : "—",
+       new Date(row.original.date).toLocaleString(),
   },
 ];
 

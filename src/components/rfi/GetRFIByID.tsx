@@ -192,7 +192,6 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
           </div>
 
           {/* RIGHT: Responses */}
-          {/* RIGHT: Responses */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
 
             {/* Header + Add Response Button */}

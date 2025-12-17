@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+
 import { useState } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
@@ -13,7 +13,7 @@ interface SubmittalResponseModalProps {
 const SubmittalResponseModal = ({
   submittalId,
   onClose,
-  onSuccess, 
+
   parentResponseId = null,
 }: SubmittalResponseModalProps) => {
 console.log(submittalId);

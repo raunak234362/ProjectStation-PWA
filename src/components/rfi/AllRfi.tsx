@@ -54,13 +54,13 @@ console.log(rfiData);
     },
   ];
 
-  if (userRole !== "CLIENT") {
-    columns.push({
-      accessorKey: "fabricator",
-      header: "Fabricator",
-      cell: ({ row }) => row.original.fabricator_id || "—",
-    });
-  }
+  // {
+  //   columns.push({
+  //     accessorKey: "fabricator",
+  //     header: "Fabricator",
+  //     cell: ({ row }) => row.original.fabricator?.fabName|| "-------",
+  //   });
+  // }
 
   columns.push(
     {
