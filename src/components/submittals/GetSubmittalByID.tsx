@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import { Loader2, AlertCircle } from "lucide-react";
 import { openFileSecurely } from "../../utils/openFileSecurely";
-import type { SubmittalResponsePayload } from "../../interface";
 import Button from "../fields/Button";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -19,7 +18,6 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
   const [loading, setLoading] = useState(true);
   const [submittal, setSubmittal] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [responses, setResponses] = useState<SubmittalResponsePayload[]>([]);
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
 
@@ -40,12 +38,13 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
       setLoading(false);
     }
   };
+  console.log(submittal);
 
   useEffect(() => {
     fetchData();
   }, [id]);
 
-
+  console.log(id);
 
 
   if (loading)
@@ -62,9 +61,10 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
       </div>
     );
   
-
+  const userRole = sessionStorage.getItem("userRole");
 
   const responseColumns: ColumnDef<any>[] = [
+    
      { accessorKey: "description", header: "Project Name" },
     {
       accessorKey: "description",
@@ -174,6 +174,17 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
                 columns={responseColumns}
                 data={submittalResponseTableData}
                 onRowClick={(row) => setSelectedResponse(row)}
+                detailComponent={({ row }) => (
+                  <SubmittalResponseModal
+                    submittalId={row.id}
+                    parentResponseId={row.id}
+                    onClose={() => setSelectedResponse(null)}
+                    onSuccess={() => {
+                      fetchData();
+                      setSelectedResponse(null);
+                    }}
+                  />
+                )}
                 pageSizeOptions={[5, 10]}
               />
             ) : (

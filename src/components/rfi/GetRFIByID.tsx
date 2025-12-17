@@ -7,7 +7,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
-
 import RFIResponseModal from "./RFIResponseModal";
 import RFIResponseDetailsModal from "./RFIResponseDetailsModal";
 

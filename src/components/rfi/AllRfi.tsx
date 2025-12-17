@@ -58,7 +58,7 @@ console.log(rfiData);
     columns.push({
       accessorKey: "fabricator",
       header: "Fabricator",
-      cell: ({ row }) => row.original.fabricator?.fabName || "—",
+      cell: ({ row }) => row.original.fabricator_id || "—",
     });
   }
 
