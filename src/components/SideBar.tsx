@@ -81,36 +81,21 @@ const Sidebar: React.FC<SidebarProps> = ({
       label: "Connection Designer",
       to: "connection-designer",
       icon: <FactoryIcon />,
-      roles: [
-        "admin",
-        "department-manager",
-        "deputy-manager",
-      ],
+      roles: ["admin", "department-manager", "deputy-manager"],
     },
     {
       label: "Connection Designing Quotation",
       to: "connection-designing-quotation",
       icon: <FactoryIcon />,
-      roles: [
-        "admin",
-        "department-manager",
-        "connection_designer_engineer",
-        "deputy-manager",
-      ],
+      roles: ["admin", "department-manager", "connection_designer_engineer", "deputy-manager"],
     },
     {
       label: "RFQ",
       to: "rfq",
       icon: <LucideComponent />,
-      roles: [
-        "admin",
-        "deputy-manager",
-        "client",
-        "estimator",
-        "sales",
-      ],
+      roles: ["admin", "deputy-manager", "client", "estimator", "sales"],
     },
-     {
+    {
       label: "Estimations",
       to: "estimation",
       icon: <Hourglass />,
@@ -146,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         "human-resource",
       ],
     },
-   
+
     {
       label: "Tasks",
       to: "tasks",
@@ -162,7 +147,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         "human-resource",
       ],
     },
-   
+
     {
       label: "Manage Team",
       to: "manage-team",
@@ -225,7 +210,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`h-full rounded-2xl m-auto border-white/25 shadow-xl bg-white border-r backdrop-blur-3xl text-black transition-all duration-300 flex flex-col ${
+      className={`h-full rounded-2xl border-white/25 shadow-xl bg-white border-r backdrop-blur-3xl text-black transition-all duration-300 flex flex-col ${
         isMinimized ? "w-16" : "w-64"
       }`}
       style={{ overflow: "visible" }} // ✅ allows tooltip overflow
@@ -239,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {!isMinimized ? (
           <img src={LOGO} alt="Logo" className="w-40" />
         ) : (
-          <img src={LOGO} alt="Logo" className="w-24" />
+          <img src={LOGO} alt="Logo" className="w-10" />
         )}
 
         {isMobile && (
@@ -279,8 +264,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
                   {/* Tooltip for minimized sidebar */}
                   {isMinimized && (
-                    <div className="absolute z-30 -translate-0.5  hidden group-hover:flex">
-                      <span className="bg-teal-900 text-white text-[10px] font-medium py-1 px-1 rounded-md shadow-lg whitespace-nowrap">
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 hidden group-hover:flex">
+                      <span className="bg-teal-900 text-white text-[10px] font-medium py-1 px-2 rounded-md shadow-lg whitespace-nowrap">
                         {label}
                       </span>
                     </div>

@@ -1,15 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChevronRight, FileText, Plus, Share2, Download } from "lucide-react";
 import Button from "../fields/Button";
-// import { createShareLink } from "../../api/Service"; // Not found
+import Service from "../../api/Service";
 import toast from "react-hot-toast";
 import React from "react";
-
-// Mock createShareLink until it is available in Service.ts
-const createShareLink = async (table: string, docId: string | undefined, fileId: string | undefined) => {
-  console.warn("createShareLink not implemented", table, docId, fileId);
-  return { data: { shareUrl: "" } };
-};
 
 interface User {
   f_name?: string;
@@ -111,10 +105,10 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     e.preventDefault();
     e.stopPropagation();
     try {
-      const response = await createShareLink(table, file.documentID, file.id);
-      console.log(response.data);
-      if (response.data.shareUrl) {
-        navigator.clipboard.writeText(response.data.shareUrl);
+      const response = await Service.createShareLink(table, file.documentID, file.id);
+      console.log(response);
+      if (response.shareUrl) {
+        await navigator.clipboard.writeText(response.shareUrl);
         toast.success("Link copied to clipboard!");
       } else {
         toast.error("Failed to generate link");

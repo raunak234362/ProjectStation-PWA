@@ -5,48 +5,28 @@ import Service from "../../api/Service";
 import Button from "../fields/Button";
 import AllEstimationTask from "./estimationTask/AllEstimationTask";
 import LineItemGroup from "./estimationLineItem/LineItemGroup";
+import EditEstimation from "./EditEstimation";
 
 import RenderFiles from "../ui/RenderFiles";
-import type { EstimationPayload } from "../../interface";
+import type { EstimationTask } from "../../interface";
 
 const truncateText = (text: string, max = 40) =>
   text.length > max ? text.substring(0, max) + "..." : text;
 
 interface GetEstimationByIDProps {
   id: string;
+  onRefresh?: () => void;
 }
 
-interface Estimation extends EstimationPayload {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  fabricators?: {
-    fabName: string;
-  };
-  rfq?: {
-    projectName: string;
-    projectNumber: string;
-    bidPrice: string;
-  };
-  createdBy?: {
-    firstName: string;
-    lastName: string;
-    username: string;
-    email: string;
-  };
-  tasks?: any[];
-  estimationTasks?: any[];
-}
-
-const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
-  const [estimation, setEstimation] = useState<Estimation | null>(null);
+const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) => {
+  const [estimation, setEstimation] = useState<EstimationTask | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEstimationTaskOpen, setIsEstimationTaskOpen] = useState(false);
   const [isHoursOpen, setIsHoursOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    const fetchEstimation = async () => {
+  const fetchEstimation = async () => {
       if (!id) {
         setError("Invalid Estimation ID");
         setLoading(false);
@@ -66,16 +46,19 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
       }
     };
 
+  useEffect(() => {
     fetchEstimation();
   }, [id]);
 
-  const formatDateTime = (date: string | Date) =>
-    new Date(date).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
+  const formatDateTime = (date: string | Date | undefined) =>
+    date
+      ? new Date(date).toLocaleString("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      })
+      : "N/A";
 
-  const formatDate = (date: string | Date) =>
+  const formatDate = (date: string | Date | undefined) =>
     date
       ? new Date(date).toLocaleDateString("en-IN", {
         year: "numeric",
@@ -83,6 +66,15 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
         day: "numeric",
       })
       : "N/A";
+
+  const formatHours = (hours: number | string | undefined) => {
+    if (hours == null || hours === "") return "N/A";
+    const numHours = typeof hours === "string" ? parseFloat(hours) : hours;
+    if (isNaN(numHours)) return "N/A";
+    const h = Math.floor(numHours);
+    const m = Math.round((numHours - h) * 60);
+    return `${h}h ${m.toString().padStart(2, "0")}m`;
+  };
 
   if (loading) {
     return (
@@ -119,6 +111,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
     finalWeeks,
     finalPrice,
     createdBy,
+    totalAgreatedHours,
     files,
   } = estimation;
 
@@ -147,7 +140,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
       </div>
 
       {/* Top Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-5">
         {/* Left Column */}
         <div className="space-y-3">
           {/* Fabricator */}
@@ -217,8 +210,12 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
             value={formatDateTime(updatedAt)}
           />
           <InfoRow
+            label="Total Agreed Hours"
+            value={formatHours(totalAgreatedHours)}
+          />
+          <InfoRow
             label="Final Hours"
-            value={finalHours != null ? finalHours : "N/A"}
+            value={formatHours(finalHours)}
           />
           <InfoRow
             label="Final Weeks"
@@ -255,7 +252,9 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
         <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           Add To Project
         </Button>
-        <Button className="py-1 px-2 text-lg">Edit Estimation</Button>
+        <Button className="py-1 px-2 text-lg" onClick={() => setIsEditing(true)}>
+          Edit Estimation
+        </Button>
       </div>
       {isEstimationTaskOpen && (
         <AllEstimationTask
@@ -284,6 +283,17 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id }) => {
           </div>
           <LineItemGroup estimationId={estimation?.id} />
         </div>
+      )}
+      {isEditing && (
+        <EditEstimation
+          id={id}
+          onSuccess={() => {
+            setIsEditing(false);
+            fetchEstimation();
+            onRefresh?.();
+          }}
+          onCancel={() => setIsEditing(false)}
+        />
       )}
     </div>
   );

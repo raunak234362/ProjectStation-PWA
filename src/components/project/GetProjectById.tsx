@@ -62,42 +62,13 @@ const rfiData = useMemo(() => {
       setEditModel(project);
     };    
 
-
-  
-
   const submittalData = useMemo(() => {
     return project?.submittals || [];
     return project?.submittals || [];
   }, [project]);
   
-
-
-
-
-
-
-  
-
-  // const FetchWBSbyProjectId = async () => {
-  //   try {
-  //     setLoading(true);
-  //     setError(null);
-  //     const response = await Service.GetWBSByProjectId(id);
-  //   //   setProject(response?.data || null);
-  //   console.log(response);
-    
-  //   } catch (err) {
-  //     setError("Failed to load WBS details");
-  //     console.error("Error fetching project:", err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   useEffect(() => {
     if (id) fetchProject();
-    console.log(id);
-    // FetchWBSbyProjectId();
   }, [id]);
 
 
@@ -211,7 +182,7 @@ const rfiData = useMemo(() => {
         <div className="p-2">
           {/* ✅ Details */}
           {activeTab === "details" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+            <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                <div className="md:col-span-2 mt-6">
                 <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
                   <FolderOpenDot className="w-4 h-4" /> Description

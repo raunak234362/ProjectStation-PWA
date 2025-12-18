@@ -575,6 +575,21 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
+  // Update Estimation By ID
+  static async UpdateEstimationById(id: string, data: any) {
+    try {
+      const response = await api.put(`estimation/estimations/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Add Estimation Task
   static async AddEstimationTask(formData: FormData) {
     try {
@@ -1332,6 +1347,26 @@ static async addSubmittalResponse(formData: FormData,SubId:string) {
       console.error("cannot find RFI", error);
     }
   } 
+
+  // Create Share Link
+  static async createShareLink(table: string, docId: string | undefined, fileId: string | undefined) {
+    try {
+      const response = await api.post(`share/link`, {
+        table,
+        docId,
+        fileId,
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Share link created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating share link:", error);
+      throw error;
+    }
+  }
 
 }
 export default Service;

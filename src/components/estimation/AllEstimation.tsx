@@ -17,9 +17,10 @@ interface Estimation {
 
 interface AllEstimationProps {
   estimations: Estimation[];
+  onRefresh?: () => void;
 }
 
-const AllEstimation: React.FC<AllEstimationProps> = ({ estimations }) => {
+const AllEstimation: React.FC<AllEstimationProps> = ({ estimations, onRefresh }) => {
   console.log(estimations);
 
 
@@ -50,7 +51,7 @@ const AllEstimation: React.FC<AllEstimationProps> = ({ estimations }) => {
            detailComponent={({ row }: { row: Estimation }) => {
           const estimationUniqueId =
             row.id ?? row.fabId ?? "";
-          return <GetEstimationByID id={estimationUniqueId} />;
+          return <GetEstimationByID id={estimationUniqueId} onRefresh={onRefresh} />;
         }}
         searchPlaceholder="Search estimations..."
         pageSizeOptions={[5, 10, 25]}
