@@ -1323,15 +1323,41 @@ static async addSubmittalResponse(formData: FormData,SubId:string) {
   //update Co
     static async EditCoById(id: string, data: FormData) {
     try {
-      const response = await api.put(`rfi/${id}`, data, {
+      const response = await api.put(`changeOrder/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("RFI Edited:", response.data);
+      console.log("co Edited:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find RFI", error);
+      console.error("cannot find co", error);
     }
   } 
+  static async SentCO() {
+    try {
+      const response = await api.get(`changeOrder/sent`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Sent Co:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Sent-CO", error);
+    }
+  }
 
+  static async ReceivedCO() {
+    try {
+      const response = await api.get(`changeOrder/received`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" received Co:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find receivedCO", error);
+    }
+  }
 }
 export default Service;

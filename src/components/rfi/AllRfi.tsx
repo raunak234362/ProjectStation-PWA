@@ -54,13 +54,7 @@ console.log(rfiData);
     },
   ];
 
-  // {
-  //   columns.push({
-  //     accessorKey: "fabricator",
-  //     header: "Fabricator",
-  //     cell: ({ row }) => row.original.fabricator?.fabName|| "-------",
-  //   });
-  // }
+  
 
   columns.push(
     {

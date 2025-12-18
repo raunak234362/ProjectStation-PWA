@@ -31,26 +31,7 @@ const {
   } = useForm<RFIPayload>();
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-//   const fabricatorId = userDetail?.FabricatorPointOfContacts[0]?.fabricatorId;
 
-
-//      const fabricatorOptions: SelectOption[] =
-//     fabricators?.map((fab: Fabricator) => ({
-//       label: fab.fabName,
-//       value: String(fab.id),
-//     })) ?? [];
-
-//     console.log(fabricatorId);
-    
-
-//      const selectedFabricator = fabricators?.find((f: Fabricator) => String(f.id) === String(fabricatorId));
-//   const pocOptions: SelectOption[] =
-//     selectedFabricator?.FabricatorPointOfContacts.map((p: any) => ({
-//       label: `${p.firstName} ${.middleName ?? ""}${p.lastName}`,
-//       value: String(p.id),
-//     })) ?? [];
-
-// Fabricator dropdown options
 
 
 // Match selected fabricator
