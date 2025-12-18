@@ -18,7 +18,10 @@ interface GetEstimationByIDProps {
   onRefresh?: () => void;
 }
 
-const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) => {
+const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
+  id,
+  onRefresh,
+}) => {
   const [estimation, setEstimation] = useState<EstimationTask | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,24 +30,24 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) 
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchEstimation = async () => {
-      if (!id) {
-        setError("Invalid Estimation ID");
-        setLoading(false);
-        return;
-      }
+    if (!id) {
+      setError("Invalid Estimation ID");
+      setLoading(false);
+      return;
+    }
 
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await Service.GetEstimationById(id);
-        setEstimation(response?.data || null);
-      } catch (err) {
-        console.error("Error fetching estimation:", err);
-        setError("Failed to load estimation details");
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await Service.GetEstimationById(id);
+      setEstimation(response?.data || null);
+    } catch (err) {
+      console.error("Error fetching estimation:", err);
+      setError("Failed to load estimation details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchEstimation();
@@ -53,18 +56,18 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) 
   const formatDateTime = (date: string | Date | undefined) =>
     date
       ? new Date(date).toLocaleString("en-IN", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
       : "N/A";
 
   const formatDate = (date: string | Date | undefined) =>
     date
       ? new Date(date).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
       : "N/A";
 
   const formatHours = (hours: number | string | undefined) => {
@@ -119,8 +122,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) 
     status === "DRAFT"
       ? "bg-yellow-100 text-yellow-800"
       : status === "COMPLETED"
-        ? "bg-green-100 text-green-800"
-        : "bg-blue-100 text-blue-800";
+      ? "bg-green-100 text-green-800"
+      : "bg-blue-100 text-blue-800";
 
   return (
     <div className="bg-linear-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200">
@@ -196,27 +199,18 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) 
 
         {/* Right Column */}
         <div className="space-y-3">
+          <InfoRow label="Estimate Date" value={formatDate(estimateDate)} />
           <InfoRow
-            label="Estimate Date"
-            value={formatDate(estimateDate)}
+            label="Start Date"
+            value={startDate ? formatDate(startDate) : "N/A"}
           />
-          <InfoRow label="Start Date" value={startDate ? formatDate(startDate) : "N/A"} />
-          <InfoRow
-            label="Created"
-            value={formatDateTime(createdAt)}
-          />
-          <InfoRow
-            label="Updated"
-            value={formatDateTime(updatedAt)}
-          />
+          <InfoRow label="Created" value={formatDateTime(createdAt)} />
+          <InfoRow label="Updated" value={formatDateTime(updatedAt)} />
           <InfoRow
             label="Total Agreed Hours"
             value={formatHours(totalAgreatedHours)}
           />
-          <InfoRow
-            label="Final Hours"
-            value={formatHours(finalHours)}
-          />
+          <InfoRow label="Final Hours" value={formatHours(finalHours)} />
           <InfoRow
             label="Final Weeks"
             value={finalWeeks != null ? finalWeeks : "N/A"}
@@ -242,17 +236,23 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) 
       <div className="py-3 flex gap-3">
         <Button
           className="py-1 px-2 text-lg bg-red-200 text-red-700"
-          onClick={() => setIsEstimationTaskOpen(true)}
+          onClick={() => setIsEstimationTaskOpen(!isEstimationTaskOpen)}
         >
           Estimation Task
         </Button>
-        <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700" onClick={() => setIsHoursOpen(true)}>
+        <Button
+          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+          onClick={() => setIsHoursOpen(!isHoursOpen)}
+        >
           Estimated Hours/Weeks
         </Button>
         <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           Add To Project
         </Button>
-        <Button className="py-1 px-2 text-lg" onClick={() => setIsEditing(true)}>
+        <Button
+          className="py-1 px-2 text-lg"
+          onClick={() => setIsEditing(!isEditing)}
+        >
           Edit Estimation
         </Button>
       </div>
@@ -264,8 +264,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) 
             Array.isArray(estimation?.tasks)
               ? estimation.tasks
               : Array.isArray(estimation?.estimationTasks)
-                ? estimation.estimationTasks
-                : []
+              ? estimation.estimationTasks
+              : []
           }
           onClose={() => setIsEstimationTaskOpen(false)}
         />
@@ -273,7 +273,9 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({ id, onRefresh }) 
       {isHoursOpen && (
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800">Estimated Hours/Weeks</h3>
+            <h3 className="text-lg font-bold text-gray-800">
+              Estimated Hours/Weeks
+            </h3>
             <button
               onClick={() => setIsHoursOpen(false)}
               className="text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
