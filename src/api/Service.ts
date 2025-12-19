@@ -1028,13 +1028,12 @@ class Service {
   // Update WBS line-item by ProjectId, wbsId and line-item ID
   static async UpdateWBSLineItem(
     projectId: string,
-    wbsId: string,
     lineItemId: string,
     data: any
   ) {
     try {
-      const response = await api.put(
-        `project/projects/${projectId}/work-break-downs/${wbsId}/line-items/${lineItemId}`,
+      const response = await api.patch(
+        `project/projects/${projectId}/line-items/${lineItemId}`,
         data,
         {
           headers: {

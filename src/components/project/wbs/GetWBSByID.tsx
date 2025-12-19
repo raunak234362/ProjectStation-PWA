@@ -19,21 +19,25 @@ const GetWBSByID = ({
   projectId,
   stage,
   onClose,
+  initialData,
 }: {
   id: string;
   projectId: string;
   stage: string;
   onClose?: () => void;
+  initialData?: any;
 }) => {
-  const [wbs, setWbs] = useState<WBSData | null>(null);
+  const wbsData = initialData || null;
+  const [wbs, setWbs] = useState<WBSData | null>(wbsData);
+  const [lineItems, setLineItems] = useState<LineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<{
-    QtyNo: number;
+    qtyNo: number;
     unitTime: number;
-    CheckUnitTime: number;
-  }>({ QtyNo: 0, unitTime: 0, CheckUnitTime: 0 });
+    checkUnitTime: number;
+  }>({ qtyNo: 0, unitTime: 0, checkUnitTime: 0 });
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const canEditTime = userRole === "admin" || userRole === "deputy_manager";
@@ -48,14 +52,10 @@ const GetWBSByID = ({
       setError(null);
       const response = await Service.GetWBSLineItemById(projectId, id, stage);
       console.log("WBS Detail Response:", response);
-
       // Handle potential different response structures from the new endpoint
-      if (response && response.wbs) {
-        setWbs({
-          ...response.wbs,
-          LineItems: response.lineItems || response.wbs.LineItems || [],
-        });
-      } else if (response && Array.isArray(response.lineItems)) {
+      if (response && response.data) {
+        setLineItems(response.data || []);
+      } else if (response && Array.isArray(response.data)) {
         // If it returns { lineItems: [...] } but no wbs metadata, we might need to handle it
         // For now assume it has the metadata or it's the old structure
         setWbs(response);
@@ -73,36 +73,35 @@ const GetWBSByID = ({
   const handleEditClick = (item: LineItem) => {
     setEditingId(item.id);
     setEditValues({
-      QtyNo: item.QtyNo || 0,
+      qtyNo: item.qtyNo || 0,
       unitTime: item.unitTime || 0,
-      CheckUnitTime: item.CheckUnitTime || 0,
+      checkUnitTime: item.checkUnitTime || 0,
     });
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEditValues({ QtyNo: 0, unitTime: 0, CheckUnitTime: 0 });
+    setEditValues({ qtyNo: 0, unitTime: 0, checkUnitTime: 0 });
   };
 
   const handleSaveLineItem = async (lineItemId: string) => {
-    if (!wbs) return;
-    const item = wbs.LineItems?.find((i) => i.id === lineItemId);
+    const item = lineItems.find((i) => i.id === lineItemId);
     if (!item) return;
 
-    const { QtyNo, unitTime, CheckUnitTime } = editValues;
-    const checkHr = CheckUnitTime * QtyNo;
-    const execHr = unitTime * QtyNo;
+    const { qtyNo, unitTime, checkUnitTime } = editValues;
+    const checkHr = checkUnitTime * qtyNo;
+    const execHr = unitTime * qtyNo;
 
     try {
-      await Service.UpdateWBSLineItem(projectId, wbs.id, lineItemId, {
-        QtyNo,
+      await Service.UpdateWBSLineItem(projectId, lineItemId, {
+        qtyNo,
         unitTime,
-        CheckUnitTime,
+        checkUnitTime,
         checkHr,
         execHr,
       });
       // Refresh data
-      await fetchWBSById(wbs.id);
+      await fetchWBSById(id);
       setEditingId(null);
     } catch (err) {
       console.error("Error updating line item:", err);
@@ -117,7 +116,7 @@ const GetWBSByID = ({
         })
       : "—";
 
-  if (loading)
+  if (loading && !wbs)
     return (
       <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 border border-white/20">
@@ -161,23 +160,20 @@ const GetWBSByID = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Section */}
-        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-teal-50/50 to-white">
+        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-linear-to-r from-teal-50/50 to-white">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-100">
               <Layers className="w-6 h-6 text-white" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                {wbs.name}
+                {wbsData.name}
               </h2>
               <div className="flex items-center gap-2 mt-1">
                 <span className="px-2 py-0.5 bg-teal-100 text-teal-700 text-[10px] font-bold uppercase rounded-md tracking-wider">
-                  {wbs.type}
+                  {wbsData.type}
                 </span>
                 <span className="text-gray-400 text-xs">•</span>
-                <span className="text-xs text-gray-500 font-medium">
-                  ID: {wbs.id}
-                </span>
               </div>
             </div>
           </div>
@@ -193,21 +189,30 @@ const GetWBSByID = ({
           {/* Summary Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <DetailCard label="Stage" value={wbs.stage} icon={<Layers className="w-4 h-4" />} />
-              <DetailCard label="Template Key" value={wbs.templateKey} icon={<ListChecks className="w-4 h-4" />} />
-              <DetailCard label="Project ID" value={wbs.projectId} icon={<Layers className="w-4 h-4" />} />
-              <DetailCard label="Created On" value={formatDate(wbs.createdAt)} icon={<Clock className="w-4 h-4" />} />
+              <DetailCard
+                label="Stage"
+                value={wbsData.stage}
+                icon={<Layers className="w-4 h-4" />}
+              />
             </div>
-            
+
             <div className="bg-gray-900 rounded-2xl p-6 text-white shadow-xl shadow-gray-200 flex flex-col justify-between">
               <div>
-                <p className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-1">Total Quantity</p>
-                <h3 className="text-4xl font-bold text-white">{wbs.totalQtyNo || 0}</h3>
+                <p className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-1">
+                  Total Quantity
+                </p>
+                <h3 className="text-4xl font-bold text-white">
+                  {wbsData.totalqtyNo || 0}
+                </h3>
               </div>
               <div className="pt-4 border-t border-gray-800 mt-4 flex justify-between items-end">
                 <div>
-                  <p className="text-gray-500 text-[10px] uppercase font-bold">Last Updated</p>
-                  <p className="text-xs text-gray-300">{formatDate(wbs.updatedAt)}</p>
+                  <p className="text-gray-500 text-[10px] uppercase font-bold">
+                    Last Updated
+                  </p>
+                  <p className="text-xs text-gray-300">
+                    {formatDate(wbsData.updatedAt)}
+                  </p>
                 </div>
                 <div className="w-8 h-8 bg-teal-500/20 rounded-lg flex items-center justify-center">
                   <Clock className="w-4 h-4 text-teal-400" />
@@ -220,31 +225,36 @@ const GetWBSByID = ({
           <section>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-6 bg-teal-600 rounded-full"></div>
-              <h3 className="text-lg font-bold text-gray-900">Hours Overview</h3>
+              <h3 className="text-lg font-bold text-gray-900">
+                Hours Overview
+              </h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard 
-                label="Execution Hours" 
-                value={wbs.totalExecHr} 
-                subValue={wbs.execHrWithRework} 
+              <StatCard
+                label="Execution Hours"
+                value={wbsData.totalExecHr}
+                subValue={wbsData.execHrWithRework}
                 subLabel="w/ Rework"
                 color="teal"
               />
-              <StatCard 
-                label="Checking Hours" 
-                value={wbs.totalCheckHr} 
-                subValue={wbs.checkHrWithRework} 
+              <StatCard
+                label="Checking Hours"
+                value={wbsData.totalCheckHr}
+                subValue={wbsData.checkHrWithRework}
                 subLabel="w/ Rework"
                 color="indigo"
               />
-              <StatCard 
-                label="Total Hours" 
-                value={(wbs.totalExecHr || 0) + (wbs.totalCheckHr || 0)} 
+              <StatCard
+                label="Total Hours"
+                value={(wbsData.totalExecHr || 0) + (wbsData.totalCheckHr || 0)}
                 color="gray"
               />
-              <StatCard 
-                label="Rework Total" 
-                value={(wbs.execHrWithRework || 0) + (wbs.checkHrWithRework || 0)} 
+              <StatCard
+                label="Rework Total"
+                value={
+                  (wbsData.execHrWithRework || 0) +
+                  (wbsData.checkHrWithRework || 0)
+                }
                 color="red"
               />
             </div>
@@ -257,49 +267,83 @@ const GetWBSByID = ({
                 <div className="w-1 h-6 bg-teal-600 rounded-full"></div>
                 <h3 className="text-lg font-bold text-gray-900">Line Items</h3>
                 <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full">
-                  {wbs.LineItems?.length || 0} Items
+                  {lineItems?.length || 0} Items
                 </span>
+                {loading && (
+                  <Loader2 className="w-4 h-4 text-teal-600 animate-spin ml-2" />
+                )}
               </div>
             </div>
 
-            {wbs.LineItems && wbs.LineItems.length > 0 ? (
+            {lineItems && lineItems.length > 0 ? (
               <div className="border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-gray-50/50 text-gray-500 text-[11px] font-bold uppercase tracking-wider">
                       <th className="px-6 py-4 border-b border-gray-100">#</th>
-                      <th className="px-6 py-4 border-b border-gray-100">Description</th>
-                      <th className="px-6 py-4 border-b border-gray-100 text-center">Qty</th>
+                      <th className="px-6 py-4 border-b border-gray-100">
+                        Description
+                      </th>
+                      <th className="px-6 py-4 border-b border-gray-100 text-center">
+                        Qty
+                      </th>
                       {canEditTime && (
                         <>
-                          <th className="px-6 py-4 border-b border-gray-100 text-center">Exec Unit</th>
-                          <th className="px-6 py-4 border-b border-gray-100 text-center">Check Unit</th>
+                          <th className="px-6 py-4 border-b border-gray-100 text-center">
+                            Exec Unit
+                          </th>
+                          <th className="px-6 py-4 border-b border-gray-100 text-center">
+                            Check Unit
+                          </th>
                         </>
                       )}
-                      <th className="px-6 py-4 border-b border-gray-100 text-center">Exec Total</th>
-                      <th className="px-6 py-4 border-b border-gray-100 text-center">Check Total</th>
-                      <th className="px-6 py-4 border-b border-gray-100 text-center">Actions</th>
+                      <th className="px-6 py-4 border-b border-gray-100 text-center">
+                        Exec Total
+                      </th>
+                      <th className="px-6 py-4 border-b border-gray-100 text-center">
+                        Check Total
+                      </th>
+                      <th className="px-6 py-4 border-b border-gray-100 text-center">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {wbs.LineItems.map((item, index) => (
-                      <tr key={item.id} className="group hover:bg-teal-50/30 transition-colors">
-                        <td className="px-6 py-4 text-xs text-gray-400 font-medium">{index + 1}</td>
+                    {lineItems.map((item, index) => (
+                      <tr
+                        key={item.id}
+                        className="group hover:bg-teal-50/30 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-xs text-gray-400 font-medium">
+                          {index + 1}
+                        </td>
                         <td className="px-6 py-4">
-                          <p className="text-sm font-semibold text-gray-800 line-clamp-2">{item.description}</p>
-                          <p className="text-[10px] text-gray-400 mt-0.5">Updated: {item.updatedAt ? formatDate(item.updatedAt) : "—"}</p>
+                          <p className="text-sm font-semibold text-gray-800 line-clamp-2">
+                            {item.description}
+                          </p>
+                          <p className="text-[10px] text-gray-400 mt-0.5">
+                            Updated:{" "}
+                            {item.updatedAt ? formatDate(item.updatedAt) : "—"}
+                          </p>
                         </td>
                         <td className="px-6 py-4 text-center">
                           {editingId === item.id ? (
                             <input
                               type="number"
-                              value={editValues.QtyNo}
-                              onChange={(e) => setEditValues({ ...editValues, QtyNo: Number(e.target.value) })}
+                              value={editValues.qtyNo}
+                              onChange={(e) =>
+                                setEditValues({
+                                  ...editValues,
+                                  qtyNo: Number(e.target.value),
+                                })
+                              }
                               className="w-16 h-8 text-center border border-teal-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                               autoFocus
                             />
                           ) : (
-                            <span className="text-sm font-bold text-teal-700 bg-teal-50 px-2 py-1 rounded-md">{item.QtyNo ?? 0}</span>
+                            <span className="text-sm font-bold text-teal-700 bg-teal-50 px-2 py-1 rounded-md">
+                              {item.qtyNo ?? 0}
+                            </span>
                           )}
                         </td>
                         {canEditTime && (
@@ -309,32 +353,50 @@ const GetWBSByID = ({
                                 <input
                                   type="number"
                                   value={editValues.unitTime}
-                                  onChange={(e) => setEditValues({ ...editValues, unitTime: Number(e.target.value) })}
+                                  onChange={(e) =>
+                                    setEditValues({
+                                      ...editValues,
+                                      unitTime: Number(e.target.value),
+                                    })
+                                  }
                                   className="w-16 h-8 text-center border border-teal-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                                 />
                               ) : (
-                                <span className="text-sm text-gray-600 font-medium">{item.unitTime ?? 0}h</span>
+                                <span className="text-sm text-gray-600 font-medium">
+                                  {item.unitTime ?? 0}h
+                                </span>
                               )}
                             </td>
                             <td className="px-6 py-4 text-center">
                               {editingId === item.id ? (
                                 <input
                                   type="number"
-                                  value={editValues.CheckUnitTime}
-                                  onChange={(e) => setEditValues({ ...editValues, CheckUnitTime: Number(e.target.value) })}
+                                  value={editValues.checkUnitTime}
+                                  onChange={(e) =>
+                                    setEditValues({
+                                      ...editValues,
+                                      checkUnitTime: Number(e.target.value),
+                                    })
+                                  }
                                   className="w-16 h-8 text-center border border-teal-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                                 />
                               ) : (
-                                <span className="text-sm text-gray-600 font-medium">{item.CheckUnitTime ?? 0}h</span>
+                                <span className="text-sm text-gray-600 font-medium">
+                                  {item.checkUnitTime ?? 0}h
+                                </span>
                               )}
                             </td>
                           </>
                         )}
                         <td className="px-6 py-4 text-center">
-                          <span className="text-sm font-bold text-gray-900">{(item.execHr ?? 0).toFixed(1)}h</span>
+                          <span className="text-sm font-bold text-gray-900">
+                            {(item.execHr ?? 0).toFixed(1)}h
+                          </span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="text-sm font-bold text-gray-900">{(item.checkHr ?? 0).toFixed(1)}h</span>
+                          <span className="text-sm font-bold text-gray-900">
+                            {(item.checkHr ?? 0).toFixed(1)}h
+                          </span>
                         </td>
                         <td className="px-6 py-4 text-center">
                           {editingId === item.id ? (
@@ -374,7 +436,9 @@ const GetWBSByID = ({
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-4">
                   <ListChecks className="w-8 h-8 text-gray-300" />
                 </div>
-                <p className="text-gray-500 font-medium">No line items found for this WBS.</p>
+                <p className="text-gray-500 font-medium">
+                  No line items found for this WBS.
+                </p>
               </div>
             )}
           </section>
@@ -394,28 +458,38 @@ const GetWBSByID = ({
   );
 };
 
-const DetailCard = ({ label, value, icon }: { label: string; value: any; icon: React.ReactNode }) => (
+const DetailCard = ({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: any;
+  icon: React.ReactNode;
+}) => (
   <div className="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex items-start gap-3">
     <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
       {icon}
     </div>
     <div>
-      <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">{label}</p>
+      <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">
+        {label}
+      </p>
       <p className="text-sm font-semibold text-gray-800">{value || "—"}</p>
     </div>
   </div>
 );
 
-const StatCard = ({ 
-  label, 
-  value, 
-  subValue, 
-  subLabel, 
-  color 
-}: { 
-  label: string; 
-  value: number | string; 
-  subValue?: number | string; 
+const StatCard = ({
+  label,
+  value,
+  subValue,
+  subLabel,
+  color,
+}: {
+  label: string;
+  value: number | string;
+  subValue?: number | string;
   subLabel?: string;
   color: "teal" | "indigo" | "gray" | "red";
 }) => {
@@ -427,14 +501,20 @@ const StatCard = ({
   };
 
   return (
-    <div className={`p-5 rounded-2xl border ${colors[color]} flex flex-col justify-between h-full`}>
+    <div
+      className={`p-5 rounded-2xl border ${colors[color]} flex flex-col justify-between h-full`}
+    >
       <div>
-        <p className="text-[10px] uppercase font-bold opacity-70 tracking-wider mb-2">{label}</p>
+        <p className="text-[10px] uppercase font-bold opacity-70 tracking-wider mb-2">
+          {label}
+        </p>
         <p className="text-2xl font-black tracking-tight">{value ?? 0}h</p>
       </div>
       {subValue !== undefined && (
         <div className="mt-3 pt-3 border-t border-current/10 flex items-center justify-between">
-          <span className="text-[9px] uppercase font-bold opacity-60">{subLabel}</span>
+          <span className="text-[9px] uppercase font-bold opacity-60">
+            {subLabel}
+          </span>
           <span className="text-xs font-bold">{subValue}h</span>
         </div>
       )}

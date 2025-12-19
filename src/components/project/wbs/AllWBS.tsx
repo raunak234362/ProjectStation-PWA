@@ -13,10 +13,7 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
   const [wbsList, setWbsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedWBS, setSelectedWBS] = useState<{
-    id: string;
-    stage: string;
-  } | null>(null);
+  const [selectedWBS, setSelectedWBS] = useState<any | null>(null);
   const [showFetchTemplate, setShowFetchTemplate] = useState(false);
   const projectId = id;
   // ✅ Fetch all WBS items
@@ -91,9 +88,7 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
 
   // ✅ Handle row click — open details
   const handleRowClick = (row: any) => {
-    const wbsId = row.id ?? row.fabId ?? "";
-    const stage = row.stage ?? "";
-    if (wbsId) setSelectedWBS({ id: wbsId, stage });
+    setSelectedWBS(row);
   };
 
   // ✅ Render loading/error states
@@ -138,6 +133,15 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
         columns={columns}
         data={wbsData}
         onRowClick={handleRowClick}
+        detailComponent={({ row, close }) => (
+          <GetWBSByID
+            projectId={projectId}
+            id={row.id || row.fabId || ""}
+            stage={row.stage || ""}
+            onClose={close}
+            initialData={row}
+          />
+        )}
         searchPlaceholder="Search WBS by name or type..."
         pageSizeOptions={[10, 25, 50, 100]}
       />
@@ -146,8 +150,9 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
       {selectedWBS && (
         <GetWBSByID
           projectId={projectId}
-          id={selectedWBS.id}
-          stage={selectedWBS.stage}
+          id={selectedWBS.id || selectedWBS.fabId || ""}
+          stage={selectedWBS.stage || ""}
+          initialData={selectedWBS}
           onClose={() => setSelectedWBS(null)}
         />
       )}

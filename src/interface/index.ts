@@ -73,13 +73,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-  | string
-  | []
-  | {
-    firstName?: string;
-    lastName?: string;
-    middleName?: string;
-  };
+    | string
+    | []
+    | {
+        firstName?: string;
+        lastName?: string;
+        middleName?: string;
+      };
 }
 
 export interface DepartmentPayload {
@@ -166,7 +166,7 @@ export interface TeamMemberPayload {
 
 export interface UpdateTeamRolePayload {
   userId: string;
-  newRole: string
+  newRole: string;
 }
 
 export interface User {
@@ -231,8 +231,6 @@ export interface RfqResponse {
   wbtStatus?: string;
 }
 
-
-
 export interface RFQItem {
   id: string;
   projectName: string;
@@ -259,7 +257,6 @@ export interface RFQItem {
   responses?: RfqResponse[];
 }
 
-
 export interface RFQpayload {
   projectNumber: string;
   projectName: string;
@@ -270,7 +267,7 @@ export interface RFQpayload {
   salesPersonId: string | null | " ";
   subject: string;
   description: string;
-  status: boolean
+  status: boolean;
   tools: string;
   wbtStatus: boolean | any;
   estimationDate: Date | any;
@@ -291,8 +288,6 @@ export interface RfqResponsePayload {
   files?: File[] | string[];
   link?: string | null;
 }
-
-
 
 export interface Staff {
   id: string;
@@ -332,7 +327,7 @@ export interface ConnectionDesigner {
   name: string;
   contactInfo?: string;
   websiteLink?: string;
-  CDEngineers?: []
+  CDEngineers?: [];
   email?: string;
   location?: string;
   createdAt: string;
@@ -361,8 +356,8 @@ export interface EstimationTask {
   createdAt: string;
   updatedAt: string;
   fabricatorName?: string;
-  fabricators?:Fabricator;
-  totalAgreatedHours?:string | number | undefined;
+  fabricators?: Fabricator;
+  totalAgreatedHours?: string | number | undefined;
   estimateDate?: string | Date | undefined;
   finalHours?: any;
   finalWeeks?: any;
@@ -402,7 +397,7 @@ export interface EstimationPayload {
   fabricatorName?: string;
   projectName: string;
   description?: string;
-  estimateDate: string | Date;   // because React Hook Form passes string from input
+  estimateDate: string | Date; // because React Hook Form passes string from input
   status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "APPROVED" | "DRAFT"; // based on your EstimationStatus enum
   assignedById?: string;
   finalHours?: number;
@@ -466,8 +461,8 @@ export interface ProjectData {
     id: string;
     name: string;
   };
-  fabricator?: Fabricator
-  manager?: UserData
+  fabricator?: Fabricator;
+  manager?: UserData;
   rfqId?: string;
   CDQuataionID?: string;
   connectionDesignerID?: string;
@@ -477,7 +472,7 @@ export interface ProjectData {
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   rfi?: any[];
-  changeOrders?: any
+  changeOrders?: any;
   submittals?: any[];
   miscDesign: boolean;
   customerDesign: boolean;
@@ -511,7 +506,6 @@ export interface RFIPayload {
   description: string;
   isAproovedByAdmin: string;
   files: File[] | string;
-
 }
 export interface RFIResponseFile {
   id: string;
@@ -537,7 +531,7 @@ export interface RFIItem {
   subject: string;
   description?: string;
   senderId?: string;
-  sender?: any
+  sender?: any;
   recepient_id?: string;
   recepients?: {
     email?: string;
@@ -546,11 +540,11 @@ export interface RFIItem {
     lastName?: string;
   } | null;
   fabricator_id?: string;
-  fabricator?: { fabName?: string; } | null;
+  fabricator?: { fabName?: string } | null;
   project_id?: string;
-  project?: { name?: string; } | null;
+  project?: { name?: string } | null;
   status?: boolean | string;
-  isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string
+  isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string;
   createdAt: string | Date;
   response?: any;
   updatedAt?: string | Date;
@@ -567,16 +561,15 @@ export interface RFIResponseSchema {
   parentResponseId: string | null;
 }
 
-
 export interface LineItem {
   id: string;
   description: string;
   unitTime?: number;
-  CheckUnitTime?: number;
+  checkUnitTime?: number;
   checkHr?: number;
   execHr?: number;
   updatedAt?: string;
-  QtyNo?: number;
+  qtyNo?: number;
 }
 
 export interface CreateLineItemGroupPayload {
@@ -698,19 +691,19 @@ export interface ChangeOrderItem {
   reason?: string;
   description: string;
   link?: string;
-  status?:string |undefined;
+  status?: string | undefined;
   isAproovedByAdmin: true | false;
   createdAt?: string;
   date?: string;
   files?: File[];
 }
-export interface COTable{
-  description:string;
-  referenceDoc:string;
-  elements:string;
-  QtyNo:number;
-  remarks:string;
-  hours:number;
-  cost:number;
-  CoId:string;
+export interface COTable {
+  description: string;
+  referenceDoc: string;
+  elements: string;
+  QtyNo: number;
+  remarks: string;
+  hours: number;
+  cost: number;
+  CoId: string;
 }
