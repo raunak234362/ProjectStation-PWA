@@ -20,7 +20,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
   const [loading, setLoading] = useState(true);
   const [co, setCO] = useState<ChangeOrderItem | null>(null);
   const [error, setError] = useState<string | null>(null);
-console.log(projectId);
+  console.log(projectId);
 
   const fetchCO = async () => {
     try {
@@ -83,26 +83,25 @@ console.log(projectId);
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-teal-700">
             CO #{co.changeOrderNumber}
-          </h1> 
+          </h1>
 
           <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              co.isAproovedByAdmin === true
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${co.isAproovedByAdmin === true
                 ? "bg-green-100 text-green-700"
                 : co.isAproovedByAdmin === false
-                ? "bg-red-100 text-red-700"
-                : "bg-yellow-100 text-yellow-700"
-            }`}
+                  ? "bg-red-100 text-red-700"
+                  : "bg-yellow-100 text-yellow-700"
+              }`}
           >
             {co.isAproovedByAdmin === true
               ? "Approved"
               : co.isAproovedByAdmin === false
-              ? "Rejected"
-              : "Pending"}
+                ? "Rejected"
+                : "Pending"}
           </span>
         </div>
 
-      
+
 
         <Info
           label="Sender"
@@ -116,8 +115,8 @@ console.log(projectId);
         <Info
           label="Recipient"
           value={
-            co.Recipients
-              ? `${co.Recipients.firstName ?? ""} ${co.Recipients.lastName ?? ""}`
+            co.recipients
+              ? `${co.recipients.firstName ?? ""} ${co.recipients.lastName ?? ""}`
               : "—"
           }
         />
