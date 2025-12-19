@@ -87,10 +87,10 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
 
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold ${co.isAproovedByAdmin === true
-                ? "bg-green-100 text-green-700"
-                : co.isAproovedByAdmin === false
-                  ? "bg-red-100 text-red-700"
-                  : "bg-yellow-100 text-yellow-700"
+              ? "bg-green-100 text-green-700"
+              : co.isAproovedByAdmin === false
+                ? "bg-red-100 text-red-700"
+                : "bg-yellow-100 text-yellow-700"
               }`}
           >
             {co.isAproovedByAdmin === true
@@ -174,6 +174,22 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
             </ul>
           </div>
         )}
+        {/* Change Order Table Link */}
+        <div className="pt-4 border-t">
+          <button
+            onClick={() =>
+              window.open(
+                `/dashboard/change-orders/${co.id}/table`,
+                "_blank",
+                "noopener,noreferrer"
+              )
+            }
+           className="inline-flex items-center gap-1 text-teal-600 cursor-pointer"
+          >
+            View Change Order Reference Table
+          </button>
+        </div>
+
       </div>
     </div>
   );

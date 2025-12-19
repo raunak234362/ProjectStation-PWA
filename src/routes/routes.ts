@@ -12,8 +12,8 @@ import ChangePasswordPage from "../pages/ChangePasswordPage";
 import RFIPage from "../pages/RFIPage";
 import EstimationPage from "../pages/EstimationPage";
 import ProjectPage from "../pages/ProjectPage";
+import CoTablePage from "../components/co/CoTablePage";
 
-// import Layout from "../layout/DashboardLayout";
 const routes = [
   { path: "/", Component: Login },
   { path: "/change-password", Component: ChangePasswordPage },
@@ -34,6 +34,10 @@ const routes = [
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },
+          {
+            path: "change-orders/:coId/table",
+            Component: CoTablePage,
+          },  
         ],
       },
     ],

@@ -1410,7 +1410,7 @@ class Service {
   // Change Order Table Methods
   static async GetAllCOTableRows(coId: string) {
     try {
-      const response = await api.get(`changeOrder/table/${coId}`, {
+      const response = await api.get(`changeOrder/${coId}/table`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1423,7 +1423,7 @@ class Service {
 
   static async addCOTable(data: any, coId: string) {
     try {
-      const response = await api.post(`changeOrder/table/${coId}`, data, {
+      const response = await api.post(`changeOrder/${coId}/table`, data, {
         headers: {
           "Content-Type": "application/json",
         },
