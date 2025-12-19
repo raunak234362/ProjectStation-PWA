@@ -23,8 +23,6 @@ import AllSubmittals from "../submittals/AllSubmittals";
 import AllNotes from "./notes/AllNotes";
 import EditProject from "./EditProject";
 import AddSubmittal from "../submittals/AddSubmittals";
-import RenderFiles from "../ui/RenderFiles";
-import FetchWBSTemplate from "./wbs/FetchWBSTemplate";
 
 
 
@@ -40,6 +38,7 @@ const GetProjectById = ({
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
   const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
   const [editModel, setEditModel] = useState<ProjectData | null>(null);
+  const [changeOrderView,setChangeOrderView]= useState<"list" | "add">("list");
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 const rfiData = useMemo(() => {
   return project?.rfi || [];
@@ -69,9 +68,32 @@ const wbsData = useMemo(() => {
 
   const submittalData = useMemo(() => {
     return project?.submittals || [];
-    return project?.submittals || [];
   }, [project]);
   
+
+
+
+
+
+
+  
+
+  // const FetchWBSbyProjectId = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     const response = await Service.GetWBSByProjectId(id);
+  //   //   setProject(response?.data || null);
+  //   console.log(response);
+    
+  //   } catch (err) {
+  //     setError("Failed to load WBS details");
+  //     console.error("Error fetching project:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   useEffect(() => {
     if (id) fetchProject();
   }, [id]);
@@ -148,6 +170,7 @@ const wbsData = useMemo(() => {
                 { key: "notes", label: "Notes" },
                 { key: "rfi", label: "RFI" },
                 { key: "submittals", label: "Submittals" },
+                { key: "changeOrder", label: "Change Order" },
               ].map((tab) => (
                 <option key={tab.key} value={tab.key}>
                   {tab.label}
@@ -166,6 +189,7 @@ const wbsData = useMemo(() => {
               { key: "notes", label: "Notes", icon: FolderOpenDot },
               { key: "rfi", label: "RFI", icon: FolderOpenDot },
               { key: "submittals", label: "Submittals", icon: FolderOpenDot },
+              { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
             ].map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
@@ -397,6 +421,50 @@ const wbsData = useMemo(() => {
                 <AllSubmittals submittalData={submittalData} />
               ) : (
                 <AddSubmittal project={project} />
+              )}
+            </div>
+          )}
+         {activeTab === "changeOrder" && (
+            <div className="space-y-4">
+              {/* Sub-tabs for RFI */}
+              <div className="flex justify-start border-b border-gray-200 mb-4">
+                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                  <button
+                    onClick={() => setChangeOrderView("list")}
+                    className={`
+                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                      ${
+                        changeOrderView === "list"
+                          ? "border-teal-500 text-teal-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }
+                    `}
+                  >
+                    All Change Order
+                  </button>
+                  {userRole !== "client" && (
+                    <button
+                      onClick={() => setChangeOrderView("add")}
+                      className={`
+                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                        ${
+                        changeOrderView === "add"
+                          ? "border-teal-500 text-teal-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }
+                    `}
+                  >
+                    Raise Change Order
+                  </button>
+                  )}
+                </nav>
+              </div>
+
+              {/* Submittal Content */}
+              {changeOrderView === "list" ? (
+                <AllCO changeOrderData={changeOrderData} />
+              ) : (
+                <AddCO project={project} />
               )}
             </div>
           )}

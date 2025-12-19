@@ -8,7 +8,7 @@ import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
-import type { SubmittalPayload, SelectOption, Fabricator } from "../../interface";
+import type {  SelectOption, Fabricator } from "../../interface";
 
 const AddSubmittal: React.FC<{ project: any }> = ({ project }) => {
 
@@ -34,7 +34,7 @@ const AddSubmittal: React.FC<{ project: any }> = ({ project }) => {
         fetchMileStone();
     }, [project.id]);
 
-    const { register, handleSubmit, control, setValue, reset } = useForm<SubmittalPayload>();
+    const { register, handleSubmit, control, setValue, reset } = useForm<any>();
     const [description, setDescription] = useState("");
     const [files, setFiles] = useState<File[]>([]);
 
@@ -68,9 +68,9 @@ const AddSubmittal: React.FC<{ project: any }> = ({ project }) => {
     }, []);
 
 
-    const onSubmit = async (data: SubmittalPayload) => {
+    const onSubmit = async (data: any) => {
         try {
-            const payload: SubmittalPayload = {
+            const payload: any = {
                 ...data,
                 fabricator_id: String(fabricatorId),
                 project_id: String(projectId),

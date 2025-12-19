@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import { Loader2, AlertCircle } from "lucide-react";
 import { openFileSecurely } from "../../utils/openFileSecurely";
-
 import Button from "../fields/Button";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import SubmittalResponseModal from "./SubmittalResponseModal";
-
+import SubmittalResponseDetailsModal from "./SubmittalResponseDetailsModal";
 
 const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div className="mb-2">
@@ -20,23 +19,17 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
   const [loading, setLoading] = useState(true);
   const [submittal, setSubmittal] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
+
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
-
-
-  const submittalResponseTableData = submittal?.submittalsResponse
-  console.log(submittalResponseTableData);
+const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await Service.GetSubmittalbyId(id);
-      console.log(response);
-
-      const raw = response?.data || null;
-
-      setSubmittal(raw);
+      const res = await Service.GetSubmittalbyId(id);
+      setSubmittal(res.data);
     } catch {
-      setError("Failed to load submittal.");
+      setError("Failed to load submittal");
     } finally {
       setLoading(false);
     }
@@ -46,32 +39,34 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
     fetchData();
   }, [id]);
 
-
-
-
-  if (loading)
+  if (loading) {
     return (
-      <div className="flex items-center gap-2 text-gray-500 py-8">
-        <Loader2 className="w-5 h-5 animate-spin" /> Loading submittal details...
+      <div className="flex items-center gap-2 py-8 text-gray-500">
+        <Loader2 className="w-5 h-5 animate-spin" />
+        Loading submittal details...
       </div>
     );
+  }
 
-  if (!submittal || error)
+  if (!submittal || error) {
     return (
-      <div className="flex items-center gap-2 text-red-600 py-8">
-        <AlertCircle className="w-5 h-5" /> {error || "Submittal not found"}
+      <div className="flex items-center gap-2 py-8 text-red-600">
+        <AlertCircle className="w-5 h-5" />
+        {error || "Submittal not found"}
       </div>
     );
-  
-
+  }
 
   const responseColumns: ColumnDef<any>[] = [
-     { accessorKey: "description", header: "Project Name" },
     {
       accessorKey: "description",
       header: "Message",
       cell: ({ row }) => (
-        <div style={{ marginLeft: row.original.parentResponseId ? "20px" : "0px" }}>
+        <div
+          style={{
+            marginLeft: row.original.parentResponseId ? "20px" : "0px",
+          }}
+        >
           {row.original.description}
         </div>
       ),
@@ -85,95 +80,82 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
       },
     },
     {
-      accessorKey: "description",
-      header: "description",
-      cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) =>
+        new Date(row.original.createdAt).toLocaleString(),
     },
   ];
-
 
   return (
     <>
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-
+          {/* LEFT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-            <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-teal-700">
+              {submittal.subject}
+            </h1>
 
-              <h1 className="text-2xl font-bold text-teal-700">{submittal.subject}</h1>
-            </div>
             <Info label="Project" value={submittal.project?.name || "—"} />
-            <Info
-              label="Milestone"
-              value={
-                submittal.mileStoneBelongsTo?.subject ||
-                submittal.mileStoneBelongsTo?.description ||
-                "—"
-              }
-            />
             <Info label="Submitted By" value={submittal.sender?.firstName || "—"} />
-            <Info label="Created On" value={new Date(submittal.date).toLocaleString()} />
+            <Info
+              label="Created On"
+              value={new Date(submittal.date).toLocaleString()}
+            />
 
             <div>
               <h4 className="font-semibold text-gray-700">Description</h4>
-              <p className="p-3 bg-gray-50 border rounded-lg">{submittal.description}</p>
+              <p className="p-3 bg-gray-50 border rounded-lg">
+                {submittal.description}
+              </p>
             </div>
-            <Info
-              label="Sender"
-              value={
-                submittal.sender
-                  ? `${submittal.sender.firstName} ${submittal.sender.lastName}`
-                  : "—"
-              }
-            />
-
-            <Info
-              label="Recipient"
-              value={
-                submittal.recepients
-                  ? `${submittal.recepients.firstName} ${submittal.recepients.lastName}`
-                  : "—"
-              }
-            />
-
-
 
             {submittal.files?.length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-700 mb-2">Attachments</h4>
-                {submittal.files.map((file: any) => (
-                  <p
-                    key={file.id}
-                    className="text-teal-600 underline cursor-pointer"
-                    onClick={() => openFileSecurely("submittal", submittal.id, file.id)}
-                  >
-                    {file.originalName}
-                  </p>
-                ))}
+                <h4 className="font-semibold text-gray-700 mb-2">
+                  Attachments
+                </h4>
+                <ul className="space-y-1">
+                  {submittal.files.map((file: any) => (
+                    <li key={file.id}>
+                      <span
+                        className="text-teal-600 underline cursor-pointer"
+                        onClick={() =>
+                          openFileSecurely("submittal", submittal.id, file.id)
+                        }
+                      >
+                        {file.originalName}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
 
-
-          {/* RIGHT PANEL — RESPONSES */}
+          {/* RIGHT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
-
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-teal-700">Responses</h2>
+              <h2 className="text-xl font-semibold text-teal-700">
+                Responses
+              </h2>
+              {userRole === "CLIENT" && (
 
               <Button
-                onClick={() => setShowResponseModal(true)}
                 className="bg-teal-600 text-white"
+                onClick={() => setShowResponseModal(true)}
               >
                 + Add Response
               </Button>
+               )}
             </div>
-
-            {submittalResponseTableData.length > 0 ? (
+             
+            {submittal.submittalsResponse?.length > 0 ? (
               <DataTable
                 columns={responseColumns}
-                data={submittalResponseTableData}
+                data={submittal.submittalsResponse}
                 onRowClick={(row) => setSelectedResponse(row)}
                 pageSizeOptions={[5, 10]}
               />
@@ -181,18 +163,13 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
               <p className="text-gray-500 italic">No responses yet.</p>
             )}
           </div>
-
-
         </div>
       </div>
 
-    
-
-    
-      {showResponseModal && submittal && (
+      {/* ADD RESPONSE MODAL */}
+      {showResponseModal && (
         <SubmittalResponseModal
           submittalId={submittal.id}
-          parentResponseId={selectedResponse?.id}
           onClose={() => setShowResponseModal(false)}
           onSuccess={() => {
             setShowResponseModal(false);
@@ -200,9 +177,19 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
           }}
         />
       )}
+
+      {/* RESPONSE DETAILS MODAL */}
+      {selectedResponse && (
+        <SubmittalResponseDetailsModal
+          response={selectedResponse}
+          onClose={() => {
+            setSelectedResponse(null);
+            fetchData();
+          }}
+        />
+      )}
     </>
   );
-
 };
 
 export default GetSubmittalByID;

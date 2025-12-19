@@ -1,10 +1,10 @@
 import { useState } from "react";
-import AddRFI from "../components/rfi/AddRFI";
-import AllRFI from "../components/rfi/AllRfi";
+import AllCO from "../components/co/AllCO";
+import AddCO from "../components/co/AddCO";
 
 
 
-const RfiLayout = () => {
+const COLayout = () => {
   const [activeTab, setActiveTab] = useState("addRFI");
 
   return (
@@ -40,12 +40,12 @@ const RfiLayout = () => {
       <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
         {activeTab === "allRFI" && (
           <div>
-            <AllRFI/>
+            <AllCO/>
           </div>
         )}
         {activeTab === "addRFI" && (
           <div>
-            <AddRFI />
+            <AddCO />
           </div>
         )}
       </div>
@@ -53,4 +53,4 @@ const RfiLayout = () => {
   );
 };
 
-export default RfiLayout
+export default COLayout

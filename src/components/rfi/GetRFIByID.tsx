@@ -7,7 +7,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
-
 import RFIResponseModal from "./RFIResponseModal";
 import RFIResponseDetailsModal from "./RFIResponseDetailsModal";
 
@@ -192,7 +191,6 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
             )}
           </div>
 
-          {/* RIGHT: Responses */}
           {/* RIGHT: Responses */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
 

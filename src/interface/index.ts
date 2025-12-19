@@ -476,8 +476,9 @@ export interface ProjectData {
   stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
-  rfi?:any[];
-  submittals?:any[];
+  rfi?: any[];
+  changeOrders?: any
+  submittals?: any[];
   miscDesign: boolean;
   customerDesign: boolean;
   detailingMain: boolean;
@@ -551,19 +552,19 @@ export interface RFIItem {
   status?: boolean | string;
   isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string
   createdAt: string | Date;
+  response?: any;
   updatedAt?: string | Date;
   files: RFIResponseFile[] | string[];
   rfiresponse: RFIResponse[];
   date: string;
 }
-export interface RFIResponseSchema
-{
-files?: File[] | string[];
-// responseState:boolean|null;
-wbtStatus?:boolean;
-reason:string;
-rfiId:string;
-parentResponseId:string|null;
+export interface RFIResponseSchema {
+  files?: File[] | string[];
+  // responseState:boolean|null;
+  wbtStatus?: boolean;
+  reason: string;
+  rfiId: string;
+  parentResponseId: string | null;
 }
 
 
@@ -661,4 +662,55 @@ export interface SubmittalResponsePayload {
   response: string;
   status: string;
   files?: File[];
+}
+
+export interface changeOrdersPayload {
+  project: string;
+  sender: string;
+  recipients: string;
+  remarks: string;
+  changeOrderNumber: string;
+  description: string;
+  sentOn: string;
+  isAproovedByAdmin?: "PENDING" | "APPROVED" | "REJECTED" | string;
+  reason: string;
+  files?: File[];
+  link: string;
+}
+export interface ChangeOrderItem {
+  original: any;
+  id: string;
+  project?: string;
+  senders?: {
+    id: string;
+    firstName?: string;
+    middleName?: string;
+    lastName?: string;
+    username?: string;
+  };
+  recipients?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+  };
+  changeOrderNumber: string;
+  remarks: string;
+  reason?: string;
+  description: string;
+  link?: string;
+  status?:string |undefined;
+  isAproovedByAdmin: true | false;
+  createdAt?: string;
+  date?: string;
+  files?: File[];
+}
+export interface COTable{
+  description:string;
+  referenceDoc:string;
+  elements:string;
+  QtyNo:number;
+  remarks:string;
+  hours:number;
+  cost:number;
+  CoId:string;
 }

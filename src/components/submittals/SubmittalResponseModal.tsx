@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+
 import { useState } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
@@ -12,11 +12,11 @@ interface SubmittalResponseModalProps {
 
 const SubmittalResponseModal = ({
   submittalId,
-  parentResponseId = null,
   onClose,
-  onSuccess
+
+  parentResponseId = null,
 }: SubmittalResponseModalProps) => {
-console.log(submittalId);
+  console.log(submittalId);
 
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
@@ -44,8 +44,6 @@ console.log(submittalId);
 
     try {
       await Service.addSubmittalResponse(formData, submittalId);
-      onSuccess();
-      onClose();
     } catch (err) {
       console.error("Submittal response failed:", err);
     }
@@ -56,9 +54,9 @@ console.log(submittalId);
       <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-lg relative space-y-4">
 
         {/* CLOSE BUTTON */}
-        <button onClick={onClose} className="absolute top-3 right-3">
+        {/* <button onClick={onClose} className="absolute top-3 right-3">
           <X size={18} />
-        </button>
+        </button> */}
 
         <h2 className="text-xl font-semibold text-teal-700">
           Add Submittal Response

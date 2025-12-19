@@ -416,19 +416,19 @@ class Service {
   //getting rfqbyID
 
   static async GetRFQbyId(rfqId: string) {
-      try {
-        const response = await api.get(`rfq/getById/${rfqId}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log(" All rfq fetched by rfq ID:", response.data);
-        return response.data;
-      } catch (error) {
-        console.error("cannot find rfq", error);
-      }
+    try {
+      const response = await api.get(`rfq/getById/${rfqId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All rfq fetched by rfq ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfq", error);
     }
-  
+  }
+
   // Update RFQ by ID
   static async UpdateRFQById(rfqId: string, data: any) {
     try {
@@ -442,19 +442,19 @@ class Service {
     } catch (error) {
       console.error("cannot update rfq", error);
     }
-  } 
-    //RESPONSES
+  }
+  //RESPONSES
   //response post request 
 
-static async addResponse(formData: FormData,responseId:string) {
-  const token = sessionStorage.getItem("token");
+  static async addResponse(formData: FormData, responseId: string) {
+    const token = sessionStorage.getItem("token");
 
-  const response = await api.post(`rfq/${responseId}/responses`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    const response = await api.post(`rfq/${responseId}/responses`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     return response.data;
   }
@@ -514,7 +514,7 @@ static async addResponse(formData: FormData,responseId:string) {
       });
       console.log(response);
       return response.data;
-    } catch (error) { 
+    } catch (error) {
       console.log(error);
     }
   }
@@ -532,7 +532,7 @@ static async addResponse(formData: FormData,responseId:string) {
       console.log(error);
     }
   }
- // Add Estimation 
+  // Add Estimation 
   static async AddEstimation(formData: FormData) {
     try {
       const response = await api.post(`estimation/estimations`, formData, {
@@ -667,7 +667,7 @@ static async addResponse(formData: FormData,responseId:string) {
   //Estimation Task Pause By ID
   static async PauseEstimationTaskById(id: string, data: any) {
     try {
-      const response = await api.patch(`task/EST/pause/${id}`,data, {
+      const response = await api.patch(`task/EST/pause/${id}`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -697,7 +697,7 @@ static async addResponse(formData: FormData,responseId:string) {
   //Estimation Task End by ID
   static async EndEstimationTaskById(id: string, data: any) {
     try {
-      const response = await api.post(`task/EST/end/${id}`,data, {
+      const response = await api.post(`task/EST/end/${id}`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -724,110 +724,110 @@ static async addResponse(formData: FormData,responseId:string) {
     }
   }
 
-// Line Item Group
-static async CreateLineItemGroup(data: CreateLineItemGroupPayload) {
-  try {
-    const response = await api.post(`estimation/line-items`, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  // Line Item Group
+  static async CreateLineItemGroup(data: CreateLineItemGroupPayload) {
+    try {
+      const response = await api.post(`estimation/line-items`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
-//fetch Group by ID 
-static async FetchGroupById(id: string) {
-  try {
-    const response = await api.get(`estimation/line-items/group/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  //fetch Group by ID 
+  static async FetchGroupById(id: string) {
+    try {
+      const response = await api.get(`estimation/line-items/group/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
-//update Group by ID
-static async UpdateGroupById(id: string, data: any) {
-  try {
-    const response = await api.put(`estimation/line-items/${id}`, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  //update Group by ID
+  static async UpdateGroupById(id: string, data: any) {
+    try {
+      const response = await api.put(`estimation/line-items/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
-//fetch Line item group
-static async FetchLineItemGroup(id: string) {
-  try {
-    const response = await api.get(`estimation/line-items/groups/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  //fetch Line item group
+  static async FetchLineItemGroup(id: string) {
+    try {
+      const response = await api.get(`estimation/line-items/groups/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-} 
 
-//fetch Line item group List
-static async FetchLineItemGroupList(id: string) {
-  try {
-    const response = await api.get(`estimation/line-items/Bygroup/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  //fetch Line item group List
+  static async FetchLineItemGroupList(id: string) {
+    try {
+      const response = await api.get(`estimation/line-items/Bygroup/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-} 
 
-//Update Line Item By ID
-static async UpdateLineItemById(id: string, data: any) {
-  try {
-    const response = await api.put(`estimation/line-items/update/${id}`, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  //Update Line Item By ID
+  static async UpdateLineItemById(id: string, data: any) {
+    try {
+      const response = await api.put(`estimation/line-items/update/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
-// add new Line Item
-static async AddLineItem(data: any) {
-  try {
-    const response = await api.post(`estimation/line-items/item`, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  // add new Line Item
+  static async AddLineItem(data: any) {
+    try {
+      const response = await api.post(`estimation/line-items/item`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
   // Add Group
   static async AddGroup(data: any) {
     try {
@@ -1039,7 +1039,7 @@ static async AddLineItem(data: any) {
 
 
   // Add Group Members
-  static async AddGroupMembers(data: any) { 
+  static async AddGroupMembers(data: any) {
     try {
       const response = await api.post(`chat/group/members`, data, {
         headers: {
@@ -1068,7 +1068,7 @@ static async AddLineItem(data: any) {
     }
   }
 
-    
+
 
   // Delete Group Member
   static async DeleteGroupMember(groupId: string, memberId: string) {
@@ -1117,9 +1117,9 @@ static async AddLineItem(data: any) {
     }
   }
 
-  
 
-  // Delete Group
+
+  // Delete Group------------------------------------------------
   static async DeleteGroup(groupId: string) {
     try {
       const response = await api.delete(`chat/group/${groupId}`, {
@@ -1137,7 +1137,7 @@ static async AddLineItem(data: any) {
   // Fetch Chats by Group ID
   static async ChatByGroupID(groupId: string, lastId?: string | undefined) {
     console.log(lastId);
-    
+
     try {
       // lastId is optional so handle it properly
       // const url = lastId
@@ -1159,19 +1159,19 @@ static async AddLineItem(data: any) {
   }
 
   //RFI components 
- //Add new RFI
- static async addRFI(formData: FormData) {
-  const token = sessionStorage.getItem("token");
+  //Add new RFI----------------------------------------------------
+  static async addRFI(formData: FormData) {
+    const token = sessionStorage.getItem("token");
 
-  const response = await api.post(`rfi`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    const response = await api.post(`rfi`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-  return response.data;
-}
+    return response.data;
+  }
   static async RfiSent() {
     try {
       const response = await api.get(`rfi/sents`, {
@@ -1198,7 +1198,7 @@ static async AddLineItem(data: any) {
       return response.data;
     } catch (error) {
       console.error("cannot find rfi's", error);
-    }                                                                                                                                                                                                                     
+    }
   }
   static async GetRFIbyId(rfiId: string) {
     try {
@@ -1223,36 +1223,36 @@ static async AddLineItem(data: any) {
     } catch (error) {
       console.error("cannot find RFI", error);
     }
-  } 
-//RFI responses
-static async addRFIResponse(formData: FormData,responseId:string) {
-  const token = sessionStorage.getItem("token");
+  }
+  //RFI responses
+  static async addRFIResponse(formData: FormData, responseId: string) {
+    const token = sessionStorage.getItem("token");
 
-  const response = await api.post(`rfi/${responseId}/responses`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    const response = await api.post(`rfi/${responseId}/responses`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     return response.data;
   }
 
 
-static async GetRFIResponsebyId(rfiId: string) {
-      try {
-        const response = await api.get(`rfi/responses/${rfiId}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log(" All rfq fetched by rfq ID:", response.data);
-        return response.data;
-      } catch (error) {
-        console.error("cannot find rfq", error);
-      }
+  static async GetRFIResponsebyId(rfiId: string) {
+    try {
+      const response = await api.get(`rfi/responses/${rfiId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All rfq fetched by rfq ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfq", error);
     }
-//submitals route 
+  }
+  //submitals route ----------------------------------------------
   static async AddSubmittal(formData: FormData) {
     const token = sessionStorage.getItem("token");
     try {
@@ -1295,7 +1295,7 @@ static async GetRFIResponsebyId(rfiId: string) {
       return response.data;
     } catch (error) {
       console.error("cannot find submittal's", error);
-    }                                                                                                                                                                                                                     
+    }
   }
   static async GetSubmittalbyId(Id: string) {
     try {
@@ -1310,34 +1310,35 @@ static async GetRFIResponsebyId(rfiId: string) {
       console.error("cannot find submittal", error);
     }
   }
-static async addSubmittalResponse(formData: FormData,SubId:string) {
-  const token = sessionStorage.getItem("token");
+  //submittal responses 
+  static async addSubmittalResponse(formData: FormData, SubId: string) {
+    const token = sessionStorage.getItem("token");
 
-  const response = await api.post(`submittal/${SubId}/responses`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    const response = await api.post(`submittal/${SubId}/responses`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     return response.data;
   }
   static async GetSubmittalResponsebyId(subId: string) {
-      try {
-        const response = await api.get(`submittal/responses/${subId}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log(" All submittals fetched by sub ID:", response.data);
-        return response.data;
-      } catch (error) {
-        console.error("cannot find sub", error);
-      }
+    try {
+      const response = await api.get(`submittal/responses/${subId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All submittals fetched by sub ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find sub", error);
     }
+  }
 
-    //change Order 
-    static async ChangeOrder(formData: FormData) {
+  //change Order ---------------------------------------------
+  static async ChangeOrder(formData: FormData) {
     const token = sessionStorage.getItem("token");
     try {
       const response = await api.post(`changeOrder/`, formData, {
@@ -1366,37 +1367,17 @@ static async addSubmittalResponse(formData: FormData,SubId:string) {
     }
   }
   //update Co
-    static async EditCoById(id: string, data: FormData) {
+  static async EditCoById(id: string, data: FormData) {
     try {
-      const response = await api.put(`rfi/${id}`, data, {
+      const response = await api.put(`changeOrder/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("RFI Edited:", response.data);
+      console.log("co Edited:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find RFI", error);
     }
   } 
-
-  // Create Share Link
-  static async createShareLink(table: string, docId: string | undefined, fileId: string | undefined) {
-    try {
-      const response = await api.post(`share/link`, {
-        table,
-        docId,
-        fileId,
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("Share link created:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error creating share link:", error);
-      throw error;
-    }
-  }
 
 }
 export default Service;
