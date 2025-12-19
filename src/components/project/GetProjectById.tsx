@@ -26,6 +26,7 @@ import AddSubmittal from "../submittals/AddSubmittals";
 import RenderFiles from "../ui/RenderFiles";
 import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
+import CoTable from "../co/CoTable";
 
 
 
@@ -41,7 +42,8 @@ const GetProjectById = ({
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
   const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
   const [editModel, setEditModel] = useState<ProjectData | null>(null);
-  const [changeOrderView,setChangeOrderView]= useState<"list" | "add">("list");
+  const [changeOrderView, setChangeOrderView] = useState<"list" | "add" | "table">("list");
+  const [selectedCoId, setSelectedCoId] = useState<string | null>(null);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 const rfiData = useMemo(() => {
   return project?.rfi || [];
@@ -49,6 +51,10 @@ const rfiData = useMemo(() => {
 
 const wbsData = useMemo(() => {
   return project?.projectWbs || [];
+}, [project]);
+
+const changeOrderData = useMemo(() => {
+  return project?.changeOrders || [];
 }, [project]);
   const fetchProject = async () => {
     try {
@@ -100,6 +106,15 @@ const wbsData = useMemo(() => {
   useEffect(() => {
     if (id) fetchProject();
   }, [id]);
+
+  const handleCoSuccess = (createdCO: any) => {
+    const coId = createdCO?.id || createdCO?._id;
+    if (coId) {
+      setSelectedCoId(coId);
+      setChangeOrderView("table");
+      fetchProject(); // Refresh project to get updated CO list
+    }
+  };
 
 
   const formatDate = (date?: string) =>
@@ -463,11 +478,24 @@ const wbsData = useMemo(() => {
                 </nav>
               </div>
 
-              {/* Submittal Content */}
+              {/* Change Order Content */}
               {changeOrderView === "list" ? (
                 <AllCO changeOrderData={changeOrderData} />
+              ) : changeOrderView === "add" ? (
+                <AddCO project={project} onSuccess={handleCoSuccess} />
               ) : (
-                <AddCO project={project} />
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-lg font-semibold text-teal-700">Change Order Table</h4>
+                    <button
+                      onClick={() => setChangeOrderView("list")}
+                      className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+                    >
+                      &larr; Back to List
+                    </button>
+                  </div>
+                  {selectedCoId && <CoTable coId={selectedCoId} />}
+                </div>
               )}
             </div>
           )}
