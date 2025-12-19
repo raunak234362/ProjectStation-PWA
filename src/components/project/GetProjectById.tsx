@@ -23,6 +23,9 @@ import AllSubmittals from "../submittals/AllSubmittals";
 import AllNotes from "./notes/AllNotes";
 import EditProject from "./EditProject";
 import AddSubmittal from "../submittals/AddSubmittals";
+import RenderFiles from "../ui/RenderFiles";
+import AllCO from "../co/AllCO";
+import AddCO from "../co/AddCO";
 
 
 
