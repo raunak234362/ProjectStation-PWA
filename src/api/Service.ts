@@ -444,7 +444,7 @@ class Service {
     }
   }
   //RESPONSES
-  //response post request 
+  //response post request
 
   static async addResponse(formData: FormData, responseId: string) {
     const token = sessionStorage.getItem("token");
@@ -532,7 +532,7 @@ class Service {
       console.log(error);
     }
   }
-  // Add Estimation 
+  // Add Estimation
   static async AddEstimation(formData: FormData) {
     try {
       const response = await api.post(`estimation/estimations`, formData, {
@@ -546,7 +546,7 @@ class Service {
       console.log(error);
     }
   }
-  // Add Estimation 
+  // Add Estimation
   static async AllEstimation() {
     try {
       const response = await api.get(`estimation/estimations`, {
@@ -739,7 +739,7 @@ class Service {
     }
   }
 
-  //fetch Group by ID 
+  //fetch Group by ID
   static async FetchGroupById(id: string) {
     try {
       const response = await api.get(`estimation/line-items/group/${id}`, {
@@ -802,11 +802,15 @@ class Service {
   //Update Line Item By ID
   static async UpdateLineItemById(id: string, data: any) {
     try {
-      const response = await api.put(`estimation/line-items/update/${id}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.put(
+        `estimation/line-items/update/${id}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response);
       return response.data;
     } catch (error) {
@@ -949,11 +953,15 @@ class Service {
   //add wbs from wbs template by project id
   static async AddWBSFromTemplate(projectId: string, wbsData: any) {
     try {
-      const response = await api.post(`project/projects/${projectId}/wbs/expand`, wbsData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.post(
+        `project/projects/${projectId}/wbs/expand`,
+        wbsData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response);
       return response.data;
     } catch (error) {
@@ -964,12 +972,15 @@ class Service {
   // Add WBS in Project
   static async AddWBSInProject(projectId: string) {
     try {
-      const response = await api.post(`project/projects/${projectId}/wbs
-`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.post(
+        `project/projects/${projectId}/wbs
+`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response);
       return response.data;
     } catch (error) {
@@ -993,13 +1004,20 @@ class Service {
   }
 
   // Get WBS By ID
-  static async GetWBSLineItemById(projectId: string, id: string, stage: string) {
+  static async GetWBSLineItemById(
+    projectId: string,
+    id: string,
+    stage: string
+  ) {
     try {
-      const response = await api.get(`project/projects/${projectId}/stages/${stage}/wbs/${id}/line-items`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.get(
+        `project/projects/${projectId}/stages/${stage}/wbs/${id}/line-items`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response);
       return response.data;
     } catch (error) {
@@ -1008,13 +1026,22 @@ class Service {
   }
 
   // Update WBS line-item by ProjectId, wbsId and line-item ID
-  static async UpdateWBSLineItem(projectId: string, wbsId: string, lineItemId: string, data: any) {
+  static async UpdateWBSLineItem(
+    projectId: string,
+    wbsId: string,
+    lineItemId: string,
+    data: any
+  ) {
     try {
-      const response = await api.put(`project/projects/${projectId}/work-break-downs/${wbsId}/line-items/${lineItemId}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.put(
+        `project/projects/${projectId}/work-break-downs/${wbsId}/line-items/${lineItemId}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response);
       return response.data;
     } catch (error) {
@@ -1036,7 +1063,6 @@ class Service {
       console.error("cannot find fabricators", error);
     }
   }
-
 
   // Add Group Members
   static async AddGroupMembers(data: any) {
@@ -1068,16 +1094,17 @@ class Service {
     }
   }
 
-
-
   // Delete Group Member
   static async DeleteGroupMember(groupId: string, memberId: string) {
     try {
-      const response = await api.delete(`chat/group/${groupId}/member/${memberId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.delete(
+        `chat/group/${groupId}/member/${memberId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(" Group member deleted", response.data);
       return response.data;
     } catch (error) {
@@ -1104,20 +1131,22 @@ class Service {
   static async CreateProjectNote(projectId: string, data: FormData) {
     const token = sessionStorage.getItem("token");
     try {
-      const response = await api.post(`project/projects/${projectId}/notes`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post(
+        `project/projects/${projectId}/notes`,
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       console.log(" Project note created", response.data);
       return response.data;
     } catch (error) {
       console.log(error);
     }
   }
-
-
 
   // Delete Group------------------------------------------------
   static async DeleteGroup(groupId: string) {
@@ -1158,7 +1187,7 @@ class Service {
     }
   }
 
-  //RFI components 
+  //RFI components
   //Add new RFI----------------------------------------------------
   static async addRFI(formData: FormData) {
     const token = sessionStorage.getItem("token");
@@ -1238,7 +1267,6 @@ class Service {
     return response.data;
   }
 
-
   static async GetRFIResponsebyId(rfiId: string) {
     try {
       const response = await api.get(`rfi/responses/${rfiId}`, {
@@ -1310,7 +1338,7 @@ class Service {
       console.error("cannot find submittal", error);
     }
   }
-  //submittal responses 
+  //submittal responses
   static async addSubmittalResponse(formData: FormData, SubId: string) {
     const token = sessionStorage.getItem("token");
 
@@ -1375,9 +1403,36 @@ class Service {
       console.log("co Edited:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find RFI", error);
+      console.error("cannot find CO", error);
     }
-  } 
+  }
 
+  // Change Order Table Methods
+  static async GetAllCOTableRows(coId: string) {
+    try {
+      const response = await api.get(`changeOrder/table/${coId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching CO table rows:", error);
+    }
+  }
+
+  static async addCOTable(data: any, coId: string) {
+    try {
+      const response = await api.post(`changeOrder/table/${coId}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error saving CO table:", error);
+      throw error;
+    }
+  }
 }
 export default Service;
