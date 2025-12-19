@@ -993,9 +993,9 @@ static async AddLineItem(data: any) {
   }
 
   // Get WBS By ID
-  static async GetWBSById(projectId: string, id: string, stage: string) {
+  static async GetWBSLineItemById(projectId: string, id: string, stage: string) {
     try {
-      const response = await api.get(`project/projects/${projectId}/stage/${stage}/wbs/${id}/line-items`, {
+      const response = await api.get(`project/projects/${projectId}/stages/${stage}/wbs/${id}/line-items`, {
         headers: {
           "Content-Type": "application/json",
         },
