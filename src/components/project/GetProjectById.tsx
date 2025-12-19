@@ -24,6 +24,7 @@ import AllNotes from "./notes/AllNotes";
 import EditProject from "./EditProject";
 import AddSubmittal from "../submittals/AddSubmittals";
 import RenderFiles from "../ui/RenderFiles";
+import FetchWBSTemplate from "./wbs/FetchWBSTemplate";
 
 
 
@@ -42,6 +43,10 @@ const GetProjectById = ({
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 const rfiData = useMemo(() => {
   return project?.rfi || [];
+}, [project]);
+
+const wbsData = useMemo(() => {
+  return project?.projectWbs || [];
 }, [project]);
   const fetchProject = async () => {
     try {
@@ -301,9 +306,10 @@ const rfiData = useMemo(() => {
             <AllNotes projectId={id} />
           )}
           {activeTab === "wbs" && (
-            <div className="text-gray-600 italic text-center py-10">
+            <div className="text-gray-600 italic text-center">
               {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
-              <WBS id={id} />
+              <WBS id={id} wbsData={wbsData}/>
+            
             </div>
           )}
           {activeTab === "rfi" && (

@@ -931,6 +931,36 @@ static async AddLineItem(data: any) {
     }
   }
 
+  //Fetch WBS-Template
+  static async GetWBSTemplate() {
+    try {
+      const response = await api.get(`project/wbs-templates`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //add wbs from wbs template by project id
+  static async AddWBSFromTemplate(projectId: string, wbsData: any) {
+    try {
+      const response = await api.post(`project/projects/${projectId}/wbs/expand`, wbsData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Add WBS in Project
   static async AddWBSInProject(projectId: string) {
     try {
@@ -963,9 +993,9 @@ static async AddLineItem(data: any) {
   }
 
   // Get WBS By ID
-  static async GetWBSById(id: string) {
+  static async GetWBSById(projectId: string, id: string, stage: string) {
     try {
-      const response = await api.get(`project/wbs/${id}`, {
+      const response = await api.get(`project/projects/${projectId}/stage/${stage}/wbs/${id}/line-items`, {
         headers: {
           "Content-Type": "application/json",
         },

@@ -14,7 +14,17 @@ import {
 import Service from "../../../api/Service";
 import type { WBSData, LineItem } from "../../../interface";
 
-const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
+const GetWBSByID = ({
+  id,
+  projectId,
+  stage,
+  onClose,
+}: {
+  id: string;
+  projectId: string;
+  stage: string;
+  onClose?: () => void;
+}) => {
   const [wbs, setWbs] = useState<WBSData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,8 +36,7 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
   }>({ QtyNo: 0, unitTime: 0, CheckUnitTime: 0 });
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
-  const canEditTime =
-    userRole === "admin" || userRole === "deputy_manager";
+  const canEditTime = userRole === "admin" || userRole === "deputy_manager";
 
   useEffect(() => {
     if (id) fetchWBSById(id);
@@ -36,7 +45,7 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
   const fetchWBSById = async (id: string) => {
     try {
       setLoading(true);
-      const response = await Service.GetWBSById(id);
+      const response = await Service.GetWBSById(projectId, id, stage);
       console.log(response);
       setWbs(response || null);
     } catch (err: any) {
@@ -79,7 +88,7 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
         execHr,
       });
       // Refresh data
-      const response = await Service.GetWBSById(wbs.id);
+      const response = await Service.GetWBSById(projectId, wbs.id, stage);
       setWbs(response || null);
       setEditingId(null);
     } catch (err) {
@@ -168,7 +177,10 @@ const GetWBSByID = ({ id, onClose }: { id: string; onClose?: () => void }) => {
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <Stat label="Total Check Hours" value={wbs.totalCheckHr} />
-            <Stat label="Check Hours with Rework" value={wbs.checkHrWithRework} />
+            <Stat
+              label="Check Hours with Rework"
+              value={wbs.checkHrWithRework}
+            />
             <Stat label="Total Exec Hours" value={wbs.totalExecHr} />
             <Stat label="Exec Hours with Rework" value={wbs.execHrWithRework} />
             <Stat label="Total Quantity No" value={wbs.totalQtyNo} />

@@ -497,6 +497,7 @@ export interface ProjectData {
   submissionMailReminder: boolean;
   files?: File[] | null; // supports direct File objects or a typed File interface
   endDateChangeLog?: string[];
+  projectWbs?: any[];
 }
 
 export interface RFIPayload {
