@@ -7,19 +7,24 @@ import DataTable from "../../ui/table";
 import Service from "../../../api/Service";
 import GetWBSByID from "./GetWBSByID";
 import Button from "../../fields/Button";
+import FetchWBSTemplate from "./FetchWBSTemplate";
 
-const AllWBS = ({ id }: { id: string }) => {
+const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
   const [wbsList, setWbsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedWBS, setSelectedWBS] = useState<string | null>(null);
-
+  const [selectedWBS, setSelectedWBS] = useState<{
+    id: string;
+    stage: string;
+  } | null>(null);
+  const [showFetchTemplate, setShowFetchTemplate] = useState(false);
+  const projectId = id;
   // ✅ Fetch all WBS items
   const fetchAllWBS = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await Service.GetWBSByProjectId(id);
+      const response = await Service.GetWBSByProjectId(projectId);
       console.log("Fetched WBS:", response);
       setWbsList(response || []);
     } catch (err) {
@@ -70,10 +75,12 @@ const AllWBS = ({ id }: { id: string }) => {
       accessorKey: "totalCheckHr",
       header: "Total Check Hrs",
       cell: ({ row }) => (
-        <span className="text-gray-700">{row.original.totalCheckHr || "—"}</span>
+        <span className="text-gray-700">
+          {row.original.totalCheckHr || "—"}
+        </span>
       ),
     },
-    
+
     {
       accessorKey: "createdAt",
       header: "Created On",
@@ -85,7 +92,8 @@ const AllWBS = ({ id }: { id: string }) => {
   // ✅ Handle row click — open details
   const handleRowClick = (row: any) => {
     const wbsId = row.id ?? row.fabId ?? "";
-    if (wbsId) setSelectedWBS(wbsId);
+    const stage = row.stage ?? "";
+    if (wbsId) setSelectedWBS({ id: wbsId, stage });
   };
 
   // ✅ Render loading/error states
@@ -107,24 +115,28 @@ const AllWBS = ({ id }: { id: string }) => {
   // ✅ Render table
   return (
     <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-      <div className="flex justify-between items-center mb-4">  
-
-      <div>
-
-      <h2 className="text-lg font-semibold text-gray-800 mb-3">
-        Work Breakdown Structure (WBS)
-      </h2>
-      <p className="text-sm text-gray-500 mb-4">
-        Total Items:{" "}
-        <span className="font-semibold text-gray-700">{wbsList.length}</span>
-      </p>
-      </div>
-      <div><Button>Add New Line Item</Button></div>
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">
+            Work Breakdown Structure (WBS)
+          </h2>
+          <p className="text-sm text-gray-500 mb-4">
+            Total Items:{" "}
+            <span className="font-semibold text-gray-700">
+              {wbsList.length}
+            </span>
+          </p>
+        </div>
+        <div>
+          <Button onClick={() => setShowFetchTemplate(true)}>
+            Add New Line Item
+          </Button>
+        </div>
       </div>
 
       <DataTable
         columns={columns}
-        data={wbsList}
+        data={wbsData}
         onRowClick={handleRowClick}
         searchPlaceholder="Search WBS by name or type..."
         pageSizeOptions={[10, 25, 50, 100]}
@@ -132,7 +144,28 @@ const AllWBS = ({ id }: { id: string }) => {
 
       {/* ✅ Modal for WBS Details */}
       {selectedWBS && (
-        <GetWBSByID id={selectedWBS} onClose={() => setSelectedWBS(null)} />
+        <GetWBSByID
+          projectId={projectId}
+          id={selectedWBS.id}
+          stage={selectedWBS.stage}
+          onClose={() => setSelectedWBS(null)}
+        />
+      )}
+
+      {/* ✅ Modal for Fetching WBS Templates */}
+      {showFetchTemplate && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <FetchWBSTemplate
+              id={id}
+              onClose={() => setShowFetchTemplate(false)}
+              onSelect={() => {
+                setShowFetchTemplate(false);
+                fetchAllWBS(); // Refresh the list after selection
+              }}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

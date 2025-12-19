@@ -3,15 +3,39 @@ import Service from "../../../api/Service";
 import { format } from "date-fns";
 import DataTable from "../../ui/table";
 import EstimationTaskByID from "./EstimationTaskByID";
+
+interface AssignedTask {
+  id: string;
+  estimationId: string;
+  endDate: string;
+  status: string;
+  estimation?: {
+    projectName: string;
+    fabricators?: {
+      fabName: string;
+    };
+  };
+  assignedTo?: {
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+  };
+  assignedBy?: {
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+  };
+}
+
 const AllAssignedTask = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [estimations, setEstimations] = useState([]);
+    const [estimations, setEstimations] = useState<AssignedTask[]>([]);
     const fetchEstimations = async () => {
         setIsLoading(true);
         try {
             const response = await Service.GetAllAssignedEstimationTask();
             console.log(response);
-            setEstimations(response);
+            setEstimations(response.data);
         } catch (error) {
             console.log(error);
         } finally {
@@ -26,33 +50,33 @@ const AllAssignedTask = () => {
       
           {
             header: "Project Name",
-            accessorFn: (row: any) => row.estimation?.projectName || "—",
+            accessorFn: (row: AssignedTask) => row.estimation?.projectName || "—",
           },
           {
             header: "Fabricator Name",
-            accessorFn: (row: any) => row.estimation?.fabricators?.fabName || "—",
+            accessorFn: (row: AssignedTask) => row.estimation?.fabricators?.fabName || "—",
           },
           {
             header: "Assigned To",
-            accessorFn: (row: any) =>
+            accessorFn: (row: AssignedTask) =>
               `${row.assignedTo?.firstName ?? ""} ${row.assignedTo?.middleName ?? ""
                 } ${row.assignedTo?.lastName ?? ""}`.trim() || "—",
           },
           {
             header: "Assigned By",
-            accessorFn: (row: any) =>
+            accessorFn: (row: AssignedTask) =>
               `${row.assignedBy?.firstName ?? ""} ${row.assignedBy?.middleName ?? ""
                 } ${row.assignedBy?.lastName ?? ""}`.trim() || "—",
           },
       
           {
             header: "End Date",
-            accessorFn: (row: any) =>
+            accessorFn: (row: AssignedTask) =>
               row.endDate ? format(new Date(row.endDate), "dd MMM yyyy") : "—",
           },
           {
             header: "Status",
-            accessorFn: (row: any) => row.status,
+            accessorFn: (row: AssignedTask) => row.status,
             cell: ({ getValue }: { getValue: () => any }) => {
               const status = getValue();
               const color =
@@ -74,7 +98,7 @@ const AllAssignedTask = () => {
       
         ];
       
-        const handleRowClick = (row: any) => {
+        const handleRowClick = (row: AssignedTask) => {
           console.log("Task clicked:", row.id);
         };
     return (
@@ -91,7 +115,7 @@ const AllAssignedTask = () => {
               columns={columns}
               data={estimations}
               onRowClick={handleRowClick}
-              detailComponent={({ row, close }: { row: any; close: any }) => {
+              detailComponent={({ row, close }: { row: AssignedTask; close: () => void }) => {
                 console.log("Detail Component Row:", row);
                 const estimationUniqueId =
                   row.id ?? row.estimationId ?? "";

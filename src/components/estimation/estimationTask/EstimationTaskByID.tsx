@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import {
@@ -17,18 +17,41 @@ import {
   Building2,
   Hash,
   FolderOpen,
-  Plus,
   Timer,
   Users,
 } from "lucide-react";
 import CreateLineItemGroup from "../estimationLineItem/CreateLineItemGroup";
 import LineItemGroup from "../estimationLineItem/LineItemGroup";
+import type { EstimationTaskPayload } from "../../../interface";
 
-const EstimationTaskByID = ({ id, onClose, refresh }) => {
-  const [task, setTask] = useState(null);
+interface EstimationTaskByIDProps {
+  id: string;
+  onClose: () => void;
+  refresh?: () => void;
+}
+
+interface EstimationTask extends EstimationTaskPayload {
+  id: string;
+  workinghours?: { id: string; ended_at: string | null }[];
+  estimation?: {
+    projectName: string;
+    estimationNumber: string;
+  };
+  assignedTo?: {
+    firstName: string;
+    username: string;
+  };
+}
+
+interface SummaryData {
+  totalHours: number;
+}
+
+const EstimationTaskByID: React.FC<EstimationTaskByIDProps> = ({ id, onClose, refresh }) => {
+  const [task, setTask] = useState<EstimationTask | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [summary, setSummary] = useState(null);
+  const [summary, setSummary] = useState<SummaryData | null>(null);
   const [showWorkSummary, setShowWorkSummary] = useState(true);
   const [refreshGroups, setRefreshGroups] = useState(0);
 
@@ -58,7 +81,7 @@ const EstimationTaskByID = ({ id, onClose, refresh }) => {
     return task?.workinghours?.find((wh) => wh.ended_at === null)?.id || null;
   };
 
-  const formatDecimalHours = (decimalHours) => {
+  const formatDecimalHours = (decimalHours: number | undefined) => {
     const num = Number(decimalHours);
     if (isNaN(num)) return "0h 0m";
     const hours = Math.floor(num);
@@ -68,7 +91,7 @@ const EstimationTaskByID = ({ id, onClose, refresh }) => {
 
   const activeWorkID = getActiveWorkID();
 
-  const toIST = (dateString) => {
+  const toIST = (dateString: string | Date | undefined) => {
     if (!dateString) return "—";
     return new Intl.DateTimeFormat("en-IN", {
       timeZone: "Asia/Kolkata",
@@ -77,31 +100,30 @@ const EstimationTaskByID = ({ id, onClose, refresh }) => {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(new Date(dateString));
+    }).format(new Date(dateString as string));
   };
 
-  const handleAction = async (action) => {
+  const handleAction = async (action: string) => {
     if (!task?.id) return;
     try {
       setProcessing(true);
-      let response;
       switch (action) {
         case "start":
-          response = await Service.StartEstimationTaskById(task.id);
+          await Service.StartEstimationTaskById(task.id);
           toast.success("Task started");
           break;
         case "pause":
           if (!activeWorkID) return toast.warning("No active session to pause");
-          response = await Service.PauseEstimationTaskById(task.id, { whId: activeWorkID });
+          await Service.PauseEstimationTaskById(task.id, { whId: activeWorkID });
           toast.info("Task paused");
           break;
         case "resume":
-          response = await Service.ResumeEstimationTaskById(task.id);
+          await Service.ResumeEstimationTaskById(task.id);
           toast.success("Task resumed");
           break;
         case "end":
           if (!activeWorkID) return toast.warning("No active session to end");
-          response = await Service.EndEstimationTaskById(task.id, { whId: activeWorkID });
+          await Service.EndEstimationTaskById(task.id, { whId: activeWorkID });
           toast.success("Task completed");
           break;
       }
@@ -114,14 +136,14 @@ const EstimationTaskByID = ({ id, onClose, refresh }) => {
     }
   };
 
-  const getStatusConfig = (status) => {
-    const configs = {
+  const getStatusConfig = (status: string | undefined) => {
+    const configs: { [key: string]: { label: string; bg: string; text: string; border: string } } = {
       ASSIGNED: { label: "Assigned", bg: "bg-purple-100", text: "text-purple-700", border: "border-purple-300" },
       IN_PROGRESS: { label: "In Progress", bg: "bg-emerald-100", text: "text-emerald-700", border: "border-emerald-300" },
       BREAK: { label: "On Break", bg: "bg-orange-100", text: "text-orange-700", border: "border-orange-300" },
       COMPLETED: { label: "Completed", bg: "bg-blue-100", text: "text-blue-700", border: "border-blue-300" },
     };
-    return configs[status] || { label: status, bg: "bg-gray-100", text: "text-gray-700", border: "border-gray-300" };
+    return configs[status || ""] || { label: status || "Unknown", bg: "bg-gray-100", text: "text-gray-700", border: "border-gray-300" };
   };
 
   const statusConfig = getStatusConfig(task?.status);
@@ -142,7 +164,7 @@ const EstimationTaskByID = ({ id, onClose, refresh }) => {
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div className="bg-white rounded-2xl shadow-2xl p-10 text-center max-w-md">
           <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <File pilgrims className="w-10 h-10 text-gray-400" />
+            <FileText className="w-10 h-10 text-gray-400" />
           </div>
           <p className="text-xl font-semibold text-gray-800">Task Not Found</p>
           <p className="text-gray-600 mt-2">This task may have been deleted or is inaccessible.</p>
@@ -182,7 +204,7 @@ const EstimationTaskByID = ({ id, onClose, refresh }) => {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
           {/* Task Info Card */}
-          <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200">
+          <div className="bg-linear-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200">
             <h3 className="text-2xl font-bold text-teal-900 mb-6 flex items-center gap-3">
               <FileText className="w-7 h-7" />
               Task Information
@@ -254,7 +276,7 @@ const EstimationTaskByID = ({ id, onClose, refresh }) => {
 
           {/* Work Summary */}
           {summary && (
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-200">
+            <div className="bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-200">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-indigo-900 flex items-center gap-3">
                   <Timer className="w-6 h-6" />
@@ -295,9 +317,9 @@ const EstimationTaskByID = ({ id, onClose, refresh }) => {
 };
 
 // Helper Components
-const InfoItem = ({ icon, label, value }) => (
+const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) => (
   <div className="flex items-start gap-4">
-    <div className="p-3 bg-white rounded-xl shadow-sm flex-shrink-0">
+    <div className="p-3 bg-white rounded-xl shadow-sm shrink-0">
       {icon && <div className="w-6 h-6 text-teal-600">{icon}</div>}
     </div>
     <div>
@@ -307,7 +329,7 @@ const InfoItem = ({ icon, label, value }) => (
   </div>
 );
 
-const ActionButton = ({ children, icon, color, onClick, disabled }) => {
+const ActionButton = ({ children, icon, color, onClick, disabled }: { children: React.ReactNode; icon: React.ReactNode; color: "emerald" | "amber" | "red" | "teal"; onClick: () => void; disabled: boolean }) => {
   const colors = {
     emerald: "bg-emerald-600 hover:bg-emerald-700",
     amber: "bg-amber-600 hover:bg-amber-700",
@@ -326,7 +348,7 @@ const ActionButton = ({ children, icon, color, onClick, disabled }) => {
   );
 };
 
-const SummaryCard = ({ icon, label, value, color = "text-indigo-700" }) => (
+const SummaryCard = ({ icon, label, value, color = "text-indigo-700" }: { icon: React.ReactNode; label: string; value: string | number; color?: string }) => (
   <div className="bg-white/80 backdrop-blur flex flex-row gap-5 items-center justify-center p-2 rounded-xl border border-indigo-100 text-center">
     <div className="w-12 h-12 mx-auto mb-3 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
       {icon}

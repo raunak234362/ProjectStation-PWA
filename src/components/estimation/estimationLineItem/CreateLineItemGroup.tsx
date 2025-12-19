@@ -1,13 +1,16 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import { Loader2, Plus } from "lucide-react";
-import PropTypes from "prop-types";
+import type { CreateLineItemGroupPayload } from "../../../interface";
 
+interface CreateLineItemGroupProps {
+  estimationId: string;
+  onGroupCreated?: () => void;
+}
 
-
-const CreateLineItemGroup = ({ estimationId, onGroupCreated }) => {
+const CreateLineItemGroup: React.FC<CreateLineItemGroupProps> = ({ estimationId, onGroupCreated }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -16,7 +19,7 @@ const CreateLineItemGroup = ({ estimationId, onGroupCreated }) => {
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm({
+    } = useForm<CreateLineItemGroupPayload>({
         defaultValues: {
             name: "",
             description: "",
@@ -24,7 +27,7 @@ const CreateLineItemGroup = ({ estimationId, onGroupCreated }) => {
         },
     });
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: CreateLineItemGroupPayload) => {
         setIsSubmitting(true);
         try {
             await Service.CreateLineItemGroup(data); // Using CreateLineItemGroup as per user instruction for creation
@@ -70,7 +73,7 @@ const CreateLineItemGroup = ({ estimationId, onGroupCreated }) => {
                             </label>
                             <input
                                 type="text"
-                                {...register("name")}
+                                {...register("name", { required: "Group name is required" })}
                                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all ${errors.name ? "border-red-500" : "border-gray-300"
                                     }`}
                                 placeholder="Enter group name"
@@ -87,7 +90,7 @@ const CreateLineItemGroup = ({ estimationId, onGroupCreated }) => {
                             <textarea
                                 {...register("description")}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
-                                rows="3"
+                                rows={3}
                                 placeholder="Enter description (optional)"
                             ></textarea>
                             {errors.description && (

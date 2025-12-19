@@ -1,15 +1,34 @@
-import { useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import { Loader2, X } from "lucide-react";
-import PropTypes from "prop-types";
 import Input from "../../fields/input";
 
+interface LineItem {
+  id: string;
+  scopeOfWork: string;
+  quantity: number;
+  hoursPerQty: number;
+  totalHours: number;
+}
 
+interface EditLineItemProps {
+  lineItem: LineItem | null;
+  onClose: () => void;
+  onUpdate: () => void;
+}
 
-const EditLineItem = ({ lineItem, onClose, onUpdate }) => {
+interface EditLineItemFormData {
+  scopeOfWork: string;
+  quantity: number;
+  hoursPerQty: number;
+  totalHours: number;
+}
+
+const EditLineItem: React.FC<EditLineItemProps> = ({ lineItem, onClose, onUpdate }) => {
     const {
         register,
         handleSubmit,
@@ -17,7 +36,7 @@ const EditLineItem = ({ lineItem, onClose, onUpdate }) => {
         reset,
         watch,
         setValue,
-    } = useForm({
+    } = useForm<EditLineItemFormData>({
 
         defaultValues: {
             scopeOfWork: "",
@@ -38,7 +57,8 @@ const EditLineItem = ({ lineItem, onClose, onUpdate }) => {
         }
     }, [lineItem, reset]);
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: EditLineItemFormData) => {
+        if (!lineItem) return;
         try {
             await Service.UpdateLineItemById(lineItem.id, data);
             toast.success("Line item updated successfully");
@@ -69,7 +89,7 @@ const EditLineItem = ({ lineItem, onClose, onUpdate }) => {
                         </label>
                         <textarea
                             {...register("scopeOfWork", { required: "Scope of work is required" })}
-                            rows="3"
+                            rows={3}
                             className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none transition-all ${errors.scopeOfWork ? "border-red-500" : "border-gray-300"
                                 }`}
                             placeholder="Enter scope of work"
@@ -89,7 +109,7 @@ const EditLineItem = ({ lineItem, onClose, onUpdate }) => {
                                 step="any"
                                 {...register("quantity", {
                                     min: { value: 0, message: "Quantity must be positive" },
-                                    onChange: (e) => {
+                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                                         const hours = watch("hoursPerQty");
                                         const qty = parseFloat(e.target.value) || 0;
                                         setValue("totalHours", qty * hours);
@@ -112,7 +132,7 @@ const EditLineItem = ({ lineItem, onClose, onUpdate }) => {
                                 step="any"
                                 {...register("hoursPerQty", {
                                     min: { value: 0, message: "Hours per quantity must be positive" },
-                                    onChange: (e) => {
+                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                                         const qty = watch("quantity");
                                         const hours = parseFloat(e.target.value) || 0;
                                         setValue("totalHours", qty * hours);
@@ -162,12 +182,6 @@ const EditLineItem = ({ lineItem, onClose, onUpdate }) => {
             </div>
         </div>
     );
-};
-
-EditLineItem.propTypes = {
-    lineItem: PropTypes.object,
-    onClose: PropTypes.func.isRequired,
-    onUpdate: PropTypes.func.isRequired,
 };
 
 export default EditLineItem;

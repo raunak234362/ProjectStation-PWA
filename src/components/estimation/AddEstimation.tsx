@@ -10,6 +10,7 @@ import MultipleFileUpload from "../fields/MultipleFileUpload";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
 import { setRFQData } from "../../store/rfqSlice";
+import type { RFQItem, Fabricator } from "../../interface";
 
 const EstimationStatusOptions = [
   { label: "Pending", value: "PENDING" },
@@ -18,15 +19,28 @@ const EstimationStatusOptions = [
   { label: "Approved", value: "APPROVED" },
 ];
 
-/**
- * @param {{ initialRfqId?: string | null, onSuccess?: () => void }} props
- */
-const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
-  const dispatch = useDispatch();
-  const [files, setFiles] = useState([]);
+interface AddEstimationProps {
+  initialRfqId?: string | null;
+  onSuccess?: () => void;
+}
 
-  const rfqData = useSelector((state) => state.RFQInfos.RFQData || []);
-  const fabricators = useSelector((state) => state.fabricatorInfo?.fabricatorData || []);
+interface EstimationFormData {
+  rfqId: string;
+  estimationNumber: string;
+  projectName: string;
+  fabricatorId: string;
+  description: string;
+  estimateDate: string;
+  tools: string;
+  status: string;
+}
+
+const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId = null, onSuccess = () => {} }) => {
+  const dispatch = useDispatch();
+  const [files, setFiles] = useState<File[]>([]);
+
+  const rfqData = useSelector((state: any) => state.RFQInfos.RFQData || []) as RFQItem[];
+  const fabricators = useSelector((state: any) => state.fabricatorInfo?.fabricatorData || []) as Fabricator[];
 
   const userType = sessionStorage.getItem("userRole");
 
@@ -59,7 +73,7 @@ const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
     watch,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<EstimationFormData>({
     defaultValues: {
       status: "PENDING",
     },
@@ -77,10 +91,11 @@ const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
     // Auto-fill all fields from selected RFQ
     setValue("projectName", rfq.projectName || "");
     setValue("description", rfq.description || "");
+    // @ts-ignore
     setValue("fabricatorId", String(rfq.fabricatorId || ""));
     setValue("tools", rfq.tools || "");
     if (rfq.estimationDate) {
-      setValue("estimateDate", rfq.estimationDate.split("T")[0]);
+      setValue("estimateDate", String(rfq.estimationDate).split("T")[0]);
     }
   }, [selectedRfqId, rfqData, setValue]);
 
@@ -96,7 +111,7 @@ const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
   const rfqOptions = rfqData
     .filter((rfq) => rfq.wbtStatus === "RECEIVED")
     .map((rfq) => ({
-      label: `${rfq.projectName} - ${rfq.fabricator?.fabName || "N/A"}`,
+      label: `${rfq.projectName} - ${rfq.sender?.fabricator?.fabName || "N/A"}`,
       value: String(rfq.id),
     }));
 
@@ -105,7 +120,7 @@ const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
     value: String(fab.id),
   }));
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: EstimationFormData) => {
     try {
       const payload = {
         ...data,
@@ -119,7 +134,7 @@ const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
         if (key === "files" && Array.isArray(value)) {
           value.forEach((file) => formData.append("files", file));
         } else if (value !== null && value !== undefined && value !== "") {
-          formData.append(key, value);
+          formData.append(key, value as string | Blob);
         }
       });
 
@@ -128,7 +143,7 @@ const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
       onSuccess?.();
       reset();
       setFiles([]);
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error?.message || "Failed to create estimation");
     }
   };
@@ -250,4 +265,4 @@ const AddEstimation = ({ initialRfqId = null, onSuccess = () => {} }) => {
   );
 };
 
-export default AddEstimation;   
+export default AddEstimation;

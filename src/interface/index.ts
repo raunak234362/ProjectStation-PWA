@@ -243,6 +243,7 @@ export interface RFQItem {
   recipientId?: string;
   salesPersonId?: string;
   status?: string;
+  wbtStatus?: string;
   tools: "TEKLA" | "SDS2" | "BOTH" | "NO_PREFERENCE" | "OTHER";
   createdAt: string | Date;
   sender?: UserRef | null;
@@ -280,8 +281,6 @@ export interface RFQpayload {
   miscDesign: boolean;
   createdById: string;
   files?: File[] | string[];
-
-
 }
 //trail response
 export interface RfqResponsePayload {
@@ -343,6 +342,46 @@ export interface ConnectionDesigner {
   files?: { id: string; originalName: string }[];
 }
 
+export interface EstimationTask {
+  id: string;
+  assignedById: string;
+  status: string;
+  startDate: Date | string;
+  endDate: Date | string;
+  notes?: string;
+  reviewNotes?: string;
+  estimationId: string;
+  estimationNumber: string;
+  description?: string;
+  tools?: string;
+  projectName: string;
+  assignedToId: string;
+  reviewedById?: string;
+  files?: any[] | null;
+  createdAt: string;
+  updatedAt: string;
+  fabricatorName?: string;
+  fabricators?:Fabricator;
+  totalAgreatedHours?:string | number | undefined;
+  estimateDate?: string | Date | undefined;
+  finalHours?: any;
+  finalWeeks?: any;
+  finalPrice?: any;
+  rfq?: {
+    projectName: string;
+    projectNumber: string;
+    bidPrice: string;
+  };
+  createdBy?: {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+  };
+  tasks?: any[];
+  estimationTasks?: any[];
+}
+
 export interface EstimationTaskPayload {
   assignedById: string;
   status: string;
@@ -364,7 +403,7 @@ export interface EstimationPayload {
   projectName: string;
   description?: string;
   estimateDate: string | Date;   // because React Hook Form passes string from input
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "APPROVED"; // based on your EstimationStatus enum
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "APPROVED" | "DRAFT"; // based on your EstimationStatus enum
   assignedById?: string;
   finalHours?: number;
   finalWeeks?: number;
@@ -459,6 +498,7 @@ export interface ProjectData {
   submissionMailReminder: boolean;
   files?: File[] | null; // supports direct File objects or a typed File interface
   endDateChangeLog?: string[];
+  projectWbs?: any[];
 }
 
 export interface RFIPayload {

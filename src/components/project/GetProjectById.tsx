@@ -4,7 +4,6 @@ import {
   Loader2,
   AlertCircle,
   FileText,
-  Link2,
   Settings,
   FolderOpenDot,
   Users,
@@ -12,7 +11,6 @@ import {
   ClipboardList,
 } from "lucide-react";
 import Service from "../../api/Service";
-import { openFileSecurely } from "../../utils/openFileSecurely";
 import Button from "../fields/Button";
 import AllMileStone from "./mileStone/AllMileStone";
 import AllDocument from "./projectDocument/AllDocument";
@@ -25,6 +23,7 @@ import AllSubmittals from "../submittals/AllSubmittals";
 import AllNotes from "./notes/AllNotes";
 import EditProject from "./EditProject";
 import AddSubmittal from "../submittals/AddSubmittals";
+import RenderFiles from "../ui/RenderFiles";
 import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
 
@@ -47,6 +46,10 @@ const GetProjectById = ({
 const rfiData = useMemo(() => {
   return project?.rfi || [];
 }, [project]);
+
+const wbsData = useMemo(() => {
+  return project?.projectWbs || [];
+}, [project]);
   const fetchProject = async () => {
     try {
       setLoading(true);
@@ -66,16 +69,17 @@ const rfiData = useMemo(() => {
       setEditModel(project);
     };    
 
-
-  
-
   const submittalData = useMemo(() => {
     return project?.submittals || [];
   }, [project]);
   
-  const changeOrderData = useMemo (()=>{
-    return project?.changeOrders || []
-  },[project])
+
+
+
+
+
+
+  
 
   // const FetchWBSbyProjectId = async () => {
   //   try {
@@ -95,8 +99,6 @@ const rfiData = useMemo(() => {
 
   useEffect(() => {
     if (id) fetchProject();
-    console.log(id);
-    // FetchWBSbyProjectId();
   }, [id]);
 
 
@@ -212,7 +214,7 @@ const rfiData = useMemo(() => {
         <div className="p-2">
           {/* ✅ Details */}
           {activeTab === "details" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+            <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                <div className="md:col-span-2 mt-6">
                 <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
                   <FolderOpenDot className="w-4 h-4" /> Description
@@ -285,26 +287,12 @@ const rfiData = useMemo(() => {
           {/* ✅ Files */}
           {activeTab === "files" && (
             <div className="space-y-4">
-              {Array.isArray(project.files) && project.files.length > 0 ? (
-                <ul className="text-gray-700 space-y-1">
-                  {project.files.map((file:any) => (
-                    <li
-                    key={file.id}
-                    className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm border"
-                    >
-                      <span>{file.originalName}</span>
-                      <a
-                        className="text-teal-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
-                        onClick={() => openFileSecurely("project", id, file.id)}
-                      >
-                        <Link2 className="w-3 h-3" /> Open
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-600 italic">No files attached.</p>
-              )}
+              <RenderFiles
+                files={project.files || []}
+                table="project"
+                parentId={id}
+                formatDate={formatDate}
+              />
               <AllDocument />
             </div>
           )}
@@ -345,9 +333,10 @@ const rfiData = useMemo(() => {
             <AllNotes projectId={id} />
           )}
           {activeTab === "wbs" && (
-            <div className="text-gray-600 italic text-center py-10">
+            <div className="text-gray-600 italic text-center">
               {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
-              <WBS id={id} />
+              <WBS id={id} wbsData={wbsData}/>
+            
             </div>
           )}
           {activeTab === "rfi" && (

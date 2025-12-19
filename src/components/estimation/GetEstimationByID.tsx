@@ -1,62 +1,83 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, FileText, Link2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Loader2, AlertCircle } from "lucide-react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
-import { openFileSecurely } from "../../utils/openFileSecurely";
 import AllEstimationTask from "./estimationTask/AllEstimationTask";
 import LineItemGroup from "./estimationLineItem/LineItemGroup";
+import EditEstimation from "./EditEstimation";
 
+import RenderFiles from "../ui/RenderFiles";
+import type { EstimationTask } from "../../interface";
 
-
-const truncateText = (text, max = 40) =>
+const truncateText = (text: string, max = 40) =>
   text.length > max ? text.substring(0, max) + "..." : text;
 
-const GetEstimationByID = ({ id }) => {
-  const [estimation, setEstimation] = useState(null);
+interface GetEstimationByIDProps {
+  id: string;
+  onRefresh?: () => void;
+}
+
+const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
+  id,
+  onRefresh,
+}) => {
+  const [estimation, setEstimation] = useState<EstimationTask | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [isEstimationTaskOpen, setIsEstimationTaskOpen] = useState(false);
   const [isHoursOpen, setIsHoursOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const fetchEstimation = async () => {
+    if (!id) {
+      setError("Invalid Estimation ID");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await Service.GetEstimationById(id);
+      setEstimation(response?.data || null);
+    } catch (err) {
+      console.error("Error fetching estimation:", err);
+      setError("Failed to load estimation details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchEstimation = async () => {
-      if (!id) {
-        setError("Invalid Estimation ID");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await Service.GetEstimationById(id);
-        setEstimation(response?.data || null);
-      } catch (err) {
-        console.error("Error fetching estimation:", err);
-        setError("Failed to load estimation details");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEstimation();
   }, [id]);
 
-  const formatDateTime = (date) =>
-    new Date(date).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
+  const formatDateTime = (date: string | Date | undefined) =>
+    date
+      ? new Date(date).toLocaleString("en-IN", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
+      : "N/A";
 
-  const formatDate = (date) =>
+  const formatDate = (date: string | Date | undefined) =>
     date
       ? new Date(date).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
       : "N/A";
+
+  const formatHours = (hours: number | string | undefined) => {
+    if (hours == null || hours === "") return "N/A";
+    const numHours = typeof hours === "string" ? parseFloat(hours) : hours;
+    if (isNaN(numHours)) return "N/A";
+    const h = Math.floor(numHours);
+    const m = Math.round((numHours - h) * 60);
+    return `${h}h ${m.toString().padStart(2, "0")}m`;
+  };
 
   if (loading) {
     return (
@@ -93,6 +114,7 @@ const GetEstimationByID = ({ id }) => {
     finalWeeks,
     finalPrice,
     createdBy,
+    totalAgreatedHours,
     files,
   } = estimation;
 
@@ -100,11 +122,11 @@ const GetEstimationByID = ({ id }) => {
     status === "DRAFT"
       ? "bg-yellow-100 text-yellow-800"
       : status === "COMPLETED"
-        ? "bg-green-100 text-green-800"
-        : "bg-blue-100 text-blue-800";
+      ? "bg-green-100 text-green-800"
+      : "bg-blue-100 text-blue-800";
 
   return (
-    <div className="bg-gradient-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner text-sm">
+    <div className="bg-linear-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
@@ -121,7 +143,7 @@ const GetEstimationByID = ({ id }) => {
       </div>
 
       {/* Top Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-5">
         {/* Left Column */}
         <div className="space-y-3">
           {/* Fabricator */}
@@ -177,23 +199,18 @@ const GetEstimationByID = ({ id }) => {
 
         {/* Right Column */}
         <div className="space-y-3">
+          <InfoRow label="Estimate Date" value={formatDate(estimateDate)} />
           <InfoRow
-            label="Estimate Date"
-            value={formatDate(estimateDate)}
+            label="Start Date"
+            value={startDate ? formatDate(startDate) : "N/A"}
           />
-          <InfoRow label="Start Date" value={formatDate(startDate)} />
+          <InfoRow label="Created" value={formatDateTime(createdAt)} />
+          <InfoRow label="Updated" value={formatDateTime(updatedAt)} />
           <InfoRow
-            label="Created"
-            value={formatDateTime(createdAt)}
+            label="Total Agreed Hours"
+            value={formatHours(totalAgreatedHours)}
           />
-          <InfoRow
-            label="Updated"
-            value={formatDateTime(updatedAt)}
-          />
-          <InfoRow
-            label="Final Hours"
-            value={finalHours != null ? finalHours : "N/A"}
-          />
+          <InfoRow label="Final Hours" value={formatHours(finalHours)} />
           <InfoRow
             label="Final Weeks"
             value={finalWeeks != null ? finalWeeks : "N/A"}
@@ -208,46 +225,36 @@ const GetEstimationByID = ({ id }) => {
       </div>
 
       {/* Files Section */}
-      {Array.isArray(files) && files.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-teal-200">
-          <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
-            <FileText className="w-4 h-4" /> Files
-          </h4>
-          <ul className="text-gray-700 space-y-1">
-            {files.map((file) => (
-              <li
-                key={file.id}
-                className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
-              >
-                <span>{file.originalName}</span>
-                <button
-                  type="button"
-                  className="text-teal-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
-                  onClick={() => openFileSecurely("estimation", id, file.id)}
-                >
-                  <Link2 className="w-3 h-3" /> Open
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <RenderFiles
+        files={files || []}
+        table="estimation"
+        parentId={id}
+        formatDate={formatDate}
+      />
 
       {/* Action Buttons (placeholders for future edit/view actions) */}
       <div className="py-3 flex gap-3">
         <Button
           className="py-1 px-2 text-lg bg-red-200 text-red-700"
-          onClick={() => setIsEstimationTaskOpen(true)}
+          onClick={() => setIsEstimationTaskOpen(!isEstimationTaskOpen)}
         >
           Estimation Task
         </Button>
-        <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700" onClick={() => setIsHoursOpen(true)}>
+        <Button
+          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+          onClick={() => setIsHoursOpen(!isHoursOpen)}
+        >
           Estimated Hours/Weeks
         </Button>
         <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           Add To Project
         </Button>
-        <Button className="py-1 px-2 text-lg">Edit Estimation</Button>
+        <Button
+          className="py-1 px-2 text-lg"
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          Edit Estimation
+        </Button>
       </div>
       {isEstimationTaskOpen && (
         <AllEstimationTask
@@ -257,8 +264,8 @@ const GetEstimationByID = ({ id }) => {
             Array.isArray(estimation?.tasks)
               ? estimation.tasks
               : Array.isArray(estimation?.estimationTasks)
-                ? estimation.estimationTasks
-                : []
+              ? estimation.estimationTasks
+              : []
           }
           onClose={() => setIsEstimationTaskOpen(false)}
         />
@@ -266,7 +273,9 @@ const GetEstimationByID = ({ id }) => {
       {isHoursOpen && (
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800">Estimated Hours/Weeks</h3>
+            <h3 className="text-lg font-bold text-gray-800">
+              Estimated Hours/Weeks
+            </h3>
             <button
               onClick={() => setIsHoursOpen(false)}
               className="text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
@@ -277,6 +286,17 @@ const GetEstimationByID = ({ id }) => {
           <LineItemGroup estimationId={estimation?.id} />
         </div>
       )}
+      {isEditing && (
+        <EditEstimation
+          id={id}
+          onSuccess={() => {
+            setIsEditing(false);
+            fetchEstimation();
+            onRefresh?.();
+          }}
+          onCancel={() => setIsEditing(false)}
+        />
+      )}
     </div>
   );
 };
@@ -285,6 +305,9 @@ const GetEstimationByID = ({ id }) => {
 const InfoRow = ({
   label,
   value,
+}: {
+  label: string;
+  value: React.ReactNode;
 }) => (
   <div className="flex justify-between gap-3">
     <span className="font-bold text-gray-600">{label}:</span>

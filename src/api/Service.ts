@@ -575,6 +575,21 @@ class Service {
     }
   }
 
+  // Update Estimation By ID
+  static async UpdateEstimationById(id: string, data: any) {
+    try {
+      const response = await api.put(`estimation/estimations/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Add Estimation Task
   static async AddEstimationTask(formData: FormData) {
     try {
@@ -916,6 +931,36 @@ class Service {
     }
   }
 
+  //Fetch WBS-Template
+  static async GetWBSTemplate() {
+    try {
+      const response = await api.get(`project/wbs-templates`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //add wbs from wbs template by project id
+  static async AddWBSFromTemplate(projectId: string, wbsData: any) {
+    try {
+      const response = await api.post(`project/projects/${projectId}/wbs/expand`, wbsData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Add WBS in Project
   static async AddWBSInProject(projectId: string) {
     try {
@@ -948,9 +993,9 @@ class Service {
   }
 
   // Get WBS By ID
-  static async GetWBSById(id: string) {
+  static async GetWBSLineItemById(projectId: string, id: string, stage: string) {
     try {
-      const response = await api.get(`project/wbs/${id}`, {
+      const response = await api.get(`project/projects/${projectId}/stages/${stage}/wbs/${id}/line-items`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1330,102 +1375,9 @@ class Service {
       console.log("co Edited:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find co", error);
+      console.error("cannot find RFI", error);
     }
-  }
+  } 
 
-
-  static async SentCO() {
-    try {
-      const response = await api.get(`changeOrder/sent`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" Sent Co:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find Sent-CO", error);
-    }
-  }
-
-  static async ReceivedCO() {
-    try {
-      const response = await api.get(`changeOrder/received`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" received Co:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find receivedCO", error);
-    }
-  }
-
-  //change order response routes 
-  static async addCOResponse(formData: FormData, COId: string) {
-    const token = sessionStorage.getItem("token");
-
-    const response = await api.post(`changeOrder/${COId}/responses`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  }
-  static async GetCOResponsebyId(COId: string) {
-    try {
-      const response = await api.get(`changeOrder/responses/${COId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All Co responses fetched by co ID:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find CO Responses", error);
-    }
-  }
-  //table routes 
-
-  static async addCOTable(formData: any, COId: string) {
-    const token = sessionStorage.getItem("token");
-
-    const response = await api.post(`changeOrder/${COId}/table`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  }
-  static async GetAllCOTableRows(COId: string) {
-    try {
-      const response = await api.get(`changeOrder/${COId}/table`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All Table rows  fetched by CO ID:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find CO Responses", error);
-    }
-  }
-  // Update single CO table row
-
-  static async EditCoTableRow(id: string, data: FormData) {
-    try {
-      const response = await api.put(`changeOrder/table/${id}`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log("co table Edited:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot update  co table row", error);
-    }
-  }
 }
 export default Service;

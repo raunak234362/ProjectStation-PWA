@@ -1,12 +1,38 @@
-import { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from "react";
 import Service from "../../../api/Service";
 import DataTable from "../../ui/table";
 import { X, Clock, Layers, AlignLeft, Edit2, Save, Calculator } from "lucide-react";
 
-const LineItemList = ({ id, onClose }) => {
-    const [lineItem, setLineItem] = useState([]);
-    const [groupData, setGroupData] = useState([]);
-    const [loading, setLoading] = useState(false);
+interface LineItemListProps {
+  id: string;
+  onClose: () => void;
+}
+
+interface LineItem {
+  id: string;
+  scopeOfWork: string;
+  quantity: number;
+  hoursPerQty: number;
+  totalHours: number;
+}
+
+interface GroupData {
+  group?: {
+    id: string;
+    name: string;
+    description: string;
+    divisor: number;
+  };
+  totalHours: number;
+}
+
+const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
+    const [lineItem, setLineItem] = useState<LineItem[]>([]);
+    const [groupData, setGroupData] = useState<GroupData | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [, setLoading] = useState(false);
+
     const groupId = groupData?.group?.id
 
     const fetchGroupById = async () => {
@@ -16,6 +42,7 @@ const LineItemList = ({ id, onClose }) => {
         setGroupData(response.data);
     }
     const fetchLineItem = async () => {
+        if (!groupId) return;
         setLoading(true);
         try {
             const response = await Service.FetchLineItemGroupList(groupId);
@@ -38,12 +65,12 @@ const LineItemList = ({ id, onClose }) => {
         }
     }, [groupId]);
 
-    const [editingRowId, setEditingRowId] = useState(null);
-    const [editFormData, setEditFormData] = useState({});
+    const [editingRowId, setEditingRowId] = useState<string | null>(null);
+    const [editFormData, setEditFormData] = useState<Partial<LineItem>>({});
 
     // Group Editing State
     const [isEditingGroup, setIsEditingGroup] = useState(false);
-    const [groupFormData, setGroupFormData] = useState({});
+    const [groupFormData, setGroupFormData] = useState<any>({});
 
     const handleGroupEditClick = () => {
         setIsEditingGroup(true);
@@ -71,16 +98,16 @@ const LineItemList = ({ id, onClose }) => {
             await Service.UpdateGroupById(id, payload);
 
             // Real-time update of local state
-            setGroupData(prev => ({
+            setGroupData(prev => prev ? ({
                 ...prev,
                 group: {
-                    ...prev.group,
+                    ...prev.group!,
                     name: payload.name,
                     description: payload.description,
                     divisor: payload.divisor
                 },
                 totalHours: payload.totalHours
-            }));
+            }) : null);
 
             setIsEditingGroup(false);
             // fetchGroupById(); // Optional: still fetch to ensure sync, but local update handles immediate UI
@@ -89,11 +116,11 @@ const LineItemList = ({ id, onClose }) => {
         }
     };
 
-    const handleGroupInputChange = (e, field) => {
+    const handleGroupInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
         setGroupFormData({ ...groupFormData, [field]: e.target.value });
     };
 
-    const handleEditClick = (row) => {
+    const handleEditClick = (row: LineItem) => {
         setEditingRowId(row.id);
         setEditFormData({
             scopeOfWork: row.scopeOfWork,
@@ -108,7 +135,7 @@ const LineItemList = ({ id, onClose }) => {
         setEditFormData({});
     };
 
-    const handleSaveClick = async (rowId) => {
+    const handleSaveClick = async (rowId: string) => {
         try {
             const payload = {
                 ...editFormData,
@@ -125,13 +152,13 @@ const LineItemList = ({ id, onClose }) => {
         }
     };
 
-    const handleInputChange = (e, field) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof LineItem) => {
         const value = e.target.value;
         const newData = { ...editFormData, [field]: value };
 
         if (field === "quantity" || field === "hoursPerQty") {
-            const qty = parseFloat(field === "quantity" ? value : newData.quantity) || 0;
-            const hours = parseFloat(field === "hoursPerQty" ? value : newData.hoursPerQty) || 0;
+            const qty = parseFloat(field === "quantity" ? value : String(newData.quantity || 0)) || 0;
+            const hours = parseFloat(field === "hoursPerQty" ? value : String(newData.hoursPerQty || 0)) || 0;
             newData.totalHours = qty * hours;
         }
 
@@ -139,7 +166,7 @@ const LineItemList = ({ id, onClose }) => {
     };
 
 
-    const formatDecimalHours = (decimalHours) => {
+    const formatDecimalHours = (decimalHours: number | undefined) => {
         const num = Number(decimalHours);
         if (isNaN(num)) return "0h 0m";
         const hours = Math.floor(num);
@@ -151,11 +178,11 @@ const LineItemList = ({ id, onClose }) => {
         {
             accessorKey: "scopeOfWork",
             header: "Scope of Work",
-            cell: ({ row }) => {
+            cell: ({ row }: { row: { original: LineItem } }) => {
                 const isEditing = editingRowId === row.original.id;
                 return isEditing ? (
                     <textarea
-                        value={editFormData.scopeOfWork}
+                        value={editFormData.scopeOfWork || ""}
                         onChange={(e) => handleInputChange(e, "scopeOfWork")}
                         className="w-full border rounded p-1"
                     />
@@ -167,12 +194,12 @@ const LineItemList = ({ id, onClose }) => {
         {
             accessorKey: "quantity",
             header: "Quantity",
-            cell: ({ row }) => {
+            cell: ({ row }: { row: { original: LineItem } }) => {
                 const isEditing = editingRowId === row.original.id;
                 return isEditing ? (
                     <input
                         type="number"
-                        value={editFormData.quantity}
+                        value={editFormData.quantity || 0}
                         onChange={(e) => handleInputChange(e, "quantity")}
                         className="w-full border rounded p-1"
                     />
@@ -184,12 +211,12 @@ const LineItemList = ({ id, onClose }) => {
         {
             accessorKey: "hoursPerQty",
             header: "Hours/Qty",
-            cell: ({ row }) => {
+            cell: ({ row }: { row: { original: LineItem } }) => {
                 const isEditing = editingRowId === row.original.id;
                 return isEditing ? (
                     <input
                         type="number"
-                        value={editFormData.hoursPerQty}
+                        value={editFormData.hoursPerQty || 0}
                         onChange={(e) => handleInputChange(e, "hoursPerQty")}
                         className="w-full border rounded p-1"
                     />
@@ -201,12 +228,12 @@ const LineItemList = ({ id, onClose }) => {
         {
             accessorKey: "totalHours",
             header: "Total Hours",
-            cell: ({ row }) => {
+            cell: ({ row }: { row: { original: LineItem } }) => {
                 const isEditing = editingRowId === row.original.id;
                 return isEditing ? (
                     <input
                         type="number"
-                        value={editFormData.totalHours}
+                        value={editFormData.totalHours || 0}
                         onChange={(e) => handleInputChange(e, "totalHours")}
                         className="w-full border rounded p-1"
                     />
@@ -218,7 +245,7 @@ const LineItemList = ({ id, onClose }) => {
         {
             id: "actions",
             header: "Actions",
-            cell: ({ row }) => {
+            cell: ({ row }: { row: { original: LineItem } }) => {
                 const isEditing = editingRowId === row.original.id;
                 return isEditing ? (
                     <div className="flex gap-2">
@@ -296,7 +323,7 @@ const LineItemList = ({ id, onClose }) => {
                                             onChange={(e) => handleGroupInputChange(e, "description")}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                                             placeholder="Description"
-                                            rows="2"
+                                            rows={2}
                                         />
                                     </div>
                                 </div>

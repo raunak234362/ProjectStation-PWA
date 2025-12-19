@@ -1,13 +1,31 @@
-import { useState } from "react";
+import React from "react";
 import DataTable from "../ui/table";
 import GetEstimationByID from "./GetEstimationByID";
 
-const AllEstimation = ({ estimations }) => {
+interface Estimation {
+  id: string;
+  estimationNumber: string;
+  projectName: string;
+  fabricator?: {
+    fabName: string;
+  };
+  fabId?: string;
+  status: string;
+  estimateDate: string;
+  [key: string]: any;
+}
+
+interface AllEstimationProps {
+  estimations: Estimation[];
+  onRefresh?: () => void;
+}
+
+const AllEstimation: React.FC<AllEstimationProps> = ({ estimations, onRefresh }) => {
   console.log(estimations);
 
-  const [selectedEstimationId, setSelectedEstimationId] = useState(null);
 
-  const handleRowClick = (row) => {
+
+  const handleRowClick = (row: any) => {
     // setSelectedEstimationId(row.id); // Assuming id exists in payload or response
     console.log("Clicked row:", row);
   };
@@ -20,7 +38,7 @@ const AllEstimation = ({ estimations }) => {
     { 
       accessorKey: "estimateDate", 
       header: "Date",
-      cell: ({ row }) => row.original.estimateDate ? new Date(row.original.estimateDate).toLocaleDateString() : "-"
+      cell: ({ row }: { row: { original: Estimation } }) => row.original.estimateDate ? new Date(row.original.estimateDate).toLocaleDateString() : "-"
     }
   ];
 
@@ -30,10 +48,10 @@ const AllEstimation = ({ estimations }) => {
         columns={columns}
         data={estimations || []}
         onRowClick={handleRowClick}
-           detailComponent={({ row }) => {
+           detailComponent={({ row }: { row: Estimation }) => {
           const estimationUniqueId =
             row.id ?? row.fabId ?? "";
-          return <GetEstimationByID id={estimationUniqueId} />;
+          return <GetEstimationByID id={estimationUniqueId} onRefresh={onRefresh} />;
         }}
         searchPlaceholder="Search estimations..."
         pageSizeOptions={[5, 10, 25]}

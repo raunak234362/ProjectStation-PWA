@@ -53,12 +53,17 @@ const EstimationLayout = () => {
       <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
         {activeTab === "allEstimation" && (
           <div>
-            <AllEstimation estimations={estmation}/>
+            <AllEstimation estimations={estmation} onRefresh={fetchAllEstimation}/>
           </div>
         )}
         {activeTab === "addEstimation" && (
           <div>
-            <AddEstimation />
+            <AddEstimation
+              onSuccess={() => {
+                fetchAllEstimation();
+                setActiveTab("allEstimation");
+              }}
+            />
           </div>
         )}
       </div>
