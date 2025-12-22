@@ -41,6 +41,7 @@ const GetWBSByID = ({
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const canEditTime = userRole === "admin" || userRole === "deputy_manager";
+console.log("WBS Data:", wbsData);
 
   useEffect(() => {
     if (id) fetchWBSById(id);
@@ -187,22 +188,21 @@ const GetWBSByID = ({
 
         <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
           {/* Summary Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <DetailCard
-                label="Stage"
-                value={wbsData.stage}
-                icon={<Layers className="w-4 h-4" />}
-              />
-            </div>
+      
+           
 
-            <div className="bg-gray-900 rounded-2xl p-6 text-white shadow-xl shadow-gray-200 flex flex-col justify-between">
+            <div className="bg-gray-900 rounded-2xl p-2 text-white shadow-xl shadow-gray-200 flex flex-col justify-between">
               <div>
+                 <DetailCard
+              label="Stage"
+              value={wbsData.stage}
+              icon={<Layers className="w-4 h-4" />}
+            />
                 <p className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-1">
                   Total Quantity
                 </p>
-                <h3 className="text-4xl font-bold text-white">
-                  {wbsData.totalqtyNo || 0}
+                <h3 className="text-2xl font-bold text-white">
+                  {wbsData.totalQtyNo || 0}
                 </h3>
               </div>
               <div className="pt-4 border-t border-gray-800 mt-4 flex justify-between items-end">
@@ -219,7 +219,7 @@ const GetWBSByID = ({
                 </div>
               </div>
             </div>
-          </div>
+       
 
           {/* Hours Overview */}
           <section>
