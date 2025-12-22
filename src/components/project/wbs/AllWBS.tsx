@@ -9,13 +9,21 @@ import GetWBSByID from "./GetWBSByID";
 import Button from "../../fields/Button";
 import FetchWBSTemplate from "./FetchWBSTemplate";
 
+import { useDispatch, useSelector } from "react-redux";
+import { setWBSForProject } from "../../../store/wbsSlice";
+
 const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
-  const [wbsList, setWbsList] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const wbsByProject = useSelector(
+    (state: any) => state.wbsInfo?.wbsByProject || {}
+  );
+  const wbsList = wbsByProject[id] || [];
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedWBS, setSelectedWBS] = useState<any | null>(null);
   const [showFetchTemplate, setShowFetchTemplate] = useState(false);
   const projectId = id;
+
   // ✅ Fetch all WBS items
   const fetchAllWBS = async () => {
     try {
@@ -23,7 +31,7 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
       setError(null);
       const response = await Service.GetWBSByProjectId(projectId);
       console.log("Fetched WBS:", response);
-      setWbsList(response || []);
+      dispatch(setWBSForProject({ projectId, wbs: response || [] }));
     } catch (err) {
       console.error("Error fetching WBS:", err);
       setError("Failed to load WBS data");
@@ -33,8 +41,10 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
   };
 
   useEffect(() => {
-    fetchAllWBS();
-  }, []);
+    if (!wbsByProject[id]) {
+      fetchAllWBS();
+    }
+  }, [id, wbsByProject, dispatch]);
 
   // ✅ Define table columns
   const columns: ColumnDef<any>[] = [

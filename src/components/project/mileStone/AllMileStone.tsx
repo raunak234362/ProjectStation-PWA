@@ -8,6 +8,9 @@ import DataTable from "../../ui/table";
 import GetMilestoneByID from "./GetMilestoneByID";
 import type { ColumnDef } from "@tanstack/react-table";
 
+import { useDispatch, useSelector } from "react-redux";
+import { setMilestonesForProject } from "../../../store/milestoneSlice";
+
 interface AllMileStoneProps {
   project: any;
   onUpdate?: () => void;
@@ -15,13 +18,22 @@ interface AllMileStoneProps {
 
 const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
   const [addMileStoneModal, setAddMileStoneModal] = useState(false);
-  const [milestones, setMilestones] = useState<any[]>([]);
+  const dispatch = useDispatch();
+  const milestonesByProject = useSelector(
+    (state: any) => state.milestoneInfo?.milestonesByProject || {}
+  );
+  const milestones = milestonesByProject[project.id] || [];
 
   const fetchMileStone = async () => {
     try {
       const response = await Service.GetProjectMilestoneById(project.id);
       if (response && response.data) {
-        setMilestones(response.data);
+        dispatch(
+          setMilestonesForProject({
+            projectId: project.id,
+            milestones: response.data,
+          })
+        );
       }
     } catch (error) {
       console.log(error);
@@ -29,8 +41,10 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
   };
 
   useEffect(() => {
-    fetchMileStone();
-  }, [project.id]);
+    if (!milestonesByProject[project.id]) {
+      fetchMileStone();
+    }
+  }, [project.id, milestonesByProject, dispatch]);
 
   const handleOpenAddMileStone = () => setAddMileStoneModal(true);
   const handleCloseAddMileStone = () => setAddMileStoneModal(false);
@@ -40,43 +54,42 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
     if (onUpdate) onUpdate();
   };
 
-
-
-
-      const columns: ColumnDef<any>[] = [
-          { accessorKey: "subject", header: "Subject" },
-          { accessorKey: "description", header: "Description" },
-          { accessorKey: "approvalDate", header: "Approval Date" },
-          { accessorKey: "status", header: "Status" },
-        ];
-      const handleRowClick = (row: any) => {
-      const milestonesId = (row as any).id ?? (row as any).fabId ?? "";
-      console.debug("Selected milestones:", milestonesId);
-    };
-
+  const columns: ColumnDef<any>[] = [
+    { accessorKey: "subject", header: "Subject" },
+    { accessorKey: "description", header: "Description" },
+    { accessorKey: "approvalDate", header: "Approval Date" },
+    { accessorKey: "status", header: "Status" },
+  ];
+  const handleRowClick = (row: any) => {
+    const milestonesId = (row as any).id ?? (row as any).fabId ?? "";
+    console.debug("Selected milestones:", milestonesId);
+  };
 
   return (
     <div className="p-2">
       <div className="flex justify-between items-center mb-4">
-        <Button onClick={handleOpenAddMileStone} className="text-sm py-1 px-3 bg-teal-600 text-white">
+        <Button
+          onClick={handleOpenAddMileStone}
+          className="text-sm py-1 px-3 bg-teal-600 text-white"
+        >
           + Add Milestone
         </Button>
       </div>
-        {milestones && milestones.length > 0 ? (
-           <DataTable
-                 columns={columns}
-                 data={milestones}
-                 onRowClick={handleRowClick}
-                 detailComponent={GetMilestoneByID}
-                 searchPlaceholder="Search projects..."
-                 pageSizeOptions={[5, 10, 25]}
-               />
-        ) : (
-          <div className="flex flex-col items-center justify-center py-8 text-gray-500">
-            <Clock className="w-8 h-8 mb-2 text-gray-300" />
-            <p>No milestones added yet.</p>
-          </div>
-        )}
+      {milestones && milestones.length > 0 ? (
+        <DataTable
+          columns={columns}
+          data={milestones}
+          onRowClick={handleRowClick}
+          detailComponent={GetMilestoneByID}
+          searchPlaceholder="Search projects..."
+          pageSizeOptions={[5, 10, 25]}
+        />
+      ) : (
+        <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+          <Clock className="w-8 h-8 mb-2 text-gray-300" />
+          <p>No milestones added yet.</p>
+        </div>
+      )}
 
       {addMileStoneModal && (
         <AddMileStone

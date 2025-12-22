@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import {
   Building2,
@@ -20,6 +20,7 @@ import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
 import ToggleField from "../fields/Toggle";
 import type { AddProjectPayload } from "../../interface";
+import { updateProject } from "../../store/projectSlice";
 
 interface EditProjectProps {
   projectId: string;
@@ -32,6 +33,7 @@ const EditProject: React.FC<EditProjectProps> = ({
   onCancel,
   onSuccess,
 }) => {
+  const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [connectionDesigners, setConnectionDesigners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,9 +44,7 @@ const EditProject: React.FC<EditProjectProps> = ({
   const departmentDatas = useSelector(
     (state: any) => state.userInfo?.departmentData || []
   );
-  const teamDatas = useSelector(
-    (state: any) => state.userInfo?.teamData || []
-  );
+  const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
 
   const { register, handleSubmit, control, setValue } =
@@ -154,13 +154,14 @@ const EditProject: React.FC<EditProjectProps> = ({
         }
       });
 
-      await Service.EditProjectById(projectId, formData);
+      const res = await Service.EditProjectById(projectId, formData);
+      if (res?.data) {
+        dispatch(updateProject(res.data));
+      }
       toast.success("Project updated successfully!");
       onSuccess();
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "Failed to update project"
-      );
+      toast.error(error?.response?.data?.message || "Failed to update project");
     } finally {
       setIsSubmitting(false);
     }
@@ -246,8 +247,8 @@ const EditProject: React.FC<EditProjectProps> = ({
               </div>
               <div>
                 <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <HardHat className="w-4 h-4 text-amber-600" /> Project
-                  Manager *
+                  <HardHat className="w-4 h-4 text-amber-600" /> Project Manager
+                  *
                 </label>
                 <Controller
                   name="managerID"
@@ -370,12 +371,8 @@ const EditProject: React.FC<EditProjectProps> = ({
                   render={({ field }) => (
                     <Select
                       options={options.tools}
-                      value={options.tools.find(
-                        (o) => o.value === field.value
-                      )}
-                      onChange={(o) =>
-                        field.onChange(o?.value || "TEKLA")
-                      }
+                      value={options.tools.find((o) => o.value === field.value)}
+                      onChange={(o) => field.onChange(o?.value || "TEKLA")}
                     />
                   )}
                 />

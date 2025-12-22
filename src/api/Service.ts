@@ -950,6 +950,21 @@ class Service {
     }
   }
 
+  //Add WBS Template
+  static async AddWBSTemplate(data: any) {
+    try {
+      const response = await api.post(`project/wbs-templates`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  } 
+
   //add wbs from wbs template by project id
   static async AddWBSFromTemplate(projectId: string, wbsData: any) {
     try {
@@ -1431,6 +1446,24 @@ class Service {
     } catch (error) {
       console.error("Error saving CO table:", error);
       throw error;
+    }
+  }
+
+  //Add Task
+  static async AddTask(data: any) {
+    console.log(data);
+    const token = sessionStorage.getItem("token");
+    try {
+      const response = await api.post(`task/`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

@@ -15,7 +15,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<UserData | null>(null);
-  
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   useEffect(() => {
     const fetchEmployee = async () => {
       if (!id) {
@@ -167,6 +167,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
               Employee Progress Status
             </Button>
           )}
+          {userRole === "admin" && (
         <>
           <Button
             onClick={() => handleModel(employee)}
@@ -176,6 +177,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           </Button>
           <Button className="py-1 px-2 text-lg">Disable Profile</Button>
         </>
+          )}
       </div>
       {editModel && (
         <EditEmployee employeeData={employee} onClose={handleModelClose} />
