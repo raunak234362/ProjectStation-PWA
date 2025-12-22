@@ -16,6 +16,10 @@ import CoTablePage from "../components/co/CoTablePage";
 
 const routes = [
   { path: "/", Component: Login },
+  {
+    path: "/co-table",
+    Component: CoTablePage,
+  },
   { path: "/change-password", Component: ChangePasswordPage },
   {
     Component: RequireAuth,
@@ -34,10 +38,10 @@ const routes = [
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },
-          {
-            path: "change-orders/:coId/table",
-            Component: CoTablePage,
-          },  
+          // {
+          //   path: "change-orders/:coId/table",
+          //   Component: CoTablePage, 
+          // },  
         ],
       },
     ],

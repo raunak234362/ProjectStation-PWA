@@ -1434,5 +1434,47 @@ class Service {
       throw error;
     }
   }
+
+  //change order response routes 
+
+    static async addCOResponse(formData: FormData, COId: string) {
+    const token = sessionStorage.getItem("token");
+
+    const response = await api.post(`changeOrder/${COId}/responses`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+     return response.data;
+
+}
+  static async GetCOResponsebyId(COId: string) {
+    try {
+      const response = await api.get(`changeOrder/responses/${COId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Response fetched :", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find response", error);
+    }
+  }
+  static async GetAllCOResponsebyId(COId: string) {
+    try {
+      const response = await api.get(`changeOrder/${COId}/responses`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Responses fetched :", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find responses", error);
+    }
+  }
+
 }
 export default Service;

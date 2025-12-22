@@ -21,6 +21,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
   const [co, setCO] = useState<ChangeOrderItem | null>(null);
   const [error, setError] = useState<string | null>(null);
   console.log(projectId);
+  const encodedCO = encodeURIComponent(JSON.stringify(co));
 
   const fetchCO = async () => {
     try {
@@ -178,16 +179,18 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
         <div className="pt-4 border-t">
           <button
             onClick={() =>
+
               window.open(
-                `/dashboard/change-orders/${co.id}/table`,
+                `/co-table?coData=${encodedCO}`,
                 "_blank",
                 "noopener,noreferrer"
               )
             }
-           className="inline-flex items-center gap-1 text-teal-600 cursor-pointer"
+            className="text-teal-600 underline"
           >
             View Change Order Reference Table
           </button>
+
         </div>
 
       </div>
