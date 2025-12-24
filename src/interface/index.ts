@@ -282,6 +282,7 @@ export interface RFQpayload {
   createdById: string;
   files?: File[] | string[];
 }
+
 //trail response
 export interface RfqResponsePayload {
   rfqId: string;
@@ -303,12 +304,14 @@ export interface Staff {
   is_superuser?: boolean;
   fabricatorId?: string;
 }
+
 export interface FabricatorClient {
   id: string;
   firstName: string;
   middleName?: string;
   lastName: string;
 }
+
 export interface SelectOption {
   label: string;
   value: string | number;
@@ -513,6 +516,7 @@ export interface RFIPayload {
   files: File[] | string;
 
 }
+
 export interface RFIResponseFile {
   id: string;
   originalName: string;
@@ -558,6 +562,7 @@ export interface RFIItem {
   rfiresponse: RFIResponse[];
   date: string;
 }
+
 export interface RFIResponseSchema {
   files?: File[] | string[];
   // responseState:boolean|null;
@@ -677,6 +682,7 @@ export interface changeOrdersPayload {
   files?: File[];
   link: string;
 }
+
 export interface ChangeOrderItem {
   original: any;
   id: string;
@@ -688,11 +694,13 @@ export interface ChangeOrderItem {
     lastName?: string;
     username?: string;
   };
+
   recipients?: {
     id: string;
     firstName?: string;
     lastName?: string;
   };
+
   changeOrderNumber: string;
   remarks: string;
   reason?: string;
@@ -703,7 +711,10 @@ export interface ChangeOrderItem {
   createdAt?: string;
   date?: string;
   files?: File[];
+  coResponse:string;
+  
 }
+
 export interface COTable{
   description:string;
   referenceDoc:string;
@@ -713,4 +724,13 @@ export interface COTable{
   hours:number;
   cost:number;
   CoId:string;
+}
+
+export interface CoResponsePayload{
+    status:string;
+    CoId:string;
+    description:string;
+    userId:string;
+    parentResponseId?:string | null;
+     files?: File[];  
 }

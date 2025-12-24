@@ -1394,6 +1394,33 @@ class Service {
       console.error("cannot find CO", error);
     }
   }
+   static async CoSent() {
+    try {
+      const response = await api.get(`changeOrder/sent`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Co sents:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find COs", error);
+    }
+  }
+    static async CoRecieved() {
+    try {
+      const response = await api.get(`changeOrder/received`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("  Co received:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find co's", error);
+    }
+  }
   //update Co
   static async EditCoById(id: string, data: FormData) {
     try {
