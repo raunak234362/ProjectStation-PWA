@@ -711,7 +711,7 @@ export interface ChangeOrderItem {
   createdAt?: string;
   date?: string;
   files?: File[];
-  coResponse:string;
+  coResponses:string;
   
 }
 

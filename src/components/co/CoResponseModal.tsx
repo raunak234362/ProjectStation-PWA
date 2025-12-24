@@ -15,6 +15,8 @@ interface Props {
 const CoResponseModal = ({ CoId, onClose, onSuccess }: Props) => {
   const { register, handleSubmit, control, reset } =
     useForm<CoResponsePayload>();
+const coId=CoId;
+console.log(CoId);
 
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
@@ -38,7 +40,7 @@ const onSubmit = async (data: CoResponsePayload) => {
       });
     }
 
-    await Service.addCOResponse(formData, CoId);
+    await Service.addCOResponse(formData, coId);
 
     onSuccess();
     onClose();

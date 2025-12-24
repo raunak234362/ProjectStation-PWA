@@ -38,6 +38,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
 
   const userRole = sessionStorage.getItem("userRole");
+  console.log(id);
   
   /* -------------------- SAFE DERIVED VALUES -------------------- */
   const encodedCO = useMemo(() => {
@@ -47,15 +48,15 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
 
   const responses = useMemo(() => {
     try {
-      if (!co?.coResponse) return [];
-      return Array.isArray(co.coResponse)
-        ? co.coResponse 
-        : JSON.parse(co.coResponse);
+      if (!co?.coResponses) return [];
+      return Array.isArray(co.coResponses)
+        ? co.coResponses 
+        : JSON.parse(co.coResponses);
     } catch (err) {
       console.error("Failed to parse CO responses", err);
       return [];
     }
-  }, [co?.coResponse]);
+  }, [co?.coResponses]);
 
   /* -------------------- FETCH CO -------------------- */
   const fetchCO = async () => {
@@ -67,14 +68,10 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
 
       setLoading(true);
 
-      const response = await Service.GetChangeOrder(projectId);
-      const selectedCO = response.data.find((x: any) => x.id === id);
+      const response = await Service.GetChangeOrder(id);
+      console.log(response);
 
-      if (!selectedCO) {
-        throw new Error("Change Order not found");
-      }
-
-      setCO(selectedCO);
+      setCO(response.data);
     } catch (err) {
       console.error(err);
       setError("Failed to load Change Order");
@@ -294,7 +291,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
       {/* ================= MODALS ================= */}
       {showResponseModal && (
         <CoResponseModal
-          CoId={co.id}
+          CoId={id}
           onClose={() => setShowResponseModal(false)}
           onSuccess={fetchCO}
         />

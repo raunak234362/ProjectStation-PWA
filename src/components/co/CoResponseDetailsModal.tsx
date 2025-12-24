@@ -11,9 +11,10 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
   const [replyMessage, setReplyMessage] = useState("");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [replyStatus, setReplyStatus] = useState("PENDING");
-
+const coID= response.CoId
   const userId = sessionStorage.getItem("userId") || "";
   const userRole = sessionStorage.getItem("userRole") || "";
+console.log(response);
 
   const handleReply = async () => {
     if (!replyMessage.trim()) return;
@@ -30,7 +31,7 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
 
     replyFiles.forEach((f) => formData.append("files", f));
 
-    await Service.addCOResponse(formData, response.coId);
+    await Service.addCOResponse(formData, response.id);
 
     onSuccess();
     onClose();

@@ -1381,9 +1381,9 @@ class Service {
       console.log(error);
     }
   }
-  static async GetChangeOrder(projectId: string) {
+  static async GetChangeOrder(coId: string) {
     try {
-      const response = await api.get(`changeOrder/project/${projectId}`, {
+      const response = await api.get(`changeOrder/ById/${coId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1464,10 +1464,11 @@ class Service {
 
   //change order response routes 
 
-    static async addCOResponse(formData: FormData, COId: string) {
+    static async addCOResponse(formData: FormData, coId: string) {
     const token = sessionStorage.getItem("token");
+console.log(coId);
 
-    const response = await api.post(`changeOrder/${COId}/responses`, formData, {
+    const response = await api.post(`changeOrder/${coId}/responses`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
