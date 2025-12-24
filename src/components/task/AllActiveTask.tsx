@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
+import GetTaskByID from "./GetTaskByID";
 
-const AllTasks = () => {
-  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+const AllActiveTask = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>(null);
@@ -22,10 +22,7 @@ const AllTasks = () => {
     const fetchTasks = async () => {
       try {
         setLoading(true);
-        const response =
-          userRole === "admin"
-            ? await Service.GetAllTask()
-            : await Service.GetMyTask();
+        const response = await Service.GetNonCompletedTasks();
 
         // Ensure tasks is an array
         const taskData = Array.isArray(response.data)
@@ -42,7 +39,7 @@ const AllTasks = () => {
       }
     };
     fetchTasks();
-  }, [userRole]);
+  }, []);
 
   const formatDate = (date?: string) =>
     date
@@ -88,7 +85,7 @@ const AllTasks = () => {
         header: "Task Details",
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-semibold text-gray-800 group-hover:text-teal-700 transition-colors">
+            <span className="font-semibold text-gray-800">
               {row.original.name}
             </span>
             <span className="text-xs text-gray-400 mt-1 line-clamp-1">
@@ -189,7 +186,7 @@ const AllTasks = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-teal-600">
         <Loader2 className="w-10 h-10 animate-spin mb-4" />
-        <p className="font-medium animate-pulse">Fetching your tasks...</p>
+        <p className="font-medium animate-pulse">Fetching active tasks...</p>
       </div>
     );
   }
@@ -198,7 +195,7 @@ const AllTasks = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-red-500 p-6 bg-red-50 rounded-xl border border-red-100 mx-4">
         <AlertCircle className="w-12 h-12 mb-4" />
-        <h3 className="text-lg font-bold mb-2">Failed to Load Tasks</h3>
+        <h3 className="text-lg font-bold mb-2">Failed to Load Active Tasks</h3>
         <p className="text-center max-w-md">
           {error.message ||
             "An unexpected error occurred while fetching tasks. Please try again later."}
@@ -219,7 +216,7 @@ const AllTasks = () => {
         <div className="flex items-center gap-2 bg-teal-50 px-4 py-2 rounded-full border border-teal-100">
           <span className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></span>
           <span className="text-sm font-semibold text-teal-700">
-            {tasks.length} Total Tasks
+            {tasks.length} Active Tasks
           </span>
         </div>
       </div>
@@ -230,10 +227,10 @@ const AllTasks = () => {
             <ClipboardList className="w-10 h-10 text-gray-300" />
           </div>
           <h3 className="text-xl font-semibold text-gray-700 mb-2">
-            No Tasks Found
+            No Active Tasks Found
           </h3>
           <p className="text-gray-500">
-            You don't have any tasks assigned at the moment.
+            You don't have any active tasks at the moment.
           </p>
         </div>
       ) : (
@@ -241,7 +238,10 @@ const AllTasks = () => {
           <DataTable
             columns={columns}
             data={tasks}
-            searchPlaceholder="Search tasks..."
+            detailComponent={({ row, close }) => (
+              <GetTaskByID id={row.id} onClose={close} />
+            )}
+            searchPlaceholder="Search active tasks..."
             pageSizeOptions={[10, 25, 50]}
           />
         </div>
@@ -250,4 +250,4 @@ const AllTasks = () => {
   );
 };
 
-export default AllTasks;
+export default AllActiveTask;

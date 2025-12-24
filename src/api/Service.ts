@@ -1466,5 +1466,125 @@ class Service {
       console.log(error);
     }
   }
+
+  //Get All Task
+  static async GetAllTask() {
+    try {
+      const response = await api.get(`task/getAllTasks`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+  //Get All Task
+  static async GetMyTask() {
+    try {
+      const response = await api.get(`task/user/tasks`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+  //non-completed-tasks
+  static async GetNonCompletedTasks() {
+    try {
+      const response = await api.get(`task/user/non-completed-tasks`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+  //Get Task by ID
+  static async GetTaskById(id: string) {
+    try {
+      const response = await api.get(`task/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+  //Task Start
+  static async TaskStart(id: string) {
+    try {
+      const response = await api.get(`task/start/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+  //Task Resume
+  static async TaskResume(id: string) {
+    try {
+      const response = await api.get(`task/resume/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+  //Task Pause
+  static async TaskPause(id: string) {
+    try {
+      const response = await api.get(`task/pause/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+
+  //Task End
+  static async TaskEnd(id: string) {
+    try {
+      const response = await api.get(`task/end/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
 }
 export default Service;
