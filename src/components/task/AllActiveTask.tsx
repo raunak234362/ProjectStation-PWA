@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
-import GetTaskByID from "./GetTaskByID";
+// import GetTaskByID from "./GetTaskByID";
 
 const AllActiveTask = () => {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -238,9 +238,9 @@ const AllActiveTask = () => {
           <DataTable
             columns={columns}
             data={tasks}
-            detailComponent={({ row, close }) => (
-              <GetTaskByID id={row.id} onClose={close} />
-            )}
+            // detailComponent={({ row, close }) => (
+            //   <GetTaskByID id={row.id} onClose={close} />
+            // )}
             searchPlaceholder="Search active tasks..."
             pageSizeOptions={[10, 25, 50]}
           />

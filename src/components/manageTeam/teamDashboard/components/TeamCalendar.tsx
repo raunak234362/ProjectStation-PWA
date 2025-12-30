@@ -1,0 +1,180 @@
+import React, { useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar as CalendarIcon,
+  User,
+  Layout,
+} from "lucide-react";
+
+interface TeamCalendarProps {
+  members: any[];
+  selectedTeamName?: string;
+}
+
+const TeamCalendar: React.FC<TeamCalendarProps> = ({
+  members,
+  selectedTeamName,
+}) => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<"user" | "project">("user");
+  const [selectedMember, setSelectedMember] = useState<string>("all");
+
+  const daysInMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0
+  ).getDate();
+  const firstDayOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  ).getDay();
+
+  const monthName = currentDate.toLocaleString("default", { month: "long" });
+  const year = currentDate.getFullYear();
+
+  const handlePrevMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+    );
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+    );
+  };
+
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const padding = Array.from({ length: firstDayOfMonth }, (_, i) => null);
+
+  return (
+    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-teal-50 text-teal-600 rounded-lg">
+            <CalendarIcon size={20} />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-gray-800">
+              Team Calendar - {selectedTeamName}
+            </h3>
+            <p className="text-xs text-gray-500">
+              Schedule and task distribution
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex bg-gray-100 p-1 rounded-xl">
+            <button
+              onClick={() => setViewMode("user")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                viewMode === "user"
+                  ? "bg-white text-teal-600 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <User size={14} />
+              User View
+            </button>
+            <button
+              onClick={() => setViewMode("project")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
+                viewMode === "project"
+                  ? "bg-white text-teal-600 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <Layout size={14} />
+              Project View
+            </button>
+          </div>
+
+          <select
+            value={selectedMember}
+            onChange={(e) => setSelectedMember(e.target.value)}
+            className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+          >
+            <option value="all">Select Team Member</option>
+            {members.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.f_name} {m.l_name}
+              </option>
+            ))}
+          </select>
+
+          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-2 py-1">
+            <button
+              onClick={handlePrevMonth}
+              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ChevronLeft size={18} className="text-gray-600" />
+            </button>
+            <span className="text-xs font-bold text-gray-700 min-w-[100px] text-center">
+              {monthName} {year}
+            </span>
+            <button
+              onClick={handleNextMonth}
+              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ChevronRight size={18} className="text-gray-600" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-7 gap-px bg-gray-100 border border-gray-100 rounded-xl overflow-hidden">
+        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
+          <div
+            key={day}
+            className="bg-gray-50 py-2 text-center text-[10px] font-bold text-gray-400"
+          >
+            {day}
+          </div>
+        ))}
+        {[...padding, ...days].map((day, idx) => (
+          <div
+            key={idx}
+            className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${
+              day === null ? "bg-gray-50/30" : ""
+            }`}
+          >
+            {day && (
+              <>
+                <span className="text-xs font-bold text-gray-400">{day}</span>
+                {/* Task rendering logic would go here */}
+                <div className="mt-1 space-y-1">
+                  {/* Example task */}
+                  {day === 15 && (
+                    <div className="px-1.5 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded border border-rose-100">
+                      On Leave
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 flex items-center gap-4 text-[10px] font-bold text-gray-400">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+          <span>Tasks</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+          <span>Projects</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-rose-400"></div>
+          <span>On Leave (Weekdays)</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TeamCalendar;

@@ -1,0 +1,154 @@
+import React from "react";
+import { X, FileText, Download, User } from "lucide-react";
+import Button from "../../../fields/Button";
+
+interface DailyWorkReportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  members: any[];
+}
+
+const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
+  isOpen,
+  onClose,
+  members,
+}) => {
+  if (!isOpen) return null;
+
+  const formatWorkedHours = (workingHourTask: any[]) => {
+    const totalMinutes = (workingHourTask || []).reduce(
+      (sum, entry) => sum + (entry.duration || 0),
+      0
+    );
+    const hrs = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    return `${hrs.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+          <div>
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <FileText className="text-teal-600" size={24} />
+              Daily Work Report
+            </h2>
+            <p className="text-sm text-gray-500">
+              Summary of activities for the selected period
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <X size={20} className="text-gray-500" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {members.map((member) => (
+            <div
+              key={member.id}
+              className="border border-gray-100 rounded-2xl p-4 hover:shadow-md transition-all"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
+                    <User size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-800">
+                      {member.f_name} {member.l_name}
+                    </h4>
+                    <p className="text-xs text-gray-500">
+                      {member.role || "Team Member"}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider font-bold">
+                    Tasks
+                  </p>
+                  <p className="text-lg font-bold text-teal-600">
+                    {member.tasks?.length || 0}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {member.tasks?.map((task: any, idx: number) => (
+                  <div
+                    key={idx}
+                    className="bg-gray-50 rounded-xl p-3 flex items-center justify-between"
+                  >
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-gray-700">
+                        {task.subject || task.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {task.project?.name || "No Project"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-[10px] text-gray-400 uppercase">
+                          Duration
+                        </p>
+                        <p className="text-xs font-bold text-gray-600">
+                          {task.duration || "00:00"}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-gray-400 uppercase">
+                          Worked
+                        </p>
+                        <p className="text-xs font-bold text-indigo-600">
+                          {formatWorkedHours(task.workingHourTask)}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
+                          task.status === "COMPLETE"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
+                        {task.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {(!member.tasks || member.tasks.length === 0) && (
+                  <p className="text-center py-4 text-sm text-gray-400 italic">
+                    No tasks recorded for this period.
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3">
+          <Button
+            onClick={onClose}
+            className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+          >
+            Close
+          </Button>
+          <Button className="bg-teal-600 text-white hover:bg-teal-700 flex items-center gap-2">
+            <Download size={18} />
+            Export PDF
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DailyWorkReportModal;

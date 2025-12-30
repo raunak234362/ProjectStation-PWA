@@ -17,13 +17,7 @@ const AllProjects = () => {
     (state: any) => state.projectInfo?.projectData || []
   );
 
-  useEffect(() => {
-    if (projects.length === 0) {
-      Service.GetAllProjects().then((res) => {
-        dispatch(setProjectData(res.data));
-      });
-    }
-  }, [dispatch, projects.length]);
+  
 
   // Handle row click (optional)
   const handleRowClick = (row: any) => {

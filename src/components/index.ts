@@ -5,7 +5,7 @@ import Profile from "./profile/Profile";
 
 //Employees Components-
 import AddEmployee from "./manageTeam/employee/AddEmployee";
-import AllEmployee from "./manageTeam/employee/AllEmployee";    
+import AllEmployee from "./manageTeam/employee/AllEmployee";
 
 //Department Components-
 import AddDepartment from "./manageTeam/department/AddDepartment";
@@ -24,23 +24,33 @@ import AllEstimation from "./estimation/AllEstimation";
 // Projects
 import AddProject from "./project/AddProject";
 import AllProjects from "./project/AllProjects";
+import ProjectDashboard from "./dashboard/ProjectDashboard";
+
+//Invoices
+import AddInvoice from "./invoices/AddInvoice";
+import AllInvoices from "./invoices/AllInvoices";
+import GetInvoiceById from "./invoices/GetInvoiceById";
+import TeamDashboard from "./manageTeam/teamDashboard/TeamDashboard";
 
 export {
-    Login,
-    WBTDashboard,
-    Profile,
-    AddEmployee,
-    AllEmployee,
-    AddDepartment,
-    AllDepartments,
-    AllCDEngineer,
-    AddConnectionDesigner,
-    AllConnectionDesigner,
-    AddCDEngineer,
-    AddProject,
-    AllProjects,
-    AddEstimation,
-    AllEstimation
-
-
-}
+  Login,
+  WBTDashboard,
+  Profile,
+  AddEmployee,
+  AllEmployee,
+  AddDepartment,
+  AllDepartments,
+  AllCDEngineer,
+  AddConnectionDesigner,
+  AllConnectionDesigner,
+  AddCDEngineer,
+  AddProject,
+  AllProjects,
+  AddEstimation,
+  AllEstimation,
+  ProjectDashboard,
+  AddInvoice,
+  AllInvoices,
+  GetInvoiceById,
+  TeamDashboard,
+};

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { AddEmployee } from "../components";
+import { TeamDashboard } from "../components";
 import EmployeeLayout from "../layout/EmployeeLayout";
 import DepartmentLayout from "../layout/DepartmentLayout";
 import TeamLayout from "../layout/TeamLayout";
@@ -11,7 +11,7 @@ import { showDepartment, showTeam } from "../store/userSlice";
 const TeamPage = () => {
   const dispatch = useDispatch();
 
-  const [activeTab, setActiveTab] = useState("manageEmployee");
+  const [activeTab, setActiveTab] = useState("teamDashboard");
   const userRole = sessionStorage.getItem("userRole");
 
   const departmentDatas = useSelector(
@@ -115,7 +115,7 @@ const TeamPage = () => {
           {activeTab === "manageEmployee" && <EmployeeLayout />}
           {activeTab === "manageDepartment" && <DepartmentLayout />}
           {activeTab === "manageTeam" && <TeamLayout />}
-          {activeTab === "teamDashboard" && <AddEmployee />}
+          {activeTab === "teamDashboard" && <TeamDashboard />}
         </div>
       </div>
     </div>

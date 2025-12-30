@@ -10,10 +10,16 @@ import socket, { connectSocket } from "./socket";
 import PWABadge from "./PWABadge";
 import { loadFabricator } from "./store/fabricatorSlice";
 import { setRFQData } from "./store/rfqSlice";
+import { setProjectData } from "./store/projectSlice";
+import { useSelector } from "react-redux";
 
 const AppContent = () => {
   const dispatch = useDispatch();
   const userType = sessionStorage.getItem("userRole");
+
+  const projects = useSelector(
+    (state: any) => state.projectInfo?.projectData || []
+  );
 
   // Fetch current user
   const fetchSignedinUser = async () => {
@@ -36,6 +42,13 @@ const AppContent = () => {
     }
   };
 
+  useEffect(() => {
+    if (projects.length === 0) {
+      Service.GetAllProjects().then((res) => {
+        dispatch(setProjectData(res.data));
+      });
+    }
+  }, [dispatch, projects.length]);
   useEffect(() => {
     // Fetch user once on mount
     fetchSignedinUser();
@@ -68,24 +81,21 @@ const AppContent = () => {
       }
     };
 
-     const fetchInboxRFQ = async () => {
-    try {
-      let rfqDetail;
-      if (userType === "CLIENT")
-         {
-        rfqDetail = await Service.RfqSent();
-      } else {
-        rfqDetail = await Service.RFQRecieved();
+    const fetchInboxRFQ = async () => {
+      try {
+        let rfqDetail;
+        if (userType === "CLIENT") {
+          rfqDetail = await Service.RfqSent();
+        } else {
+          rfqDetail = await Service.RFQRecieved();
+        }
+        // setRfq(rfqDetail.data);
+        dispatch(setRFQData(rfqDetail.data));
+        console.log(rfqDetail.data);
+      } catch (error) {
+        console.error("Error fetching RFQ:", error);
       }
-      // setRfq(rfqDetail.data);
-      dispatch(setRFQData(rfqDetail.data));
-     console.log(rfqDetail.data);
-     
-    } catch (error) {
-      console.error("Error fetching RFQ:", error);
-    }
-  };
-
+    };
 
     fetchAllFabricator();
     fetchAllEmployee();
@@ -98,7 +108,6 @@ const AppContent = () => {
       }
     };
   }, [dispatch]);
-
 
   return (
     <>

@@ -317,7 +317,7 @@ export default function DataTable<T extends object>({
           {showColumnToggle && (
             <div className="relative group">
               <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                Columns
+                Fields
               </button>
               <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-10 hidden group-hover:block">
                 <div className="p-2 max-h-60 overflow-auto">

@@ -15,8 +15,6 @@ const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
   const [loading, setLoading] = useState(true);
 
   const userRole = sessionStorage.getItem("userRole");
-console.log(submittalData);
-
 
 const fetchSubmittals = async () => {
   try {
@@ -50,7 +48,6 @@ const fetchSubmittals = async () => {
   }
 };
 
-
  useEffect(() => {
   if (submittalData && submittalData.length > 0) {
     setSubmittals(submittalData);
@@ -60,7 +57,6 @@ const fetchSubmittals = async () => {
   }
  
 }, []);
-
 
 const columns: ColumnDef<any>[] = [
   { accessorKey: "subject", header: "Subject" },
@@ -74,28 +70,21 @@ const columns: ColumnDef<any>[] = [
     },
   },
 
-//   {
-//     accessorKey: "milestone",
-//     header: "Milestone",
-//     cell: ({ row }) => row.original.milestone?.subject || row.original.milestone?.description || "—",
-//   },
-
   {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
-            ? "bg-green-100 text-green-700"
-            : "bg-yellow-100 text-yellow-700"
-            }`}
-        >
-          {row.original.status}
-        </span>
-      ),
-    },
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === true
+          ? "bg-yellow-100 text-yellow-700"
+          : "bg-green-100 text-green-700"
+          }`}
+      >
+        {row.original.status === true ? "Pending" : "Responded"}
+      </span>
+    ),
+  },
 
-    
   {
     accessorKey: "createdAt",
     header: "Created",
@@ -103,7 +92,6 @@ const columns: ColumnDef<any>[] = [
        new Date(row.original.date).toLocaleString(),
   },
 ];
-
 
   if (loading) {
     return (

@@ -1,0 +1,190 @@
+import {
+  ChartCandlestick,
+  Home,
+  MessageSquare,
+  User2,
+  Hourglass,
+  FolderOpenDot,
+  Group,
+  LucideComponent,
+  FactoryIcon,
+} from "lucide-react";
+import type { JSX } from "react";
+
+export interface NavItem {
+  label: string;
+  to: string;
+  icon: JSX.Element;
+  roles: string[];
+}
+
+export const navItems: NavItem[] = [
+  {
+    label: "Dashboard",
+    to: "/dashboard",
+    icon: <Home />,
+    roles: [
+      "admin",
+      "staff",
+      "department-manager",
+      "deputy_manager",
+      "project-manager",
+      "client",
+      "system-admin",
+      "user",
+      "estimator",
+      "sales",
+      "sales_manager",
+    ],
+  },
+  {
+    label: "Fabricator",
+    to: "fabricator",
+    icon: <LucideComponent />,
+    roles: [
+      "admin",
+      "department-manager",
+      "deputy_manager",
+      "project-manager",
+      "system-admin",
+      "user",
+      "estimator",
+      "sales_manager",
+      "sales",
+    ],
+  },
+  {
+    label: "Connection Designer",
+    to: "connection-designer",
+    icon: <FactoryIcon />,
+    roles: ["admin", "department-manager", "deputy_manager"],
+  },
+  {
+    label: "Connection Designing Quotation",
+    to: "connection-designing-quotation",
+    icon: <FactoryIcon />,
+    roles: [
+      "admin",
+      "department-manager",
+      "connection_designer_engineer",
+      "deputy_manager",
+    ],
+  },
+  {
+    label: "RFQ",
+    to: "rfq",
+    icon: <LucideComponent />,
+    roles: [
+      "admin",
+      "sales_manager",
+      "deputy_manager",
+      "client",
+      "estimator",
+      "sales",
+    ],
+  },
+  {
+    label: "Estimations",
+    to: "estimation",
+    icon: <Hourglass />,
+    roles: [
+      "admin",
+      "sales_manager",
+      "department-manager",
+      "deputy_manager",
+      "user",
+    ],
+  },
+  {
+    label: "Projects",
+    to: "projects",
+    icon: <FolderOpenDot />,
+    roles: [
+      "admin",
+      "dept_manager",
+      "deputy_manager",
+      "team_lead",
+      "staff",
+      "sales_manager",
+      "connection_designer_engineer",
+      "client",
+      "project_manager",
+      "user",
+      "human-resource",
+    ],
+  },
+  {
+    label: "Invoices",
+    to: "invoices",
+    icon: <FolderOpenDot />,
+    roles: [
+      "admin",
+      "deputy_manager",
+      "pmo",
+      "client"
+    ],
+  },
+  {
+    label: "Tasks",
+    to: "tasks",
+    icon: <ChartCandlestick />,
+    roles: [
+      "admin",
+      "staff",
+      "department-manager",
+      "deputy_manager",
+      "project-manager",
+      "user",
+      "system-admin",
+      "human-resource",
+    ],
+  },
+  {
+    label: "Manage Team",
+    to: "manage-team",
+    icon: <Group />,
+    roles: [
+      "admin",
+      "department-manager",
+      "project-manager",
+      "deputy_manager",
+      "user",
+      "human-resource",
+    ],
+  },
+  {
+    label: "Chats",
+    to: "chats",
+    icon: <MessageSquare />,
+    roles: [
+      "admin",
+      "staff",
+      "department-manager",
+      "project-manager",
+      "deputy_manager",
+      "user",
+      "human-resource",
+    ],
+  },
+  {
+    label: "Profile",
+    to: "profile",
+    icon: <User2 />,
+    roles: [
+      "admin",
+      "connection_designer_engineer",
+      "user",
+      "staff",
+      "client",
+      "connection_designer_engineer",
+      "estimator",
+      "sales",
+      "sales_manager",
+      "dept_manager",
+      "deputy_manager",
+      "project_manager",
+      "system_admin",
+      "human_resource",
+    ],
+  },
+];

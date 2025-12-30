@@ -963,7 +963,7 @@ class Service {
     } catch (error) {
       console.log(error);
     }
-  } 
+  }
 
   //add wbs from wbs template by project id
   static async AddWBSFromTemplate(projectId: string, wbsData: any) {
@@ -1529,7 +1529,7 @@ class Service {
   //Task Start
   static async TaskStart(id: string) {
     try {
-      const response = await api.get(`task/start/${id}`, {
+      const response = await api.post(`task/start/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1544,7 +1544,7 @@ class Service {
   //Task Resume
   static async TaskResume(id: string) {
     try {
-      const response = await api.get(`task/resume/${id}`, {
+      const response = await api.post(`task/resume/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1559,7 +1559,7 @@ class Service {
   //Task Pause
   static async TaskPause(id: string) {
     try {
-      const response = await api.get(`task/pause/${id}`, {
+      const response = await api.patch(`task/pause/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1571,11 +1571,10 @@ class Service {
     }
   }
 
-
   //Task End
   static async TaskEnd(id: string) {
     try {
-      const response = await api.get(`task/end/${id}`, {
+      const response = await api.post(`task/end/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1584,6 +1583,17 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find Task", error);
+    }
+  }
+
+  // Get User Stats
+  static async getUsersStats(userId: string) {
+    try {
+      const response = await api.get(`task/user/stats/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching stats for user ${userId}:`, error);
+      throw error;
     }
   }
 }

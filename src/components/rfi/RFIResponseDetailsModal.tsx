@@ -6,10 +6,9 @@ import Service from "../../api/Service";
 
 // Status dropdown options
 const STATUS_OPTIONS = [
-  { label: "Pending", value: "PENDING" },
-  { label: "Approved", value: "APPROVED" },
-  { label: "Rejected", value: "REJECTED" },
-  { label: "Clarification Required", value: "CLARIFICATION_REQUIRED" },
+  { label: "Partial", value: "PARTIAL" },
+  { label: "Complete", value: "COMPLETE" },
+  { label: "Open", value: "OPEN" },
 ];
 
 const RFIResponseDetailsModal = ({ response, onClose }: any) => {
@@ -33,7 +32,7 @@ console.log(response);
     formData.append("rfiId", response.rfiId);
     formData.append("parentResponseId", response.id);
     formData.append("userId", userId);
-    formData.append("status", replyStatus); // 👈 send selected status
+    formData.append("wbtStatus", replyStatus); // 👈 send selected status
 
     replyFiles.forEach((file) => formData.append("files", file));
 
