@@ -11,6 +11,11 @@ import {
 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
+import FetchTaskByID from "./FetchTaskByID";
+
+const TaskDetailWrapper = ({ row, close }: { row: any; close: () => void }) => {
+  return <FetchTaskByID id={row.id} onClose={close} />;
+};
 
 const AllTasks = () => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
@@ -241,6 +246,7 @@ const AllTasks = () => {
           <DataTable
             columns={columns}
             data={tasks}
+            detailComponent={TaskDetailWrapper}
             searchPlaceholder="Search tasks..."
             pageSizeOptions={[10, 25, 50]}
           />

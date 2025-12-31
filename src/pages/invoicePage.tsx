@@ -1,7 +1,8 @@
+import InvoiceLayout from "../layout/InvoiceLayout"
 
 const invoicePage = () => {
   return (
-    <div>invoicePage</div>
+    <div><InvoiceLayout/></div>
   )
 }
 

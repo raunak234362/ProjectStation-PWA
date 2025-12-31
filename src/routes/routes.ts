@@ -13,6 +13,8 @@ import RFIPage from "../pages/RFIPage";
 import EstimationPage from "../pages/EstimationPage";
 import ProjectPage from "../pages/ProjectPage";
 import TaskPage from "../pages/TaskPage";
+import invoicePage from "../pages/invoicePage";
+import AccountPage from "../pages/AccountPage";
 
 // import Layout from "../layout/DashboardLayout";
 const routes = [
@@ -32,10 +34,12 @@ const routes = [
           { path: "fabricator", Component: FabricatorPage },
           { path: "estimation", Component: EstimationPage },
           { path: "projects", Component: ProjectPage },
+          { path: "invoices", Component: invoicePage },
           { path: "tasks", Component: TaskPage },
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },
+          { path: "accounts", Component: AccountPage },
         ],
       },
     ],

@@ -12,23 +12,25 @@ import Select from "react-select";
 
 interface AddCOProps {
   project?: any;
-  onSuccess: (co: any) => void;
+  onSuccess?: (co: any) => void;
 }
 
 const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
   const userDetail = useSelector((state: any) => state.userInfo.userDetail);
   const staff = useSelector((state: any) => state.userInfo.staffData);
 
-  const { register, handleSubmit, control, reset } = useForm<changeOrdersPayload>();
+  const { register, handleSubmit, control, reset } =
+    useForm<changeOrdersPayload>();
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<File[]>([]);
 
-  const recipientOptions: SelectOption[] = staff
-    ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
-    .map((s: any) => ({
-      label: `${s.firstName} ${s.lastName}`,
-      value: String(s.id),
-    })) ?? [];
+  const recipientOptions: SelectOption[] =
+    staff
+      ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
+      .map((s: any) => ({
+        label: `${s.firstName} ${s.lastName}`,
+        value: String(s.id),
+      })) ?? [];
 
   const onSubmit = async (data: changeOrdersPayload) => {
     try {
@@ -49,9 +51,9 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
       const response = await Service.ChangeOrder(formData);
       const createdCO = response.data?.data ?? response.data;
 
-   if (createdCO) {
+      if (createdCO) {
         toast.success("Change Order Created!");
-        
+
         // This is where your error happened because onSuccess was undefined
         if (typeof onSuccess === "function") {
           onSuccess(createdCO);
@@ -78,7 +80,7 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
             <Select
               placeholder="Select Recipient *"
               options={recipientOptions}
-              value={recipientOptions.find(o => o.value === field.value)}
+              value={recipientOptions.find((o) => o.value === field.value)}
               onChange={(option) => field.onChange(option?.value)}
             />
           )}
@@ -86,14 +88,22 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
 
         <SectionTitle title="Details" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="CO Number *" {...register("changeOrderNumber", { required: true })} />
-          <Input label="Remarks *" {...register("remarks", { required: true })} />
+          <Input
+            label="CO Number *"
+            {...register("changeOrderNumber", { required: true })}
+          />
+          <Input
+            label="Remarks *"
+            {...register("remarks", { required: true })}
+          />
           <Input label="Reason" {...register("reason")} />
           <Input label="Reference Link" {...register("link")} />
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Description</label>
+          <label className="text-sm font-medium text-gray-700">
+            Description
+          </label>
           <textarea
             className="w-full border rounded-md p-2 focus:ring-2 focus:ring-teal-500 outline-none"
             rows={4}
@@ -107,7 +117,10 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
         <MultipleFileUpload onFilesChange={setFiles} />
 
         <div className="flex justify-end pt-4">
-          <Button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-2 rounded-lg transition-all">
+          <Button
+            type="submit"
+            className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-2 rounded-lg transition-all"
+          >
             Save & Continue
           </Button>
         </div>

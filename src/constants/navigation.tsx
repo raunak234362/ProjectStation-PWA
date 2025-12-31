@@ -27,6 +27,7 @@ export const navItems: NavItem[] = [
       "admin",
       "staff",
       "department-manager",
+      "estimation_head",
       "deputy_manager",
       "project-manager",
       "client",
@@ -90,6 +91,7 @@ export const navItems: NavItem[] = [
     roles: [
       "admin",
       "sales_manager",
+      "estimation_head",
       "department-manager",
       "deputy_manager",
       "user",
@@ -122,6 +124,16 @@ export const navItems: NavItem[] = [
       "deputy_manager",
       "pmo",
       "client"
+    ],
+  },
+  {
+    label: "Accounts",
+    to: "accounts",
+    icon: <FolderOpenDot />,
+    roles: [
+      "admin",
+      "deputy_manager",
+      "pmo",
     ],
   },
   {
@@ -161,6 +173,7 @@ export const navItems: NavItem[] = [
       "staff",
       "department-manager",
       "project-manager",
+      "estimation_head",
       "deputy_manager",
       "user",
       "human-resource",
@@ -174,6 +187,7 @@ export const navItems: NavItem[] = [
       "admin",
       "connection_designer_engineer",
       "user",
+      "estimation_head",
       "staff",
       "client",
       "connection_designer_engineer",

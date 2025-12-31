@@ -426,7 +426,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="text-left px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                          className="text-left px-6 py-4 text-sm text-gray-900"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -456,7 +456,10 @@ export default function DataTable<T extends object>({
                           className="bg-gray-50 p-0"
                         >
                           <div className=" overflow-y-auto p-4">
-                            <DetailComponent row={row.original} close={() => toggleRowExpand(row.id)} />
+                            <DetailComponent
+                              row={row.original}
+                              close={() => toggleRowExpand(row.id)}
+                            />
                           </div>
                         </td>
                       </tr>
@@ -495,7 +498,7 @@ export default function DataTable<T extends object>({
           </select>
         </div>
 
-       <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1">
           <Button
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}

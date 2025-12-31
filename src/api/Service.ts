@@ -935,6 +935,21 @@ class Service {
     }
   }
 
+  //Get mileston by ID
+  static async GetMilestoneById(id: string) {
+    try {
+      const response = await api.get(`mileStone/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   //Fetch WBS-Template
   static async GetWBSTemplate() {
     try {
@@ -1529,60 +1544,68 @@ class Service {
   //Task Start
   static async TaskStart(id: string) {
     try {
-      const response = await api.post(`task/start/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All Task fetched by ID:", response.data);
+      const response = await api.post(
+        `task/start/${id}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(" Task started by ID:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find Task", error);
+      console.error("cannot start Task", error);
     }
   }
 
   //Task Resume
   static async TaskResume(id: string) {
     try {
-      const response = await api.post(`task/resume/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All Task fetched by ID:", response.data);
+      const response = await api.post(
+        `task/resume/${id}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(" Task resumed by ID:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find Task", error);
+      console.error("cannot resume Task", error);
     }
   }
 
   //Task Pause
-  static async TaskPause(id: string) {
+  static async TaskPause(id: string, data: any) {
     try {
-      const response = await api.patch(`task/pause/${id}`, {
+      const response = await api.patch(`task/pause/${id}`, data, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All Task fetched by ID:", response.data);
+      console.log(" Task paused by ID:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find Task", error);
+      console.error("cannot pause Task", error);
     }
   }
 
   //Task End
-  static async TaskEnd(id: string) {
+  static async TaskEnd(id: string, data: any) {
     try {
-      const response = await api.post(`task/end/${id}`, {
+      const response = await api.post(`task/end/${id}`, data, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All Task fetched by ID:", response.data);
+      console.log(" Task ended by ID:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find Task", error);
+      console.error("cannot end Task", error);
     }
   }
 
@@ -1593,6 +1616,34 @@ class Service {
       return response.data;
     } catch (error) {
       console.error(`Error fetching stats for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  // Add Bank Account
+  static async AddBankAccount(data: any) {
+    try {
+      const response = await api.post(`invoice/account`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Bank account added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding bank account:", error);
+      throw error;
+    }
+  }
+
+  //get bank accounts
+  static async GetBankAccounts() {
+    try {
+      const response = await api.get(`invoice/accounts/all`);
+      console.log("Bank accounts fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching bank accounts:", error);
       throw error;
     }
   }
