@@ -198,7 +198,7 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-teal-700">Responses</h2>
 
-              {(userRole === "CLIENT") && (
+              {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
                 <Button onClick={() => setShowModal(true)} className="bg-teal-600 text-white">
                   + Add Response
                 </Button>

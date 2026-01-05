@@ -1,9 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import type { Branch } from "../../../interface";
 import Button from "../../fields/Button";
 import Service from "../../../api/Service";
 import Input from "../../fields/input";
+import { toast } from "react-toastify";
+import Select from "react-select";
+import { Country, State, City } from "country-state-city";
+import axios from "axios";
 interface AddBranchProps {
   fabricatorId: string;
   onClose: () => void;
@@ -11,22 +15,100 @@ interface AddBranchProps {
 }
 
 const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
+  const [stateOptions, setStateOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [cityOptions, setCityOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+
   const {
     register,
     handleSubmit,
+    control,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<Branch>({
     defaultValues: {
       fabricatorId,
       isHeadquarters: false,
+      country: "IN", // Default to India
     },
   });
+
+  const selectedCountry = watch("country");
+  const selectedState = watch("state");
+  const zipCode = watch("zipCode");
+
+  // --- Load states when country changes ---
+  useEffect(() => {
+    if (selectedCountry) {
+      const statesData = State.getStatesOfCountry(selectedCountry) || [];
+      setStateOptions(
+        statesData.map((s) => ({ label: s.name, value: s.isoCode }))
+      );
+      // Only reset if the country actually changed and it's not the initial load
+      // But for simplicity, we'll let the user re-select
+    } else {
+      setStateOptions([]);
+    }
+  }, [selectedCountry]);
+
+  // --- Load cities when state changes ---
+  useEffect(() => {
+    if (selectedCountry && selectedState) {
+      const citiesData =
+        City.getCitiesOfState(selectedCountry, selectedState) || [];
+      setCityOptions(citiesData.map((c) => ({ label: c.name, value: c.name })));
+    } else {
+      setCityOptions([]);
+    }
+  }, [selectedCountry, selectedState]);
+
+  // --- Pincode Fetching ---
+  const handleZipCodeBlur = async () => {
+    if (zipCode && zipCode.length === 6 && selectedCountry === "IN") {
+      try {
+        const response = await axios.get(
+          `https://api.postalpincode.in/pincode/${zipCode}`
+        );
+        const data = response.data[0];
+        if (data.Status === "Success") {
+          const postOffice = data.PostOffice[0];
+          const stateName = postOffice.State;
+          const cityName = postOffice.District;
+
+          // Find state code
+          const states = State.getStatesOfCountry("IN");
+          const stateObj = states.find(
+            (s) => s.name.toLowerCase() === stateName.toLowerCase()
+          );
+
+          if (stateObj) {
+            setValue("state", stateObj.isoCode);
+            // City options will update via useEffect, but we can set the value after a short delay or manually
+            setTimeout(() => {
+              setValue("city", cityName);
+            }, 100);
+          }
+          toast.success("Address details fetched from pincode");
+        }
+      } catch (error) {
+        console.error("Pincode fetch failed:", error);
+      }
+    }
+  };
 
   const onSubmit = async (data: Branch) => {
     try {
       console.log("Branch Form Submitted:", data);
       const response = await Service.AddBranchByFabricator(data);
       console.log(response);
+      toast.success("Branch added successfully");
+      reset();
+      if (onClose) onClose();
 
       // API Request Example ⬇
       // const response = await Service.AddBranchToFabricator(data);
@@ -35,6 +117,7 @@ const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
       // reset();
     } catch (err) {
       console.error("Failed to add branch:", err);
+      toast.error("Failed to add branch");
     }
   };
 
@@ -110,45 +193,99 @@ const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
           )}
         </div>
 
-        {/* City */}
+        {/* Country */}
         <div>
-          <Input
-            label="City"
-            type="text"
-            {...register("city", { required: "City required" })}
-            className="input"
-            placeholder="Delhi"
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Country
+          </label>
+          <Controller
+            name="country"
+            control={control}
+            rules={{ required: "Country is required" }}
+            render={({ field }) => (
+              <Select
+                placeholder="Select Country"
+                options={Country.getAllCountries().map((c) => ({
+                  label: c.name,
+                  value: c.isoCode,
+                }))}
+                value={
+                  Country.getAllCountries()
+                    .filter((c) => c.isoCode === field.value)
+                    .map((c) => ({ label: c.name, value: c.isoCode }))[0] ||
+                  null
+                }
+                onChange={(option) => {
+                  field.onChange(option?.value || "");
+                  setValue("state", "");
+                  setValue("city", "");
+                }}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+              />
+            )}
           />
-          {errors.city && (
-            <p className="text-red-500 text-xs">{errors.city.message}</p>
+          {errors.country && (
+            <p className="text-red-500 text-xs">{errors.country.message}</p>
           )}
         </div>
 
         {/* State */}
         <div>
-          <Input
-            label="State"
-            type="text"
-            {...register("state", { required: "State required" })}
-            className="input"
-            placeholder="UP / KA / MH"
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            State
+          </label>
+          <Controller
+            name="state"
+            control={control}
+            rules={{ required: "State is required" }}
+            render={({ field }) => (
+              <Select
+                placeholder="Select State"
+                options={stateOptions}
+                value={
+                  stateOptions.find((opt) => opt.value === field.value) || null
+                }
+                onChange={(option) => {
+                  field.onChange(option?.value || "");
+                  setValue("city", "");
+                }}
+                isDisabled={!selectedCountry}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+              />
+            )}
           />
           {errors.state && (
             <p className="text-red-500 text-xs">{errors.state.message}</p>
           )}
         </div>
 
-        {/* Country */}
+        {/* City */}
         <div>
-          <Input
-            label="Country"
-            type="text"
-            {...register("country", { required: "Country required" })}
-            className="input"
-            placeholder="IN"
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            City
+          </label>
+          <Controller
+            name="city"
+            control={control}
+            rules={{ required: "City is required" }}
+            render={({ field }) => (
+              <Select
+                placeholder="Select City"
+                options={cityOptions}
+                value={
+                  cityOptions.find((opt) => opt.value === field.value) || null
+                }
+                onChange={(option) => field.onChange(option?.value || "")}
+                isDisabled={!selectedState}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+              />
+            )}
           />
-          {errors.country && (
-            <p className="text-red-500 text-xs">{errors.country.message}</p>
+          {errors.city && (
+            <p className="text-red-500 text-xs">{errors.city.message}</p>
           )}
         </div>
 
@@ -157,7 +294,10 @@ const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
           <Input
             label="Zipcode"
             type="text"
-            {...register("zipCode", { required: "Zip Code required" })}
+            {...register("zipCode", {
+              required: "Zip Code required",
+              onBlur: handleZipCodeBlur,
+            })}
             className="input"
             placeholder="560001"
           />

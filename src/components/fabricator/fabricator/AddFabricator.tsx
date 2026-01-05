@@ -1,15 +1,20 @@
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { FabricatorPayload } from "../../../interface";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
-import MultipleFileUpload from "../../fields/MultipleFileUpload"; 
+import MultipleFileUpload from "../../fields/MultipleFileUpload";
 import { useDispatch } from "react-redux";
 import { addFabricator } from "../../../store/fabricatorSlice";
+import AddBranch from "../branches/AddBranch";
 
 const AddFabricator = () => {
   const dispatch = useDispatch();
+  const [addedFabricatorId, setAddedFabricatorId] = useState<string | null>(
+    null
+  );
   const {
     register,
     handleSubmit,
@@ -35,6 +40,16 @@ const AddFabricator = () => {
 
       const response = await Service.AddFabricator(formData);
       dispatch(addFabricator(response?.data));
+
+      const newFabId =
+        response?.data?._id ||
+        response?.data?.id ||
+        response?._id ||
+        response?.id;
+      if (newFabId) {
+        setAddedFabricatorId(newFabId);
+      }
+
       console.log("Fabricator added:", response);
       toast.success("Fabricator created successfully");
       reset(); // Reset form to default values
@@ -137,6 +152,24 @@ const AddFabricator = () => {
           </Button>
         </div>
       </form>
+
+      {addedFabricatorId && (
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 mb-8">
+            <h3 className="text-xl font-bold text-emerald-800 mb-2">
+              Fabricator Added Successfully!
+            </h3>
+            <p className="text-emerald-700">
+              Required to add branch for this fabricator.
+            </p>
+          </div>
+
+          <AddBranch
+            fabricatorId={addedFabricatorId}
+            onClose={() => setAddedFabricatorId(null)}
+          />
+        </div>
+      )}
     </div>
   );
 };

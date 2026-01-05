@@ -10,7 +10,7 @@ const Layout = () => {
   // Close sidebar automatically when resizing from mobile → desktop
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
+      if (window.innerWidth >= 768) {
         setIsMobileOpen(false);
       }
     };
@@ -19,7 +19,7 @@ const Layout = () => {
   }, []);
 
   const toggleSidebar = () => {
-    if (window.innerWidth < 780) {
+    if (window.innerWidth < 768) {
       setIsMobileOpen((prev) => !prev);
     } else {
       setIsMinimized((prev) => !prev);
@@ -46,7 +46,7 @@ const Layout = () => {
       ></div>
 
       <div
-        className={`fixed top-0 left-0 h-full bg-white z-50 transform transition-transform duration-300 lg:hidden ${
+        className={`fixed top-0 left-0 h-full bg-white z-50 transform transition-transform duration-300 md:hidden ${
           isMobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -59,10 +59,7 @@ const Layout = () => {
 
       {/* Main Content */}
       <div className="pl-0 md:pl-1 flex flex-col flex-1 overflow-hidden min-h-0">
-        <Header
-          isMinimized={isMinimized}
-          toggleSidebar={toggleSidebar}
-        />
+        <Header isMinimized={isMinimized} toggleSidebar={toggleSidebar} />
         <main className="flex-1 w-full overflow-y-auto p-2 min-h-0">
           <Outlet />
         </main>

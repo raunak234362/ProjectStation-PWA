@@ -15,7 +15,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
-  const [replyStatus, setReplyStatus] = useState("PENDING");
+  const [replyStatus, setReplyStatus] = useState(response.wbtStatus);
 
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
   const userId = sessionStorage.getItem("userId") || "";
@@ -42,7 +42,7 @@ console.log(response);
     setReplyMode(false);
     setReplyMessage("");
     setReplyFiles([]);
-    setReplyStatus("PENDING");
+    setReplyStatus(response.wbtStatus);
 
     // Close to refresh parent UI
     onClose();

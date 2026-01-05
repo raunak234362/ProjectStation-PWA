@@ -1647,5 +1647,18 @@ class Service {
       throw error;
     }
   }
+
+
+  //Dashboard Data
+  static async GetDashboardData() {
+    try {
+      const response = await api.get(`dashBoardData/`);
+      console.log("Dashboard data fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      throw error;
+    }
+  } 
 }
 export default Service;

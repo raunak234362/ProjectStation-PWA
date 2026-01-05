@@ -13,10 +13,6 @@ import {
   Cell,
 } from "recharts";
 import {
-  Users,
-  Factory,
-  Send,
-  Inbox,
   Files,
   Activity,
   CheckCircle2,
@@ -29,8 +25,21 @@ import {
 } from "lucide-react";
 import Service from "../../api/Service";
 import { useSelector } from "react-redux";
+import GetProjectById from "../project/GetProjectById";
 
 const COLORS = ["#6366f1", "#22c55e", "#3b82f6", "#f97316"];
+
+interface DashboardStats {
+  activeEmployeeCount: number;
+  pendingChangeOrders: number;
+  pendingRFI: number;
+  pendingRFQ: number;
+  pendingSubmittals: number;
+  totalActiveProjects: number;
+  totalCompleteProject: number;
+  totalOnHoldProject: number;
+  totalProjects: number;
+}
 
 const WBTDashboard = () => {
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
@@ -39,6 +48,9 @@ const WBTDashboard = () => {
   );
   const projects = useSelector(
     (state: any) => state.projectInfo.projectData || []
+  );
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
+    null
   );
 
   const [stats, setStats] = useState({
@@ -58,6 +70,7 @@ const WBTDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
+  const [selectedProject, setSelectedProject] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +80,9 @@ const WBTDashboard = () => {
           Service.RFQRecieved(),
         ]);
 
+        const dashboardData = await Service.GetDashboardData();
+        console.log(dashboardData);
+        setDashboardStats(dashboardData);
         const sentCount = sent?.length || 0;
         const receivedCount = received?.length || 0;
 
@@ -190,7 +206,6 @@ const WBTDashboard = () => {
                 </span>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -205,19 +220,19 @@ const WBTDashboard = () => {
                 <FileText size={20} />
               </div>
               <span className="text-xs font-medium text-gray-600 mt-2">
-                Pending RFI
+                Pending RFI {dashboardStats?.pendingRFI || 0}
               </span>
               <span className="text-xs font-medium text-gray-600 mt-2">
                 Response Pending
               </span>
-              
             </div>
             <div className="flex flex-col items-center p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
               <div className="p-2 bg-purple-50 rounded-lg text-purple-600 group-hover:bg-purple-100 transition-colors">
                 <RefreshCw size={20} />
               </div>
               <span className="text-xs font-medium text-gray-600 mt-2">
-                Pending Submittals response
+                Pending Submittals response{" "}
+                {dashboardStats?.pendingSubmittals || 0}
               </span>
             </div>
             <div className="flex flex-col items-center p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
@@ -225,7 +240,8 @@ const WBTDashboard = () => {
                 <Activity size={20} />
               </div>
               <span className="text-xs font-medium text-gray-600 mt-2">
-                Pending Change Orders response
+                Pending Change Orders response{" "}
+                {dashboardStats?.pendingChangeOrders || 0}
               </span>
             </div>
             <div className="flex flex-col items-center p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
@@ -233,7 +249,7 @@ const WBTDashboard = () => {
                 <Search size={20} />
               </div>
               <span className="text-xs font-medium text-gray-600 mt-2">
-                Pending RFQ response
+                Pending RFQ response {dashboardStats?.pendingRFQ || 0}
               </span>
               <span className="text-xs font-medium text-gray-600 mt-2">
                 New RFQ
@@ -248,7 +264,8 @@ const WBTDashboard = () => {
         {/* Bar Chart */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Total Number of Invoices Raised <span className="text-xs text-gray-500">(per month graph)</span>
+            Total Number of Invoices Raised{" "}
+            <span className="text-xs text-gray-500">(per month graph)</span>
           </h2>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -340,7 +357,7 @@ const WBTDashboard = () => {
             {/* Modal Content */}
             <div className="flex-1 overflow-y-auto p-6">
               {filteredProjects.length > 0 ? (
-                <div className="overflow-x-auto">
+                  <div className="overflow-x-auto">
                   <table className="w-full text-left border-separate border-spacing-y-2">
                     <thead>
                       <tr className="text-gray-400 text-xs uppercase tracking-wider">
@@ -355,7 +372,8 @@ const WBTDashboard = () => {
                       {filteredProjects.map((project, index) => (
                         <tr
                           key={index}
-                          className="bg-gray-50 hover:bg-gray-100 transition-colors rounded-xl group"
+                          className="bg-gray-50 hover:bg-gray-100 transition-colors rounded-xl group cursor-pointer"
+                          onClick={() => setSelectedProject(project)}
                         >
                           <td className="px-4 py-4 rounded-l-xl font-medium text-gray-800">
                             {project.name}
@@ -394,6 +412,35 @@ const WBTDashboard = () => {
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="px-6 py-2 bg-gray-800 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors shadow-lg shadow-gray-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <div className="bg-white w-full max-w-5xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <h3 className="text-lg font-bold text-gray-800">
+                Project Details
+              </h3>
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+              >
+                <CloseIcon size={24} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <GetProjectById id={selectedProject.id || selectedProject._id} />
+            </div>
+            <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="px-6 py-2 bg-gray-800 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors"
               >
                 Close
               </button>
