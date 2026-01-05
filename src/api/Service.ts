@@ -1636,6 +1636,22 @@ class Service {
     }
   }
 
+  // Add Invoice
+  static async AddInvoice(data: any) {
+    try {
+      const response = await api.post(`invoice/add`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Invoice added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding invoice:", error);
+      throw error;
+    }
+  }
+
   //get bank accounts
   static async GetBankAccounts() {
     try {
@@ -1648,7 +1664,6 @@ class Service {
     }
   }
 
-
   //Dashboard Data
   static async GetDashboardData() {
     try {
@@ -1659,6 +1674,6 @@ class Service {
       console.error("Error fetching dashboard data:", error);
       throw error;
     }
-  } 
+  }
 }
 export default Service;

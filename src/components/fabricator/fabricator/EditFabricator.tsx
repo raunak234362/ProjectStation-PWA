@@ -19,7 +19,6 @@ interface FabricatorFile {
   // Add other file properties if needed (e.g., mimeType, size)
 }
 
-
 interface EditFabricatorProps {
   fabricatorData: Fabricator; // Use FabricatorWithFiles for clarity
   onClose: () => void;
@@ -30,6 +29,7 @@ type FabricatorFormData = {
   fabName: string;
   website?: string;
   drive?: string;
+  accountId?: string;
   // Change files to File[] to match what RHF and MultipleFileUpload handle
   files?: File[] | null;
 };
@@ -41,6 +41,8 @@ const EditFabricator = ({
 }: EditFabricatorProps) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [fetchingAccounts, setFetchingAccounts] = useState(false);
 
   // State to manage existing files that the user decides to KEEP
   const [filesToKeep, setFilesToKeep] = useState<FabricatorFile[]>(
@@ -58,9 +60,27 @@ const EditFabricator = ({
       fabName: "",
       website: "",
       drive: "",
+      accountId: "",
       files: null, // Initialize new files to null
     },
   });
+
+  // Fetch accounts on mount
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      setFetchingAccounts(true);
+      try {
+        const response = await Service.GetBankAccounts();
+        const data = response?.data || response || [];
+        setAccounts(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching accounts:", err);
+      } finally {
+        setFetchingAccounts(false);
+      }
+    };
+    fetchAccounts();
+  }, []);
 
   // Pre‑fill form with fabricator data and initialize filesToKeep
   useEffect(() => {
@@ -68,6 +88,7 @@ const EditFabricator = ({
       fabName: fabricatorData.fabName || "",
       website: fabricatorData.website || "",
       drive: fabricatorData.drive || "",
+      accountId: (fabricatorData as any).accountId || "",
       files: null,
     });
     setFilesToKeep((fabricatorData.files as FabricatorFile[]) || []);
@@ -93,19 +114,21 @@ const EditFabricator = ({
 
       const formData = new FormData();
 
-      // 1. Append Text Fields
-      formData.append("fabName", data.fabName || fabricatorData.fabName);
-      formData.append("website", data.website || fabricatorData.website || "");
-      formData.append("drive", data.drive || fabricatorData.drive || "");
+      // 1. Append Text Fields (only if they have values)
+      if (data.fabName) formData.append("fabName", data.fabName);
+      if (data.website) formData.append("website", data.website);
+      if (data.drive) formData.append("drive", data.drive);
+      if (data.accountId) formData.append("accountId", data.accountId);
 
-      // 2. Append IDs of files to KEEP
+      // 2. Append IDs of files to KEEP (only if not empty)
       const fileIdsToKeep = filesToKeep.map((file) => file.id);
-      formData.append("files", JSON.stringify(fileIdsToKeep)); // Backend must handle this JSON string
+      if (fileIdsToKeep.length > 0) {
+        formData.append("files", JSON.stringify(fileIdsToKeep));
+      }
 
-      // 3. Append New Files
+      // 3. Append New Files (only if not empty)
       if (Array.isArray(data.files) && data.files.length > 0) {
         data.files.forEach((file: File) => {
-          // Assuming the backend expects the field name 'newFiles' for new uploads
           formData.append("files", file);
         });
       }
@@ -222,6 +245,28 @@ const EditFabricator = ({
                 {errors.drive.message}
               </p>
             )}
+          </div>
+
+          {/* Bank Account Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Bank Account
+            </label>
+            <select
+              {...register("accountId")}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all bg-white"
+              disabled={fetchingAccounts}
+            >
+              <option value="">-- Select Bank Account --</option>
+              {accounts.map((account) => (
+                <option
+                  key={account._id || account.id}
+                  value={account._id || account.id}
+                >
+                  {account.accountName} ({account.accountNumber})
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* --- Existing Files Display/Deletion --- */}

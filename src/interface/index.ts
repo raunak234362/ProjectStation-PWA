@@ -123,6 +123,7 @@ export interface Fabricator {
   fabName: string;
   website: string;
   drive: string;
+  accountId?: string;
   files: File[] | [];
   branches: Branch[];
   project: any[];
