@@ -1653,9 +1653,9 @@ class Service {
   }
 
   // Get Invoice
-  static async GetInvoice(id: string) {
+  static async GetInvoiceById(id: string) {
     try {
-      const response = await api.get(`invoice/${id}`);
+      const response = await api.get(`invoice/byId/${id}`);
       console.log("Invoice fetched:", response.data);
       return response.data;
     } catch (error) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
+import GetInvoiceById from "./GetInvoiceById";
 
 const AllInvoices = () => {
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -90,6 +91,7 @@ const AllInvoices = () => {
       <DataTable
         columns={columns}
         data={invoices}
+        detailComponent={({ row }) => <GetInvoiceById id={row.id} />}
         searchPlaceholder="Search invoices..."
         pageSizeOptions={[5, 10, 25]}
       />

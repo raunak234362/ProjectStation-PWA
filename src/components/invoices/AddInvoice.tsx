@@ -25,8 +25,11 @@ export interface AccountInfo {
 export interface InvoiceItem {
   description: string;
   quantity: number;
-  rate: number;
-  amount: number;
+  rateUSD: number;
+  totalUSD: number;
+  unit?: number;
+  sacCode?: number;
+  remarks?: string;
 }
 
 export interface InvoiceFormData {
@@ -79,7 +82,17 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
     defaultValues: {
       currencyType: "USD",
       totalInvoiceValue: 0,
-      invoiceItems: [{ description: "", quantity: 1, rate: 0, amount: 0 }],
+      invoiceItems: [
+        {
+          description: "",
+          quantity: 1,
+          rateUSD: 0,
+          totalUSD: 0,
+          unit: 0,
+          sacCode: 0,
+          remarks: "",
+        },
+      ],
       accountInfo: [],
     },
   });
@@ -121,7 +134,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
   const handleCalculateTotal = () => {
     if (watchedItems) {
       const total = watchedItems.reduce(
-        (sum, item) => sum + (item.amount || 0),
+        (sum, item) => sum + (item.totalUSD || 0),
         0
       );
       setValue("totalInvoiceValue", total);
@@ -249,8 +262,22 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
     }
   };
   const onSubmit = async (data: InvoiceFormData) => {
+    // Ensure numeric fields are numbers
+    const formattedData = {
+      ...data,
+      totalInvoiceValue: Number(data.totalInvoiceValue),
+      invoiceItems: data.invoiceItems?.map((item) => ({
+        ...item,
+        quantity: Number(item.quantity),
+        rateUSD: Number(item.rateUSD),
+        totalUSD: Number(item.totalUSD),
+        unit: item.unit ? Number(item.unit) : 0,
+        sacCode: item.sacCode ? String(item.sacCode) : 0,
+      })),
+    };
+
     try {
-      await Service.AddInvoice(data);
+      await Service.AddInvoice(formattedData);
       toast.success("Invoice created successfully");
       reset();
       if (onSuccess) onSuccess();
@@ -462,7 +489,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                 key={field.id}
                 className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end border-b pb-4"
               >
-                <div className="md:col-span-5">
+                <div className="md:col-span-3">
                   <Input
                     label={index === 0 ? "Description *" : ""}
                     placeholder="Item description"
@@ -476,7 +503,27 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                     </p>
                   )}
                 </div>
-                <div className="md:col-span-2">
+                <div className="md:col-span-1">
+                  <Input
+                    label={index === 0 ? "Unit" : ""}
+                    placeholder="Unit"
+                    type="number"
+                    {...register(`invoiceItems.${index}.unit` as const, {
+                      valueAsNumber: true,
+                    })}
+                  />
+                </div>
+                <div className="md:col-span-1">
+                  <Input
+                    label={index === 0 ? "SAC" : ""}
+                    placeholder="SAC"
+                    type="number"
+                    {...register(`invoiceItems.${index}.sacCode` as const, {
+                      valueAsNumber: true,
+                    })}
+                  />
+                </div>
+                <div className="md:col-span-1">
                   <Input
                     label={index === 0 ? "Qty *" : ""}
                     type="number"
@@ -484,12 +531,13 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                       required: "Qty is required",
                       valueAsNumber: true,
                       min: { value: 1, message: "Min 1" },
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                        const qty = parseFloat(e.target.value) || 0;
+                        const rate =
+                          watch(`invoiceItems.${index}.rateUSD`) || 0;
+                        setValue(`invoiceItems.${index}.totalUSD`, qty * rate);
+                      },
                     })}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const qty = parseFloat(e.target.value) || 0;
-                      const rate = watch(`invoiceItems.${index}.rate`) || 0;
-                      setValue(`invoiceItems.${index}.amount`, qty * rate);
-                    }}
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -497,24 +545,25 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                     label={index === 0 ? "Rate *" : ""}
                     type="number"
                     step="any"
-                    {...register(`invoiceItems.${index}.rate` as const, {
+                    {...register(`invoiceItems.${index}.rateUSD` as const, {
                       required: "Rate is required",
                       valueAsNumber: true,
                       min: { value: 0, message: "Min 0" },
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                        const rate = parseFloat(e.target.value) || 0;
+                        const qty =
+                          watch(`invoiceItems.${index}.quantity`) || 0;
+                        setValue(`invoiceItems.${index}.totalUSD`, qty * rate);
+                      },
                     })}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const rate = parseFloat(e.target.value) || 0;
-                      const qty = watch(`invoiceItems.${index}.quantity`) || 0;
-                      setValue(`invoiceItems.${index}.amount`, qty * rate);
-                    }}
                   />
                 </div>
                 <div className="md:col-span-2">
                   <Input
-                    label={index === 0 ? "Amount" : ""}
+                    label={index === 0 ? "Total" : ""}
                     type="number"
                     readOnly
-                    {...register(`invoiceItems.${index}.amount` as const, {
+                    {...register(`invoiceItems.${index}.totalUSD` as const, {
                       valueAsNumber: true,
                     })}
                   />
@@ -530,12 +579,27 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                     </button>
                   )}
                 </div>
+                <div className="md:col-span-12">
+                  <Input
+                    label="Remarks"
+                    placeholder="Remarks"
+                    {...register(`invoiceItems.${index}.remarks` as const)}
+                  />
+                </div>
               </div>
             ))}
             <Button
               type="button"
               onClick={() =>
-                append({ description: "", quantity: 1, rate: 0, amount: 0 })
+                append({
+                  description: "",
+                  quantity: 1,
+                  rateUSD: 0,
+                  totalUSD: 0,
+                  unit: 0,
+                  sacCode: 0,
+                  remarks: "",
+                })
               }
               className="flex items-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200"
             >
