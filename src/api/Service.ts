@@ -1652,6 +1652,18 @@ class Service {
     }
   }
 
+  // Get Invoice
+  static async GetInvoice(id: string) {
+    try {
+      const response = await api.get(`invoice/${id}`);
+      console.log("Invoice fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching invoice:", error);
+      throw error;
+    }
+  }
+
   // all Invoice 
   static async GetAllInvoice() {
     try {
@@ -1699,6 +1711,6 @@ class Service {
       throw error;
     }
   }
-  
+
 }
 export default Service;

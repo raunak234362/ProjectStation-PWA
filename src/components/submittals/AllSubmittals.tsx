@@ -13,6 +13,7 @@ interface AllSubmittalProps {
 const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
   const [submittals, setSubmittals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+console.log(submittalData);
 
   const userRole = sessionStorage.getItem("userRole");
 
