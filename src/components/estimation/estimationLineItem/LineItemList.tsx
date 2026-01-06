@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Service from "../../../api/Service";
 import DataTable from "../../ui/table";
 import { X, Clock, Layers, AlignLeft, Edit2, Save, Calculator } from "lucide-react";
+import RichTextEditor from "../../fields/RichTextEditor";
 
 interface LineItemListProps {
   id: string;
@@ -116,7 +117,11 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
         }
     };
 
-    const handleGroupInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
+    const handleGroupInputChange = (value: string, field: string) => {
+        setGroupFormData({ ...groupFormData, [field]: value });
+    };
+
+    const handleGroupInputRawChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
         setGroupFormData({ ...groupFormData, [field]: e.target.value });
     };
 
@@ -152,7 +157,12 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
         }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof LineItem) => {
+    const handleInputChange = (value: string, field: keyof LineItem) => {
+        const newData = { ...editFormData, [field]: value };
+        setEditFormData(newData);
+    };
+
+    const handleInputRawChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof LineItem) => {
         const value = e.target.value;
         const newData = { ...editFormData, [field]: value };
 
@@ -181,13 +191,16 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
             cell: ({ row }: { row: { original: LineItem } }) => {
                 const isEditing = editingRowId === row.original.id;
                 return isEditing ? (
-                    <textarea
+                    <RichTextEditor
                         value={editFormData.scopeOfWork || ""}
-                        onChange={(e) => handleInputChange(e, "scopeOfWork")}
-                        className="w-full border rounded p-1"
+                        onChange={(val) => handleInputChange(val, "scopeOfWork")}
+                        placeholder="Enter scope of work"
                     />
                 ) : (
-                    row.original.scopeOfWork
+                    <div 
+                        className="prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: row.original.scopeOfWork }}
+                    />
                 );
             },
         },
@@ -200,7 +213,7 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                     <input
                         type="number"
                         value={editFormData.quantity || 0}
-                        onChange={(e) => handleInputChange(e, "quantity")}
+                        onChange={(e) => handleInputRawChange(e, "quantity")}
                         className="w-full border rounded p-1"
                     />
                 ) : (
@@ -217,7 +230,7 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                     <input
                         type="number"
                         value={editFormData.hoursPerQty || 0}
-                        onChange={(e) => handleInputChange(e, "hoursPerQty")}
+                        onChange={(e) => handleInputRawChange(e, "hoursPerQty")}
                         className="w-full border rounded p-1"
                     />
                 ) : (
@@ -234,7 +247,7 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                     <input
                         type="number"
                         value={editFormData.totalHours || 0}
-                        onChange={(e) => handleInputChange(e, "totalHours")}
+                        onChange={(e) => handleInputRawChange(e, "totalHours")}
                         className="w-full border rounded p-1"
                     />
                 ) : (
@@ -311,19 +324,17 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                                         <input
                                             type="text"
                                             value={groupFormData.name}
-                                            onChange={(e) => handleGroupInputChange(e, "name")}
+                                            onChange={(e) => handleGroupInputRawChange(e, "name")}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                                             placeholder="Group Name"
                                         />
                                     </div>
                                     <div>
                                         <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Description</label>
-                                        <textarea
+                                        <RichTextEditor
                                             value={groupFormData.description}
-                                            onChange={(e) => handleGroupInputChange(e, "description")}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+                                            onChange={(val) => handleGroupInputChange(val, "description")}
                                             placeholder="Description"
-                                            rows={2}
                                         />
                                     </div>
                                 </div>
@@ -335,9 +346,10 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                                     </h3>
                                     <div className="flex items-start gap-2 text-gray-600">
                                         <AlignLeft className="w-4 h-4 mt-1 shrink-0 text-gray-400" />
-                                        <p className="text-sm leading-relaxed">
-                                            {groupData?.group?.description || "No description available."}
-                                        </p>
+                                        <div 
+                                            className="text-sm leading-relaxed prose prose-sm max-w-none"
+                                            dangerouslySetInnerHTML={{ __html: groupData?.group?.description || "No description available." }}
+                                        />
                                     </div>
                                 </>
                             )}
@@ -356,7 +368,7 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                                                 <input
                                                     type="number"
                                                     value={groupFormData.divisor}
-                                                    onChange={(e) => handleGroupInputChange(e, "divisor")}
+                                                    onChange={(e) => handleGroupInputRawChange(e, "divisor")}
                                                     className="w-16 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 outline-none text-right font-bold text-gray-800"
                                                     placeholder="Div"
                                                 />
@@ -388,7 +400,7 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                                             <input
                                                 type="number"
                                                 value={groupFormData.totalHours}
-                                                onChange={(e) => handleGroupInputChange(e, "totalHours")}
+                                                onChange={(e) => handleGroupInputRawChange(e, "totalHours")}
                                                 className="w-24 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 outline-none text-right font-bold text-gray-800"
                                             />
                                         ) : (

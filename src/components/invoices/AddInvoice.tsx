@@ -5,6 +5,7 @@ import Button from "../fields/Button";
 import Service from "../../api/Service";
 import { toast } from "react-toastify";
 import { Plus, Trash2 } from "lucide-react";
+import { numberToWords } from "../../utils/numberToWords";
 
 export interface AccountInfo {
   abaRoutingNumber: string;
@@ -33,7 +34,7 @@ export interface InvoiceFormData {
   fabricatorId: string;
   clientId?: string;
   customerName: string;
-  contactName?: string;
+  receiptId?: string;
   address?: string;
   stateCode?: string;
   GSTIN?: string;
@@ -60,12 +61,11 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
   const [fabricators, setFabricators] = useState<any[]>([]);
   const [allProjects, setAllProjects] = useState<any[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
-  const [allSubmittals, setAllSubmittals] = useState<any[]>([]);
-  const [filteredSubmittals, setFilteredSubmittals] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [selectedFabricatorId, setSelectedFabricatorId] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [contacts, setContacts] = useState<any[]>([]);
 
   const {
     register,
@@ -95,13 +95,11 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [accountsRes, fabricatorsRes, projectsRes, submittalsRes] =
-          await Promise.all([
-            Service.GetBankAccounts(),
-            Service.GetAllFabricators(),
-            Service.GetAllProjects(),
-            Service.SubmittalSent(),
-          ]);
+        const [accountsRes, fabricatorsRes, projectsRes] = await Promise.all([
+          Service.GetBankAccounts(),
+          Service.GetAllFabricators(),
+          Service.GetAllProjects(),
+        ]);
 
         const accountsData = accountsRes?.data || accountsRes || [];
         setAccounts(Array.isArray(accountsData) ? accountsData : []);
@@ -111,9 +109,6 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
 
         const projectsData = projectsRes?.data || projectsRes || [];
         setAllProjects(Array.isArray(projectsData) ? projectsData : []);
-
-        const submittalsData = submittalsRes?.data || submittalsRes || [];
-        setAllSubmittals(Array.isArray(submittalsData) ? submittalsData : []);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -123,16 +118,19 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
     fetchData();
   }, []);
 
-  // Calculate totals whenever items change
-  useEffect(() => {
+  const handleCalculateTotal = () => {
     if (watchedItems) {
       const total = watchedItems.reduce(
         (sum, item) => sum + (item.amount || 0),
         0
       );
       setValue("totalInvoiceValue", total);
+      setValue(
+        "totalInvoiceValueInWords",
+        numberToWords(total, watch("currencyType"))
+      );
     }
-  }, [watchedItems, setValue]);
+  };
 
   const handleAccountSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const accountId = e.target.value;
@@ -166,7 +164,6 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
     setValue("fabricatorId", fabricatorId);
     setSelectedProjectId("");
     setValue("projectId", "");
-    setFilteredSubmittals([]);
 
     if (!fabricatorId) {
       setFilteredProjects([]);
@@ -176,10 +173,12 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
     const selectedFabricator = fabricators.find(
       (f: any) => f.id === fabricatorId || f._id === fabricatorId
     );
+    console.log(selectedFabricator);
 
     if (selectedFabricator) {
       setValue("customerName", selectedFabricator.fabName || "");
       setValue("address", selectedFabricator.website || ""); // Using website as placeholder for address if not available
+      setContacts(selectedFabricator.pointOfContact || []);
     }
 
     const projects = allProjects.filter(
@@ -213,35 +212,42 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
       }
     }
   };
-
-  const handleProjectSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleProjectSelect = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const projectId = e.target.value;
     setSelectedProjectId(projectId);
     setValue("projectId", projectId);
 
-    if (!projectId) {
-      setFilteredSubmittals([]);
-      return;
-    }
+    if (!projectId) return;
 
     const project = allProjects.find(
       (p: any) => p.id === projectId || p._id === projectId
     );
+    console.log("Project-------", project);
+
     if (project) {
       setValue("jobName", project.name || "");
+
+      if (project.rfqId) {
+        try {
+          const rfqRes = await Service.GetRFQbyId(project.rfqId);
+          const rfq = rfqRes.data;
+          console.log("RFQ Data-------", rfq);
+
+          if (rfq && rfq.sender) {
+            const senderName = `${rfq.sender.firstName || ""} ${
+              rfq.sender.lastName || ""
+            }`.trim();
+            setValue("customerName", senderName);
+            setValue("clientId", rfq.senderId || rfq.sender.id);
+          }
+        } catch (error) {
+          console.error("Error fetching RFQ:", error);
+        }
+      }
     }
-
-    const submittals = allSubmittals.filter((s: any) => {
-      const isForProject =
-        s.projectId === projectId || s.project_id === projectId;
-      const hasCompleteResponse = s.submittalsResponse?.some(
-        (r: any) => r.wbtStatus === "COMPLETE" || r.status === "COMPLETE"
-      );
-      return isForProject && hasCompleteResponse;
-    });
-    setFilteredSubmittals(submittals);
   };
-
   const onSubmit = async (data: InvoiceFormData) => {
     try {
       await Service.AddInvoice(data);
@@ -308,26 +314,6 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
               </select>
             </div>
           )}
-
-          {selectedProjectId && (
-            <div className="w-full md:w-64">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Select Submittal (Complete)
-              </label>
-              <select
-                className="w-full p-2 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all bg-teal-50/30"
-                disabled={loading}
-              >
-                <option value="">-- Choose a Submittal --</option>
-                {filteredSubmittals.map((sub: any) => (
-                  <option key={sub.id || sub._id} value={sub.id || sub._id}>
-                    {sub.subject}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
           <div className="w-full md:w-64">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Select Existing Account
@@ -359,7 +345,12 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
           </legend>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
-              <Input label="Customer Name *" {...register("customerName", { required: "Customer Name is required" })} />
+              <Input
+                label="Customer Name *"
+                {...register("customerName", {
+                  required: "Customer Name is required",
+                })}
+              />
               {errors.customerName && (
                 <p className="text-red-500 text-xs">
                   {errors.customerName.message}
@@ -367,7 +358,25 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
               )}
             </div>
             <div className="space-y-1">
-              <Input label="Contact Name" {...register("contactName")} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Receipt ID (Contact)
+              </label>
+              <select
+                {...register("receiptId")}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+              >
+                <option value="">-- Select Contact --</option>
+                {contacts.map((contact: any) => (
+                  <option
+                    key={contact.id || contact._id}
+                    value={`${contact.firstName || ""} ${
+                      contact.lastName || ""
+                    }`.trim()}
+                  >
+                    {contact.firstName} {contact.lastName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="space-y-1">
               <Input label="GSTIN" {...register("GSTIN")} />
@@ -388,7 +397,12 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
           </legend>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
-              <Input label="Invoice Number *" {...register("invoiceNumber", { required: "Invoice Number is required" })} />
+              <Input
+                label="Invoice Number *"
+                {...register("invoiceNumber", {
+                  required: "Invoice Number is required",
+                })}
+              />
               {errors.invoiceNumber && (
                 <p className="text-red-500 text-xs">
                   {errors.invoiceNumber.message}
@@ -403,7 +417,10 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
               />
             </div>
             <div className="space-y-1">
-              <Input label="Job Name *" {...register("jobName", { required: "Job Name is required" })} />
+              <Input
+                label="Job Name *"
+                {...register("jobName", { required: "Job Name is required" })}
+              />
               {errors.jobName && (
                 <p className="text-red-500 text-xs">{errors.jobName.message}</p>
               )}
@@ -426,10 +443,9 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                 {...register("currencyType")}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
               >
+                <option value="INR">Rupees</option>
+                <option value="CAD">CAD</option>
                 <option value="USD">USD</option>
-                <option value="INR">INR</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
               </select>
             </div>
           </div>
@@ -450,22 +466,26 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                   <Input
                     label={index === 0 ? "Description *" : ""}
                     placeholder="Item description"
-                    {...register(`invoiceItems.${index}.description` as const, { required: "Description is required" })}
+                    {...register(`invoiceItems.${index}.description` as const, {
+                      required: "Description is required",
+                    })}
                   />
                   {errors.invoiceItems?.[index]?.description && (
-                    <p className="text-red-500 text-xs">{errors.invoiceItems[index]?.description?.message}</p>
+                    <p className="text-red-500 text-xs">
+                      {errors.invoiceItems[index]?.description?.message}
+                    </p>
                   )}
                 </div>
                 <div className="md:col-span-2">
                   <Input
                     label={index === 0 ? "Qty *" : ""}
                     type="number"
-                    {...register(`invoiceItems.${index}.quantity` as const, { 
+                    {...register(`invoiceItems.${index}.quantity` as const, {
                       required: "Qty is required",
                       valueAsNumber: true,
-                      min: { value: 1, message: "Min 1" }
+                      min: { value: 1, message: "Min 1" },
                     })}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const qty = parseFloat(e.target.value) || 0;
                       const rate = watch(`invoiceItems.${index}.rate`) || 0;
                       setValue(`invoiceItems.${index}.amount`, qty * rate);
@@ -476,12 +496,13 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                   <Input
                     label={index === 0 ? "Rate *" : ""}
                     type="number"
-                    {...register(`invoiceItems.${index}.rate` as const, { 
+                    step="any"
+                    {...register(`invoiceItems.${index}.rate` as const, {
                       required: "Rate is required",
                       valueAsNumber: true,
-                      min: { value: 0, message: "Min 0" }
+                      min: { value: 0, message: "Min 0" },
                     })}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const rate = parseFloat(e.target.value) || 0;
                       const qty = watch(`invoiceItems.${index}.quantity`) || 0;
                       setValue(`invoiceItems.${index}.amount`, qty * rate);
@@ -493,7 +514,9 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                     label={index === 0 ? "Amount" : ""}
                     type="number"
                     readOnly
-                    {...register(`invoiceItems.${index}.amount` as const, { valueAsNumber: true })}
+                    {...register(`invoiceItems.${index}.amount` as const, {
+                      valueAsNumber: true,
+                    })}
                   />
                 </div>
                 <div className="md:col-span-1 flex justify-center">
@@ -535,9 +558,17 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                   {watch("totalInvoiceValue").toLocaleString()}
                 </span>
               </div>
+              <Button
+                type="button"
+                onClick={handleCalculateTotal}
+                className="w-full bg-teal-100 text-teal-700 hover:bg-teal-200 border border-teal-300 py-2 text-sm font-semibold"
+              >
+                Calculate Total & Words
+              </Button>
               <Input
                 label="Total in Words"
                 placeholder="e.g. One Thousand Dollars"
+                readOnly
                 {...register("totalInvoiceValueInWords")}
               />
             </div>

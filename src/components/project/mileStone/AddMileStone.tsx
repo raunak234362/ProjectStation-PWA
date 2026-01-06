@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { X, CheckCircle } from "lucide-react";
 import Service from "../../../api/Service";
@@ -6,6 +6,7 @@ import Input from "../../fields/input";
 import Button from "../../fields/Button";
 import Select from "react-select";
 import type { ProjectMilestone } from "../../../interface";
+import RichTextEditor from "../../fields/RichTextEditor";
 
 interface AddMileStoneProps {
   projectId: string;
@@ -14,7 +15,12 @@ interface AddMileStoneProps {
   onSuccess?: () => void;
 }
 
-const AddMileStone = ({ projectId, fabricatorId, onClose, onSuccess }: AddMileStoneProps) => {
+const AddMileStone = ({
+  projectId,
+  fabricatorId,
+  onClose,
+  onSuccess,
+}: AddMileStoneProps) => {
   const {
     register,
     handleSubmit,
@@ -41,12 +47,14 @@ const AddMileStone = ({ projectId, fabricatorId, onClose, onSuccess }: AddMileSt
         ...data,
         status: "ACTIVE",
         date: data.date ? new Date(data.date).toISOString() : undefined,
-        approvalDate: data.approvalDate ? new Date(data.approvalDate).toISOString() : undefined,
+        approvalDate: data.approvalDate
+          ? new Date(data.approvalDate).toISOString()
+          : undefined,
       };
       await Service.AddProjectMilestone(payload);
       toast.success("Milestone added successfully!");
       if (onSuccess) onSuccess();
-    //   onClose();
+      //   onClose();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to add milestone");
     }
@@ -77,20 +85,31 @@ const AddMileStone = ({ projectId, fabricatorId, onClose, onSuccess }: AddMileSt
             {...register("subject", { required: "Required" })}
           />
           {errors.subject && (
-            <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>
+            <p className="text-red-500 text-xs mt-1">
+              {errors.subject.message}
+            </p>
           )}
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Description *
             </label>
-            <textarea
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all resize-none h-24"
-              placeholder="Describe the milestone deliverables..."
-              {...register("description", { required: "Required" })}
-            ></textarea>
+            <Controller
+              name="description"
+              control={control}
+              rules={{ required: "Required" }}
+              render={({ field }) => (
+                <RichTextEditor
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  placeholder="Describe the milestone deliverables..."
+                />
+              )}
+            />
             {errors.description && (
-              <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -122,7 +141,11 @@ const AddMileStone = ({ projectId, fabricatorId, onClose, onSuccess }: AddMileSt
               onChange={(opt) => setValue("status", opt?.value || "PENDING")}
               className="text-sm"
               styles={{
-                control: (base) => ({ ...base, borderRadius: "0.5rem", padding: "2px" }),
+                control: (base) => ({
+                  ...base,
+                  borderRadius: "0.5rem",
+                  padding: "2px",
+                }),
               }}
             />
           </div>

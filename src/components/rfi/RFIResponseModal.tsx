@@ -5,6 +5,7 @@ import Service from "../../api/Service";
 import { X } from "lucide-react";
 import Button from "../fields/Button";
 import type { RFIResponseSchema } from "../../interface";
+import RichTextEditor from "../fields/RichTextEditor";
 
 interface RFIResponseModalProps {
   rfiId: string;
@@ -17,8 +18,8 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-
-  const { register, handleSubmit, control, reset } = useForm<RFIResponseSchema>();
+  const { register, handleSubmit, control, reset } =
+    useForm<RFIResponseSchema>();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -28,18 +29,17 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
 
       const userId = sessionStorage.getItem("userId") || "";
       const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
-        const payload: RFIResponseSchema = {
+      const payload: RFIResponseSchema = {
         ...data,
         rfiId,
-        parentResponseId: data.parentResponseId|| "",
-
+        parentResponseId: data.parentResponseId || "",
       };
       console.log(payload);
       const formData = new FormData();
       formData.append("rfiId", rfiId);
       formData.append("reason", data.reason);
- 
-    //   formData.append("responseState", data.responseState ? "true" : "false");
+
+      //   formData.append("responseState", data.responseState ? "true" : "false");
       formData.append("userRole", userRole);
       formData.append("userId", userId);
 
@@ -51,7 +51,6 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
       setFiles([]);
       onSuccess();
       onClose();
-
     } catch (err) {
       console.error("Error submitting RFI response:", err);
     } finally {
@@ -62,7 +61,6 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg relative">
-
         <button onClick={onClose} className="absolute top-3 right-3">
           <X className="text-gray-600 hover:text-red-500" size={18} />
         </button>
@@ -71,11 +69,17 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
 
         <form className="space-y-4 mt-4" onSubmit={handleSubmit(onSubmit)}>
           {/* Message */}
-          <textarea
-            {...register("reason", { required: true })}
-            placeholder="Write your response..."
-            className="w-full border rounded-md p-3"
-            rows={4}
+          <Controller
+            name="reason"
+            control={control}
+            rules={{ required: "Message is required" }}
+            render={({ field }) => (
+              <RichTextEditor
+                value={field.value || ""}
+                onChange={field.onChange}
+                placeholder="Write your response..."
+              />
+            )}
           />
 
           {/* File uploader */}
@@ -89,7 +93,11 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
 
           <div className="flex justify-end gap-3">
             <Button onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={loading} className="bg-teal-600 text-white">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-teal-600 text-white"
+            >
               {loading ? "Submitting..." : "Submit Response"}
             </Button>
           </div>

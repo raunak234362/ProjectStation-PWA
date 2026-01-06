@@ -9,6 +9,7 @@ import Service from "../../api/Service";
 import type { changeOrdersPayload, SelectOption } from "../../interface";
 import SectionTitle from "../ui/SectionTitle";
 import Select from "react-select";
+import RichTextEditor from "../fields/RichTextEditor";
 
 interface AddCOProps {
   project?: any;
@@ -104,11 +105,9 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
           <label className="text-sm font-medium text-gray-700">
             Description
           </label>
-          <textarea
-            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-teal-500 outline-none"
-            rows={4}
+          <RichTextEditor
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={setDescription}
             placeholder="Detailed description..."
           />
         </div>

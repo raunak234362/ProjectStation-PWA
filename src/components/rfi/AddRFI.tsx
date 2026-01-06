@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -9,51 +9,45 @@ import Service from "../../api/Service";
 import type { Fabricator, SelectOption, RFIPayload } from "../../interface";
 import SectionTitle from "../ui/SectionTitle";
 import Select from "react-select";
+import RichTextEditor from "../fields/RichTextEditor";
 
+const AddRFI: React.FC<{ project?: any }> = ({ project }) => {
+  console.log(project);
 
-const AddRFI:React.FC<{project?: any}> = ({project}) => {
-console.log(project);
-
- const userDetail = useSelector((state: any) => state.userInfo.userDetail);
+  const userDetail = useSelector((state: any) => state.userInfo.userDetail);
   const userRole = userDetail?.role; // CLIENT | ADMIN | STAFF etc.
-  const fabricators = useSelector((state: any) => state.fabricatorInfo.fabricatorData);
+  const fabricators = useSelector(
+    (state: any) => state.fabricatorInfo.fabricatorData
+  );
   const staff = useSelector((state: any) => state.userInfo.staffData);
   const project_id = project?.id;
-  const fabricatorID=project?.fabricatorID;
+  const fabricatorID = project?.fabricatorID;
   console.log("Fabricators from Redux:", fabricators);
 
-const {
-    register,
-    setValue,
-    handleSubmit,
-     control,
-    reset,
-  } = useForm<RFIPayload>();
+  const { register, setValue, handleSubmit, control, reset } =
+    useForm<RFIPayload>();
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<File[]>([]);
 
+  // Match selected fabricator
+  const selectedFabricator = fabricators?.find(
+    (f: Fabricator) => String(f.id) === String(fabricatorID)
+  );
+  // Correct POC mapping
+  const pocOptions: SelectOption[] =
+    selectedFabricator?.pointOfContact?.map((p: any) => ({
+      label: `${p.firstName} ${p.middleName ?? ""} ${p.lastName}`,
 
+      value: String(p.id),
+    })) ?? [];
 
-// Match selected fabricator
-const selectedFabricator = fabricators?.find(
-  (f: Fabricator) => String(f.id) === String(fabricatorID)
-);
-// Correct POC mapping
-const pocOptions: SelectOption[] =
-  selectedFabricator?.pointOfContact?.map((p: any) => ({
-   label: `${p.firstName} ${p.middleName ?? ""} ${p.lastName}`,
+  const projectOptions: SelectOption[] =
+    selectedFabricator?.project?.map((p: any) => ({
+      label: p.projectName || p.name,
+      value: String(p.id),
+    })) ?? [];
 
-    value: String(p.id),
-  })) ?? [];
-
-const projectOptions: SelectOption[] =
-  selectedFabricator?.project?.map((p: any) => ({
-    label: p.projectName || p.name,
-    value: String(p.id),
-  })) ?? [];
-
-
-    const recipientOptions: SelectOption[] =
+  const recipientOptions: SelectOption[] =
     staff
       ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
       .map((s: any) => ({
@@ -61,7 +55,7 @@ const projectOptions: SelectOption[] =
         value: String(s.id),
       })) ?? [];
 
-        const onSubmit = async (data: RFIPayload) => {
+  const onSubmit = async (data: RFIPayload) => {
     try {
       const payload: RFIPayload = {
         ...data,
@@ -89,7 +83,6 @@ const projectOptions: SelectOption[] =
       reset();
       setDescription("");
       setFiles([]);
-
     } catch (err) {
       console.error(err);
       toast.error("Failed to create RFI");
@@ -97,35 +90,29 @@ const projectOptions: SelectOption[] =
   };
 
   useEffect(() => {
-  if (userRole === "CLIENT") {
-    setValue("sender_id", String(userDetail?.id)); // auto-select logged-in client
-  }
-}, [userRole]);
-useEffect(() => {
-  if (userRole === "CLIENT" && selectedFabricator) {
-    setValue("fabricator_id", String(selectedFabricator.id));
-    setValue("sender_id", String(userDetail?.id));
-  }
-}, [userRole, selectedFabricator]);
-useEffect(() => {
-  if (userRole === "CLIENT" && projectOptions.length > 0) {
-    setValue("project_id", String(projectOptions[0].value)); 
-  }
-}, [userRole, projectOptions]);
-
-
+    if (userRole === "CLIENT") {
+      setValue("sender_id", String(userDetail?.id)); // auto-select logged-in client
+    }
+  }, [userRole]);
+  useEffect(() => {
+    if (userRole === "CLIENT" && selectedFabricator) {
+      setValue("fabricator_id", String(selectedFabricator.id));
+      setValue("sender_id", String(userDetail?.id));
+    }
+  }, [userRole, selectedFabricator]);
+  useEffect(() => {
+    if (userRole === "CLIENT" && projectOptions.length > 0) {
+      setValue("project_id", String(projectOptions[0].value));
+    }
+  }, [userRole, projectOptions]);
 
   return (
-
     <div className="w-full mx-auto bg-white p-2 rounded-xl shadow">
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
         <SectionTitle title="Fabrication & Routing" />
 
         {userRole !== "CLIENT" && (
           <>
-
             {/* CLIENT CONTACT */}
             <Controller
               name="sender_id"
@@ -134,8 +121,12 @@ useEffect(() => {
                 <Select<SelectOption, false>
                   placeholder="Fabricator Contact"
                   options={pocOptions}
-                  value={pocOptions.find((o) => o.value === field.value) ?? null}
-                  onChange={(option) => field.onChange(option ? option.value : null)}
+                  value={
+                    pocOptions.find((o) => o.value === field.value) ?? null
+                  }
+                  onChange={(option) =>
+                    field.onChange(option ? option.value : null)
+                  }
                 />
               )}
             />
@@ -151,8 +142,12 @@ useEffect(() => {
             <Select<SelectOption, false>
               placeholder="WBT Contact *"
               options={recipientOptions}
-              value={recipientOptions.find((o) => o.value === field.value) ?? null}
-              onChange={(option) => field.onChange(option ? option.value : null)}
+              value={
+                recipientOptions.find((o) => o.value === field.value) ?? null
+              }
+              onChange={(option) =>
+                field.onChange(option ? option.value : null)
+              }
             />
           )}
         />
@@ -165,13 +160,16 @@ useEffect(() => {
           {...register("subject", { required: true })}
         />
 
-        <textarea
-          className="w-full border rounded-md p-2"
-          rows={4}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter RFI description..."
-        />
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700">
+            Description
+          </label>
+          <RichTextEditor
+            value={description}
+            onChange={setDescription}
+            placeholder="Enter RFI description..."
+          />
+        </div>
 
         <SectionTitle title="Files" />
 
@@ -185,5 +183,4 @@ useEffect(() => {
   );
 };
 
-  
 export default AddRFI;

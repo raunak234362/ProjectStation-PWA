@@ -11,6 +11,7 @@ import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
 import { setRFQData } from "../../store/rfqSlice";
 import type { RFQItem, Fabricator } from "../../interface";
+import RichTextEditor from "../fields/RichTextEditor";
 
 const EstimationStatusOptions = [
   { label: "Pending", value: "PENDING" },
@@ -35,12 +36,19 @@ interface EstimationFormData {
   status: string;
 }
 
-const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId = null, onSuccess = () => {} }) => {
+const AddEstimation: React.FC<AddEstimationProps> = ({
+  initialRfqId = null,
+  onSuccess = () => {},
+}) => {
   const dispatch = useDispatch();
   const [files, setFiles] = useState<File[]>([]);
 
-  const rfqData = useSelector((state: any) => state.RFQInfos.RFQData || []) as RFQItem[];
-  const fabricators = useSelector((state: any) => state.fabricatorInfo?.fabricatorData || []) as Fabricator[];
+  const rfqData = useSelector(
+    (state: any) => state.RFQInfos.RFQData || []
+  ) as RFQItem[];
+  const fabricators = useSelector(
+    (state: any) => state.fabricatorInfo?.fabricatorData || []
+  ) as Fabricator[];
 
   const userType = sessionStorage.getItem("userRole");
 
@@ -126,7 +134,9 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId = null, onSu
         ...data,
         files,
         status: "DRAFT",
-        estimateDate: data.estimateDate ? new Date(data.estimateDate).toISOString() : null,
+        estimateDate: data.estimateDate
+          ? new Date(data.estimateDate).toISOString()
+          : null,
       };
 
       const formData = new FormData();
@@ -157,7 +167,6 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId = null, onSu
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-
         {/* RFQ Selection */}
         <SectionTitle title="Select RFQ" />
         <Controller
@@ -167,14 +176,18 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId = null, onSu
           render={({ field }) => (
             <Select
               label="RFQ *"
-              placeholder={isRfqLocked ? "RFQ pre-selected" : "Search and select an RFQ..."}
+              placeholder={
+                isRfqLocked ? "RFQ pre-selected" : "Search and select an RFQ..."
+              }
               options={rfqOptions}
               value={field.value}
               onChange={(_, val) => field.onChange(val ?? "")}
             />
           )}
         />
-        {errors.rfqId && <p className="text-red-600 text-sm -mt-6">{errors.rfqId.message}</p>}
+        {errors.rfqId && (
+          <p className="text-red-600 text-sm -mt-6">{errors.rfqId.message}</p>
+        )}
 
         {/* Estimation Details */}
         <SectionTitle title="Estimation Details" />
@@ -184,7 +197,11 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId = null, onSu
             {...register("estimationNumber", { required: "Required" })}
             placeholder="e.g. EST-2025-089"
           />
-          {errors.estimationNumber && <p className="text-red-500 text-xs">{errors.estimationNumber.message}</p>}
+          {errors.estimationNumber && (
+            <p className="text-red-500 text-xs">
+              {errors.estimationNumber.message}
+            </p>
+          )}
 
           <Input
             label="Project Name"
@@ -207,15 +224,21 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId = null, onSu
             />
           )}
         />
-        {errors.fabricatorId && <p className="text-red-500 text-xs">{errors.fabricatorId.message}</p>}
+        {errors.fabricatorId && (
+          <p className="text-red-500 text-xs">{errors.fabricatorId.message}</p>
+        )}
 
         <SectionTitle title="Description" />
-        <textarea
-          {...register("description")}
-          rows={4}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
-          placeholder="Project scope, special requirements..."
-          disabled={!!selectedRfqId}
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <RichTextEditor
+              value={field.value || ""}
+              onChange={field.onChange}
+              placeholder="Project scope, special requirements..."
+            />
+          )}
         />
 
         <SectionTitle title="Timeline & Tools" />
@@ -249,11 +272,19 @@ const AddEstimation: React.FC<AddEstimationProps> = ({ initialRfqId = null, onSu
         <SectionTitle title="Attach Files" />
         <MultipleFileUpload onFilesChange={setFiles} />
         {files.length > 0 && (
-          <p className="text-sm text-gray-600 mt-2">{files.length} file(s) attached</p>
+          <p className="text-sm text-gray-600 mt-2">
+            {files.length} file(s) attached
+          </p>
         )}
 
         <div className="flex justify-end gap-4 pt-8 border-t border-gray-200">
-          <Button type="button"  onClick={() => { reset(); setFiles([]); }}>
+          <Button
+            type="button"
+            onClick={() => {
+              reset();
+              setFiles([]);
+            }}
+          >
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>

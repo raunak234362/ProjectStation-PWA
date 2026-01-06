@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Loader2, Plus, FileText, Calendar, User, Paperclip } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  FileText,
+  Calendar,
+  User,
+  Paperclip,
+} from "lucide-react";
 import Service from "../../../api/Service";
 import type { ProjectNote } from "../../../interface";
 import Button from "../../fields/Button";
@@ -37,8 +44,10 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        
-        <Button onClick={() => setShowAddModal(true)} className="flex items-center gap-2">
+        <Button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2"
+        >
           <Plus className="w-4 h-4" /> Add Note
         </Button>
       </div>
@@ -50,29 +59,41 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
       ) : notes.length > 0 ? (
         <div className="grid gap-4">
           {notes.map((note) => (
-            <div key={note.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div
+              key={note.id}
+              className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+            >
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
-                  <span className={`px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200`}>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200`}
+                  >
                     {note.stage}
                   </span>
                   <span className="text-xs text-gray-500 flex items-center gap-1">
-                    <Calendar className="w-3 h-3" /> {formatDate(note.createdAt)}
+                    <Calendar className="w-3 h-3" />{" "}
+                    {formatDate(note.createdAt)}
                   </span>
                 </div>
                 <div className="text-xs text-gray-500 flex items-center gap-1">
-                  <User className="w-3 h-3" /> {note.createdBy?.firstName} {note.createdBy?.lastName}
+                  <User className="w-3 h-3" /> {note.createdBy?.firstName}{" "}
+                  {note.createdBy?.lastName}
                 </div>
               </div>
-              
-              <p className="text-gray-800 whitespace-pre-wrap text-sm mb-3">{note.content}</p>
-              
+
+              <div
+                className="text-gray-800 text-sm mb-3 prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: note.content }}
+              />
+
               {note.files && note.files.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-gray-100">
                   {note.files.map((file) => (
                     <button
                       key={file.id}
-                      onClick={() => openFileSecurely("project", projectId, file.id)}
+                      onClick={() =>
+                        openFileSecurely("project", projectId, file.id)
+                      }
                       className="flex items-center gap-1 text-xs bg-teal-50 text-teal-700 px-2 py-1 rounded hover:bg-teal-100 transition-colors"
                     >
                       <Paperclip className="w-3 h-3" /> {file.originalName}
@@ -87,7 +108,7 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
         <div className="text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300">
           <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
           <p className="text-gray-500">No notes found for this project.</p>
-          <button 
+          <button
             onClick={() => setShowAddModal(true)}
             className="text-teal-600 font-medium hover:underline mt-2 text-sm"
           >

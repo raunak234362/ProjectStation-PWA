@@ -8,27 +8,22 @@ import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 
-import type {
-  Fabricator,
-  SelectOption,
-  RFQpayload,
-} from "../../interface";
+import type { Fabricator, SelectOption, RFQpayload } from "../../interface";
 
 import SectionTitle from "../ui/SectionTitle";
 import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
+import RichTextEditor from "../fields/RichTextEditor";
 
 const AddRFQ: React.FC = () => {
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo?.fabricatorData
   ) as Fabricator[];
 
-  const staffData = useSelector(
-    (state: any) => state.userInfo.staffData
-  );
+  const staffData = useSelector((state: any) => state.userInfo.staffData);
 
   // const userType =
-    typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
+  typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
 
   const {
     register,
@@ -37,17 +32,13 @@ const AddRFQ: React.FC = () => {
     setValue,
     watch,
     formState: { errors, isSubmitting },
-
   } = useForm<RFQpayload>({
     defaultValues: {
       tools: "NO_PREFERENCE",
     },
   });
 
-
   const selectedFabricatorId = watch("fabricatorId");
-
-
 
   const [description, setDescription] = useState("");
 
@@ -66,15 +57,23 @@ const AddRFQ: React.FC = () => {
   // --- WBT RECIPIENT OPTIONS ---
   const recipientOption: SelectOption[] =
     staffData
-      ?.filter((u: { role: string }) => u.role === "SALES" || u.role === "ADMIN")
-      .map((u: { firstName: string; middleName?: string; lastName: string; id: number }) => ({
-        label: `${u.firstName} ${u.middleName ?? ""} ${u.lastName}`,
-        value: String(u.id),
-      })) ?? [];
+      ?.filter(
+        (u: { role: string }) => u.role === "SALES" || u.role === "ADMIN"
+      )
+      .map(
+        (u: {
+          firstName: string;
+          middleName?: string;
+          lastName: string;
+          id: number;
+        }) => ({
+          label: `${u.firstName} ${u.middleName ?? ""} ${u.lastName}`,
+          value: String(u.id),
+        })
+      ) ?? [];
   // useEffect(() => {
   //   if (tools !== "OTHER") setValue("otherTool", "");
   // }, [tools, setValue]);
-
 
   // --- FABRICATOR OPTIONS ---
   const fabOptions: SelectOption[] =
@@ -89,7 +88,9 @@ const AddRFQ: React.FC = () => {
 
   const clientOptions: SelectOption[] =
     selectedFabricator?.pointOfContact?.map((client) => ({
-      label: `${client.firstName} ${client.middleName ?? ""} ${client.lastName}`,
+      label: `${client.firstName} ${client.middleName ?? ""} ${
+        client.lastName
+      }`,
       value: String(client.id),
     })) ?? [];
 
@@ -97,73 +98,71 @@ const AddRFQ: React.FC = () => {
 
   const userDetail = useSelector((state: any) => state.userInfo.userDetail);
   const userRole = userDetail?.role;
-  const fabricatorId = userDetail?.FabricatorPointOfContacts[0]?.id 
-console.log(userDetail);
-
+  const fabricatorId = userDetail?.FabricatorPointOfContacts[0]?.id;
+  console.log(userDetail);
 
   // --- SUBMIT ---
- const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
-  try {
-    const basePayload = {
-      projectNumber: data.projectNumber || "",
-      projectName: data.projectName,
-      subject: data.subject || "",
-      description,
-      tools: data.tools,
-      bidPrice: data.bidPrice,
-      estimationDate: data.estimationDate
-        ? new Date(data.estimationDate).toISOString()
-        : null,
-      status: "IN_REVIEW", 
-      wbtStatus: "RECEIVED",
-      connectionDesign: data.connectionDesign,
-      miscDesign: data.miscDesign,
-      customerDesign: data.customerDesign,
-      detailingMain: data.detailingMain,
-      detailingMisc: data.detailingMisc,
+  const onSubmit: SubmitHandler<RFQpayload> = async (data) => {
+    try {
+      const basePayload = {
+        projectNumber: data.projectNumber || "",
+        projectName: data.projectName,
+        subject: data.subject || "",
+        description,
+        tools: data.tools,
+        bidPrice: data.bidPrice,
+        estimationDate: data.estimationDate
+          ? new Date(data.estimationDate).toISOString()
+          : null,
+        status: "IN_REVIEW",
+        wbtStatus: "RECEIVED",
+        connectionDesign: data.connectionDesign,
+        miscDesign: data.miscDesign,
+        customerDesign: data.customerDesign,
+        detailingMain: data.detailingMain,
+        detailingMisc: data.detailingMisc,
 
-      files: data.files ?? [],
-    };
-
-    let payload;
-
-    if (userRole === "CLIENT") {
-      payload = {
-        ...basePayload,
-        senderId: userDetail?.id,
-        fabricatorId: fabricatorId,
-        recipientId: data.recipientId || "", // must exist
-        salesPersonId: null, // client doesn't assign
+        files: data.files ?? [],
       };
-    } else {
-      payload = {
-        ...basePayload,
-        senderId: data.senderId,
-        recipientId: data.recipientId,
-        fabricatorId: data.fabricatorId,
-        salesPersonId: data.salesPersonId ?? null,
-      };
-    }
 
-    // Convert to FormData
-    const formData = new FormData();
-    for (const [key, value] of Object.entries(payload)) {
-      if (key === "files" && Array.isArray(value)) {
-        value.forEach((file) => formData.append("files", file));
-      } else if (value !== undefined && value !== null) {
-        formData.append(key, value as string);
+      let payload;
+
+      if (userRole === "CLIENT") {
+        payload = {
+          ...basePayload,
+          senderId: userDetail?.id,
+          fabricatorId: fabricatorId,
+          recipientId: data.recipientId || "", // must exist
+          salesPersonId: null, // client doesn't assign
+        };
+      } else {
+        payload = {
+          ...basePayload,
+          senderId: data.senderId,
+          recipientId: data.recipientId,
+          fabricatorId: data.fabricatorId,
+          salesPersonId: data.salesPersonId ?? null,
+        };
       }
+
+      // Convert to FormData
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(payload)) {
+        if (key === "files" && Array.isArray(value)) {
+          value.forEach((file) => formData.append("files", file));
+        } else if (value !== undefined && value !== null) {
+          formData.append(key, value as string);
+        }
+      }
+
+      await Service.addRFQ(formData);
+      toast.success("RFQ Created Successfully");
+      setDescription("");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to create RFQ");
     }
-
-    await Service.addRFQ(formData);
-    toast.success("RFQ Created Successfully");
-    setDescription("");
-
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to create RFQ");
-  }
-};
+  };
 
   const selectedFabricatorOption =
     fabOptions.find((opt) => opt.value === selectedFabricatorId) || null;
@@ -190,11 +189,12 @@ console.log(userDetail);
                   name="fabricatorId"
                   control={control}
                   disabled={userRole === "CLIENT"}
-
                   rules={{ required: "Fabricator is required" }}
                   render={({ field }) => {
                     const normalizedValue =
-                      field.value ?? selectedFabricatorOption?.value ?? undefined;
+                      field.value ??
+                      selectedFabricatorOption?.value ??
+                      undefined;
                     const stringValue =
                       typeof normalizedValue === "number"
                         ? String(normalizedValue)
@@ -238,7 +238,6 @@ console.log(userDetail);
                     />
                   )}
                 />
-
 
                 {errors.senderId && (
                   <p className="text-red-500 text-xs mt-1">
@@ -299,13 +298,16 @@ console.log(userDetail);
 
         <Input label="Subject" {...register("subject")} />
 
-        <textarea
-          className="w-full border rounded-md p-2"
-          rows={4}
-          placeholder="Enter description..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700">
+            Description
+          </label>
+          <RichTextEditor
+            value={description}
+            onChange={setDescription}
+            placeholder="Enter description..."
+          />
+        </div>
 
         {/* TOOLS */}
         <div>
@@ -333,8 +335,6 @@ console.log(userDetail);
             )}
           />
         </div>
-
-
 
         <Input
           label="Bid Price (USD)"

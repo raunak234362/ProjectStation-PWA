@@ -1,5 +1,5 @@
 import Login from "./auth/Login";
-import WBTDashboard from "./dashboard/WBTDashboard";
+// WBTDashboard is now exported directly below
 
 import Profile from "./profile/Profile";
 
@@ -34,7 +34,7 @@ import TeamDashboard from "./manageTeam/teamDashboard/TeamDashboard";
 
 export {
   Login,
-  WBTDashboard,
+  // WBTDashboard is now exported directly below
   Profile,
   AddEmployee,
   AllEmployee,
@@ -54,3 +54,5 @@ export {
   GetInvoiceById,
   TeamDashboard,
 };
+
+export { default as WBTDashboard } from "./dashboard/WBTDashboard";

@@ -13,7 +13,7 @@ const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
 
 interface GetCOByIDProps {
   id: string;
-  projectId?: string
+  projectId?: string;
 }
 
 const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
@@ -54,8 +54,6 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
     if (id && projectId) fetchCO();
   }, [id, projectId]);
 
-
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8 text-gray-500">
@@ -74,11 +72,9 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
     );
   }
 
-
   return (
     <div className="p-6">
       <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-teal-700">
@@ -86,22 +82,21 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
           </h1>
 
           <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${co.isAproovedByAdmin === true
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+              co.isAproovedByAdmin === true
                 ? "bg-green-100 text-green-700"
                 : co.isAproovedByAdmin === false
-                  ? "bg-red-100 text-red-700"
-                  : "bg-yellow-100 text-yellow-700"
-              }`}
+                ? "bg-red-100 text-red-700"
+                : "bg-yellow-100 text-yellow-700"
+            }`}
           >
             {co.isAproovedByAdmin === true
               ? "Approved"
               : co.isAproovedByAdmin === false
-                ? "Rejected"
-                : "Pending"}
+              ? "Rejected"
+              : "Pending"}
           </span>
         </div>
-
-
 
         <Info
           label="Sender"
@@ -116,7 +111,9 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
           label="Recipient"
           value={
             co.recipients
-              ? `${co.recipients.firstName ?? ""} ${co.recipients.lastName ?? ""}`
+              ? `${co.recipients.firstName ?? ""} ${
+                  co.recipients.lastName ?? ""
+                }`
               : "—"
           }
         />
@@ -132,9 +129,10 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
         {/* Description */}
         <div>
           <h4 className="font-semibold text-gray-600 mb-1">Description</h4>
-          <p className="bg-gray-50 p-3 rounded-lg border">
-            {co.description || "—"}
-          </p>
+          <div
+            className="bg-gray-50 p-3 rounded-lg border prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: co.description || "—" }}
+          />
         </div>
 
         {/* Reference Link */}

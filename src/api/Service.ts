@@ -259,7 +259,7 @@ class Service {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All Fabricators fetched:", response.data);
+      // console.log(" All Fabricators fetched:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find fabricators", error);
@@ -407,7 +407,7 @@ class Service {
         },
       });
 
-      console.log("  RFQ received:", response.data);
+      // console.log("  RFQ received:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find rfqs", error);
@@ -872,7 +872,7 @@ class Service {
           "Content-Type": "application/json",
         },
       });
-      console.log(response);
+      // console.log(response);
       return response.data;
     } catch (error) {
       console.log(error);
@@ -1639,7 +1639,7 @@ class Service {
   // Add Invoice
   static async AddInvoice(data: any) {
     try {
-      const response = await api.post(`invoice/add`, data, {
+      const response = await api.post(`invoice/create`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1652,11 +1652,23 @@ class Service {
     }
   }
 
+  // all Invoice 
+  static async GetAllInvoice() {
+    try {
+      const response = await api.get(`invoice/AllInvoices`);
+      console.log("Invoice fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching invoice:", error);
+      throw error;
+    }
+  }
+
   //get bank accounts
   static async GetBankAccounts() {
     try {
       const response = await api.get(`invoice/accounts/all`);
-      console.log("Bank accounts fetched:", response.data);
+      // console.log("Bank accounts fetched:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching bank accounts:", error);
@@ -1675,5 +1687,18 @@ class Service {
       throw error;
     }
   }
+
+  // upcomping submittal
+  static async GetPendingSubmittal() {
+    try {
+      const response = await api.get(`mileStone/pendingSubmittals`);
+      console.log("Upcoming submittal fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching upcoming submittal:", error);
+      throw error;
+    }
+  }
+  
 }
 export default Service;

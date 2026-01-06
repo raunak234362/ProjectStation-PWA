@@ -3,6 +3,7 @@ import { useState } from "react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
+import RichTextEditor from "../fields/RichTextEditor";
 
 interface ResponseDetailsModalProps {
   response: any;
@@ -73,9 +74,11 @@ const handleReplySubmit = async () => {
   const renderThread = (res: any) => {
     return (
       <div className="ml-4 border-l pl-4 space-y-4">
-        {res.childResponses?.map((child: any) => (
           <div key={child.id} className="bg-gray-50 p-3 rounded-md">
-            <p className="font-medium">{child.description}</p>
+            <div 
+              className="font-medium prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: child.description }}
+            />
 
             {child.files?.length > 0 && (
               <div className="text-sm text-gray-500">
@@ -113,9 +116,10 @@ const handleReplySubmit = async () => {
         {/* Message */}
         <div className="space-y-1">
           <p className="text-sm text-gray-500">Message</p>
-          <p className="text-gray-900 bg-gray-50 p-3 rounded-md border">
-            {response.description}
-          </p>
+          <div 
+            className="text-gray-900 bg-gray-50 p-3 rounded-md border prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: response.description }}
+          />
         </div>
 
         {/* Attachments */}
@@ -155,13 +159,13 @@ const handleReplySubmit = async () => {
     </h3>
 
     {/* Reply message */}
-    <textarea
-      value={replyMessage}
-      onChange={(e) => setReplyMessage(e.target.value)}
-      placeholder="Type your reply..."
-      rows={3}
-      className="w-full border rounded-md p-2"
-    />
+    <div className="space-y-1">
+      <RichTextEditor
+        value={replyMessage}
+        onChange={setReplyMessage}
+        placeholder="Type your reply..."
+      />
+    </div>
 
     {/* Status Dropdown */}
     <div>

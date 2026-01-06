@@ -3,9 +3,9 @@ import { useForm, Controller } from "react-hook-form";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { X } from "lucide-react";
-import type { RfqResponsePayload } from  "../../interface";
+import type { RfqResponsePayload } from "../../interface";
 import Button from "../fields/Button";
-
+import RichTextEditor from "../fields/RichTextEditor";
 
 interface ResponseModalProps {
   rfqId: string;
@@ -18,7 +18,8 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { register, handleSubmit, control, reset } = useForm<RfqResponsePayload>();
+  const { register, handleSubmit, control, reset } =
+    useForm<RfqResponsePayload>();
 
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
       setLoading(true);
 
       const userId = sessionStorage.getItem("userId") || ""; // assuming userId stored in session
-       const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+      const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
       const payload: RfqResponsePayload = {
         ...data,
@@ -38,7 +39,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         parentResponseId: data.parentResponseId || "",
         files,
       };
-console.log(payload);
+      console.log(payload);
 
       // Convert to FormData
       const formData = new FormData();
@@ -49,7 +50,6 @@ console.log(payload);
       formData.append("userRole", userRole ?? "");
       formData.append("userId", userId ?? "");
 
-      
       if (payload.link) formData.append("link", payload.link);
 
       if (files.length > 0) {
@@ -72,7 +72,6 @@ console.log(payload);
   return (
     <div className=" flex items-center justify-center z-50">
       <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-lg relative">
-
         {/* Close Button */}
         <Button
           onClick={onClose}
@@ -81,22 +80,25 @@ console.log(payload);
           <X className="w-5 h-5" />
         </Button>
 
-        <h2 className="text-xl font-bold text-teal-700 mb-4">
-          Add Response
-        </h2>
+        <h2 className="text-xl font-bold text-teal-700 mb-4">Add Response</h2>
 
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Message *
             </label>
-            <textarea
-              {...register("description", { required: true })}
-              placeholder="Type your response..."
-              rows={4}
-              className="w-full border rounded-md p-2 text-gray-800"
+            <Controller
+              name="description"
+              control={control}
+              rules={{ required: "Message is required" }}
+              render={({ field }) => (
+                <RichTextEditor
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  placeholder="Type your response..."
+                />
+              )}
             />
           </div>
 

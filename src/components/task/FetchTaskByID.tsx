@@ -300,9 +300,10 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                                     <FileText className="w-5 h-5 text-teal-600" />
                                     Description
                                 </h4>
-                                <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                    {task.description}
-                                </p>
+                                <div 
+                                    className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: task.description }}
+                                />
                             </div>
                         )}
 

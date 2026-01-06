@@ -3,6 +3,7 @@ import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import Service from "../../api/Service";
+import RichTextEditor from "../fields/RichTextEditor";
 
 // Status dropdown options
 const STATUS_OPTIONS = [
@@ -19,7 +20,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
 
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
   const userId = sessionStorage.getItem("userId") || "";
-console.log(response);
+  console.log(response);
 
   // 🔒 Only Admin/Team can reply (not client)
   const canReply = ["ADMIN", "STAFF", "MANAGER"].includes(userRole);
@@ -51,7 +52,6 @@ console.log(response);
   return (
     <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl space-y-5 relative">
-
         {/* Close Button */}
         <button onClick={onClose} className="absolute top-3 right-3">
           <X size={18} className="text-gray-500 hover:text-red-600" />
@@ -60,7 +60,10 @@ console.log(response);
         <h2 className="text-xl font-bold text-teal-700">Response Details</h2>
 
         {/* Main message */}
-        <p className="bg-gray-100 p-3 rounded-md border">{response.reason}</p>
+        <div
+          className="bg-gray-100 p-3 rounded-md border prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{ __html: response.reason }}
+        />
 
         {/* Files */}
         {response.files?.length > 0 && (
@@ -92,14 +95,20 @@ console.log(response);
           <div className="mt-4 space-y-4 border-t pt-4 max-h-60 overflow-y-auto">
             <h4 className="text-sm font-semibold text-gray-700">History</h4>
             {response.childResponses.map((child: any) => (
-              <div key={child.id} className="bg-gray-50 p-3 rounded border text-sm">
+              <div
+                key={child.id}
+                className="bg-gray-50 p-3 rounded border text-sm"
+              >
                 <div className="flex justify-between text-xs text-gray-500 mb-1">
                   <span className="font-medium text-gray-900">
                     {child.user?.name || "User"} ({child.user?.role || "N/A"})
                   </span>
                   <span>{new Date(child.createdAt).toLocaleString()}</span>
                 </div>
-                <p className="text-gray-800 mb-2">{child.reason}</p>
+                <div
+                  className="text-gray-800 mb-2 prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: child.reason }}
+                />
 
                 {/* Child Files */}
                 {child.files?.length > 0 && (
@@ -125,7 +134,10 @@ console.log(response);
 
         {/* Reply Button — only internal side */}
         {canReply && !replyMode && (
-          <Button className="bg-blue-600 text-white mt-4" onClick={() => setReplyMode(true)}>
+          <Button
+            className="bg-blue-600 text-white mt-4"
+            onClick={() => setReplyMode(true)}
+          >
             Reply
           </Button>
         )}
@@ -133,15 +145,17 @@ console.log(response);
         {/* Reply Form */}
         {replyMode && (
           <div className="pt-4 space-y-4 border-t">
-            
             {/* Message */}
-            <textarea
-              value={replyMessage}
-              onChange={(e) => setReplyMessage(e.target.value)}
-              rows={3}
-              className="w-full border p-2 rounded"
-              placeholder="Type your reply..."
-            />
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-600">
+                Your Reply
+              </label>
+              <RichTextEditor
+                value={replyMessage}
+                onChange={setReplyMessage}
+                placeholder="Type your reply..."
+              />
+            </div>
 
             {/* Status Dropdown */}
             <div>
@@ -173,7 +187,10 @@ console.log(response);
             {/* Action Buttons */}
             <div className="flex justify-end gap-3">
               <Button onClick={() => setReplyMode(false)}>Cancel</Button>
-              <Button className="bg-teal-600 text-white" onClick={handleReplySubmit}>
+              <Button
+                className="bg-teal-600 text-white"
+                onClick={handleReplySubmit}
+              >
                 Send Reply
               </Button>
             </div>

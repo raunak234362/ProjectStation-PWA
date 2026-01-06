@@ -18,6 +18,8 @@ import Input from "../fields/input";
 import Button from "../fields/Button";
 import Select from "../fields/Select";
 import SectionTitle from "../ui/SectionTitle";
+import RichTextEditor from "../fields/RichTextEditor";
+
 import type {
   ProjectData,
   ProjectMilestone,
@@ -473,11 +475,19 @@ const AddTask: React.FC = () => {
                     />
 
                     <div className="md:col-span-2">
-                      <Input
-                        label="Description"
-                        type="textarea"
-                        placeholder="Provide detailed instructions..."
-                        {...register("description")}
+                      <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                        Description
+                      </label>
+                      <Controller
+                        name="description"
+                        control={control}
+                        render={({ field }) => (
+                          <RichTextEditor
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            placeholder="Provide detailed instructions..."
+                          />
+                        )}
                       />
                     </div>
                     <Input

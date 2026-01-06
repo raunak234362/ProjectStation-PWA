@@ -9,6 +9,7 @@ import MultipleFileUpload from "../../fields/MultipleFileUpload";
 import SectionTitle from "../../ui/SectionTitle";
 import Service from "../../../api/Service";
 import { useSelector } from "react-redux";
+import RichTextEditor from "../../fields/RichTextEditor";
 
 interface AddEstimationTaskProps {
   estimationId: string;
@@ -39,9 +40,8 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
   // Dropdown options for staff
   const staffOptions =
     staffData
-      ?.filter(
-        (staff: any) =>
-          ["STAFF", "ESTIMATOR", "ESTIMATION_HEAD"].includes(staff.role)
+      ?.filter((staff: any) =>
+        ["STAFF", "ESTIMATOR", "ESTIMATION_HEAD"].includes(staff.role)
       )
       .map((staff: any) => ({
         label: `${staff.firstName} ${staff.lastName}`,
@@ -127,7 +127,10 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
               <Select
                 placeholder="Assigned To *"
                 options={staffOptions}
-                value={staffOptions.find((opt: any) => opt.value === field.value) || null}
+                value={
+                  staffOptions.find((opt: any) => opt.value === field.value) ||
+                  null
+                }
                 onChange={(option: any) => field.onChange(option?.value)}
                 menuPortalTarget={document.body}
                 styles={{
@@ -168,11 +171,16 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
         {/* Notes */}
         <SectionTitle title="Notes" />
         <div>
-          <textarea
-            {...register("notes")}
-            rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
-            placeholder="Add notes..."
+          <Controller
+            name="notes"
+            control={control}
+            render={({ field }) => (
+              <RichTextEditor
+                value={field.value || ""}
+                onChange={field.onChange}
+                placeholder="Add notes..."
+              />
+            )}
           />
         </div>
 
@@ -180,7 +188,9 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
         <SectionTitle title="Attachments" />
         <MultipleFileUpload onFilesChange={setFiles} />
         {files.length > 0 && (
-          <p className="text-sm text-gray-600 mt-2">{files.length} file(s) attached</p>
+          <p className="text-sm text-gray-600 mt-2">
+            {files.length} file(s) attached
+          </p>
         )}
 
         {/* Submit Buttons */}

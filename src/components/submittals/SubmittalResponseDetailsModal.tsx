@@ -3,6 +3,7 @@ import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import Service from "../../api/Service";
+import RichTextEditor from "../fields/RichTextEditor";
 
 // Status options for submittal
 const STATUS_OPTIONS = [
@@ -27,7 +28,7 @@ const SubmittalResponseDetailsModal = ({
 
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
   const userId = sessionStorage.getItem("userId") || "";
-  
+
   const canReply = ["ADMIN", "STAFF", "MANAGER"].includes(userRole);
 
   const handleReplySubmit = async () => {
@@ -43,10 +44,7 @@ const SubmittalResponseDetailsModal = ({
     replyFiles.forEach((file) => formData.append("files", file));
 
     try {
-      await Service.addSubmittalResponse(
-        formData,
-        response.submittalsId
-      );
+      await Service.addSubmittalResponse(formData, response.submittalsId);
       onClose(); // close to refresh parent
     } catch (err) {
       console.error("Failed to send submittal reply:", err);
@@ -56,7 +54,6 @@ const SubmittalResponseDetailsModal = ({
   return (
     <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl space-y-5 relative">
-
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -66,14 +63,15 @@ const SubmittalResponseDetailsModal = ({
         </button>
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-teal-700">
-          Response Details
-        </h2>
+        <h2 className="text-xl font-bold text-teal-700">Response Details</h2>
 
         {/* Parent Message */}
-        <p className="bg-gray-100 p-3 rounded-md border">
-          {response.reason || response.description}
-        </p>
+        <div
+          className="bg-gray-100 p-3 rounded-md border prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{
+            __html: response.reason || response.description,
+          }}
+        />
 
         {/* Parent Files */}
         {response.files?.length > 0 && (
@@ -84,11 +82,7 @@ const SubmittalResponseDetailsModal = ({
                 key={file.id}
                 className="cursor-pointer text-teal-600 underline text-sm"
                 onClick={() =>
-                  openFileSecurely(
-                    "submittal/response",
-                    response.id,
-                    file.id
-                  )
+                  openFileSecurely("submittal/response", response.id, file.id)
                 }
               >
                 <Paperclip size={14} className="inline-block mr-2" />
@@ -107,9 +101,7 @@ const SubmittalResponseDetailsModal = ({
         {/* 🔥 CHILD RESPONSES THREAD */}
         {response.childResponses?.length > 0 && (
           <div className="mt-4 space-y-4 border-t pt-4 max-h-60 overflow-y-auto">
-            <h4 className="text-sm font-semibold text-gray-700">
-              History
-            </h4>
+            <h4 className="text-sm font-semibold text-gray-700">History</h4>
 
             {response.childResponses.map((child: any) => (
               <div
@@ -119,17 +111,17 @@ const SubmittalResponseDetailsModal = ({
                 <div className="flex justify-between text-xs text-gray-500 mb-1">
                   <span className="font-medium text-gray-900">
                     {child.user?.firstName || "User"}{" "}
-                    {child.user?.lastName || ""} (
-                    {child.user?.role || "N/A"})
+                    {child.user?.lastName || ""} ({child.user?.role || "N/A"})
                   </span>
-                  <span>
-                    {new Date(child.createdAt).toLocaleString()}
-                  </span>
+                  <span>{new Date(child.createdAt).toLocaleString()}</span>
                 </div>
 
-                <p className="text-gray-800 mb-2">
-                  {child.reason || child.description}
-                </p>
+                <div
+                  className="text-gray-800 mb-2 prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: child.reason || child.description,
+                  }}
+                />
 
                 {/* Child Files */}
                 {child.files?.length > 0 && (
@@ -146,10 +138,7 @@ const SubmittalResponseDetailsModal = ({
                           )
                         }
                       >
-                        <Paperclip
-                          size={12}
-                          className="inline-block mr-1"
-                        />
+                        <Paperclip size={12} className="inline-block mr-1" />
                         {file.originalName}
                       </p>
                     ))}
@@ -161,28 +150,29 @@ const SubmittalResponseDetailsModal = ({
         )}
 
         {/* Reply Button */}
-      {canReply && !replyMode && (
-  <Button
-    className="bg-blue-600 text-white mt-4"
-    onClick={() => setReplyMode(true)}
-  >
-    Reply
-  </Button>
-)}
-
+        {canReply && !replyMode && (
+          <Button
+            className="bg-blue-600 text-white mt-4"
+            onClick={() => setReplyMode(true)}
+          >
+            Reply
+          </Button>
+        )}
 
         {/* Reply Form */}
         {replyMode && (
           <div className="pt-4 space-y-4 border-t">
-
             {/* Message */}
-            <textarea
-              value={replyMessage}
-              onChange={(e) => setReplyMessage(e.target.value)}
-              rows={3}
-              className="w-full border p-2 rounded"
-              placeholder="Type your reply..."
-            />
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-600">
+                Your Reply
+              </label>
+              <RichTextEditor
+                value={replyMessage}
+                onChange={setReplyMessage}
+                placeholder="Type your reply..."
+              />
+            </div>
 
             {/* Status */}
             <select
@@ -202,17 +192,13 @@ const SubmittalResponseDetailsModal = ({
               type="file"
               multiple
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setReplyFiles(
-                  e.target.files ? Array.from(e.target.files) : []
-                )
+                setReplyFiles(e.target.files ? Array.from(e.target.files) : [])
               }
             />
 
             {/* Actions */}
             <div className="flex justify-end gap-3">
-              <Button onClick={() => setReplyMode(false)}>
-                Cancel
-              </Button>
+              <Button onClick={() => setReplyMode(false)}>Cancel</Button>
               <Button
                 className="bg-teal-600 text-white"
                 onClick={handleReplySubmit}

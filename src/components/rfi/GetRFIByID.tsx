@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import type { RFIItem } from "../../interface";
@@ -9,7 +8,6 @@ import Button from "../fields/Button";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import RFIResponseModal from "./RFIResponseModal";
 import RFIResponseDetailsModal from "./RFIResponseDetailsModal";
-
 
 const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div>
@@ -29,7 +27,7 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
 
-  //   
+  //
   const fetchRfi = async () => {
     try {
       setLoading(true);
@@ -47,8 +45,6 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
     if (id) fetchRfi();
   }, [id]);
   console.log(id);
-
-
 
   if (loading) {
     return (
@@ -76,13 +72,15 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
         <span className="font-medium text-sm">
           {row.original.createdByRole === "CLIENT" ? "Client" : "WBT Team"}
         </span>
-      )
+      ),
     },
     {
       accessorKey: "description",
       header: "Message",
       cell: ({ row }) => (
-        <p className="truncate max-w-[180px]">{row.original.reason || row.original.description}</p>
+        <p className="truncate max-w-[180px]">
+          {row.original.reason || row.original.description}
+        </p>
       ),
     },
     {
@@ -111,7 +109,9 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
       accessorKey: "reason",
       header: "Message",
       cell: ({ row }) => (
-        <div style={{ marginLeft: row.original.parentResponseId ? "20px" : "0px" }}>
+        <div
+          style={{ marginLeft: row.original.parentResponseId ? "20px" : "0px" }}
+        >
           {row.original.reason}
         </div>
       ),
@@ -122,10 +122,11 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
-            ? "bg-green-100 text-green-700"
-            : "bg-yellow-100 text-yellow-700"
-            }`}
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.original.status === "OPEN"
+              ? "bg-green-100 text-green-700"
+              : "bg-yellow-100 text-yellow-700"
+          }`}
         >
           {row.original.status}
         </span>
@@ -133,23 +134,23 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
     },
   ];
 
-
   return (
     <>
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
           {/* LEFT: RFI Details */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-
             {/* Header */}
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-teal-700">{rfi.subject}</h1>
+              <h1 className="text-2xl font-bold text-teal-700">
+                {rfi.subject}
+              </h1>
               <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${rfi.isAproovedByAdmin
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                  rfi.isAproovedByAdmin
                     ? "bg-green-100 text-green-700"
                     : "bg-yellow-100 text-yellow-700"
-                  }`}
+                }`}
               >
                 {rfi.isAproovedByAdmin ? "Approved" : "Pending"}
               </span>
@@ -166,15 +167,20 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
             {/* Description */}
             <div>
               <h4 className="font-semibold text-gray-600 mb-1">Description</h4>
-              <p className="text-gray-800 bg-gray-50 p-3 rounded-lg border">
-                {rfi.description || "No description provided"}
-              </p>
+              <div
+                className="text-gray-800 bg-gray-50 p-3 rounded-lg border prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{
+                  __html: rfi.description || "No description provided",
+                }}
+              />
             </div>
 
             {/* Files */}
             {rfi.files?.length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-600 mb-2">Attachments</h4>
+                <h4 className="font-semibold text-gray-600 mb-2">
+                  Attachments
+                </h4>
                 <ul className="space-y-1">
                   {rfi.files.map((file: any, i: number) => (
                     <li key={file.id}>
@@ -193,13 +199,15 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
 
           {/* RIGHT: Responses */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
-
             {/* Header + Add Response Button */}
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-teal-700">Responses</h2>
 
               {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
-                <Button onClick={() => setShowModal(true)} className="bg-teal-600 text-white">
+                <Button
+                  onClick={() => setShowModal(true)}
+                  className="bg-teal-600 text-white"
+                >
                   + Add Response
                 </Button>
               )}
@@ -234,12 +242,10 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
               onClose={() => setSelectedResponse(null)}
             />
           )}
-
         </div>
       </div>
     </>
   );
-
 };
 
 export default GetRFIByID;

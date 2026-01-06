@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -12,6 +10,7 @@ import Button from "../fields/Button";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
 import type { Fabricator, EstimationPayload } from "../../interface";
+import RichTextEditor from "../fields/RichTextEditor";
 
 const EstimationStatusOptions = [
   { label: "Pending", value: "PENDING" },
@@ -27,9 +26,15 @@ interface EditEstimationProps {
   onCancel?: () => void;
 }
 
-const EditEstimation: React.FC<EditEstimationProps> = ({ id, onSuccess, onCancel }) => {
+const EditEstimation: React.FC<EditEstimationProps> = ({
+  id,
+  onSuccess,
+  onCancel,
+}) => {
   const [loading, setLoading] = useState(true);
-  const fabricators = useSelector((state: any) => state.fabricatorInfo?.fabricatorData || []) as Fabricator[];
+  const fabricators = useSelector(
+    (state: any) => state.fabricatorInfo?.fabricatorData || []
+  ) as Fabricator[];
 
   const {
     register,
@@ -51,7 +56,9 @@ const EditEstimation: React.FC<EditEstimationProps> = ({ id, onSuccess, onCancel
             projectName: data.projectName,
             fabricatorId: String(data.fabricatorId || ""),
             description: data.description,
-            estimateDate: data.estimateDate ? String(data.estimateDate).split("T")[0] : "",
+            estimateDate: data.estimateDate
+              ? String(data.estimateDate).split("T")[0]
+              : "",
             tools: data.tools,
             status: data.status,
           });
@@ -78,7 +85,9 @@ const EditEstimation: React.FC<EditEstimationProps> = ({ id, onSuccess, onCancel
     try {
       const payload = {
         ...data,
-        estimateDate: data.estimateDate ? new Date(data.estimateDate).toISOString() : null,
+        estimateDate: data.estimateDate
+          ? new Date(data.estimateDate).toISOString()
+          : null,
       };
 
       await Service.UpdateEstimationById(id, payload);
@@ -103,22 +112,35 @@ const EditEstimation: React.FC<EditEstimationProps> = ({ id, onSuccess, onCancel
       <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gray-50/50">
-          <h2 className="text-2xl font-bold text-gray-800">
-            Edit Estimation
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-800">Edit Estimation</h2>
           <button
             onClick={onCancel}
             className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
         {/* Modal Body - Scrollable */}
         <div className="flex-1 overflow-y-auto p-8">
-          <form id="edit-estimation-form" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            id="edit-estimation-form"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
             {/* Estimation Details */}
             <SectionTitle title="Estimation Details" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -127,7 +149,11 @@ const EditEstimation: React.FC<EditEstimationProps> = ({ id, onSuccess, onCancel
                 {...register("estimationNumber", { required: "Required" })}
                 placeholder="e.g. EST-2025-089"
               />
-              {errors.estimationNumber && <p className="text-red-500 text-xs">{errors.estimationNumber.message}</p>}
+              {errors.estimationNumber && (
+                <p className="text-red-500 text-xs">
+                  {errors.estimationNumber.message}
+                </p>
+              )}
 
               <Input
                 label="Project Name"
@@ -149,14 +175,23 @@ const EditEstimation: React.FC<EditEstimationProps> = ({ id, onSuccess, onCancel
                 />
               )}
             />
-            {errors.fabricatorId && <p className="text-red-500 text-xs">{errors.fabricatorId.message}</p>}
+            {errors.fabricatorId && (
+              <p className="text-red-500 text-xs">
+                {errors.fabricatorId.message}
+              </p>
+            )}
 
             <SectionTitle title="Description" />
-            <textarea
-              {...register("description")}
-              rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
-              placeholder="Project scope, special requirements..."
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <RichTextEditor
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  placeholder="Project scope, special requirements..."
+                />
+              )}
             />
 
             <SectionTitle title="Timeline & Tools" />
@@ -193,7 +228,11 @@ const EditEstimation: React.FC<EditEstimationProps> = ({ id, onSuccess, onCancel
           <Button type="button" onClick={onCancel}>
             Cancel
           </Button>
-          <Button form="edit-estimation-form" type="submit" disabled={isSubmitting}>
+          <Button
+            form="edit-estimation-form"
+            type="submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Updating..." : "Update Estimation"}
           </Button>
         </div>

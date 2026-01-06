@@ -307,9 +307,10 @@ export default function EstimationTaskByID({
                   <FileText className="w-5 h-5 text-teal-600" />
                   Notes
                 </h4>
-                <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                  {task.notes}
-                </p>
+                <div
+                  className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: task.notes }}
+                />
               </div>
             )}
 

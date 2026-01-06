@@ -22,7 +22,7 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
 
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
-const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
+  const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -82,8 +82,7 @@ const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
     {
       accessorKey: "createdAt",
       header: "Created",
-      cell: ({ row }) =>
-        new Date(row.original.createdAt).toLocaleString(),
+      cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
     },
   ];
 
@@ -91,7 +90,6 @@ const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
     <>
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
           {/* LEFT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
             <h1 className="text-2xl font-bold text-teal-700">
@@ -99,7 +97,10 @@ const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
             </h1>
 
             <Info label="Project" value={submittal.project?.name || "—"} />
-            <Info label="Submitted By" value={submittal.sender?.firstName || "—"} />
+            <Info
+              label="Submitted By"
+              value={submittal.sender?.firstName || "—"}
+            />
             <Info
               label="Created On"
               value={new Date(submittal.date).toLocaleString()}
@@ -107,9 +108,10 @@ const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
 
             <div>
               <h4 className="font-semibold text-gray-700">Description</h4>
-              <p className="p-3 bg-gray-50 border rounded-lg">
-                {submittal.description}
-              </p>
+              <div
+                className="p-3 bg-gray-50 border rounded-lg prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: submittal.description }}
+              />
             </div>
 
             {submittal.files?.length > 0 && (
@@ -138,20 +140,17 @@ const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
           {/* RIGHT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-teal-700">
-                Responses
-              </h2>
+              <h2 className="text-xl font-semibold text-teal-700">Responses</h2>
               {userRole === "CLIENT" && (
-
-              <Button
-                className="bg-teal-600 text-white"
-                onClick={() => setShowResponseModal(true)}
-              >
-                + Add Response
-              </Button>
-               )}
+                <Button
+                  className="bg-teal-600 text-white"
+                  onClick={() => setShowResponseModal(true)}
+                >
+                  + Add Response
+                </Button>
+              )}
             </div>
-             
+
             {submittal.submittalsResponse?.length > 0 ? (
               <DataTable
                 columns={responseColumns}

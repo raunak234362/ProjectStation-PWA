@@ -202,9 +202,12 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             {/* Description */}
             <div>
               <h4 className="font-semibold text-gray-600 mb-1">Description</h4>
-              <p className="text-gray-800 bg-white p-3 rounded-md border">
-                {rfq.description || "No description provided"}
-              </p>
+              <div
+                className="text-gray-800 bg-white p-3 rounded-md border prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{
+                  __html: rfq.description || "No description provided",
+                }}
+              />
             </div>
 
             {/* Scopes */}

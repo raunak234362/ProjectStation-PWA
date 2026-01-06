@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
+import RichTextEditor from "../fields/RichTextEditor";
 
 interface SubmittalResponseModalProps {
   submittalId: string;
@@ -22,7 +22,6 @@ const SubmittalResponseModal = ({
   const [description, setDescription] = useState("");
 
   // ENUMS
-
 
   const [files, setFiles] = useState<File[]>([]);
 
@@ -52,7 +51,6 @@ const SubmittalResponseModal = ({
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-lg relative space-y-4">
-
         {/* CLOSE BUTTON */}
         {/* <button onClick={onClose} className="absolute top-3 right-3">
           <X size={18} />
@@ -76,11 +74,9 @@ const SubmittalResponseModal = ({
         {/* DESCRIPTION */}
         <div>
           <label className="text-sm font-medium">Description</label>
-          <textarea
-            rows={3}
+          <RichTextEditor
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full border rounded-md p-2 mt-1"
+            onChange={setDescription}
             placeholder="Write your message..."
           />
         </div>
