@@ -204,6 +204,8 @@ const AddTask: React.FC = () => {
     : 0;
 
   const onSubmit = async (data: AddTaskFormValues) => {
+    console.log("Form Data Submitted:", data);
+
     if (totalAssignedHours > availableHours && availableHours > 0) {
       toast.error("Total assigned hours exceed available WBS hours");
       return;
@@ -277,7 +279,15 @@ const AddTask: React.FC = () => {
     <div className="min-h-screen bg-slate-50/50">
       <div className="w-full mx-auto">
         <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-          <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-10">
+          <form
+            onSubmit={handleSubmit(onSubmit, (errors) => {
+              console.log("Form Validation Errors:", errors);
+              toast.error(
+                "Please fix the errors in the form before submitting."
+              );
+            })}
+            className="p-8 space-y-10"
+          >
             {/* Project & Milestone Section */}
             <section className="space-y-6">
               <SectionTitle title="Project Context" />
@@ -468,11 +478,16 @@ const AddTask: React.FC = () => {
                 <section className="space-y-6">
                   <SectionTitle title="Task Information" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Input
-                      label="Task Name *"
-                      placeholder="e.g., Prepare GA Drawings"
-                      {...register("name", { required: "Name is required" })}
-                    />
+                    <div className="space-y-1">
+                      <Input
+                        label="Task Name *"
+                        placeholder="e.g., Prepare GA Drawings"
+                        {...register("name", { required: "Name is required" })}
+                      />
+                      {errors.name && (
+                        <p className="text-xs text-red-500">{errors.name.message}</p>
+                      )}
+                    </div>
 
                     <div className="md:col-span-2">
                       <label className="text-sm font-semibold text-slate-700 mb-2 block">
@@ -490,20 +505,30 @@ const AddTask: React.FC = () => {
                         )}
                       />
                     </div>
-                    <Input
-                      label="Start Date *"
-                      type="datetime-local"
-                      {...register("start_date", {
-                        required: "Start date is required",
-                      })}
-                    />
-                    <Input
-                      label="Due Date *"
-                      type="datetime-local"
-                      {...register("due_date", {
-                        required: "Due date is required",
-                      })}
-                    />
+                    <div className="space-y-1">
+                      <Input
+                        label="Start Date *"
+                        type="datetime-local"
+                        {...register("start_date", {
+                          required: "Start date is required",
+                        })}
+                      />
+                      {errors.start_date && (
+                        <p className="text-xs text-red-500">{errors.start_date.message}</p>
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <Input
+                        label="Due Date *"
+                        type="datetime-local"
+                        {...register("due_date", {
+                          required: "Due date is required",
+                        })}
+                      />
+                      {errors.due_date && (
+                        <p className="text-xs text-red-500">{errors.due_date.message}</p>
+                      )}
+                    </div>
                     <Input
                       label="Duration (e.g., 2w, 3d)"
                       placeholder="2w"
@@ -554,13 +579,23 @@ const AddTask: React.FC = () => {
                             control={control}
                             rules={{ required: "Employee is required" }}
                             render={({ field }) => (
-                              <Select
-                                name={`user_id`}
-                                options={employeeOptions}
-                                value={field.value}
-                                onChange={(_, val) => field.onChange(val)}
-                                placeholder="Select Employee"
-                              />
+                              <div className="space-y-1">
+                                <Select
+                                  name={field.name}
+                                  options={employeeOptions}
+                                  value={field.value}
+                                  onChange={(_, val) => field.onChange(val)}
+                                  placeholder="Select Employee"
+                                />
+                                {errors.assignments?.[index]?.employeeId && (
+                                  <p className="text-xs text-red-500">
+                                    {
+                                      errors.assignments[index]?.employeeId
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
                             )}
                           />
                         </div>
@@ -568,17 +603,27 @@ const AddTask: React.FC = () => {
                           <label className="text-xs font-bold text-slate-500 uppercase">
                             Hours
                           </label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register(
-                              `assignments.${index}.hours` as const,
-                              {
-                                required: true,
-                                min: 0,
-                              }
+                          <div className="space-y-1">
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              {...register(
+                                `assignments.${index}.hours` as const,
+                                {
+                                  required: "Hours are required",
+                                  min: {
+                                    value: 0,
+                                    message: "Hours must be positive",
+                                  },
+                                }
+                              )}
+                            />
+                            {errors.assignments?.[index]?.hours && (
+                              <p className="text-xs text-red-500">
+                                {errors.assignments[index]?.hours?.message}
+                              </p>
                             )}
-                          />
+                          </div>
                         </div>
                         {fields.length > 1 && (
                           <button

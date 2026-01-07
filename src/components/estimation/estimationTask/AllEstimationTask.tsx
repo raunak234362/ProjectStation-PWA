@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
 import DataTable from "../../ui/table";
 import { format } from "date-fns";
+import { X as CloseIcon } from "lucide-react";
 import EstimationTaskByID from "./EstimationTaskByID";
+import AddEstimationTask from "./AddEstimationTask";
 
 interface EstimationTask {
   id: string;
@@ -30,12 +31,18 @@ interface EstimationTask {
 interface AllEstimationTaskProps {
   estimations: EstimationTask[];
   onClose?: () => void;
+  estimationId?: string;
+  onRefresh?: () => void;
 }
 
-const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({ estimations, onClose }) => {
+const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
+  estimations,
+  onClose,
+  estimationId,
+  onRefresh,
+}) => {
+  const [isAddingTask, setIsAddingTask] = useState(false);
   console.log(estimations);
-
-
 
   // ─────────────── Columns ───────────────
   const columns = [
@@ -51,14 +58,16 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({ estimations, onCl
     {
       header: "Assigned To",
       accessorFn: (row: EstimationTask) =>
-        `${row.assignedTo?.firstName ?? ""} ${row.assignedTo?.middleName ?? ""} ${row.assignedTo?.lastName ?? ""}`
-          .trim() || "—",
+        `${row.assignedTo?.firstName ?? ""} ${
+          row.assignedTo?.middleName ?? ""
+        } ${row.assignedTo?.lastName ?? ""}`.trim() || "—",
     },
     {
       header: "Assigned By",
       accessorFn: (row: EstimationTask) =>
-        `${row.assignedBy?.firstName ?? ""} ${row.assignedBy?.middleName ?? ""} ${row.assignedBy?.lastName ?? ""}`
-          .trim() || "—",
+        `${row.assignedBy?.firstName ?? ""} ${
+          row.assignedBy?.middleName ?? ""
+        } ${row.assignedBy?.lastName ?? ""}`.trim() || "—",
     },
     {
       header: "End Date",
@@ -74,13 +83,15 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({ estimations, onCl
           status === "COMPLETED"
             ? "bg-green-100 text-green-800"
             : status === "ASSIGNED"
-              ? "bg-yellow-100 text-yellow-800"
-              : status === "BREAK"
-                ? "bg-orange-100 text-orange-800"
-                : "bg-blue-100 text-blue-800";
+            ? "bg-yellow-100 text-yellow-800"
+            : status === "BREAK"
+            ? "bg-orange-100 text-orange-800"
+            : "bg-blue-100 text-blue-800";
 
         return (
-          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${color}`}>
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-semibold ${color}`}
+          >
             {status}
           </span>
         );
@@ -102,16 +113,56 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({ estimations, onCl
         <h2 className="text-lg font-semibold text-gray-800">
           Estimation Tasks
         </h2>
-        {typeof onClose === "function" && (
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800"
-          >
-            Close
-          </button>
-        )}
+        <div className="flex gap-2">
+          {estimationId && (
+            <button
+              type="button"
+              onClick={() => setIsAddingTask(true)}
+              className="px-3 py-1 text-sm rounded-md bg-teal-600 hover:bg-teal-700 text-white font-medium transition-colors shadow-sm"
+            >
+              Add Task
+            </button>
+          )}
+          {typeof onClose === "function" && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors"
+            >
+              Close
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Modal Overlay for Adding Task */}
+      {isAddingTask && estimationId && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in duration-200">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <h3 className="text-xl font-bold text-gray-800">
+                Add Estimation Task
+              </h3>
+              <button
+                onClick={() => setIsAddingTask(false)}
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+              >
+                <CloseIcon size={24} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-8">
+              <AddEstimationTask
+                estimationId={estimationId}
+                onClose={() => setIsAddingTask(false)}
+                onSuccess={() => {
+                  setIsAddingTask(false);
+                  onRefresh?.();
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div className="w-full rounded-xl p-4 ">
@@ -121,11 +172,18 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({ estimations, onCl
               columns={columns}
               data={estimations}
               onRowClick={handleRowClick}
-              detailComponent={({ row, close }: { row: EstimationTask; close: () => void }) => {
+              detailComponent={({
+                row,
+                close,
+              }: {
+                row: EstimationTask;
+                close: () => void;
+              }) => {
                 console.log("Detail Component Row:", row.id);
-                const estimationUniqueId =
-                  row.id ?? row.estimationId ?? "";
-                return <EstimationTaskByID id={estimationUniqueId} onClose={close} />;
+                const estimationUniqueId = row.id ?? row.estimationId ?? "";
+                return (
+                  <EstimationTaskByID id={estimationUniqueId} onClose={close} />
+                );
               }}
               searchPlaceholder="Search tasks..."
               pageSizeOptions={[5, 10, 25]}

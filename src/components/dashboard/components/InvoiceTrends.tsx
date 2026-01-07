@@ -87,6 +87,15 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     }
   }, [invoices, selectedYear, selectedMonth]);
 
+  const { totalPeriodAmount, totalPeriodCount } = useMemo(() => {
+    const amount = processedChartData.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
+    const count = processedChartData.reduce((sum, item) => sum + item.count, 0);
+    return { totalPeriodAmount: amount, totalPeriodCount: count };
+  }, [processedChartData]);
+
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
     return Array.from({ length: 5 }, (_, i) => currentYear - i);
@@ -96,11 +105,15 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800">
+          <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
             Invoice Trends
+            <span className="text-sm font-normal text-gray-500">
+              | Total: ${totalPeriodAmount.toLocaleString()} ({totalPeriodCount}{" "}
+              Invoices)
+            </span>
           </h2>
           <p className="text-xs text-gray-500">
-            Showing amount and count for{" "}
+            Showing trends for{" "}
             {selectedMonth !== null ? `${months[selectedMonth]} ` : ""}
             {selectedYear}
           </p>
@@ -164,7 +177,6 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               dy={10}
             />
             <YAxis
-              yAxisId="left"
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#9ca3af", fontSize: 12 }}
@@ -172,29 +184,32 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                 `$${value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value}`
               }
             />
-            <YAxis
-              yAxisId="right"
-              orientation="right"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
-            />
             <Tooltip
-              contentStyle={{
-                borderRadius: "12px",
-                border: "none",
-                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                padding: "12px",
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0].payload;
+                  return (
+                    <div className="bg-white p-3 rounded-xl shadow-xl border border-gray-100">
+                      <p className="text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                        {selectedMonth !== null
+                          ? `${months[selectedMonth]} ${label}`
+                          : label}
+                      </p>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sm font-bold text-teal-700">
+                          Amount: ${data.amount.toLocaleString()}
+                        </p>
+                        <p className="text-xs font-medium text-gray-600">
+                          Invoices: {data.count}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
               }}
             />
-            <Legend
-              verticalAlign="top"
-              align="right"
-              height={36}
-              iconType="circle"
-            />
             <Area
-              yAxisId="left"
               type="monotone"
               dataKey="amount"
               name="Total Amount"
@@ -202,21 +217,6 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               fillOpacity={0.1}
               stroke="#0d9488"
               strokeWidth={3}
-            />
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="count"
-              name="Invoice Count"
-              stroke="#f59e0b"
-              strokeWidth={3}
-              dot={{
-                r: 4,
-                fill: "#f59e0b",
-                strokeWidth: 2,
-                stroke: "#fff",
-              }}
-              activeDot={{ r: 6, strokeWidth: 0 }}
             />
           </ComposedChart>
         </ResponsiveContainer>

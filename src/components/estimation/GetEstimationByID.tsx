@@ -246,9 +246,9 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
         >
           Estimated Hours/Weeks
         </Button>
-        <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
+        {/* <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           Add To Project
-        </Button>
+        </Button> */}
         <Button
           className="py-1 px-2 text-lg"
           onClick={() => setIsEditing(!isEditing)}
@@ -258,6 +258,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       </div>
       {isEstimationTaskOpen && (
         <AllEstimationTask
+          estimationId={estimation?.id || ""}
+          onRefresh={fetchEstimation}
           // Many APIs return tasks either nested under `tasks` or `estimationTasks`
           // Fallback to an empty array to avoid runtime errors.
           estimations={

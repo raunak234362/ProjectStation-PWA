@@ -8,32 +8,30 @@ const EmployeeLayout = () => {
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
-        <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-t-md ">
-          <div className="flex w-full overflow-x-auto">
+        <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 border-b rounded-t-2xl flex flex-col md:flex-row items-center justify-end gap-4">
+          <div className="flex flex-row gap-3 items-end justify-end">
             <button
               onClick={() => setActiveTab("allEmployee")}
-              className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
+              className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allEmployee"
                   ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm text-white font-semibold"
+                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
               }`}
             >
               All Employee
             </button>
 
             {(userRole === "ADMIN" || userRole === "human-resource") && (
-              <>
-                <button
-                  onClick={() => setActiveTab("addEmployee")}
-                  className={`px-1.5 md:px-4 py-2 rounded-lg rounded-b ${
-                    activeTab === "addEmployee"
-                      ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                      : "md:text-base text-sm text-white font-semibold"
-                  }`}
-                >
-                  Add Employee
-                </button>
-              </>
+              <button
+                onClick={() => setActiveTab("addEmployee")}
+                className={`px-1.5 md:px-4 py-2 rounded-lg ${
+                  activeTab === "addEmployee"
+                    ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
+                    : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                }`}
+              >
+                Add Employee
+              </button>
             )}
           </div>
         </div>

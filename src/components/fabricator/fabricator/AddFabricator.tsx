@@ -61,10 +61,6 @@ const AddFabricator = () => {
 
   return (
     <div className="w-full mx-auto bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg p-8 mt-8 border border-gray-200">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-        Add New Fabricator
-      </h2>
-
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-1 md:grid-cols-2 gap-6"

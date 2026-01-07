@@ -107,10 +107,7 @@ const AddConnectionDesigner: React.FC = () => {
 
   return (
     <div className="w-full h-auto mx-auto bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg p-8 mt-8 border border-gray-200 overflow-visible">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-        Add New Connection Designer
-      </h2>
-
+ 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {/* Connection Designer Name */}
         <Input
