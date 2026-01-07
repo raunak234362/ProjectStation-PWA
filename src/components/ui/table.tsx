@@ -170,6 +170,7 @@ interface DataTableProps<T extends object> {
   searchPlaceholder?: string;
   pageSizeOptions?: number[];
   showColumnToggle?: boolean;
+  initialSorting?: SortingState;
 }
 
 export default function DataTable<T extends object>({
@@ -181,9 +182,25 @@ export default function DataTable<T extends object>({
   searchPlaceholder = "Search...",
   pageSizeOptions = [10, 25, 50, 100],
   showColumnToggle = true,
+  initialSorting,
 }: DataTableProps<T>) {
   const [globalFilter, setGlobalFilter] = useState("");
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>(() => {
+    if (initialSorting) return initialSorting;
+
+    // Default to sorting by the first available column (excluding selection)
+    const firstSortableColumn = userColumns.find(
+      (col) => col.id !== "select" && (col as any).accessorKey
+    );
+
+    if (firstSortableColumn) {
+      const id =
+        firstSortableColumn.id || (firstSortableColumn as any).accessorKey;
+      return [{ id, desc: false }];
+    }
+
+    return [];
+  });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [columnVisibility, setColumnVisibility] = useState<
