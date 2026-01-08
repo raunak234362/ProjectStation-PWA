@@ -14,8 +14,8 @@ const TeamLayout = () => {
               onClick={() => setActiveTab("allTeam")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allTeam"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               All Team
@@ -26,8 +26,8 @@ const TeamLayout = () => {
                 onClick={() => setActiveTab("addTeam")}
                 className={`px-1.5 md:px-4 py-2 rounded-lg ${
                   activeTab === "addTeam"
-                    ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                    : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                    ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                    : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
                 }`}
               >
                 Add Team

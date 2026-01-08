@@ -36,6 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       console.error("Logout failed:", error);
     }
   };
+console.log(userData,"=========================");
 
   return (
     <aside

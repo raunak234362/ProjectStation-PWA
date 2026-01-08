@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showDepartment, showTeam } from "../store/userSlice";
 
 const ProjectLayout = () => {
-  const [activeTab, setActiveTab] = useState("allProject");
+  const [activeTab, setActiveTab] = useState("projectDashboard");
   const dispatch = useDispatch();
   const departmentDatas = useSelector(
     (state: any) => state?.userInfo?.departmentData
@@ -95,8 +95,8 @@ const ProjectLayout = () => {
               onClick={() => setActiveTab("projectDashboard")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "projectDashboard"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               Project Dashboard
@@ -105,8 +105,8 @@ const ProjectLayout = () => {
               onClick={() => setActiveTab("allProject")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allProject"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               All Project
@@ -116,8 +116,8 @@ const ProjectLayout = () => {
               onClick={() => setActiveTab("addProject")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addProject"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               Add New Project

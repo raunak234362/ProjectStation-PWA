@@ -15,6 +15,7 @@ import ProjectPage from "../pages/ProjectPage";
 import invoicePage from "../pages/invoicePage";
 import TaskPage from "../pages/TaskPage";
 import CoTablePage from "../components/co/CoTablePage";
+import AccountPage from "../pages/AccountPage";
 
 const routes = [
   { path: "/", Component: Login },
@@ -39,6 +40,7 @@ const routes = [
           { path: "projects", Component: ProjectPage },
           { path: "invoices", Component: invoicePage },
           { path: "tasks", Component: TaskPage },
+          { path: "accounts", Component: AccountPage },
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },

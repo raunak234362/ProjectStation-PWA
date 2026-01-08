@@ -47,7 +47,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
   };
 
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-  const padding = Array.from({ length: firstDayOfMonth }, (_, i) => null);
+  const padding = Array.from({ length: firstDayOfMonth }, () => null);
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
@@ -95,14 +95,23 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
           <select
             value={selectedMember}
             onChange={(e) => setSelectedMember(e.target.value)}
-            className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+            className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
           >
-            <option value="all">Select Team Member</option>
-            {members.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.f_name} {m.l_name}
-              </option>
-            ))}
+            <option value="all" className="text-gray-900">
+              Select Team Member
+            </option>
+            {members.map((m) => {
+              const user = m.member || {};
+              const name =
+                `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+                m.f_name ||
+                "Unknown";
+              return (
+                <option key={m.id} value={m.id} className="text-gray-900">
+                  {name}
+                </option>
+              );
+            })}
           </select>
 
           <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-2 py-1">
@@ -134,29 +143,50 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
             {day}
           </div>
         ))}
-        {[...padding, ...days].map((day, idx) => (
-          <div
-            key={idx}
-            className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${
-              day === null ? "bg-gray-50/30" : ""
-            }`}
-          >
-            {day && (
-              <>
-                <span className="text-xs font-bold text-gray-400">{day}</span>
-                {/* Task rendering logic would go here */}
-                <div className="mt-1 space-y-1">
-                  {/* Example task */}
-                  {day === 15 && (
-                    <div className="px-1.5 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded border border-rose-100">
-                      On Leave
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        ))}
+        {[...padding, ...days].map((day, idx) => {
+          const date = new Date(year, currentDate.getMonth(), day || 1);
+          date.setHours(0, 0, 0, 0);
+
+          const peopleWorkingCount = day
+            ? members.filter((member) => {
+                return (member.tasks || []).some((task: any) => {
+                  if (!task.start_date || !task.due_date) return false;
+                  const start = new Date(task.start_date);
+                  const end = new Date(task.due_date);
+                  start.setHours(0, 0, 0, 0);
+                  end.setHours(0, 0, 0, 0);
+                  return date >= start && date <= end;
+                });
+              }).length
+            : 0;
+
+          return (
+            <div
+              key={idx}
+              className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${
+                day === null ? "bg-gray-50/30" : ""
+              }`}
+            >
+              {day && (
+                <>
+                  <span className="text-xs font-bold text-gray-400">{day}</span>
+                  <div className="mt-2 flex flex-col gap-1">
+                    {peopleWorkingCount > 0 ? (
+                      <div className="px-2 py-1 bg-teal-50 text-teal-700 text-[10px] font-bold rounded-lg border border-teal-100 flex items-center justify-center gap-1">
+                        <User size={10} />
+                        <span>{peopleWorkingCount} Working</span>
+                      </div>
+                    ) : (
+                      <div className="px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-medium rounded-lg border border-gray-100 text-center">
+                        No Active Tasks
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className="mt-4 flex items-center gap-4 text-[10px] font-bold text-gray-400">

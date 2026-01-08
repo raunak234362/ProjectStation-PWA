@@ -24,10 +24,9 @@ export interface AccountInfo {
 
 export interface InvoiceItem {
   description: string;
-  quantity: number;
   rateUSD: number;
   totalUSD: number;
-  unit?: number;
+  unit: number;
   sacCode?: number;
   remarks?: string;
 }
@@ -85,10 +84,9 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
       invoiceItems: [
         {
           description: "",
-          quantity: 1,
+          unit: 1,
           rateUSD: 0,
           totalUSD: 0,
-          unit: 0,
           sacCode: 0,
           remarks: "",
         },
@@ -268,10 +266,9 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
       totalInvoiceValue: Number(data.totalInvoiceValue),
       invoiceItems: data.invoiceItems?.map((item) => ({
         ...item,
-        quantity: Number(item.quantity),
         rateUSD: Number(item.rateUSD),
         totalUSD: Number(item.totalUSD),
-        unit: item.unit ? Number(item.unit) : 0,
+        unit: Number(item.unit),
         sacCode: item.sacCode ? String(item.sacCode) : 0,
       })),
     };
@@ -505,13 +502,26 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                 </div>
                 <div className="md:col-span-1">
                   <Input
-                    label={index === 0 ? "Unit" : ""}
+                    label={index === 0 ? "Unit *" : ""}
                     placeholder="Unit"
                     type="number"
                     {...register(`invoiceItems.${index}.unit` as const, {
+                      required: "Unit is required",
                       valueAsNumber: true,
+                      min: { value: 0, message: "Min 0" },
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                        const unit = parseFloat(e.target.value) || 0;
+                        const rate =
+                          watch(`invoiceItems.${index}.rateUSD`) || 0;
+                        setValue(`invoiceItems.${index}.totalUSD`, unit * rate);
+                      },
                     })}
                   />
+                  {errors.invoiceItems?.[index]?.unit && (
+                    <p className="text-red-500 text-xs">
+                      {errors.invoiceItems[index]?.unit?.message}
+                    </p>
+                  )}
                 </div>
                 <div className="md:col-span-1">
                   <Input
@@ -520,23 +530,6 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                     type="number"
                     {...register(`invoiceItems.${index}.sacCode` as const, {
                       valueAsNumber: true,
-                    })}
-                  />
-                </div>
-                <div className="md:col-span-1">
-                  <Input
-                    label={index === 0 ? "Qty *" : ""}
-                    type="number"
-                    {...register(`invoiceItems.${index}.quantity` as const, {
-                      required: "Qty is required",
-                      valueAsNumber: true,
-                      min: { value: 1, message: "Min 1" },
-                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                        const qty = parseFloat(e.target.value) || 0;
-                        const rate =
-                          watch(`invoiceItems.${index}.rateUSD`) || 0;
-                        setValue(`invoiceItems.${index}.totalUSD`, qty * rate);
-                      },
                     })}
                   />
                 </div>
@@ -551,9 +544,8 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                       min: { value: 0, message: "Min 0" },
                       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                         const rate = parseFloat(e.target.value) || 0;
-                        const qty =
-                          watch(`invoiceItems.${index}.quantity`) || 0;
-                        setValue(`invoiceItems.${index}.totalUSD`, qty * rate);
+                        const unit = watch(`invoiceItems.${index}.unit`) || 0;
+                        setValue(`invoiceItems.${index}.totalUSD`, unit * rate);
                       },
                     })}
                   />
@@ -593,10 +585,9 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
               onClick={() =>
                 append({
                   description: "",
-                  quantity: 1,
+                  unit: 1,
                   rateUSD: 0,
                   totalUSD: 0,
-                  unit: 0,
                   sacCode: 0,
                   remarks: "",
                 })
