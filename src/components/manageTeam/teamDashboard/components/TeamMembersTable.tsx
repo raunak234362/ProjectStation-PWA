@@ -14,6 +14,8 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
   formatToHoursMinutes,
   getEfficiencyColorClass,
 }) => {
+  console.log(tableData);
+  
   const columns = useMemo<ExtendedColumnDef<any>[]>(
     () => [
       {

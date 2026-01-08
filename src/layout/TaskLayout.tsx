@@ -18,8 +18,8 @@ const TaskLayout = () => {
               onClick={() => setActiveTab("activeTask")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "activeTask"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               Active Tasks
@@ -28,8 +28,8 @@ const TaskLayout = () => {
               onClick={() => setActiveTab("allTask")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allTask"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               All Task
@@ -39,8 +39,8 @@ const TaskLayout = () => {
               onClick={() => setActiveTab("addTask")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addTask"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               Add Task

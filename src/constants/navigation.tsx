@@ -61,17 +61,17 @@ export const navItems: NavItem[] = [
     icon: <FactoryIcon />,
     roles: ["admin", "department-manager", "deputy_manager"],
   },
-  {
-    label: "Connection Designing Quotation",
-    to: "connection-designing-quotation",
-    icon: <FactoryIcon />,
-    roles: [
-      "admin",
-      "department-manager",
-      "connection_designer_engineer",
-      "deputy_manager",
-    ],
-  },
+  // {
+  //   label: "Connection Designing Quotation",
+  //   to: "connection-designing-quotation",
+  //   icon: <FactoryIcon />,
+  //   roles: [
+  //     "admin",
+  //     "department-manager",
+  //     "connection_designer_engineer",
+  //     "deputy_manager",
+  //   ],
+  // },
   {
     label: "RFQ",
     to: "rfq",

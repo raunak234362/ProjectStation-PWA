@@ -25,20 +25,6 @@ const AccountLayout = () => {
     fetchAccounts();
   }, []);
 
-  const stats = {
-    total: accounts.length,
-    savings: accounts.filter(
-      (a: any) => a.accountType?.toLowerCase() === "savings"
-    ).length,
-    current: accounts.filter(
-      (a: any) => a.accountType?.toLowerCase() === "current"
-    ).length,
-    other: accounts.filter((a: any) => {
-      const type = a.accountType?.toLowerCase();
-      return type !== "savings" && type !== "current";
-    }).length,
-  };
-
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
@@ -82,8 +68,8 @@ const AccountLayout = () => {
               onClick={() => setActiveTab("allAccounts")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allAccounts"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               All Accounts
@@ -93,8 +79,8 @@ const AccountLayout = () => {
               onClick={() => setActiveTab("addAccount")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addAccount"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               Add Account

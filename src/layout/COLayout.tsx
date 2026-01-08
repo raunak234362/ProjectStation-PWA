@@ -14,8 +14,8 @@ const COLayout = () => {
               onClick={() => setActiveTab("allCO")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allCO"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               ALL CO
@@ -25,8 +25,8 @@ const COLayout = () => {
               onClick={() => setActiveTab("addCO")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addCO"
-                  ? "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-bold"
-                  : "md:text-base text-sm bg-teal-700 text-white font-semibold"
+                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
               }`}
             >
               Add CO

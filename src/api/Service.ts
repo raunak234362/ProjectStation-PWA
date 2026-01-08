@@ -1227,9 +1227,24 @@ class Service {
         "Content-Type": "multipart/form-data",
       },
     });
-
     return response.data;
   }
+
+  //pending RFIs
+  static async pendingRFIs() {
+    try {
+      const response = await api.get(`rfi/pendingRFIs`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("pending RFIs:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find pending RFIs", error);
+    }
+  }
+
   static async RfiSent() {
     try {
       const response = await api.get(`rfi/sents`, {
@@ -1325,6 +1340,22 @@ class Service {
       console.log(error);
     }
   }
+
+  //pending submittals
+  static async PendingSubmittal() {
+    try {
+      const response = await api.get(`submittal/pendingSubmittal`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Pending submittals:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittals", error);
+    }
+  }
+
   //All Submitals
   static async SubmittalSent() {
     try {
@@ -1410,9 +1441,25 @@ class Service {
       console.log(error);
     }
   }
-  static async GetChangeOrder(coId: string) {
+
+  // pending Co
+  static async PendingCo() {
     try {
-      const response = await api.get(`changeOrder/ById/${coId}`, {
+      const response = await api.get(`changeOrder/pendingCOs`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Pending Co:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Co", error);
+    }
+  }
+
+  static async GetChangeOrder(projectId: string) {
+    try {
+      const response = await api.get(`changeOrder/project/${projectId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1421,33 +1468,6 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find CO", error);
-    }
-  }
-   static async CoSent() {
-    try {
-      const response = await api.get(`changeOrder/sent`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" Co sents:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find COs", error);
-    }
-  }
-    static async CoRecieved() {
-    try {
-      const response = await api.get(`changeOrder/received`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("  Co received:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find co's", error);
     }
   }
   //update Co
@@ -1466,7 +1486,7 @@ class Service {
   // Change Order Table Methods
   static async GetAllCOTableRows(coId: string) {
     try {
-      const response = await api.get(`changeOrder/${coId}/table`, {
+      const response = await api.get(`changeOrder/table/${coId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1479,7 +1499,7 @@ class Service {
 
   static async addCOTable(data: any, coId: string) {
     try {
-      const response = await api.post(`changeOrder/${coId}/table`, data, {
+      const response = await api.post(`changeOrder/table/${coId}`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1490,5 +1510,266 @@ class Service {
       throw error;
     }
   }
+
+  //Add Task
+  static async AddTask(data: any) {
+    console.log(data);
+    const token = sessionStorage.getItem("token");
+    try {
+      const response = await api.post(`task/`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //Get All Task
+  static async GetAllTask() {
+    try {
+      const response = await api.get(`task/getAllTasks`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+  //Get All Task
+  static async GetMyTask() {
+    try {
+      const response = await api.get(`task/user/tasks`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+  //non-completed-tasks
+  static async GetNonCompletedTasks() {
+    try {
+      const response = await api.get(`task/user/non-completed-tasks`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+  //Get Task by ID
+  static async GetTaskById(id: string) {
+    try {
+      const response = await api.get(`task/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Task fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Task", error);
+    }
+  }
+
+  //Task Start
+  static async TaskStart(id: string) {
+    try {
+      const response = await api.post(
+        `task/start/${id}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(" Task started by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot start Task", error);
+    }
+  }
+
+  //Task Resume
+  static async TaskResume(id: string) {
+    try {
+      const response = await api.post(
+        `task/resume/${id}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(" Task resumed by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot resume Task", error);
+    }
+  }
+
+  //Task Pause
+  static async TaskPause(id: string, data: any) {
+    try {
+      const response = await api.patch(`task/pause/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Task paused by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot pause Task", error);
+    }
+  }
+
+  //Task End
+  static async TaskEnd(id: string, data: any) {
+    try {
+      const response = await api.post(`task/end/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Task ended by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot end Task", error);
+    }
+  }
+
+  // Get User Stats
+  static async getUsersStats(userId: string) {
+    try {
+      const response = await api.get(`task/user/stats/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching stats for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  // Add Bank Account
+  static async AddBankAccount(data: any) {
+    try {
+      const response = await api.post(`invoice/account`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Bank account added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding bank account:", error);
+      throw error;
+    }
+  }
+
+  // Add Invoice
+  static async AddInvoice(data: any) {
+    try {
+      const response = await api.post(`invoice/create`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Invoice added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding invoice:", error);
+      throw error;
+    }
+  }
+
+  // Get Invoice
+  static async GetInvoiceById(id: string) {
+    try {
+      const response = await api.get(`invoice/byId/${id}`);
+      console.log("Invoice fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching invoice:", error);
+      throw error;
+    }
+  }
+
+  // all Invoice 
+  static async GetAllInvoice() {
+    try {
+      const response = await api.get(`invoice/AllInvoices`);
+      console.log("Invoice fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching invoice:", error);
+      throw error;
+    }
+  }
+
+  //get bank accounts
+  static async GetBankAccounts() {
+    try {
+      const response = await api.get(`invoice/accounts/all`);
+      // console.log("Bank accounts fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching bank accounts:", error);
+      throw error;
+    }
+  }
+
+  //get bank account by ID
+  static async GetBankAccountById(id: string) {
+    try {
+      const response = await api.get(`invoice/accounts/${id}`);
+      console.log("Bank account fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching bank account:", error);
+      throw error;
+    }
+  }
+
+  //Dashboard Data
+  static async GetDashboardData() {
+    try {
+      const response = await api.get(`dashBoardData/`);
+      console.log("Dashboard data fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      throw error;
+    }
+  }
+
+  // upcomping submittal
+  static async GetPendingSubmittal() {
+    try {
+      const response = await api.get(`mileStone/pendingSubmittals`);
+      console.log("Upcoming submittal fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching upcoming submittal:", error);
+      throw error;
+    }
+  }
+
 }
 export default Service;
