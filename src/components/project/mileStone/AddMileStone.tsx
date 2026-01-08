@@ -24,6 +24,7 @@ const AddMileStone = ({
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<ProjectMilestone>({

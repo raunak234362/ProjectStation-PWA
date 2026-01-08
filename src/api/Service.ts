@@ -1462,6 +1462,19 @@ class Service {
       console.error("cannot find CO", error);
     }
   }
+  //response routes 
+ static async addCOResponse(formData: FormData, responseId: string) {
+    const token = sessionStorage.getItem("token");
+
+    const response = await api.post(`changeOrder/${responseId}/responses`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  }
 
   // Change Order Table Methods
   static async GetAllCOTableRows(coId: string) {
