@@ -71,13 +71,16 @@ const WBTDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sent, received, pendingSubmittalsRes, allInvoices] =
+        const [sent, received, pendingSubmittalsRes, allInvoices, pendingSubmittalNumber, pendingRFIs] =
           await Promise.all([
             Service.RfqSent(),
             Service.RFQRecieved(),
             Service.GetPendingSubmittal(),
             Service.GetAllInvoice(),
+            Service.PendingSubmittal(),
+            Service.pendingRFIs(),
           ]);
+console.log(pendingRFIs);
 
         setPendingSubmittals(
           Array.isArray(pendingSubmittalsRes)
@@ -151,7 +154,10 @@ const WBTDashboard = () => {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <InvoiceTrends invoices={invoices} />
-          <UpcomingSubmittals pendingSubmittals={pendingSubmittals} />
+          <UpcomingSubmittals
+            pendingSubmittals={pendingSubmittals}
+            invoices={invoices}
+          />
         </div>
 
         {/* Modals */}

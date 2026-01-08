@@ -59,7 +59,7 @@ const CoTable = ({ coId }: ChangeOrderTableProps) => {
         QtyNo: Number(row.QtyNo),
         hours: Number(row.hours),
         cost: Number(row.cost),
-      }));
+      }));  
 
       await Service.addCOTable(formattedRows, coId);
       toast.success("Table saved successfully!");

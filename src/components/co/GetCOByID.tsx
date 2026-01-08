@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Service from "../../api/Service";
 import type { ChangeOrderItem } from "../../interface";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { openFileSecurely } from "../../utils/openFileSecurely";
+import type { ColumnDef } from "@tanstack/react-table";
+import DataTable from "../ui/table";
+import Button from "../fields/Button";
+import CoResponseModal from "./CoResponseModal";
+import COResponseDetailsModal from "./CoResponseDetailsModal";
 
+/* -------------------- Small UI Helper -------------------- */
 const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div>
     <h4 className="text-sm text-gray-500">{label}</h4>
@@ -11,37 +17,61 @@ const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   </div>
 );
 
+/* -------------------- Props -------------------- */
 interface GetCOByIDProps {
   id: string;
   projectId?: string;
 }
 
+/* ========================================================= */
+/* ======================= COMPONENT ======================= */
+/* ========================================================= */
+
 const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
+  /* -------------------- STATE (ALL HOOKS AT TOP) -------------------- */
   const [loading, setLoading] = useState(true);
   const [co, setCO] = useState<ChangeOrderItem | null>(null);
   const [error, setError] = useState<string | null>(null);
-  console.log(projectId);
+  const [Responses, setResponses] = useState<any[]>([]);
 
+  const [showResponseModal, setShowResponseModal] = useState(false);
+  const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
+
+  const userRole = sessionStorage.getItem("userRole");
+  console.log(id);
+  
+  /* -------------------- SAFE DERIVED VALUES -------------------- */
+  const encodedCO = useMemo(() => {
+    if (!co) return "";
+    return encodeURIComponent(JSON.stringify(co));
+  }, [co]);
+
+  const responses = useMemo(() => {
+    try {
+      if (!co?.coResponses) return [];
+      return Array.isArray(co.coResponses)
+        ? co.coResponses 
+        : JSON.parse(co.coResponses);
+    } catch (err) {
+      console.error("Failed to parse CO responses", err);
+      return [];
+    }
+  }, [co?.coResponses]);
+
+  /* -------------------- FETCH CO -------------------- */
   const fetchCO = async () => {
     try {
       if (!projectId) {
         setError("Project ID is missing");
-        setLoading(false);
         return;
       }
 
       setLoading(true);
 
-      const response = await Service.GetChangeOrder(projectId);
-      const allCOs = response.data || [];
+      const response = await Service.GetChangeOrder(id);
+      console.log(response);
 
-      const selectedCO = allCOs.find((item: any) => item.id === id);
-
-      if (!selectedCO) {
-        throw new Error("Change Order not found");
-      }
-
-      setCO(selectedCO);
+      setCO(response.data);
     } catch (err) {
       console.error(err);
       setError("Failed to load Change Order");
@@ -51,9 +81,10 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
   };
 
   useEffect(() => {
-    if (id && projectId) fetchCO();
+    fetchCO();
   }, [id, projectId]);
 
+  /* -------------------- EARLY RETURNS -------------------- */
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8 text-gray-500">
@@ -72,108 +103,208 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
     );
   }
 
-  return (
-    <div className="p-6">
-      <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-teal-700">
-            CO #{co.changeOrderNumber}
-          </h1>
-
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              co.isAproovedByAdmin === true
-                ? "bg-green-100 text-green-700"
-                : co.isAproovedByAdmin === false
-                ? "bg-red-100 text-red-700"
-                : "bg-yellow-100 text-yellow-700"
-            }`}
-          >
-            {co.isAproovedByAdmin === true
-              ? "Approved"
-              : co.isAproovedByAdmin === false
-              ? "Rejected"
-              : "Pending"}
+  /* -------------------- RESPONSE TABLE COLUMNS -------------------- */
+  const responseColumns: ColumnDef<any>[] = [
+    {
+      accessorKey: "createdByRole",
+      header: "From",
+      cell: ({ row }) => (
+        <span className="font-medium text-sm">
+          {row.original.createdByRole === "CLIENT"
+            ? "Client"
+            : "WBT Team"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "reason",
+      header: "Message",
+      cell: ({ row }) => (
+        <p className="truncate max-w-[220px]">
+          {row.original.reason}
+        </p>
+      ),
+    },
+    {
+      accessorKey: "files",
+      header: "Files",
+      cell: ({ row }) => {
+        const count = row.original.files?.length ?? 0;
+        return count > 0 ? (
+          <span className="text-teal-700 font-medium">
+            {count} file(s)
           </span>
-        </div>
+        ) : (
+          <span className="text-gray-400">—</span>
+        );
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) => (
+        <span className="text-gray-600 text-sm">
+          {new Date(row.original.createdAt).toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
+              ? "bg-green-100 text-green-700"
+              : "bg-yellow-100 text-yellow-700"
+            }`}
+        >
+          {row.original.status}
+        </span>
+      ),
+    },
+  ];
 
-        <Info
-          label="Sender"
-          value={
-            co.senders
-              ? `${co.senders.firstName ?? ""} ${co.senders.lastName ?? ""}`
-              : "—"
-          }
-        />
+  /* ======================= RENDER ======================= */
+  return (
+    <>
+      <div className="p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <Info
-          label="Recipient"
-          value={
-            co.recipients
-              ? `${co.recipients.firstName ?? ""} ${
-                  co.recipients.lastName ?? ""
-                }`
-              : "—"
-          }
-        />
+          {/* ================= LEFT: CO DETAILS ================= */}
+          <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-teal-700">
+                CO #{co.changeOrderNumber}
+              </h1>
 
-        {/* Remarks */}
-        <div>
-          <h4 className="font-semibold text-gray-600 mb-1">Remarks</h4>
-          <p className="bg-gray-50 p-3 rounded-lg border">
-            {co.remarks || "—"}
-          </p>
-        </div>
-
-        {/* Description */}
-        <div>
-          <h4 className="font-semibold text-gray-600 mb-1">Description</h4>
-          <div
-            className="bg-gray-50 p-3 rounded-lg border prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: co.description || "—" }}
-          />
-        </div>
-
-        {/* Reference Link */}
-        {co.link && (
-          <Info
-            label="Reference Link"
-            value={
-              <a
-                href={co.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-teal-700 underline"
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${co.isAproovedByAdmin === true
+                    ? "bg-green-100 text-green-700"
+                    : co.isAproovedByAdmin === false
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
               >
-                {co.link}
-              </a>
-            }
-          />
-        )}
+                {co.isAproovedByAdmin === true
+                  ? "Approved"
+                  : co.isAproovedByAdmin === false
+                    ? "Rejected"
+                    : "Pending"}
+              </span>
+            </div>
 
-        {/* Files */}
-        {(co.files ?? []).length > 0 && (
-          <div>
-            <h4 className="font-semibold text-gray-600 mb-2">Attachments</h4>
-            <ul className="space-y-1">
-              {(co.files ?? []).map((file: any) => (
-                <li key={file.id}>
-                  <span
-                    className="text-teal-700 underline cursor-pointer"
-                    onClick={() =>
-                      openFileSecurely("changeOrder", co.id, file.id)
-                    }
-                  >
-                    {file.originalName}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <Info
+              label="Sender"
+              value={
+                co.senders
+                  ? `${co.senders.firstName ?? ""} ${co.senders.lastName ?? ""}`
+                  : "—"
+              }
+            />
+
+            <Info
+              label="Recipient"
+              value={
+                co.recipients
+                  ? `${co.recipients.firstName ?? ""} ${co.recipients.lastName ?? ""}`
+                  : "—"
+              }
+            />
+
+            <div>
+              <h4 className="font-semibold text-gray-600 mb-1">Remarks</h4>
+              <p className="bg-gray-50 p-3 rounded-lg border">
+                {co.remarks || "—"}
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-gray-600 mb-1">Description</h4>
+              <p className="bg-gray-50 p-3 rounded-lg border">
+                {co.description || "—"}
+              </p>
+            </div>
+
+            {(co.files ?? []).length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-600 mb-2">Attachments</h4>
+                <ul className="space-y-1">
+                  {(co.files ?? []).map((file: any) => (
+                    <li key={file.id}>
+                      <span
+                        className="text-teal-700 underline cursor-pointer"
+                        onClick={() =>
+                          openFileSecurely("changeOrder", co.id, file.id)
+                        }
+                      >
+                        {file.originalName}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="pt-4 border-t">
+              <button
+                onClick={() =>
+                  window.open(`/co-table?coData=${encodedCO}`, "_blank")
+                }
+                className="text-teal-600 underline"
+              >
+                View Change Order Reference Table
+              </button>
+            </div>
           </div>
-        )}
+
+          {/* ================= RIGHT: RESPONSES ================= */}
+          <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-teal-700">
+                Responses
+              </h2>
+
+              {userRole === "CLIENT" && (
+                <Button
+                  className="bg-teal-600 text-white"
+                  onClick={() => setShowResponseModal(true)}
+                >
+                  + Add Response
+                </Button>
+              )}
+            </div>
+
+            {responses.length > 0 ? (
+              <DataTable
+                columns={responseColumns}
+                data={responses}
+                pageSizeOptions={[5, 10]}
+                onRowClick={(row) => setSelectedResponse(row)}
+              />
+            ) : (
+              <p className="text-gray-500 italic">No responses yet.</p>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* ================= MODALS ================= */}
+      {showResponseModal && (
+        <CoResponseModal
+          CoId={id}
+          onClose={() => setShowResponseModal(false)}
+          onSuccess={fetchCO}
+        />
+      )}
+
+      {selectedResponse && (
+        <COResponseDetailsModal
+          response={selectedResponse}
+          onClose={() => setSelectedResponse(null)}
+          onSuccess={fetchCO}
+        />
+      )}
+    </>
   );
 };
 

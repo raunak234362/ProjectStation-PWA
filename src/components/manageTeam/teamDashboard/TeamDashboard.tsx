@@ -12,7 +12,6 @@ import TeamStatsCards from "./components/TeamStatsCards";
 import MonthlyEfficiencyChart from "./components/MonthlyEfficiencyChart";
 import TeamMembersTable from "./components/TeamMembersTable";
 import TaskDistribution from "./components/TaskDistribution";
-import ProjectsSection from "./components/ProjectsSection";
 import DailyWorkReportModal from "./components/DailyWorkReportModal";
 import TeamCalendar from "./components/TeamCalendar";
 import { toast } from "react-toastify";
@@ -68,40 +67,42 @@ const TeamDashboard = () => {
   }, []);
 
   // Fetch team stats (Reusable)
-  const fetchTeamStats = useCallback(
-    async (teamId: string) => {
-      try {
-        const response = await Service.GetTeamByID(teamId);
-        if (!response?.data) return null;
+  const fetchTeamStats = useCallback(async (teamId: string) => {
+    try {
+      const response = await Service.GetTeamByID(teamId);
+      if (!response?.data) return null;
 
-        const teamData = response.data;
-        const activeMembers = (teamData.members || []).filter(
-          (member: any) => !member.is_disabled
-        );
+      const teamData = response.data;
+      const activeMembers = (teamData.members || []).filter(
+        (member: any) => !member.is_disabled && !member.member?.is_disabled
+      );
 
-        const memberStats = await Promise.all(
-          activeMembers.map(async (member: any) => {
-            try {
-              const response = await Service.getUsersStats(member.id);
-              return { ...member, ...response.data };
-            } catch (error) {
-              console.error(
-                `Error fetching stats for member ${member.id}:`,
-                error
-              );
-              return { ...member, tasks: [] };
-            }
-          })
-        );
+      const memberStats = await Promise.all(
+        activeMembers.map(async (member: any) => {
+          try {
+            const userId = member.userId || member.member?.id || member.id;
+            const response = await Service.getUsersStats(userId);
+            return { ...member, ...response.data, id: userId }; // Ensure id is the userId for mapping
+          } catch (error) {
+            console.error(
+              `Error fetching stats for member ${member.id}:`,
+              error
+            );
+            return {
+              ...member,
+              tasks: [],
+              id: member.userId || member.member?.id || member.id,
+            };
+          }
+        })
+      );
 
-        return { members: activeMembers, memberStats };
-      } catch (error) {
-        console.error("Error fetching team stats:", error);
-        return null;
-      }
-    },
-    []
-  );
+      return { members: activeMembers, memberStats };
+    } catch (error) {
+      console.error("Error fetching team stats:", error);
+      return null;
+    }
+  }, []);
 
   // Handle team selection
   useEffect(() => {
@@ -164,7 +165,10 @@ const TeamDashboard = () => {
       const totalWorkedHours = filteredStats.reduce((total, member) => {
         const memberWorkedHours = (member.tasks || [])
           .flatMap((task: any) => task.workingHourTask || [])
-          .reduce((sum: number, entry: any) => sum + (entry.duration || 0) / 60, 0);
+          .reduce(
+            (sum: number, entry: any) => sum + (entry.duration || 0) / 60,
+            0
+          );
         return total + memberWorkedHours;
       }, 0);
 
@@ -178,14 +182,17 @@ const TeamDashboard = () => {
       const completedTasks = filteredStats.reduce(
         (total, member) =>
           total +
-          (member.tasks || []).filter((task: any) => task.status === "COMPLETE").length,
+          (member.tasks || []).filter((task: any) => task.status === "COMPLETE")
+            .length,
         0
       );
 
       const inProgressTasks = filteredStats.reduce(
         (total, member) =>
           total +
-          (member.tasks || []).filter((task: any) => task.status === "IN_PROGRESS").length,
+          (member.tasks || []).filter(
+            (task: any) => task.status === "IN_PROGRESS"
+          ).length,
         0
       );
 
@@ -205,7 +212,9 @@ const TeamDashboard = () => {
 
       let efficiency = 0;
       if (efficiencyWorkedHours > 0) {
-        efficiency = Math.round((efficiencyAssignedHours / efficiencyWorkedHours) * 100);
+        efficiency = Math.round(
+          (efficiencyAssignedHours / efficiencyWorkedHours) * 100
+        );
       }
 
       const completionRate =
@@ -268,8 +277,8 @@ const TeamDashboard = () => {
     Object.keys(monthlyData).forEach((month: any) => {
       const { assignedHours, workedHours } = monthlyData[month];
       monthlyData[month].efficiency =
-        assignedHours > 0 && workedHours > 0 
-          ? Math.round((assignedHours / workedHours) * 100) 
+        assignedHours > 0 && workedHours > 0
+          ? Math.round((assignedHours / workedHours) * 100)
           : 0;
     });
 
@@ -305,29 +314,34 @@ const TeamDashboard = () => {
     if (!teamMembers || !teamStats.memberStats) return [];
 
     return teamMembers
-      .filter((member) => !member.is_disabled)
+      .filter((member) => !member.is_disabled && !member.member?.is_disabled)
       .map((member, index) => {
+        const user = member.member || {};
         const memberStat = teamStats.memberStats?.find(
-          (stat: any) => stat.id === member.id
+          (stat: any) => stat.id === (member.userId || user.id || member.id)
         );
 
         const assignedHours =
-          (memberStat?.tasks || [])
-            .reduce(
-              (sum: number, task: any) =>
-                sum + parseDurationToMinutes(task.duration || "00:00:00") / 60,
-              0
-            ) || 0;
+          (memberStat?.tasks || []).reduce(
+            (sum: number, task: any) =>
+              sum + parseDurationToMinutes(task.duration || "00:00:00") / 60,
+            0
+          ) || 0;
 
         const workedHours =
           (memberStat?.tasks || [])
             .flatMap((task: any) => task.workingHourTask || [])
-            .reduce((sum: number, entry: any) => sum + (entry.duration || 0) / 60, 0) || 0;
+            .reduce(
+              (sum: number, entry: any) => sum + (entry.duration || 0) / 60,
+              0
+            ) || 0;
 
         const totalTasks = memberStat?.tasks?.length || 0;
         const completedTasks =
-          (memberStat?.tasks || []).filter((task: any) => 
-            ["COMPLETE", "USER_FAULT", "VALIDATE_COMPLETED"].includes(task.status)
+          (memberStat?.tasks || []).filter((task: any) =>
+            ["COMPLETE", "USER_FAULT", "VALIDATE_COMPLETED"].includes(
+              task.status
+            )
           ).length || 0;
 
         const memberCompletedTasks = (memberStat?.tasks || []).filter(
@@ -344,17 +358,25 @@ const TeamDashboard = () => {
         const efficiencyWorked =
           memberCompletedTasks
             ?.flatMap((task: any) => task.workingHourTask || [])
-            .reduce((sum: number, entry: any) => sum + (entry.duration || 0) / 60, 0) || 0;
+            .reduce(
+              (sum: number, entry: any) => sum + (entry.duration || 0) / 60,
+              0
+            ) || 0;
 
         let efficiency = 0;
         if (efficiencyWorked > 0) {
-          efficiency = Math.round((efficiencyAssigned / efficiencyWorked) * 100);
+          efficiency = Math.round(
+            (efficiencyAssigned / efficiencyWorked) * 100
+          );
         }
 
         return {
           sno: index + 1,
-          id: member.id,
-          name: `${member.firstName} ${member.middleName || ""} ${member.lastName}`,
+          id: member.userId || user.id || member.id,
+          name:
+            `${user.firstName || ""} ${user.middleName || ""} ${
+              user.lastName || ""
+            }`.trim() || "Unknown",
           role: member.role || "Member",
           assignedHours: assignedHours.toFixed(2),
           workedHours: workedHours.toFixed(2),
@@ -375,7 +397,9 @@ const TeamDashboard = () => {
   };
 
   const handleGenerateReport = () => {
-    toast.info("PDF generation is currently being set up. Please try again later.");
+    toast.info(
+      "PDF generation is currently being set up. Please try again later."
+    );
   };
 
   return (
@@ -393,7 +417,9 @@ const TeamDashboard = () => {
       {loading && !selectedTeam ? (
         <div className="flex flex-col items-center justify-center h-64">
           <div className="w-12 h-12 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-500 font-medium">Loading dashboard data...</p>
+          <p className="mt-4 text-gray-500 font-medium">
+            Loading dashboard data...
+          </p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -409,7 +435,10 @@ const TeamDashboard = () => {
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-8 bg-teal-500 rounded-full"></div>
                   <h2 className="text-2xl font-bold text-gray-800">
-                    Team: <span className="text-teal-600">{teams?.find((t) => t.id === selectedTeam)?.name}</span>
+                    Team:{" "}
+                    <span className="text-teal-600">
+                      {teams?.find((t) => t.id === selectedTeam)?.name}
+                    </span>
                   </h2>
                 </div>
                 <button
@@ -421,10 +450,12 @@ const TeamDashboard = () => {
               </div>
 
               <TeamStatsCards teamStats={teamStats} />
-              
+
               <TeamCalendar
                 members={allMemberStats}
-                selectedTeamName={teams?.find((t) => t.id === selectedTeam)?.name}
+                selectedTeamName={
+                  teams?.find((t) => t.id === selectedTeam)?.name
+                }
               />
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -447,8 +478,6 @@ const TeamDashboard = () => {
                 formatToHoursMinutes={formatToHoursMinutes}
                 getEfficiencyColorClass={getEfficiencyColorClass}
               />
-              
-              <ProjectsSection projects={teamStats?.projects || []} />
             </div>
           )}
         </div>
@@ -458,7 +487,10 @@ const TeamDashboard = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden relative">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors"
+            >
               <XIcon />
             </button>
             <div className="max-h-[80vh] overflow-y-auto">
@@ -471,7 +503,10 @@ const TeamDashboard = () => {
       {isViewModalOpen && selectedTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden relative">
-            <button onClick={() => setIsViewModalOpen(false)} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors">
+            <button
+              onClick={() => setIsViewModalOpen(false)}
+              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors"
+            >
               <XIcon />
             </button>
             <div className="max-h-[80vh] overflow-y-auto p-6">
@@ -484,7 +519,10 @@ const TeamDashboard = () => {
       {selectedEmployee && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden relative">
-            <button onClick={handleCloseModal} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors"
+            >
               <XIcon />
             </button>
             <div className="max-h-[80vh] overflow-y-auto p-6">
@@ -504,7 +542,20 @@ const TeamDashboard = () => {
 };
 
 const XIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
+  </svg>
 );
 
 const parseDurationToMinutes = (duration: any) => {

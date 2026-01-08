@@ -1227,9 +1227,24 @@ class Service {
         "Content-Type": "multipart/form-data",
       },
     });
-
     return response.data;
   }
+
+  //pending RFIs
+  static async pendingRFIs() {
+    try {
+      const response = await api.get(`rfi/pendingRFIs`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("pending RFIs:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find pending RFIs", error);
+    }
+  }
+
   static async RfiSent() {
     try {
       const response = await api.get(`rfi/sents`, {
@@ -1325,6 +1340,22 @@ class Service {
       console.log(error);
     }
   }
+
+  //pending submittals
+  static async PendingSubmittal() {
+    try {
+      const response = await api.get(`submittal/pendingSubmittal`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Pending submittals:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittals", error);
+    }
+  }
+
   //All Submitals
   static async SubmittalSent() {
     try {
@@ -1410,6 +1441,22 @@ class Service {
       console.log(error);
     }
   }
+
+  // pending Co
+  static async PendingCo() {
+    try {
+      const response = await api.get(`changeOrder/pendingCOs`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Pending Co:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Co", error);
+    }
+  }
+
   static async GetChangeOrder(projectId: string) {
     try {
       const response = await api.get(`changeOrder/project/${projectId}`, {
@@ -1684,6 +1731,18 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("Error fetching bank accounts:", error);
+      throw error;
+    }
+  }
+
+  //get bank account by ID
+  static async GetBankAccountById(id: string) {
+    try {
+      const response = await api.get(`invoice/accounts/${id}`);
+      console.log("Bank account fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching bank account:", error);
       throw error;
     }
   }
