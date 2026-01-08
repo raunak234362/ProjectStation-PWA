@@ -27,7 +27,7 @@ const Layout = () => {
   };
 
   return (
-    <div className="flex px-1 h-screen w-screen overflow-hidden bg-linear-to-tr from-emerald-200 to-green-950">
+    <div className="flex px-1 h-screen w-screen overflow-hidden bg-green-600">
       {/* Sidebar for Desktop */}
       <div className="hidden md:flex">
         <Sidebar

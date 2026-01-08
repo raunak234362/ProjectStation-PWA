@@ -161,7 +161,7 @@ console.log("WBS Data:", wbsData);
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Section */}
-        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-linear-to-r from-green-50/50 to-white">
+        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-green-50">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-100">
               <Layers className="w-6 h-6 text-white" />

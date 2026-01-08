@@ -251,7 +251,7 @@ export default function EstimationTaskByID({
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
           {/* Task Info Card */}
-          <div className="bg-linear-to-br from-green-50 to-cyan-50 rounded-2xl p-8 border border-green-200">
+          <div className="bg-green-50 rounded-2xl p-8 border border-green-200">
             <h3 className="text-2xl font-bold text-green-900 mb-6 flex items-center gap-3">
               <FileText className="w-7 h-7" />
               Task Information
@@ -372,7 +372,7 @@ export default function EstimationTaskByID({
 
           {/* Work Summary */}
           {summary && (
-            <div className="bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-200">
+            <div className="bg-green-50 rounded-2xl p-6 border border-green-200">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-indigo-900 flex items-center gap-3">
                   <Timer className="w-6 h-6" />

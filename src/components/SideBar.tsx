@@ -88,9 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                           }`
                     }
                   >
-                    <div className="text-green-600/90 hover:text-white">
-                      {icon}
-                    </div>
+                    <div>{icon}</div>
                     {!isMinimized && <span className="ml-3">{label}</span>}
                   </NavLink>
 

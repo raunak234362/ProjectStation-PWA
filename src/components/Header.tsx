@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
         <Button onClick={toggleSidebar}>
           {isMinimized ? <Menu size={20} /> : <ChevronLeft size={20} />}
         </Button>
-        <p className="text-sm md:text-2xl font-bold bg-linear-to-r from-emerald-200 to-green-600 bg-clip-text text-transparent uppercase">
+        <p className="text-sm md:text-2xl font-bold text-green-600 uppercase">
           {headerTitle}
         </p>
       </div>
