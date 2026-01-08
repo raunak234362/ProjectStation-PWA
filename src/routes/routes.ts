@@ -12,6 +12,9 @@ import ChangePasswordPage from "../pages/ChangePasswordPage";
 import RFIPage from "../pages/RFIPage";
 import EstimationPage from "../pages/EstimationPage";
 import ProjectPage from "../pages/ProjectPage";
+import invoicePage from "../pages/invoicePage";
+import TaskPage from "../pages/TaskPage";
+import CoTablePage from "../components/co/CoTablePage";
 
 const routes = [
   { path: "/", Component: Login },
