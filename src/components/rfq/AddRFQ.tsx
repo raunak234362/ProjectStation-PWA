@@ -169,7 +169,7 @@ const AddRFQ: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-lg p-8 my-6">
-      <h2 className="text-3xl font-bold text-center mb-4 text-gray-800">
+      <h2 className="text-3xl font-bold text-center mb-4 text-gray-700">
         Add New RFQ
       </h2>
 

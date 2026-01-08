@@ -74,13 +74,13 @@ function TextFilter({ column }: { column: any }) {
         value={value ?? ""}
         onChange={(e) => column.setFilterValue(e.target.value || undefined)}
         placeholder={`Filter...`}
-        className="w-full pl-8 pr-7 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 outline-none"
+        className="w-full pl-8 pr-7 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none"
       />
       <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
       {value && (
         <Button
           onClick={() => column.setFilterValue(undefined)}
-          className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
         >
           <X className="w-4 h-4" />
         </Button>
@@ -139,7 +139,7 @@ function MultiSelectFilter({
             type="checkbox"
             checked={value.includes(opt.value)}
             onChange={() => toggle(opt.value)}
-            className="w-3 h-3 text-teal-600 rounded"
+            className="w-3 h-3 text-green-600 rounded"
           />
           {opt.label}
         </label>
@@ -221,7 +221,7 @@ export default function DataTable<T extends object>({
             !table.getIsAllPageRowsSelected()
           }
           onChange={(e) => table.toggleAllPageRowsSelected(e.target.checked)}
-          className="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500"
+          className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
           ariaLabel="Select all rows on page"
           title="Select all rows on page"
         />
@@ -231,7 +231,7 @@ export default function DataTable<T extends object>({
           type="checkbox"
           checked={row.getIsSelected()}
           onChange={(e) => row.toggleSelected(e.target.checked)}
-          className="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500"
+          className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
           aria-label="Select row"
           title="Select row"
         />
@@ -327,7 +327,7 @@ export default function DataTable<T extends object>({
               value={globalFilter ?? ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder={searchPlaceholder}
-              className="pl-10 pr-4 py-2 w-full md:w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+              className="pl-10 pr-4 py-2 w-full md:w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
 
@@ -349,7 +349,7 @@ export default function DataTable<T extends object>({
                           type="checkbox"
                           checked={column.getIsVisible()}
                           onChange={() => column.toggleVisibility()}
-                          className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
+                          className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
                         />
                         <span>{column.columnDef.header?.toString()}</span>
                       </label>
@@ -363,7 +363,7 @@ export default function DataTable<T extends object>({
 
         {selectedCount > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-700">
               {selectedCount} selected
             </span>
             <Button
@@ -386,7 +386,7 @@ export default function DataTable<T extends object>({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
                   >
                     {/* Header + sort */}
                     <div
@@ -421,7 +421,7 @@ export default function DataTable<T extends object>({
               <tr>
                 <td
                   colSpan={table.getVisibleFlatColumns().length}
-                  className="px-6 py-12 text-center text-gray-500"
+                  className="px-6 py-12 text-center text-gray-700"
                 >
                   No data available
                 </td>
@@ -432,7 +432,7 @@ export default function DataTable<T extends object>({
                 return (
                   <React.Fragment key={row.id}>
                     <tr
-                      className={`hover:bg-teal-50 transition-colors ${
+                      className={`hover:bg-green-50 transition-colors ${
                         onRowClick ? "cursor-pointer" : ""
                       }`}
                       onClick={() => {
@@ -443,7 +443,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="text-left px-6 py-4 text-sm text-gray-900"
+                          className="text-left px-6 py-4 text-sm text-gray-700"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -519,28 +519,28 @@ export default function DataTable<T extends object>({
           <Button
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
-            className="bg-teal-100 text-gray-800 hover:bg-teal-200 px-3 py-1 border rounded disabled:opacity-50"
+            className="bg-green-100 text-gray-700 hover:bg-green-200 px-3 py-1 border rounded disabled:opacity-50"
           >
             {"<<"}
           </Button>
           <Button
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="bg-teal-100 text-gray-800 hover:bg-teal-200 px-3 py-1 border rounded disabled:opacity-50"
+            className="bg-green-100 text-gray-700 hover:bg-green-200 px-3 py-1 border rounded disabled:opacity-50"
           >
             {"<"}
           </Button>
           <Button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="bg-teal-100 text-gray-800 hover:bg-teal-200 px-3 py-1 border rounded disabled:opacity-50"
+            className="bg-green-100 text-gray-700 hover:bg-green-200 px-3 py-1 border rounded disabled:opacity-50"
           >
             {">"}
           </Button>
           <Button
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
-            className="bg-teal-100 text-gray-800 hover:bg-teal-200 px-3 py-1 border rounded disabled:opacity-50"
+            className="bg-green-100 text-gray-700 hover:bg-green-200 px-3 py-1 border rounded disabled:opacity-50"
           >
             {">>"}
           </Button>
@@ -554,7 +554,7 @@ export default function DataTable<T extends object>({
             <h3 className="text-lg font-semibold mb-2">
               Delete {selectedCount} {selectedCount === 1 ? "Item" : "Items"}?
             </h3>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-gray-700 mb-6">
               This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">

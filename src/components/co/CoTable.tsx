@@ -73,7 +73,7 @@ const CoTable = ({ coId }: ChangeOrderTableProps) => {
   const totalHours = rows.reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
   const totalCost = rows.reduce((sum, r) => sum + (Number(r.cost) || 0), 0);
 
-  if (loading) return <div className="p-10 text-center animate-pulse text-teal-600">Loading Table Data...</div>;
+  if (loading) return <div className="p-10 text-center animate-pulse text-green-600">Loading Table Data...</div>;
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
@@ -95,7 +95,7 @@ const CoTable = ({ coId }: ChangeOrderTableProps) => {
             <tbody className="divide-y divide-gray-100">
               {fields.map((field, index) => (
                 <tr key={field.id} className="hover:bg-gray-50">
-                  <td className="p-3 text-gray-500">{index + 1}</td>
+                  <td className="p-3 text-gray-700">{index + 1}</td>
                   <td className="p-2"><Controller name={`rows.${index}.description`} control={control} render={({ field }) => <Input {...field} />} /></td>
                   <td className="p-2"><Controller name={`rows.${index}.referenceDoc`} control={control} render={({ field }) => <Input {...field}  />} /></td>
                   <td className="p-2"><Controller name={`rows.${index}.elements`} control={control} render={({ field }) => <Input {...field}  />} /></td>
@@ -105,10 +105,10 @@ const CoTable = ({ coId }: ChangeOrderTableProps) => {
                   <td className="p-2"><Controller name={`rows.${index}.remarks`} control={control} render={({ field }) => <Input {...field} />} /></td>
                 </tr>
               ))}
-              <tr className="bg-teal-50 font-bold">
-                <td colSpan={5} className="p-3 text-right text-teal-900">Total</td>
-                <td className="p-3 text-teal-900">{totalHours}</td>
-                <td className="p-3 text-teal-900">${totalCost.toLocaleString()}</td>
+              <tr className="bg-green-50 font-bold">
+                <td colSpan={5} className="p-3 text-right text-green-900">Total</td>
+                <td className="p-3 text-green-900">{totalHours}</td>
+                <td className="p-3 text-green-900">${totalCost.toLocaleString()}</td>
                 <td />
               </tr>
             </tbody>
@@ -119,7 +119,7 @@ const CoTable = ({ coId }: ChangeOrderTableProps) => {
           <Button type="button" onClick={() => append({ description: "", referenceDoc: "", elements: "", QtyNo: "0", hours: "0", cost: "0", remarks: "" })} className="bg-blue-500 hover:bg-blue-600 text-white">
             + Add Row
           </Button>
-          <Button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white shadow-md">
+          <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white shadow-md">
             Finalize & Save Table
           </Button>
         </div>

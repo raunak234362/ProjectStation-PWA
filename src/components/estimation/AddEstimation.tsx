@@ -162,7 +162,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
 
   return (
     <div className="w-full mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-8 my-8">
-      <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
+      <h2 className="text-3xl font-bold text-center mb-8 text-gray-700">
         {isRfqLocked ? "Create Estimation from RFQ" : "Create New Estimation"}
       </h2>
 
@@ -272,7 +272,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
         <SectionTitle title="Attach Files" />
         <MultipleFileUpload onFilesChange={setFiles} />
         {files.length > 0 && (
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-sm text-gray-700 mt-2">
             {files.length} file(s) attached
           </p>
         )}

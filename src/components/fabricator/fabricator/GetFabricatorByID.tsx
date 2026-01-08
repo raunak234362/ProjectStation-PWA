@@ -78,7 +78,7 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading fabricator details...
       </div>
@@ -96,10 +96,10 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   console.log(fabricator);
 
   return (
-    <div className="bg-linear-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner text-sm">
+    <div className="bg-linear-to-br from-green-50 to-green-50 p-6 rounded-xl shadow-inner text-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold text-teal-800">
+        <h3 className="text-xl font-bold text-green-800">
           {fabricator.fabName}
         </h3>
         <span
@@ -165,8 +165,8 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
 
       {/* Files Section */}
       {Array.isArray(fabricator.files) && fabricator.files.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-teal-200">
-          <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
+        <div className="mt-6 pt-5 border-t border-green-200">
+          <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
             <FileText className="w-4 h-4" /> Files
           </h4>
           <ul className="text-gray-700 space-y-1">
@@ -178,7 +178,7 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
                 >
                   <span>{file.originalName}</span>
                   <a
-                    className="text-teal-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
+                    className="text-green-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
                     onClick={() => openFileSecurely("fabricator", id, file.id)}
                   >
                     <Link2 className="w-3 h-3" /> Open
@@ -238,18 +238,18 @@ const InfoRow = ({
   href?: string;
 }) => (
   <div className="flex justify-between">
-    <span className="font-bold text-gray-600">{label}:</span>
+    <span className="font-bold text-gray-700">{label}:</span>
     {href ? (
       <a
         href={href}
-        className="text-teal-600 hover:underline hover:text-teal-800 transition-colors"
+        className="text-green-600 hover:underline hover:text-green-800 transition-colors"
         target="_blank"
         rel="noopener noreferrer"
       >
         {value}
       </a>
     ) : (
-      <span className="text-gray-900">{value}</span>
+      <span className="text-gray-700">{value}</span>
     )}
   </div>
 );

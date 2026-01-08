@@ -54,7 +54,7 @@ const TeamPage = () => {
     <div className="w-full overflow-y-auto overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
         {/* ---------- TOP TABS ---------- */}
-        <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-teal-600/50 border-b rounded-md">
+        <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-green-600/50 border-b rounded-md">
           <h1 className="text-2xl py-2 font-bold text-white">Team Detail</h1>
 
           <div className="flex w-full overflow-x-auto">
@@ -62,7 +62,7 @@ const TeamPage = () => {
               onClick={() => setActiveTab("teamDashboard")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "teamDashboard"
-                  ? "bg-white/70 text-gray-800 font-bold"
+                  ? "bg-white/70 text-gray-700 font-bold"
                   : "text-white font-semibold"
               }`}
             >
@@ -73,7 +73,7 @@ const TeamPage = () => {
               onClick={() => setActiveTab("manageEmployee")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "manageEmployee"
-                  ? "bg-white/70 text-gray-800 font-bold"
+                  ? "bg-white/70 text-gray-700 font-bold"
                   : "text-white font-semibold"
               }`}
             >
@@ -85,7 +85,7 @@ const TeamPage = () => {
                 onClick={() => setActiveTab("manageDepartment")}
                 className={`px-1.5 md:px-4 py-2 rounded-lg ${
                   activeTab === "manageDepartment"
-                    ? "bg-white/70 text-gray-800 font-bold"
+                    ? "bg-white/70 text-gray-700 font-bold"
                     : "text-white font-semibold"
                 }`}
               >
@@ -100,7 +100,7 @@ const TeamPage = () => {
                 onClick={() => setActiveTab("manageTeam")}
                 className={`px-1.5 md:px-4 py-2 rounded-lg ${
                   activeTab === "manageTeam"
-                    ? "bg-white/70 text-gray-800 font-bold"
+                    ? "bg-white/70 text-gray-700 font-bold"
                     : "text-white font-semibold"
                 }`}
               >

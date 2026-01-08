@@ -36,11 +36,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       console.error("Logout failed:", error);
     }
   };
-console.log(userData,"=========================");
+  console.log(userData, "=========================");
 
   return (
     <aside
-      className={`h-full rounded-2xl border-white/25 shadow-xl bg-white border-r backdrop-blur-3xl text-black transition-all duration-300 flex flex-col ${
+      className={`h-full rounded-2xl border-white/25 shadow-xl bg-white border-r backdrop-blur-3xl text-gray-700 transition-all duration-300 flex flex-col ${
         isMinimized ? "w-16" : "w-64"
       }`}
       style={{ overflow: "visible" }} // ✅ allows tooltip overflow
@@ -80,22 +80,24 @@ console.log(userData,"=========================");
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
                       isActive
-                        ? `flex items-center font-semibold text-white bg-linear-to-r from-emerald-200 to-teal-500 py-2 px-3 rounded-md w-full ${
+                        ? `flex items-center font-semibold text-white bg-green-600/90 py-2 px-3 rounded-md w-full ${
                             isMinimized ? "justify-center" : "justify-start"
                           }`
-                        : `text-teal-600 font-semibold hover:text-white hover:bg-linear-to-r hover:from-emerald-100 hover:to-teal-500 py-2 px-3 rounded-md flex items-center w-full ${
+                        : `text-green-600/90 font-semibold hover:text-white hover:bg-green-600/90 py-2 px-3 rounded-md flex items-center w-full ${
                             isMinimized ? "justify-center" : "justify-start"
                           }`
                     }
                   >
-                    <div className="text-teal-700">{icon}</div>
+                    <div className="text-green-600/90 hover:text-white">
+                      {icon}
+                    </div>
                     {!isMinimized && <span className="ml-3">{label}</span>}
                   </NavLink>
 
                   {/* Tooltip for minimized sidebar */}
                   {isMinimized && (
                     <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 hidden group-hover:flex">
-                      <span className="bg-teal-900 text-white text-[10px] font-medium py-1 px-2 rounded-md shadow-lg whitespace-nowrap">
+                      <span className="bg-green-600/90 text-white text-[10px] font-medium py-1 px-2 rounded-md shadow-lg whitespace-nowrap">
                         {label}
                       </span>
                     </div>
@@ -117,10 +119,10 @@ console.log(userData,"=========================");
                   }`.trim()
                 : "User"}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-700">
               {userData?.role?.toUpperCase() || userRole.toUpperCase()}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Version - 2.0.0</p>
+            <p className="text-xs text-gray-700 mt-1">Version - 2.0.0</p>
           </div>
         )}
 

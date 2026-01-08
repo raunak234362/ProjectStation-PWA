@@ -89,7 +89,7 @@ console.log(rfiData);
   // ✅ Loading state
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+      <div className="flex flex-col items-center justify-center py-12 text-gray-700">
         <Loader2 className="w-6 h-6 animate-spin mb-2" />
         Loading RFIs...
       </div>
@@ -99,7 +99,7 @@ console.log(rfiData);
   // ✅ Empty state
   if (!loading && (!rfis || rfis.length === 0)) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+      <div className="flex flex-col items-center justify-center py-16 text-gray-700">
         <Inbox className="w-10 h-10 mb-3 text-gray-400" />
         <p className="text-lg font-medium">No RFIs Available</p>
         <p className="text-sm text-gray-400">

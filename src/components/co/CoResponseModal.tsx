@@ -58,7 +58,7 @@ const onSubmit = async (data: CoResponsePayload) => {
           <X size={18} />
         </button>
 
-        <h2 className="text-xl font-semibold text-teal-700">
+        <h2 className="text-xl font-semibold text-green-700">
           Add CO Response
         </h2>
 
@@ -97,7 +97,7 @@ const onSubmit = async (data: CoResponsePayload) => {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-teal-600 text-white"
+              className="bg-green-600 text-white"
             >
               {loading ? "Submitting..." : "Submit"}
             </Button>

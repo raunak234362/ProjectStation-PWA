@@ -25,15 +25,15 @@ const CoTablePage = () => {
         {/* Header */}
         <div className="bg-white rounded-xl shadow-md p-6 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-teal-700">
+            <h1 className="text-2xl font-bold text-green-700">
               Change Order Reference Table
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-700">
               CO #{co.changeOrderNumber}
             </p>
           </div>
 
-          <span className="px-4 py-1 text-sm rounded-full bg-teal-100 text-teal-700 font-semibold">
+          <span className="px-4 py-1 text-sm rounded-full bg-green-100 text-green-700 font-semibold">
             Read Only
           </span>
         </div>
@@ -59,8 +59,8 @@ const CoTablePage = () => {
 
 const SummaryCard = ({ label, value }: { label: string; value: string | number }) => (
   <div className="bg-white rounded-xl shadow-sm border p-4">
-    <p className="text-xs uppercase text-gray-500 font-semibold">{label}</p>
-    <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
+    <p className="text-xs uppercase text-gray-700 font-semibold">{label}</p>
+    <p className="text-2xl font-bold text-gray-700 mt-1">{value}</p>
   </div>
 );
 

@@ -101,8 +101,8 @@ const EditEstimation: React.FC<EditEstimationProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-        <span className="ml-3 text-gray-600">Loading estimation data...</span>
+        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+        <span className="ml-3 text-gray-700">Loading estimation data...</span>
       </div>
     );
   }
@@ -112,10 +112,10 @@ const EditEstimation: React.FC<EditEstimationProps> = ({
       <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gray-50/50">
-          <h2 className="text-2xl font-bold text-gray-800">Edit Estimation</h2>
+          <h2 className="text-2xl font-bold text-gray-700">Edit Estimation</h2>
           <button
             onClick={onCancel}
-            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
+            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-700"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

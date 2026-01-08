@@ -186,8 +186,8 @@ const ProjectDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-        <Loader2 className="w-8 h-8 animate-spin mb-2 text-teal-600" />
+      <div className="flex flex-col items-center justify-center h-64 text-gray-700">
+        <Loader2 className="w-8 h-8 animate-spin mb-2 text-green-600" />
         <p className="text-sm font-medium">Loading Dashboard Data...</p>
       </div>
     );
@@ -203,7 +203,7 @@ const ProjectDashboard = () => {
             <select
               value={selectedTeam}
               onChange={(e) => setSelectedTeam(e.target.value)}
-              className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-teal-500 outline-none appearance-none cursor-pointer hover:bg-gray-100 transition-colors"
+              className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-gray-100 transition-colors"
             >
               <option value="all">All Teams</option>
               {teamDatas.map((team) => (
@@ -220,7 +220,7 @@ const ProjectDashboard = () => {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-teal-500 outline-none appearance-none cursor-pointer hover:bg-gray-100 transition-colors"
+              className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-gray-100 transition-colors"
             >
               {years.map((year) => (
                 <option key={year} value={year}>
@@ -237,8 +237,8 @@ const ProjectDashboard = () => {
             onClick={() => setSelectedMonth(null)}
             className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
               selectedMonth === null
-                ? "bg-teal-600 text-white shadow-md shadow-teal-100"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-green-600 text-white shadow-md shadow-green-100"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             All Months
@@ -249,8 +249,8 @@ const ProjectDashboard = () => {
               onClick={() => setSelectedMonth(index)}
               className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
                 selectedMonth === index
-                  ? "bg-teal-600 text-white shadow-md shadow-teal-100"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-green-600 text-white shadow-md shadow-green-100"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
               {month}
@@ -276,8 +276,8 @@ const ProjectDashboard = () => {
           Object.entries(groupedProjects).map(([stage, statuses]) => (
             <div key={stage} className="space-y-4">
               <div className="flex items-center gap-2 px-2">
-                <LayoutGrid className="w-5 h-5 text-teal-600" />
-                <h3 className="text-lg font-bold text-gray-800 uppercase tracking-wider">
+                <LayoutGrid className="w-5 h-5 text-green-600" />
+                <h3 className="text-lg font-bold text-gray-700 uppercase tracking-wider">
                   {stage}
                 </h3>
                 <div className="h-px flex-1 bg-gray-100 ml-2" />
@@ -317,7 +317,7 @@ const ProjectDashboard = () => {
                           >
                             <div className="flex justify-between items-start mb-3">
                               <div>
-                                <h4 className="font-bold text-gray-800 group-hover:text-teal-600 transition-colors line-clamp-1">
+                                <h4 className="font-bold text-gray-700 group-hover:text-green-600 transition-colors line-clamp-1">
                                   {project.name}
                                 </h4>
                                 <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">
@@ -325,7 +325,7 @@ const ProjectDashboard = () => {
                                 </p>
                               </div>
                               <div className="flex flex-col items-end">
-                                <span className="text-lg font-black text-teal-600 leading-none">
+                                <span className="text-lg font-black text-green-600 leading-none">
                                   {progress}%
                                 </span>
                                 <span className="text-[10px] font-bold text-gray-400 uppercase">
@@ -344,13 +344,13 @@ const ProjectDashboard = () => {
                                   className={`h-full rounded-full ${
                                     progress === 100
                                       ? "bg-green-500"
-                                      : "bg-teal-500"
+                                      : "bg-green-500"
                                   }`}
                                 />
                               </div>
 
                               {/* Stats */}
-                              <div className="flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase">
+                              <div className="flex items-center justify-between text-[10px] font-bold text-gray-700 uppercase">
                                 <div className="flex items-center gap-3">
                                   <div className="flex items-center gap-1">
                                     <CheckCircle2 className="w-3 h-3 text-green-500" />
@@ -390,10 +390,10 @@ const ProjectDashboard = () => {
         ) : (
           <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
             <Inbox className="w-12 h-12 text-gray-300 mb-4" />
-            <h3 className="text-lg font-bold text-gray-800">
+            <h3 className="text-lg font-bold text-gray-700">
               No Projects Found
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-700">
               Try adjusting your filters to see more results.
             </p>
           </div>

@@ -33,11 +33,11 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
           <div>
-            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <FileText className="text-teal-600" size={24} />
+            <h2 className="text-xl font-bold text-gray-700 flex items-center gap-2">
+              <FileText className="text-green-600" size={24} />
               Daily Work Report
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-700">
               Summary of activities for the selected period
             </p>
           </div>
@@ -45,7 +45,7 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
             onClick={onClose}
             className="p-2 hover:bg-gray-200 rounded-full transition-colors"
           >
-            <X size={20} className="text-gray-500" />
+            <X size={20} className="text-gray-700" />
           </button>
         </div>
 
@@ -58,14 +58,14 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
                     <User size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-800">
+                    <h4 className="font-bold text-gray-700">
                       {member.f_name} {member.l_name}
                     </h4>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-700">
                       {member.role || "Team Member"}
                     </p>
                   </div>
@@ -74,7 +74,7 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
                   <p className="text-xs text-gray-400 uppercase tracking-wider font-bold">
                     Tasks
                   </p>
-                  <p className="text-lg font-bold text-teal-600">
+                  <p className="text-lg font-bold text-green-600">
                     {member.tasks?.length || 0}
                   </p>
                 </div>
@@ -90,7 +90,7 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
                       <p className="text-sm font-semibold text-gray-700">
                         {task.subject || task.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-700">
                         {task.project?.name || "No Project"}
                       </p>
                     </div>
@@ -99,7 +99,7 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
                         <p className="text-[10px] text-gray-400 uppercase">
                           Duration
                         </p>
-                        <p className="text-xs font-bold text-gray-600">
+                        <p className="text-xs font-bold text-gray-700">
                           {task.duration || "00:00"}
                         </p>
                       </div>
@@ -141,7 +141,7 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
           >
             Close
           </Button>
-          <Button className="bg-teal-600 text-white hover:bg-teal-700 flex items-center gap-2">
+          <Button className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2">
             <Download size={18} />
             Export PDF
           </Button>

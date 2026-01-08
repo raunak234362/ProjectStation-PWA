@@ -63,13 +63,13 @@ const TeamStatsCards: React.FC<TeamStatsCardsProps> = ({ teamStats }) => {
           <div className="flex items-center justify-between mb-4">
             <div className={`p-3 rounded-xl ${stat.bg}`}>{stat.icon}</div>
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-500">{stat.label}</p>
-              <h3 className="text-2xl font-bold text-gray-800">{stat.value}</h3>
+              <p className="text-sm font-medium text-gray-700">{stat.label}</p>
+              <h3 className="text-2xl font-bold text-gray-700">{stat.value}</h3>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="flex justify-between text-xs text-gray-500">
+            <div className="flex justify-between text-xs text-gray-700">
               <span>{stat.subValue}</span>
               {stat.label !== "Projects" && (
                 <span>{Math.round(stat.progress)}%</span>

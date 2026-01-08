@@ -96,7 +96,7 @@ const columns: ColumnDef<any>[] = [
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center gap-2 py-12 text-gray-500">
+      <div className="flex flex-col items-center gap-2 py-12 text-gray-700">
         <Loader2 className="animate-spin w-6 h-6" /> Loading Submittals...
       </div>
     );
@@ -104,7 +104,7 @@ const columns: ColumnDef<any>[] = [
 
   if (!submittals.length) {
     return (
-      <div className="flex flex-col items-center gap-2 py-16 text-gray-500">
+      <div className="flex flex-col items-center gap-2 py-16 text-gray-700">
         <Inbox className="w-10 h-10 text-gray-400" />
         <p>No Submittals Found</p>
       </div>

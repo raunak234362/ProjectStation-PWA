@@ -55,7 +55,7 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
         <span>
           {row.original.member.phone || "—"}
           {row.original.member.extensionNumber && (
-            <span className="text-gray-500 text-xs ml-1">
+            <span className="text-gray-700 text-xs ml-1">
               (Ext: {row.original.member.extensionNumber})
             </span>
           )}
@@ -66,7 +66,7 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
       accessorKey: "role",
       header: "Role",
       cell: ({ row }) => (
-        <span className="px-2 py-1 rounded bg-gray-100 text-gray-600 text-xs">
+        <span className="px-2 py-1 rounded bg-gray-100 text-gray-700 text-xs">
           {row.original.role}
         </span>
       ),
@@ -101,11 +101,11 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
       <div className="w-[900px] bg-white rounded-xl p-4 shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-3 border-b pb-2">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold text-gray-700">
             Team - <span className="font-bold">{members.name}</span>
           </h2>
           <button onClick={onClose} aria-label="Close">
-            <X className="w-6 h-6 text-gray-600 hover:text-black" />
+            <X className="w-6 h-6 text-gray-700 hover:text-gray-700" />
           </button>
         </div>
 

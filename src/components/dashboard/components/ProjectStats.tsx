@@ -14,17 +14,17 @@ interface ProjectStatsProps {
 const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   return (
     <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-      <h2 className="text-gray-800 font-semibold mb-4">Projects Stats</h2>
+      <h2 className="text-gray-700 font-semibold mb-4">Projects Stats</h2>
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="flex items-center gap-3 bg-indigo-50 p-3 rounded-xl border border-indigo-100 min-w-0">
           <div className="p-2 bg-indigo-500 rounded-lg text-white shrink-0">
             <Files size={20} />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate">
+            <span className="text-xs text-gray-700 font-medium truncate">
               Total
             </span>
-            <span className="text-lg font-bold text-gray-800">
+            <span className="text-lg font-bold text-gray-700">
               {stats.totalProjects}
             </span>
           </div>
@@ -38,7 +38,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
             <Activity size={20} />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate">
+            <span className="text-xs text-gray-700 font-medium truncate">
               Active
             </span>
             <span className="text-lg font-bold text-green-700">
@@ -55,7 +55,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
             <CheckCircle2 size={20} />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate">
+            <span className="text-xs text-gray-700 font-medium truncate">
               Completed
             </span>
             <span className="text-lg font-bold text-blue-700">
@@ -72,7 +72,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
             <PauseCircle size={20} />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate">
+            <span className="text-xs text-gray-700 font-medium truncate">
               On Hold
             </span>
             <span className="text-lg font-bold text-orange-700">

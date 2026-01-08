@@ -37,14 +37,14 @@ const AddChatGroup: React.FC<AddChatGroupProps> = ({ onClose, onCreated }) => {
         {/* Header */}
         <div className="px-6 py-4 border-b bg-white flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-teal-50 rounded-lg text-teal-600">
+            <div className="p-2 bg-green-50 rounded-lg text-green-600">
               <Users size={20} />
             </div>
-            <h2 className="text-lg font-bold text-gray-800">Create New Group</h2>
+            <h2 className="text-lg font-bold text-gray-700">Create New Group</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1 rounded-full transition"
+            className="text-gray-400 hover:text-gray-700 hover:bg-gray-100 p-1 rounded-full transition"
           >
             <X size={20} />
           </button>
@@ -54,7 +54,7 @@ const AddChatGroup: React.FC<AddChatGroupProps> = ({ onClose, onCreated }) => {
         <div className="p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-gray-700 mb-4">
                 Give your group a name. You can add members after creating the group.
               </p>
               <Input
@@ -80,7 +80,7 @@ const AddChatGroup: React.FC<AddChatGroupProps> = ({ onClose, onCreated }) => {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-teal-600 text-white hover:bg-teal-700"
+                className="flex-1 bg-green-600 text-white hover:bg-green-700"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Creating..." : "Create Group"}

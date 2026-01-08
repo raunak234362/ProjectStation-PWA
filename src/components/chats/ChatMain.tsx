@@ -190,7 +190,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
 
   if (!groupId || !activeChat?.group) {
     return (
-      <div className="flex flex-col h-full bg-white rounded-2xl items-center justify-center text-gray-500 text-sm">
+      <div className="flex flex-col h-full bg-white rounded-2xl items-center justify-center text-gray-700 text-sm">
         Select a chat to start messaging
       </div>
     );
@@ -202,7 +202,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4">
         {loading && (
-          <div className="text-center text-sm text-gray-500">Loading...</div>
+          <div className="text-center text-sm text-gray-700">Loading...</div>
         )}
         {messages.map((msg) => {
           const time = new Date(msg.time).toLocaleTimeString([], {
@@ -221,7 +221,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
                 className={`max-w-xs md:max-w-md p-3 rounded-lg ${
                   msg.sender === "me"
                     ? "bg-white/80 rounded-tr-none"
-                    : "bg-teal-100/90 rounded-tl-none"
+                    : "bg-green-100/90 rounded-tl-none"
                 }`}
               >
                 {msg.sender === "other" && msg.senderName && (
@@ -230,7 +230,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
                   </p>
                 )}
                 <div className="text-sm">{formatMessage(msg.text)}</div>
-                <p className="text-right text-xs text-gray-600 mt-1">{time}</p>
+                <p className="text-right text-xs text-gray-700 mt-1">{time}</p>
               </div>
             </div>
           );
@@ -251,9 +251,9 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
               }
             }}
             placeholder="Type a message..."
-            className="flex-1 resize-none border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="flex-1 resize-none border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          <Button onClick={sendMessage} className="bg-teal-600 text-white">
+          <Button onClick={sendMessage} className="bg-green-600 text-white">
             <Send size={20} />
           </Button>
         </div>

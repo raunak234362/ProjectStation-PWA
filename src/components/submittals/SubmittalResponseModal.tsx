@@ -56,7 +56,7 @@ const SubmittalResponseModal = ({
           <X size={18} />
         </button> */}
 
-        <h2 className="text-xl font-semibold text-teal-700">
+        <h2 className="text-xl font-semibold text-green-700">
           Add Submittal Response
         </h2>
 
@@ -112,7 +112,7 @@ const SubmittalResponseModal = ({
         {/* ACTIONS */}
         <div className="flex justify-end gap-2 pt-2">
           <Button onClick={onClose}>Cancel</Button>
-          <Button className="bg-teal-600 text-white" onClick={handleSubmit}>
+          <Button className="bg-green-600 text-white" onClick={handleSubmit}>
             Submit Response
           </Button>
         </div>

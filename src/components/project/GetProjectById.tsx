@@ -127,7 +127,7 @@ const changeOrderData = useMemo(() => {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading project details...
       </div>
@@ -147,8 +147,8 @@ const changeOrderData = useMemo(() => {
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3 mb-3">
           <div>
-            <h2 className="text-xl md:text-2xl font-semibold text-teal-700">{project.name}</h2>
-            <p className="text-gray-500 text-sm">Project No: {project.projectNumber}</p>
+            <h2 className="text-xl md:text-2xl font-semibold text-green-700">{project.name}</h2>
+            <p className="text-gray-700 text-sm">Project No: {project.projectNumber}</p>
           </div>
           <div className="flex items-center gap-2">
             <span
@@ -176,7 +176,7 @@ const changeOrderData = useMemo(() => {
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               {[
                 { key: "details", label: "Details" },
@@ -214,8 +214,8 @@ const changeOrderData = useMemo(() => {
                 onClick={() => setActiveTab(key)}
                 className={`flex items-center gap-2 px-4 py-2 text-sm rounded-t-md font-medium transition-colors whitespace-nowrap ${
                   activeTab === key
-                    ? "bg-teal-600 text-white"
-                    : "text-gray-600 hover:text-teal-700 hover:bg-gray-50"
+                    ? "bg-green-600 text-white"
+                    : "text-gray-700 hover:text-green-700 hover:bg-gray-50"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -231,7 +231,7 @@ const changeOrderData = useMemo(() => {
           {activeTab === "details" && (
             <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                <div className="md:col-span-2 mt-6">
-                <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
+                <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
                   <FolderOpenDot className="w-4 h-4" /> Description
                 </h4>
                 <p className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
@@ -271,7 +271,7 @@ const changeOrderData = useMemo(() => {
 
              
                <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-              <h4 className="text-lg font-semibold text-teal-700 mb-3 flex items-center gap-1">
+              <h4 className="text-lg font-semibold text-green-700 mb-3 flex items-center gap-1">
                 <Settings className="w-5 h-5" /> Connection Design Scope
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -281,7 +281,7 @@ const changeOrderData = useMemo(() => {
               </div>
             </div>
                <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-              <h4 className="text-lg font-semibold text-teal-700 mb-3 flex items-center gap-1">
+              <h4 className="text-lg font-semibold text-green-700 mb-3 flex items-center gap-1">
                 <Settings className="w-5 h-5" /> Detailing Scope
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -292,7 +292,7 @@ const changeOrderData = useMemo(() => {
 
         {/* Footer Buttons */}
         <div className="pt-2 flex flex-wrap gap-3">
-          <Button className="py-1 px-3 text-sm bg-teal-600 text-white" onClick={() => handleEditModel(project)}>
+          <Button className="py-1 px-3 text-sm bg-green-600 text-white" onClick={() => handleEditModel(project)}>
             Edit Project
           </Button>
         </div>
@@ -320,7 +320,7 @@ const changeOrderData = useMemo(() => {
           {/* ✅ Team */}
           {activeTab === "team" && (
             <div className="text-gray-700 text-sm">
-              <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
+              <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
                 <Users className="w-4 h-4" /> Assigned Team
               </h4>
               <p>Team: {project.team?.name || "No team assigned."}</p>
@@ -335,7 +335,7 @@ const changeOrderData = useMemo(() => {
 
           {/* ✅ Timeline */}
           {activeTab === "timeline" && (
-            <div className="text-gray-600 italic text-center py-10">
+            <div className="text-gray-700 italic text-center py-10">
               <Clock className="w-6 h-6 mx-auto mb-2 text-gray-400" />
               Timeline view will be integrated soon.
             </div>
@@ -348,7 +348,7 @@ const changeOrderData = useMemo(() => {
             <AllNotes projectId={id} />
           )}
           {activeTab === "wbs" && (
-            <div className="text-gray-600 italic text-center">
+            <div className="text-gray-700 italic text-center">
               {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
               <WBS id={id} wbsData={wbsData}/>
             
@@ -365,8 +365,8 @@ const changeOrderData = useMemo(() => {
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                       ${
                         rfiView === "list"
-                          ? "border-teal-500 text-teal-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -379,8 +379,8 @@ const changeOrderData = useMemo(() => {
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                         ${
                         rfiView === "add"
-                          ? "border-teal-500 text-teal-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -409,8 +409,8 @@ const changeOrderData = useMemo(() => {
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                       ${
                         submittalView === "list"
-                          ? "border-teal-500 text-teal-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -423,8 +423,8 @@ const changeOrderData = useMemo(() => {
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                         ${
                         submittalView === "add"
-                          ? "border-teal-500 text-teal-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -453,8 +453,8 @@ const changeOrderData = useMemo(() => {
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                       ${
                         changeOrderView === "list"
-                          ? "border-teal-500 text-teal-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -467,8 +467,8 @@ const changeOrderData = useMemo(() => {
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                         ${
                         changeOrderView === "add"
-                          ? "border-teal-500 text-teal-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -486,10 +486,10 @@ const changeOrderData = useMemo(() => {
               ) : (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h4 className="text-lg font-semibold text-teal-700">Change Order Table</h4>
+                    <h4 className="text-lg font-semibold text-green-700">Change Order Table</h4>
                     <button
                       onClick={() => setChangeOrderView("list")}
-                      className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+                      className="text-sm text-green-600 hover:text-green-700 font-medium"
                     >
                       &larr; Back to List
                     </button>
@@ -519,8 +519,8 @@ const changeOrderData = useMemo(() => {
 // ✅ InfoRow Component
 const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div className="flex justify-between border-b border-gray-100 pb-1">
-    <span className="font-medium text-gray-600">{label}:</span>
-    <span className="text-gray-900">{value}</span>
+    <span className="font-medium text-gray-700">{label}:</span>
+    <span className="text-gray-700">{value}</span>
   </div>
 );
 
@@ -529,8 +529,8 @@ const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
     className={`px-3 py-1 text-xs font-medium rounded-full ${
       active
-        ? "bg-teal-100 text-teal-800 border border-teal-300"
-        : "bg-gray-100 text-gray-500 border border-gray-200"
+        ? "bg-green-100 text-green-800 border border-green-300"
+        : "bg-gray-100 text-gray-700 border border-gray-200"
     }`}
   >
     {label}

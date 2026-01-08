@@ -28,7 +28,7 @@ const GetInvoiceById = ({ id }: { id: string }) => {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center py-12 text-gray-500">
+      <div className="flex items-center justify-center py-12 text-gray-700">
         <Loader2 className="w-6 h-6 animate-spin mr-2" />
         Loading invoice...
       </div>
@@ -73,8 +73,8 @@ const GetInvoiceById = ({ id }: { id: string }) => {
         <div className="border-b-2 border-red-500 mb-2"></div>
 
         <div className="flex justify-between items-center mb-8">
-          <span className="text-xs text-gray-500">acc</span>
-          <h2 className="text-lg font-bold text-gray-800">
+          <span className="text-xs text-gray-700">acc</span>
+          <h2 className="text-lg font-bold text-gray-700">
             Original for Recipient
           </h2>
         </div>
@@ -83,48 +83,48 @@ const GetInvoiceById = ({ id }: { id: string }) => {
         <div className="grid grid-cols-2 gap-8 mb-8">
           {/* Left Column: Receiver Details */}
           <div>
-            <h3 className="font-bold text-gray-800 mb-2">
+            <h3 className="font-bold text-gray-700 mb-2">
               Details of Receiver (Billed to)
             </h3>
             <div className="grid grid-cols-[140px_1fr] gap-y-1 text-sm">
-              <span className="text-gray-600">Name:</span>
+              <span className="text-gray-700">Name:</span>
               <span className="font-bold">{invoice.customerName}</span>
 
-              <span className="text-gray-600">Contact Name:</span>
+              <span className="text-gray-700">Contact Name:</span>
               <span className="font-bold">{invoice.receiptId || "—"}</span>
 
-              <span className="text-gray-600">Address:</span>
+              <span className="text-gray-700">Address:</span>
               <span className="font-bold whitespace-pre-wrap">
                 {invoice.address || "—"}
               </span>
 
-              <span className="text-gray-600">Country/State/State code:</span>
+              <span className="text-gray-700">Country/State/State code:</span>
               <span className="font-bold">{invoice.stateCode || "—"}</span>
 
-              <span className="text-gray-600">GSTIN / UNIQUE ID:</span>
+              <span className="text-gray-700">GSTIN / UNIQUE ID:</span>
               <span className="font-bold">{invoice.GSTIN || "-"}</span>
             </div>
           </div>
 
           {/* Right Column: Invoice Metadata */}
           <div className="grid grid-cols-[120px_1fr] gap-y-1 text-sm">
-            <span className="text-gray-600">Invoice No:</span>
+            <span className="text-gray-700">Invoice No:</span>
             <span className="font-bold">{invoice.invoiceNumber}</span>
 
-            <span className="text-gray-600">Invoice Date:</span>
+            <span className="text-gray-700">Invoice Date:</span>
             <span className="font-bold">{formatDate(invoice.invoiceDate)}</span>
 
-            <span className="text-gray-600">Date of Supply:</span>
+            <span className="text-gray-700">Date of Supply:</span>
             <span className="font-bold">
               {formatDate(invoice.dateOfSupply)}
             </span>
 
-            <span className="text-gray-600">Place of Supply:</span>
+            <span className="text-gray-700">Place of Supply:</span>
             <span className="font-bold">
               {invoice.placeOfSupply || "Electronic"}
             </span>
 
-            <span className="text-gray-600 mt-4">Job Name:</span>
+            <span className="text-gray-700 mt-4">Job Name:</span>
             <span className="font-bold mt-4">{invoice.jobName}</span>
           </div>
         </div>
@@ -166,7 +166,7 @@ const GetInvoiceById = ({ id }: { id: string }) => {
                   <td className="py-2 px-2 border-b border-gray-300">
                     {item.description}
                     {item.remarks && (
-                      <div className="text-xs text-gray-500 italic mt-1">
+                      <div className="text-xs text-gray-700 italic mt-1">
                         ({item.remarks})
                       </div>
                     )}
@@ -251,10 +251,10 @@ const GetInvoiceById = ({ id }: { id: string }) => {
             {/* Signature Placeholder */}
             {/* <img src={signature} alt="Signature" className="h-12 mb-2" /> */}
             <div className="h-12 w-32 mb-2"></div>
-            <p className="text-sm text-gray-600">Authorised signatory</p>
+            <p className="text-sm text-gray-700">Authorised signatory</p>
           </div>
 
-          <div className="text-xs text-gray-600">
+          <div className="text-xs text-gray-700">
             <p className="mb-2">For any questions please contact Raj:</p>
             <div className="flex gap-8">
               <div>
@@ -337,7 +337,7 @@ const GetInvoiceById = ({ id }: { id: string }) => {
 
         {/* Footer Repeated */}
         <div className="mt-24">
-          <div className="text-xs text-gray-600">
+          <div className="text-xs text-gray-700">
             <p className="mb-2">For any questions please contact Raj:</p>
             <div className="flex gap-8">
               <div>

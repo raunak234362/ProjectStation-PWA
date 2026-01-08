@@ -186,7 +186,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
             case 3:
                 return { label: 'Low', color: 'text-blue-500', bg: 'bg-blue-50' }
             default:
-                return { label: 'Normal', color: 'text-gray-500', bg: 'bg-gray-50' }
+                return { label: 'Normal', color: 'text-gray-700', bg: 'bg-gray-50' }
         }
     }
 
@@ -194,7 +194,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
         return (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-2xl shadow-2xl p-10 flex flex-col items-center">
-                    <Loader2 className="w-12 h-12 animate-spin text-teal-600" />
+                    <Loader2 className="w-12 h-12 animate-spin text-green-600" />
                     <p className="mt-4 text-lg font-medium text-gray-700">Loading task details...</p>
                 </div>
             </div>
@@ -208,11 +208,11 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                     <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
                         <FileText className="w-10 h-10 text-gray-400" />
                     </div>
-                    <p className="text-xl font-semibold text-gray-800">Task Not Found</p>
-                    <p className="text-gray-600 mt-2">This task may have been deleted or is inaccessible.</p>
+                    <p className="text-xl font-semibold text-gray-700">Task Not Found</p>
+                    <p className="text-gray-700 mt-2">This task may have been deleted or is inaccessible.</p>
                     <button
                         onClick={onClose}
-                        className="mt-6 px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition"
+                        className="mt-6 px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition"
                     >
                         Close
                     </button>
@@ -230,17 +230,17 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                 {/* Header */}
                 <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-teal-100 rounded-xl">
-                            <ClipboardList className="w-7 h-7 text-teal-700" />
+                        <div className="p-3 bg-green-100 rounded-xl">
+                            <ClipboardList className="w-7 h-7 text-green-700" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900">{task.name}</h2>
-                            <p className="text-sm text-gray-500">ID: #{task.id}</p>
+                            <h2 className="text-2xl font-bold text-gray-700">{task.name}</h2>
+                            <p className="text-sm text-gray-700">ID: #{task.id}</p>
                         </div>
                     </div>
                     <button 
                         onClick={onClose}
-                        className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-xl transition"
+                        className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-xl transition"
                     >
                         Close
                     </button>
@@ -249,8 +249,8 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                 {/* Scrollable Content */}
                 <div className="flex-1 overflow-y-auto px-8 py-8 space-y-8">
                     {/* Task Info Card */}
-                    <div className="bg-linear-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200">
-                        <h3 className="text-2xl font-bold text-teal-900 mb-6 flex items-center gap-3">
+                    <div className="bg-linear-to-br from-green-50 to-cyan-50 rounded-2xl p-8 border border-green-200">
+                        <h3 className="text-2xl font-bold text-green-900 mb-6 flex items-center gap-3">
                             <FileText className="w-7 h-7" />
                             Task Information
                         </h3>
@@ -273,7 +273,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                                     ></div>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Priority</p>
+                                    <p className="text-sm font-medium text-gray-700">Priority</p>
                                     <p className={`font-bold mt-1 ${priority.color}`}>{priority.label}</p>
                                 </div>
                             </div>
@@ -283,7 +283,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                                     <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Status</p>
+                                    <p className="text-sm font-medium text-gray-700">Status</p>
                                     <span
                                         className={`inline-block mt-1 px-4 py-2 rounded-full font-semibold text-sm border-2 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}
                                     >
@@ -295,9 +295,9 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
 
                         {/* Description */}
                         {task.description && (
-                            <div className="mt-8 p-6 bg-white/70 backdrop-blur rounded-xl border border-teal-100">
-                                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                    <FileText className="w-5 h-5 text-teal-600" />
+                            <div className="mt-8 p-6 bg-white/70 backdrop-blur rounded-xl border border-green-100">
+                                <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                    <FileText className="w-5 h-5 text-green-600" />
                                     Description
                                 </h4>
                                 <div 
@@ -308,7 +308,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                         )}
 
                         {/* Actions */}
-                        <div className="mt-8 pt-6 border-t border-teal-200">
+                        <div className="mt-8 pt-6 border-t border-green-200">
                             <div className="flex flex-wrap items-center gap-4">
                                 {task.status === 'ASSIGNED' && (
                                     <ActionButton
@@ -343,7 +343,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                                 {task.status === 'BREAK' && (
                                     <ActionButton
                                         icon={<Play />}
-                                        color="teal"
+                                        color="green"
                                         onClick={() => handleAction('resume')}
                                         disabled={processing}
                                     >
@@ -351,7 +351,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
                                     </ActionButton>
                                 )}
                                 {processing && (
-                                    <div className="flex items-center gap-2 text-gray-600">
+                                    <div className="flex items-center gap-2 text-gray-700">
                                         <Loader2 className="w-5 h-5 animate-spin" />
                                         <span>Processing...</span>
                                     </div>
@@ -407,21 +407,21 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({ id, onClose, refresh }) =
 const InfoItem: React.FC<{ icon: React.ReactNode; label: string; value: string }> = ({ icon, label, value }) => (
     <div className="flex items-start gap-4">
         <div className="p-3 bg-white rounded-xl shadow-sm shrink-0">
-            {icon && <div className="w-6 h-6 text-teal-600">{icon}</div>}
+            {icon && <div className="w-6 h-6 text-green-600">{icon}</div>}
         </div>
         <div>
-            <p className="text-sm font-medium text-gray-600">{label}</p>
-            <p className="font-semibold text-gray-900 mt-1">{value}</p>
+            <p className="text-sm font-medium text-gray-700">{label}</p>
+            <p className="font-semibold text-gray-700 mt-1">{value}</p>
         </div>
     </div>
 )
 
-const ActionButton: React.FC<{ children: React.ReactNode; icon: React.ReactNode; color: 'emerald' | 'amber' | 'red' | 'teal'; onClick: () => void; disabled: boolean }> = ({ children, icon, color, onClick, disabled }) => {
+const ActionButton: React.FC<{ children: React.ReactNode; icon: React.ReactNode; color: 'emerald' | 'amber' | 'red' | 'green'; onClick: () => void; disabled: boolean }> = ({ children, icon, color, onClick, disabled }) => {
     const colors = {
         emerald: 'bg-emerald-600 hover:bg-emerald-700',
         amber: 'bg-amber-600 hover:bg-amber-700',
         red: 'bg-red-600 hover:bg-red-700',
-        teal: 'bg-teal-600 hover:bg-teal-700'
+        green: 'bg-green-600 hover:bg-green-700'
     }
     return (
         <button
@@ -441,7 +441,7 @@ const SummaryCard: React.FC<{ icon: React.ReactNode; label: string; value: strin
             {icon}
         </div>
         <div>
-            <p className="text-sm text-gray-600">{label}</p>
+            <p className="text-sm text-gray-700">{label}</p>
             <p className={`text-xl font-bold mt-2 ${color}`}>{value}</p>
         </div>
     </div>

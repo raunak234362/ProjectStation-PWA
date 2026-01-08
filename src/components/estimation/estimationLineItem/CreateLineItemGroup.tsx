@@ -57,10 +57,10 @@ const CreateLineItemGroup: React.FC<CreateLineItemGroupProps> = ({
         className="p-4 bg-gray-50 flex justify-between items-center cursor-pointer hover:bg-gray-100 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h3 className="text-lg font-semibold text-gray-800">
+        <h3 className="text-lg font-semibold text-gray-700">
           Line Item Groups
         </h3>
-        <button className="flex items-center gap-2 text-teal-600 font-medium hover:text-teal-700">
+        <button className="flex items-center gap-2 text-green-600 font-medium hover:text-green-700">
           <Plus size={18} />
           {isExpanded ? "Cancel" : "Create New Group"}
         </button>
@@ -82,7 +82,7 @@ const CreateLineItemGroup: React.FC<CreateLineItemGroupProps> = ({
               <input
                 type="text"
                 {...register("name", { required: "Group name is required" })}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all ${
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all ${
                   errors.name ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="Enter group name"
@@ -120,7 +120,7 @@ const CreateLineItemGroup: React.FC<CreateLineItemGroupProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
+                className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
               >
                 {isSubmitting ? (
                   <>

@@ -34,7 +34,7 @@ const Input = React.forwardRef<
 
     // Base styles for inputs
     const baseStyles =
-      "w-full px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200";
+      "w-full px-3 py-2 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200";
 
     // Variant styles
     const variantStyles = {
@@ -71,7 +71,7 @@ const Input = React.forwardRef<
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 hover:text-gray-700 focus:outline-none"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}

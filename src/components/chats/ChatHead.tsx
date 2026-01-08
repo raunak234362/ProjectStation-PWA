@@ -20,7 +20,7 @@ const ChatHead: React.FC<Props> = ({ contact, onBack }) => {
         {onBack && (
           <button
             onClick={onBack}
-            className="md:hidden text-teal-600 font-medium"
+            className="md:hidden text-green-600 font-medium"
           >
             Back
           </button>
@@ -35,7 +35,7 @@ const ChatHead: React.FC<Props> = ({ contact, onBack }) => {
 
       <Button
         onClick={() => setDetailOpen(true)}
-        className="rounded-full bg-teal-500 text-white"
+        className="rounded-full bg-green-500 text-white"
       >
         <MoreVertical size={20} />
       </Button>

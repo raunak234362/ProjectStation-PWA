@@ -110,7 +110,7 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
     <>
       {/* Header with Close button (used when opened from Estimation details) */}
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold text-gray-800">
+        <h2 className="text-lg font-semibold text-gray-700">
           Estimation Tasks
         </h2>
         <div className="flex gap-2">
@@ -118,7 +118,7 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
             <button
               type="button"
               onClick={() => setIsAddingTask(true)}
-              className="px-3 py-1 text-sm rounded-md bg-teal-600 hover:bg-teal-700 text-white font-medium transition-colors shadow-sm"
+              className="px-3 py-1 text-sm rounded-md bg-green-600 hover:bg-green-700 text-white font-medium transition-colors shadow-sm"
             >
               Add Task
             </button>
@@ -127,7 +127,7 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors"
+              className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
             >
               Close
             </button>
@@ -140,12 +140,12 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
         <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in duration-200">
             <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-gray-700">
                 Add Estimation Task
               </h3>
               <button
                 onClick={() => setIsAddingTask(false)}
-                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-700"
               >
                 <CloseIcon size={24} />
               </button>
@@ -189,7 +189,7 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
               pageSizeOptions={[5, 10, 25]}
             />
           ) : (
-            <div className="text-center text-gray-500 py-10">
+            <div className="text-center text-gray-700 py-10">
               No estimation tasks found.
             </div>
           )}

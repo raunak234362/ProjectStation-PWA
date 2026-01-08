@@ -87,7 +87,7 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
           <span>
             {row.original.phone}
             {row.original.extensionNumber && (
-              <span className="text-gray-500 text-xs ml-1">
+              <span className="text-gray-700 text-xs ml-1">
                 (Ext: {row.original.extensionNumber})
               </span>
             )}
@@ -107,7 +107,7 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
         header: "Address",
         id: "fullAddress",
         cell: ({ row }) => (
-          <span className="text-gray-600">{row.getValue("fullAddress")}</span>
+          <span className="text-gray-700">{row.getValue("fullAddress")}</span>
         ),
       },
     ],
@@ -125,12 +125,12 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
       <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-gray-700">
             Connection Designer Engineers
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-black transition"
+            className="text-gray-700 hover:text-gray-700 transition"
             aria-label="Close"
           >
             <X className="w-6 h-6" />
@@ -155,8 +155,8 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
         {/* DataTable */}
         <div className="flex-1 overflow-auto mt-4 border-t p-4">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12 text-gray-500">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600 mr-2"></div>
+            <div className="flex items-center justify-center py-12 text-gray-700">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mr-2"></div>
               Loading engineers...
             </div>
           ) : engineers.length > 0 ? (
@@ -169,7 +169,7 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
               pageSizeOptions={[5, 10, 25]}
             />
           ) : (
-            <div className="text-center text-gray-500 py-10">
+            <div className="text-center text-gray-700 py-10">
               No engineers found for this Connection Designer.
             </div>
           )}

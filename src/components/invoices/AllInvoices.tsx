@@ -78,7 +78,7 @@ const AllInvoices = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
       </div>
     );
   }
@@ -86,7 +86,7 @@ const AllInvoices = () => {
   return (
     <div className="bg-white p-4 rounded-2xl shadow-sm">
       <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">All Invoices</h2>
+        <h2 className="text-xl font-semibold text-gray-700">All Invoices</h2>
       </div>
       <DataTable
         columns={columns}

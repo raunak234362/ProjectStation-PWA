@@ -286,12 +286,12 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
 
   return (
     <div className="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-full mx-auto">
-      <header className="mb-6 border-b pb-4 border-teal-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <header className="mb-6 border-b pb-4 border-green-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-teal-700">
+          <h1 className="text-2xl font-bold text-green-700">
             Create New Invoice
           </h1>
-          <p className="text-gray-500">
+          <p className="text-gray-700">
             Enter details to generate a new invoice.
           </p>
         </div>
@@ -302,7 +302,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
             </label>
             <select
               onChange={handleFabricatorSelect}
-              className="w-full p-2 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all bg-teal-50/30"
+              className="w-full p-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-green-50/30"
               disabled={loading}
               value={selectedFabricatorId}
             >
@@ -322,7 +322,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
               </label>
               <select
                 onChange={handleProjectSelect}
-                className="w-full p-2 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all bg-teal-50/30"
+                className="w-full p-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-green-50/30"
                 disabled={loading}
                 value={selectedProjectId}
               >
@@ -344,7 +344,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
             </label>
             <select
               onChange={handleAccountSelect}
-              className="w-full p-2 border border-teal-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all bg-teal-50/30"
+              className="w-full p-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-green-50/30"
               disabled={loading}
             >
               <option value="">-- Choose an Account --</option>
@@ -364,7 +364,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Customer Details */}
         <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-teal-600 px-2">
+          <legend className="text-lg font-semibold text-green-600 px-2">
             Customer Details
           </legend>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -387,7 +387,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
               </label>
               <select
                 {...register("receiptId")}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
               >
                 <option value="">-- Select Contact --</option>
                 {contacts.map((contact: any) => (
@@ -416,7 +416,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
 
         {/* Invoice Details */}
         <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-teal-600 px-2">
+          <legend className="text-lg font-semibold text-green-600 px-2">
             Invoice Details
           </legend>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -465,7 +465,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
               </label>
               <select
                 {...register("currencyType")}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
               >
                 <option value="INR">Rupees</option>
                 <option value="CAD">CAD</option>
@@ -477,7 +477,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
 
         {/* Invoice Items */}
         <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-teal-600 px-2">
+          <legend className="text-lg font-semibold text-green-600 px-2">
             Invoice Items
           </legend>
           <div className="space-y-4">
@@ -592,7 +592,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                   remarks: "",
                 })
               }
-              className="flex items-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200"
+              className="flex items-center gap-2 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
             >
               <Plus size={18} /> Add Item
             </Button>
@@ -602,11 +602,11 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
         {/* Totals and Bank Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <fieldset className="border p-4 rounded-lg shadow-inner">
-            <legend className="text-lg font-semibold text-teal-600 px-2">
+            <legend className="text-lg font-semibold text-green-600 px-2">
               Summary
             </legend>
             <div className="space-y-4">
-              <div className="flex justify-between items-center text-xl font-bold text-teal-800">
+              <div className="flex justify-between items-center text-xl font-bold text-green-800">
                 <span>Total Value:</span>
                 <span>
                   {watch("currencyType")}{" "}
@@ -616,7 +616,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
               <Button
                 type="button"
                 onClick={handleCalculateTotal}
-                className="w-full bg-teal-100 text-teal-700 hover:bg-teal-200 border border-teal-300 py-2 text-sm font-semibold"
+                className="w-full bg-green-100 text-green-700 hover:bg-green-200 border border-green-300 py-2 text-sm font-semibold"
               >
                 Calculate Total & Words
               </Button>
@@ -630,7 +630,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
           </fieldset>
 
           <fieldset className="border p-4 rounded-lg shadow-inner">
-            <legend className="text-lg font-semibold text-teal-600 px-2">
+            <legend className="text-lg font-semibold text-green-600 px-2">
               Payment Info
             </legend>
             <div className="space-y-4">
@@ -639,7 +639,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                   type="checkbox"
                   {...register("paymentStatus")}
                   id="paymentStatus"
-                  className="w-4 h-4 text-teal-600"
+                  className="w-4 h-4 text-green-600"
                 />
                 <label
                   htmlFor="paymentStatus"
@@ -649,8 +649,8 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                 </label>
               </div>
               {watch("accountInfo") && watch("accountInfo")!.length > 0 && (
-                <div className="bg-teal-50 p-3 rounded-lg border border-teal-100 text-sm">
-                  <p className="font-bold text-teal-800">
+                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
+                  <p className="font-bold text-green-800">
                     Selected Bank Account:
                   </p>
                   <p>{watch("accountInfo")![0].accountName}</p>
@@ -664,7 +664,7 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
 
         <Button
           type="submit"
-          className="mt-8 bg-teal-700 hover:bg-teal-800 text-white w-full py-4 text-xl font-bold shadow-lg transition transform hover:scale-[1.01]"
+          className="mt-8 bg-green-700 hover:bg-green-800 text-white w-full py-4 text-xl font-bold shadow-lg transition transform hover:scale-[1.01]"
         >
           Create Invoice
         </Button>

@@ -49,18 +49,18 @@ const AddAccount = ({ onSuccess }: AddAccountProps) => {
   return (
     <div className="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-full mx-auto">
       {/* Header */}
-      <header className="mb-6 border-b pb-4 border-teal-200">
-        <h1 className="text-3xl font-extrabold text-teal-700">
+      <header className="mb-6 border-b pb-4 border-green-200">
+        <h1 className="text-3xl font-extrabold text-green-700">
           Add Bank Account Details
         </h1>
-        <p className="text-gray-500">Enter details to link a bank account.</p>
+        <p className="text-gray-700">Enter details to link a bank account.</p>
       </header>
 
       {/* FORM */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Account Details Section */}
         <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-teal-600 px-2">
+          <legend className="text-lg font-semibold text-green-600 px-2">
             Account Details
           </legend>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -125,7 +125,7 @@ const AddAccount = ({ onSuccess }: AddAccountProps) => {
 
         {/* Bank Details Section */}
         <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-teal-600 px-2">
+          <legend className="text-lg font-semibold text-green-600 px-2">
             Bank Details
           </legend>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -176,7 +176,7 @@ const AddAccount = ({ onSuccess }: AddAccountProps) => {
 
         {/* Beneficiary Details Section */}
         <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-teal-600 px-2">
+          <legend className="text-lg font-semibold text-green-600 px-2">
             Beneficiary Details
           </legend>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,7 +200,7 @@ const AddAccount = ({ onSuccess }: AddAccountProps) => {
         {/* Submit */}
         <Button
           type="submit"
-          className="mt-8 bg-teal-700 hover:bg-teal-800 text-white w-full py-3 text-lg font-bold shadow-lg transition"
+          className="mt-8 bg-green-700 hover:bg-green-800 text-white w-full py-3 text-lg font-bold shadow-lg transition"
         >
           Save Bank Account Details
         </Button>

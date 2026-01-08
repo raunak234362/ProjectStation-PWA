@@ -54,10 +54,10 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
       <div className="bg-white w-full max-w-lg p-6 rounded-xl space-y-5 relative">
         {/* Close Button */}
         <button onClick={onClose} className="absolute top-3 right-3">
-          <X size={18} className="text-gray-500 hover:text-red-600" />
+          <X size={18} className="text-gray-700 hover:text-red-600" />
         </button>
 
-        <h2 className="text-xl font-bold text-teal-700">Response Details</h2>
+        <h2 className="text-xl font-bold text-green-700">Response Details</h2>
 
         {/* Main message */}
         <div
@@ -68,11 +68,11 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
         {/* Files */}
         {response.files?.length > 0 && (
           <div>
-            <h4 className="text-sm text-gray-600 mb-2">Attachments</h4>
+            <h4 className="text-sm text-gray-700 mb-2">Attachments</h4>
             {response.files.map((file: any) => (
               <p
                 key={file.id}
-                className="cursor-pointer text-teal-600 underline"
+                className="cursor-pointer text-green-600 underline"
                 onClick={() =>
                   openFileSecurely("rfi/response", response.id, file.id)
                 }
@@ -85,7 +85,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
         )}
 
         {/* Timestamp */}
-        <div className="flex gap-2 items-center text-gray-500 text-xs">
+        <div className="flex gap-2 items-center text-gray-700 text-xs">
           <CalendarDays size={14} />
           {new Date(response.createdAt).toLocaleString()}
         </div>
@@ -99,14 +99,14 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
                 key={child.id}
                 className="bg-gray-50 p-3 rounded border text-sm"
               >
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
-                  <span className="font-medium text-gray-900">
+                <div className="flex justify-between text-xs text-gray-700 mb-1">
+                  <span className="font-medium text-gray-700">
                     {child.user?.name || "User"} ({child.user?.role || "N/A"})
                   </span>
                   <span>{new Date(child.createdAt).toLocaleString()}</span>
                 </div>
                 <div
-                  className="text-gray-800 mb-2 prose prose-sm max-w-none"
+                  className="text-gray-700 mb-2 prose prose-sm max-w-none"
                   dangerouslySetInnerHTML={{ __html: child.reason }}
                 />
 
@@ -116,7 +116,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
                     {child.files.map((file: any) => (
                       <p
                         key={file.id}
-                        className="cursor-pointer text-teal-600 underline text-xs"
+                        className="cursor-pointer text-green-600 underline text-xs"
                         onClick={() =>
                           openFileSecurely("rfi/response", child.id, file.id)
                         }
@@ -147,7 +147,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
           <div className="pt-4 space-y-4 border-t">
             {/* Message */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-600">
+              <label className="text-sm font-medium text-gray-700">
                 Your Reply
               </label>
               <RichTextEditor
@@ -159,7 +159,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
 
             {/* Status Dropdown */}
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Response Status
               </label>
               <select
@@ -188,7 +188,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
             <div className="flex justify-end gap-3">
               <Button onClick={() => setReplyMode(false)}>Cancel</Button>
               <Button
-                className="bg-teal-600 text-white"
+                className="bg-green-600 text-white"
                 onClick={handleReplySubmit}
               >
                 Send Reply

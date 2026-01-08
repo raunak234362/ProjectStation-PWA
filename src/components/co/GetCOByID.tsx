@@ -12,8 +12,8 @@ import COResponseDetailsModal from "./CoResponseDetailsModal";
 /* -------------------- Small UI Helper -------------------- */
 const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div>
-    <h4 className="text-sm text-gray-500">{label}</h4>
-    <div className="text-gray-800 font-medium">{value}</div>
+    <h4 className="text-sm text-gray-700">{label}</h4>
+    <div className="text-gray-700 font-medium">{value}</div>
   </div>
 );
 
@@ -87,7 +87,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
   /* -------------------- EARLY RETURNS -------------------- */
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading Change Order details...
       </div>
@@ -131,7 +131,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
       cell: ({ row }) => {
         const count = row.original.files?.length ?? 0;
         return count > 0 ? (
-          <span className="text-teal-700 font-medium">
+          <span className="text-green-700 font-medium">
             {count} file(s)
           </span>
         ) : (
@@ -143,7 +143,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
       accessorKey: "createdAt",
       header: "Created",
       cell: ({ row }) => (
-        <span className="text-gray-600 text-sm">
+        <span className="text-gray-700 text-sm">
           {new Date(row.original.createdAt).toLocaleString()}
         </span>
       ),
@@ -173,7 +173,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
           {/* ================= LEFT: CO DETAILS ================= */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-teal-700">
+              <h1 className="text-2xl font-bold text-green-700">
                 CO #{co.changeOrderNumber}
               </h1>
 
@@ -212,14 +212,14 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
             />
 
             <div>
-              <h4 className="font-semibold text-gray-600 mb-1">Remarks</h4>
+              <h4 className="font-semibold text-gray-700 mb-1">Remarks</h4>
               <p className="bg-gray-50 p-3 rounded-lg border">
                 {co.remarks || "—"}
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold text-gray-600 mb-1">Description</h4>
+              <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
               <p className="bg-gray-50 p-3 rounded-lg border">
                 {co.description || "—"}
               </p>
@@ -227,12 +227,12 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
 
             {(co.files ?? []).length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-600 mb-2">Attachments</h4>
+                <h4 className="font-semibold text-gray-700 mb-2">Attachments</h4>
                 <ul className="space-y-1">
                   {(co.files ?? []).map((file: any) => (
                     <li key={file.id}>
                       <span
-                        className="text-teal-700 underline cursor-pointer"
+                        className="text-green-700 underline cursor-pointer"
                         onClick={() =>
                           openFileSecurely("changeOrder", co.id, file.id)
                         }
@@ -250,7 +250,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
                 onClick={() =>
                   window.open(`/co-table?coData=${encodedCO}`, "_blank")
                 }
-                className="text-teal-600 underline"
+                className="text-green-600 underline"
               >
                 View Change Order Reference Table
               </button>
@@ -260,13 +260,13 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
           {/* ================= RIGHT: RESPONSES ================= */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-teal-700">
+              <h2 className="text-xl font-semibold text-green-700">
                 Responses
               </h2>
 
               {userRole === "CLIENT" && (
                 <Button
-                  className="bg-teal-600 text-white"
+                  className="bg-green-600 text-white"
                   onClick={() => setShowResponseModal(true)}
                 >
                   + Add Response
@@ -282,7 +282,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
                 onRowClick={(row) => setSelectedResponse(row)}
               />
             ) : (
-              <p className="text-gray-500 italic">No responses yet.</p>
+              <p className="text-gray-700 italic">No responses yet.</p>
             )}
           </div>
         </div>

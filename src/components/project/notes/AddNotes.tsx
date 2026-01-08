@@ -71,12 +71,12 @@ const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold text-gray-700">
             Add Project Note
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-700"
           >
             <X className="w-5 h-5" />
           </button>
@@ -89,7 +89,7 @@ const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
             </label>
             <select
               {...register("stage", { required: "Stage is required" })}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
               <option value="">Select Stage</option>
               <option value="PLANNING">Planning</option>
@@ -142,7 +142,7 @@ const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-700">
                 Click or drag files to upload
               </p>
             </div>

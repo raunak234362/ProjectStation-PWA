@@ -49,7 +49,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading RFQ details...
       </div>
@@ -98,7 +98,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       cell: ({ row }) => {
         const count = row.original.files?.length ?? 0;
         return count > 0 ? (
-          <span className="text-teal-700 font-medium">{count} file(s)</span>
+          <span className="text-green-700 font-medium">{count} file(s)</span>
         ) : (
           <span className="text-gray-400">—</span>
         );
@@ -108,7 +108,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       accessorKey: "createdAt",
       header: "Created",
       cell: ({ row }) => (
-        <span className="text-gray-600 text-sm">
+        <span className="text-gray-700 text-sm">
           {new Date(row.original.createdAt).toLocaleString()}
         </span>
       ),
@@ -135,11 +135,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
-          <div className="bg-gradient-to-br from-teal-50 to-white p-6 rounded-xl shadow-md space-y-6">
+          <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-xl shadow-md space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <h3 className="text-2xl font-bold text-teal-700">
+                <h3 className="text-2xl font-bold text-green-700">
                   {rfq.projectName}
                 </h3>
 
@@ -160,7 +160,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 {/* EDIT RFQ */}
                 <Button
                   onClick={() => alert("Coming soon: Edit RFQ modal")}
-                  className="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition text-sm"
+                  className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
                 >
                   Edit
                 </Button>
@@ -201,9 +201,9 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
             {/* Description */}
             <div>
-              <h4 className="font-semibold text-gray-600 mb-1">Description</h4>
+              <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
               <div
-                className="text-gray-800 bg-white p-3 rounded-md border prose prose-sm max-w-none"
+                className="text-gray-700 bg-white p-3 rounded-md border prose prose-sm max-w-none"
                 dangerouslySetInnerHTML={{
                   __html: rfq.description || "No description provided",
                 }}
@@ -211,7 +211,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             </div>
 
             {/* Scopes */}
-            <h4 className="font-semibold text-gray-600">Scope Summary</h4>
+            <h4 className="font-semibold text-gray-700">Scope Summary</h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               <Scope label="Main Design" enabled={rfq.connectionDesign} />
               <Scope label="Misc Design" enabled={rfq.miscDesign} />
@@ -241,10 +241,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
           </div>
 
           {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-          <div className="bg-gradient-to-br from-teal-50 to-white p-6 rounded-xl shadow-md space-y-6">
+          <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-xl shadow-md space-y-6">
             {/* Header + Add Response Button */}
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-semibold text-teal-700">
+              <h1 className="text-2xl font-semibold text-green-700">
                 Responses
               </h1>
 
@@ -253,7 +253,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 userRole === "USER") && (
                 <Button
                   onClick={() => setShowResponseModal(true)}
-                  className="px-4 py-2 bg-teal-600 text-white rounded-lg shadow hover:bg-teal-700 transition"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
                 >
                   + Add Response
                 </Button>
@@ -277,7 +277,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
               />
             ) : (
-              <p className="text-gray-500 italic">No responses yet.</p>
+              <p className="text-gray-700 italic">No responses yet.</p>
             )}
           </div>
         </div>
@@ -303,7 +303,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
             <button
               onClick={() => setShowEstimationModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
+              className="absolute top-4 right-4 text-gray-700 hover:text-gray-700 z-10"
             >
               ✕
             </button>
@@ -323,8 +323,8 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
 const Info = ({ label, value }: { label: string; value: string | number }) => (
   <div className="space-y-1">
-    <p className="text-gray-500 text-xs uppercase">{label}</p>
-    <p className="font-semibold text-gray-900">{value}</p>
+    <p className="text-gray-700 text-xs uppercase">{label}</p>
+    <p className="font-semibold text-gray-700">{value}</p>
   </div>
 );
 
@@ -333,7 +333,7 @@ const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
     className={`px-3 py-2 rounded-md border ${
       enabled
         ? "bg-green-100 border-green-400 text-green-700"
-        : "bg-gray-100 border-gray-300 text-gray-500"
+        : "bg-gray-100 border-gray-300 text-gray-700"
     }`}
   >
     {label}

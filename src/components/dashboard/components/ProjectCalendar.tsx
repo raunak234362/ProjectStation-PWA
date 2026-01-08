@@ -76,14 +76,14 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-teal-50 text-teal-600 rounded-lg">
+          <div className="p-2 bg-green-50 text-green-600 rounded-lg">
             <CalendarIcon size={20} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-800">
+            <h3 className="text-lg font-bold text-gray-700">
               Project Timeline Calendar
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-700">
               Visualizing active projects across the month
             </p>
           </div>
@@ -94,7 +94,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
             onClick={handlePrevMonth}
             className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <ChevronLeft size={18} className="text-gray-600" />
+            <ChevronLeft size={18} className="text-gray-700" />
           </button>
           <span className="text-xs font-bold text-gray-700 min-w-[100px] text-center">
             {monthName} {year}
@@ -103,7 +103,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
             onClick={handleNextMonth}
             className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <ChevronRight size={18} className="text-gray-600" />
+            <ChevronRight size={18} className="text-gray-700" />
           </button>
         </div>
       </div>
@@ -133,7 +133,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                     {dayProjects.slice(0, 3).map((project) => (
                       <div
                         key={project.id}
-                        className="px-1.5 py-0.5 bg-teal-50 text-teal-600 text-[9px] font-bold rounded border border-teal-100 truncate"
+                        className="px-1.5 py-0.5 bg-green-50 text-green-600 text-[9px] font-bold rounded border border-green-100 truncate"
                         title={project.name}
                       >
                         {project.name}

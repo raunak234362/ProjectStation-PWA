@@ -106,8 +106,8 @@ const AllAssignedTask = () => {
   {/* Task Table */}
         <div className="mt-4 border rounded-lg">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12 text-gray-500">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600 mr-2"></div>
+            <div className="flex items-center justify-center py-12 text-gray-700">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mr-2"></div>
               Loading tasks...
             </div>
           ) : estimations?.length > 0 ? (
@@ -125,7 +125,7 @@ const AllAssignedTask = () => {
               pageSizeOptions={[5, 10, 25]}
             />
           ) : (
-            <div className="text-center text-gray-500 py-10">
+            <div className="text-center text-gray-700 py-10">
               No estimation tasks found.
             </div>
           )}

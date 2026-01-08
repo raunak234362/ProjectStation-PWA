@@ -95,8 +95,8 @@ const ProjectLayout = () => {
               onClick={() => setActiveTab("projectDashboard")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "projectDashboard"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               Project Dashboard
@@ -105,8 +105,8 @@ const ProjectLayout = () => {
               onClick={() => setActiveTab("allProject")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allProject"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               All Project
@@ -116,8 +116,8 @@ const ProjectLayout = () => {
               onClick={() => setActiveTab("addProject")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addProject"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               Add New Project

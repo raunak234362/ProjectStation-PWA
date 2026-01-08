@@ -57,13 +57,13 @@ const SubmittalResponseDetailsModal = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-red-600"
+          className="absolute top-3 right-3 text-gray-700 hover:text-red-600"
         >
           <X size={18} />
         </button>
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-teal-700">Response Details</h2>
+        <h2 className="text-xl font-bold text-green-700">Response Details</h2>
 
         {/* Parent Message */}
         <div
@@ -76,11 +76,11 @@ const SubmittalResponseDetailsModal = ({
         {/* Parent Files */}
         {response.files?.length > 0 && (
           <div>
-            <h4 className="text-sm text-gray-600 mb-2">Attachments</h4>
+            <h4 className="text-sm text-gray-700 mb-2">Attachments</h4>
             {response.files.map((file: any) => (
               <p
                 key={file.id}
-                className="cursor-pointer text-teal-600 underline text-sm"
+                className="cursor-pointer text-green-600 underline text-sm"
                 onClick={() =>
                   openFileSecurely("submittal/response", response.id, file.id)
                 }
@@ -93,7 +93,7 @@ const SubmittalResponseDetailsModal = ({
         )}
 
         {/* Timestamp */}
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-gray-700">
           <CalendarDays size={14} />
           {new Date(response.createdAt).toLocaleString()}
         </div>
@@ -108,8 +108,8 @@ const SubmittalResponseDetailsModal = ({
                 key={child.id}
                 className="bg-gray-50 p-3 rounded border text-sm"
               >
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
-                  <span className="font-medium text-gray-900">
+                <div className="flex justify-between text-xs text-gray-700 mb-1">
+                  <span className="font-medium text-gray-700">
                     {child.user?.firstName || "User"}{" "}
                     {child.user?.lastName || ""} ({child.user?.role || "N/A"})
                   </span>
@@ -117,7 +117,7 @@ const SubmittalResponseDetailsModal = ({
                 </div>
 
                 <div
-                  className="text-gray-800 mb-2 prose prose-sm max-w-none"
+                  className="text-gray-700 mb-2 prose prose-sm max-w-none"
                   dangerouslySetInnerHTML={{
                     __html: child.reason || child.description,
                   }}
@@ -129,7 +129,7 @@ const SubmittalResponseDetailsModal = ({
                     {child.files.map((file: any) => (
                       <p
                         key={file.id}
-                        className="cursor-pointer text-teal-600 underline text-xs"
+                        className="cursor-pointer text-green-600 underline text-xs"
                         onClick={() =>
                           openFileSecurely(
                             "submittal/response",
@@ -164,7 +164,7 @@ const SubmittalResponseDetailsModal = ({
           <div className="pt-4 space-y-4 border-t">
             {/* Message */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-600">
+              <label className="text-sm font-medium text-gray-700">
                 Your Reply
               </label>
               <RichTextEditor
@@ -200,7 +200,7 @@ const SubmittalResponseDetailsModal = ({
             <div className="flex justify-end gap-3">
               <Button onClick={() => setReplyMode(false)}>Cancel</Button>
               <Button
-                className="bg-teal-600 text-white"
+                className="bg-green-600 text-white"
                 onClick={handleReplySubmit}
               >
                 Send Reply

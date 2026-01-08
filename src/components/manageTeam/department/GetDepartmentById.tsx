@@ -42,7 +42,7 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading department details...
       </div>
@@ -67,7 +67,7 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
   const managers = department.managerIds || [];
 
   return (
-    <div className="bg-linear-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner">
+    <div className="bg-linear-to-br from-green-50 to-green-50 p-6 rounded-xl shadow-inner">
       {/* Header */}
       {/* <div className="flex items-center justify-between mb-5">
         <h3 className="text-xl font-bold text-orange-800">{department.name}</h3>
@@ -94,8 +94,8 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
         {/* Right Column */}
         <div className="space-y-3">
           <div className="flex justify-between">
-            <span className="font-bold text-gray-600">Managers:</span>
-            <div className="text-gray-900 text-right">
+            <span className="font-bold text-gray-700">Managers:</span>
+            <div className="text-gray-700 text-right">
               {Array.isArray(managers) && managers?.length > 0
                 ? managers
                     .map(
@@ -135,8 +135,8 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex justify-between">
-    <span className="font-bold text-gray-600">{label}:</span>
-    <span className="text-gray-900">{value}</span>
+    <span className="font-bold text-gray-700">{label}:</span>
+    <span className="text-gray-700">{value}</span>
   </div>
 );
 

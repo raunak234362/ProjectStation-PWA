@@ -96,12 +96,12 @@ const QuotationRaise = ({
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b bg-gray-50 rounded-t-2xl">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold text-gray-700">
             Raise Connection Designer Quotation
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-black transition"
+            className="text-gray-700 hover:text-gray-700 transition"
             aria-label="Close"
           >
             <X className="w-6 h-6" />
@@ -187,12 +187,12 @@ const QuotationRaise = ({
                   }}
                   formatOptionLabel={(option: any) => (
                     <div>
-                      <p className="font-medium text-gray-800">{option.label}</p>
+                      <p className="font-medium text-gray-700">{option.label}</p>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {option.states?.map((s: string) => (
                           <span
                             key={s}
-                            className="text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full"
+                            className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full"
                           >
                             {s}
                           </span>
@@ -209,7 +209,7 @@ const QuotationRaise = ({
           <div className="flex justify-end pt-4 border-t border-gray-200">
             <button
               type="submit"
-              className="bg-teal-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-teal-700 transition-all duration-200"
+              className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-all duration-200"
             >
               Raise for Quotation
             </button>

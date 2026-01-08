@@ -45,7 +45,7 @@ console.log(response);
           <X size={18} />
         </button>
 
-        <h2 className="text-xl font-semibold text-teal-700">
+        <h2 className="text-xl font-semibold text-green-700">
           Response Details
         </h2>
 
@@ -58,7 +58,7 @@ console.log(response);
             {response.files.map((file: any) => (
               <p
                 key={file.id}
-                className="text-teal-600 underline cursor-pointer"
+                className="text-green-600 underline cursor-pointer"
                 onClick={() =>
                   openFileSecurely("changeOrder/response", response.id, file.id)
                 }
@@ -99,7 +99,7 @@ console.log(response);
 
         <div className="flex justify-end gap-3">
           <Button onClick={onClose}>Cancel</Button>
-          <Button className="bg-teal-600 text-white" onClick={handleReply}>
+          <Button className="bg-green-600 text-white" onClick={handleReply}>
             Send Reply
           </Button>
         </div>

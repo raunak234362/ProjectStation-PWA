@@ -82,7 +82,7 @@ const ResponseDetailsModal = ({
             />
 
             {child.files?.length > 0 && (
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-700">
                 {child.files.length} attachment(s)
               </div>
             )}
@@ -101,20 +101,20 @@ const ResponseDetailsModal = ({
         {/* Close Button */}
         <Button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-600 hover:text-black"
+          className="absolute top-3 right-3 text-gray-700 hover:text-gray-700"
         >
           <X size={18} />
         </Button>
 
-        <h2 className="text-xl font-semibold text-teal-700">
+        <h2 className="text-xl font-semibold text-green-700">
           Response Details
         </h2>
 
         {/* Message */}
         <div className="space-y-1">
-          <p className="text-sm text-gray-500">Message</p>
+          <p className="text-sm text-gray-700">Message</p>
           <div
-            className="text-gray-900 bg-gray-50 p-3 rounded-md border prose prose-sm max-w-none"
+            className="text-gray-700 bg-gray-50 p-3 rounded-md border prose prose-sm max-w-none"
             dangerouslySetInnerHTML={{ __html: response.description }}
           />
         </div>
@@ -122,16 +122,16 @@ const ResponseDetailsModal = ({
         {/* Attachments */}
         {response.files?.length > 0 && (
           <div>
-            <p className="text-sm font-medium text-gray-600 mb-2">
+            <p className="text-sm font-medium text-gray-700 mb-2">
               Attachments
             </p>
             <ul className="space-y-2">
               {response.files.map((file: any) => (
                 <li key={file.id} className="flex items-center gap-2">
-                  <Paperclip size={16} className="text-teal-600" />
+                  <Paperclip size={16} className="text-green-600" />
 
                   <span
-                    className="text-sm text-teal-700 underline cursor-pointer hover:text-teal-900"
+                    className="text-sm text-green-700 underline cursor-pointer hover:text-green-900"
                     onClick={() =>
                       openFileSecurely("rfq/response", response.id, file.id)
                     }
@@ -145,14 +145,14 @@ const ResponseDetailsModal = ({
         )}
 
         {/* Created At */}
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-gray-700">
           <CalendarDays size={16} />
           {new Date(response.createdAt).toLocaleString()}
         </div>
 
         {replyMode && (
           <div className="mt-4 border-t pt-4 space-y-3">
-            <h3 className="text-md font-semibold text-teal-700">
+            <h3 className="text-md font-semibold text-green-700">
               Write a Reply
             </h3>
 
@@ -167,7 +167,7 @@ const ResponseDetailsModal = ({
 
             {/* Status Dropdown */}
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Response Status
               </label>
               <select
@@ -186,7 +186,7 @@ const ResponseDetailsModal = ({
 
             {/* File Upload */}
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Attach Files (Optional)
               </label>
               <input
@@ -203,7 +203,7 @@ const ResponseDetailsModal = ({
             <div className="flex justify-end gap-2">
               <Button onClick={() => setReplyMode(false)}>Cancel</Button>
               <Button
-                className="bg-teal-600 text-white"
+                className="bg-green-600 text-white"
                 onClick={handleReplySubmit}
               >
                 Send Reply
@@ -215,7 +215,7 @@ const ResponseDetailsModal = ({
         {/* Replies Section */}
         {response.childResponses?.length > 0 && (
           <div className="mt-4">
-            <h3 className="text-sm text-gray-600 font-semibold">Replies</h3>
+            <h3 className="text-sm text-gray-700 font-semibold">Replies</h3>
             {renderThread(response)}
           </div>
         )}

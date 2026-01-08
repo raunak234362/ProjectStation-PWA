@@ -110,8 +110,8 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="flex flex-col items-center">
-          <Loader2 className="w-10 h-10 animate-spin text-teal-600" />
-          <p className="mt-4 text-sm font-medium text-gray-500">
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
+          <p className="mt-4 text-sm font-medium text-gray-700">
             Loading milestone details...
           </p>
         </div>
@@ -125,15 +125,15 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
           <AlertCircle className="w-8 h-8 text-gray-400" />
         </div>
-        <p className="text-lg font-semibold text-gray-800">
+        <p className="text-lg font-semibold text-gray-700">
           Milestone Not Found
         </p>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-700 mt-1">
           This milestone may have been removed.
         </p>
         <button
           onClick={close}
-          className="mt-6 px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+          className="mt-6 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
         >
           Go Back
         </button>
@@ -146,7 +146,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
       {/* Header */}
-      <div className="bg-linear-to-r from-teal-600 to-teal-500 px-6 py-4 flex justify-between items-center">
+      <div className="bg-linear-to-r from-green-600 to-green-500 px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
             <CheckCircle2 className="w-6 h-6 text-white" />
@@ -155,7 +155,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             <h2 className="text-xl font-bold text-white leading-tight">
               {milestone.subject}
             </h2>
-            <p className="text-teal-50 text-xs font-medium">
+            <p className="text-green-50 text-xs font-medium">
               ID: #{milestone.id}
             </p>
           </div>
@@ -211,19 +211,19 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             icon={<Tag className="w-5 h-5" />}
             label="Project"
             value={milestone.project?.name || "—"}
-            color="text-teal-600"
-            bg="bg-teal-50"
+            color="text-green-600"
+            bg="bg-green-50"
           />
         </div>
 
         {/* Description */}
         <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
           <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-teal-600" />
+            <FileText className="w-4 h-4 text-green-600" />
             Description
           </h3>
           <div
-            className="text-gray-600 text-sm leading-relaxed prose prose-sm max-w-none"
+            className="text-gray-700 text-sm leading-relaxed prose prose-sm max-w-none"
             dangerouslySetInnerHTML={{
               __html:
                 milestone.description ||
@@ -236,26 +236,26 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
         {milestone.tasks && milestone.tasks.length > 0 && (
           <div>
             <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
-              <ClipboardList className="w-4 h-4 text-teal-600" />
+              <ClipboardList className="w-4 h-4 text-green-600" />
               Associated Tasks ({milestone.tasks.length})
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {milestone.tasks.map((task) => (
                 <div
                   key={task.id}
-                  className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:border-teal-200 transition-colors shadow-sm"
+                  className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:border-green-200 transition-colors shadow-sm"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-teal-50 flex items-center justify-center">
-                      <ClipboardList className="w-4 h-4 text-teal-600" />
+                    <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
+                      <ClipboardList className="w-4 h-4 text-green-600" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800">
+                      <p className="text-sm font-semibold text-gray-700">
                         {task.name}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <User className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-700">
                           {task.user
                             ? `${task.user.firstName} ${task.user.lastName}`
                             : "Unassigned"}
@@ -263,7 +263,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
                       </div>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 uppercase">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase">
                     {task.status}
                   </span>
                 </div>
@@ -295,7 +295,7 @@ const InfoCard = ({
     </span>
     <div className="flex items-center gap-2 mt-1">
       <div className={`p-1.5 ${bg} ${color} rounded-lg`}>{icon}</div>
-      <span className="text-sm font-bold text-gray-800">{value}</span>
+      <span className="text-sm font-bold text-gray-700">{value}</span>
     </div>
   </div>
 );

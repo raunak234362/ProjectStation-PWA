@@ -416,8 +416,8 @@ const TeamDashboard = () => {
 
       {loading && !selectedTeam ? (
         <div className="flex flex-col items-center justify-center h-64">
-          <div className="w-12 h-12 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-500 font-medium">
+          <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-700 font-medium">
             Loading dashboard data...
           </p>
         </div>
@@ -433,17 +433,17 @@ const TeamDashboard = () => {
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-8 bg-teal-500 rounded-full"></div>
-                  <h2 className="text-2xl font-bold text-gray-800">
+                  <div className="w-2 h-8 bg-green-500 rounded-full"></div>
+                  <h2 className="text-2xl font-bold text-gray-700">
                     Team:{" "}
-                    <span className="text-teal-600">
+                    <span className="text-green-600">
                       {teams?.find((t) => t.id === selectedTeam)?.name}
                     </span>
                   </h2>
                 </div>
                 <button
                   onClick={() => setIsViewModalOpen(true)}
-                  className="px-6 py-2 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
+                  className="px-6 py-2 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-100"
                 >
                   View Full Details
                 </button>

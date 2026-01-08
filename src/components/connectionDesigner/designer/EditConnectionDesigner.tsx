@@ -234,12 +234,12 @@ const EditConnectionDesigner = ({
       >
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b bg-gray-50 shrink-0">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-gray-700">
             Edit Connection Designer
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition"
+            className="text-gray-700 hover:text-gray-700 transition"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -392,7 +392,7 @@ const EditConnectionDesigner = ({
             <Button
               type="submit"
               disabled={submitting}
-              className="bg-teal-600 text-white hover:bg-teal-700 flex items-center gap-2 disabled:opacity-70"
+              className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2 disabled:opacity-70"
             >
               {submitting ? (
                 <>

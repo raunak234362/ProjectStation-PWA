@@ -152,7 +152,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
                 <div>
                   <h5
-                    className="text-base font-semibold text-gray-800"
+                    className="text-base font-semibold text-gray-700"
                     dangerouslySetInnerHTML={{ __html: description }}
                   />
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
@@ -162,11 +162,11 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
                       </p>
                     )}
                     {firstFile?.uploadedAt && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-700">
                         Uploaded on {formatDate(firstFile.uploadedAt)}
                       </p>
                     )}
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-700">
                       by <span className="font-medium">{uploaderName}</span>
                     </p>
                   </div>
@@ -186,13 +186,13 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 flex-1 min-w-0"
                     >
-                      <FileText size={18} className="text-teal-500" />
+                      <FileText size={18} className="text-green-500" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-gray-800 text-sm font-medium truncate">
+                        <p className="text-gray-700 text-sm font-medium truncate">
                           {file.originalName || `File ${index + 1}`}
                         </p>
                         {file.stage && (
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-700">
                             Stage: {file.stage}
                           </p>
                         )}
@@ -202,14 +202,14 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={(e) => handleShare(e, file)}
-                        className="p-1.5 text-gray-500 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
+                        className="p-1.5 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
                         title="Share Link"
                       >
                         <Share2 size={16} />
                       </button>
                       <button
                         onClick={(e) => handleDownload(e, file)}
-                        className="p-1.5 text-gray-500 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
+                        className="p-1.5 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
                         title="Download"
                       >
                         <Download size={16} />
@@ -229,7 +229,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
       ) : (
         // Empty State
         <div className="text-center py-8 border border-dashed border-gray-200 rounded-lg">
-          <p className="text-gray-500">No files available for this project</p>
+          <p className="text-gray-700">No files available for this project</p>
           {onAddFilesClick && (
             <Button
               onClick={onAddFilesClick}

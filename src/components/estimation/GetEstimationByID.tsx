@@ -81,7 +81,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading estimation details...
       </div>
@@ -126,11 +126,11 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       : "bg-blue-100 text-blue-800";
 
   return (
-    <div className="bg-linear-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200">
+    <div className="bg-linear-to-br from-green-50 to-cyan-50 rounded-2xl p-8 border border-green-200">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="text-xl font-bold text-teal-800">
+          <h3 className="text-xl font-bold text-green-800">
             Estimation #{estimationNumber}
           </h3>
           <p className="text-gray-700 font-medium">Project: {projectName}</p>
@@ -163,7 +163,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
                   <span className="font-semibold">
                     {rfq.projectName || "RFQ Linked"}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-700">
                     Project No: {rfq.projectNumber || "N/A"} · Bid:{" "}
                     {rfq.bidPrice || "-"}
                   </span>
@@ -275,12 +275,12 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {isHoursOpen && (
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800">
+            <h3 className="text-lg font-bold text-gray-700">
               Estimated Hours/Weeks
             </h3>
             <button
               onClick={() => setIsHoursOpen(false)}
-              className="text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
+              className="text-gray-700 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
             >
               Close
             </button>
@@ -312,8 +312,8 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex justify-between gap-3">
-    <span className="font-bold text-gray-600">{label}:</span>
-    <span className="text-gray-900 text-right wrap-break-words">{value}</span>
+    <span className="font-bold text-gray-700">{label}:</span>
+    <span className="text-gray-700 text-right wrap-break-words">{value}</span>
   </div>
 );
 

@@ -114,12 +114,12 @@ const ChatSidebar: React.FC<Props> = ({
               key={chat.id}
               onClick={() => selectChat(chat)}
               className={`p-3 rounded-lg cursor-pointer transition ${
-                isActive ? "bg-teal-100" : "hover:bg-gray-100"
+                isActive ? "bg-green-100" : "hover:bg-gray-100"
               }`}
             >
               <div className="flex justify-between items-center">
                 <h3 className="font-medium text-sm">{chat.group.name}</h3>
-                <span className="text-xs text-gray-600">
+                <span className="text-xs text-gray-700">
                   {new Date(chat.updatedAt).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -127,7 +127,7 @@ const ChatSidebar: React.FC<Props> = ({
                 </span>
               </div>
               <div className="flex justify-between items-center mt-1">
-                <p className="text-xs text-gray-600 truncate max-w-[140px]">
+                <p className="text-xs text-gray-700 truncate max-w-[140px]">
                   {chat.lastMessage || "No messages"}
                 </p>
                 {hasUnread && !isActive && (

@@ -70,7 +70,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
       <div className="flex justify-between items-center mb-4">
         <Button
           onClick={handleOpenAddMileStone}
-          className="text-sm py-1 px-3 bg-teal-600 text-white"
+          className="text-sm py-1 px-3 bg-green-600 text-white"
         >
           + Add Milestone
         </Button>
@@ -85,7 +85,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
           pageSizeOptions={[5, 10, 25]}
         />
       ) : (
-        <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+        <div className="flex flex-col items-center justify-center py-8 text-gray-700">
           <Clock className="w-8 h-8 mb-2 text-gray-300" />
           <p>No milestones added yet.</p>
         </div>

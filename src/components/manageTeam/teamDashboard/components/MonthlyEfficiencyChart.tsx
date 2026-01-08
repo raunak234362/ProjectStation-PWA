@@ -27,17 +27,17 @@ const MonthlyEfficiencyChart: React.FC<MonthlyEfficiencyChartProps> = ({
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-bold text-gray-800">
+          <h3 className="text-lg font-bold text-gray-700">
             Efficiency Analytics
           </h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700">
             Monthly efficiency trend for {teamName}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-teal-500"></div>
-            <span className="text-xs text-gray-600 font-medium">
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-xs text-gray-700 font-medium">
               {teamName}
             </span>
           </div>

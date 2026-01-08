@@ -24,7 +24,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
           <div>
-            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
               <div
                 className={`w-2 h-6 rounded-full ${
                   status === "ACTIVE"
@@ -36,13 +36,13 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
               ></div>
               {status.replace("_", " ")} Projects
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-700 mt-1">
               Showing {projects.length} projects
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-700"
           >
             <CloseIcon size={24} />
           </button>
@@ -67,10 +67,10 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
                       className="bg-gray-50 hover:bg-gray-100 transition-colors rounded-xl group cursor-pointer"
                       onClick={() => onProjectSelect(project)}
                     >
-                      <td className="px-4 py-4 rounded-l-xl font-medium text-gray-800">
+                      <td className="px-4 py-4 rounded-l-xl font-medium text-gray-700">
                         {project.name}
                       </td>
-                      <td className="px-4 py-4 text-gray-600">
+                      <td className="px-4 py-4 text-gray-700">
                         {project.stage || "N/A"}
                       </td>
                       <td className="px-4 py-4 rounded-r-xl">

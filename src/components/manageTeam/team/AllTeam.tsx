@@ -79,7 +79,7 @@ const AllTeam = () => {
       accessorKey: "name",
       header: "Team Name",
       cell: ({ row }) => (
-        <span className="font-medium text-gray-900">{row.original.name}</span>
+        <span className="font-medium text-gray-700">{row.original.name}</span>
       ),
     },
     {
@@ -92,7 +92,7 @@ const AllTeam = () => {
       cell: ({ getValue }) => {
         const value = getValue() as string | undefined;
         return (
-          <span className="text-teal-700 font-medium">{value || "—"}</span>
+          <span className="text-green-700 font-medium">{value || "—"}</span>
         );
       },
     },
@@ -113,8 +113,8 @@ const AllTeam = () => {
     return (
       <div className="flex items-center justify-center p-12 bg-white rounded-2xl">
         <div className="flex items-center gap-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
-          <span className="text-gray-600">Loading teams...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+          <span className="text-gray-700">Loading teams...</span>
         </div>
       </div>
     );
@@ -131,8 +131,8 @@ const AllTeam = () => {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
       <div className="p-6 border-b">
-        <h2 className="text-2xl font-bold text-gray-800">All Teams</h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <h2 className="text-2xl font-bold text-gray-700">All Teams</h2>
+        <p className="text-sm text-gray-700 mt-1">
           Manage and view all project teams
         </p>
       </div>
