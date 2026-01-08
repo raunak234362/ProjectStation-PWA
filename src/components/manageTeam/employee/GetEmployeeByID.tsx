@@ -104,7 +104,16 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           />
           <InfoRow
             label="Phone"
-            value={employee.phone}
+            value={
+              <span>
+                {employee.phone}
+                {employee.extensionNumber && (
+                  <span className="text-gray-500 text-xs ml-1">
+                    (Ext: {employee.extensionNumber})
+                  </span>
+                )}
+              </span>
+            }
             href={`tel:${employee.phone}`}
           />
           <InfoRow label="Alt Phone" value={employee.altPhone || "—"} />
@@ -167,17 +176,17 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
               Employee Progress Status
             </Button>
           )}
-          {userRole === "admin" && (
-        <>
-          <Button
-            onClick={() => handleModel(employee)}
-            className="py-1 px-2 text-lg"
-          >
-            Edit Profile
-          </Button>
-          <Button className="py-1 px-2 text-lg">Disable Profile</Button>
-        </>
-          )}
+        {userRole === "admin" && (
+          <>
+            <Button
+              onClick={() => handleModel(employee)}
+              className="py-1 px-2 text-lg"
+            >
+              Edit Profile
+            </Button>
+            <Button className="py-1 px-2 text-lg">Disable Profile</Button>
+          </>
+        )}
       </div>
       {editModel && (
         <EditEmployee employeeData={employee} onClose={handleModelClose} />

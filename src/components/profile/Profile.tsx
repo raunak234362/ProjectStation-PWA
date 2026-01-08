@@ -1,7 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useSelector } from "react-redux";
-import { Mail, Phone, MapPin, UserCog, User, Shield, Edit2 } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  UserCog,
+  User,
+  Shield,
+  Edit2,
+} from "lucide-react";
 import { FiPhoneCall } from "react-icons/fi";
 import Button from "../fields/Button";
 
@@ -55,6 +63,11 @@ const Profile = () => {
             <p className="flex items-center gap-2 text-gray-800 font-medium">
               <Phone className="w-4 h-4 text-teal-500" />
               {user.phone || "N/A"}
+              {user.extensionNumber && (
+                <span className="text-gray-500 text-sm ml-1">
+                  (Ext: {user.extensionNumber})
+                </span>
+              )}
             </p>
           </div>
           <div>
@@ -127,7 +140,8 @@ const Profile = () => {
         </div>
         <div className="border-t border-gray-200 pt-6">
           <div className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <Edit2 className="w-5 h-5 text-teal-600" /> Update Detail <Button>Update </Button>
+            <Edit2 className="w-5 h-5 text-teal-600" /> Update Detail{" "}
+            <Button>Update </Button>
           </div>
         </div>
       </div>

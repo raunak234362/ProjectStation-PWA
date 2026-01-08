@@ -34,9 +34,7 @@ const AllBranches = ({ fabricator, onClose }: AllBranchProps) => {
         </p>
 
         {/* Add Branch Button */}
-        <Button onClick={handleOpenAddBranch}>
-          + Add Branch
-        </Button>
+        <Button onClick={handleOpenAddBranch}>+ Add Branch</Button>
 
         {/* ✅ Branch Table */}
         <div className="mt-4 overflow-x-auto border rounded-lg">
@@ -57,7 +55,14 @@ const AllBranches = ({ fabricator, onClose }: AllBranchProps) => {
                   <tr key={branch.id} className="border-b hover:bg-gray-50">
                     <td className="px-3 py-2">{branch.name}</td>
                     <td className="px-3 py-2">{branch.email}</td>
-                    <td className="px-3 py-2">{branch.phone}</td>
+                    <td className="px-3 py-2">
+                      {branch.phone}
+                      {branch.extensionNumber && (
+                        <span className="text-gray-500 text-xs ml-1">
+                          (Ext: {branch.extensionNumber})
+                        </span>
+                      )}
+                    </td>
                     <td className="px-3 py-2">
                       {branch.address}, {branch.city}, {branch.state} -{" "}
                       {branch.zipCode}, {branch.country}

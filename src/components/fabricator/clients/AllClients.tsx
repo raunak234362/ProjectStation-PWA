@@ -8,7 +8,7 @@ import AddClients from "./AddClient";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import DataTable from "../../ui/table"; // Assuming this is the correct path
-import type { ColumnDef } from "@tanstack/react-table"; 
+import type { ColumnDef } from "@tanstack/react-table";
 import GetEmployeeByID from "../../manageTeam/employee/GetEmployeeByID";
 
 interface AllClientProps {
@@ -93,7 +93,20 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         id: "fullName",
       },
       { accessorKey: "email", header: "Email" },
-      { accessorKey: "phone", header: "Phone" },
+      {
+        accessorKey: "phone",
+        header: "Phone",
+        cell: ({ row }) => (
+          <span>
+            {row.original.phone}
+            {row.original.extensionNumber && (
+              <span className="text-gray-500 text-xs ml-1">
+                (Ext: {row.original.extensionNumber})
+              </span>
+            )}
+          </span>
+        ),
+      },
       { accessorKey: "designation", header: "Designation" },
       {
         accessorFn: (r) => {

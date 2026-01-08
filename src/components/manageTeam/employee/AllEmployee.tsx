@@ -7,13 +7,11 @@ import GetEmployeeByID from "./GetEmployeeByID";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSelector } from "react-redux";
 const AllEmployee = () => {
-  const staffData = useSelector((state:any)=>state.userInfo.staffData)
+  const staffData = useSelector((state: any) => state.userInfo.staffData);
   const [employees, setEmployees] = useState<UserData[]>(staffData);
   const [employeeID, setEmployeeID] = useState<string | null>(null);
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
-
-
 
   console.log(employees);
   const handleDelete = async (selectedRows: UserData[]) => {
@@ -33,10 +31,10 @@ const AllEmployee = () => {
   };
 
   const handleRowClick = (row: UserData) => {
-    setEmployeeID(row.id)
+    setEmployeeID(row.id);
     // router.push(`/employees/${row.id}`);
   };
-  console.log(employeeID)
+  console.log(employeeID);
 
   const columns: ColumnDef<UserData>[] = [
     { accessorKey: "username", header: "Username" },
@@ -47,7 +45,20 @@ const AllEmployee = () => {
       header: "Full Name",
       id: "fullName",
     },
-    { accessorKey: "phone", header: "Phone" },
+    {
+      accessorKey: "phone",
+      header: "Phone",
+      cell: ({ row }) => (
+        <span>
+          {row.original.phone}
+          {row.original.extensionNumber && (
+            <span className="text-gray-500 text-xs ml-1">
+              (Ext: {row.original.extensionNumber})
+            </span>
+          )}
+        </span>
+      ),
+    },
     { accessorKey: "designation", header: "Designation" },
     {
       accessorKey: "role",

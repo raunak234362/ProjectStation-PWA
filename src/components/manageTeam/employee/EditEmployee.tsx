@@ -22,11 +22,7 @@ const EditEmployee = ({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-  } = useForm<EditEmployeePayload>({
+  const { register, handleSubmit, setValue } = useForm<EditEmployeePayload>({
     defaultValues: {
       role: "STAFF",
     },
@@ -148,16 +144,19 @@ const EditEmployee = ({
               label="Last Name"
               {...register("lastName", { required: "Last name is required" })}
             />
-            <Input
-              label="Phone"
-              {...register("phone", {
-                required: "Phone is required",
-                pattern: {
-                  value: /^\+?[0-9]{10,15}$/,
-                  message: "Invalid phone (10–15 digits)",
-                },
-              })}
-            />
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                label="Phone"
+                {...register("phone", {
+                  required: "Phone is required",
+                  pattern: {
+                    value: /^\+?[0-9]{10,15}$/,
+                    message: "Invalid phone (10–15 digits)",
+                  },
+                })}
+              />
+              <Input label="Extension" {...register("extensionNumber")} />
+            </div>
             <Input label="Alt Phone" {...register("altPhone")} />
             <Input
               label="Designation"

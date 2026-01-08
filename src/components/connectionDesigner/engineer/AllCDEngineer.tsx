@@ -45,6 +45,7 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
             address: e.address ?? "",
             role: e.role ?? "ENGINEER",
             isActive: e.isActive ?? true,
+            extensionNumber: e.extensionNumber ?? "",
             createdAt: e.createdAt ?? "",
             updatedAt: e.updatedAt ?? "",
           })
@@ -79,7 +80,20 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
         id: "fullName",
       },
       { accessorKey: "email", header: "Email" },
-      { accessorKey: "phone", header: "Phone" },
+      {
+        accessorKey: "phone",
+        header: "Phone",
+        cell: ({ row }) => (
+          <span>
+            {row.original.phone}
+            {row.original.extensionNumber && (
+              <span className="text-gray-500 text-xs ml-1">
+                (Ext: {row.original.extensionNumber})
+              </span>
+            )}
+          </span>
+        ),
+      },
       { accessorKey: "designation", header: "Designation" },
       {
         accessorFn: (r) => {

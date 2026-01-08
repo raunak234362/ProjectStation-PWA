@@ -51,7 +51,16 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
     {
       accessorKey: "member.phone",
       header: "Phone",
-      cell: ({ row }) => row.original.member.phone || "—",
+      cell: ({ row }) => (
+        <span>
+          {row.original.member.phone || "—"}
+          {row.original.member.extensionNumber && (
+            <span className="text-gray-500 text-xs ml-1">
+              (Ext: {row.original.member.extensionNumber})
+            </span>
+          )}
+        </span>
+      ),
     },
     {
       accessorKey: "role",

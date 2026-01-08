@@ -165,18 +165,29 @@ const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
           )}
         </div>
 
-        {/* Phone */}
-        <div>
-          <Input
-            label="Phone"
-            type="text"
-            {...register("phone", { required: "Phone required" })}
-            className="input"
-            placeholder="+91XXXXXXXXXX"
-          />
-          {errors.phone && (
-            <p className="text-red-500 text-xs">{errors.phone.message}</p>
-          )}
+        {/* Phone & Extension */}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <Input
+              label="Phone"
+              type="text"
+              {...register("phone", { required: "Phone required" })}
+              className="input"
+              placeholder="+91XXXXXXXXXX"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-xs">{errors.phone.message}</p>
+            )}
+          </div>
+          <div>
+            <Input
+              label="Extension"
+              type="text"
+              {...register("extensionNumber")}
+              className="input"
+              placeholder="Ext"
+            />
+          </div>
         </div>
 
         {/* Address */}

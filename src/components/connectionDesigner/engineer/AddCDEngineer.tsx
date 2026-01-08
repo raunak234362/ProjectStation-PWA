@@ -34,9 +34,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
     };
 
     try {
-      const response = await Service.AddEmployee(
-        payload
-      );
+      const response = await Service.AddEmployee(payload);
       console.log("Employee created:", response);
       dispatch(addStaff(response?.data?.user));
       toast.success("Employee created successfully!");
@@ -47,7 +45,6 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
       );
     }
   };
-
 
   return (
     <div className="w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-200">
@@ -90,18 +87,31 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
           )}
         </div>
 
-        {/* Phone */}
-        <div>
-          <Input
-            label="Phone"
-            type="tel"
-            {...register("phone", { required: "Phone number is required" })}
-            placeholder="+91XXXXXXXXXX"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
-          />
-          {errors.phone && (
-            <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
-          )}
+        {/* Phone & Extension */}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <Input
+              label="Phone"
+              type="tel"
+              {...register("phone", { required: "Phone number is required" })}
+              placeholder="+91XXXXXXXXXX"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.phone.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <Input
+              label="Extension"
+              type="text"
+              {...register("extensionNumber")}
+              placeholder="Ext"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            />
+          </div>
         </div>
 
         {/* First Name */}
