@@ -53,14 +53,14 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-teal-50 text-teal-600 rounded-lg">
+          <div className="p-2 bg-green-50 text-green-600 rounded-lg">
             <CalendarIcon size={20} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-800">
+            <h3 className="text-lg font-bold text-gray-700">
               Team Calendar - {selectedTeamName}
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-700">
               Schedule and task distribution
             </p>
           </div>
@@ -72,8 +72,8 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
               onClick={() => setViewMode("user")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
                 viewMode === "user"
-                  ? "bg-white text-teal-600 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-green-600 shadow-sm"
+                  : "text-gray-700 hover:text-gray-700"
               }`}
             >
               <User size={14} />
@@ -83,8 +83,8 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
               onClick={() => setViewMode("project")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
                 viewMode === "project"
-                  ? "bg-white text-teal-600 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-green-600 shadow-sm"
+                  : "text-gray-700 hover:text-gray-700"
               }`}
             >
               <Layout size={14} />
@@ -95,9 +95,9 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
           <select
             value={selectedMember}
             onChange={(e) => setSelectedMember(e.target.value)}
-            className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+            className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/20"
           >
-            <option value="all" className="text-gray-900">
+            <option value="all" className="text-gray-700">
               Select Team Member
             </option>
             {members.map((m) => {
@@ -107,7 +107,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
                 m.f_name ||
                 "Unknown";
               return (
-                <option key={m.id} value={m.id} className="text-gray-900">
+                <option key={m.id} value={m.id} className="text-gray-700">
                   {name}
                 </option>
               );
@@ -119,7 +119,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
               onClick={handlePrevMonth}
               className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <ChevronLeft size={18} className="text-gray-600" />
+              <ChevronLeft size={18} className="text-gray-700" />
             </button>
             <span className="text-xs font-bold text-gray-700 min-w-[100px] text-center">
               {monthName} {year}
@@ -128,7 +128,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
               onClick={handleNextMonth}
               className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <ChevronRight size={18} className="text-gray-600" />
+              <ChevronRight size={18} className="text-gray-700" />
             </button>
           </div>
         </div>
@@ -172,7 +172,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
                   <span className="text-xs font-bold text-gray-400">{day}</span>
                   <div className="mt-2 flex flex-col gap-1">
                     {peopleWorkingCount > 0 ? (
-                      <div className="px-2 py-1 bg-teal-50 text-teal-700 text-[10px] font-bold rounded-lg border border-teal-100 flex items-center justify-center gap-1">
+                      <div className="px-2 py-1 bg-green-50 text-green-700 text-[10px] font-bold rounded-lg border border-green-100 flex items-center justify-center gap-1">
                         <User size={10} />
                         <span>{peopleWorkingCount} Working</span>
                       </div>
@@ -195,7 +195,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
           <span>Tasks</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+          <div className="w-2 h-2 rounded-full bg-green-400"></div>
           <span>Projects</span>
         </div>
         <div className="flex items-center gap-1.5">

@@ -106,7 +106,7 @@ const Select = ({
         <>
           {parts.map((part, i) =>
             regex.test(part) ? (
-              <mark key={i} className="bg-yellow-200 text-black">
+              <mark key={i} className="bg-yellow-200 text-gray-700">
                 {part}
               </mark>
             ) : (
@@ -147,7 +147,7 @@ const Select = ({
               </div>
             ) : (
               <span
-                className={selectedOption ? "text-gray-900" : "text-gray-500"}
+                className={selectedOption ? "text-gray-700" : "text-gray-700"}
               >
                 {selectedOption
                   ? selectedOption.label
@@ -186,7 +186,7 @@ const Select = ({
                 </div>
               ))
             ) : (
-              <div className="px-4 py-1 text-gray-500">No options found</div>
+              <div className="px-4 py-1 text-gray-700">No options found</div>
             )}
           </div>
         )}

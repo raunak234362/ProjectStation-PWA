@@ -54,7 +54,7 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+          <Loader2 className="w-6 h-6 animate-spin text-green-600" />
         </div>
       ) : notes.length > 0 ? (
         <div className="grid gap-4">
@@ -70,19 +70,19 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
                   >
                     {note.stage}
                   </span>
-                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                  <span className="text-xs text-gray-700 flex items-center gap-1">
                     <Calendar className="w-3 h-3" />{" "}
                     {formatDate(note.createdAt)}
                   </span>
                 </div>
-                <div className="text-xs text-gray-500 flex items-center gap-1">
+                <div className="text-xs text-gray-700 flex items-center gap-1">
                   <User className="w-3 h-3" /> {note.createdBy?.firstName}{" "}
                   {note.createdBy?.lastName}
                 </div>
               </div>
 
               <div
-                className="text-gray-800 text-sm mb-3 prose prose-sm max-w-none"
+                className="text-gray-700 text-sm mb-3 prose prose-sm max-w-none"
                 dangerouslySetInnerHTML={{ __html: note.content }}
               />
 
@@ -94,7 +94,7 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
                       onClick={() =>
                         openFileSecurely("project", projectId, file.id)
                       }
-                      className="flex items-center gap-1 text-xs bg-teal-50 text-teal-700 px-2 py-1 rounded hover:bg-teal-100 transition-colors"
+                      className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-1 rounded hover:bg-green-100 transition-colors"
                     >
                       <Paperclip className="w-3 h-3" /> {file.originalName}
                     </button>
@@ -107,10 +107,10 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
       ) : (
         <div className="text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300">
           <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-500">No notes found for this project.</p>
+          <p className="text-gray-700">No notes found for this project.</p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="text-teal-600 font-medium hover:underline mt-2 text-sm"
+            className="text-green-600 font-medium hover:underline mt-2 text-sm"
           >
             Create the first note
           </button>

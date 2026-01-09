@@ -52,7 +52,7 @@ const AllEmployee = () => {
         <span>
           {row.original.phone}
           {row.original.extensionNumber && (
-            <span className="text-gray-500 text-xs ml-1">
+            <span className="text-gray-700 text-xs ml-1">
               (Ext: {row.original.extensionNumber})
             </span>
           )}
@@ -64,7 +64,7 @@ const AllEmployee = () => {
       accessorKey: "role",
       header: "Role",
       cell: ({ row }) => (
-        <span className="px-2 py-1 rounded-full bg-teal-100 text-teal-800">
+        <span className="px-2 py-1 rounded-full bg-green-100 text-green-800">
           {row.getValue("role")}
         </span>
       ),

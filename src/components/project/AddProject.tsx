@@ -12,6 +12,7 @@ import {
   Sparkles,
   Zap,
   Layers,
+  Users,
 } from "lucide-react";
 
 import Input from "../fields/input";
@@ -171,7 +172,7 @@ const AddProject: React.FC = () => {
                     placeholder="Search RFQ by project name or fabricator..."
                     isClearable
                     isSearchable
-                    className="text-gray-800"
+                    className="text-gray-700"
                     styles={{
                       control: (base) => ({
                         ...base,
@@ -187,7 +188,7 @@ const AddProject: React.FC = () => {
 
             {/* RFQ Preview */}
             {selectedRfq && (
-              <div className="bg-linear-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-2xl p-8 -mt-6 mb-10 shadow-inner">
+              <div className="bg-linear-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl p-8 -mt-6 mb-10 shadow-inner">
                 <div className="flex items-center gap-3 mb-4">
                   <Zap className="w-7 h-7 text-emerald-600" />
                   <h3 className="text-2xl font-bold text-emerald-900">
@@ -196,19 +197,19 @@ const AddProject: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
                   <div className="bg-white/70 p-4 rounded-xl">
-                    <p className="text-gray-600">Project</p>
-                    <p className="font-bold text-gray-800 truncate">
+                    <p className="text-gray-700">Project</p>
+                    <p className="font-bold text-gray-700 truncate">
                       {selectedRfq.projectName}
                     </p>
                   </div>
                   <div className="bg-white/70 p-4 rounded-xl">
-                    <p className="text-gray-600">Fabricator</p>
+                    <p className="text-gray-700">Fabricator</p>
                     <p className="font-bold">
                       {selectedRfq.fabricator?.fabName}
                     </p>
                   </div>
                   <div className="bg-white/70 p-4 rounded-xl">
-                    <p className="text-gray-600">Tool</p>
+                    <p className="text-gray-700">Tool</p>
                     <p className="font-bold text-purple-700">
                       {selectedRfq.tools || "TEKLA"}
                     </p>
@@ -303,6 +304,40 @@ const AddProject: React.FC = () => {
                       placeholder="Select dept"
                     />
                   )}
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
+                  <Users className="w-5 h-5 text-purple-600" /> Team
+                </label>
+                <Controller
+                  name="teamID"
+                  control={control}
+                  render={({ field }) => {
+                    const selectedDeptId = watch("departmentID");
+                    const filteredTeams = teamDatas
+                      .filter(
+                        (t: any) =>
+                          !selectedDeptId || t.departmentID === selectedDeptId
+                      )
+                      .map((t: any) => ({
+                        label: t.name,
+                        value: String(t.id),
+                      }));
+
+                    return (
+                      <Select
+                        options={filteredTeams}
+                        value={filteredTeams.find(
+                          (o: any) => o.value === field.value
+                        )}
+                        onChange={(o: any) => field.onChange(o?.value || "")}
+                        placeholder="Select team"
+                        isClearable
+                        isDisabled={!selectedDeptId}
+                      />
+                    );
+                  }}
                 />
               </div>
             </div>

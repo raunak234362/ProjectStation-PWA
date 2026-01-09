@@ -13,8 +13,8 @@ const InvoiceLayout = () => {
               onClick={() => setActiveTab("allInvoices")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allInvoices"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               All Invoices
@@ -24,8 +24,8 @@ const InvoiceLayout = () => {
               onClick={() => setActiveTab("addInvoice")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addInvoice"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               Add Invoice

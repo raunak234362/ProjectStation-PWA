@@ -165,10 +165,10 @@ const EditFabricator = ({
       >
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b bg-gray-50 flex-shrink-0">
-          <h2 className="text-xl font-bold text-gray-800">Edit Fabricator</h2>
+          <h2 className="text-xl font-bold text-gray-700">Edit Fabricator</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition"
+            className="text-gray-700 hover:text-gray-700 transition"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -254,7 +254,7 @@ const EditFabricator = ({
             </label>
             <select
               {...register("accountId")}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all bg-white"
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-white"
               disabled={fetchingAccounts}
             >
               <option value="">-- Select Bank Account --</option>
@@ -287,7 +287,7 @@ const EditFabricator = ({
                       rel="noopener noreferrer"
                       className="flex items-center text-blue-600 hover:underline text-sm truncate mr-4"
                     >
-                      <Paperclip className="w-4 h-4 mr-2 shrink-0 text-gray-500" />
+                      <Paperclip className="w-4 h-4 mr-2 shrink-0 text-gray-700" />
                       {file?.filename}
                     </a>
                     <button
@@ -339,7 +339,7 @@ const EditFabricator = ({
             <Button
               type="submit"
               disabled={submitting}
-              className="bg-teal-600 text-white hover:bg-teal-700 flex items-center gap-2 disabled:opacity-70"
+              className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2 disabled:opacity-70"
             >
               {submitting ? (
                 <>

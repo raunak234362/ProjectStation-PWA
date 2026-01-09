@@ -72,7 +72,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   // ---------------- Loading / Error states ----------------
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading Connection Designer details...
       </div>
@@ -90,10 +90,10 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
   // ---------------- Render Main Content ----------------
   return (
-    <div className="bg-gradient-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner text-sm">
+    <div className="bg-gradient-to-br from-green-50 to-green-50 p-6 rounded-xl shadow-inner text-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold text-teal-800">{designer.name}</h3>
+        <h3 className="text-xl font-bold text-green-800">{designer.name}</h3>
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             designer.isDeleted
@@ -144,8 +144,8 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             <InfoRow
               label="Location"
               value={
-                <span className="flex items-center gap-1 text-gray-800">
-                  <MapPin className="w-4 h-4 text-teal-600" />{" "}
+                <span className="flex items-center gap-1 text-gray-700">
+                  <MapPin className="w-4 h-4 text-green-600" />{" "}
                   {designer.location}
                 </span>
               }
@@ -173,8 +173,8 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
       {/* Files Section */}
       {Array.isArray(designer.files) && designer.files.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-teal-200">
-          <h4 className="font-semibold text-teal-700 mb-2 flex items-center gap-1">
+        <div className="mt-6 pt-5 border-t border-green-200">
+          <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
             <FileText className="w-4 h-4" /> Files
           </h4>
           <ul className="text-gray-700 space-y-1">
@@ -185,7 +185,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
               >
                 <span>{file.originalName}</span>
                 <a
-                  className="text-teal-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
+                  className="text-green-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
                   onClick={() =>
                     openFileSecurely("connection-designer", id, file.id)
                   }
@@ -207,7 +207,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
           Edit
         </Button>
         <Button className="py-1 px-2 text-lg bg-red-200 text-red-700">
-          Disable
+          Archive
         </Button>
         <Button
           onClick={() => handleEngineerModel()}
@@ -245,8 +245,8 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex justify-between">
-    <span className="font-bold text-gray-600">{label}:</span>
-    <span className="text-gray-900 text-right">{value}</span>
+    <span className="font-bold text-gray-700">{label}:</span>
+    <span className="text-gray-700 text-right">{value}</span>
   </div>
 );
 

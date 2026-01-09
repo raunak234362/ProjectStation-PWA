@@ -86,7 +86,7 @@ const EditEmployee = ({
     return (
       <ModalOverlay onClick={onClose}>
         <ModalContent className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-green-600" />
           <span className="ml-3 text-lg">Loading employee...</span>
         </ModalContent>
       </ModalOverlay>
@@ -97,11 +97,11 @@ const EditEmployee = ({
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="sticky top-0 z-10 flex md:flex-row flex-col items-center justify-between p-2 bg-linear-to-r from-teal-400 to-teal-100 border-b rounded-md">
-          <h2 className="text-2xl font-bold text-gray-800">Edit Employee</h2>
+        <div className="sticky top-0 z-10 flex md:flex-row flex-col items-center justify-between p-2 bg-linear-to-r from-green-400 to-green-100 border-b rounded-md">
+          <h2 className="text-2xl font-bold text-gray-700">Edit Employee</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-700 hover:text-gray-700 transition-colors"
             aria-label="Close"
           >
             <X className="w-6 h-6" />
@@ -172,7 +172,7 @@ const EditEmployee = ({
               </label>
               <select
                 {...register("role", { required: "Role is required" })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
               >
                 <option value="STAFF">Staff</option>
                 <option value="ADMIN">Admin</option>
@@ -210,7 +210,7 @@ const EditEmployee = ({
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+              className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
             >
               {submitting ? (
                 <>

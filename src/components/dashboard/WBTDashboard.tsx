@@ -26,11 +26,7 @@ const ProjectDetailsModal = lazy(
   () => import("./components/ProjectDetailsModal")
 );
 
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center p-12">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
-  </div>
-);
+import DashboardSkeleton from "./components/DashboardSkeleton";
 
 const WBTDashboard = () => {
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
@@ -71,16 +67,22 @@ const WBTDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sent, received, pendingSubmittalsRes, allInvoices, pendingSubmittalNumber, pendingRFIs] =
-          await Promise.all([
-            Service.RfqSent(),
-            Service.RFQRecieved(),
-            Service.GetPendingSubmittal(),
-            Service.GetAllInvoice(),
-            Service.PendingSubmittal(),
-            Service.pendingRFIs(),
-          ]);
-console.log(pendingRFIs);
+        const [
+          sent,
+          received,
+          pendingSubmittalsRes,
+          allInvoices,
+          pendingSubmittalNumber,
+          pendingRFIs,
+        ] = await Promise.all([
+          Service.RfqSent(),
+          Service.RFQRecieved(),
+          Service.GetPendingSubmittal(),
+          Service.GetAllInvoice(),
+          Service.PendingSubmittal(),
+          Service.pendingRFIs(),
+        ]);
+        console.log(pendingRFIs);
 
         setPendingSubmittals(
           Array.isArray(pendingSubmittalsRes)
@@ -135,16 +137,12 @@ console.log(pendingRFIs);
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
     <div className="min-h-screen md:h-[94.6vh] p-2 rounded-xl space-y-6 bg-gray-50 overflow-y-auto">
-      <Suspense fallback={<LoadingFallback />}>
+      <Suspense fallback={<DashboardSkeleton />}>
         {/* Stats Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <ProjectStats stats={stats} onCardClick={handleCardClick} />
@@ -158,6 +156,7 @@ console.log(pendingRFIs);
             pendingSubmittals={pendingSubmittals}
             invoices={invoices}
           />
+          
         </div>
 
         {/* Modals */}

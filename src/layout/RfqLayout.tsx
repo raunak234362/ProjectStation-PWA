@@ -17,8 +17,8 @@ const RfqLayout = () => {
               onClick={() => setActiveTab("allRFQ")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allRFQ"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               All RFQ
@@ -28,8 +28,8 @@ const RfqLayout = () => {
               onClick={() => setActiveTab("addRFQ")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addRFQ"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               Add RFQ

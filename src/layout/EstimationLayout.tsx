@@ -27,8 +27,8 @@ const EstimationLayout = () => {
               onClick={() => setActiveTab("allEstimation")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allEstimation"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               All Estimations
@@ -38,8 +38,8 @@ const EstimationLayout = () => {
               onClick={() => setActiveTab("addEstimation")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addEstimation"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               Add Estimation

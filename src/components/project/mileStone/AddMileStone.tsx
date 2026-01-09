@@ -66,13 +66,13 @@ const AddMileStone = ({
       <div className="bg-white rounded-2xl shadow-2xl w-full w-full overflow-hidden animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b bg-gray-50">
-          <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-            <CheckCircle className="w-6 h-6 text-teal-600" />
+          <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
+            <CheckCircle className="w-6 h-6 text-green-600" />
             Add New Milestone
           </h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-200 text-gray-500 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-200 text-gray-700 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -163,7 +163,7 @@ const AddMileStone = ({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-teal-600 hover:bg-teal-700 text-white px-6"
+              className="bg-green-600 hover:bg-green-700 text-white px-6"
             >
               {isSubmitting ? "Adding..." : "Add Milestone"}
             </Button>

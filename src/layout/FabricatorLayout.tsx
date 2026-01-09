@@ -14,8 +14,8 @@ const FabricatorLayout = () => {
               onClick={() => setActiveTab("allFabricator")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allFabricator"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               All Fabricator
@@ -25,8 +25,8 @@ const FabricatorLayout = () => {
               onClick={() => setActiveTab("addFabricator")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "addFabricator"
-                  ? "md:text-base text-sm bg-teal-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-800 font-semibold"
+                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
+                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
               }`}
             >
               Add Fabricator

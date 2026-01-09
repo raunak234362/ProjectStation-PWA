@@ -13,63 +13,96 @@ interface PendingActionsProps {
 }
 
 const PendingActions: React.FC<PendingActionsProps> = ({ dashboardStats }) => {
+  const actions = [
+    {
+      title: "Pending RFI",
+      count: dashboardStats?.pendingRFI || 0,
+      subtitle: "Response Pending",
+      icon: FileText,
+      color: "amber",
+    },
+    {
+      title: "Pending Submittals",
+      count: dashboardStats?.pendingSubmittals || 0,
+      subtitle: "Response Pending",
+      icon: RefreshCw,
+      color: "purple",
+    },
+    {
+      title: "Change Orders",
+      count: dashboardStats?.pendingChangeOrders || 0,
+      subtitle: "Response Pending",
+      icon: Activity,
+      color: "rose",
+    },
+    {
+      title: "Pending RFQ",
+      count: dashboardStats?.pendingRFQ || 0,
+      subtitle: "New RFQ",
+      icon: Search,
+      color: "cyan",
+    },
+  ];
+
+  const colorClasses = {
+    amber: {
+      bg: "bg-amber-50",
+      hoverBg: "bg-amber-100",
+      text: "text-amber-600",
+    },
+    purple: {
+      bg: "bg-purple-50",
+      hoverBg: "bg-purple-100",
+      text: "text-purple-600",
+    },
+    rose: {
+      bg: "bg-rose-50",
+      hoverBg: "bg-rose-100",
+      text: "text-rose-600",
+    },
+    cyan: {
+      bg: "bg-cyan-50",
+      hoverBg: "bg-cyan-100",
+      text: "text-cyan-600",
+    },
+  };
+
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-      <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <ClipboardList className="text-teal-600" size={20} />
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <h3 className="font-semibold text-lg text-gray-800 mb-6 flex items-center gap-3">
+        <ClipboardList className="text-green-600" size={24} />
         Pending Actions
       </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group text-center">
-          <div className="p-2 bg-amber-50 rounded-lg text-amber-600 group-hover:bg-amber-100 transition-colors mb-2">
-            <FileText size={20} />
-          </div>
-          <span className="text-xs font-bold text-gray-800">Pending RFI</span>
-          <span className="text-lg font-bold text-amber-600">
-            {dashboardStats?.pendingRFI || 0}
-          </span>
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
-            Response Pending
-          </span>
-        </div>
-        <div className="flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group text-center">
-          <div className="p-2 bg-purple-50 rounded-lg text-purple-600 group-hover:bg-purple-100 transition-colors mb-2">
-            <RefreshCw size={20} />
-          </div>
-          <span className="text-xs font-bold text-gray-800">
-            Pending Submittals
-          </span>
-          <span className="text-lg font-bold text-purple-600">
-            {dashboardStats?.pendingSubmittals || 0}
-          </span>
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
-            Response Pending
-          </span>
-        </div>
-        <div className="flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group text-center">
-          <div className="p-2 bg-rose-50 rounded-lg text-rose-600 group-hover:bg-rose-100 transition-colors mb-2">
-            <Activity size={20} />
-          </div>
-          <span className="text-xs font-bold text-gray-800">Change Orders</span>
-          <span className="text-lg font-bold text-rose-600">
-            {dashboardStats?.pendingChangeOrders || 0}
-          </span>
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
-            Response Pending
-          </span>
-        </div>
-        <div className="flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group text-center">
-          <div className="p-2 bg-cyan-50 rounded-lg text-cyan-600 group-hover:bg-cyan-100 transition-colors mb-2">
-            <Search size={20} />
-          </div>
-          <span className="text-xs font-bold text-gray-800">Pending RFQ</span>
-          <span className="text-lg font-bold text-cyan-600">
-            {dashboardStats?.pendingRFQ || 0}
-          </span>
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
-            New RFQ
-          </span>
-        </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+        {actions.map((action) => {
+          const colors = colorClasses[action.color as keyof typeof colorClasses];
+
+          return (
+            <div
+              key={action.title}
+              className="flex flex-row items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
+            >
+              <div
+                className={`p-3 rounded-lg ${colors.bg} ${colors.text} group-hover:${colors.hoverBg} transition-colors`}
+              >
+                <action.icon size={24} />
+              </div>
+
+              <div className="flex flex-col">
+                <span className="font-semibold text-gray-700">
+                  {action.title}
+                </span>
+                <span className="text-2xl font-bold mt-1" style={{ color: colors.text.replace("text-", "#") }}>
+                  {action.count}
+                </span>
+                <span className="text-xs text-gray-500 uppercase tracking-wider mt-2">
+                  {action.subtitle}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

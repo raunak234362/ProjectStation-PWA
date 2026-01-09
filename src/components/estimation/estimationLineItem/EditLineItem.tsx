@@ -79,12 +79,12 @@ const EditLineItem: React.FC<EditLineItemProps> = ({
     <div className="fixed inset-0 z-index-[60] flex items-center justify-center bg-black/50">
       <div className="bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
         <div className="flex justify-between items-center p-4 border-b bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-lg font-semibold text-gray-700">
             Edit Line Item
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-700 hover:text-gray-700 transition-colors"
           >
             <X size={20} />
           </button>
@@ -130,7 +130,7 @@ const EditLineItem: React.FC<EditLineItemProps> = ({
                     setValue("totalHours", qty * hours);
                   },
                 })}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none transition-all ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition-all ${
                   errors.quantity ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -159,7 +159,7 @@ const EditLineItem: React.FC<EditLineItemProps> = ({
                     setValue("totalHours", qty * hours);
                   },
                 })}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none transition-all ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition-all ${
                   errors.hoursPerQty ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -179,7 +179,7 @@ const EditLineItem: React.FC<EditLineItemProps> = ({
                 {...register("totalHours", {
                   min: { value: 0, message: "Total hours must be positive" },
                 })}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none transition-all ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition-all ${
                   errors.totalHours ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -195,7 +195,7 @@ const EditLineItem: React.FC<EditLineItemProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
               {isSubmitting ? (
                 <>

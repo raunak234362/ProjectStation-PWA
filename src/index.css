@@ -4,12 +4,12 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Roboto", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color: #213547;
   background-color: #242424;
 
   font-synthesis: none;
@@ -17,7 +17,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: #6bbd45;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -34,7 +34,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: #6bbd45;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -50,10 +50,9 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: rgba(255, 255, 255, 0.87);
     background-color: #ffffff;
   }
   a:hover {
@@ -97,6 +96,19 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Brand Color Overrides - Based on #6bbd45 */
+  --color-green-50: #f4fbf1;
+  --color-green-100: #e3f6db;
+  --color-green-200: #c6ecb8;
+  --color-green-300: #9bde88;
+  --color-green-400: #6bbd45; /* User provided code as 400/500/600 anchor */
+  --color-green-500: #6bbd45; /* Using as main for 500 too if needed, or slightly lighter */
+  --color-green-600: #6bbd45; /* Main Brand Color requested */
+  --color-green-700: #559e35;
+  --color-green-800: #447d2d;
+  --color-green-900: #386626;
+  --color-green-950: #1d3812;
 }
 
 .dark {
@@ -134,7 +146,9 @@
 }
 
 @layer base {
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
     overflow: hidden; /* prevent page-level scroll; app manages its own scroll */
   }

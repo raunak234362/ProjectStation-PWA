@@ -56,7 +56,7 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
   // ── Loading ──
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading team details...
       </div>
@@ -86,10 +86,10 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
   const memberCount = team.members?.length ?? 0;
 
   return (
-    <div className="bg-linear-to-br from-teal-50 to-teal-50 p-6 rounded-xl shadow-inner">
+    <div className="bg-linear-to-br from-green-50 to-green-50 p-6 rounded-xl shadow-inner">
       {/* Header */}
       <div className="mb-5">
-        <h3 className="text-xl font-bold text-teal-800">{team.name}</h3>
+        <h3 className="text-xl font-bold text-green-800">{team.name}</h3>
       </div>
 
       {/* Two‑column grid */}
@@ -111,7 +111,7 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
                 value={
                   <a
                     href={`mailto:${team.manager.email}`}
-                    className="text-teal-600 hover:underline"
+                    className="text-green-600 hover:underline"
                   >
                     {team.manager.email}
                   </a>
@@ -122,11 +122,11 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
                 value={
                   <a
                     href={`tel:${team.manager.phone}`}
-                    className="text-teal-600 hover:underline"
+                    className="text-green-600 hover:underline"
                   >
                     {team.manager.phone}
                     {team.manager.extensionNumber && (
-                      <span className="text-gray-500 text-xs ml-1">
+                      <span className="text-gray-700 text-xs ml-1">
                         (Ext: {team.manager.extensionNumber})
                       </span>
                     )}
@@ -171,8 +171,8 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex justify-between">
-    <span className="font-bold text-gray-600">{label}:</span>
-    <span className="text-gray-900 text-right">{value}</span>
+    <span className="font-bold text-gray-700">{label}:</span>
+    <span className="text-gray-700 text-right">{value}</span>
   </div>
 );
 

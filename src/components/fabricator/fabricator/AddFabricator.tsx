@@ -77,7 +77,7 @@ const AddFabricator = () => {
               required: "Fabricator name is required",
             })}
             placeholder="Enter Fabricator Name"
-            className="w-full border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
           />
           {errors.fabName && (
             <p className="text-red-500 text-xs mt-1">
@@ -96,7 +96,7 @@ const AddFabricator = () => {
             type="url"
             {...register("website")}
             placeholder="https://example.com"
-            className="w-full border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
           />
         </div>
 
@@ -110,7 +110,7 @@ const AddFabricator = () => {
             type="url"
             {...register("drive")}
             placeholder="https://drive.google.com/..."
-            className="w-full border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
           />
         </div>
 
@@ -142,7 +142,7 @@ const AddFabricator = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-gradient-to-r from-teal-600 to-emerald-500 text-white px-8 py-2.5 rounded-lg hover:opacity-90 shadow-md transition"
+            className="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-8 py-2.5 rounded-lg hover:opacity-90 shadow-md transition"
           >
             {isSubmitting ? "Creating..." : "Create Fabricator"}
           </Button>

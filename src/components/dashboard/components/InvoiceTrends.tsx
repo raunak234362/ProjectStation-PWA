@@ -105,14 +105,14 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
             Invoice Trends
-            <span className="text-sm font-normal text-gray-500">
+            <span className="text-sm font-normal text-gray-700">
               | Total: ${totalPeriodAmount.toLocaleString()} ({totalPeriodCount}{" "}
               Invoices)
             </span>
           </h2>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-700">
             Showing trends for{" "}
             {selectedMonth !== null ? `${months[selectedMonth]} ` : ""}
             {selectedYear}
@@ -123,7 +123,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="p-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-teal-500 bg-gray-50 font-medium"
+            className="p-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-gray-50 font-medium"
           >
             {years.map((year) => (
               <option key={year} value={year}>
@@ -140,8 +140,8 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           onClick={() => setSelectedMonth(null)}
           className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
             selectedMonth === null
-              ? "bg-teal-600 text-white shadow-md shadow-teal-100"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-green-600 text-white shadow-md shadow-green-100"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
           All Months
@@ -152,8 +152,8 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             onClick={() => setSelectedMonth(index)}
             className={`px-3 py-1 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
               selectedMonth === index
-                ? "bg-teal-600 text-white shadow-md shadow-teal-100"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-green-600 text-white shadow-md shadow-green-100"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             {month}
@@ -196,10 +196,10 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                           : label}
                       </p>
                       <div className="flex flex-col gap-1">
-                        <p className="text-sm font-bold text-teal-700">
+                        <p className="text-sm font-bold text-green-700">
                           Amount: ${data.amount.toLocaleString()}
                         </p>
-                        <p className="text-xs font-medium text-gray-600">
+                        <p className="text-xs font-medium text-gray-700">
                           Invoices: {data.count}
                         </p>
                       </div>
@@ -215,7 +215,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               name="Total Amount"
               fill="#0d9488"
               fillOpacity={0.1}
-              stroke="#0d9488"
+              stroke="#6bbd45"
               strokeWidth={3}
             />
           </ComposedChart>

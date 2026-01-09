@@ -52,14 +52,14 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
       accessorKey: "name",
       header: "WBS Name",
       cell: ({ row }) => (
-        <span className="font-medium text-gray-800">{row.original.name}</span>
+        <span className="font-medium text-gray-700">{row.original.name}</span>
       ),
     },
     {
       accessorKey: "type",
       header: "Type",
       cell: ({ row }) => (
-        <span className="text-sm text-teal-700 font-semibold">
+        <span className="text-sm text-green-700 font-semibold">
           {row.original.type}
         </span>
       ),
@@ -104,7 +104,7 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
   // ✅ Render loading/error states
   if (loading)
     return (
-      <div className="flex justify-center items-center py-10 text-gray-500">
+      <div className="flex justify-center items-center py-10 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading WBS data...
       </div>
@@ -122,10 +122,10 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
     <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">
+          <h2 className="text-lg font-semibold text-gray-700 mb-3">
             Work Breakdown Structure (WBS)
           </h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-700 mb-4">
             Total Items:{" "}
             <span className="font-semibold text-gray-700">
               {wbsList.length}

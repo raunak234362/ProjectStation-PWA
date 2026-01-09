@@ -114,12 +114,12 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
       <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-          <h2 className="text-lg font-bold text-gray-800">{group.name}</h2>
+          <h2 className="text-lg font-bold text-gray-700">{group.name}</h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-200 rounded-full transition"
           >
-            <X size={20} className="text-gray-600" />
+            <X size={20} className="text-gray-700" />
           </button>
         </div>
 
@@ -128,8 +128,8 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
           <button
             className={`flex-1 py-3 text-sm font-medium transition ${
               activeTab === "members"
-                ? "text-teal-600 border-b-2 border-teal-600 bg-teal-50"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                ? "text-green-600 border-b-2 border-green-600 bg-green-50"
+                : "text-gray-700 hover:text-gray-700 hover:bg-gray-50"
             }`}
             onClick={() => setActiveTab("members")}
           >
@@ -138,8 +138,8 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
           <button
             className={`flex-1 py-3 text-sm font-medium transition ${
               activeTab === "add"
-                ? "text-teal-600 border-b-2 border-teal-600 bg-teal-50"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                ? "text-green-600 border-b-2 border-green-600 bg-green-50"
+                : "text-gray-700 hover:text-gray-700 hover:bg-gray-50"
             }`}
             onClick={() => setActiveTab("add")}
           >
@@ -152,7 +152,7 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
           {activeTab === "members" ? (
             <div className="space-y-2">
               {groupMembers.length === 0 ? (
-                <div className="text-center text-gray-500 py-8">
+                <div className="text-center text-gray-700 py-8">
                   <p>No members found.</p>
                 </div>
               ) : (
@@ -162,15 +162,15 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
                     className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50 justify-between"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 font-bold text-xs">
+                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-xs">
                         {member.firstName?.[0]}
                         {member.lastName?.[0]}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-800">
+                        <p className="text-sm font-medium text-gray-700">
                           {member.firstName} {member.lastName}
                         </p>
-                        <p className="text-xs text-gray-500">{member.role}</p>
+                        <p className="text-xs text-gray-700">{member.role}</p>
                       </div>
                     </div>
                     <button
@@ -199,7 +199,7 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
                   placeholder="Search employees..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
@@ -210,14 +210,14 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
                     onClick={() => toggleUserSelection(user.id)}
                     className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition border ${
                       selectedUsers.includes(user.id)
-                        ? "bg-teal-50 border-teal-200"
+                        ? "bg-green-50 border-green-200"
                         : "hover:bg-gray-50 border-transparent"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded border flex items-center justify-center ${
                         selectedUsers.includes(user.id)
-                          ? "bg-teal-500 border-teal-500"
+                          ? "bg-green-500 border-green-500"
                           : "border-gray-300"
                       }`}
                     >
@@ -226,10 +226,10 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">
+                      <p className="text-sm font-medium text-gray-700">
                         {user.firstName} {user.lastName}
                       </p>
-                      <p className="text-xs text-gray-500">{user.role}</p>
+                      <p className="text-xs text-gray-700">{user.role}</p>
                     </div>
                   </div>
                 ))}
@@ -251,7 +251,7 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
             <div className="flex gap-3">
               <Button
                 onClick={() => setSelectedUsers([])}
-                className="text-gray-600 hover:bg-gray-200"
+                className="text-gray-700 hover:bg-gray-200"
                 disabled={loading}
               >
                 Clear
@@ -259,7 +259,7 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
               <Button
                 onClick={handleAddMembers}
                 disabled={selectedUsers.length === 0 || loading}
-                className="bg-teal-600 text-white flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-green-600 text-white flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   "Adding..."

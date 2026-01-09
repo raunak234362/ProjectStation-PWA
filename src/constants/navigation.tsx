@@ -1,13 +1,16 @@
 import {
-  ChartCandlestick,
-  Home,
-  MessageSquare,
-  User2,
-  Hourglass,
-  FolderOpenDot,
-  Group,
-  LucideComponent,
-  FactoryIcon,
+  LayoutDashboard,
+  Hammer,
+  PenTool,
+  FileQuestion,
+  Calculator,
+  Briefcase,
+  Receipt,
+  Landmark,
+  CheckSquare,
+  Users,
+  MessageCircle,
+  UserCircle,
 } from "lucide-react";
 import type { JSX } from "react";
 
@@ -22,7 +25,7 @@ export const navItems: NavItem[] = [
   {
     label: "Dashboard",
     to: "/dashboard",
-    icon: <Home />,
+    icon: <LayoutDashboard />,
     roles: [
       "admin",
       "staff",
@@ -42,7 +45,7 @@ export const navItems: NavItem[] = [
   {
     label: "Fabricator",
     to: "fabricator",
-    icon: <LucideComponent />,
+    icon: <Hammer />,
     roles: [
       "admin",
       "department-manager",
@@ -58,7 +61,7 @@ export const navItems: NavItem[] = [
   {
     label: "Connection Designer",
     to: "connection-designer",
-    icon: <FactoryIcon />,
+    icon: <PenTool />,
     roles: ["admin", "department-manager", "deputy_manager"],
   },
   // {
@@ -75,7 +78,7 @@ export const navItems: NavItem[] = [
   {
     label: "RFQ",
     to: "rfq",
-    icon: <LucideComponent />,
+    icon: <FileQuestion />,
     roles: [
       "admin",
       "sales_manager",
@@ -89,7 +92,7 @@ export const navItems: NavItem[] = [
   {
     label: "Estimations",
     to: "estimation",
-    icon: <Hourglass />,
+    icon: <Calculator />,
     roles: [
       "admin",
       "sales_manager",
@@ -102,7 +105,7 @@ export const navItems: NavItem[] = [
   {
     label: "Projects",
     to: "projects",
-    icon: <FolderOpenDot />,
+    icon: <Briefcase />,
     roles: [
       "admin",
       "dept_manager",
@@ -121,29 +124,19 @@ export const navItems: NavItem[] = [
   {
     label: "Invoices",
     to: "invoices",
-    icon: <FolderOpenDot />,
-    roles: [
-      "admin",
-      "deputy_manager",
-      "client_admin",
-      "pmo",
-      "client"
-    ],
+    icon: <Receipt />,
+    roles: ["admin", "deputy_manager", "client_admin", "pmo", "client"],
   },
   {
     label: "Accounts",
     to: "accounts",
-    icon: <FolderOpenDot />,
-    roles: [
-      "admin",
-      "deputy_manager",
-      "pmo",
-    ],
+    icon: <Landmark />,
+    roles: ["admin", "deputy_manager", "pmo"],
   },
   {
     label: "Tasks",
     to: "tasks",
-    icon: <ChartCandlestick />,
+    icon: <CheckSquare />,
     roles: [
       "admin",
       "staff",
@@ -158,7 +151,7 @@ export const navItems: NavItem[] = [
   {
     label: "Manage Team",
     to: "manage-team",
-    icon: <Group />,
+    icon: <Users />,
     roles: [
       "admin",
       "department-manager",
@@ -171,7 +164,7 @@ export const navItems: NavItem[] = [
   {
     label: "Chats",
     to: "chats",
-    icon: <MessageSquare />,
+    icon: <MessageCircle />,
     roles: [
       "admin",
       "staff",
@@ -186,7 +179,7 @@ export const navItems: NavItem[] = [
   {
     label: "Profile",
     to: "profile",
-    icon: <User2 />,
+    icon: <UserCircle />,
     roles: [
       "admin",
       "connection_designer_engineer",

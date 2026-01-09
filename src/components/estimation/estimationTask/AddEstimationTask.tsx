@@ -214,7 +214,7 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
           <div className="mt-4">
             <MultipleFileUpload onFilesChange={setFiles} />
             {files.length > 0 && (
-              <p className="text-sm text-teal-600 font-medium mt-2 ml-1">
+              <p className="text-sm text-green-600 font-medium mt-2 ml-1">
                 {files.length} file(s) attached
               </p>
             )}
@@ -233,7 +233,7 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
           <Button
             type="submit"
             disabled={isSubmitting || loading}
-            className="bg-teal-600 text-white hover:bg-teal-700 px-8 rounded-xl shadow-lg shadow-teal-200 transition-all"
+            className="bg-green-600 text-white hover:bg-green-700 px-8 rounded-xl shadow-lg shadow-green-200 transition-all"
           >
             {loading ? "Creating..." : "Create Task"}
           </Button>

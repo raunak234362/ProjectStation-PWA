@@ -11,8 +11,8 @@ import RFIResponseDetailsModal from "./RFIResponseDetailsModal";
 
 const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div>
-    <h4 className="text-sm text-gray-500">{label}</h4>
-    <div className="text-gray-800 font-medium">{value}</div>
+    <h4 className="text-sm text-gray-700">{label}</h4>
+    <div className="text-gray-700 font-medium">{value}</div>
   </div>
 );
 
@@ -48,7 +48,7 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading RFQ details...
       </div>
@@ -89,7 +89,7 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
       cell: ({ row }) => {
         const count = row.original.files?.length ?? 0;
         return count > 0 ? (
-          <span className="text-teal-700 font-medium">{count} file(s)</span>
+          <span className="text-green-700 font-medium">{count} file(s)</span>
         ) : (
           <span className="text-gray-400">—</span>
         );
@@ -99,7 +99,7 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
       accessorKey: "createdAt",
       header: "Created",
       cell: ({ row }) => (
-        <span className="text-gray-600 text-sm">
+        <span className="text-gray-700 text-sm">
           {new Date(row.original.date).toLocaleString()}
         </span>
       ),
@@ -142,7 +142,7 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
             {/* Header */}
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-teal-700">
+              <h1 className="text-2xl font-bold text-green-700">
                 {rfi.subject}
               </h1>
               <span
@@ -166,9 +166,9 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
 
             {/* Description */}
             <div>
-              <h4 className="font-semibold text-gray-600 mb-1">Description</h4>
+              <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
               <div
-                className="text-gray-800 bg-gray-50 p-3 rounded-lg border prose prose-sm max-w-none"
+                className="text-gray-700 bg-gray-50 p-3 rounded-lg border prose prose-sm max-w-none"
                 dangerouslySetInnerHTML={{
                   __html: rfi.description || "No description provided",
                 }}
@@ -178,14 +178,14 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
             {/* Files */}
             {rfi.files?.length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-600 mb-2">
+                <h4 className="font-semibold text-gray-700 mb-2">
                   Attachments
                 </h4>
                 <ul className="space-y-1">
                   {rfi.files.map((file: any, i: number) => (
                     <li key={file.id}>
                       <span
-                        className="text-teal-700 underline cursor-pointer"
+                        className="text-green-700 underline cursor-pointer"
                         onClick={() => openFileSecurely("rfi", rfi.id, file.id)}
                       >
                         {file.originalName || `File ${i + 1}`}
@@ -201,12 +201,12 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
             {/* Header + Add Response Button */}
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-teal-700">Responses</h2>
+              <h2 className="text-xl font-semibold text-green-700">Responses</h2>
 
               {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
                 <Button
                   onClick={() => setShowModal(true)}
-                  className="bg-teal-600 text-white"
+                  className="bg-green-600 text-white"
                 >
                   + Add Response
                 </Button>
@@ -222,7 +222,7 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
                 onRowClick={(row) => setSelectedResponse(row)}
               />
             ) : (
-              <p className="text-gray-500 italic">No responses yet.</p>
+              <p className="text-gray-700 italic">No responses yet.</p>
             )}
           </div>
 

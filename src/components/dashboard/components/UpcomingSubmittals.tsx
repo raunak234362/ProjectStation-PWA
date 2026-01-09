@@ -48,8 +48,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             onClick={() => setActiveTab("submittals")}
             className={`text-md font-semibold transition-all ${
               activeTab === "submittals"
-                ? "text-teal-600 border-b-2 border-teal-600"
-                : "text-gray-400 hover:text-gray-600"
+                ? "text-green-600 border-b-2 border-green-600"
+                : "text-gray-400 hover:text-gray-700"
             }`}
           >
             Upcoming Submittals
@@ -58,14 +58,14 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             onClick={() => setActiveTab("invoices")}
             className={`text-md font-semibold transition-all ${
               activeTab === "invoices"
-                ? "text-teal-600 border-b-2 border-teal-600"
-                : "text-gray-400 hover:text-gray-600"
+                ? "text-green-600 border-b-2 border-green-600"
+                : "text-gray-400 hover:text-gray-700"
             }`}
           >
             Invoice Need Raise
           </button>
         </div>
-        <span className="px-3 py-1 bg-teal-50 text-teal-700 text-xs font-bold rounded-full">
+        <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full">
           {activeTab === "submittals"
             ? `${pendingSubmittals.length} Pending`
             : `${invoiceNeedRaise.length} Need Raise`}
@@ -78,11 +78,11 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             Object.entries(groupedSubmittals).map(([projectName, items]) => (
               <div key={projectName} className="space-y-3">
                 <div className="flex items-center gap-2 sticky top-0 bg-white py-1 z-10">
-                  <div className="w-1 h-4 bg-teal-500 rounded-full"></div>
+                  <div className="w-1 h-4 bg-green-500 rounded-full"></div>
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                     {projectName}
                   </h3>
-                  <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-md font-bold">
+                  <span className="text-[10px] bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded-md font-bold">
                     {items.length}
                   </span>
                 </div>
@@ -95,7 +95,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                         className={`p-4 rounded-xl border transition-all group ${
                           overdue
                             ? "bg-red-50 border-red-100 hover:bg-red-100/50 hover:border-red-200 shadow-sm shadow-red-50"
-                            : "bg-gray-50/50 border-gray-50 hover:bg-white hover:border-teal-100 hover:shadow-md hover:shadow-teal-50/50"
+                            : "bg-gray-50/50 border-gray-50 hover:bg-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50"
                         }`}
                       >
                         <div className="flex justify-between items-start mb-2">
@@ -107,7 +107,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                               className={`font-bold text-sm transition-colors ${
                                 overdue
                                   ? "text-red-700"
-                                  : "text-gray-800 group-hover:text-teal-700"
+                                  : "text-gray-700 group-hover:text-green-700"
                               }`}
                             >
                               {submittal.subject || "No Subject"}
@@ -136,7 +136,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                             </span>
                             <span
                               className={`text-xs font-semibold truncate ${
-                                overdue ? "text-red-600" : "text-gray-600"
+                                overdue ? "text-red-600" : "text-gray-700"
                               }`}
                             >
                               {submittal.fabricator?.fabName ||
@@ -162,10 +162,10 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             {invoiceNeedRaise.map((invoice, index) => (
               <div
                 key={invoice.id || index}
-                className="p-4 rounded-xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-teal-100 hover:shadow-md hover:shadow-teal-50/50 transition-all group"
+                className="p-4 rounded-xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50 transition-all group"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-sm text-gray-800 group-hover:text-teal-700 transition-colors">
+                  <h4 className="font-bold text-sm text-gray-700 group-hover:text-green-700 transition-colors">
                     {invoice.invoiceNumber || "No Number"}
                   </h4>
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
@@ -179,7 +179,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                     <span className="text-[10px] text-gray-400 uppercase font-medium">
                       Customer
                     </span>
-                    <span className="text-xs font-semibold text-gray-600 truncate">
+                    <span className="text-xs font-semibold text-gray-700 truncate">
                       {invoice.customerName || "N/A"}
                     </span>
                   </div>
@@ -187,7 +187,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                     <span className="text-[10px] text-gray-400 uppercase font-medium">
                       Amount
                     </span>
-                    <span className="text-xs font-bold text-teal-600">
+                    <span className="text-xs font-bold text-green-600">
                       ${invoice.totalInvoiceValue?.toLocaleString() || "0"}
                     </span>
                   </div>

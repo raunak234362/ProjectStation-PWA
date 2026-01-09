@@ -49,7 +49,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
   return (
     <div className="w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-200">
       <Button onClick={onClose}>Close</Button>
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">
+      <h2 className="text-xl font-semibold text-gray-700 mb-6">
         Add New Engineer
       </h2>
 
@@ -64,7 +64,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
             type="text"
             {...register("username", { required: "Username is required" })}
             placeholder="Enter username"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
           />
           {errors.username && (
             <p className="text-red-500 text-xs mt-1">
@@ -80,7 +80,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
             type="email"
             {...register("email", { required: "Email is required" })}
             placeholder="employee@company.com"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
           />
           {errors.email && (
             <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
@@ -95,7 +95,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
               type="tel"
               {...register("phone", { required: "Phone number is required" })}
               placeholder="+91XXXXXXXXXX"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
             />
             {errors.phone && (
               <p className="text-red-500 text-xs mt-1">
@@ -109,7 +109,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
               type="text"
               {...register("extensionNumber")}
               placeholder="Ext"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
             />
           </div>
         </div>
@@ -121,7 +121,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
             type="text"
             {...register("firstName", { required: "First name is required" })}
             placeholder="John"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
           />
           {errors.firstName && (
             <p className="text-red-500 text-xs mt-1">
@@ -137,7 +137,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
             type="text"
             {...register("middleName")}
             placeholder="M."
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
           />
         </div>
 
@@ -148,7 +148,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
             type="text"
             {...register("lastName")}
             placeholder="Doe"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
           />
         </div>
 
@@ -161,7 +161,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
               required: "Designation is required",
             })}
             placeholder="Software Engineer"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
           />
           {errors.designation && (
             <p className="text-red-500 text-xs mt-1">
@@ -175,7 +175,7 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
           >
             {isSubmitting ? (
               <>

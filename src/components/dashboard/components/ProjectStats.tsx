@@ -12,74 +12,106 @@ interface ProjectStatsProps {
 }
 
 const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
+  const projectCards = [
+    {
+      label: "Total Projects",
+      value: stats.totalProjects,
+      icon: Files,
+      color: "indigo",
+      clickable: false,
+    },
+    {
+      label: "Active",
+      value: stats.activeProjects,
+      icon: Activity,
+      color: "green",
+      status: "ACTIVE",
+      clickable: true,
+    },
+    {
+      label: "Completed",
+      value: stats.completedProjects,
+      icon: CheckCircle2,
+      color: "blue",
+      status: "COMPLETED",
+      clickable: true,
+    },
+    {
+      label: "On Hold",
+      value: stats.onHoldProjects,
+      icon: PauseCircle,
+      color: "orange",
+      status: "ON_HOLD",
+      clickable: true,
+    },
+  ];
+
+  const colorClasses = {
+    indigo: {
+      bg: "bg-indigo-50",
+      hoverBg: "hover:bg-indigo-100",
+      iconBg: "bg-indigo-500",
+      text: "text-indigo-700",
+    },
+    green: {
+      bg: "bg-green-50",
+      hoverBg: "hover:bg-green-100",
+      iconBg: "bg-green-500",
+      text: "text-green-700",
+    },
+    blue: {
+      bg: "bg-blue-50",
+      hoverBg: "hover:bg-blue-100",
+      iconBg: "bg-blue-500",
+      text: "text-blue-700",
+    },
+    orange: {
+      bg: "bg-orange-50",
+      hoverBg: "hover:bg-orange-100",
+      iconBg: "bg-orange-500",
+      text: "text-orange-700",
+    },
+  };
+
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-      <h2 className="text-gray-800 font-semibold mb-4">Projects Stats</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="flex items-center gap-3 bg-indigo-50 p-3 rounded-xl border border-indigo-100 min-w-0">
-          <div className="p-2 bg-indigo-500 rounded-lg text-white shrink-0">
-            <Files size={20} />
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate">
-              Total
-            </span>
-            <span className="text-lg font-bold text-gray-800">
-              {stats.totalProjects}
-            </span>
-          </div>
-        </div>
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <h2 className="text-lg font-semibold text-gray-800 mb-6">
+        Project Stats
+      </h2>
 
-        <div
-          onClick={() => onCardClick("ACTIVE")}
-          className="flex items-center gap-3 bg-green-50 p-3 rounded-xl border border-green-100 cursor-pointer hover:bg-green-100 transition-colors min-w-0"
-        >
-          <div className="p-2 bg-green-500 rounded-lg text-white shrink-0">
-            <Activity size={20} />
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate">
-              Active
-            </span>
-            <span className="text-lg font-bold text-green-700">
-              {stats.activeProjects}
-            </span>
-          </div>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-10">
+        {projectCards.map((card) => {
+          const colors = colorClasses[card.color as keyof typeof colorClasses];
+          const isClickable = card.clickable;
 
-        <div
-          onClick={() => onCardClick("COMPLETED")}
-          className="flex items-center gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100 cursor-pointer hover:bg-blue-100 transition-colors min-w-0"
-        >
-          <div className="p-2 bg-blue-500 rounded-lg text-white shrink-0">
-            <CheckCircle2 size={20} />
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate">
-              Completed
-            </span>
-            <span className="text-lg font-bold text-blue-700">
-              {stats.completedProjects}
-            </span>
-          </div>
-        </div>
+          return (
+            <div
+              key={card.label}
+              onClick={() => isClickable && card.status && onCardClick(card.status)}
+              className={`
+                flex items-center gap-4 p-4 rounded-xl border 
+                ${colors.bg} ${isClickable ? colors.hoverBg + " cursor-pointer" : ""} 
+                ${isClickable ? "transition-all duration-200 hover:shadow-md" : ""}
+                border-gray-200
+              `}
+            >
+              <div
+                className={`p-3 rounded-lg ${colors.iconBg} text-white shrink-0`}
+              >
+                <card.icon size={24} />
+              </div>
 
-        <div
-          onClick={() => onCardClick("ON_HOLD")}
-          className="flex items-center gap-3 bg-orange-50 p-3 rounded-xl border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors min-w-0"
-        >
-          <div className="p-2 bg-orange-500 rounded-lg text-white shrink-0">
-            <PauseCircle size={20} />
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate">
-              On Hold
-            </span>
-            <span className="text-lg font-bold text-orange-700">
-              {stats.onHoldProjects}
-            </span>
-          </div>
-        </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-gray-600">
+                  {card.label}
+                </span>
+                <span className={`text-2xl font-bold mt-1 ${colors.text}`}>
+                  {card.value}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

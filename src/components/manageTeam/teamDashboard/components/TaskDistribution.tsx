@@ -36,7 +36,7 @@ const TaskDistribution: React.FC<TaskDistributionProps> = ({ teamStats }) => {
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
-      <h3 className="text-lg font-bold text-gray-800 mb-6">
+      <h3 className="text-lg font-bold text-gray-700 mb-6">
         Task Distribution
       </h3>
       <div className="h-[300px] w-full">

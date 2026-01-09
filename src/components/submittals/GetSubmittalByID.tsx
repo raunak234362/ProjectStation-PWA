@@ -10,8 +10,8 @@ import SubmittalResponseDetailsModal from "./SubmittalResponseDetailsModal";
 
 const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div className="mb-2">
-    <h4 className="text-sm text-gray-500">{label}</h4>
-    <div className="font-medium text-gray-800">{value}</div>
+    <h4 className="text-sm text-gray-700">{label}</h4>
+    <div className="font-medium text-gray-700">{value}</div>
   </div>
 );
 
@@ -41,7 +41,7 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 py-8 text-gray-500">
+      <div className="flex items-center gap-2 py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin" />
         Loading submittal details...
       </div>
@@ -92,7 +92,7 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* LEFT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-            <h1 className="text-2xl font-bold text-teal-700">
+            <h1 className="text-2xl font-bold text-green-700">
               {submittal.subject}
             </h1>
 
@@ -123,7 +123,7 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
                   {submittal.files.map((file: any) => (
                     <li key={file.id}>
                       <span
-                        className="text-teal-600 underline cursor-pointer"
+                        className="text-green-600 underline cursor-pointer"
                         onClick={() =>
                           openFileSecurely("submittal", submittal.id, file.id)
                         }
@@ -140,10 +140,10 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
           {/* RIGHT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-teal-700">Responses</h2>
+              <h2 className="text-xl font-semibold text-green-700">Responses</h2>
               {userRole === "CLIENT" && (
                 <Button
-                  className="bg-teal-600 text-white"
+                  className="bg-green-600 text-white"
                   onClick={() => setShowResponseModal(true)}
                 >
                   + Add Response
@@ -159,7 +159,7 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
                 pageSizeOptions={[5, 10]}
               />
             ) : (
-              <p className="text-gray-500 italic">No responses yet.</p>
+              <p className="text-gray-700 italic">No responses yet.</p>
             )}
           </div>
         </div>

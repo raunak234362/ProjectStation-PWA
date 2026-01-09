@@ -1,5 +1,7 @@
 import React from "react";
-import { X as CloseIcon, Files } from "lucide-react";
+import { X as CloseIcon } from "lucide-react";
+import DataTable from "../../ui/table";
+import type { ColumnDef } from "@tanstack/react-table";
 
 interface ProjectListModalProps {
   isOpen: boolean;
@@ -18,13 +20,56 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: "name",
+      header: "Project Name",
+      cell: ({ row }) => (
+        <span className="font-medium text-gray-700">{row.original.name}</span>
+      ),
+    },
+    {
+      accessorKey: "fabricator.name",
+      header: "Fabricator Name",
+      cell: ({ row }) => (
+        <span className="text-gray-700">
+          {row.original.fabricator?.name || "N/A"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "stage",
+      header: "Stage",
+      cell: ({ row }) => (
+        <span className="text-gray-700">{row.original.stage || "N/A"}</span>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-bold ${
+            row.original.status === "ACTIVE"
+              ? "bg-green-100 text-green-700"
+              : row.original.status === "COMPLETED"
+              ? "bg-blue-100 text-blue-700"
+              : "bg-orange-100 text-orange-700"
+          }`}
+        >
+          {row.original.status}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-4xl max-h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[90%] max-w-[80%] max-h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
           <div>
-            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
               <div
                 className={`w-2 h-6 rounded-full ${
                   status === "ACTIVE"
@@ -36,13 +81,13 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
               ></div>
               {status.replace("_", " ")} Projects
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-700 mt-1">
               Showing {projects.length} projects
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-700"
           >
             <CloseIcon size={24} />
           </button>
@@ -50,53 +95,13 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {projects.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-separate border-spacing-y-2">
-                <thead>
-                  <tr className="text-gray-400 text-xs uppercase tracking-wider">
-                    <th className="px-4 py-2 font-semibold">Project Name</th>
-                    <th className="px-4 py-2 font-semibold">Stage</th>
-                    <th className="px-4 py-2 font-semibold">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projects.map((project, index) => (
-                    <tr
-                      key={index}
-                      className="bg-gray-50 hover:bg-gray-100 transition-colors rounded-xl group cursor-pointer"
-                      onClick={() => onProjectSelect(project)}
-                    >
-                      <td className="px-4 py-4 rounded-l-xl font-medium text-gray-800">
-                        {project.name}
-                      </td>
-                      <td className="px-4 py-4 text-gray-600">
-                        {project.stage || "N/A"}
-                      </td>
-                      <td className="px-4 py-4 rounded-r-xl">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-bold ${
-                            project.status === "ACTIVE"
-                              ? "bg-green-100 text-green-700"
-                              : project.status === "COMPLETED"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-orange-100 text-orange-700"
-                          }`}
-                        >
-                          {project.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-              <Files size={48} className="mb-4 opacity-20" />
-              <p>No projects found with this status.</p>
-            </div>
-          )}
+          <DataTable
+            columns={columns}
+            data={projects}
+            onRowClick={onProjectSelect}
+            searchPlaceholder="Search projects..."
+            pageSizeOptions={[5, 10, 25]}
+          />
         </div>
 
         {/* Modal Footer */}

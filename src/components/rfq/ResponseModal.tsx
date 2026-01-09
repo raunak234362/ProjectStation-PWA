@@ -75,17 +75,17 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         {/* Close Button */}
         <Button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
+          className="absolute top-3 right-3 text-gray-700 hover:text-red-500"
         >
           <X className="w-5 h-5" />
         </Button>
 
-        <h2 className="text-xl font-bold text-teal-700 mb-4">Add Response</h2>
+        <h2 className="text-xl font-bold text-green-700 mb-4">Add Response</h2>
 
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Message *
             </label>
             <Controller
@@ -104,7 +104,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 
           {/* Optional Parent Thread
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Replying to (optional)
             </label>
             <input
@@ -116,7 +116,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 
           {/* Optional Link */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Optional Link
             </label>
             <input
@@ -128,7 +128,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 
           {/* Files */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Attach Files
             </label>
             <Controller
@@ -155,7 +155,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             <Button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition disabled:opacity-50"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
             >
               {loading ? "Submitting..." : "Submit Response"}
             </Button>

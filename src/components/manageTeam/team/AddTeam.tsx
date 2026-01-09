@@ -122,8 +122,8 @@ const AddTeam = () => {
     return (
       <div className="w-full mx-auto bg-white rounded-xl shadow-md p-10 border border-gray-200 text-center">
         <div className="inline-flex items-center gap-3">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600"></div>
-          <span className="text-gray-600">Loading team setup...</span>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+          <span className="text-gray-700">Loading team setup...</span>
         </div>
       </div>
     );
@@ -134,7 +134,7 @@ const AddTeam = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-white rounded-xl shadow-md p-8 mt-6 border border-gray-200">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Create New Team</h2>
+      <h2 className="text-2xl font-bold text-gray-700 mb-6">Create New Team</h2>
 
       <form onSubmit={handleSubmit(addTeam)} className="space-y-6">
         {/* Team Name */}
@@ -196,8 +196,8 @@ const AddTeam = () => {
             disabled={isSubmitting || !hasManagers || !hasDepartments}
             className={`px-8 py-3 rounded-lg font-medium transition ${
               isSubmitting || !hasManagers || !hasDepartments
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-teal-600 text-white hover:bg-teal-700"
+                ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                : "bg-green-600 text-white hover:bg-green-700"
             }`}
           >
             {isSubmitting ? "Creating..." : "Create Team"}

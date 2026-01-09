@@ -110,7 +110,7 @@ const Chats = () => {
               onMessageSent={handleMessageSent}
             />
           ) : (
-            <div className="flex items-center justify-center h-full text-gray-500">
+            <div className="flex items-center justify-center h-full text-gray-700">
               Select a chat to start messaging
             </div>
           )}

@@ -29,15 +29,15 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
         <Button onClick={toggleSidebar}>
           {isMinimized ? <Menu size={20} /> : <ChevronLeft size={20} />}
         </Button>
-        <p className="text-sm md:text-2xl font-bold bg-linear-to-r from-emerald-200 to-teal-600 bg-clip-text text-transparent uppercase">
+        <p className="text-sm md:text-2xl font-bold text-green-600 uppercase">
           {headerTitle}
         </p>
       </div>
 
       {/* Right: Greeting */}
       <div className="flex items-center gap-4">
-        <span className="text-gray-600 text-sm hidden sm:block">
-          Welcome Back 👋
+        <span className="text-gray-700 text-sm hidden font-bold sm:block">
+          Hii Welcome Back 👋 {sessionStorage.getItem("firstName")}
         </span>
         <Bell />
       </div>

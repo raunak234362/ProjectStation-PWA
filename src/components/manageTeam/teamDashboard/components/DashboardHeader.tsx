@@ -24,10 +24,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="text-2xl font-bold text-gray-700">
           Team Performance Dashboard
         </h1>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-700 text-sm">
           Monitor and analyze team efficiency and task distribution
         </p>
       </div>
@@ -43,7 +43,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             placeholder="Search teams..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all w-full md:w-64"
+            className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all w-full md:w-64"
           />
         </div>
 
@@ -54,7 +54,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             onChange={(e) =>
               onDateFilterChange({ ...dateFilter, type: e.target.value })
             }
-            className="text-sm text-gray-600 bg-transparent focus:outline-none cursor-pointer"
+            className="text-sm text-gray-700 bg-transparent focus:outline-none cursor-pointer"
           >
             <option value="all">All Time</option>
             <option value="week">This Week</option>
@@ -65,7 +65,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
         <Button
           onClick={onAddTeam}
-          className="bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-2"
+          className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
         >
           <Plus size={18} />
           <span>Add Team</span>

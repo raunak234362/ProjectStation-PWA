@@ -21,11 +21,11 @@ const AllBranches = ({ fabricator, onClose }: AllBranchProps) => {
       <div className="w-4xl bg-white rounded-xl p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-3 border-b pb-2">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-gray-700">
             Fabricator Branches
           </h2>
           <button onClick={onClose} aria-label="Close">
-            <X className="w-6 h-6 text-gray-600 hover:text-black" />
+            <X className="w-6 h-6 text-gray-700 hover:text-gray-700" />
           </button>
         </div>
 
@@ -58,7 +58,7 @@ const AllBranches = ({ fabricator, onClose }: AllBranchProps) => {
                     <td className="px-3 py-2">
                       {branch.phone}
                       {branch.extensionNumber && (
-                        <span className="text-gray-500 text-xs ml-1">
+                        <span className="text-gray-700 text-xs ml-1">
                           (Ext: {branch.extensionNumber})
                         </span>
                       )}
@@ -75,7 +75,7 @@ const AllBranches = ({ fabricator, onClose }: AllBranchProps) => {
               </tbody>
             </table>
           ) : (
-            <p className="text-center text-gray-500 py-4">No branches found</p>
+            <p className="text-center text-gray-700 py-4">No branches found</p>
           )}
         </div>
 

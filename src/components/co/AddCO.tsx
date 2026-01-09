@@ -118,7 +118,7 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
         <div className="flex justify-end pt-4">
           <Button
             type="submit"
-            className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-2 rounded-lg transition-all"
+            className="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg transition-all"
           >
             Save & Continue
           </Button>

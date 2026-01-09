@@ -23,7 +23,7 @@ const CoTableView = ({ rows }: Props) => {
           <tbody className="divide-y">
             {rows.map((r, i) => (
               <tr key={r.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-gray-500">{i + 1}</td>
+                <td className="px-4 py-3 text-gray-700">{i + 1}</td>
 
                 <td className="px-4 py-3 max-w-xs">
                   <p className="line-clamp-2">{r.description}</p>
@@ -44,7 +44,7 @@ const CoTableView = ({ rows }: Props) => {
                   ${r.cost}
                 </td>
 
-                <td className="px-4 py-3 max-w-xs text-gray-600">
+                <td className="px-4 py-3 max-w-xs text-gray-700">
                   {r.remarks || "—"}
                 </td>
               </tr>

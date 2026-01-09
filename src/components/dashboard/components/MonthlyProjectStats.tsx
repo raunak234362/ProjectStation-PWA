@@ -66,10 +66,10 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           <Info className="w-6 h-6 text-blue-500" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-gray-800">
+          <h3 className="text-sm font-bold text-gray-700">
             Monthly Workload Insight
           </h3>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-700">
             Select a specific month to see projects with active tasks during
             that period.
           </p>
@@ -86,11 +86,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-teal-50 rounded-xl">
-            <Briefcase className="w-5 h-5 text-teal-600" />
+          <div className="p-2.5 bg-green-50 rounded-xl">
+            <Briefcase className="w-5 h-5 text-green-600" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-gray-800">
+            <h3 className="text-base font-bold text-gray-700">
               Workload for {months[selectedMonth]} {selectedYear}
             </h3>
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -99,7 +99,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           </div>
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-2xl font-black text-teal-600 leading-none">
+          <span className="text-2xl font-black text-green-600 leading-none">
             {workloadData.count}
           </span>
           <span className="text-[10px] font-bold text-gray-400 uppercase">
@@ -113,13 +113,13 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           {workloadData.projects.map((project) => (
             <div
               key={project.id}
-              className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-teal-200 hover:bg-teal-50/30 transition-all group"
+              className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-green-200 hover:bg-green-50/30 transition-all group"
             >
-              <div className="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[10px] font-bold text-teal-600 shadow-sm group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[10px] font-bold text-green-600 shadow-sm group-hover:scale-110 transition-transform">
                 {project.projectNumber.slice(-3)}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-bold text-gray-700 truncate group-hover:text-teal-700 transition-colors">
+                <h4 className="text-sm font-bold text-gray-700 truncate group-hover:text-green-700 transition-colors">
                   {project.name}
                 </h4>
                 <p className="text-[10px] font-medium text-gray-400 truncate">

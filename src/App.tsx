@@ -30,6 +30,7 @@ const AppContent = () => {
 
       sessionStorage.setItem("userId", userDetail.id);
       sessionStorage.setItem("username", userDetail.username);
+      sessionStorage.setItem("firstName", userDetail.firstName);
 
       // setUserId(userDetail.id);
       dispatch(setUserData(userDetail));

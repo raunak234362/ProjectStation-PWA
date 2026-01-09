@@ -97,7 +97,7 @@ console.log(changeOrderData);
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+      <div className="flex flex-col items-center justify-center py-12 text-gray-700">
         <Loader2 className="w-6 h-6 animate-spin mb-2" />
         Loading Change Orders...
       </div>
@@ -106,7 +106,7 @@ console.log(changeOrderData);
 
   if (!changeOrders.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+      <div className="flex flex-col items-center justify-center py-16 text-gray-700">
         <Inbox className="w-10 h-10 mb-3 text-gray-400" />
         <p className="text-lg font-medium">No Change Orders Available</p>
         <p className="text-sm text-gray-400">

@@ -51,7 +51,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-500">
+      <div className="flex items-center justify-center py-8 text-gray-700">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading employee details...
       </div>
@@ -74,10 +74,10 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
     });
 
   return (
-    <div className="bg-linear-to-br from-teal-50 to-blue-50 p-6 rounded-xl shadow-inner">
+    <div className="bg-linear-to-br from-green-50 to-blue-50 p-6 rounded-xl shadow-inner">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold text-teal-800">
+        <h3 className="text-xl font-bold text-green-800">
           {employee.firstName} {employee.middleName} {employee.lastName}
         </h3>
         <span
@@ -108,7 +108,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
               <span>
                 {employee.phone}
                 {employee.extensionNumber && (
-                  <span className="text-gray-500 text-xs ml-1">
+                  <span className="text-gray-700 text-xs ml-1">
                     (Ext: {employee.extensionNumber})
                   </span>
                 )}
@@ -127,7 +127,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           <InfoRow
             label="Role"
             value={
-              <span className="px-2 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-medium">
+              <span className="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
                 {employee.role}
               </span>
             }
@@ -151,8 +151,8 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         employee.state ||
         employee.country ||
         employee.zipCode) && (
-        <div className="mt-6 pt-5 border-t border-teal-200">
-          <h4 className="font-semibold text-teal-700 mb-2">Address</h4>
+        <div className="mt-6 pt-5 border-t border-green-200">
+          <h4 className="font-semibold text-green-700 mb-2">Address</h4>
           <div className="text-sm space-y-1 text-gray-700">
             {employee.address && <p>{employee.address}</p>}
             <p>
@@ -184,7 +184,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
             >
               Edit Profile
             </Button>
-            <Button className="py-1 px-2 text-lg">Disable Profile</Button>
+            <Button className="py-1 px-2 text-lg">Archive Profile</Button>
           </>
         )}
       </div>
@@ -206,16 +206,16 @@ const InfoRow = ({
   href?: string;
 }) => (
   <div className="flex md:justify-between gap-5">
-    <span className="font-bold text-gray-600">{label}:</span>
+    <span className="font-bold text-gray-700">{label}:</span>
     {href ? (
       <a
         href={href}
-        className="text-teal-600 hover:underline hover:text-teal-800 transition-colors"
+        className="text-green-600 hover:underline hover:text-green-800 transition-colors"
       >
         {value}
       </a>
     ) : (
-      <span className="text-gray-900">{value}</span>
+      <span className="text-gray-700">{value}</span>
     )}
   </div>
 );
