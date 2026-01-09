@@ -1,9 +1,11 @@
-import InvoiceLayout from "../layout/InvoiceLayout"
+import InvoiceLayout from "../layout/InvoiceLayout";
 
 const invoicePage = () => {
   return (
-    <div><InvoiceLayout/></div>
-  )
-}
+    <div className="h-full w-full overflow-y-auto">
+      <InvoiceLayout />
+    </div>
+  );
+};
 
-export default invoicePage
+export default invoicePage;

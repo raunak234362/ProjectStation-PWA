@@ -51,7 +51,7 @@ const TeamPage = () => {
   }, [dispatch]);
 
   return (
-    <div className="w-full overflow-y-auto overflow-x-hidden">
+    <div className="h-full w-full overflow-y-auto overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
         {/* ---------- TOP TABS ---------- */}
         <div className="px-3 flex flex-col justify-between items-start backdrop-blur-2xl bg-linear-to-t from-emerald-200/60 to-green-600/50 border-b rounded-md">

@@ -4,7 +4,7 @@ import ProjectLayout from "../layout/ProjectLayout"
 const ProjectPage = () => {
   
   return (
-    <div><ProjectLayout/></div>
+    <div className="h-full w-full overflow-y-auto"><ProjectLayout/></div>
   )
 }
 

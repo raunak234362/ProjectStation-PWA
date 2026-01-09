@@ -27,7 +27,7 @@ const Layout = () => {
   };
 
   return (
-    <div className="flex px-1 h-screen w-screen overflow-hidden bg-green-600">
+    <div className="flex p-1.5 h-screen w-screen overflow-hidden bg-green-600">
       {/* Sidebar for Desktop */}
       <div className="hidden md:flex">
         <Sidebar
@@ -58,9 +58,9 @@ const Layout = () => {
       </div>
 
       {/* Main Content */}
-      <div className="pl-0 md:pl-1 flex flex-col flex-1 overflow-hidden min-h-0">
+      <div className="pl-0 md:pl-1 flex flex-col gap-1 flex-1 overflow-hidden min-h-0">
         <Header isMinimized={isMinimized} toggleSidebar={toggleSidebar} />
-        <main className="flex-1 w-full overflow-y-auto p-2 min-h-0">
+        <main className="flex-1 w-full overflow-y-hidden ">
           <Outlet />
         </main>
       </div>

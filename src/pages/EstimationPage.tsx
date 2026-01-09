@@ -1,11 +1,11 @@
 import EstimationLayout from "../layout/EstimationLayout";
 
 const EstimationPage = () => {
-    return (
-        <div>
-            <EstimationLayout/>
-        </div>
-    );
+  return (
+    <div className="h-full w-full overflow-y-auto">
+      <EstimationLayout />
+    </div>
+  );
 };
 
 export default EstimationPage;

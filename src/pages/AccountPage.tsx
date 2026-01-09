@@ -1,9 +1,11 @@
-import AccountLayout from "../layout/AccountLayout"
+import AccountLayout from "../layout/AccountLayout";
 
 const AccountPage = () => {
   return (
-    <div><AccountLayout/></div>
-  )
-}
+    <div className="h-full w-full overflow-y-auto">
+      <AccountLayout />
+    </div>
+  );
+};
 
-export default AccountPage
+export default AccountPage;

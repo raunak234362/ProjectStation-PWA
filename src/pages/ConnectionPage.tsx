@@ -1,9 +1,11 @@
-import ConnectionLayout from "../layout/ConnectionLayout"
+import ConnectionLayout from "../layout/ConnectionLayout";
 
 const ConnectionPage = () => {
   return (
-    <div><ConnectionLayout/></div>
-  )
-}
+    <div className="h-full w-full overflow-y-auto">
+      <ConnectionLayout />
+    </div>
+  );
+};
 
-export default ConnectionPage
+export default ConnectionPage;

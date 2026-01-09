@@ -141,7 +141,7 @@ const WBTDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen md:h-[94.6vh] p-2 rounded-xl space-y-6 bg-gray-50 overflow-y-auto">
+    <div className="h-full p-2 rounded-xl space-y-6 bg-gray-50 overflow-y-auto">
       <Suspense fallback={<DashboardSkeleton />}>
         {/* Stats Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
