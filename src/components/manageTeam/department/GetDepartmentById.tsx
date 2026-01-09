@@ -120,7 +120,7 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
       {/* Action Buttons */}
       <div className="py-2 flex gap-2 mt-4">
         <Button className="py-1 px-2 text-lg">Edit Department</Button>
-        <Button className="py-1 px-2 text-lg">Disable Department</Button>
+        <Button className="py-1 px-2 text-lg">Archive Department</Button>
       </div>
     </div>
   );

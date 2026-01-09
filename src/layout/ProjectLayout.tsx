@@ -101,7 +101,7 @@ const ProjectLayout = () => {
             >
               Project Dashboard
             </button>
-            <button
+            {/* <button
               onClick={() => setActiveTab("allProject")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${
                 activeTab === "allProject"
@@ -110,7 +110,7 @@ const ProjectLayout = () => {
               }`}
             >
               All Project
-            </button>
+            </button> */}
 
             <button
               onClick={() => setActiveTab("addProject")}

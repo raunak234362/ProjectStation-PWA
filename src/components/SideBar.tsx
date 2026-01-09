@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         ? `flex items-center font-semibold text-white bg-green-600/90 py-2 px-3 rounded-md w-full ${
                             isMinimized ? "justify-center" : "justify-start"
                           }`
-                        : `text-green-600/90 font-semibold hover:text-white hover:bg-green-600/90 py-2 px-3 rounded-md flex items-center w-full ${
+                        : `text-gray-700 font-semibold hover:text-white hover:bg-green-600/90 py-2 px-3 rounded-md flex items-center w-full ${
                             isMinimized ? "justify-center" : "justify-start"
                           }`
                     }

@@ -184,7 +184,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
             >
               Edit Profile
             </Button>
-            <Button className="py-1 px-2 text-lg">Disable Profile</Button>
+            <Button className="py-1 px-2 text-lg">Archive Profile</Button>
           </>
         )}
       </div>

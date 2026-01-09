@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Service from "../../api/Service";
 import { toast } from "react-toastify";
+import { Button } from "../ui/button";
 
 interface Task {
   id: string | number;
@@ -234,12 +235,12 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
           <p className="text-gray-700 mt-2">
             This task may have been deleted or is inaccessible.
           </p>
-          <button
+          <Button
             onClick={onClose}
-            className="mt-6 px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition"
+            className="mt-6 px-8 py-3 font-semibold transition"
           >
             Close
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -262,12 +263,13 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
               <p className="text-sm text-gray-700">ID: #{task.id}</p>
             </div>
           </div>
-          <button
+          <Button
             onClick={onClose}
-            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-xl transition"
+            variant="secondary"
+            className="px-6 py-3 font-medium transition"
           >
             Close
-          </button>
+          </Button>
         </div>
 
         {/* Scrollable Content */}
@@ -490,7 +492,7 @@ const ActionButton: React.FC<{
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center gap-2 px-6 py-3 ${colors[color]} text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed`}
+      className={`flex items-center gap-2 px-6 py-3 ${colors[color]} text-white font-semibold rounded-md shadow-md hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed`}
     >
       {icon}
       {children}

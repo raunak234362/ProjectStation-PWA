@@ -215,7 +215,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               name="Total Amount"
               fill="#0d9488"
               fillOpacity={0.1}
-              stroke="#0d9488"
+              stroke="#6bbd45"
               strokeWidth={3}
             />
           </ComposedChart>

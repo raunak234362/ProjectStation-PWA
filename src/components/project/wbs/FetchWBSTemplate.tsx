@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Service from "../../../api/Service";
-import { Check, Loader2, Search, X } from "lucide-react";
+import { Check, Loader2, Search } from "lucide-react";
 import Button from "../../fields/Button";
 
 interface WBSTemplate {
@@ -103,14 +103,15 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button
+          <Button
+            variant="ghost"
             onClick={handleSelectAll}
-            className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors px-4 py-2 rounded-lg hover:bg-green-50"
+            className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors px-4 py-2 hover:bg-green-50"
           >
             {selectedIds.size === filteredTemplates.length
               ? "Deselect All"
               : "Select All"}
-          </button>
+          </Button>
         </div>
 
         {/* Template List */}
@@ -208,7 +209,7 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
             <Button
               onClick={handleSubmit}
               disabled={selectedIds.size === 0}
-              className={`px-8 py-2.5 rounded-xl font-bold transition-all ${
+              className={`px-8 py-2.5 font-bold transition-all ${
                 selectedIds.size > 0
                   ? "bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-200"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"

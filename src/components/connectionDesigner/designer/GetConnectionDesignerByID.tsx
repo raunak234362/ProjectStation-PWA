@@ -207,7 +207,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
           Edit
         </Button>
         <Button className="py-1 px-2 text-lg bg-red-200 text-red-700">
-          Disable
+          Archive
         </Button>
         <Button
           onClick={() => handleEngineerModel()}

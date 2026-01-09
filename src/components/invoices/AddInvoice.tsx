@@ -562,13 +562,15 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
                 </div>
                 <div className="md:col-span-1 flex justify-center">
                   {fields.length > 1 && (
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => remove(index)}
-                      className="text-red-500 hover:text-red-700 p-2"
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 size={20} />
-                    </button>
+                    </Button>
                   )}
                 </div>
                 <div className="md:col-span-12">

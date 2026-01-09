@@ -476,7 +476,7 @@ export interface ProjectData {
   CDQuataionID?: string;
   connectionDesignerID?: string;
   projectNumber: string;
-  status: "ACTIVE" | "INACTIVE" | "DRAFT";
+  status: "ACTIVE" | "INACTIVE" | "DRAFT" | "ON_HOLD" | "COMPLETED";
   stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
@@ -710,25 +710,24 @@ export interface ChangeOrderItem {
   createdAt?: string;
   date?: string;
   files?: File[];
-  coResponses:string;
-  
+  coResponses: string;
 }
-export interface COTable{
-  description:string;
-  referenceDoc:string;
-  elements:string;
-  QtyNo:number;
-  remarks:string;
-  hours:number;
-  cost:number;
-  CoId:string;
+export interface COTable {
+  description: string;
+  referenceDoc: string;
+  elements: string;
+  QtyNo: number;
+  remarks: string;
+  hours: number;
+  cost: number;
+  CoId: string;
 }
 
-export interface CoResponsePayload{
-    status:string;
-    CoId:string;
-    description:string;
-    userId:string;
-    parentResponseId?:string | null;
-     files?: File[];  
+export interface CoResponsePayload {
+  status: string;
+  CoId: string;
+  description: string;
+  userId: string;
+  parentResponseId?: string | null;
+  files?: File[];
 }

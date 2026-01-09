@@ -210,7 +210,7 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
           Edit Fabricator
         </Button>
         <Button className="py-1 px-2 text-lg bg-red-200 text-red-700">
-          Disable
+          Archive
         </Button>
       </div>
       {editModel && (

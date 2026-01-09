@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Service from "../../../api/Service";
 import type { WBSData, LineItem } from "../../../interface";
+import { Button } from "../../ui/button";
 
 const GetWBSByID = ({
   id,
@@ -141,12 +142,12 @@ console.log("WBS Data:", wbsData);
           </div>
           <h3 className="text-xl font-bold text-gray-700">Oops!</h3>
           <p className="text-gray-700">{error || "WBS data not found"}</p>
-          <button
+          <Button
             onClick={onClose}
-            className="mt-2 px-6 py-2.5 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-gray-200"
+            className="mt-2 bg-gray-900 text-white hover:bg-gray-800 shadow-lg shadow-gray-200"
           >
             Close Window
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -178,12 +179,14 @@ console.log("WBS Data:", wbsData);
               </div>
             </div>
           </div>
-          <button
+          <Button
             onClick={onClose}
-            className="p-2.5 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors active:scale-90"
+            variant="ghost"
+            size="icon"
+            className="text-gray-400 hover:text-gray-700 hover:bg-gray-100"
           >
             <X className="w-6 h-6" />
-          </button>
+          </Button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
@@ -403,14 +406,14 @@ console.log("WBS Data:", wbsData);
                             <div className="flex justify-center gap-2">
                               <button
                                 onClick={() => handleSaveLineItem(item.id)}
-                                className="p-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                                className="p-1.5 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
                                 title="Save"
                               >
                                 <Check className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={handleCancelEdit}
-                                className="p-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                                className="p-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
                                 title="Cancel"
                               >
                                 <XCircle className="w-4 h-4" />
@@ -419,7 +422,7 @@ console.log("WBS Data:", wbsData);
                           ) : (
                             <button
                               onClick={() => handleEditClick(item)}
-                              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-md transition-all opacity-0 group-hover:opacity-100"
                               title="Edit"
                             >
                               <Pencil className="w-4 h-4" />
@@ -446,12 +449,12 @@ console.log("WBS Data:", wbsData);
 
         {/* Footer Section */}
         <div className="px-8 py-6 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-4">
-          <button className="px-6 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all active:scale-95 shadow-sm">
+          <Button variant="outline" className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 shadow-sm">
             Download Report
-          </button>
-          <button className="px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 transition-all active:scale-95 shadow-lg shadow-green-100">
+          </Button>
+          <Button className="text-white shadow-lg shadow-green-100">
             Add Quantity
-          </button>
+          </Button>
         </div>
       </div>
     </div>

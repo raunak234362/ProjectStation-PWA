@@ -1,24 +1,10 @@
 import React from "react";
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-  type?: "button" | "submit" | "reset";
-}
+import { Button as UiButton } from "../ui/button";
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  type = "button",
-  className,
-  ...props
-}) => {
-  return (
-    <button
-      type={type}
-      className={`${className} text-center md:px-5 px-3 md:py-1 py-0 font-semibold bg-green-600 hover:bg-green-700 transform hover:scale-105 transition-transform duration-200 text-white md:text-md hover:font-bold text-sm rounded-xl`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
+type ButtonProps = React.ComponentProps<typeof UiButton>;
+
+const Button: React.FC<ButtonProps> = (props) => {
+  return <UiButton {...props} />;
 };
 
 export default Button;

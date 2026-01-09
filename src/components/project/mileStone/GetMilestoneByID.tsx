@@ -9,9 +9,11 @@ import {
   ClipboardList,
   User,
   Tag,
+  X,
 } from "lucide-react";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
+import { Button } from "../../ui/button";
 
 interface Milestone {
   id: string | number;
@@ -131,12 +133,12 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
         <p className="text-gray-700 mt-1">
           This milestone may have been removed.
         </p>
-        <button
+        <Button
           onClick={close}
-          className="mt-6 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          className="mt-6 px-6 py-2 bg-green-600 text-white hover:bg-green-700 transition"
         >
           Go Back
-        </button>
+        </Button>
       </div>
     );
   }
@@ -160,24 +162,14 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             </p>
           </div>
         </div>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={close}
-          className="p-2 hover:bg-white/10 rounded-full transition text-white"
+          className="p-2 hover:bg-white/10 text-white"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+          <X className="w-6 h-6" />
+        </Button>
       </div>
 
       <div className="p-6 space-y-8">

@@ -25,7 +25,6 @@ import type {
   ProjectMilestone,
   WBSData,
   UserData,
-  Department,
 } from "../../interface";
 import { setProjectData, updateProject } from "../../store/projectSlice";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
@@ -71,9 +70,6 @@ const AddTask: React.FC = () => {
     }
   }, [dispatch, projects.length]);
 
-  const departments = useSelector(
-    (state: any) => state.userInfo?.departmentData || []
-  );
   const employees = useSelector(
     (state: any) => state.userInfo?.staffData || []
   );
@@ -252,11 +248,6 @@ const AddTask: React.FC = () => {
   const milestoneOptions = milestones.map((m: ProjectMilestone) => ({
     label: m.subject || m.name || "Unnamed Milestone",
     value: m.id,
-  }));
-
-  const departmentOptions = departments.map((d: Department) => ({
-    label: d.name || "Unnamed Department",
-    value: d.id || "",
   }));
 
   const wbsTypeOptions = [
@@ -485,7 +476,9 @@ const AddTask: React.FC = () => {
                         {...register("name", { required: "Name is required" })}
                       />
                       {errors.name && (
-                        <p className="text-xs text-red-500">{errors.name.message}</p>
+                        <p className="text-xs text-red-500">
+                          {errors.name.message}
+                        </p>
                       )}
                     </div>
 
@@ -514,7 +507,9 @@ const AddTask: React.FC = () => {
                         })}
                       />
                       {errors.start_date && (
-                        <p className="text-xs text-red-500">{errors.start_date.message}</p>
+                        <p className="text-xs text-red-500">
+                          {errors.start_date.message}
+                        </p>
                       )}
                     </div>
                     <div className="space-y-1">
@@ -526,7 +521,9 @@ const AddTask: React.FC = () => {
                         })}
                       />
                       {errors.due_date && (
-                        <p className="text-xs text-red-500">{errors.due_date.message}</p>
+                        <p className="text-xs text-red-500">
+                          {errors.due_date.message}
+                        </p>
                       )}
                     </div>
                     <Input
@@ -629,7 +626,7 @@ const AddTask: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => remove(index)}
-                            className="p-2.5 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                            className="p-2.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
@@ -640,7 +637,7 @@ const AddTask: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => append({ employeeId: "", hours: 0 })}
-                      className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 font-medium hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-4 border-2 border-dashed border-slate-200 rounded-md text-slate-500 font-medium hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2"
                     >
                       <Plus className="w-5 h-5" />
                       Add Another Employee
@@ -663,7 +660,7 @@ const AddTask: React.FC = () => {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-10 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
+                    className="px-10 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
                   >
                     {isSubmitting ? "Assigning..." : "Confirm & Assign Tasks"}
                   </Button>
