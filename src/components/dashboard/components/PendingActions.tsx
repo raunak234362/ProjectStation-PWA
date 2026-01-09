@@ -10,9 +10,13 @@ import type { DashboardStats } from "../WBTDashboard";
 
 interface PendingActionsProps {
   dashboardStats: DashboardStats | null;
+  onActionClick?: (actionType: string) => void;
 }
 
-const PendingActions: React.FC<PendingActionsProps> = ({ dashboardStats }) => {
+const PendingActions: React.FC<PendingActionsProps> = ({
+  dashboardStats,
+  onActionClick,
+}) => {
   const actions = [
     {
       title: "Pending RFI",
@@ -76,11 +80,17 @@ const PendingActions: React.FC<PendingActionsProps> = ({ dashboardStats }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
         {actions.map((action) => {
-          const colors = colorClasses[action.color as keyof typeof colorClasses];
+          const colors =
+            colorClasses[action.color as keyof typeof colorClasses];
 
           return (
             <div
               key={action.title}
+              onClick={() => {
+                if (action.title === "Pending Submittals" && onActionClick) {
+                  onActionClick("PENDING_SUBMITTALS");
+                }
+              }}
               className="flex flex-row items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
             >
               <div
@@ -93,7 +103,10 @@ const PendingActions: React.FC<PendingActionsProps> = ({ dashboardStats }) => {
                 <span className="font-semibold text-gray-700">
                   {action.title}
                 </span>
-                <span className="text-2xl font-bold mt-1" style={{ color: colors.text.replace("text-", "#") }}>
+                <span
+                  className="text-2xl font-bold mt-1"
+                  style={{ color: colors.text.replace("text-", "#") }}
+                >
                   {action.count}
                 </span>
                 <span className="text-xs text-gray-500 uppercase tracking-wider mt-2">

@@ -7,7 +7,7 @@ interface MonthlyProjectStatsProps {
   tasks: any[];
   projects: ProjectData[];
   selectedMonth: number | null;
-  selectedYear: number;
+  selectedYear: number | null;
 }
 
 const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
@@ -32,7 +32,8 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
   ];
 
   const workloadData = useMemo(() => {
-    if (selectedMonth === null) return { projects: [], count: 0 };
+    if (selectedMonth === null || selectedYear === null)
+      return { projects: [], count: 0 };
 
     const startOfMonth = new Date(selectedYear, selectedMonth, 1);
     const endOfMonth = new Date(selectedYear, selectedMonth + 1, 0, 23, 59, 59);
@@ -59,7 +60,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
     };
   }, [tasks, projects, selectedMonth, selectedYear]);
 
-  if (selectedMonth === null) {
+  if (selectedMonth === null || selectedYear === null) {
     return (
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
         <div className="p-3 bg-blue-50 rounded-xl">

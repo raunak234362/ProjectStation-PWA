@@ -894,6 +894,21 @@ class Service {
     }
   }
 
+  // Get Project Overall Dashboard
+  static async GetProjectOverallDashboard(id: string,stage:string) {
+    try {
+      const response = await api.get(`project/${id}/dashboard/${stage}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Edit Project By ID
   static async EditProjectById(id: string, data: any) {
     try {
@@ -953,7 +968,7 @@ class Service {
   //Fetch WBS-Template
   static async GetWBSTemplate() {
     try {
-      const response = await api.get(`project/wbs-templates`, {
+      const response = await api.get(`project/wbs/bundles`, {
         headers: {
           "Content-Type": "application/json",
         },

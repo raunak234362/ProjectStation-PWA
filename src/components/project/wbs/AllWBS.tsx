@@ -12,7 +12,15 @@ import FetchWBSTemplate from "./FetchWBSTemplate";
 import { useDispatch, useSelector } from "react-redux";
 import { setWBSForProject } from "../../../store/wbsSlice";
 
-const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
+const AllWBS = ({
+  id,
+  wbsData,
+  stage,
+}: {
+  id: string;
+  wbsData: any;
+  stage: string;
+}) => {
   const dispatch = useDispatch();
   const wbsByProject = useSelector(
     (state: any) => state.wbsInfo?.wbsByProject || {}
@@ -29,7 +37,10 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await Service.GetWBSByProjectId(projectId);
+      const response = await Service.GetProjectOverallDashboard(
+        projectId,
+        stage
+      );
       console.log("Fetched WBS:", response);
       dispatch(setWBSForProject({ projectId, wbs: response || [] }));
     } catch (err) {
@@ -44,23 +55,25 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
     if (!wbsByProject[id]) {
       fetchAllWBS();
     }
-  }, [id, wbsByProject, dispatch]);
+  }, [id, wbsByProject, dispatch, stage]);
 
   // ✅ Define table columns
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "name",
+      accessorKey: "wbsTemplateKey",
       header: "WBS Name",
       cell: ({ row }) => (
-        <span className="font-medium text-gray-700">{row.original.name}</span>
+        <span className="font-medium text-gray-700">
+          {row.original.wbsTemplateKey || row.original.name || "—"}
+        </span>
       ),
     },
     {
-      accessorKey: "type",
-      header: "Type",
+      accessorKey: "discipline",
+      header: "Discipline",
       cell: ({ row }) => (
         <span className="text-sm text-green-700 font-semibold">
-          {row.original.type}
+          {row.original.discipline || row.original.type || "—"}
         </span>
       ),
     },
@@ -75,25 +88,32 @@ const AllWBS = ({ id, wbsData }: { id: string; wbsData: any }) => {
       accessorKey: "totalExecHr",
       header: "Total Exec Hrs",
       cell: ({ row }) => (
-        <span className="text-gray-700">{row.original.totalExecHr || "—"}</span>
+        <span className="text-gray-700">{row.original.totalExecHr || 0}</span>
       ),
     },
     {
       accessorKey: "totalCheckHr",
       header: "Total Check Hrs",
       cell: ({ row }) => (
-        <span className="text-gray-700">
-          {row.original.totalCheckHr || "—"}
-        </span>
+        <span className="text-gray-700">{row.original.totalCheckHr || 0}</span>
       ),
     },
-
-    {
-      accessorKey: "createdAt",
-      header: "Created On",
-      cell: ({ row }) =>
-        format(new Date(row.original.createdAt), "dd MMM yyyy, HH:mm"),
-    },
+    // {
+    //   accessorKey: "createdAt",
+    //   header: "Created On",
+    //   cell: ({ row }) => {
+    //     const date = row.original.createdAt
+    //       ? new Date(row.original.createdAt)
+    //       : null;
+    //     return (
+    //       <span className="text-gray-700">
+    //         {date && !isNaN(date.getTime())
+    //           ? format(date, "dd MMM yyyy, HH:mm")
+    //           : "—"}
+    //       </span>
+    //     );
+    //   },
+    // },
   ];
 
   // ✅ Handle row click — open details
