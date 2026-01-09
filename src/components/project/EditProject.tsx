@@ -12,6 +12,7 @@ import {
   Layers,
   X,
   Save,
+  Users,
 } from "lucide-react";
 
 import Input from "../fields/input";
@@ -78,6 +79,7 @@ const EditProject: React.FC<EditProjectProps> = ({
           setValue("fabricatorID", project.fabricatorID);
           setValue("managerID", project.managerID);
           setValue("departmentID", project.department?.id);
+          setValue("teamID", project.team?.id);
           setValue("tools", project.tools);
           setValue("stage", project.stage);
           setValue("estimatedHours", project.estimatedHours);
@@ -203,20 +205,20 @@ const EditProject: React.FC<EditProjectProps> = ({
             <SectionTitle title="Project Details" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
-                label="Project Number *"
+                label="Project Number"
                 placeholder="PROJ-2025-089"
-                {...register("projectNumber", { required: "Required" })}
+                {...register("projectNumber")}
               />
               <Input
-                label="Project Name *"
+                label="Project Name"
                 placeholder="Empire State Tower - Phase II"
-                {...register("name", { required: "Required" })}
+                {...register("name")}
               />
               <div className="md:col-span-2">
                 <Input
-                  label="Description *"
+                  label="Description"
                   placeholder="Full structural steel detailing for 40-story commercial building..."
-                  {...register("description", { required: "Required" })}
+                  {...register("description")}
                 />
               </div>
             </div>
@@ -226,12 +228,11 @@ const EditProject: React.FC<EditProjectProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <Building2 className="w-4 h-4 text-blue-600" /> Fabricator *
+                  <Building2 className="w-4 h-4 text-blue-600" /> Fabricator
                 </label>
                 <Controller
                   name="fabricatorID"
                   control={control}
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <Select
                       options={options.fabricators}
@@ -248,12 +249,10 @@ const EditProject: React.FC<EditProjectProps> = ({
               <div>
                 <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
                   <HardHat className="w-4 h-4 text-amber-600" /> Project Manager
-                  *
                 </label>
                 <Controller
                   name="managerID"
                   control={control}
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <Select
                       options={options.managers}
@@ -269,12 +268,11 @@ const EditProject: React.FC<EditProjectProps> = ({
               </div>
               <div>
                 <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <UserCheck className="w-4 h-4 text-green-600" /> Department *
+                  <UserCheck className="w-4 h-4 text-green-600" /> Department
                 </label>
                 <Controller
                   name="departmentID"
                   control={control}
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <Select
                       options={options.departments}
@@ -283,6 +281,26 @@ const EditProject: React.FC<EditProjectProps> = ({
                       )}
                       onChange={(o: any) => field.onChange(o?.value || "")}
                       placeholder="Select dept"
+                    />
+                  )}
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
+                  <Users className="w-4 h-4 text-purple-600" /> Team
+                </label>
+                <Controller
+                  name="teamID"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      options={options.teams}
+                      value={options.teams.find(
+                        (o: any) => o.value === field.value
+                      )}
+                      onChange={(o: any) => field.onChange(o?.value || "")}
+                      placeholder="Select team"
+                      isSearchable
                     />
                   )}
                 />
@@ -384,9 +402,9 @@ const EditProject: React.FC<EditProjectProps> = ({
                 {...register("estimatedHours")}
               />
               <Input
-                label="Start Date *"
+                label="Start Date"
                 type="date"
-                {...register("startDate", { required: "Required" })}
+                {...register("startDate")}
               />
               <Input
                 label="Target End Date"

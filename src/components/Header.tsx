@@ -36,8 +36,8 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
 
       {/* Right: Greeting */}
       <div className="flex items-center gap-4">
-        <span className="text-green-600/90 text-sm hidden sm:block">
-          Hello 👋 
+        <span className="text-gray-700 text-sm hidden font-bold sm:block">
+          Hii Welcome Back 👋 {sessionStorage.getItem("firstName")}
         </span>
         <Bell />
       </div>

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavLink, useNavigate } from "react-router-dom";
-import LOGO from "../assets/logo.png";
+import LOGO from "../assets/mainLogo.png";
+import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
 import { LogOut, X } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -52,9 +53,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {!isMinimized ? (
-          <img src={LOGO} alt="Logo" className="w-40" />
+          <img src={LOGO} alt="Logo" className="w-48" />
         ) : (
-          <img src={LOGO} alt="Logo" className="w-10" />
+          <img src={SLOGO} alt="Logo" className="w-20" />
         )}
 
         {isMobile && (

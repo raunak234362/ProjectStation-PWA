@@ -12,6 +12,7 @@ import {
   Sparkles,
   Zap,
   Layers,
+  Users,
 } from "lucide-react";
 
 import Input from "../fields/input";
@@ -303,6 +304,40 @@ const AddProject: React.FC = () => {
                       placeholder="Select dept"
                     />
                   )}
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
+                  <Users className="w-5 h-5 text-purple-600" /> Team
+                </label>
+                <Controller
+                  name="teamID"
+                  control={control}
+                  render={({ field }) => {
+                    const selectedDeptId = watch("departmentID");
+                    const filteredTeams = teamDatas
+                      .filter(
+                        (t: any) =>
+                          !selectedDeptId || t.departmentID === selectedDeptId
+                      )
+                      .map((t: any) => ({
+                        label: t.name,
+                        value: String(t.id),
+                      }));
+
+                    return (
+                      <Select
+                        options={filteredTeams}
+                        value={filteredTeams.find(
+                          (o: any) => o.value === field.value
+                        )}
+                        onChange={(o: any) => field.onChange(o?.value || "")}
+                        placeholder="Select team"
+                        isClearable
+                        isDisabled={!selectedDeptId}
+                      />
+                    );
+                  }}
                 />
               </div>
             </div>
