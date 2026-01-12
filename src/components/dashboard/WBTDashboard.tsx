@@ -94,7 +94,7 @@ const WBTDashboard = () => {
         );
 
         const dashboardData = await Service.GetDashboardData();
-        setDashboardStats(dashboardData);
+        setDashboardStats(dashboardData.data);
         const sentCount = sent?.length || 0;
         const receivedCount = received?.length || 0;
 
