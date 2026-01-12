@@ -13,7 +13,7 @@ const WBS = ({
 
   return (
     <>
-      <AllWBS id={id} wbsData={wbsData} stage={stage} />
+      <AllWBS id={id} stage={stage} />
     </>
   );
 };

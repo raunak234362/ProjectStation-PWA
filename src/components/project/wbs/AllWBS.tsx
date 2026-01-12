@@ -9,26 +9,12 @@ import GetWBSByID from "./GetWBSByID";
 import { Button } from "../../ui/button";
 import FetchWBSTemplate from "./FetchWBSTemplate";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setWBSForProject } from "../../../store/wbsSlice";
 
-const AllWBS = ({
-  id,
-  wbsData,
-  stage,
-}: {
-  id: string;
-  wbsData: any;
-  stage: string;
-}) => {
-  console.log("AllWBS - wbsData:", wbsData);
-  console.log("AllWBS - is array?", Array.isArray(wbsData));
-  console.log("AllWBS - projectBundles:", wbsData?.projectBundles);
-
+const AllWBS = ({ id, stage }: { id: string; stage: string }) => {
   const dispatch = useDispatch();
-  const wbsByProject = useSelector(
-    (state: any) => state.wbsInfo?.wbsByProject || {}
-  );
+  const [wbsBundles, setWbsBundles] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedWBS, setSelectedWBS] = useState<any | null>(null);
@@ -37,15 +23,17 @@ const AllWBS = ({
 
   // ✅ Fetch all WBS items
   const fetchAllWBS = async () => {
+    console.log("fetchAllWBS called for project:", projectId, "stage:", stage);
     try {
       setLoading(true);
       setError(null);
-      const response = await Service.GetProjectOverallDashboard(
-        projectId,
-        stage
+
+      const wbsBundlesResponse = await Service.GetBundleByProjectId(projectId);
+      setWbsBundles(wbsBundlesResponse.data);
+      console.log("Fetched WBS Bundle:", wbsBundlesResponse.data);
+      dispatch(
+        setWBSForProject({ projectId, wbs: wbsBundlesResponse.data || [] })
       );
-      console.log("Fetched WBS:", response);
-      dispatch(setWBSForProject({ projectId, wbs: response || [] }));
     } catch (err) {
       console.error("Error fetching WBS:", err);
       setError("Failed to load WBS data");
@@ -55,10 +43,8 @@ const AllWBS = ({
   };
 
   useEffect(() => {
-    if (!wbsByProject[id]) {
-      fetchAllWBS();
-    }
-  }, [id, wbsByProject, dispatch, stage]);
+    fetchAllWBS();
+  }, [id, stage]);
 
   // ✅ Define table columns for bundles
   const columns: ColumnDef<any>[] = [
@@ -67,7 +53,10 @@ const AllWBS = ({
       header: "Bundle Name",
       cell: ({ row }) => (
         <span className="font-medium text-gray-700">
-          {row.original.bundle?.bundleKey || row.original.bundleKey || "—"}
+          {row.original.name ||
+            row.original.bundle?.name ||
+            row.original.bundleKey ||
+            "—"}
         </span>
       ),
     },
@@ -133,7 +122,7 @@ const AllWBS = ({
           <p className="text-sm text-gray-700 mb-4">
             Total Bundles:{" "}
             <span className="font-semibold text-gray-700">
-              {wbsData?.length || 0}
+              {wbsBundles?.length || 0}
             </span>
           </p>
         </div>
@@ -146,7 +135,7 @@ const AllWBS = ({
 
       <DataTable
         columns={columns}
-        data={wbsData || []}
+        data={wbsBundles || []}
         onRowClick={handleRowClick}
         detailComponent={({ row, close }) => (
           <GetWBSByID
@@ -159,6 +148,10 @@ const AllWBS = ({
         )}
         searchPlaceholder="Search bundles by name..."
         pageSizeOptions={[10, 25, 50, 100]}
+        initialSorting={[
+          { id: "totalQtyNo", desc: true },
+          { id: "bundleKey", desc: false },
+        ]}
       />
 
       {/* ✅ Modal for WBS Details */}
