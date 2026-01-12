@@ -17,13 +17,14 @@ const PendingActions: React.FC<PendingActionsProps> = ({ dashboardStats }) => {
     {
       title: "Pending RFI",
       count: dashboardStats?.pendingRFI || 0,
-      subtitle: "Response Pending",
+      subtitle: "New RFI",
+      subcount: dashboardStats?.newRFI || 0,
       icon: FileText,
       color: "amber",
     },
     {
       title: "Pending Submittals",
-      count: dashboardStats?.pendingSubmittals || 0,
+      count: dashboardStats?.pendingSubmittals|| 0,
       subtitle: "Response Pending",
       icon: RefreshCw,
       color: "purple",
@@ -31,13 +32,15 @@ const PendingActions: React.FC<PendingActionsProps> = ({ dashboardStats }) => {
     {
       title: "Change Orders",
       count: dashboardStats?.pendingChangeOrders || 0,
-      subtitle: "Response Pending",
+      subtitle: "New Change Orders",
+      subcount: dashboardStats?.newChangeOrders || 0,
       icon: Activity,
       color: "rose",
     },
     {
       title: "Pending RFQ",
       count: dashboardStats?.pendingRFQ || 0,
+      subcount: dashboardStats?.newRFQ || 0,
       subtitle: "New RFQ",
       icon: Search,
       color: "cyan",
@@ -97,7 +100,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({ dashboardStats }) => {
                   {action.count}
                 </span>
                 <span className="text-xs text-gray-500 uppercase tracking-wider mt-2">
-                  {action.subtitle}
+                  {action.subtitle} - {action.subcount}
                 </span>
               </div>
             </div>

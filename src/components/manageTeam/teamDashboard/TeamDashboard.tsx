@@ -4,12 +4,12 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import Service from "../../../api/Service";
 import AddTeam from "../team/AddTeam";
-import GetTeamByID from "../team/GetTeamById";
+import GetTeamById from "../team/GetTeamById";
 import GetEmployeeByID from "../employee/GetEmployeeByID";
 import DashboardHeader from "./components/DashboardHeader";
 import TeamsList from "./components/TeamsList";
 import TeamStatsCards from "./components/TeamStatsCards";
-import MonthlyEfficiencyChart from "./components/MonthlyEfficiencyChart";
+import EfficiencyAnalytics from "./components/EfficiencyAnalytics";
 import TeamMembersTable from "./components/TeamMembersTable";
 import TaskDistribution from "./components/TaskDistribution";
 import DailyWorkReportModal from "./components/DailyWorkReportModal";
@@ -29,7 +29,16 @@ const TeamDashboard = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
   const [allMemberStats, setAllMemberStats] = useState<any[]>([]);
-  const [monthlyEfficiency, setMonthlyEfficiency] = useState<any[]>([]);
+
+  // Analytics State
+  const [selectedComparisonTeams, setSelectedComparisonTeams] = useState<string[]>([]);
+  const [efficiencyData, setEfficiencyData] = useState<any[]>([]);
+  const [timeFilter, setTimeFilter] = useState("1M");
+  const [analyticsDateRange, setAnalyticsDateRange] = useState({
+    start: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split("T")[0],
+    end: new Date().toISOString().split("T")[0]
+  });
+
   const [dateFilter, setDateFilter] = useState({
     type: "all",
     year: new Date().getFullYear(),
@@ -48,6 +57,9 @@ const TeamDashboard = () => {
     endDate: new Date().toISOString(),
   });
 
+  // Cache for fetched team stats to avoid refetching
+  const [teamStatsCache, setTeamStatsCache] = useState<Map<string, any>>(new Map());
+
   // Fetch all teams
   useEffect(() => {
     const fetchTeams = async () => {
@@ -57,6 +69,12 @@ const TeamDashboard = () => {
         const teamsData = response?.data || [];
         setTeams(teamsData);
         setFilteredTeams(teamsData);
+
+        // Auto-select first team if available
+        if (teamsData.length > 0 && !selectedTeam) {
+          // setSelectedTeam(teamsData[0].id); // Optional: Auto select logic
+        }
+
         setLoading(false);
       } catch (error: any) {
         console.error(error.message);
@@ -66,8 +84,20 @@ const TeamDashboard = () => {
     fetchTeams();
   }, []);
 
-  // Fetch team stats (Reusable)
+  // Sync selectedComparisonTeams with selectedTeam (initial selection)
+  useEffect(() => {
+    if (selectedTeam && !selectedComparisonTeams.includes(selectedTeam)) {
+      setSelectedComparisonTeams([selectedTeam]);
+    }
+  }, [selectedTeam]);
+
+
+  // Fetch team stats (Reusable & Caching)
   const fetchTeamStats = useCallback(async (teamId: string) => {
+    if (teamStatsCache.has(teamId)) {
+      return teamStatsCache.get(teamId);
+    }
+
     try {
       const response = await Service.GetTeamByID(teamId);
       if (!response?.data) return null;
@@ -82,7 +112,7 @@ const TeamDashboard = () => {
           try {
             const userId = member.userId || member.member?.id || member.id;
             const response = await Service.getUsersStats(userId);
-            return { ...member, ...response.data, id: userId }; // Ensure id is the userId for mapping
+            return { ...member, ...response.data, id: userId };
           } catch (error) {
             console.error(
               `Error fetching stats for member ${member.id}:`,
@@ -97,14 +127,19 @@ const TeamDashboard = () => {
         })
       );
 
-      return { members: activeMembers, memberStats };
+      const data = { members: activeMembers, memberStats };
+
+      // Update cache
+      setTeamStatsCache(prev => new Map(prev).set(teamId, data));
+
+      return data;
     } catch (error) {
       console.error("Error fetching team stats:", error);
       return null;
     }
-  }, []);
+  }, [teamStatsCache]);
 
-  // Handle team selection
+  // Handle main dashboard team selection (Project Stats etc)
   useEffect(() => {
     if (!selectedTeam) return;
 
@@ -121,7 +156,7 @@ const TeamDashboard = () => {
     loadTeamData();
   }, [selectedTeam, fetchTeamStats]);
 
-  // Apply filters and calculate stats
+  // Apply filters and calculate stats (existing logic for stats cards)
   useEffect(() => {
     if (!allMemberStats || allMemberStats.length === 0) return;
 
@@ -138,6 +173,183 @@ const TeamDashboard = () => {
 
     calculateTeamSummary(filteredStats);
   }, [allMemberStats, dateFilter]);
+
+
+  // --- New Logic for Efficiency Analytics ---
+
+  useEffect(() => {
+    const generateAnalytics = async () => {
+      if (selectedComparisonTeams.length === 0) {
+        setEfficiencyData([]);
+        return;
+      }
+
+      const teamDataMap: any = {};
+
+      // 1. Ensure fetched stats for all selected comparison teams
+      await Promise.all(selectedComparisonTeams.map(async (tid) => {
+        const data = await fetchTeamStats(tid);
+        if (data) teamDataMap[tid] = data;
+      }));
+
+      // 2. Prepare date points based on timeFilter/DateRange
+      const { start, end, format } = getDateRangeParams(timeFilter, analyticsDateRange);
+      const dataPoints = generateDatePoints(start, end, format);
+
+      // 3. Compute efficiency per team per point
+      const chartData = dataPoints.map(point => {
+        const pointData: any = { date: point.label, fullDate: point.date };
+
+        selectedComparisonTeams.forEach(tid => {
+          const fetched = teamDataMap[tid];
+          if (fetched) {
+            const eff = calculateEfficiencyForPeriod(fetched.memberStats, point.start, point.end);
+            pointData[tid] = eff;
+          } else {
+            pointData[tid] = 0;
+          }
+        });
+        return pointData;
+      });
+
+      setEfficiencyData(chartData);
+    };
+
+    generateAnalytics();
+
+  }, [selectedComparisonTeams, timeFilter, analyticsDateRange, fetchTeamStats]);
+
+  const getDateRangeParams = (filter: string, range: { start: string, end: string }) => {
+    const now = new Date();
+    let start = new Date();
+    let end = new Date();
+    let format = 'daily';
+
+    if (filter === '1D') {
+      start.setDate(now.getDate() - 1);
+    } else if (filter === '1W') {
+      start.setDate(now.getDate() - 7);
+    } else if (filter === '1M') {
+      start.setDate(now.getDate() - 30);
+    } else if (filter === '1Y') {
+      start.setFullYear(now.getFullYear() - 1);
+      format = 'monthly';
+    } else if (filter === 'ALL') {
+      start = new Date('2023-01-01'); // Arbitrary start for 'ALL'
+      format = 'monthly';
+    }
+    // Use custom range strictly if provided? Or date pickers should just update range state?
+    // Component logic: date pickers update `analyticsDateRange`. Time Filter buttons update `analyticsDateRange` and `timeFilter`.
+    // So here rely on passed range IF filter is "Custom" (implied). 
+    // Actually, buttons invoke logic to set range. 
+    // Let's use `analyticsDateRange` as truth. But buttons set presets.
+
+    // Override with state (which buttons should update)
+    start = new Date(range.start);
+    endDateToEndOfDay(start); // Start of day actually
+    start.setHours(0, 0, 0, 0);
+
+    end = new Date(range.end);
+    endDateToEndOfDay(end);
+
+    // Heuristic for format
+    const diffDays = (end.getTime() - start.getTime()) / (1000 * 3600 * 24);
+    if (diffDays > 60) format = 'monthly';
+
+    return { start, end, format };
+  };
+
+  const endDateToEndOfDay = (date: Date) => {
+    date.setHours(23, 59, 59, 999);
+  };
+
+  const generateDatePoints = (start: Date, end: Date, format: string) => {
+    const points = [];
+    let current = new Date(start);
+
+    while (current <= end) {
+      if (format === 'monthly') {
+        // Logic for monthly buckets
+        const monthStart = new Date(current.getFullYear(), current.getMonth(), 1);
+        const monthEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+        points.push({
+          label: monthStart.toLocaleString('default', { month: 'short', year: '2-digit' }),
+          date: monthStart.toISOString(), // Sortable/Key
+          start: monthStart,
+          end: monthEnd > end ? end : monthEnd
+        });
+        // Next month
+        current.setMonth(current.getMonth() + 1);
+      } else {
+        // Daily buckets
+        const dayStart = new Date(current);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(current);
+        dayEnd.setHours(23, 59, 59, 999);
+
+        points.push({
+          label: dayStart.toLocaleDateString(), // Or format nicely
+          date: dayStart.toISOString(),
+          start: dayStart,
+          end: dayEnd
+        });
+        // Next day
+        current.setDate(current.getDate() + 1);
+      }
+    }
+    return points;
+  };
+
+  const calculateEfficiencyForPeriod = (memberStats: any[], periodStart: Date, periodEnd: Date) => {
+    let totalAssigned = 0;
+    let totalWorked = 0;
+
+    memberStats?.forEach(member => {
+      const tasks = member.tasks || [];
+      tasks.forEach((task: any) => {
+        // Using Task Start Date for attribution as noted in Plan
+        const taskDate = new Date(task.start_date || task.startDate);
+
+        if (taskDate >= periodStart && taskDate <= periodEnd) {
+          if (["COMPLETE", "VALIDATE_COMPLETED"].includes(task.status)) { // Only completed tasks count for efficiency? usually yes
+            totalAssigned += parseDurationToMinutes(task.duration || "00:00:00") / 60;
+
+            // Sum worklogs for this task? Or just check if worklogs fall in range?
+            // Simplification: If task starts in range, sum ALL its worklogs (ProjectStation logic often does this)
+            // Or iterate worklogs. But `workingHourTask` might not have dates? 
+            // Assuming standard attribution to task.
+            const worked = (task.workingHourTask || []).reduce(
+              (sum: number, entry: any) => sum + (entry.duration || 0) / 60,
+              0
+            );
+            totalWorked += worked;
+          }
+        }
+      });
+    });
+
+    if (totalWorked === 0) return 0;
+    return Math.round((totalAssigned / totalWorked) * 100);
+  };
+
+  const handleTimeFilterChange = (tf: string) => {
+    setTimeFilter(tf);
+    const now = new Date();
+    let start = new Date();
+
+    if (tf === '1D') start.setDate(now.getDate() - 1);
+    if (tf === '1W') start.setDate(now.getDate() - 7);
+    if (tf === '1M') start.setDate(now.getDate() - 30);
+    if (tf === '1Y') start.setFullYear(now.getFullYear() - 1);
+    if (tf === 'ALL') start = new Date('2023-01-01');
+
+    setAnalyticsDateRange({
+      start: start.toISOString().split('T')[0],
+      end: now.toISOString().split('T')[0]
+    });
+  };
+
+  // --- End New Logic ---
 
   const calculateTeamSummary = (filteredStats: any[]) => {
     try {
@@ -233,56 +445,9 @@ const TeamDashboard = () => {
         projectCount,
       });
 
-      calculateMonthlyEfficiency(filteredStats);
     } catch (error) {
       console.error("Error calculating team stats:", error);
     }
-  };
-
-  const calculateMonthlyEfficiency = (memberStats: any[]) => {
-    const monthlyData: any = {};
-    const currentYear = new Date().getFullYear();
-
-    for (let i = 0; i < 12; i++) {
-      const monthName = new Date(currentYear, i, 1).toLocaleString("default", {
-        month: "short",
-      });
-      monthlyData[i] = {
-        month: monthName,
-        assignedHours: 0,
-        workedHours: 0,
-        efficiency: 0,
-      };
-    }
-
-    memberStats.forEach((member) => {
-      (member.tasks || []).forEach((task: any) => {
-        const startDate = new Date(task.start_date || task.startDate);
-        const month = startDate.getMonth();
-
-        if (startDate.getFullYear() === currentYear) {
-          const assignedHours =
-            parseDurationToMinutes(task.duration || "00:00:00") / 60;
-          monthlyData[month].assignedHours += assignedHours;
-
-          const workedHours = (task.workingHourTask || []).reduce(
-            (sum: number, entry: any) => sum + (entry.duration || 0) / 60,
-            0
-          );
-          monthlyData[month].workedHours += workedHours;
-        }
-      });
-    });
-
-    Object.keys(monthlyData).forEach((month: any) => {
-      const { assignedHours, workedHours } = monthlyData[month];
-      monthlyData[month].efficiency =
-        assignedHours > 0 && workedHours > 0
-          ? Math.round((assignedHours / workedHours) * 100)
-          : 0;
-    });
-
-    setMonthlyEfficiency(Object.values(monthlyData));
   };
 
   useEffect(() => {
@@ -374,9 +539,8 @@ const TeamDashboard = () => {
           sno: index + 1,
           id: member.userId || user.id || member.id,
           name:
-            `${user.firstName || ""} ${user.middleName || ""} ${
-              user.lastName || ""
-            }`.trim() || "Unknown",
+            `${user.firstName || ""} ${user.middleName || ""} ${user.lastName || ""
+              }`.trim() || "Unknown",
           role: member.role || "Member",
           assignedHours: assignedHours.toFixed(2),
           workedHours: workedHours.toFixed(2),
@@ -460,11 +624,16 @@ const TeamDashboard = () => {
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
-                  <MonthlyEfficiencyChart
-                    monthlyEfficiency={monthlyEfficiency}
+                  {/* Replaced MonthlyChart with EfficiencyAnalytics */}
+                  <EfficiencyAnalytics
+                    data={efficiencyData}
                     teams={teams}
-                    fetchTeamStats={fetchTeamStats}
-                    selectedTeam={selectedTeam}
+                    selectedTeams={selectedComparisonTeams}
+                    onTeamSelectionChange={setSelectedComparisonTeams}
+                    timeFilter={timeFilter}
+                    onTimeFilterChange={handleTimeFilterChange}
+                    dateRange={analyticsDateRange}
+                    onDateRangeChange={setAnalyticsDateRange}
                   />
                 </div>
                 <div>
@@ -510,7 +679,7 @@ const TeamDashboard = () => {
               <XIcon />
             </button>
             <div className="max-h-[80vh] overflow-y-auto p-6">
-              <GetTeamByID id={selectedTeam} />
+              <GetTeamById id={selectedTeam} />
             </div>
           </div>
         </div>

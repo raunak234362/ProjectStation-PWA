@@ -12,6 +12,9 @@ export interface DashboardStats {
   totalCompleteProject: number;
   totalOnHoldProject: number;
   totalProjects: number;
+  newRFQ:number;
+  newRFI:number;
+  newChangeOrders:number;
 }
 
 // Lazy load components
