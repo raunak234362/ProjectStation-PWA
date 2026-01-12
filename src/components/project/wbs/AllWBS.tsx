@@ -6,7 +6,7 @@ import { Loader2, AlertCircle } from "lucide-react";
 import DataTable from "../../ui/table";
 import Service from "../../../api/Service";
 import GetWBSByID from "./GetWBSByID";
-import Button from "../../fields/Button";
+import { Button } from "../../ui/button";
 import FetchWBSTemplate from "./FetchWBSTemplate";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -21,11 +21,14 @@ const AllWBS = ({
   wbsData: any;
   stage: string;
 }) => {
+  console.log("AllWBS - wbsData:", wbsData);
+  console.log("AllWBS - is array?", Array.isArray(wbsData));
+  console.log("AllWBS - projectBundles:", wbsData?.projectBundles);
+
   const dispatch = useDispatch();
   const wbsByProject = useSelector(
     (state: any) => state.wbsInfo?.wbsByProject || {}
   );
-  const wbsList = wbsByProject[id] || [];
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedWBS, setSelectedWBS] = useState<any | null>(null);
@@ -57,23 +60,14 @@ const AllWBS = ({
     }
   }, [id, wbsByProject, dispatch, stage]);
 
-  // ✅ Define table columns
+  // ✅ Define table columns for bundles
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "wbsTemplateKey",
-      header: "WBS Name",
+      accessorKey: "bundleKey",
+      header: "Bundle Name",
       cell: ({ row }) => (
         <span className="font-medium text-gray-700">
-          {row.original.wbsTemplateKey || row.original.name || "—"}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "discipline",
-      header: "Discipline",
-      cell: ({ row }) => (
-        <span className="text-sm text-green-700 font-semibold">
-          {row.original.discipline || row.original.type || "—"}
+          {row.original.bundle?.bundleKey || row.original.bundleKey || "—"}
         </span>
       ),
     },
@@ -82,6 +76,13 @@ const AllWBS = ({
       header: "Stage",
       cell: ({ row }) => (
         <span className="text-gray-700">{row.original.stage || "—"}</span>
+      ),
+    },
+    {
+      accessorKey: "totalQtyNo",
+      header: "Total Quantity",
+      cell: ({ row }) => (
+        <span className="text-gray-700">{row.original.totalQtyNo || 0}</span>
       ),
     },
     {
@@ -98,22 +99,6 @@ const AllWBS = ({
         <span className="text-gray-700">{row.original.totalCheckHr || 0}</span>
       ),
     },
-    // {
-    //   accessorKey: "createdAt",
-    //   header: "Created On",
-    //   cell: ({ row }) => {
-    //     const date = row.original.createdAt
-    //       ? new Date(row.original.createdAt)
-    //       : null;
-    //     return (
-    //       <span className="text-gray-700">
-    //         {date && !isNaN(date.getTime())
-    //           ? format(date, "dd MMM yyyy, HH:mm")
-    //           : "—"}
-    //       </span>
-    //     );
-    //   },
-    // },
   ];
 
   // ✅ Handle row click — open details
@@ -146,22 +131,22 @@ const AllWBS = ({
             Work Breakdown Structure (WBS)
           </h2>
           <p className="text-sm text-gray-700 mb-4">
-            Total Items:{" "}
+            Total Bundles:{" "}
             <span className="font-semibold text-gray-700">
-              {wbsList.length}
+              {wbsData?.length || 0}
             </span>
           </p>
         </div>
         <div>
           <Button onClick={() => setShowFetchTemplate(true)}>
-            Add New Line Item
+            Add New Bundle
           </Button>
         </div>
       </div>
 
       <DataTable
         columns={columns}
-        data={wbsData}
+        data={wbsData || []}
         onRowClick={handleRowClick}
         detailComponent={({ row, close }) => (
           <GetWBSByID
@@ -172,7 +157,7 @@ const AllWBS = ({
             initialData={row}
           />
         )}
-        searchPlaceholder="Search WBS by name or type..."
+        searchPlaceholder="Search bundles by name..."
         pageSizeOptions={[10, 25, 50, 100]}
       />
 

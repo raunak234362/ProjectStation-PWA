@@ -46,7 +46,7 @@ const GetProjectById = ({ id }: { id: string }) => {
   }, [project]);
 
   const wbsData = useMemo(() => {
-    return project?.projectWbs || [];
+    return project?.projectBundles || [];
   }, [project]);
 
   const changeOrderData = useMemo(() => {
@@ -227,7 +227,8 @@ const GetProjectById = ({ id }: { id: string }) => {
             <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
               <div className="md:col-span-2 mt-6">
                 <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
-                  <FolderOpenDot className="w-4 h-4" />Project Description
+                  <FolderOpenDot className="w-4 h-4" />
+                  Project Description
                 </h4>
                 <p className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
                   {project.description || "No description available."}

@@ -503,6 +503,7 @@ export interface ProjectData {
   files?: File[] | null; // supports direct File objects or a typed File interface
   endDateChangeLog?: string[];
   projectWbs?: any[];
+  projectBundles?: any[];
 }
 
 export interface RFIPayload {

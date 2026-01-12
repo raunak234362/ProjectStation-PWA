@@ -30,8 +30,10 @@ const GetWBSByID = ({
 }) => {
   const wbsData = initialData || null;
   const [wbs, setWbs] = useState<WBSData | null>(wbsData);
-  const [lineItems, setLineItems] = useState<LineItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [lineItems, setLineItems] = useState<LineItem[]>(
+    initialData?.bundle?.wbsTemplates || initialData?.wbsTemplates || []
+  );
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<{
@@ -42,10 +44,12 @@ const GetWBSByID = ({
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const canEditTime = userRole === "admin" || userRole === "deputy_manager";
-console.log("WBS Data:", wbsData);
 
   useEffect(() => {
-    if (id) fetchWBSById(id);
+    // Only fetch if we don't have templates in initialData
+    if (!lineItems || lineItems.length === 0) {
+      if (id) fetchWBSById(id);
+    }
   }, [id, projectId, stage]);
 
   const fetchWBSById = async (id: string) => {
@@ -169,13 +173,16 @@ console.log("WBS Data:", wbsData);
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-700 tracking-tight">
-                {wbsData.name}
+                {wbsData?.bundle?.bundleKey ||
+                  wbsData?.bundleKey ||
+                  "Bundle Details"}
               </h2>
               <div className="flex items-center gap-2 mt-1">
                 <span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded-md tracking-wider">
-                  {wbsData.type}
+                  {wbsData?.stage || "—"}
                 </span>
                 <span className="text-gray-400 text-xs">•</span>
+                <span className="text-gray-600 text-xs">Project Bundle</span>
               </div>
             </div>
           </div>
@@ -191,38 +198,35 @@ console.log("WBS Data:", wbsData);
 
         <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
           {/* Summary Grid */}
-      
-           
 
-            <div className="bg-gray-900 rounded-2xl p-2 text-white shadow-xl shadow-gray-200 flex flex-col justify-between">
+          <div className="bg-gray-900 rounded-2xl p-2 text-white shadow-xl shadow-gray-200 flex flex-col justify-between">
+            <div>
+              <DetailCard
+                label="Stage"
+                value={wbsData.stage}
+                icon={<Layers className="w-4 h-4" />}
+              />
+              <p className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-1">
+                Total Quantity
+              </p>
+              <h3 className="text-2xl font-bold text-white">
+                {wbsData?.totalQtyNo || 0}
+              </h3>
+            </div>
+            <div className="pt-4 border-t border-gray-800 mt-4 flex justify-between items-end">
               <div>
-                 <DetailCard
-              label="Stage"
-              value={wbsData.stage}
-              icon={<Layers className="w-4 h-4" />}
-            />
-                <p className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-1">
-                  Total Quantity
+                <p className="text-gray-700 text-[10px] uppercase font-bold">
+                  Last Updated
                 </p>
-                <h3 className="text-2xl font-bold text-white">
-                  {wbsData.totalQtyNo || 0}
-                </h3>
+                <p className="text-xs text-gray-300">
+                  {formatDate(wbsData?.updatedAt)}
+                </p>
               </div>
-              <div className="pt-4 border-t border-gray-800 mt-4 flex justify-between items-end">
-                <div>
-                  <p className="text-gray-700 text-[10px] uppercase font-bold">
-                    Last Updated
-                  </p>
-                  <p className="text-xs text-gray-300">
-                    {formatDate(wbsData.updatedAt)}
-                  </p>
-                </div>
-                <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-green-400" />
-                </div>
+              <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                <Clock className="w-4 h-4 text-green-400" />
               </div>
             </div>
-       
+          </div>
 
           {/* Hours Overview */}
           <section>
@@ -235,28 +239,30 @@ console.log("WBS Data:", wbsData);
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <StatCard
                 label="Execution Hours"
-                value={wbsData.totalExecHr}
-                subValue={wbsData.execHrWithRework}
+                value={wbsData?.totalExecHr || 0}
+                subValue={wbsData?.execHrWithRework}
                 subLabel="w/ Rework"
                 color="green"
               />
               <StatCard
                 label="Checking Hours"
-                value={wbsData.totalCheckHr}
-                subValue={wbsData.checkHrWithRework}
+                value={wbsData?.totalCheckHr || 0}
+                subValue={wbsData?.checkHrWithRework}
                 subLabel="w/ Rework"
                 color="indigo"
               />
               <StatCard
                 label="Total Hours"
-                value={(wbsData.totalExecHr || 0) + (wbsData.totalCheckHr || 0)}
+                value={
+                  (wbsData?.totalExecHr || 0) + (wbsData?.totalCheckHr || 0)
+                }
                 color="gray"
               />
               <StatCard
                 label="Rework Total"
                 value={
-                  (wbsData.execHrWithRework || 0) +
-                  (wbsData.checkHrWithRework || 0)
+                  (wbsData?.execHrWithRework || 0) +
+                  (wbsData?.checkHrWithRework || 0)
                 }
                 color="red"
               />
@@ -322,11 +328,7 @@ console.log("WBS Data:", wbsData);
                         </td>
                         <td className="px-6 py-4">
                           <p className="text-sm font-semibold text-gray-700 line-clamp-2">
-                            {item.description}
-                          </p>
-                          <p className="text-[10px] text-gray-400 mt-0.5">
-                            Updated:{" "}
-                            {item.updatedAt ? formatDate(item.updatedAt) : "—"}
+                            {item.description || "—"}
                           </p>
                         </td>
                         <td className="px-6 py-4 text-center">
@@ -449,7 +451,10 @@ console.log("WBS Data:", wbsData);
 
         {/* Footer Section */}
         <div className="px-8 py-6 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-4">
-          <Button variant="outline" className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 shadow-sm">
+          <Button
+            variant="outline"
+            className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 shadow-sm"
+          >
             Download Report
           </Button>
           <Button className="text-white shadow-lg shadow-green-100">

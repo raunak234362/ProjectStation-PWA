@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Service from "../../../api/Service";
 import { Check, Loader2, Search } from "lucide-react";
-import Button from "../../fields/Button";
+import { Button } from "../../ui/button";
 
 interface WBSTemplate {
   id: string;
