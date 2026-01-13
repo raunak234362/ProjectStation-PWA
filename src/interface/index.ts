@@ -324,6 +324,8 @@ export interface ConnectionDesignerForm {
   drive?: string;
   contactInfo?: string;
   email?: string;
+  insuranceLiability?: string;
+  certificate?: File[];
   headquater: {
     country: string;
     states: string[];
@@ -431,7 +433,7 @@ export interface AddProjectPayload {
   CDQuataionID?: string;
   connectionDesignerID?: string;
   status: "ACTIVE" | "INACTIVE" | "DRAFT";
-  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA" | "IFC" | "CO#";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   miscDesign: boolean;
@@ -503,6 +505,7 @@ export interface ProjectData {
   files?: File[] | null; // supports direct File objects or a typed File interface
   endDateChangeLog?: string[];
   projectWbs?: any[];
+  projectBundles?: any[];
 }
 
 export interface RFIPayload {
@@ -574,13 +577,22 @@ export interface RFIResponseSchema {
 
 export interface LineItem {
   id: string;
+  name?: string;
   description: string;
+  discipline?: string;
   unitTime?: number;
   checkUnitTime?: number;
   checkHr?: number;
   execHr?: number;
   updatedAt?: string;
   qtyNo?: number;
+  wbsTemplateKey?: string;
+  wbsTemplate?: {
+    name: string;
+  };
+  totalQtyNo?: number;
+  totalExecHr?: number;
+  totalCheckHr?: number;
 }
 
 export interface CreateLineItemGroupPayload {
@@ -592,11 +604,14 @@ export interface CreateLineItemGroupPayload {
 
 export interface WBSData {
   id: string;
+  fabId?: string;
+  project_bundle_id?: string;
   name: string;
   type: string;
   stage: string;
   projectId: string;
   templateKey: string;
+  bundleKey?: string;
   totalCheckHr: number;
   checkHrWithRework: number;
   totalExecHr: number;
@@ -605,6 +620,10 @@ export interface WBSData {
   createdAt: string;
   updatedAt: string;
   LineItems?: LineItem[];
+  bundle?: {
+    name: string;
+    category: string;
+  };
 }
 
 export interface ProjectNote {

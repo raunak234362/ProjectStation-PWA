@@ -21,9 +21,7 @@ const ProjectDashboard = () => {
   //   (state: any) => state.milestoneInfo?.milestonesByProject || {}
   // ) as Record<string, ProjectMilestone[]>;
 
-  const [selectedYear, setSelectedYear] = useState<number>(
-    new Date().getFullYear()
-  );
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [allTasks, setAllTasks] = useState<any[]>([]);
@@ -110,12 +108,8 @@ const ProjectDashboard = () => {
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
-      // If project is not completed, show it regardless of date filter
-      if (project.stage !== "COMPLETED") {
-        return true;
-      }
+      if (selectedYear === null) return true;
 
-      // If project is completed, only show it if it matches the selected year/month
       const projectDate = new Date(project.startDate);
       const matchesYear = projectDate.getFullYear() === selectedYear;
       const matchesMonth =
@@ -195,10 +189,15 @@ const ProjectDashboard = () => {
           <div className="relative">
             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+              value={selectedYear === null ? "all" : selectedYear}
+              onChange={(e) =>
+                setSelectedYear(
+                  e.target.value === "all" ? null : parseInt(e.target.value)
+                )
+              }
               className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-lg font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-gray-100 transition-colors"
             >
+              <option value="all">All Years</option>
               {years.map((year) => (
                 <option key={year} value={year}>
                   {year}

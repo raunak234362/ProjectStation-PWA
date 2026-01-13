@@ -11,8 +11,12 @@ import Service from "../../../api/Service";
 // import Service from "../../../api/Service";
 
 const AddConnectionDesigner: React.FC = () => {
-  const [stateOptions, setStateOptions] = useState<{ label: string; value: string }[]>([]);
-  const [cityOptions, setCityOptions] = useState<{ label: string; value: string }[]>([]);
+  const [stateOptions, setStateOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [cityOptions, setCityOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   const countryMap: Record<string, string> = {
     "United States": "US",
@@ -46,7 +50,9 @@ const AddConnectionDesigner: React.FC = () => {
     if (country && countryMap[country]) {
       const countryCode = countryMap[country];
       const statesData = State.getStatesOfCountry(countryCode) || [];
-      setStateOptions(statesData.map((s) => ({ label: s.name, value: s.name })));
+      setStateOptions(
+        statesData.map((s) => ({ label: s.name, value: s.name }))
+      );
 
       setValue("headquater.states", []);
       setValue("headquater.city", "");
@@ -70,8 +76,11 @@ const AddConnectionDesigner: React.FC = () => {
           (s) => s.name === stateName
         );
         if (stateObj) {
-          const cities = City.getCitiesOfState(countryCode, stateObj.isoCode) || [];
-          allCities.push(...cities.map((c) => ({ label: c.name, value: c.name })));
+          const cities =
+            City.getCitiesOfState(countryCode, stateObj.isoCode) || [];
+          allCities.push(
+            ...cities.map((c) => ({ label: c.name, value: c.name }))
+          );
         }
       });
 
@@ -84,19 +93,32 @@ const AddConnectionDesigner: React.FC = () => {
   // --- Submit Form ---
   const onSubmit = async (data: ConnectionDesignerForm) => {
     try {
-      const payload = {
-        name: data.connectionDesignerName.trim(),
-        state: data.headquater.states, // JSON array
-        contactInfo: data.contactInfo || "",
-        websiteLink: data.website || "",
-        email: data.email || "",
-        location: data.headquater.city
-          ? `${data.headquater.city}, ${data.headquater.country}`
-          : data.headquater.country,
-      };
+      const formData = new FormData();
+      formData.append("name", data.connectionDesignerName.trim());
+      formData.append("contactInfo", data.contactInfo || "");
+      formData.append("websiteLink", data.website || "");
+      formData.append("email", data.email || "");
+      formData.append("insurenceLiability", data.insuranceLiability || "");
 
-      console.log("🚀 Payload to send:", payload);
-      await Service.AddConnectionDesigner(payload); // ✅ Send to backend
+      // Append states as JSON string if backend expects it that way,
+      // or multiple appends if it expects multiple values with same key.
+      // Given the previous payload was { state: data.headquater.states },
+      // and it was JSON, I'll stringify it if it's not handled by FormData automatically.
+      formData.append("state", JSON.stringify(data.headquater.states));
+
+      const location = data.headquater.city
+        ? `${data.headquater.city}, ${data.headquater.country}`
+        : data.headquater.country;
+      formData.append("location", location);
+
+      if (data.certificate && data.certificate.length > 0) {
+        Array.from(data.certificate).forEach((file) => {
+          formData.append("files", file);
+        });
+      }
+
+      console.log("🚀 FormData to send:", formData);
+      await Service.AddConnectionDesigner(formData); // ✅ Send to backend
       toast.success("Connection Designer created successfully!");
       reset();
     } catch (error) {
@@ -107,7 +129,6 @@ const AddConnectionDesigner: React.FC = () => {
 
   return (
     <div className="w-full h-auto mx-auto bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg p-8 mt-8 border border-gray-200 overflow-visible">
- 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {/* Connection Designer Name */}
         <Input
@@ -140,6 +161,31 @@ const AddConnectionDesigner: React.FC = () => {
           />
         </div>
 
+        {/* Insurance Liability & Certificate */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Input
+            label="Insurance Liability (optional)"
+            type="text"
+            {...register("insuranceLiability")}
+            placeholder="Enter Insurance Liability"
+          />
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">
+              Certificate (optional)
+            </label>
+            <input
+              type="file"
+              multiple
+              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border border-gray-300 rounded-lg p-1"
+              onChange={(e) => {
+                if (e.target.files) {
+                  setValue("certificate", Array.from(e.target.files));
+                }
+              }}
+            />
+          </div>
+        </div>
+
         {/* Website & Drive Link */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Input
@@ -170,7 +216,11 @@ const AddConnectionDesigner: React.FC = () => {
                   label: c,
                   value: c,
                 }))}
-                value={field.value ? { label: field.value, value: field.value } : null}
+                value={
+                  field.value
+                    ? { label: field.value, value: field.value }
+                    : null
+                }
                 onChange={(option) => field.onChange(option?.value || "")}
                 menuPortalTarget={document.body}
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -188,9 +238,13 @@ const AddConnectionDesigner: React.FC = () => {
                 isMulti
                 placeholder="Select State(s)"
                 options={stateOptions}
-                value={stateOptions.filter((opt) => field.value.includes(opt.value))}
+                value={stateOptions.filter((opt) =>
+                  field.value.includes(opt.value)
+                )}
                 onChange={(options) => {
-                  const selected = options ? options.map((opt) => opt.value) : [];
+                  const selected = options
+                    ? options.map((opt) => opt.value)
+                    : [];
                   field.onChange(selected);
                   setValue("headquater.city", "");
                 }}
@@ -208,7 +262,11 @@ const AddConnectionDesigner: React.FC = () => {
               <Select
                 placeholder="Select City (Optional)"
                 options={cityOptions}
-                value={field.value ? { label: field.value, value: field.value } : null}
+                value={
+                  field.value
+                    ? { label: field.value, value: field.value }
+                    : null
+                }
                 onChange={(option) => field.onChange(option?.value || "")}
                 menuPortalTarget={document.body}
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}

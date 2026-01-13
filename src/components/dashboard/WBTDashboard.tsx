@@ -28,6 +28,9 @@ const ProjectListModal = lazy(() => import("./components/ProjectListModal"));
 const ProjectDetailsModal = lazy(
   () => import("./components/ProjectDetailsModal")
 );
+const SubmittalListModal = lazy(
+  () => import("./components/SubmittalListModal")
+);
 
 import DashboardSkeleton from "./components/DashboardSkeleton";
 
@@ -57,6 +60,7 @@ const WBTDashboard = () => {
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmittalModalOpen, setIsSubmittalModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
@@ -138,6 +142,12 @@ const WBTDashboard = () => {
     setIsModalOpen(true);
   };
 
+  const handleActionClick = (actionType: string) => {
+    if (actionType === "PENDING_SUBMITTALS") {
+      setIsSubmittalModalOpen(true);
+    }
+  };
+
   if (loading) {
     return <DashboardSkeleton />;
   }
@@ -148,7 +158,10 @@ const WBTDashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <ProjectStats stats={stats} onCardClick={handleCardClick} />
-          <PendingActions dashboardStats={dashboardStats} />
+          <PendingActions
+            dashboardStats={dashboardStats}
+            onActionClick={handleActionClick}
+          />
         </div>
 
         {/* Charts Section */}
@@ -158,7 +171,6 @@ const WBTDashboard = () => {
             pendingSubmittals={pendingSubmittals}
             invoices={invoices}
           />
-          
         </div>
 
         {/* Modals */}
@@ -168,6 +180,12 @@ const WBTDashboard = () => {
           status={selectedStatus}
           projects={filteredProjects}
           onProjectSelect={(project) => setSelectedProject(project)}
+        />
+
+        <SubmittalListModal
+          isOpen={isSubmittalModalOpen}
+          onClose={() => setIsSubmittalModalOpen(false)}
+          data={pendingSubmittals}
         />
 
         <ProjectDetailsModal

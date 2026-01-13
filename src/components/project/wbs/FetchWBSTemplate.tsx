@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import Service from "../../../api/Service";
 import { Check, Loader2, Search } from "lucide-react";
-import Button from "../../fields/Button";
+import { Button } from "../../ui/button";
 
 interface WBSTemplate {
   id: string;
   name: string;
-  type: string;
-  templateKey: string;
-  lineItems: any[];
+  category: string;
+  bundleKey: string;
+  stage: string;
+  wbsTemplates: any[];
 }
 
 interface FetchWBSTemplateProps {
@@ -62,19 +63,21 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
       console.error("Project ID is missing");
       return;
     }
-    const wbsTemplateIds = Array.from(selectedIds);
+    const selectedTemplates = templates.filter((t) => selectedIds.has(t.id));
+    const bundleKeys = selectedTemplates.map((t) => t.bundleKey);
+
     if (onSelect) {
-      onSelect(wbsTemplateIds.join(","));
+      onSelect(bundleKeys.join(","));
     }
-    const response = await Service.AddWBSFromTemplate(id, { wbsTemplateIds });
-    console.log("Selected IDs:", wbsTemplateIds);
+    const response = await Service.AddWBSFromTemplate(id, { bundleKeys });
+    console.log("Selected Bundle Keys:", bundleKeys);
     console.log("Response:", response);
   };
 
   const filteredTemplates = templates.filter(
     (template) =>
       template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.type.toLowerCase().includes(searchQuery.toLowerCase())
+      template.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {
@@ -155,7 +158,7 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
                       Line Items
                     </h4>
                     <ul className="space-y-1">
-                      {template.lineItems?.map((item, index) => (
+                      {template.wbsTemplates?.map((item, index) => (
                         <li
                           key={index}
                           className="text-sm text-gray-700 border-l-2 border-green-200 pl-2"
@@ -167,10 +170,10 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
                   </div>
                   <div className="flex items-center mt-1 space-x-3">
                     <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 uppercase tracking-wider">
-                      {template.type}
+                      {template.category}
                     </span>
                     <span className="text-xs text-gray-400">
-                      {template.lineItems?.length || 0} Line Items
+                      {template.wbsTemplates?.length || 0} Line Items
                     </span>
                   </div>
                 </div>

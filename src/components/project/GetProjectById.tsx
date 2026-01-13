@@ -46,7 +46,7 @@ const GetProjectById = ({ id }: { id: string }) => {
   }, [project]);
 
   const wbsData = useMemo(() => {
-    return project?.projectWbs || [];
+    return project?.projectBundles || [];
   }, [project]);
 
   const changeOrderData = useMemo(() => {
@@ -167,7 +167,7 @@ const GetProjectById = ({ id }: { id: string }) => {
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md bg-primary text-white focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               {[
                 { key: "details", label: "Details" },
@@ -207,10 +207,10 @@ const GetProjectById = ({ id }: { id: string }) => {
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 text-sm rounded-t-md font-medium transition-colors whitespace-nowrap ${
+                className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-sm rounded-md font-medium transition-colors whitespace-nowrap ${
                   activeTab === key
-                    ? "bg-green-600 text-white"
-                    : "text-gray-700 hover:text-green-700 hover:bg-gray-50"
+                    ? "bg-green-600 text-white font-bold"
+                    : "text-gray-700 hover:text-green-700 font-semibold hover:bg-gray-50"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -227,7 +227,8 @@ const GetProjectById = ({ id }: { id: string }) => {
             <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
               <div className="md:col-span-2 mt-6">
                 <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
-                  <FolderOpenDot className="w-4 h-4" /> Description
+                  <FolderOpenDot className="w-4 h-4" />
+                  Project Description
                 </h4>
                 <p className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
                   {project.description || "No description available."}
@@ -365,7 +366,7 @@ const GetProjectById = ({ id }: { id: string }) => {
           {activeTab === "wbs" && (
             <div className="text-gray-700 italic text-center">
               {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
-              <WBS id={id} wbsData={wbsData} />
+              <WBS id={id} wbsData={wbsData} stage={project.stage || ""} />
             </div>
           )}
           {activeTab === "rfi" && (

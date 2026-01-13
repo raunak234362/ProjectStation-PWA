@@ -1,6 +1,10 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { X as CloseIcon } from "lucide-react";
-import GetProjectById from "../../project/GetProjectById";
+const GetProjectById = React.lazy(() =>
+  import("../../project/GetProjectById").then((module) => ({
+    default: module.default,
+  }))
+);
 
 interface ProjectDetailsModalProps {
   project: any | null;
@@ -26,7 +30,9 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
-          <GetProjectById id={project.id || project._id} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <GetProjectById id={project.id || project._id} />
+          </Suspense>
         </div>
         <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
           <button

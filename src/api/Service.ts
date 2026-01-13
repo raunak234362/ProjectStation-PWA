@@ -460,13 +460,13 @@ class Service {
   }
 
   //Add Connection Designer
-  static async AddConnectionDesigner(data: any) {
+  static async AddConnectionDesigner(data: FormData | any) {
     console.log(data);
 
     try {
       const response = await api.post(`connectionDesign`, data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(response);
@@ -519,11 +519,11 @@ class Service {
     }
   }
   // Update Connection Designer By ID
-  static async UpdateConnectionDesignerByID(id: string, data: any) {
+  static async UpdateConnectionDesignerByID(id: string, data: FormData | any) {
     try {
       const response = await api.put(`connectionDesign/update/${id}`, data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(response);
@@ -894,6 +894,21 @@ class Service {
     }
   }
 
+  // Get Project Overall Dashboard
+  static async GetProjectOverallDashboard(id: string, stage: string) {
+    try {
+      const response = await api.get(`project/${id}/dashboard/${stage}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Edit Project By ID
   static async EditProjectById(id: string, data: any) {
     try {
@@ -953,7 +968,52 @@ class Service {
   //Fetch WBS-Template
   static async GetWBSTemplate() {
     try {
-      const response = await api.get(`project/wbs-templates`, {
+      const response = await api.get(`project/wbs/bundles`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // fetch bundle by ProjectID
+  static async GetBundleByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`project/projects/${projectId}/bundles`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //fetch the line item from the wbsID
+  static async GetWBSLineItem(wbsId: string) {
+    try {
+      const response = await api.get(`project/project-wbs/${wbsId}/line-items`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // patch the LineItem
+  static async UpdateLineItem(id: string, data: any) {
+    try {
+      const response = await api.patch(`project/line-items/${id}/`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1482,16 +1542,20 @@ class Service {
       console.error("cannot find CO", error);
     }
   }
-  //response routes 
- static async addCOResponse(formData: FormData, responseId: string) {
+  //response routes
+  static async addCOResponse(formData: FormData, responseId: string) {
     const token = sessionStorage.getItem("token");
 
-    const response = await api.post(`changeOrder/${responseId}/responses`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.post(
+      `changeOrder/${responseId}/responses`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
     return response.data;
   }
@@ -1533,6 +1597,21 @@ class Service {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // update task by ID
+  static async UpdateTaskById(id: string, data: any) {
+    try {
+      const response = await api.put(`task/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
         },
       });
       console.log(response);
@@ -1724,7 +1803,7 @@ class Service {
     }
   }
 
-  // all Invoice 
+  // all Invoice
   static async GetAllInvoice() {
     try {
       const response = await api.get(`invoice/AllInvoices`);
@@ -1783,6 +1862,5 @@ class Service {
       throw error;
     }
   }
-
 }
 export default Service;
