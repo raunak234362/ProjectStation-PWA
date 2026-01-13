@@ -20,6 +20,7 @@ const CreateLineItemGroup: React.FC<CreateLineItemGroupProps> = ({
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },

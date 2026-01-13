@@ -12,6 +12,9 @@ export interface DashboardStats {
   totalCompleteProject: number;
   totalOnHoldProject: number;
   totalProjects: number;
+  newRFQ:number;
+  newRFI:number;
+  newChangeOrders:number;
 }
 
 // Lazy load components
@@ -76,7 +79,6 @@ const WBTDashboard = () => {
           received,
           pendingSubmittalsRes,
           allInvoices,
-          pendingSubmittalNumber,
           pendingRFIs,
         ] = await Promise.all([
           Service.RfqSent(),
@@ -98,7 +100,7 @@ const WBTDashboard = () => {
         );
 
         const dashboardData = await Service.GetDashboardData();
-        setDashboardStats(dashboardData);
+        setDashboardStats(dashboardData.data);
         const sentCount = sent?.length || 0;
         const receivedCount = received?.length || 0;
 
