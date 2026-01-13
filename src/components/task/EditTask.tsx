@@ -3,7 +3,15 @@ import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { FileText, AlertCircle, User, Layers, Save, X } from "lucide-react";
+import {
+  FileText,
+  AlertCircle,
+  User,
+  Layers,
+  Save,
+  X,
+  Flag,
+} from "lucide-react";
 import Service from "../../api/Service";
 import Input from "../fields/input";
 import Button from "../fields/Button";
@@ -277,13 +285,29 @@ const EditTask: React.FC<EditTaskProps> = ({ id, onClose, refresh }) => {
               placeholder="2w"
               {...register("duration")}
             />
-            <Input
-              label="Priority (1-5)"
-              type="number"
-              min={1}
-              max={5}
-              {...register("priority")}
-            />
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <Flag className="w-4 h-4 text-indigo-500" /> Priority
+              </label>
+              <Controller
+                name="priority"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    name="priority"
+                    options={[
+                      { label: "Low", value: 1 },
+                      { label: "Medium", value: 2 },
+                      { label: "High", value: 3 },
+                      { label: "Critical", value: 4 },
+                    ]}
+                    value={String(field.value)}
+                    onChange={(_, val) => field.onChange(Number(val))}
+                    placeholder="Select Priority"
+                  />
+                )}
+              />
+            </div>
           </div>
         </section>
 

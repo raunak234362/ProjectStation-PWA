@@ -96,9 +96,12 @@ const AllTasks = () => {
             <span className="font-semibold text-gray-700 group-hover:text-green-700 transition-colors">
               {row.original.name}
             </span>
-            <span className="text-xs text-gray-400 mt-1 line-clamp-1">
-              {row.original.description || "No description"}
-            </span>
+            <div
+              className="text-xs text-gray-400 mt-1 line-clamp-1 prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{
+                __html: row.original.description || "No description",
+              }}
+            />
           </div>
         ),
       },

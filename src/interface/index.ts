@@ -479,7 +479,7 @@ export interface ProjectData {
   connectionDesignerID?: string;
   projectNumber: string;
   status: "ACTIVE" | "INACTIVE" | "DRAFT" | "ON_HOLD" | "COMPLETED";
-  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA" | "IFC" | "CO#";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   rfi?: any[];
