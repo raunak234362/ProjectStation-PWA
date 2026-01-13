@@ -45,10 +45,6 @@ const GetProjectById = ({ id }: { id: string }) => {
     return project?.rfi || [];
   }, [project]);
 
-  const wbsData = useMemo(() => {
-    return project?.projectBundles || [];
-  }, [project]);
-
   const changeOrderData = useMemo(() => {
     return project?.changeOrders || [];
   }, [project]);
@@ -366,7 +362,7 @@ const GetProjectById = ({ id }: { id: string }) => {
           {activeTab === "wbs" && (
             <div className="text-gray-700 italic text-center">
               {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
-              <WBS id={id} wbsData={wbsData} stage={project.stage || ""} />
+              <WBS id={id} stage={project.stage || ""} />
             </div>
           )}
           {activeTab === "rfi" && (

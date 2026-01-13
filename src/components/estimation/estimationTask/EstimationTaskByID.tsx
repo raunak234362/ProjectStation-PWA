@@ -67,7 +67,6 @@ export default function EstimationTaskByID({
       const taskData = taskRes.data;
       setTask(taskData);
 
-      const assignedUserID = taskData?.assignedTo?.id;
       const summaryRes = await Service.SummaryEstimationTaskById(id);
       setSummary(summaryRes.data);
     } catch (error) {

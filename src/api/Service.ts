@@ -998,11 +998,14 @@ class Service {
   //fetch the line item from the wbsID
   static async GetWBSLineItem(wbsId: string) {
     try {
-      const response = await api.get(`project/project-wbs/${wbsId}/line-items`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.get(
+        `project/project-wbs/${wbsId}/line-items`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response);
       return response.data;
     } catch (error) {
@@ -1859,6 +1862,21 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("Error fetching upcoming submittal:", error);
+      throw error;
+    }
+  }
+
+  // Create Share Link
+  static async createShareLink(
+    table: string,
+    parentId: string | undefined,
+    fileId: string | undefined
+  ) {
+    try {
+      const response = await api.get(`${table}/share/${parentId}/${fileId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating share link:", error);
       throw error;
     }
   }

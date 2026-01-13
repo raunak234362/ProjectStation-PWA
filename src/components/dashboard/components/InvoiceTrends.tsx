@@ -1,12 +1,10 @@
 import React, { useState, useMemo } from "react";
 import {
-  Line,
   ComposedChart,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Area,
 } from "recharts";

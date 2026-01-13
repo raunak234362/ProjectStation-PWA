@@ -24,6 +24,7 @@ const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<NoteFormInputs>();
 

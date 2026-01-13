@@ -9,7 +9,6 @@ import ProjectDetailsModal from "./components/ProjectDetailsModal";
 import MonthlyProjectStats from "./components/MonthlyProjectStats";
 import ProjectListModal from "./components/ProjectListModal";
 
-import ProjectCalendar from "./components/ProjectCalendar";
 import { Button } from "../ui/button";
 
 const ProjectDashboard = () => {
