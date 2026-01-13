@@ -1,23 +1,35 @@
 import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import CDSnapshotCards from "./components/CDSnapshotCards";
-import CDLocationCharts from "./components/CDLocationCharts";
+import CDNetworkOverview from "./components/CDNetworkOverview";
 import CDCapacityTable from "./components/CDCapacityTable";
-import CDInsightsList from "./components/CDInsightsList";
-import DataTable from "../ui/table";
-import type { ColumnDef } from "@tanstack/react-table";
-import type { ConnectionDesigner } from "../../interface";
+// import CDInsightsList from "./components/CDInsightsList"; // Removed based on feedback/redundancy
 import GetConnectionDesignerByID from "./designer/GetConnectionDesignerByID";
+import { motion, AnimatePresence } from "motion/react";
+import { X } from "lucide-react";
+
+const DashboardSkeleton = () => (
+    <div className="p-6 space-y-6 animate-pulse">
+        {/* Snapshot Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-28 bg-gray-200 rounded-2xl"></div>
+            ))}
+        </div>
+        {/* Network Overview Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[500px]">
+            <div className="lg:col-span-2 bg-gray-200 rounded-2xl"></div>
+            <div className="lg:col-span-1 bg-gray-200 rounded-2xl"></div>
+        </div>
+        {/* Bottom Skeleton */}
+        <div className="h-48 bg-gray-200 rounded-2xl"></div>
+    </div>
+);
 
 const CDdashboard = () => {
     const [loading, setLoading] = useState(true);
     const [cdData, setCdData] = useState<any[]>([]);
-
-    const columns: ColumnDef<ConnectionDesigner>[] = [
-        { accessorKey: "name", header: "Name" },
-        { accessorKey: "email", header: "Email" },
-        // { accessorKey: "headquater.country", header: "Country" }, // Optional additions if desired
-    ];
+    const [selectedDesignerId, setSelectedDesignerId] = useState<string | null>(null);
 
     // Processed Data States
     const [stats, setStats] = useState({
@@ -28,32 +40,26 @@ const CDdashboard = () => {
         activeRFQs: 0
     });
     const [stateDist, setStateDist] = useState<any[]>([]);
-    const [countryDist, setCountryDist] = useState<any[]>([]);
-    const [capacityData, setCapacityData] = useState<any[]>([]);
     const [recentActivity, setRecentActivity] = useState<any[]>([]);
-    const [insights, setInsights] = useState({
-        noEngineers: [] as string[],
-        limitedCoverage: [] as string[],
-        recentlyAdded: [] as string[]
-    });
 
+    // Insights removed from view, but logic kept if needed later
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true);
+                // setLoading(true); // Already true init
                 const response = await Service.FetchAllConnectionDesigner();
-                // Ensure response is array
                 const data = Array.isArray(response) ? response : (response?.data || []);
                 setCdData(data);
                 processData(data);
+
+                // Simulate a slight delay for smooth skeleton transition if data is too fast
+                setTimeout(() => setLoading(false), 800);
             } catch (error) {
                 console.error("Failed to fetch CD data", error);
-            } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, []);
 
@@ -62,33 +68,18 @@ const CDdashboard = () => {
 
         // 1. Snapshot Stats
         const totalCDs = data.length;
-
-        // Sets for unique counts
         const allCountries = new Set<string>();
         const allStates = new Set<string>();
         let totalEngineers = 0;
-
-        // For Charts
         const stateCounts: Record<string, number> = {};
-        const countryCounts: Record<string, number> = {};
-
-        // For Insights
-        const noEngineers: string[] = [];
-        const limitedCoverage: string[] = [];
 
         data.forEach(cd => {
-            // Location - Assuming cd.location or cd.headquater.country/states
-            // Based on AddConnectionDesigner logic: location string or separate fields if API returns structure
-            // Let's assume the API returns the structure saved: name, state (array), location (string), etc.
-
-            // Extract Country/State from available fields
-            // Often backend might flatten it. Let's try to parse 'state' if it's there.
+            // Location Processing
             let statesArr: string[] = [];
             if (Array.isArray(cd.state)) {
                 statesArr = cd.state;
             } else if (typeof cd.state === 'string') {
                 try {
-                    // Sometimes saved as JSON string in DB? or just a single string
                     if (cd.state.startsWith('[')) {
                         statesArr = JSON.parse(cd.state);
                     } else {
@@ -99,7 +90,6 @@ const CDdashboard = () => {
                 }
             }
 
-            // Count States
             statesArr.forEach(s => {
                 if (s) {
                     allStates.add(s);
@@ -107,30 +97,21 @@ const CDdashboard = () => {
                 }
             });
 
-            // Count Country
-            // If country is not separate, try to extract from location "City, Country"
+            // Country Processing
             let country = cd.country || "";
             if (!country && cd.location && cd.location.includes(',')) {
                 country = cd.location.split(',')[1].trim();
             } else if (!country && cd.location) {
                 country = cd.location; // Fallback
             }
-
-            // Normalize country names if needed, simple trim for now
             if (country) {
                 allCountries.add(country);
-                countryCounts[country] = (countryCounts[country] || 0) + 1;
             }
 
-            // Engineers count using CDEngineers array
-            const engineers = cd.CDEngineers || []; // Safety check
+            // Engineers
+            const engineers = cd.CDEngineers || [];
             const engCount = engineers.length;
             totalEngineers += engCount;
-
-            // Insights Logic
-            if (engCount === 0) noEngineers.push(cd.name);
-            if (statesArr.length <= 1) limitedCoverage.push(cd.name);
-
         });
 
         setStats({
@@ -138,101 +119,106 @@ const CDdashboard = () => {
             totalCountries: allCountries.size,
             totalStates: allStates.size,
             totalEngineers,
-            activeRFQs: 0 // Placeholder as requested derived later
+            activeRFQs: 0
         });
 
-        // 2. Charts Data
-        const stateChartData = Object.entries(stateCounts)
+        // 2. Charts Data (State)
+        const sortedStates = Object.entries(stateCounts)
             .map(([name, count]) => ({ name, count }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 10); // Top 10 states
+            .sort((a, b) => b.count - a.count);
 
-        const countryChartData = Object.entries(countryCounts)
-            .map(([name, count]) => ({ name, count }));
+        let finalStateData = sortedStates;
+        if (sortedStates.length > 5) {
+            const top5 = sortedStates.slice(0, 5);
+            const othersCount = sortedStates.slice(5).reduce((sum, item) => sum + item.count, 0);
+            finalStateData = [...top5, { name: 'Others', count: othersCount }];
+        }
+        setStateDist(finalStateData);
 
-        setStateDist(stateChartData);
-        setCountryDist(countryChartData);
-
-        // 3. Capacity Table Data
-        const capData = data.map(cd => {
-            const count = cd.CDEngineers?.length || 0;
-            let status: 'Balanced' | 'Lean' | 'Risk' = 'Balanced';
-            if (count === 0) status = 'Risk';
-            else if (count <= 2) status = 'Lean';
-
-            return {
-                id: cd._id || cd.id, // Assuming ID field
-                name: cd.name,
-                engineerCount: count,
-                status,
-                updatedAt: cd.updatedAt
-            };
-        });
-        setCapacityData(capData);
-
-        // 4. Recent Activity (Sort by updatedAt)
-        const sortedByUpdate = [...capData].sort((a, b) => {
+        // 3. Recent Activity (Sort by updatedAt)
+        const sortedByUpdate = [...data].sort((a, b) => {
             return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
         });
-        setRecentActivity(sortedByUpdate);
 
-        // 5. Insights
-        // Sorted by createdAt for "Recently Added"
-        const sortedByCreated = [...data].sort((a, b) => {
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-        const recentlyAdded = sortedByCreated.slice(0, 5).map(cd => cd.name);
-
-        setInsights({
-            noEngineers,
-            limitedCoverage,
-            recentlyAdded
-        });
+        setRecentActivity(sortedByUpdate.map(cd => ({
+            id: cd._id || cd.id,
+            name: cd.name,
+            updatedAt: cd.updatedAt
+        })));
     };
 
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
-                <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
-                <p className="mt-4 text-gray-500 font-medium">Loading Dashboard...</p>
-            </div>
-        );
+        return <DashboardSkeleton />;
     }
 
     return (
-        <div className="h-full p-6 space-y-6 bg-gray-50 overflow-y-auto min-h-screen">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="h-full p-6 space-y-6 bg-gray-50 overflow-y-auto min-h-screen relative"
+        >
             {/* Header if needed */}
 
             {/* SECTION B — EXECUTIVE SNAPSHOT */}
-            <CDSnapshotCards stats={stats} />
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+            >
+                <CDSnapshotCards stats={stats} />
+            </motion.div>
 
-            {/* SECTION C — LOCATION INTELLIGENCE */}
-            <CDLocationCharts stateData={stateDist} countryData={countryDist} />
+            {/* SECTION C — LOCATION INTELLIGENCE (Redesigned) */}
+            {/* New component: List on Left, Pie on Right */}
+            <CDNetworkOverview
+                designers={cdData}
+                stateData={stateDist}
+                onSelect={(id) => setSelectedDesignerId(id)}
+            />
 
-            {/* SECTION D — DESIGNER CAPACITY & UTILIZATION */}
-            <CDCapacityTable capacityData={capacityData} recentActivity={recentActivity} />
+            {/* SECTION D — RECENT ACTIVITY */}
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+            >
+                <CDCapacityTable recentActivity={recentActivity} />
+            </motion.div>
 
-            {/* SECTION E — ACTIONABLE INSIGHTS */}
-            <CDInsightsList insights={insights} />
+            {/* DETAILS MODAL */}
+            <AnimatePresence>
+                {selectedDesignerId && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                        onClick={() => setSelectedDesignerId(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()} // Prevent close on content click
+                            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
+                        >
+                            <button
+                                onClick={() => setSelectedDesignerId(null)}
+                                className="absolute top-4 right-4 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors z-10"
+                            >
+                                <X size={20} className="text-gray-600" />
+                            </button>
 
-            {/* SECTION F — ALL CONNECTION DESIGNERS */}
-            <div className="pt-4">
-                <h3 className="text-lg font-bold text-gray-800 mb-4 px-1">All Connection Designers</h3>
-                <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <DataTable
-                        columns={columns}
-                        data={cdData}
-                        detailComponent={({ row }) => {
-                            const fabricatorUniqueId = (row as any).id ?? (row as any).fabId ?? "";
-                            return <GetConnectionDesignerByID id={fabricatorUniqueId} />;
-                        }}
-                        searchPlaceholder="Search connection designers..."
-                        pageSizeOptions={[5, 10, 25]}
-                    />
-                </div>
-            </div>
+                            <div className="p-1">
+                                <GetConnectionDesignerByID id={selectedDesignerId} />
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-        </div>
+        </motion.div>
     );
 };
 
