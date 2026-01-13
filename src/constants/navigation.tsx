@@ -11,6 +11,7 @@ import {
   Users,
   MessageCircle,
   UserCircle,
+  DollarSign,
 } from "lucide-react";
 import type { JSX } from "react";
 
@@ -149,6 +150,19 @@ export const navItems: NavItem[] = [
     ],
   },
   {
+    label: "Sales",
+    to: "sales",
+    icon: <DollarSign />,
+    roles: [
+      "admin",
+      "sales",
+      "sales_manager",
+      "department-manager",
+      "deputy_manager",
+      "system-admin",
+    ],
+  },
+  {
     label: "Manage Team",
     to: "manage-team",
     icon: <Users />,
@@ -199,4 +213,5 @@ export const navItems: NavItem[] = [
       "human_resource",
     ],
   },
+  
 ];
