@@ -27,35 +27,35 @@ const TaskDistribution: React.FC<TaskDistributionProps> = ({ teamStats }) => {
     });
 
     return [
-      { label: "Modelling", value: modelling, icon: Layers, color: "text-blue-600", bg: "bg-blue-50" },
-      { label: "Model Checking", value: modelChecking, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
-      { label: "Detailing", value: detailing, icon: PenTool, color: "text-purple-600", bg: "bg-purple-50" },
-      { label: "Detail Checking", value: detailChecking, icon: FileSearch, color: "text-indigo-600", bg: "bg-indigo-50" },
-      { label: "Erection", value: erection, icon: HardHat, color: "text-orange-600", bg: "bg-orange-50" },
-      { label: "Erection Checking", value: erectionChecking, icon: Circle, color: "text-red-600", bg: "bg-red-50" },
+      { label: "Modelling", value: modelling, icon: Layers, color: "text-green-700", bg: "bg-green-100" },
+      { label: "Model Checking", value: modelChecking, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
+      { label: "Detailing", value: detailing, icon: PenTool, color: "text-teal-600", bg: "bg-teal-50" },
+      { label: "Detail Checking", value: detailChecking, icon: FileSearch, color: "text-cyan-600", bg: "bg-cyan-50" },
+      { label: "Erection", value: erection, icon: HardHat, color: "text-green-800", bg: "bg-green-50" },
+      { label: "Erection Checking", value: erectionChecking, icon: Circle, color: "text-lime-600", bg: "bg-lime-50" },
     ];
   }, [teamStats.projects]);
 
   return (
-    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm mb-8 h-full">
+    <div className="bg-white p-6 rounded-[2rem] border border-green-50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] mb-8 h-full">
       <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <Layers className="text-gray-400" size={20} />
+        <Layers className="text-green-600" size={24} />
         Task Distribution
-        <span className="text-xs font-normal text-gray-400 ml-auto bg-gray-50 px-2 py-1 rounded-md">Total Hours Estimate</span>
+        <span className="text-xs font-bold text-green-700 ml-auto bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">Total Hours</span>
       </h3>
 
       <div className="space-y-4">
         {distributionData.map((item, index) => {
           const Icon = item.icon;
           return (
-            <div key={index} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors group">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${item.bg} ${item.color}`}>
-                  <Icon size={18} />
+            <div key={index} className="flex items-center justify-between p-3.5 hover:bg-green-50/30 rounded-2xl transition-colors group">
+              <div className="flex items-center gap-4">
+                <div className={`p-2.5 rounded-xl ${item.bg} ${item.color}`}>
+                  <Icon size={20} />
                 </div>
-                <span className="text-gray-600 font-medium text-sm group-hover:text-gray-900">{item.label}</span>
+                <span className="text-gray-600 font-bold text-sm group-hover:text-gray-900">{item.label}</span>
               </div>
-              <span className="text-gray-800 font-bold bg-gray-100 px-3 py-1 rounded-full text-sm">
+              <span className="text-gray-800 font-extrabold bg-gray-50 border border-gray-100 px-4 py-1.5 rounded-xl text-sm shadow-sm">
                 {item.value || 0}
               </span>
             </div>

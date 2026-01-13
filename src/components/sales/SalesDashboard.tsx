@@ -96,32 +96,32 @@ const SalesDashboard = () => {
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen p-6 space-y-8">
+        <div className="h-full p-8 space-y-10 font-sans text-slate-800">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Sales Dashboard</h1>
-                    <p className="text-gray-500 mt-1">Welcome back, here's what's happening today.</p>
+                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Sales Dashboard</h1>
+                    <p className="text-gray-500 mt-2 font-medium text-lg">Welcome back, Anderson. Track your growth today.</p>
                 </div>
 
-                <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors shadow-sm">
-                        <Filter size={18} />
+                <div className="flex gap-4">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-gray-600 font-semibold hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all shadow-sm">
+                        <Filter size={20} />
                         All Time
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
-                        <Download size={18} />
+                    <button className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-[1.25rem] font-semibold hover:bg-green-600 transition-all shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]">
+                        <Download size={20} />
                         Export Report
                     </button>
                 </div>
             </div>
 
-            {/* Tabs (Visual only for now) */}
-            <div className="flex gap-8 border-b border-gray-200">
+            {/* Tabs */}
+            <div className="flex gap-10 border-b-2 border-gray-100 pb-0.5">
                 {['Overview', 'Projects', 'Analytics'].map((tab, i) => (
-                    <button key={tab} className={`pb-3 text-sm font-semibold transition-colors relative ${i === 0 ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-800'}`}>
+                    <button key={tab} className={`pb-4 text-base font-bold transition-all relative px-2 ${i === 0 ? 'text-green-700' : 'text-gray-400 hover:text-gray-600'}`}>
                         {tab}
-                        {i === 0 && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />}
+                        {i === 0 && <motion.div layoutId="activeTab" className="absolute -bottom-1 left-0 right-0 h-1 bg-green-600 rounded-full" />}
                     </button>
                 ))}
             </div>
@@ -130,10 +130,12 @@ const SalesDashboard = () => {
             <SalesStatsCards stats={stats} />
 
             {/* Secondary Stats */}
-            <SalesSecondaryStats stats={stats} />
+            <div className="pt-2">
+                <SalesSecondaryStats stats={stats} />
+            </div>
 
             {/* Charts & Details Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 pt-4">
                 <SalesPerformanceChart />
             </div>
         </div>

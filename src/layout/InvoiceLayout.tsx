@@ -7,26 +7,24 @@ const InvoiceLayout = () => {
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
-        <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 border-b rounded-t-2xl flex flex-col md:flex-row items-center justify-end gap-4">
-          <div className="flex flex-row gap-3 items-end justify-end">
+        <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 rounded-t-2xl flex flex-col md:flex-row items-center justify-end gap-4">
+          <div className="flex flex-row gap-4 items-center justify-end">
             <button
               onClick={() => setActiveTab("allInvoices")}
-              className={`px-1.5 md:px-4 py-2 rounded-lg ${
-                activeTab === "allInvoices"
-                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
-              }`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-[1.25rem] font-semibold transition-all ${activeTab === "allInvoices"
+                  ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
+                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                }`}
             >
               All Invoices
             </button>
 
             <button
               onClick={() => setActiveTab("addInvoice")}
-              className={`px-1.5 md:px-4 py-2 rounded-lg ${
-                activeTab === "addInvoice"
-                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
-              }`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-[1.25rem] font-semibold transition-all ${activeTab === "addInvoice"
+                  ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
+                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                }`}
             >
               Add Invoice
             </button>

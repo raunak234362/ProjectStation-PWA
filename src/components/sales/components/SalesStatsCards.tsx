@@ -12,42 +12,36 @@ interface SalesStatsCardsProps {
 }
 
 const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats }) => {
+    // Unified Green Theme Palette
+    // Primary: green-600 (#16a34a)
+    // Light: green-50 (#f0fdf4)
+    // Accents: green-100, green-200
+
     const cards = [
         {
             title: "Total RFQs Received",
             value: stats.totalRfqs,
             change: "+12% from last period",
             icon: FileText,
-            color: "text-blue-600",
-            bg: "bg-blue-600",
-            iconBg: "bg-blue-100",
+            // Keeping distinct icons but unifying color feel
         },
         {
             title: "Projects Awarded",
             value: stats.projectsAwarded,
             change: "+8% from last period",
             icon: Trophy,
-            color: "text-green-600",
-            iconBg: "bg-green-100",
-            bg: "bg-green-600"
         },
         {
             title: "Win Rate",
             value: `${stats.winRate}%`,
             change: "+2.3% from last period",
             icon: Target,
-            color: "text-purple-600",
-            iconBg: "bg-purple-100",
-            bg: "bg-purple-600"
         },
         {
             title: "Total Sales Value",
             value: `$${stats.totalSalesValue.toLocaleString()}`,
             change: "+15% from last period",
             icon: DollarSign,
-            color: "text-yellow-600",
-            iconBg: "bg-yellow-100",
-            bg: "bg-yellow-500" // darker for text contrast usually
         },
     ];
 
@@ -63,27 +57,28 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats }) => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow"
+                        className="bg-white p-6 rounded-[2rem] border border-green-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(22,163,74,0.1)] transition-all duration-300 relative overflow-hidden group"
                     >
-                        <div className={`absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity`}>
-                            <Icon size={80} className={card.color} />
-                        </div>
+                        {/* Decorative Background Blob */}
+                        <div className="absolute -right-6 -top-6 w-24 h-24 bg-green-50 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-500" />
 
-                        <div className="flex justify-between items-start mb-4">
+                        <div className="flex justify-between items-start mb-6 relative z-10">
                             <div>
-                                <p className="text-gray-500 text-sm font-medium mb-1">{card.title}</p>
-                                <h3 className="text-3xl font-bold text-gray-800">{formatValue(card.value)}</h3>
+                                <p className="text-gray-500 text-sm font-semibold mb-2 tracking-wide">{card.title}</p>
+                                <h3 className="text-3xl font-extrabold text-gray-800 tracking-tight">{formatValue(card.value)}</h3>
                             </div>
-                            <div className={`p-3 rounded-2xl ${card.bg} text-white shadow-lg shadow-${card.bg}/30`}>
+                            <div className="p-3.5 rounded-2xl bg-green-50 text-green-600 shadow-sm group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">
                                 <Icon size={24} />
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <span className="text-green-500 text-xs font-bold bg-green-50 px-2 py-0.5 rounded-full">
-                                {card.change.split(' ')[0]}
-                            </span>
-                            <span className="text-gray-400 text-xs text-nowrap">from last period</span>
+                        <div className="flex items-center gap-2 relative z-10">
+                            <div className="flex items-center gap-1 bg-green-100/80 px-2.5 py-1 rounded-full">
+                                <span className="text-green-700 text-xs font-bold">
+                                    {card.change.split(' ')[0]}
+                                </span>
+                            </div>
+                            <span className="text-gray-400 text-xs font-medium">from last period</span>
                         </div>
                     </motion.div>
                 );

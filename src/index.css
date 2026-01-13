@@ -159,3 +159,40 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Green Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* Default slate-300 for neutrality */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Custom Class for Content Areas asking for Green Scroll */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #6bbd45; /* Brand Green */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #559e35;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f0fdf4; /* Light Green background for track blending */
+}

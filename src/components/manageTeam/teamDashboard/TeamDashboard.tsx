@@ -567,7 +567,7 @@ const TeamDashboard = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-4 md:p-6 overflow-y-auto">
+    <div className="h-full p-6 overflow-y-auto custom-scrollbar">
       <DashboardHeader
         onAddTeam={() => setIsModalOpen(true)}
         searchTerm={searchTerm}
@@ -579,11 +579,8 @@ const TeamDashboard = () => {
       />
 
       {loading && !selectedTeam ? (
-        <div className="flex flex-col items-center justify-center h-64">
+        <div className="flex items-center justify-center h-full min-h-[60vh]">
           <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-700 font-medium">
-            Loading dashboard data...
-          </p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -594,23 +591,25 @@ const TeamDashboard = () => {
           />
 
           {selectedTeam && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-8 bg-green-500 rounded-full"></div>
-                  <h2 className="text-2xl font-bold text-gray-700">
-                    Team:{" "}
-                    <span className="text-green-600">
-                      {teams?.find((t) => t.id === selectedTeam)?.name}
-                    </span>
-                  </h2>
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {/* Gradient Header Bar - Matching Uploaded Reference */}
+              <div className="w-full bg-gradient-to-r from-green-400 to-green-300/80 rounded-2xl p-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-extrabold text-white tracking-wide drop-shadow-sm">
+                    {teams?.find((t) => t.id === selectedTeam)?.name || "Team Detail"}
+                  </h1>
                 </div>
-                <button
-                  onClick={() => setIsViewModalOpen(true)}
-                  className="px-6 py-2 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-100"
-                >
-                  View Full Details
-                </button>
+
+                {/* Mock Tabs for Visual Reference if needed, or keeping Action Button styled to match */}
+                <div className="flex items-center gap-3">
+                  <span className="px-4 py-2 bg-white/20 text-white font-bold rounded-lg cursor-pointer hover:bg-white/30 transition-all">Dashboard</span>
+                  <button
+                    onClick={() => setIsViewModalOpen(true)}
+                    className="flex items-center gap-2 px-6 py-3 bg-white text-green-700 rounded-[1.25rem] font-bold hover:bg-green-50 transition-all shadow-[0_8px_20px_-4px_rgba(0,0,0,0.1)] hover:shadow-md"
+                  >
+                    View Details
+                  </button>
+                </div>
               </div>
 
               <TeamStatsCards teamStats={teamStats} />
@@ -624,7 +623,6 @@ const TeamDashboard = () => {
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
-                  {/* Replaced MonthlyChart with EfficiencyAnalytics */}
                   <EfficiencyAnalytics
                     data={efficiencyData}
                     teams={teams}
@@ -654,15 +652,15 @@ const TeamDashboard = () => {
 
       {/* Modals */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-2xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors"
+              className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
             >
               <XIcon />
             </button>
-            <div className="max-h-[80vh] overflow-y-auto">
+            <div className="max-h-[80vh] overflow-y-auto custom-scrollbar">
               <AddTeam />
             </div>
           </div>
@@ -670,15 +668,15 @@ const TeamDashboard = () => {
       )}
 
       {isViewModalOpen && selectedTeam && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-3xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
             <button
               onClick={() => setIsViewModalOpen(false)}
-              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors"
+              className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
             >
               <XIcon />
             </button>
-            <div className="max-h-[80vh] overflow-y-auto p-6">
+            <div className="max-h-[80vh] overflow-y-auto p-8 custom-scrollbar">
               <GetTeamById id={selectedTeam} />
             </div>
           </div>
@@ -686,15 +684,15 @@ const TeamDashboard = () => {
       )}
 
       {selectedEmployee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-3xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
             <button
               onClick={handleCloseModal}
-              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full z-10 transition-colors"
+              className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
             >
               <XIcon />
             </button>
-            <div className="max-h-[80vh] overflow-y-auto p-6">
+            <div className="max-h-[80vh] overflow-y-auto p-8 custom-scrollbar">
               <GetEmployeeByID id={selectedEmployee} />
             </div>
           </div>
