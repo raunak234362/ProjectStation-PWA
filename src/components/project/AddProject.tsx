@@ -39,6 +39,9 @@ const AddProject: React.FC = () => {
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
   const rfqData = useSelector((state: any) => state.RFQInfos?.RFQData || []);
 
+
+  console.log(teamDatas);
+  
   const { register, handleSubmit, control, watch, setValue } =
     useForm<AddProjectPayload>({
       defaultValues: {
@@ -84,13 +87,14 @@ const AddProject: React.FC = () => {
       value: String(c.id),
     })) as { label: string; value: string }[],
     tools: [
-      { label: "TEKLA", value: "TEKLA" },
-      { label: "SDS2", value: "SDS2" },
-      { label: "Both (TEKLA + SDS2)", value: "BOTH" },
+      { label: "Tekla", value: "TEKLA" },
+      { label: "SDS/2", value: "SDS2" },
+      { label: "Both (Tekla + SDS/2)", value: "BOTH" },
     ],
   };
 
   const selectedRfqId = watch("rfqId");
+  const selectedDeptId = watch("departmentID");
   const selectedRfq = rfqData.find(
     (r: any) => String(r.id) === String(selectedRfqId)
   );
@@ -306,40 +310,62 @@ const AddProject: React.FC = () => {
                   )}
                 />
               </div>
-              <div>
-                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
-                  <Users className="w-5 h-5 text-purple-600" /> Team
-                </label>
-                <Controller
-                  name="teamID"
-                  control={control}
-                  render={({ field }) => {
-                    const selectedDeptId = watch("departmentID");
-                    const filteredTeams = teamDatas
-                      .filter(
-                        (t: any) =>
-                          !selectedDeptId || t.departmentID === selectedDeptId
-                      )
-                      .map((t: any) => ({
-                        label: t.name,
-                        value: String(t.id),
-                      }));
 
-                    return (
+              {selectedDeptId && (
+                <div>
+                  <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
+                    <Wrench className="w-5 h-5 text-purple-600" /> Tool
+                  </label>
+                  <Controller
+                    name="tools"
+                    control={control}
+                    render={({ field }) => (
                       <Select
-                        options={filteredTeams}
-                        value={filteredTeams.find(
-                          (o: any) => o.value === field.value
+                        options={options.tools}
+                        value={options.tools.find(
+                          (o) => o.value === field.value
                         )}
-                        onChange={(o: any) => field.onChange(o?.value || "")}
-                        placeholder="Select team"
-                        isClearable
-                        isDisabled={!selectedDeptId}
+                        onChange={(o) => field.onChange(o?.value || "TEKLA")}
                       />
-                    );
-                  }}
-                />
-              </div>
+                    )}
+                  />
+                </div>
+              )}
+
+              {selectedDeptId && (
+                <div>
+                  <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
+                    <Users className="w-5 h-5 text-purple-600" /> Team
+                  </label>
+                  <Controller
+                    name="teamID"
+                    control={control}
+                    render={({ field }) => {
+                      const filteredTeams = teamDatas
+                        .filter(
+                          (t: any) =>
+                            !selectedDeptId || t.departmentID === selectedDeptId
+                        )
+                        .map((t: any) => ({
+                          label: t.name,
+                          value: String(t.id),
+                        }));
+
+                      return (
+                        <Select
+                          options={filteredTeams}
+                          value={filteredTeams.find(
+                            (o: any) => o.value === field.value
+                          )}
+                          onChange={(o: any) => field.onChange(o?.value || "")}
+                          placeholder="Select team"
+                          isClearable
+                        />
+                      );
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Scope: Connection Design */}
@@ -421,25 +447,9 @@ const AddProject: React.FC = () => {
               </div>
             </div>
 
-            {/* Tools & Timeline */}
-            <SectionTitle title="Tools & Timeline" />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div>
-                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
-                  <Wrench className="w-5 h-5 text-purple-600" /> Tool
-                </label>
-                <Controller
-                  name="tools"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      options={options.tools}
-                      value={options.tools.find((o) => o.value === field.value)}
-                      onChange={(o) => field.onChange(o?.value || "TEKLA")}
-                    />
-                  )}
-                />
-              </div>
+            {/* Timeline & Estimation */}
+            <SectionTitle title="Timeline & Estimation" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <Input
                 label="Estimated Hours"
                 type="number"

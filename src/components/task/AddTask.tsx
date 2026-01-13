@@ -31,7 +31,7 @@ import { setMilestonesForProject } from "../../store/milestoneSlice";
 
 interface EmployeeAssignment {
   employeeId: string;
-  hours: number;
+  duration: string;
 }
 
 interface AddTaskFormValues {
@@ -88,7 +88,7 @@ const AddTask: React.FC = () => {
     defaultValues: {
       priority: 2,
       Stage: "IFA",
-      assignments: [{ employeeId: "", hours: 0 }],
+      assignments: [{ employeeId: "", duration: "" }],
     },
   });
 
@@ -212,7 +212,7 @@ const AddTask: React.FC = () => {
         const taskId = t.project_bundle_id || t.wbs_id;
         const typeMatch =
           !selectedWbsType ||
-          String(t.taskType).toLowerCase() ===
+          String(t.wbsType).toLowerCase() ===
             String(selectedWbsType).toLowerCase();
         return String(taskId) === String(selectedWbsId) && typeMatch;
       });
@@ -228,10 +228,16 @@ const AddTask: React.FC = () => {
 
   const filteredWbsItems = bundles.filter((w: WBSData) => {
     const category = (w.bundle?.category || w.type || "").toLowerCase();
+    const isCheckingType = selectedWbsType?.toLowerCase().includes("checking");
+    const baseType = selectedWbsType
+      ?.toLowerCase()
+      .replace("_checking", "")
+      .replace(" checking", "");
+
     const typeOk =
       !selectedWbsType ||
-      (selectedWbsType === "checking"
-        ? (w.totalCheckHr || 0) > 0
+      (isCheckingType
+        ? (w.totalCheckHr || 0) > 0 && category === baseType
         : category === selectedWbsType.toLowerCase());
     const stageOk =
       !selectedStage ||
@@ -241,12 +247,13 @@ const AddTask: React.FC = () => {
 
   const assignments = watch("assignments") || [];
 
-  const totalAssignedHours = assignments.reduce(
-    (sum, a) => sum + Number(a.hours || 0),
-    0
-  );
+  const totalAssignedHours = assignments.reduce((sum, a) => {
+    // Try to parse duration as hours if it's a number string
+    const h = parseFloat(a.duration);
+    return sum + (isNaN(h) ? 0 : h);
+  }, 0);
   const totalWbsHours = selectedWbs
-    ? selectedWbsType === "checking"
+    ? selectedWbsType?.toLowerCase().includes("checking")
       ? selectedWbs.totalCheckHr || 0
       : selectedWbs.totalExecHr || 0
     : 0;
@@ -279,8 +286,8 @@ const AddTask: React.FC = () => {
           isRework: isRework,
           priority: Number(data.priority),
           due_date: data.due_date,
-          duration: data.duration,
-          hours: Number(assignment.hours),
+          duration: assignment.duration,
+          hours: parseFloat(assignment.duration) || 0,
           project_id: data.project_id,
           user_id: assignment.employeeId,
           mileStone_id: data.mileStone_id,
@@ -288,7 +295,7 @@ const AddTask: React.FC = () => {
           Stage: data.Stage,
           departmentId: data.departmentId,
           project_bundle_id: data.project_bundle_id,
-          taskType: selectedWbsType,
+          wbsType: selectedWbsType,
         };
         return Service.AddTask(payload);
       });
@@ -315,15 +322,43 @@ const AddTask: React.FC = () => {
 
   const wbsTypeOptions = [
     { label: "Modeling", value: "modeling" },
-    { label: "Erection", value: "erection" },
+    { label: "Model Checking", value: "modeling_checking" },
     { label: "Detailing", value: "detailing" },
-    { label: "Checking", value: "checking" },
+    { label: "Detail Checking", value: "detailing_checking" },
+    { label: "Erection", value: "erection" },
+    { label: "Erection Checking", value: "erection_checking" },
   ];
 
-  const wbsOptions = filteredWbsItems.map((w: any) => ({
-    label: w.name || w.bundle?.name || "Unnamed Bundle",
-    value: w.id || w._id || (w.wbs && w.wbs[0]?.id),
-  }));
+  const wbsOptions = filteredWbsItems.map((w: any) => {
+    const total = selectedWbsType?.toLowerCase().includes("checking")
+      ? w.totalCheckHr || 0
+      : w.totalExecHr || 0;
+
+    // Calculate existing hours for this specific bundle and type
+    const filtered = allTasks.filter((t: any) => {
+      const taskId = t.project_bundle_id || t.wbs_id;
+      const typeMatch =
+        !selectedWbsType ||
+        String(t.wbsType).toLowerCase() ===
+          String(selectedWbsType).toLowerCase();
+      return (
+        String(taskId) === String(w.id || w._id || (w.wbs && w.wbs[0]?.id)) &&
+        typeMatch
+      );
+    });
+    const existing = filtered.reduce(
+      (sum: number, t: any) => sum + Number(t.hours || 0),
+      0
+    );
+    const remaining = Math.max(0, total - existing);
+
+    return {
+      label: `${
+        w.name || w.bundle?.name || "Unnamed Bundle"
+      } (${remaining}h remaining)`,
+      value: w.id || w._id || (w.wbs && w.wbs[0]?.id),
+    };
+  });
 
   const employeeOptions = employees.map((e: UserData) => ({
     label: `${e.firstName} ${e.lastName}`,
@@ -579,7 +614,7 @@ const AddTask: React.FC = () => {
                     <div className="space-y-1">
                       <Input
                         label="Start Date *"
-                        type="datetime-local"
+                        type="date"
                         {...register("start_date", {
                           required: "Start date is required",
                         })}
@@ -593,7 +628,7 @@ const AddTask: React.FC = () => {
                     <div className="space-y-1">
                       <Input
                         label="Due Date *"
-                        type="datetime-local"
+                        type="date"
                         {...register("due_date", {
                           required: "Due date is required",
                         })}
@@ -609,13 +644,29 @@ const AddTask: React.FC = () => {
                       placeholder="2w"
                       {...register("duration")}
                     />
-                    <Input
-                      label="Priority (1-5)"
-                      type="number"
-                      min={1}
-                      max={5}
-                      {...register("priority")}
-                    />
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                        <Flag className="w-4 h-4 text-indigo-500" /> Priority
+                      </label>
+                      <Controller
+                        name="priority"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            name="priority"
+                            options={[
+                              { label: "Low", value: 1 },
+                              { label: "Medium", value: 2 },
+                              { label: "High", value: 3 },
+                              { label: "Critical", value: 4 },
+                            ]}
+                            value={String(field.value)}
+                            onChange={(_, val) => field.onChange(Number(val))}
+                            placeholder="Select Priority"
+                          />
+                        )}
+                      />
+                    </div>
                   </div>
                 </section>
 
@@ -699,26 +750,21 @@ const AddTask: React.FC = () => {
                         </div>
                         <div className="w-32 space-y-2">
                           <label className="text-xs font-bold text-slate-500 uppercase">
-                            Hours
+                            Duration
                           </label>
                           <div className="space-y-1">
                             <Input
-                              type="number"
-                              placeholder="0"
+                              placeholder="e.g. 4h"
                               {...register(
-                                `assignments.${index}.hours` as const,
+                                `assignments.${index}.duration` as const,
                                 {
-                                  required: "Hours are required",
-                                  min: {
-                                    value: 0,
-                                    message: "Hours must be positive",
-                                  },
+                                  required: "Duration is required",
                                 }
                               )}
                             />
-                            {errors.assignments?.[index]?.hours && (
+                            {errors.assignments?.[index]?.duration && (
                               <p className="text-xs text-red-500">
-                                {errors.assignments[index]?.hours?.message}
+                                {errors.assignments[index]?.duration?.message}
                               </p>
                             )}
                           </div>
@@ -737,7 +783,7 @@ const AddTask: React.FC = () => {
 
                     <button
                       type="button"
-                      onClick={() => append({ employeeId: "", hours: 0 })}
+                      onClick={() => append({ employeeId: "", duration: "" })}
                       className="w-full py-4 border-2 border-dashed border-slate-200 rounded-md text-slate-500 font-medium hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2"
                     >
                       <Plus className="w-5 h-5" />

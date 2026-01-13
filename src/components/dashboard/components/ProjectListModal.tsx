@@ -72,11 +72,17 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
               <div
                 className={`w-2 h-6 rounded-full ${
-                  status === "ACTIVE"
+                  status.includes("ACTIVE") || status.includes("IFA")
                     ? "bg-green-500"
-                    : status === "COMPLETED"
+                    : status.includes("COMPLETED") ||
+                      status.includes("IFC") ||
+                      status.includes("Done")
                     ? "bg-blue-500"
-                    : "bg-orange-500"
+                    : status.includes("ON_HOLD") ||
+                      status.includes("CO#") ||
+                      status.includes("On-Hold")
+                    ? "bg-orange-500"
+                    : "bg-gray-500"
                 }`}
               ></div>
               {status.replace("_", " ")} Projects
