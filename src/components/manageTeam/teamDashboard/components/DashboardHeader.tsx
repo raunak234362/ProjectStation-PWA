@@ -65,25 +65,25 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
         <Button
           onClick={onAddTeam}
-          className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+          className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-[1.25rem] font-semibold hover:bg-green-600 transition-all shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
         >
-          <Plus size={18} />
+          <Plus size={20} />
           <span>Add Team</span>
         </Button>
 
         <Button
           onClick={onGenerateReport}
-          className="bg-rose-500 hover:bg-rose-600 text-white flex items-center gap-2"
+          className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-gray-600 font-semibold hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all shadow-sm"
         >
-          <FileText size={18} />
+          <FileText size={20} />
           <span>Report</span>
         </Button>
 
         <Button
           onClick={onDailyReport}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2"
+          className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-gray-600 font-semibold hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all shadow-sm"
         >
-          <Calendar size={18} />
+          <Calendar size={20} />
           <span>Daily Report</span>
         </Button>
       </div>

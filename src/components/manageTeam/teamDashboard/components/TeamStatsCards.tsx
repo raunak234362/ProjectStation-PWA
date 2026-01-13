@@ -1,5 +1,6 @@
 import React from "react";
 import { Clock, CheckCircle2, Zap, Layout } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface TeamStatsCardsProps {
   teamStats: any;
@@ -11,78 +12,76 @@ const TeamStatsCards: React.FC<TeamStatsCardsProps> = ({ teamStats }) => {
       label: "Hours",
       value: `${teamStats.totalWorkedHours || 0} hrs`,
       subValue: `Assigned: ${teamStats.totalAssignedHours || 0} hrs`,
-      icon: <Clock className="text-blue-600" size={24} />,
-      bg: "bg-blue-50",
-      border: "border-blue-100",
-      progress:
-        Math.min(
-          100,
-          (teamStats.totalWorkedHours / teamStats.totalAssignedHours) * 100
-        ) || 0,
-      progressColor: "bg-blue-500",
+      icon: <Clock size={24} />,
+      color: "text-green-600",
+      bg: "bg-green-50",
+      progress: Math.min(100, (teamStats.totalWorkedHours / teamStats.totalAssignedHours) * 100) || 0,
     },
     {
       label: "Tasks",
       value: teamStats.totalTasks || 0,
       subValue: `Completed: ${teamStats.completedTasks || 0}`,
-      icon: <CheckCircle2 className="text-green-600" size={24} />,
-      bg: "bg-green-50",
-      border: "border-green-100",
+      icon: <CheckCircle2 size={24} />,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
       progress: (teamStats.completedTasks / teamStats.totalTasks) * 100 || 0,
-      progressColor: "bg-green-500",
     },
     {
       label: "Efficiency",
       value: `${teamStats.efficiency || 0}%`,
-      subValue: "Hours worked vs assigned",
-      icon: <Zap className="text-purple-600" size={24} />,
-      bg: "bg-purple-50",
-      border: "border-purple-100",
+      subValue: "Performance Score",
+      icon: <Zap size={24} />,
+      color: "text-teal-600",
+      bg: "bg-teal-50",
       progress: teamStats.efficiency || 0,
-      progressColor: "bg-purple-500",
     },
     {
       label: "Projects",
       value: teamStats.projectCount || 0,
-      subValue: "Active projects",
-      icon: <Layout className="text-orange-600" size={24} />,
-      bg: "bg-orange-50",
-      border: "border-orange-100",
+      subValue: "Active Projects",
+      icon: <Layout size={24} />,
+      color: "text-green-700",
+      bg: "bg-green-100",
       progress: 100,
-      progressColor: "bg-orange-500",
     },
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {stats.map((stat, index) => (
-        <div
+        <motion.div
           key={index}
-          className={`bg-white p-6 rounded-2xl border ${stat.border} shadow-sm transition-all hover:shadow-md`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className="bg-white p-6 rounded-[2rem] border border-green-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(22,163,74,0.1)] transition-all duration-300 relative overflow-hidden group"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className={`p-3 rounded-xl ${stat.bg}`}>{stat.icon}</div>
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-700">{stat.label}</p>
-              <h3 className="text-2xl font-bold text-gray-700">{stat.value}</h3>
+          {/* Decorative Blob */}
+          <div className={`absolute -right-6 -top-6 w-24 h-24 ${stat.bg} rounded-full opacity-50 group-hover:scale-110 transition-transform duration-500`} />
+
+          <div className="flex justify-between items-start mb-6 relative z-10">
+            <div>
+              <p className="text-gray-500 text-sm font-semibold mb-2 tracking-wide">{stat.label}</p>
+              <h3 className="text-2xl font-extrabold text-gray-800 tracking-tight">{stat.value}</h3>
+            </div>
+            <div className={`p-3.5 rounded-2xl ${stat.bg} ${stat.color} shadow-sm group-hover:bg-green-600 group-hover:text-white transition-colors duration-300`}>
+              {stat.icon}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs text-gray-700">
+          <div className="space-y-3 relative z-10">
+            <div className="flex justify-between text-xs font-medium text-gray-400">
               <span>{stat.subValue}</span>
-              {stat.label !== "Projects" && (
-                <span>{Math.round(stat.progress)}%</span>
-              )}
+              {stat.label !== "Projects" && <span>{Math.round(stat.progress)}%</span>}
             </div>
-            <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
               <div
-                className={`h-full ${stat.progressColor} rounded-full transition-all duration-500`}
+                className={`h-full bg-green-500 rounded-full transition-all duration-500`}
                 style={{ width: `${stat.progress}%` }}
-              ></div>
+              />
             </div>
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );

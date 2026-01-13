@@ -26,8 +26,16 @@ const data = [
 
 const SalesPerformanceChart = () => {
     return (
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm h-[400px] w-full">
-            <h3 className="text-lg font-bold text-gray-800 mb-6">Monthly Performance</h3>
+        <div className="bg-white p-8 rounded-[2rem] border border-green-50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-[400px] w-full">
+            <div className="flex justify-between items-center mb-8">
+                <h3 className="text-xl font-bold text-gray-800 tracking-tight">Monthly Performance</h3>
+                <div className="flex gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-600"></span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span className="w-2 h-2 rounded-full bg-teal-300"></span>
+                </div>
+            </div>
+
             <ResponsiveContainer width="100%" height="85%">
                 <AreaChart
                     data={data}
@@ -40,45 +48,45 @@ const SalesPerformanceChart = () => {
                 >
                     <defs>
                         <linearGradient id="colorRFQs" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
-                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#16a34a" stopOpacity={0.2} />
+                            <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="colorAwarded" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#34d399" stopOpacity={0.2} />
+                            <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.1} />
-                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#99f6e4" stopOpacity={0.2} />
+                            <stop offset="95%" stopColor="#99f6e4" stopOpacity={0} />
                         </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0fdf4" />
                     <XAxis
                         dataKey="name"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                        tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 500 }}
                         dy={10}
                     />
                     <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                        tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 500 }}
                     />
                     <Tooltip
-                        contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        cursor={{ stroke: '#F3F4F6', strokeWidth: 2 }}
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #f0fdf4', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                        cursor={{ stroke: '#dcfce7', strokeWidth: 2 }}
                     />
                     <Legend
                         verticalAlign="bottom"
                         height={36}
                         iconType="circle"
-                        wrapperStyle={{ paddingTop: '20px' }}
+                        wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 600, color: '#4b5563' }}
                     />
                     <Area
                         type="monotone"
                         dataKey="RFQs"
-                        stroke="#3b82f6"
+                        stroke="#16a34a"
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorRFQs)"
@@ -86,7 +94,7 @@ const SalesPerformanceChart = () => {
                     <Area
                         type="monotone"
                         dataKey="Awarded"
-                        stroke="#10b981"
+                        stroke="#34d399"
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorAwarded)"
@@ -94,7 +102,7 @@ const SalesPerformanceChart = () => {
                     <Area
                         type="monotone"
                         dataKey="Completed"
-                        stroke="#8b5cf6"
+                        stroke="#99f6e4"
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorCompleted)"

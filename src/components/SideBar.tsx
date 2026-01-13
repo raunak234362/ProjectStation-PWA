@@ -37,40 +37,37 @@ const Sidebar: React.FC<SidebarProps> = ({
       console.error("Logout failed:", error);
     }
   };
-  console.log(userData, "=========================");
 
   return (
     <aside
-      className={`h-full rounded-2xl border-white/25 shadow-xl bg-white border-r backdrop-blur-3xl text-gray-700 transition-all duration-300 flex flex-col ${
-        isMinimized ? "w-16" : "w-64"
-      }`}
-      style={{ overflow: "visible" }} // ✅ allows tooltip overflow
+      className={`h-full bg-gradient-to-b from-[#f0fdf4] to-white transition-all duration-300 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] ${isMinimized ? "w-24" : "w-80"
+        } ${isMobile ? "fixed inset-y-0 left-0 z-50 shadow-2xl bg-white" : "relative border-r-0"
+        }`}
     >
       {/* Header */}
       <div
-        className={`flex items-center py-1.5 px-4 ${
-          isMobile ? "justify-between" : "justify-center"
-        }`}
+        className={`flex items-center pt-8 pb-4 px-6 ${isMobile ? "justify-between" : isMinimized ? "justify-center" : "justify-start pl-8"
+          }`}
       >
         {!isMinimized ? (
-          <img src={LOGO} alt="Logo" className="w-48" />
+          <img src={LOGO} alt="Logo" className="w-44 object-contain drop-shadow-sm" />
         ) : (
-          <img src={SLOGO} alt="Logo" className="w-20" />
+          <img src={SLOGO} alt="Logo" className="w-12 object-contain drop-shadow-sm" />
         )}
 
         {isMobile && (
           <Button
             onClick={toggleSidebar}
-            className="p-1 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="p-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-100 transition-colors shadow-sm"
           >
-            <X size={18} />
+            <X size={22} />
           </Button>
         )}
       </div>
 
-      {/* Navigation */}
-      <div className="flex-1 overflow-y-auto py-4">
-        <ul className="flex flex-col gap-2 px-2 relative">
+      {/* Navigation - Optimized for No Scroll */}
+      <div className="flex-1 px-4 py-2 flex flex-col justify-center">
+        <ul className="flex flex-col gap-1 w-full">
           {navItems.map(
             ({ label, to, roles, icon }) =>
               canView(roles) && (
@@ -80,23 +77,20 @@ const Sidebar: React.FC<SidebarProps> = ({
                     end={to === "/dashboard"}
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
-                      isActive
-                        ? `flex items-center font-semibold text-white bg-green-600/90 py-2 px-3 rounded-md w-full ${
-                            isMinimized ? "justify-center" : "justify-start"
-                          }`
-                        : `text-gray-700 font-semibold hover:text-white hover:bg-green-600/90 py-2 px-3 rounded-md flex items-center w-full ${
-                            isMinimized ? "justify-center" : "justify-start"
-                          }`
+                      `flex items-center gap-4 px-5 py-3 rounded-[1.25rem] transition-all duration-300 font-bold text-[15px] tracking-wide ${isActive
+                        ? "bg-green-600 text-white shadow-[0_8px_20px_-6px_rgba(22,163,74,0.5)] scale-[1.02]"
+                        : "text-gray-500 hover:bg-green-50 hover:text-green-700 hover:pl-6"
+                      } ${isMinimized ? "justify-center px-0 w-14 h-14 mx-auto" : ""}`
                     }
                   >
-                    <div>{icon}</div>
-                    {!isMinimized && <span className="ml-3">{label}</span>}
+                    <div className={`${isMinimized ? "" : ""}`}>{icon}</div>
+                    {!isMinimized && <span>{label}</span>}
                   </NavLink>
 
                   {/* Tooltip for minimized sidebar */}
                   {isMinimized && (
-                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 hidden group-hover:flex">
-                      <span className="bg-green-600/90 text-white text-[10px] font-medium py-1 px-2 rounded-md shadow-lg whitespace-nowrap">
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 hidden group-hover:flex">
+                      <span className="bg-green-800 text-white text-sm font-bold py-2 px-4 rounded-xl shadow-xl whitespace-nowrap">
                         {label}
                       </span>
                     </div>
@@ -108,28 +102,36 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-6 mt-auto">
         {!isMinimized && (
-          <div className="mb-2">
-            <p className="text-sm font-semibold truncate">
-              {userData
-                ? `${userData.firstName ?? ""} ${
-                    userData.lastName ?? ""
-                  }`.trim()
-                : "User"}
-            </p>
-            <p className="text-xs text-gray-700">
-              {userData?.role?.toUpperCase() || userRole.toUpperCase()}
-            </p>
-            <p className="text-xs text-gray-700 mt-1">Version - 2.0.0</p>
+          <div className="flex items-center gap-4 mb-4 bg-white p-3 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-green-50">
+            <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-700 font-extrabold text-xl shadow-inner">
+              {userData?.firstName?.[0] || "U"}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-base font-bold text-gray-800 truncate">
+                {userData
+                  ? `${userData.firstName ?? ""} ${userData.lastName ?? ""
+                    }`.trim()
+                  : "User"}
+              </p>
+              <p className="text-xs text-green-600 font-bold uppercase tracking-wider truncate">
+                {userData?.role || userRole}
+              </p>
+            </div>
           </div>
         )}
 
-        <div className="flex flex-col justify-center">
-          <Button className="" onClick={fetchLogout}>
-            {isMinimized ? <LogOut size={18} /> : "Logout"}
-          </Button>
-        </div>
+        <Button
+          className={`w-full flex items-center gap-3 py-3.5 rounded-xl transition-all shadow-sm ${isMinimized
+              ? "justify-center bg-red-50 text-red-500 hover:bg-red-100"
+              : "justify-start px-6 bg-red-50 text-red-500 hover:bg-red-100 hover:shadow-md"
+            }`}
+          onClick={fetchLogout}
+        >
+          <LogOut size={22} />
+          {!isMinimized && <span className="font-bold text-sm">Logout</span>}
+        </Button>
       </div>
     </aside>
   );

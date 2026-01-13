@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import EstimationStats from "./components/EstimationStats";
-import TopFabricatorWidget from "./components/TopFabricatorWidget";
+
 import FabricatorProjectChart from "./components/FabricatorProjectChart";
 import AllEstimation from "./AllEstimation";
 
@@ -173,9 +173,9 @@ const EstimationDashboard = () => {
                 <div className="xl:col-span-2">
                     <EstimationStats stats={{ ...stats, totalHours: stats.totalHours.toFixed(2) }} />
                 </div>
-                <div className="xl:col-span-1">
+                {/* <div className="xl:col-span-1">
                     <TopFabricatorWidget fabricator={topFabricator} />
-                </div>
+                </div> */}
             </div>
 
             {/* Comparison Chart */}

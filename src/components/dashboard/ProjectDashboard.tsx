@@ -192,7 +192,7 @@ const ProjectDashboard = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Filters Header */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-4 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="relative">
             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -219,11 +219,10 @@ const ProjectDashboard = () => {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
           <Button
             onClick={() => setSelectedMonth(null)}
-            className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all whitespace-nowrap h-auto ${
-              selectedMonth === null
+            className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === null
                 ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
-            }`}
+              }`}
           >
             All Months
           </Button>
@@ -231,11 +230,10 @@ const ProjectDashboard = () => {
             <Button
               key={month}
               onClick={() => setSelectedMonth(index)}
-              className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all whitespace-nowrap h-auto ${
-                selectedMonth === index
+              className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === index
                   ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
-              }`}
+                }`}
             >
               {month}
             </Button>
