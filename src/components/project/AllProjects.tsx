@@ -2,13 +2,19 @@ import { useEffect } from "react";
 import Service from "../../api/Service";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
-import GetProjectById from "./GetProjectById";
+import React, { Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setProjectData } from "../../store/projectSlice";
+const GetProjectById = React.lazy(() =>
+  import("./GetProjectById").then((module) => ({ default: module.default }))
+);
 
 const ProjectDetailComponent = ({ row }: { row: any }) => {
   const fabricatorUniqueId = row.id ?? row.fabId ?? "";
-  return <GetProjectById id={fabricatorUniqueId} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GetProjectById id={fabricatorUniqueId} />
+    </Suspense>
+  );
 };
 
 const AllProjects = () => {
@@ -16,8 +22,6 @@ const AllProjects = () => {
   const projects = useSelector(
     (state: any) => state.projectInfo?.projectData || []
   );
-
-  
 
   // Handle row click (optional)
   const handleRowClick = (row: any) => {

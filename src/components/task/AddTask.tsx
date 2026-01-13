@@ -46,13 +46,16 @@ interface AddTaskFormValues {
   departmentId: string;
   Stage: string;
   wbsType: string;
-  wbs_id: string;
+  project_bundle_id: string;
   assignments: EmployeeAssignment[];
 }
 
 const AddTask: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedWbs, setSelectedWbs] = useState<WBSData | null>(null);
+  const [allTasks, setAllTasks] = useState<any[]>([]);
+  const [existingWbsHours, setExistingWbsHours] = useState(0);
+  const [bundles, setBundles] = useState<WBSData[]>([]);
 
   const dispatch = useDispatch();
   const projects = useSelector(
@@ -98,13 +101,12 @@ const AddTask: React.FC = () => {
   const selectedMilestoneId = watch("mileStone_id");
   const selectedWbsType = watch("wbsType");
   const selectedStage = watch("Stage");
-  const selectedWbsId = watch("wbs_id");
+  const selectedWbsId = watch("project_bundle_id");
 
   const milestones = selectedProjectId
     ? milestonesByProject[selectedProjectId] || []
     : [];
   const selectedProject = projects.find((p: any) => p.id === selectedProjectId);
-  const wbsItems = selectedProject?.projectWbs || [];
 
   // Fetch Project Details and Milestones when project changes
   useEffect(() => {
@@ -112,7 +114,7 @@ const AddTask: React.FC = () => {
       // Reset selections when project changes
       setValue("mileStone_id", "");
       setValue("wbsType", "");
-      setValue("wbs_id", "");
+      setValue("project_bundle_id", "");
       setSelectedWbs(null);
 
       // Fetch full project details if projectWbs is missing
@@ -123,6 +125,11 @@ const AddTask: React.FC = () => {
           }
         });
       }
+
+      // Fetch WBS bundles
+      Service.GetBundleByProjectId(selectedProjectId).then((res) => {
+        setBundles(res?.data || []);
+      });
 
       if (!milestonesByProject[selectedProjectId]) {
         Service.GetProjectMilestoneById(selectedProjectId).then((res) => {
@@ -137,7 +144,7 @@ const AddTask: React.FC = () => {
     } else {
       setValue("mileStone_id", "");
       setValue("wbsType", "");
-      setValue("wbs_id", "");
+      setValue("project_bundle_id", "");
       setValue("departmentId", "");
       setSelectedWbs(null);
     }
@@ -164,7 +171,7 @@ const AddTask: React.FC = () => {
     if (selectedProjectId && selectedMilestoneId) {
       // Reset WBS selections when milestone changes
       setValue("wbsType", "");
-      setValue("wbs_id", "");
+      setValue("project_bundle_id", "");
       setSelectedWbs(null);
     }
   }, [selectedMilestoneId, setValue]);
@@ -172,17 +179,60 @@ const AddTask: React.FC = () => {
   // Update selected WBS data
   useEffect(() => {
     if (selectedWbsId) {
-      const wbs = wbsItems.find((w: WBSData) => w.id === selectedWbsId);
+      const wbs = bundles.find((w: any) => {
+        const bundleId = w.id || w._id || (w.wbs && w.wbs[0]?.id);
+        return String(bundleId) === String(selectedWbsId);
+      });
       setSelectedWbs(wbs || null);
     } else {
       setSelectedWbs(null);
     }
-  }, [selectedWbsId, wbsItems]);
+  }, [selectedWbsId, bundles]);
 
-  const filteredWbsItems = wbsItems.filter((w: WBSData) => {
+  // Fetch all tasks to calculate remaining hours
+  useEffect(() => {
+    const fetchAllTasks = async () => {
+      try {
+        const res = await Service.GetAllTask();
+        const taskData = Array.isArray(res?.data)
+          ? res.data
+          : res?.data?.data || [];
+        setAllTasks(taskData);
+      } catch (error) {
+        console.error("Error fetching all tasks:", error);
+      }
+    };
+    fetchAllTasks();
+  }, []);
+
+  // Calculate existing hours for the selected WBS and Type
+  useEffect(() => {
+    if (selectedWbsId && allTasks.length > 0) {
+      const filtered = allTasks.filter((t: any) => {
+        const taskId = t.project_bundle_id || t.wbs_id;
+        const typeMatch =
+          !selectedWbsType ||
+          String(t.taskType).toLowerCase() ===
+            String(selectedWbsType).toLowerCase();
+        return String(taskId) === String(selectedWbsId) && typeMatch;
+      });
+      const total = filtered.reduce(
+        (sum: number, t: any) => sum + Number(t.hours || 0),
+        0
+      );
+      setExistingWbsHours(total);
+    } else {
+      setExistingWbsHours(0);
+    }
+  }, [selectedWbsId, allTasks, selectedWbsType]);
+
+  const filteredWbsItems = bundles.filter((w: WBSData) => {
+    const category = (w.bundle?.category || w.type || "").toLowerCase();
     const typeOk =
       !selectedWbsType ||
-      (w.type && w.type.toLowerCase() === selectedWbsType.toLowerCase());
+      (selectedWbsType === "checking"
+        ? (w.totalCheckHr || 0) > 0
+        : category === selectedWbsType.toLowerCase());
     const stageOk =
       !selectedStage ||
       (w.stage && w.stage.toLowerCase() === selectedStage.toLowerCase());
@@ -195,37 +245,50 @@ const AddTask: React.FC = () => {
     (sum, a) => sum + Number(a.hours || 0),
     0
   );
-  const availableHours = selectedWbs
-    ? (selectedWbs.totalExecHr || 0) + (selectedWbs.totalCheckHr || 0)
+  const totalWbsHours = selectedWbs
+    ? selectedWbsType === "checking"
+      ? selectedWbs.totalCheckHr || 0
+      : selectedWbs.totalExecHr || 0
     : 0;
+  const availableHours = Math.max(0, totalWbsHours - existingWbsHours);
+  const remainingHours = Math.max(0, availableHours - totalAssignedHours);
 
   const onSubmit = async (data: AddTaskFormValues) => {
     console.log("Form Data Submitted:", data);
 
-    if (totalAssignedHours > availableHours && availableHours > 0) {
-      toast.error("Total assigned hours exceed available WBS hours");
-      return;
-    }
+    const isOverLimit = existingWbsHours + totalAssignedHours > totalWbsHours;
 
     try {
       setIsSubmitting(true);
 
       // Create a task for each assignment
       const promises = data.assignments.map((assignment) => {
+        const isDuplicateUser = allTasks.some(
+          (t: any) =>
+            String(t.project_bundle_id || t.wbs_id) ===
+              String(data.project_bundle_id) &&
+            String(t.user_id) === String(assignment.employeeId)
+        );
+
+        const isRework = isOverLimit || isDuplicateUser;
+
         const payload = {
           name: data.name,
           description: data.description,
-          status: "ASSIGNED",
+          status: isRework ? "REWORK" : "ASSIGNED",
+          isRework: isRework,
           priority: Number(data.priority),
           due_date: data.due_date,
           duration: data.duration,
+          hours: Number(assignment.hours),
           project_id: data.project_id,
           user_id: assignment.employeeId,
           mileStone_id: data.mileStone_id,
           start_date: data.start_date,
           Stage: data.Stage,
           departmentId: data.departmentId,
-          wbs_id: data.wbs_id, // Including wbs_id as it's in the form but wasn't in the user's snippet
+          project_bundle_id: data.project_bundle_id,
+          taskType: selectedWbsType,
         };
         return Service.AddTask(payload);
       });
@@ -254,11 +317,12 @@ const AddTask: React.FC = () => {
     { label: "Modeling", value: "modeling" },
     { label: "Erection", value: "erection" },
     { label: "Detailing", value: "detailing" },
+    { label: "Checking", value: "checking" },
   ];
 
-  const wbsOptions = filteredWbsItems.map((w: WBSData) => ({
-    label: w.name,
-    value: w.id,
+  const wbsOptions = filteredWbsItems.map((w: any) => ({
+    label: w.name || w.bundle?.name || "Unnamed Bundle",
+    value: w.id || w._id || (w.wbs && w.wbs[0]?.id),
   }));
 
   const employeeOptions = employees.map((e: UserData) => ({
@@ -357,7 +421,7 @@ const AddTask: React.FC = () => {
                             value={field.value}
                             onChange={(_, val) => {
                               field.onChange(val);
-                              setValue("wbs_id", "");
+                              setValue("project_bundle_id", "");
                             }}
                             placeholder="Select Type"
                           />
@@ -370,12 +434,12 @@ const AddTask: React.FC = () => {
                         <Layers className="w-4 h-4 text-blue-500" /> WBS Item *
                       </label>
                       <Controller
-                        name="wbs_id"
+                        name="project_bundle_id"
                         control={control}
                         rules={{ required: "WBS Item is required" }}
                         render={({ field }) => (
                           <Select
-                            name="wbs_id"
+                            name="project_bundle_id"
                             options={wbsOptions}
                             value={field.value}
                             onChange={(_, val) => field.onChange(val)}
@@ -383,9 +447,9 @@ const AddTask: React.FC = () => {
                           />
                         )}
                       />
-                      {errors.wbs_id && (
+                      {errors.project_bundle_id && (
                         <p className="text-xs text-red-500">
-                          {errors.wbs_id.message}
+                          {errors.project_bundle_id.message}
                         </p>
                       )}
                     </div>
@@ -409,7 +473,7 @@ const AddTask: React.FC = () => {
                             onChange={(_, val) => {
                               field.onChange(val);
                               // Reset WBS selection when stage changes
-                              setValue("wbs_id", "");
+                              setValue("project_bundle_id", "");
                               setSelectedWbs(null);
                             }}
                             placeholder="Select Stage"
@@ -454,10 +518,24 @@ const AddTask: React.FC = () => {
                         </div>
                         <div>
                           <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
-                            Total Available
+                            Total Bundle Hours
                           </p>
                           <p className="text-xl font-black text-slate-900">
-                            {availableHours}h
+                            {totalWbsHours}h
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-emerald-100 rounded-xl">
+                          <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                            Remaining Hours
+                          </p>
+                          <p className="text-xl font-black text-slate-900">
+                            {remainingHours}h
                           </p>
                         </div>
                       </div>
@@ -551,7 +629,7 @@ const AddTask: React.FC = () => {
                       </span>
                       <span
                         className={`text-sm font-bold ${
-                          totalAssignedHours > availableHours
+                          totalAssignedHours > remainingHours
                             ? "text-red-600"
                             : "text-indigo-600"
                         }`}
@@ -584,6 +662,29 @@ const AddTask: React.FC = () => {
                                   onChange={(_, val) => field.onChange(val)}
                                   placeholder="Select Employee"
                                 />
+                                {(() => {
+                                  const isDuplicate = allTasks.some(
+                                    (t: any) =>
+                                      String(
+                                        t.project_bundle_id || t.wbs_id
+                                      ) === String(selectedWbsId) &&
+                                      String(t.user_id) === String(field.value)
+                                  );
+                                  const isOverLimit =
+                                    existingWbsHours + totalAssignedHours >
+                                    totalWbsHours;
+                                  if (isDuplicate || isOverLimit) {
+                                    return (
+                                      <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 uppercase">
+                                        <AlertCircle className="w-3 h-3" />
+                                        Will be marked as Rework
+                                        {isDuplicate && " (Duplicate User)"}
+                                        {isOverLimit && " (Hours Exceeded)"}
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                })()}
                                 {errors.assignments?.[index]?.employeeId && (
                                   <p className="text-xs text-red-500">
                                     {

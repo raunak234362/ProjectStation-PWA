@@ -386,7 +386,7 @@ export default function DataTable<T extends object>({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-md font-medium text-gray-700 uppercase tracking-wider"
                   >
                     {/* Header + sort */}
                     <div
@@ -443,7 +443,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="text-left px-6 py-4 text-sm text-gray-700"
+                          className="text-left px-6 py-4 text-md text-gray-700"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,

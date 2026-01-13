@@ -60,6 +60,21 @@ const parseLocation = (
   return { country, city };
 };
 
+const normalizeStates = (states: any): string[] => {
+  if (Array.isArray(states)) {
+    return states;
+  }
+  if (typeof states === "string") {
+    try {
+      const parsed = JSON.parse(states);
+      return Array.isArray(parsed) ? parsed : [states];
+    } catch {
+      return [states];
+    }
+  }
+  return [];
+};
+
 const EditConnectionDesigner = ({
   designerData,
   onClose,
@@ -97,7 +112,7 @@ const EditConnectionDesigner = ({
       headquater: {
         country: initialCountry,
         city: initialCity,
-        states: designerData?.state || [],
+        states: normalizeStates(designerData?.state),
       },
     },
   });
@@ -111,16 +126,11 @@ const EditConnectionDesigner = ({
       headquater: {
         country: initialCountry,
         city: initialCity,
-        states: designerData?.state || [],
+        states: normalizeStates(designerData?.state),
       },
     });
     lastCountryRef.current = initialCountry || null;
-  }, [
-    designerData,
-    initialCountry,
-    initialCity,
-    reset,
-  ]);
+  }, [designerData, initialCountry, initialCity, reset]);
 
   const country = watch("headquater.country");
   const selectedStates = watch("headquater.states");
@@ -135,10 +145,7 @@ const EditConnectionDesigner = ({
         statesData.map((s) => ({ label: s.name, value: s.name }))
       );
 
-      if (
-        lastCountryRef.current &&
-        lastCountryRef.current !== country
-      ) {
+      if (lastCountryRef.current && lastCountryRef.current !== country) {
         setValue("headquater.states", []);
         setValue("headquater.city", "");
         setCityOptions([]);
@@ -157,7 +164,7 @@ const EditConnectionDesigner = ({
 
   // --- Load cities for all selected states ---
   useEffect(() => {
-    const normalizedStates = selectedStates ?? [];
+    const normalizedStates = normalizeStates(selectedStates);
     const normalizedCity = selectedCity ?? "";
 
     if (normalizedStates.length > 0 && country && COUNTRY_MAP[country]) {
@@ -307,7 +314,7 @@ const EditConnectionDesigner = ({
               render={({ field }) => (
                 <Select
                   placeholder="Select Country"
-                    options={Object.keys(COUNTRY_MAP).map((c) => ({
+                  options={Object.keys(COUNTRY_MAP).map((c) => ({
                     label: c,
                     value: c,
                   }))}

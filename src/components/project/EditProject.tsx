@@ -22,6 +22,7 @@ import Service from "../../api/Service";
 import ToggleField from "../fields/Toggle";
 import type { AddProjectPayload } from "../../interface";
 import { updateProject } from "../../store/projectSlice";
+import { showDepartment, showTeam, showStaff } from "../../store/userSlice";
 
 interface EditProjectProps {
   projectId: string;
@@ -48,7 +49,7 @@ const EditProject: React.FC<EditProjectProps> = ({
   const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
 
-  const { register, handleSubmit, control, setValue } =
+  const { register, handleSubmit, control, setValue, watch } =
     useForm<AddProjectPayload>({
       defaultValues: {
         tools: "TEKLA",
@@ -64,12 +65,23 @@ const EditProject: React.FC<EditProjectProps> = ({
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [cdRes, projectRes] = await Promise.all([
-          Service.FetchAllConnectionDesigner(),
-          Service.GetProjectById(projectId),
-        ]);
+        const [cdRes, projectRes, deptRes, teamRes, staffRes] =
+          await Promise.all([
+            Service.FetchAllConnectionDesigner(),
+            Service.GetProjectById(projectId),
+            departmentDatas.length === 0
+              ? Service.AllDepartments()
+              : Promise.resolve(null),
+            teamDatas.length === 0 ? Service.AllTeam() : Promise.resolve(null),
+            users.length === 0
+              ? Service.FetchAllEmployee()
+              : Promise.resolve(null),
+          ]);
 
         setConnectionDesigners(cdRes?.data || []);
+        if (deptRes) dispatch(showDepartment(deptRes.data || deptRes));
+        if (teamRes) dispatch(showTeam(teamRes.data || teamRes));
+        if (staffRes) dispatch(showStaff(staffRes.data || staffRes));
 
         const project = projectRes?.data;
         if (project) {
@@ -113,19 +125,23 @@ const EditProject: React.FC<EditProjectProps> = ({
   }, [projectId, setValue]);
 
   const options = {
-    fabricators: fabricators.map((f: any) => ({
-      label: f.fabName,
-      value: String(f.id),
-    })),
-    departments: departmentDatas.map((d: any) => ({
-      label: d.name,
-      value: String(d.id),
-    })),
-    managers: users.map((u: any) => ({
+    fabricators: (Array.isArray(fabricators) ? fabricators : []).map(
+      (f: any) => ({
+        label: f.fabName,
+        value: String(f.id),
+      })
+    ),
+    departments: (Array.isArray(departmentDatas) ? departmentDatas : []).map(
+      (d: any) => ({
+        label: d.name,
+        value: String(d.id),
+      })
+    ),
+    managers: (Array.isArray(users) ? users : []).map((u: any) => ({
       label: `${u.firstName} ${u.lastName}`,
       value: String(u.id),
     })),
-    teams: teamDatas.map((t: any) => ({
+    teams: (Array.isArray(teamDatas) ? teamDatas : []).map((t: any) => ({
       label: t.name,
       value: String(t.id),
     })),
@@ -137,6 +153,11 @@ const EditProject: React.FC<EditProjectProps> = ({
       { label: "TEKLA", value: "TEKLA" },
       { label: "SDS2", value: "SDS2" },
       { label: "Both (TEKLA + SDS2)", value: "BOTH" },
+    ],
+    stage: [
+      { label: "IFA - (Issue for Approval)", value: "IFA" },
+      { label: "IFC - (Issue for Construction)", value: "IFC" },
+      { label: "CO# - (Change Order)", value: "CO#" },
     ],
   };
 
@@ -292,17 +313,33 @@ const EditProject: React.FC<EditProjectProps> = ({
                 <Controller
                   name="teamID"
                   control={control}
-                  render={({ field }) => (
-                    <Select
-                      options={options.teams}
-                      value={options.teams.find(
-                        (o: any) => o.value === field.value
-                      )}
-                      onChange={(o: any) => field.onChange(o?.value || "")}
-                      placeholder="Select team"
-                      isSearchable
-                    />
-                  )}
+                  render={({ field }) => {
+                    const selectedDeptId = watch("departmentID");
+                    const filteredTeams = (Array.isArray(teamDatas) ? teamDatas : [])
+                      .filter(
+                        (t: any) =>
+                          !selectedDeptId ||
+                          String(t.departmentID) === String(selectedDeptId)
+                      )
+                      .map((t: any) => ({
+                        label: t.name,
+                        value: String(t.id),
+                      }));
+
+                    return (
+                      <Select
+                        options={filteredTeams}
+                        value={filteredTeams.find(
+                          (o: any) => o.value === field.value
+                        )}
+                        onChange={(o: any) => field.onChange(o?.value || "")}
+                        placeholder="Select team"
+                        isSearchable
+                        isClearable
+                        isDisabled={!selectedDeptId}
+                      />
+                    );
+                  }}
                 />
               </div>
             </div>
@@ -391,6 +428,22 @@ const EditProject: React.FC<EditProjectProps> = ({
                       options={options.tools}
                       value={options.tools.find((o) => o.value === field.value)}
                       onChange={(o) => field.onChange(o?.value || "TEKLA")}
+                    />
+                  )}
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
+                  <Layers className="w-4 h-4 text-cyan-600" /> Stage
+                </label>
+                <Controller
+                  name="stage"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      options={options.stage}
+                      value={options.stage.find((o) => o.value === field.value)}
+                      onChange={(o) => field.onChange(o?.value || "IFA")}
                     />
                   )}
                 />
