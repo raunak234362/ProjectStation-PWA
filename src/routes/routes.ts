@@ -16,6 +16,7 @@ import invoicePage from "../pages/invoicePage";
 import TaskPage from "../pages/TaskPage";
 import CoTablePage from "../components/co/CoTablePage";
 import AccountPage from "../pages/AccountPage";
+import SalesDashboard from "../components/sales/SalesDashboard";
 
 const routes = [
   { path: "/", Component: Login },
@@ -44,6 +45,7 @@ const routes = [
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },
+          { path: "sales", Component: SalesDashboard },
         ],
       },
     ],
