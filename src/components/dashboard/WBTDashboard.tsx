@@ -75,7 +75,6 @@ const WBTDashboard = () => {
           received,
           pendingSubmittalsRes,
           allInvoices,
-          pendingSubmittalNumber,
           pendingRFIs,
         ] = await Promise.all([
           Service.RfqSent(),
