@@ -3,23 +3,23 @@ import api from "./api";
 
 class AuthService {
   static async login({ username, password }: AuthInterface) {
-    console.log(username, password);
     const userData = {
       username: username.toUpperCase(),
       password,
     };
 
+    console.log("Sending login request with payload:", userData);
+
     try {
-      const response = await api.post(`auth/login`, userData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.post(`auth/login`, userData);
       console.log("response of Sign-in:-", response);
       return response?.data;
-    } catch (error) {
-      alert(error);
-      console.log("Error while sign-in", error);
+    } catch (error: any) {
+      console.error(
+        "Error while sign-in:",
+        error?.response?.data || error.message || error
+      );
+      throw error;
     }
   }
 }

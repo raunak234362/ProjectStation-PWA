@@ -16,21 +16,32 @@ const Login = () => {
   const Submit = async (data: AuthInterface) => {
     try {
       const userLogin = await AuthService.login(data);
-      if (!userLogin?.data?.token) {
-        throw new Error("Invalid Credential")
+      const token = userLogin?.data?.token || userLogin?.token;
+      const userDetail = userLogin?.data?.user || userLogin?.user;
+
+      if (!token) {
+        throw new Error("Invalid Credentials: Token not found in response");
       }
-      const token = userLogin?.data?.token
-      const userDetail = userLogin?.data?.user
-      sessionStorage.setItem("token", userLogin?.data?.token)
-      sessionStorage.setItem("userRole", userLogin?.data?.user?.role)
-      dispatch(login(token))
-      dispatch(setUserData(userDetail))
-      navigate('/dashboard')
+
+      sessionStorage.setItem("token", token);
+      if (userDetail?.role) {
+        sessionStorage.setItem("userRole", userDetail.role);
+      }
+
+      dispatch(login(token));
+      if (userDetail) {
+        dispatch(setUserData(userDetail));
+      }
+
+      navigate("/dashboard");
       console.log("Login Successful:", userLogin);
-      // alert("Login Successful!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error While Logging in:", error);
-      alert("Login failed. Please check your credentials.");
+      const errorMessage =
+        error?.response?.data?.message ||
+        error.message ||
+        "Login failed. Please check your credentials.";
+      alert(errorMessage);
     }
   };
 
@@ -50,7 +61,6 @@ const Login = () => {
             <img src={LOGO} alt="Logo" />
           </div>
         </div>
-        
 
         {/* Login form */}
         <div className="flex items-center bg-black/70 backdrop-blur-lg justify-center">

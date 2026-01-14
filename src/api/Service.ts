@@ -11,17 +11,11 @@ import type {
   CreateLineItemGroupPayload,
 } from "../interface";
 import api from "./api";
-const token = sessionStorage.getItem("token");
 class Service {
   //Get Logged-In User Detail
   static async GetUserByToken() {
     try {
-      const response = await api.get(`user/me`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(`user/me`);
       console.log("Signed In User detail-", response);
       return response.data;
     } catch (error) {
@@ -33,12 +27,7 @@ class Service {
   //Add New Employee
   static async AddEmployee(employeeData: EmployeePayload) {
     try {
-      const response = await api.post(`employee`, employeeData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post(`employee`, employeeData);
       console.log(response);
       return response?.data;
     } catch (error) {
@@ -50,12 +39,7 @@ class Service {
   //Fetch All Employee
   static async FetchAllEmployee() {
     try {
-      const response = await api.get(`employee`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(`employee`);
       console.log(response);
       return response.data;
     } catch (error) {
@@ -67,12 +51,7 @@ class Service {
   //Fetch Employee by ROLE
   static async FetchEmployeeByRole(role: string) {
     try {
-      const response = await api.get(`employee/role/${role}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(`employee/role/${role}`);
       console.log(response);
       return response.data;
     } catch (error) {
@@ -84,12 +63,7 @@ class Service {
   // Fetch Employee by ID
   static async FetchEmployeeByID(id: string) {
     try {
-      const response = await api.get(`employee/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(`employee/${id}`);
       console.log(response);
       return response.data;
     } catch (error) {
@@ -356,11 +330,8 @@ class Service {
 
   //Add new RFQ
   static async addRFQ(formData: FormData) {
-    const token = sessionStorage.getItem("token");
-
     const response = await api.post(`rfq`, formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });
@@ -385,11 +356,7 @@ class Service {
   // api for sents :
   static async RfqSent() {
     try {
-      const response = await api.get(`rfq/sents`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.get(`rfq/sents`);
       console.log(" RFQ sents:", response.data);
       return response.data;
     } catch (error) {
@@ -400,12 +367,7 @@ class Service {
   //api for recieved:
   static async RFQRecieved() {
     try {
-      const response = await api.get(`rfq/received`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.get(`rfq/received`);
 
       // console.log("  RFQ received:", response.data);
       return response.data;
@@ -417,11 +379,7 @@ class Service {
 
   static async GetRFQbyId(rfqId: string) {
     try {
-      const response = await api.get(`rfq/getById/${rfqId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.get(`rfq/getById/${rfqId}`);
       console.log(" All rfq fetched by rfq ID:", response.data);
       return response.data;
     } catch (error) {
@@ -432,11 +390,7 @@ class Service {
   // Update RFQ by ID
   static async UpdateRFQById(rfqId: string, data: any) {
     try {
-      const response = await api.put(`rfq/update/${rfqId}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.put(`rfq/update/${rfqId}`, data);
       console.log("RFQ updated:", response.data);
       return response.data;
     } catch (error) {
@@ -447,11 +401,8 @@ class Service {
   //response post request
 
   static async addResponse(formData: FormData, responseId: string) {
-    const token = sessionStorage.getItem("token");
-
     const response = await api.post(`rfq/${responseId}/responses`, formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });
@@ -821,11 +772,7 @@ class Service {
   // add new Line Item
   static async AddLineItem(data: any) {
     try {
-      const response = await api.post(`estimation/line-items/item`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.post(`estimation/line-items/item`, data);
       console.log(response);
       return response.data;
     } catch (error) {
@@ -849,12 +796,10 @@ class Service {
 
   // Add Project
   static async AddProject(formData: FormData) {
-    const token = sessionStorage.getItem("token");
     try {
       const response = await api.post(`project/projects`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
         },
       });
       console.log(response);
@@ -1221,7 +1166,6 @@ class Service {
 
   // Create Project Note
   static async CreateProjectNote(projectId: string, data: FormData) {
-    const token = sessionStorage.getItem("token");
     try {
       const response = await api.post(
         `project/projects/${projectId}/notes`,
@@ -1229,7 +1173,6 @@ class Service {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -1282,11 +1225,8 @@ class Service {
   //RFI components
   //Add new RFI----------------------------------------------------
   static async addRFI(formData: FormData) {
-    const token = sessionStorage.getItem("token");
-
     const response = await api.post(`rfi`, formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });
@@ -1362,14 +1302,7 @@ class Service {
   }
   //RFI responses
   static async addRFIResponse(formData: FormData, responseId: string) {
-    const token = sessionStorage.getItem("token");
-
-    const response = await api.post(`rfi/${responseId}/responses`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.post(`rfi/${responseId}/responses`, formData);
 
     return response.data;
   }
@@ -1389,14 +1322,8 @@ class Service {
   }
   //submitals route ----------------------------------------------
   static async AddSubmittal(formData: FormData) {
-    const token = sessionStorage.getItem("token");
     try {
-      const response = await api.post(`submittal/`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post(`submittal/`, formData);
       console.log(response);
       return response.data;
     } catch (error) {
@@ -1463,14 +1390,7 @@ class Service {
   }
   //submittal responses
   static async addSubmittalResponse(formData: FormData, SubId: string) {
-    const token = sessionStorage.getItem("token");
-
-    const response = await api.post(`submittal/${SubId}/responses`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.post(`submittal/${SubId}/responses`, formData);
 
     return response.data;
   }
@@ -1490,14 +1410,8 @@ class Service {
 
   //change Order ---------------------------------------------
   static async ChangeOrder(formData: FormData) {
-    const token = sessionStorage.getItem("token");
     try {
-      const response = await api.post(`changeOrder/`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post(`changeOrder/`, formData);
       console.log(response);
       return response.data;
     } catch (error) {
@@ -1547,17 +1461,9 @@ class Service {
   }
   //response routes
   static async addCOResponse(formData: FormData, responseId: string) {
-    const token = sessionStorage.getItem("token");
-
     const response = await api.post(
       `changeOrder/${responseId}/responses`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
+      formData
     );
 
     return response.data;
@@ -1594,14 +1500,8 @@ class Service {
   //Add Task
   static async AddTask(data: any) {
     console.log(data);
-    const token = sessionStorage.getItem("token");
     try {
-      const response = await api.post(`task/`, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post(`task/`, data);
       console.log(response);
       return response.data;
     } catch (error) {
