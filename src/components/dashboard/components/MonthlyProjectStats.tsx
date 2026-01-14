@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Users, Clock, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
 import type { ProjectData } from "../../../interface";
+import { formatSeconds } from "../../../utils/timeUtils";
 
 interface MonthlyProjectStatsProps {
   tasks: any[];
@@ -27,14 +28,6 @@ interface MonthlyProjectStatsProps {
     status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL"
   ) => void;
 }
-
-const formatSeconds = (totalSeconds: number) => {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  return `${hours.toString().padStart(2, "0")}:${minutes
-    .toString()
-    .padStart(2, "0")}`;
-};
 
 const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
   tasks,

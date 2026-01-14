@@ -2,6 +2,7 @@ import React from "react";
 import { X as CloseIcon } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
+import { formatSeconds } from "../../../utils/timeUtils";
 
 interface ProjectListModalProps {
   isOpen: boolean;
@@ -62,7 +63,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             row.original.isOverrun ? "text-red-600" : "text-green-600"
           }`}
         >
-          {(row.original.workedHours || 0).toFixed(1)}h
+          {formatSeconds(row.original.workedSeconds || 0)}
         </span>
       ),
     },
