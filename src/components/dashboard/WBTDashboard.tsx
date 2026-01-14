@@ -12,9 +12,9 @@ export interface DashboardStats {
   totalCompleteProject: number;
   totalOnHoldProject: number;
   totalProjects: number;
-  newRFQ:number;
-  newRFI:number;
-  newChangeOrders:number;
+  newRFQ: number;
+  newRFI: number;
+  newChangeOrders: number;
 }
 
 // Lazy load components
@@ -153,24 +153,35 @@ const WBTDashboard = () => {
   }
 
   return (
-    <div className="h-full p-2 rounded-xl space-y-6 bg-gray-50 overflow-y-auto">
+    <div className="flex flex-col w-full p-2 space-y-3 pb-8">
       <Suspense fallback={<DashboardSkeleton />}>
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <ProjectStats stats={stats} onCardClick={handleCardClick} />
-          <PendingActions
-            dashboardStats={dashboardStats}
-            onActionClick={handleActionClick}
-          />
+        {/* Stats Grid - Top Section */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 shrink-0">
+          {/* Project Stats */}
+          <div className="w-full">
+            <ProjectStats stats={stats} onCardClick={handleCardClick} />
+          </div>
+
+          {/* Pending Actions */}
+          <div className="w-full">
+            <PendingActions
+              dashboardStats={dashboardStats}
+              onActionClick={handleActionClick}
+            />
+          </div>
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <InvoiceTrends invoices={invoices} />
-          <UpcomingSubmittals
-            pendingSubmittals={pendingSubmittals}
-            invoices={invoices}
-          />
+        {/* Charts Section - Bottom Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
+          <div className="w-full min-h-[400px]">
+            <InvoiceTrends invoices={invoices} />
+          </div>
+          <div className="w-full min-h-[400px]">
+            <UpcomingSubmittals
+              pendingSubmittals={pendingSubmittals}
+              invoices={invoices}
+            />
+          </div>
         </div>
 
         {/* Modals */}

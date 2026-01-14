@@ -23,36 +23,35 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
   const headerTitle = activeTab ? activeTab.label : "Whiteboard Technologies";
 
   return (
-    <header className="flex items-center justify-between w-full py-5 px-8 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-6">
+    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-2 px-6 bg-white rounded-xl shadow-[0_4px_15px_rgb(0,0,0,0.03)] mb-2">
       {/* Left: Sidebar Toggle & Title */}
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-4">
         <Button
           onClick={toggleSidebar}
-          className="w-11 h-11 flex items-center justify-center bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)]"
+          className="w-9 h-9 flex items-center justify-center bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all shadow-[0_4px_10px_-2px_rgba(34,197,94,0.4)]"
         >
-          {isMinimized ? <Menu size={20} strokeWidth={2.5} /> : <ChevronLeft size={24} strokeWidth={3} />}
+          {isMinimized ? <Menu size={18} strokeWidth={2.5} /> : <ChevronLeft size={20} strokeWidth={3} />}
         </Button>
         <div className="flex flex-col">
-          <h1 className="text-3xl font-black text-green-600 uppercase tracking-tight leading-none drop-shadow-sm">
+          <h1 className="text-xl font-black text-green-600 uppercase tracking-tight leading-none drop-shadow-sm">
             {headerTitle}
           </h1>
         </div>
       </div>
 
       {/* Right: Greeting & Notifications */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className="flex flex-col items-end hidden sm:flex">
-          <span className="text-base font-extrabold text-gray-800 tracking-tight">
-            Welcome Back ,
-       
-          <span className="text-base font-bold text-green-500 tracking-wide uppercase">
-              {sessionStorage.getItem("firstName") || "User"} 
-          </span>
+          <span className="text-sm font-extrabold text-gray-800 tracking-tight">
+            Welcome Back,
+            <span className="ml-1 text-sm font-bold text-green-500 tracking-wide uppercase">
+              {sessionStorage.getItem("firstName") || "User"}
+            </span>
           </span>
         </div>
-        <button className="relative p-2.5 bg-green-50 text-green-600 hover:bg-green-100 rounded-[1rem] transition-all shadow-sm group">
-          <Bell size={22} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
-          <span className="absolute top-2.5 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+        <button className="relative p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-[0.75rem] transition-all shadow-sm group">
+          <Bell size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
+          <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></span>
         </button>
       </div>
     </header>
