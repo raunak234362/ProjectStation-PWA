@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Service from "../../api/Service";
-import { Calendar, Loader2, Inbox } from "lucide-react";
+import { Calendar, Loader2 } from "lucide-react";
 import { setProjectData, updateProject } from "../../store/projectSlice";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
 import type { ProjectData } from "../../interface";
@@ -9,7 +9,6 @@ import ProjectDetailsModal from "./components/ProjectDetailsModal";
 import MonthlyProjectStats from "./components/MonthlyProjectStats";
 import ProjectListModal from "./components/ProjectListModal";
 
-import ProjectCalendar from "./components/ProjectCalendar";
 import { Button } from "../ui/button";
 
 const ProjectDashboard = () => {
@@ -27,6 +26,7 @@ const ProjectDashboard = () => {
   const [allTasks, setAllTasks] = useState<any[]>([]);
   const [selectedProjectForModal, setSelectedProjectForModal] =
     useState<ProjectData | null>(null);
+  const [allTeams, setAllTeams] = useState<any[]>([]);
 
   // List Modal State
   const [isListModalOpen, setIsListModalOpen] = useState(false);
@@ -56,10 +56,15 @@ const ProjectDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [projectsRes, tasksRes] = await Promise.all([
+      const [projectsRes, tasksRes, teamsRes] = await Promise.all([
         Service.GetAllProjects(),
         Service.GetAllTask(),
+        Service.AllTeam(),
       ]);
+
+      if (teamsRes) {
+        setAllTeams(Array.isArray(teamsRes) ? teamsRes : teamsRes.data || []);
+      }
 
       if (tasksRes?.data) {
         setAllTasks(Array.isArray(tasksRes.data) ? tasksRes.data : []);
@@ -106,8 +111,35 @@ const ProjectDashboard = () => {
     fetchDashboardData();
   }, []);
 
+  const projectsWithStats = useMemo(() => {
+    return projects.map((project) => {
+      const projectTasks = allTasks.filter(
+        (task) => task.project_id === project.id
+      );
+
+      const workedSeconds = projectTasks.reduce((sum, task) => {
+        const taskSeconds = (task.workingHourTask || []).reduce(
+          (tSum: number, wht: any) => tSum + (wht.duration_seconds || 0),
+          0
+        );
+        return sum + taskSeconds;
+      }, 0);
+
+      const estimatedHours = project.estimatedHours || 0;
+      const workedHours = workedSeconds / 3600;
+      const isOverrun = workedHours > estimatedHours && estimatedHours > 0;
+
+      return {
+        ...project,
+        workedSeconds,
+        workedHours, // Keep for backward compatibility if needed
+        isOverrun,
+      };
+    });
+  }, [projects, allTasks]);
+
   const filteredProjects = useMemo(() => {
-    return projects.filter((project) => {
+    return projectsWithStats.filter((project) => {
       if (selectedYear === null) return true;
 
       const projectDate = new Date(project.startDate);
@@ -117,7 +149,7 @@ const ProjectDashboard = () => {
 
       return matchesYear && matchesMonth;
     });
-  }, [projects, selectedYear, selectedMonth]);
+  }, [projectsWithStats, selectedYear, selectedMonth]);
 
   // Group projects by Team
   const projectsByTeam = useMemo(() => {
@@ -127,6 +159,7 @@ const ProjectDashboard = () => {
       {
         teamName: string;
         projects: ProjectData[];
+        totalSeconds: number;
         stats: Record<
           (typeof stages)[number],
           { active: number; onHold: number; completed: number; total: number }
@@ -142,6 +175,7 @@ const ProjectDashboard = () => {
         grouped[teamId] = {
           teamName,
           projects: [],
+          totalSeconds: 0,
           stats: {
             IFA: { active: 0, onHold: 0, completed: 0, total: 0 },
             IFC: { active: 0, onHold: 0, completed: 0, total: 0 },
@@ -151,6 +185,7 @@ const ProjectDashboard = () => {
       }
 
       grouped[teamId].projects.push(project);
+      grouped[teamId].totalSeconds += (project as any).workedSeconds || 0;
 
       const stage = project.stage;
       if (stages.includes(stage as any)) {
@@ -220,10 +255,11 @@ const ProjectDashboard = () => {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
           <Button
             onClick={() => setSelectedMonth(null)}
-            className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === null
+            className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all whitespace-nowrap h-auto ${
+              selectedMonth === null
                 ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
-              }`}
+            }`}
           >
             All Months
           </Button>
@@ -231,10 +267,11 @@ const ProjectDashboard = () => {
             <Button
               key={month}
               onClick={() => setSelectedMonth(index)}
-              className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === index
+              className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all whitespace-nowrap h-auto ${
+                selectedMonth === index
                   ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
-                }`}
+              }`}
             >
               {month}
             </Button>
@@ -245,228 +282,17 @@ const ProjectDashboard = () => {
       {/* Monthly Workload Stats */}
       <MonthlyProjectStats
         tasks={allTasks}
-        projects={projects}
+        projects={projectsWithStats}
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
+        teams={allTeams}
+        projectsByTeam={projectsByTeam}
+        handleStatClick={handleStatClick}
       />
 
       {/* Project Timeline Calendar */}
       {/* <ProjectCalendar projects={projects} tasks={allTasks} /> */}
 
-      {/* Team-based Project Stats */}
-      <div className="overflow-x-auto pb-4">
-        <div className="flex gap-6 min-w-max">
-          {Object.keys(projectsByTeam).length > 0 ? (
-            Object.values(projectsByTeam).map((teamData) => (
-              <div
-                key={teamData.teamName}
-                className="min-w-[450px] bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm"
-              >
-                {/* Team Header */}
-                <div className="bg-gray-800 p-3 text-center border-b border-gray-200">
-                  <h3 className="text-lg font-bold text-white uppercase tracking-wider truncate">
-                    {teamData.teamName}
-                  </h3>
-                </div>
-
-                {/* Grid Header */}
-                <div className="grid grid-cols-3 bg-gray-50 border-b border-gray-200">
-                  <div className="p-2 text-center border-r border-gray-200 font-bold text-gray-700">
-                    IFA
-                  </div>
-                  <div className="p-2 text-center border-r border-gray-200 font-bold text-gray-700">
-                    IFC
-                  </div>
-                  <div className="p-2 text-center font-bold text-gray-700">
-                    CO
-                  </div>
-                </div>
-
-                {/* Grid Body */}
-                <div className="grid grid-cols-3 divide-x divide-gray-200">
-                  {/* IFA Column */}
-                  <div className="p-3 flex flex-col gap-3">
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "IFA", "ACTIVE")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-green-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-green-600">
-                        Active
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-green-700">
-                        {teamData.stats["IFA"].active}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "IFA", "ON_HOLD")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-orange-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-orange-600">
-                        On-Hold
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-orange-700">
-                        {teamData.stats["IFA"].onHold}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "IFA", "COMPLETED")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-blue-600">
-                        Done
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-blue-700">
-                        {teamData.stats["IFA"].completed}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "IFA", "TOTAL")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-all group"
-                    >
-                      <span className="text-[10px] font-bold text-gray-700 uppercase">
-                        Total
-                      </span>
-                      <span className="text-base font-black text-gray-900">
-                        {teamData.stats["IFA"].total}
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* IFC Column */}
-                  <div className="p-3 flex flex-col gap-3">
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "IFC", "ACTIVE")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-green-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-green-600">
-                        Active
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-green-700">
-                        {teamData.stats["IFC"].active}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "IFC", "ON_HOLD")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-orange-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-orange-600">
-                        On-Hold
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-orange-700">
-                        {teamData.stats["IFC"].onHold}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "IFC", "COMPLETED")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-blue-600">
-                        Done
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-blue-700">
-                        {teamData.stats["IFC"].completed}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "IFC", "TOTAL")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-all group"
-                    >
-                      <span className="text-[10px] font-bold text-gray-700 uppercase">
-                        Total
-                      </span>
-                      <span className="text-base font-black text-gray-900">
-                        {teamData.stats["IFC"].total}
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* CO Column */}
-                  <div className="p-3 flex flex-col gap-3">
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "CO#", "ACTIVE")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-green-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-green-600">
-                        Active
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-green-700">
-                        {teamData.stats["CO#"].active}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "CO#", "ON_HOLD")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-orange-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-orange-600">
-                        On-Hold
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-orange-700">
-                        {teamData.stats["CO#"].onHold}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "CO#", "COMPLETED")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all group"
-                    >
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase group-hover:text-blue-600">
-                        Done
-                      </span>
-                      <span className="text-base font-bold text-gray-800 group-hover:text-blue-700">
-                        {teamData.stats["CO#"].completed}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleStatClick(teamData.projects, "CO#", "TOTAL")
-                      }
-                      className="flex flex-col items-center justify-center p-2 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-all group"
-                    >
-                      <span className="text-[10px] font-bold text-gray-700 uppercase">
-                        Total
-                      </span>
-                      <span className="text-base font-black text-gray-900">
-                        {teamData.stats["CO#"].total}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="w-full flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
-              <Inbox className="w-12 h-12 text-gray-300 mb-4" />
-              <h3 className="text-2xl font-bold text-gray-700">
-                No Projects Found
-              </h3>
-              <p className="text-lg text-gray-700">
-                Try adjusting your filters to see more results.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
 
       <ProjectListModal
         isOpen={isListModalOpen}

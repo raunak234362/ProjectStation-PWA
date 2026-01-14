@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import RichTextEditor from "../../fields/RichTextEditor";
 
@@ -36,6 +36,7 @@ const EditLineItem: React.FC<EditLineItemProps> = ({
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
     reset,
     watch,

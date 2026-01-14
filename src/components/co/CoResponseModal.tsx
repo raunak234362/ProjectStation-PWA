@@ -13,47 +13,43 @@ interface Props {
 }
 
 const CoResponseModal = ({ CoId, onClose, onSuccess }: Props) => {
-  const { register, handleSubmit, control, reset } =
-    useForm<CoResponsePayload>();
-const coId=CoId;
-console.log(CoId);
+  const { register, handleSubmit, control } = useForm<CoResponsePayload>();
+  console.log(CoId);
 
   const [files, setFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState(false);
-const onSubmit = async (data: CoResponsePayload) => {
-  try {
-    const userId = sessionStorage.getItem("userId") || "";
-    const userRole = sessionStorage.getItem("userRole") || "";
+  const [loading] = useState(false);
+  const onSubmit = async (data: CoResponsePayload) => {
+    try {
+      const userId = sessionStorage.getItem("userId") || "";
+      const userRole = sessionStorage.getItem("userRole") || "";
 
-    const formData = new FormData();
+      const formData = new FormData();
 
-    formData.append("CoId", CoId);
-    formData.append("description", data.description);
-    formData.append("status", data.status);
-    formData.append("userId", userId);
-    formData.append("userRole", userRole);
-    formData.append("ParentResponseId", data.parentResponseId ?? "");
+      formData.append("CoId", CoId);
+      formData.append("description", data.description);
+      formData.append("status", data.status);
+      formData.append("userId", userId);
+      formData.append("userRole", userRole);
+      formData.append("ParentResponseId", data.parentResponseId ?? "");
 
-    if (files?.length) {
-      files.forEach((file) => {
-        formData.append("files", file);
-      });
+      if (files?.length) {
+        files.forEach((file) => {
+          formData.append("files", file);
+        });
+      }
+
+      await Service.addCOResponse(formData, CoId);
+
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error("CO Response error:", error);
     }
-
-    await Service.addCOResponse(formData, coId);
-
-    onSuccess();
-    onClose();
-  } catch (error) {
-    console.error("CO Response error:", error);
-  }
-};
-
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl relative">
-
         <button onClick={onClose} className="absolute top-3 right-3">
           <X size={18} />
         </button>
@@ -63,7 +59,6 @@ const onSubmit = async (data: CoResponsePayload) => {
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-
           {/* Description */}
           <textarea
             {...register("description", { required: true })}
@@ -87,9 +82,7 @@ const onSubmit = async (data: CoResponsePayload) => {
           <Controller
             name="files"
             control={control}
-            render={() => (
-              <MultipleFileUpload onFilesChange={setFiles} />
-            )}
+            render={() => <MultipleFileUpload onFilesChange={setFiles} />}
           />
 
           <div className="flex justify-end gap-3">
@@ -102,7 +95,6 @@ const onSubmit = async (data: CoResponsePayload) => {
               {loading ? "Submitting..." : "Submit"}
             </Button>
           </div>
-
         </form>
       </div>
     </div>

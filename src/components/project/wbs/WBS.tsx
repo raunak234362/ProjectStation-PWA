@@ -1,14 +1,6 @@
 import AllWBS from "./AllWBS";
 
-const WBS = ({
-  id,
-  wbsData,
-  stage,
-}: {
-  id: string;
-  wbsData: any;
-  stage: string;
-}) => {
+const WBS = ({ id, stage }: { id: string; stage: string }) => {
   console.log(id);
 
   return (

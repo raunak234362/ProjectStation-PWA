@@ -18,8 +18,7 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { register, handleSubmit, control, reset } =
-    useForm<RFIResponseSchema>();
+  const { handleSubmit, control, reset } = useForm<RFIResponseSchema>();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 

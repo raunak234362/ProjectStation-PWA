@@ -11,10 +11,9 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
   const [replyMessage, setReplyMessage] = useState("");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [replyStatus, setReplyStatus] = useState("PENDING");
-const coID= response.CoId
   const userId = sessionStorage.getItem("userId") || "";
   const userRole = sessionStorage.getItem("userRole") || "";
-console.log(response);
+  console.log(response);
 
   const handleReply = async () => {
     if (!replyMessage.trim()) return;
@@ -40,7 +39,6 @@ console.log(response);
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
       <div className="bg-white p-6 w-full max-w-lg rounded-xl relative space-y-4">
-
         <button onClick={onClose} className="absolute top-3 right-3">
           <X size={18} />
         </button>
@@ -49,9 +47,7 @@ console.log(response);
           Response Details
         </h2>
 
-        <p className="bg-gray-100 p-3 rounded border">
-          {response.description}
-        </p>
+        <p className="bg-gray-100 p-3 rounded border">{response.description}</p>
 
         {response.files?.length > 0 && (
           <div className="space-y-1">
@@ -85,7 +81,9 @@ console.log(response);
           className="w-full border rounded p-2"
         >
           {STATUS_OPTIONS.map((s) => (
-            <option key={s} value={s}>{s}</option>
+            <option key={s} value={s}>
+              {s}
+            </option>
           ))}
         </select>
 

@@ -1,9 +1,7 @@
-import { useEffect } from "react";
-import Service from "../../api/Service";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import React, { Suspense } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 const GetProjectById = React.lazy(() =>
   import("./GetProjectById").then((module) => ({ default: module.default }))
 );
@@ -18,7 +16,6 @@ const ProjectDetailComponent = ({ row }: { row: any }) => {
 };
 
 const AllProjects = () => {
-  const dispatch = useDispatch();
   const projects = useSelector(
     (state: any) => state.projectInfo?.projectData || []
   );

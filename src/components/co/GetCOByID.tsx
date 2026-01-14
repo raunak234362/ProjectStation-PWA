@@ -32,14 +32,13 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
   const [loading, setLoading] = useState(true);
   const [co, setCO] = useState<ChangeOrderItem | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [Responses, setResponses] = useState<any[]>([]);
 
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
 
   const userRole = sessionStorage.getItem("userRole");
   console.log(id);
-  
+
   /* -------------------- SAFE DERIVED VALUES -------------------- */
   const encodedCO = useMemo(() => {
     if (!co) return "";
@@ -50,7 +49,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
     try {
       if (!co?.coResponses) return [];
       return Array.isArray(co.coResponses)
-        ? co.coResponses 
+        ? co.coResponses
         : JSON.parse(co.coResponses);
     } catch (err) {
       console.error("Failed to parse CO responses", err);
@@ -110,9 +109,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
       header: "From",
       cell: ({ row }) => (
         <span className="font-medium text-sm">
-          {row.original.createdByRole === "CLIENT"
-            ? "Client"
-            : "WBT Team"}
+          {row.original.createdByRole === "CLIENT" ? "Client" : "WBT Team"}
         </span>
       ),
     },
@@ -120,9 +117,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
       accessorKey: "reason",
       header: "Message",
       cell: ({ row }) => (
-        <p className="truncate max-w-[220px]">
-          {row.original.reason}
-        </p>
+        <p className="truncate max-w-[220px]">{row.original.reason}</p>
       ),
     },
     {
@@ -131,9 +126,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
       cell: ({ row }) => {
         const count = row.original.files?.length ?? 0;
         return count > 0 ? (
-          <span className="text-green-700 font-medium">
-            {count} file(s)
-          </span>
+          <span className="text-green-700 font-medium">{count} file(s)</span>
         ) : (
           <span className="text-gray-400">—</span>
         );
@@ -153,10 +146,11 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.original.status === "OPEN"
               ? "bg-green-100 text-green-700"
               : "bg-yellow-100 text-yellow-700"
-            }`}
+          }`}
         >
           {row.original.status}
         </span>
@@ -169,7 +163,6 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
     <>
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
           {/* ================= LEFT: CO DETAILS ================= */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
             <div className="flex justify-between items-center">
@@ -178,18 +171,19 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
               </h1>
 
               <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${co.isAproovedByAdmin === true
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                  co.isAproovedByAdmin === true
                     ? "bg-green-100 text-green-700"
                     : co.isAproovedByAdmin === false
-                      ? "bg-red-100 text-red-700"
-                      : "bg-yellow-100 text-yellow-700"
-                  }`}
+                    ? "bg-red-100 text-red-700"
+                    : "bg-yellow-100 text-yellow-700"
+                }`}
               >
                 {co.isAproovedByAdmin === true
                   ? "Approved"
                   : co.isAproovedByAdmin === false
-                    ? "Rejected"
-                    : "Pending"}
+                  ? "Rejected"
+                  : "Pending"}
               </span>
             </div>
 
@@ -206,7 +200,9 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
               label="Recipient"
               value={
                 co.recipients
-                  ? `${co.recipients.firstName ?? ""} ${co.recipients.lastName ?? ""}`
+                  ? `${co.recipients.firstName ?? ""} ${
+                      co.recipients.lastName ?? ""
+                    }`
                   : "—"
               }
             />
@@ -227,7 +223,9 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
 
             {(co.files ?? []).length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-700 mb-2">Attachments</h4>
+                <h4 className="font-semibold text-gray-700 mb-2">
+                  Attachments
+                </h4>
                 <ul className="space-y-1">
                   {(co.files ?? []).map((file: any) => (
                     <li key={file.id}>

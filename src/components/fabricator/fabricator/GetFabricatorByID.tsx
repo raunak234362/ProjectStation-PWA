@@ -7,6 +7,7 @@ import { openFileSecurely } from "../../../utils/openFileSecurely";
 import EditFabricator from "./EditFabricator";
 import AllBranches from "../branches/AllBranches";
 import AllClients from "../clients/AllClients";
+import FabricatorDashboard from "./FabricatorDashboard";
 
 interface GetFabricatorIDProps {
   id: string;
@@ -22,6 +23,9 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   const [editModel, setEditModel] = useState<Fabricator | null>(null);
   const [branch, setBranch] = useState<Fabricator | null>(null);
   const [poc, setPoc] = useState<Fabricator | null>(null);
+  const [activeTab, setActiveTab] = useState<"details" | "dashboard">(
+    "dashboard"
+  );
   useEffect(() => {
     const fetchFab = async () => {
       if (!id) {
@@ -113,81 +117,119 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
         </span>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="space-y-3">
-          {fabricator.website && (
-            <InfoRow
-              label="Website"
-              value={
-                <a
-                  href={fabricator.website}
-                  target="_blank"
-                  rel="noreferrer"
-                  title={fabricator.website}
-                  className="text-cyan-700 underline hover:text-cyan-900"
-                >
-                  {truncateText(fabricator.website, 20)}
-                </a>
-              }
-            />
-          )}
-          {fabricator.drive && (
-            <InfoRow
-              label="Drive Link"
-              value={
-                <a
-                  href={fabricator.drive}
-                  target="_blank"
-                  rel="noreferrer"
-                  title={fabricator.drive}
-                  className="text-cyan-700 underline hover:text-cyan-900 flex gap-1"
-                >
-                  <Link className="w-4 h-4" />{" "}
-                  {truncateText(fabricator.drive, 20)}
-                </a>
-              }
-            />
-          )}
-        </div>
-
-        <div className="space-y-3">
-          <InfoRow label="Created" value={formatDate(fabricator.createdAt)} />
-          <InfoRow label="Updated" value={formatDate(fabricator.updatedAt)} />
-          <InfoRow
-            label="Total Files"
-            value={
-              Array.isArray(fabricator.files) ? fabricator.files.length : 0
-            }
-          />
-        </div>
+      {/* Tabs */}
+      <div className="flex gap-4 mb-6 border-b border-green-200">
+        <button
+          onClick={() => setActiveTab("dashboard")}
+          className={`pb-2 px-1 text-sm font-semibold transition-colors ${
+            activeTab === "dashboard"
+              ? "text-green-700 border-b-2 border-green-600"
+              : "text-gray-500 hover:text-green-600"
+          }`}
+        >
+          Dashboard
+        </button>
+        <button
+          onClick={() => setActiveTab("details")}
+          className={`pb-2 px-1 text-sm font-semibold transition-colors ${
+            activeTab === "details"
+              ? "text-green-700 border-b-2 border-green-600"
+              : "text-gray-500 hover:text-green-600"
+          }`}
+        >
+          Basic Details
+        </button>
       </div>
 
-      {/* Files Section */}
-      {Array.isArray(fabricator.files) && fabricator.files.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-green-200">
-          <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
-            <FileText className="w-4 h-4" /> Files
-          </h4>
-          <ul className="text-gray-700 space-y-1">
-            {(fabricator.files as { id: string; originalName: string }[]).map(
-              (file) => (
-                <li
-                  key={file.id}
-                  className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
-                >
-                  <span>{file.originalName}</span>
-                  <a
-                    className="text-green-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
-                    onClick={() => openFileSecurely("fabricator", id, file.id)}
+      {activeTab === "dashboard" ? (
+        <FabricatorDashboard fabricator={fabricator} />
+      ) : (
+        <>
+          {/* Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-3">
+              {fabricator.website && (
+                <InfoRow
+                  label="Website"
+                  value={
+                    <a
+                      href={fabricator.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={fabricator.website}
+                      className="text-cyan-700 underline hover:text-cyan-900"
+                    >
+                      {truncateText(fabricator.website, 20)}
+                    </a>
+                  }
+                />
+              )}
+              {fabricator.drive && (
+                <InfoRow
+                  label="Drive Link"
+                  value={
+                    <a
+                      href={fabricator.drive}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={fabricator.drive}
+                      className="text-cyan-700 underline hover:text-cyan-900 flex gap-1"
+                    >
+                      <Link className="w-4 h-4" />{" "}
+                      {truncateText(fabricator.drive, 20)}
+                    </a>
+                  }
+                />
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <InfoRow
+                label="Created"
+                value={formatDate(fabricator.createdAt)}
+              />
+              <InfoRow
+                label="Updated"
+                value={formatDate(fabricator.updatedAt)}
+              />
+              <InfoRow
+                label="Total Files"
+                value={
+                  Array.isArray(fabricator.files) ? fabricator.files.length : 0
+                }
+              />
+            </div>
+          </div>
+
+          {/* Files Section */}
+          {Array.isArray(fabricator.files) && fabricator.files.length > 0 && (
+            <div className="mt-6 pt-5 border-t border-green-200">
+              <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
+                <FileText className="w-4 h-4" /> Files
+              </h4>
+              <ul className="text-gray-700 space-y-1">
+                {(
+                  fabricator.files as { id: string; originalName: string }[]
+                ).map((file) => (
+                  <li
+                    key={file.id}
+                    className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
                   >
-                    <Link2 className="w-3 h-3" /> Open
-                  </a>
-                </li>
-              )
-            )}
-          </ul>
-        </div>
+                    <span>{file.originalName}</span>
+                    <a
+                      className="text-green-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
+                      onClick={() =>
+                        openFileSecurely("fabricator", id, file.id)
+                      }
+                    >
+                      <Link2 className="w-3 h-3" /> Open
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
       )}
       {/* Buttons */}
       <div className="py-3 flex gap-3">
