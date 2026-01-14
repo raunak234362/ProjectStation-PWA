@@ -28,7 +28,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
     },
     {
       title: "Pending Submittals",
-      count: dashboardStats?.pendingSubmittals|| 0,
+      count: dashboardStats?.pendingSubmittals || 0,
       subtitle: "Response Pending",
       icon: RefreshCw,
       color: "purple",
@@ -75,13 +75,13 @@ const PendingActions: React.FC<PendingActionsProps> = ({
   };
 
   return (
-    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col justify-center">
-      <h3 className="font-semibold text-md text-gray-800 mb-2 flex items-center gap-2">
+    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center h-full">
+      <h3 className="font-semibold text-md text-gray-800 mb-3 flex items-center gap-2">
         <ClipboardList className="text-green-600" size={20} />
         Pending Actions
       </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 h-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {actions.map((action) => {
           const colors =
             colorClasses[action.color as keyof typeof colorClasses];
@@ -103,16 +103,16 @@ const PendingActions: React.FC<PendingActionsProps> = ({
               </div>
 
               <div className="flex flex-col">
-                <span className="font-semibold text-xs text-gray-700">
+                <span className="font-semibold text-xs text-gray-700 truncate">
                   {action.title}
                 </span>
                 <span
-                  className="text-lg font-bold mt-0.5"
+                  className="text-lg lg:text-xl font-bold mt-0.5"
                   style={{ color: colors.text.replace("text-", "#") }}
                 >
                   {action.count}
                 </span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider mt-1">
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider mt-1 truncate">
                   {action.subtitle} - {action.subcount || 0}
                 </span>
               </div>

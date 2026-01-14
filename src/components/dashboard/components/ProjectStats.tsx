@@ -74,12 +74,12 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   };
 
   return (
-    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col justify-center">
-      <h2 className="text-md font-semibold text-gray-800 mb-2">
+    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center h-full">
+      <h2 className="text-md font-semibold text-gray-800 mb-3">
         Project Stats
       </h2>
 
-      <div className="grid grid-cols-2 gap-3 h-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {projectCards.map((card) => {
           const colors = colorClasses[card.color as keyof typeof colorClasses];
           const isClickable = card.clickable;
@@ -102,10 +102,10 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
               </div>
 
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-gray-600">
+                <span className="text-xs font-medium text-gray-600 truncate">
                   {card.label}
                 </span>
-                <span className={`text-lg font-bold mt-0.5 ${colors.text}`}>
+                <span className={`text-lg lg:text-xl font-bold mt-0.5 ${colors.text}`}>
                   {card.value}
                 </span>
               </div>

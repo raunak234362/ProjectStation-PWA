@@ -102,7 +102,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   }, []);
 
   return (
-    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden">
+    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2 shrink-0">
         <div>
           <h2 className="text-md font-semibold text-gray-700 flex items-center gap-2">
@@ -139,8 +139,8 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
         <button
           onClick={() => setSelectedMonth(null)}
           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shadow-sm ${selectedMonth === null
-              ? "bg-green-500 text-white shadow-green-200"
-              : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
+            ? "bg-green-500 text-white shadow-green-200"
+            : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
             }`}
         >
           All Months
@@ -150,8 +150,8 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             key={month}
             onClick={() => setSelectedMonth(index)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shadow-sm ${selectedMonth === index
-                ? "bg-green-500 text-white shadow-green-200"
-                : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
+              ? "bg-green-500 text-white shadow-green-200"
+              : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
               }`}
           >
             {month}

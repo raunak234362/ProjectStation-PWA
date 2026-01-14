@@ -41,36 +41,36 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   }, [invoices]);
 
   return (
-    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden">
-      <div className="flex items-center justify-between mb-4 shrink-0">
-        <div className="flex gap-2 bg-white/50 p-1 rounded-lg">
+    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 shrink-0">
+        <div className="flex gap-2 bg-white/50 p-1 rounded-lg self-start sm:self-auto">
           <button
             onClick={() => setActiveTab("submittals")}
-            className={`px-4 py-2 text-sm font-semibold rounded-md transition-all ${activeTab === "submittals"
-                ? "bg-green-500 text-white shadow-md shadow-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-white"
+            className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${activeTab === "submittals"
+              ? "bg-green-500 text-white shadow-md shadow-green-200"
+              : "text-gray-500 hover:text-gray-700 hover:bg-white"
               }`}
           >
             Upcoming Submittals
           </button>
           <button
             onClick={() => setActiveTab("invoices")}
-            className={`px-4 py-2 text-sm font-semibold rounded-md transition-all ${activeTab === "invoices"
-                ? "bg-green-500 text-white shadow-md shadow-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-white"
+            className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${activeTab === "invoices"
+              ? "bg-green-500 text-white shadow-md shadow-green-200"
+              : "text-gray-500 hover:text-gray-700 hover:bg-white"
               }`}
           >
             Invoice Need Raise
           </button>
         </div>
-        <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm">
+        <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm self-start sm:self-auto">
           {activeTab === "submittals"
             ? `${pendingSubmittals.length} Pending`
             : `${invoiceNeedRaise.length} Need Raise`}
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 space-y-4 no-scrollbar min-h-0">
+      <div className="flex-1 space-y-4 min-h-0">
         {activeTab === "submittals" ? (
           pendingSubmittals.length > 0 ? (
             Object.entries(groupedSubmittals).map(([projectName, items]) => (
@@ -91,8 +91,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                       <div
                         key={submittal.id || index}
                         className={`p-3 rounded-lg border transition-all group ${overdue
-                            ? "bg-red-50 border-red-100 hover:bg-red-100/50 hover:border-red-200 shadow-sm shadow-red-50"
-                            : "bg-white border-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50"
+                          ? "bg-red-50 border-red-100 hover:bg-red-100/50 hover:border-red-200 shadow-sm shadow-red-50"
+                          : "bg-white border-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50"
                           }`}
                       >
                         <div className="flex justify-between items-start mb-1">
@@ -102,8 +102,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                             )}
                             <h4
                               className={`font-bold text-xs transition-colors ${overdue
-                                  ? "text-red-700"
-                                  : "text-gray-700 group-hover:text-green-700"
+                                ? "text-red-700"
+                                : "text-gray-700 group-hover:text-green-700"
                                 }`}
                             >
                               {submittal.subject || "No Subject"}

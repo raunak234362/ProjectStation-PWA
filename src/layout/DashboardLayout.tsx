@@ -27,8 +27,9 @@ const Layout = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-100/50">
-      {/* Sidebar Area - sits on the green background */}
+    // Outer container matches the Sidebar's Green Theme (Brand Color #6bbd45)
+    <div className="flex h-screen w-screen overflow-hidden bg-[#6bbd45]">
+      {/* Sidebar Area */}
       <div className="hidden md:flex relative z-10">
         <Sidebar
           isMinimized={isMinimized}
@@ -45,7 +46,7 @@ const Layout = () => {
       ></div>
 
       <div
-        className={`fixed top-0 left-0 h-full bg-white z-50 transform transition-transform duration-300 md:hidden ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 h-full bg-background z-50 transform transition-transform duration-300 md:hidden ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         <Sidebar
@@ -55,9 +56,9 @@ const Layout = () => {
         />
       </div>
 
-      {/* Main Content Area - White Card effect with rounded corners on the left */}
-      <div className="flex flex-col flex-1 min-h-0 bg-[#f0fdf4] p-4 pl-0">
-        <div className="flex-1 bg-white rounded-[2.5rem] shadow-sm overflow-hidden flex flex-col relative">
+      {/* Main Content Area - White Card effect */}
+      <div className="flex flex-col flex-1 min-h-0 bg-background p-2 pl-0">
+        <div className="flex-1 bg-gray-50 rounded-xl shadow-2xl overflow-hidden flex flex-col relative transition-all">
 
           {/* Optional: If Header is needed globally, it goes here inside the white card */}
           <div className="px-8 pt-6">
