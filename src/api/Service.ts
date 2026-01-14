@@ -24,6 +24,18 @@ class Service {
     }
   }
 
+  // Update employee
+  static async UpdateEmployee(id: string, employeeData: EmployeePayload) {
+    try {
+      const response = await api.put(`employee/${id}`, employeeData);
+      console.log(response);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error while updating Employee", error);
+    }
+  }
+
   //Add New Employee
   static async AddEmployee(employeeData: EmployeePayload) {
     try {

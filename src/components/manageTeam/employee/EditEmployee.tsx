@@ -6,6 +6,7 @@ import Service from "../../../api/Service";
 import type { EditEmployeePayload, UserData } from "../../../interface";
 import { Loader2, X, Check } from "lucide-react";
 import Input from "../../fields/input";
+import Select from "../../fields/Select";
 
 interface EditEmployeeProps {
   employeeData: UserData;
@@ -22,11 +23,41 @@ const EditEmployee = ({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { register, handleSubmit, setValue } = useForm<EditEmployeePayload>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<EditEmployeePayload>({
     defaultValues: {
       role: "STAFF",
     },
   });
+
+  const roleOptions = [
+    { label: "STAFF", value: "STAFF" },
+    { label: "ADMIN", value: "ADMIN" },
+    { label: "OPERATION_EXECUTIVE", value: "OPERATION_EXECUTIVE" },
+    { label: "PROJECT_MANAGER_OFFICER", value: "PROJECT_MANAGER_OFFICER" },
+    { label: "DEPUTY_MANAGER", value: "DEPUTY_MANAGER" },
+    { label: "DEPT_MANAGER", value: "DEPT_MANAGER" },
+    { label: "PROJECT_MANAGER", value: "PROJECT_MANAGER" },
+    { label: "TEAM_LEAD", value: "TEAM_LEAD" },
+    { label: "SALES_MANAGER", value: "SALES_MANAGER" },
+    { label: "SALES_PERSON", value: "SALES_PERSON" },
+    { label: "SYSTEM_ADMIN", value: "SYSTEM_ADMIN" },
+    { label: "ESTIMATION_HEAD", value: "ESTIMATION_HEAD" },
+    { label: "ESTIMATOR", value: "ESTIMATOR" },
+    { label: "HUMAN_RESOURCE", value: "HUMAN_RESOURCE" },
+  ];
+
+  // Watch current role value (string)
+  const selectedRole = watch("role");
+
+  // Find the full option object for display
+  const selectedRoleOption =
+    roleOptions.find((opt) => opt.value === selectedRole) || null;
 
   // ── Fetch employee data & pre‑fill form ──
   useEffect(() => {
@@ -166,25 +197,24 @@ const EditEmployee = ({
             />
 
             {/* Role */}
-            {/* <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Role
               </label>
-              <select
-                {...register("role", { required: "Role is required" })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
-              >
-                <option value="STAFF">Staff</option>
-                <option value="ADMIN">Admin</option>
-                <option value="MANAGER">Manager</option>
-                <option value="INTERN">Intern</option>
-              </select>
+              <Select
+                options={roleOptions}
+                {...register("role")}
+                value={selectedRoleOption?.value}
+                onChange={(_, value) => setValue("role", value as any)}
+                placeholder="Select role..."
+                className="mt-1"
+              />
               {errors.role && (
                 <p className="mt-1 text-xs text-red-600">
                   {errors.role.message}
                 </p>
               )}
-            </div> */}
+            </div>
 
             {/* ── Address ── */}
             <div className="md:col-span-2">
