@@ -100,17 +100,17 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2 shrink-0">
         <div>
-          <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+          <h2 className="text-md font-semibold text-gray-700 flex items-center gap-2">
             Invoice Trends
-            <span className="text-sm font-normal text-gray-700">
+            <span className="text-xs font-normal text-gray-700">
               | Total: ${totalPeriodAmount.toLocaleString()} ({totalPeriodCount}{" "}
               Invoices)
             </span>
           </h2>
-          <p className="text-xs text-gray-700">
+          <p className="text-[10px] text-gray-500">
             Showing trends for{" "}
             {selectedMonth !== null ? `${months[selectedMonth]} ` : ""}
             {selectedYear}
@@ -121,7 +121,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="p-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-gray-50 font-medium"
+            className="py-1 px-2 text-xs border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-white font-medium shadow-sm"
           >
             {years.map((year) => (
               <option key={year} value={year}>
@@ -133,14 +133,13 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
       </div>
 
       {/* Month Filter Row */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+      <div className="flex items-center gap-2 mb-2 overflow-x-auto pb-2 no-scrollbar shrink-0">
         <button
           onClick={() => setSelectedMonth(null)}
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-            selectedMonth === null
-              ? "bg-green-600 text-white shadow-md shadow-green-100"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-          }`}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shadow-sm ${selectedMonth === null
+            ? "bg-green-500 text-white shadow-green-200"
+            : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
+            }`}
         >
           All Months
         </button>
@@ -148,20 +147,19 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           <button
             key={month}
             onClick={() => setSelectedMonth(index)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-              selectedMonth === index
-                ? "bg-green-600 text-white shadow-md shadow-green-100"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shadow-sm ${selectedMonth === index
+              ? "bg-green-500 text-white shadow-green-200"
+              : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
+              }`}
           >
             {month}
           </button>
         ))}
       </div>
 
-      <div className="h-[300px]">
+      <div className="flex-1 min-h-0 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={processedChartData}>
+          <ComposedChart data={processedChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
@@ -171,33 +169,34 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
-              dy={10}
+              tick={{ fill: "#9ca3af", fontSize: 10 }}
+              dy={5}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
+              tick={{ fill: "#9ca3af", fontSize: 10 }}
               tickFormatter={(value) =>
-                `$${value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value}`
+                `$${value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`
               }
+              width={35}
             />
             <Tooltip
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   return (
-                    <div className="bg-white p-3 rounded-xl shadow-xl border border-gray-100">
-                      <p className="text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                    <div className="bg-white p-2 rounded-lg shadow-xl border border-gray-100 text-xs">
+                      <p className="font-bold text-gray-400 mb-1 uppercase tracking-wider">
                         {selectedMonth !== null
                           ? `${months[selectedMonth]} ${label}`
                           : label}
                       </p>
-                      <div className="flex flex-col gap-1">
-                        <p className="text-sm font-bold text-green-700">
+                      <div className="flex flex-col gap-0.5">
+                        <p className="font-bold text-green-700">
                           Amount: ${data.amount.toLocaleString()}
                         </p>
-                        <p className="text-xs font-medium text-gray-700">
+                        <p className="font-medium text-gray-700">
                           Invoices: {data.count}
                         </p>
                       </div>
@@ -214,7 +213,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               fill="#0d9488"
               fillOpacity={0.1}
               stroke="#6bbd45"
-              strokeWidth={3}
+              strokeWidth={2}
             />
           </ComposedChart>
         </ResponsiveContainer>
@@ -222,5 +221,4 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     </div>
   );
 };
-
 export default InvoiceTrends;
