@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavLink, useNavigate } from "react-router-dom";
-import LOGO from "../assets/mainLogo.png";
+import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
 import { LogOut, X } from "lucide-react";

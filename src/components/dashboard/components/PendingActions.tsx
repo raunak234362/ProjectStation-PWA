@@ -75,13 +75,13 @@ const PendingActions: React.FC<PendingActionsProps> = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <h3 className="font-semibold text-lg text-gray-800 mb-6 flex items-center gap-3">
-        <ClipboardList className="text-green-600" size={24} />
+    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col justify-center">
+      <h3 className="font-semibold text-md text-gray-800 mb-2 flex items-center gap-2">
+        <ClipboardList className="text-green-600" size={20} />
         Pending Actions
       </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 h-full">
         {actions.map((action) => {
           const colors =
             colorClasses[action.color as keyof typeof colorClasses];
@@ -94,26 +94,26 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   onActionClick("PENDING_SUBMITTALS");
                 }
               }}
-              className="flex flex-row items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
+              className="flex flex-row items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 cursor-pointer group bg-white border border-transparent hover:border-gray-100"
             >
               <div
-                className={`p-3 rounded-lg ${colors.bg} ${colors.text} group-hover:${colors.hoverBg} transition-colors`}
+                className={`p-2 rounded-lg ${colors.bg} ${colors.text} group-hover:${colors.hoverBg} transition-colors`}
               >
-                <action.icon size={24} />
+                <action.icon size={20} />
               </div>
 
               <div className="flex flex-col">
-                <span className="font-semibold text-gray-700">
+                <span className="font-semibold text-xs text-gray-700">
                   {action.title}
                 </span>
                 <span
-                  className="text-2xl font-bold mt-1"
+                  className="text-lg font-bold mt-0.5"
                   style={{ color: colors.text.replace("text-", "#") }}
                 >
                   {action.count}
                 </span>
-                <span className="text-xs text-gray-500 uppercase tracking-wider mt-2">
-                  {action.subtitle} - {action.subcount}
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider mt-1">
+                  {action.subtitle} - {action.subcount || 0}
                 </span>
               </div>
             </div>

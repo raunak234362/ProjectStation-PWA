@@ -74,12 +74,12 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <h2 className="text-lg font-semibold text-gray-800 mb-6">
+    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col justify-center">
+      <h2 className="text-md font-semibold text-gray-800 mb-2">
         Project Stats
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-10">
+      <div className="grid grid-cols-2 gap-3 h-full">
         {projectCards.map((card) => {
           const colors = colorClasses[card.color as keyof typeof colorClasses];
           const isClickable = card.clickable;
@@ -89,23 +89,23 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
               key={card.label}
               onClick={() => isClickable && card.status && onCardClick(card.status)}
               className={`
-                flex items-center gap-4 p-4 rounded-xl border 
+                flex items-center gap-3 p-3 rounded-lg border 
                 ${colors.bg} ${isClickable ? colors.hoverBg + " cursor-pointer" : ""} 
                 ${isClickable ? "transition-all duration-200 hover:shadow-md" : ""}
                 border-gray-200
               `}
             >
               <div
-                className={`p-3 rounded-lg ${colors.iconBg} text-white shrink-0`}
+                className={`p-2 rounded-lg ${colors.iconBg} text-white shrink-0`}
               >
-                <card.icon size={24} />
+                <card.icon size={20} />
               </div>
 
               <div className="flex flex-col">
-                <span className="text-sm font-medium text-gray-600">
+                <span className="text-xs font-medium text-gray-600">
                   {card.label}
                 </span>
-                <span className={`text-2xl font-bold mt-1 ${colors.text}`}>
+                <span className={`text-lg font-bold mt-0.5 ${colors.text}`}>
                   {card.value}
                 </span>
               </div>
