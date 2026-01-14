@@ -76,7 +76,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
 
   return (
     <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center h-full">
-      <h3 className="font-semibold text-md text-gray-800 mb-3 flex items-center gap-2">
+      <h3 className="font-semibold text-lg text-gray-800 mb-3 flex items-center gap-2">
         <ClipboardList className="text-green-600" size={20} />
         Pending Actions
       </h3>
@@ -99,11 +99,11 @@ const PendingActions: React.FC<PendingActionsProps> = ({
               <div
                 className={`p-2 rounded-lg ${colors.bg} ${colors.text} group-hover:${colors.hoverBg} transition-colors`}
               >
-                <action.icon size={20} />
+                <action.icon size={25} />
               </div>
 
               <div className="flex flex-col">
-                <span className="font-semibold text-xs text-gray-700 truncate">
+                <span className="font-semibold text-md text-gray-700 truncate">
                   {action.title}
                 </span>
                 <span
@@ -112,7 +112,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                 >
                   {action.count}
                 </span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider mt-1 truncate">
+                <span className="text-sm text-gray-400 uppercase tracking-wider mt-1 truncate">
                   {action.subtitle} - {action.subcount || 0}
                 </span>
               </div>
