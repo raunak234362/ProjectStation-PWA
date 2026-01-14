@@ -45,6 +45,42 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       ),
     },
     {
+      accessorKey: "estimatedHours",
+      header: "Est. Hours",
+      cell: ({ row }) => (
+        <span className="text-gray-700 font-medium">
+          {row.original.estimatedHours || 0}h
+        </span>
+      ),
+    },
+    {
+      accessorKey: "workedHours",
+      header: "Worked Hours",
+      cell: ({ row }) => (
+        <span
+          className={`font-bold ${
+            row.original.isOverrun ? "text-red-600" : "text-green-600"
+          }`}
+        >
+          {(row.original.workedHours || 0).toFixed(1)}h
+        </span>
+      ),
+    },
+    {
+      accessorKey: "isOverrun",
+      header: "Overrun",
+      cell: ({ row }) =>
+        row.original.isOverrun ? (
+          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-[10px] font-black uppercase tracking-tighter animate-pulse">
+            OVERRUN
+          </span>
+        ) : (
+          <span className="text-gray-300 text-[10px] font-bold uppercase">
+            Normal
+          </span>
+        ),
+    },
+    {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
