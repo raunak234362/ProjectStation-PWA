@@ -29,6 +29,13 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
     "#ec4899",
     "#14b8a6",
     "#6366f1",
+    "#ef4444",
+    "#84cc16",
+    "#0ea5e9",
+    "#d946ef",
+    "#f97316",
+    "#64748b",
+    "#a855f7",
   ];
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -195,7 +202,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
               <Pie
                 data={stateData}
                 cx="50%"
-                cy="50%"
+                cy="40%"
                 innerRadius={60}
                 outerRadius={80}
                 paddingAngle={5}
@@ -217,7 +224,8 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
               />
               <Legend
                 verticalAlign="bottom"
-                height={36}
+                height={80}
+                wrapperStyle={{ overflowY: 'auto' }}
                 iconType="circle"
                 formatter={(value, entry: any) => (
                   <span className="text-xs text-gray-600 ml-1">
@@ -225,15 +233,27 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                   </span>
                 )}
               />
+              <text
+                x="50%"
+                y="40%"
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                <tspan
+                  x="50%"
+                  dy="-0.5em"
+                  fontSize="24"
+                  fontWeight="bold"
+                  fill="#1f2937"
+                >
+                  {stateData.reduce((a, b) => a + b.count, 0)}
+                </tspan>
+                <tspan x="50%" dy="1.5em" fontSize="12" fill="#6b7280">
+                  Total States
+                </tspan>
+              </text>
             </PieChart>
           </ResponsiveContainer>
-          {/* Center Text */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none mb-8">
-            <span className="text-2xl font-bold text-gray-800">
-              {stateData.reduce((a, b) => a + b.count, 0)}
-            </span>
-            <p className="text-xs text-gray-500">Total States</p>
-          </div>
         </div>
       </motion.div>
     </div>

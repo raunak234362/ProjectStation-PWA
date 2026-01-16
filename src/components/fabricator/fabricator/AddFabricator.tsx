@@ -26,9 +26,10 @@ const AddFabricator = () => {
   const onSubmit = async (data: FabricatorPayload) => {
     try {
       const formData = new FormData();
-      formData.append("fabName", data.fabName);
+      formData.append("fabName", data.fabName.toUpperCase());
       formData.append("website", data.website || "");
       formData.append("drive", data.drive || "");
+      formData.append("fabStage", data.fabStage || "");
 
       if (Array.isArray(data.files) && data.files.length > 0) {
         // Append each file to the FormData
@@ -86,6 +87,7 @@ const AddFabricator = () => {
           )}
         </div>
 
+      
         {/* Website */}
         <div>
           <label className="block text-gray-700 font-semibold mb-1">
@@ -101,7 +103,7 @@ const AddFabricator = () => {
         </div>
 
         {/* Drive Link */}
-        <div className="md:col-span-2">
+        <div>
           <label className="block text-gray-700 font-semibold mb-1">
             Drive Link (optional)
           </label>
@@ -112,6 +114,26 @@ const AddFabricator = () => {
             placeholder="https://drive.google.com/..."
             className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
           />
+        </div>
+
+        {/* Stage Selection */}
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Stage <span className="text-red-500">*</span>
+          </label>
+          <select
+            {...register("fabStage", { required: "Stage is required" })}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 outline-none bg-white transition-all shadow-sm"
+          >
+            <option value="">Select Stage</option>
+            <option value="RFQ">RFQ</option>
+            <option value="PRODUCTION">PRODUCTION</option>
+          </select>
+          {errors.fabStage && (
+            <p className="text-red-500 text-xs mt-1">
+              {String(errors.fabStage.message)}
+            </p>
+          )}
         </div>
 
         {/* File Upload - FIXED */}
