@@ -1785,7 +1785,7 @@ class Service {
     fileId: string | undefined
   ) {
     try {
-      const response = await api.get(`${table}/share/${parentId}/${fileId}`);
+      const response = await api.post(`share/${table}/${parentId}/${fileId}`);
       return response.data;
     } catch (error) {
       console.error("Error creating share link:", error);

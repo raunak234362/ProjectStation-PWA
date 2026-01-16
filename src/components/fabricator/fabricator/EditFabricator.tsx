@@ -255,7 +255,7 @@ const EditFabricator = ({
               <Input
                 label="Fabricat Percentage (%)"
                 type="number"
-                {...register("approvalPercentage", { valueAsNumber: true })}
+                {...register("fabricatPercentage", { valueAsNumber: true })}
                 placeholder="0"
                 className="w-full"
               />
