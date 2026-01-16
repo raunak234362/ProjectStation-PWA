@@ -76,13 +76,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-    | string
-    | []
-    | {
-        firstName?: string;
-        lastName?: string;
-        middleName?: string;
-      };
+  | string
+  | []
+  | {
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+  };
 }
 
 export interface DepartmentPayload {
@@ -93,6 +93,7 @@ export interface FabricatorPayload {
   fabName: string;
   website?: string;
   drive?: string;
+  fabStage?: "RFQ" | "PRODUCTION";
   files?: File | string | "";
 }
 export interface FabricatorEditPayload {
