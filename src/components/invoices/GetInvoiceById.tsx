@@ -130,100 +130,82 @@ const GetInvoiceById = ({ id }: { id: string }) => {
         </div>
 
         {/* Items Table */}
-        <div className="mb-8">
-          <table className="w-full border-collapse">
+        <div className="mb-0">
+          <table className="w-full border-collapse table-fixed">
             <thead>
               <tr className="bg-[#4ade80] text-white text-sm">
-                <th className="py-2 px-2 text-center border border-[#4ade80] w-12">
-                  Sl. #
-                </th>
-                <th className="py-2 px-2 text-left border border-[#4ade80]">
-                  Description of Engineering Services
-                </th>
-                <th className="py-2 px-2 text-center border border-[#4ade80] w-24">
-                  SAC
-                </th>
-                <th className="py-2 px-2 text-center border border-[#4ade80] w-16">
-                  Unit
-                </th>
-                <th className="py-2 px-2 text-right border border-[#4ade80] w-32">
-                  Rate ({invoice.currencyType})
-                </th>
-                <th className="py-2 px-2 text-right border border-[#4ade80] w-32">
-                  Total
-                </th>
-                <th className="py-2 px-2 text-right border border-[#4ade80] w-32">
-                  Total ({invoice.currencyType})
-                </th>
+                <th className="py-3 px-2 text-center w-[5%] font-semibold">Sl. #</th>
+                <th className="py-3 px-2 text-left w-[35%] font-semibold">Description of Engineering Services</th>
+                <th className="py-3 px-2 text-center w-[10%] font-semibold">SAC</th>
+                <th className="py-3 px-2 text-center w-[10%] font-semibold">Unit</th>
+                <th className="py-3 px-2 text-right w-[13%] font-semibold">Rate ({invoice.currencyType})</th>
+                <th className="py-3 px-2 text-right w-[13%] font-semibold">Total</th>
+                <th className="py-3 px-2 text-right w-[14%] font-semibold">Total ({invoice.currencyType})</th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {invoice.invoiceItems?.map((item: any, index: number) => (
-                <tr key={index}>
-                  <td className="py-2 px-2 text-center border-b border-gray-300">
-                    {index + 1}.
-                  </td>
-                  <td className="py-2 px-2 border-b border-gray-300">
+                <tr key={index} className="border-b border-gray-200">
+                  <td className="py-3 px-2 text-center">{index + 1}.</td>
+                  <td className="py-3 px-2 text-left">
                     {item.description}
                     {item.remarks && (
-                      <div className="text-xs text-gray-700 italic mt-1">
+                      <div className="text-xs text-gray-500 mt-1 italic">
                         ({item.remarks})
                       </div>
                     )}
                   </td>
-                  <td className="py-2 px-2 text-center border-b border-gray-300">
-                    {item.sacCode || ""}
-                  </td>
-                  <td className="py-2 px-2 text-center border-b border-gray-300">
-                    {item.unit}
-                  </td>
-                  <td className="py-2 px-2 text-right border-b border-gray-300">
+                  <td className="py-3 px-2 text-center">{item.sacCode || ""}</td>
+                  <td className="py-3 px-2 text-center">{item.unit}</td>
+                  <td className="py-3 px-2 text-right">
                     {item.rateUSD?.toFixed(2) || item.rate?.toFixed(2)}
                   </td>
-                  <td className="py-2 px-2 text-right border-b border-gray-300">
+                  <td className="py-3 px-2 text-right">
                     {item.totalUSD?.toFixed(2) || item.amount?.toFixed(2)}
                   </td>
-                  <td className="py-2 px-2 text-right border-b border-gray-300">
+                  <td className="py-3 px-2 text-right font-medium">
                     {item.totalUSD?.toFixed(2) || item.amount?.toFixed(2)}
                   </td>
                 </tr>
               ))}
-              {/* Empty rows filler if needed, or just border bottom */}
-              <tr>
-                <td colSpan={7} className="border-b border-gray-800 h-1"></td>
-              </tr>
+              {/* Filler Rows to maintain min height if needed, implies professional space */}
+              {[...Array(Math.max(0, 3 - (invoice.invoiceItems?.length || 0)))].map((_, i) => (
+                <tr key={`filler-${i}`} className="border-b border-gray-100">
+                  <td colSpan={7} className="py-4">&nbsp;</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
 
-        {/* Totals */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center border-b border-gray-300 py-1 font-bold text-sm">
-            <span>Total</span>
-            <span>
-              {formatCurrency(invoice.totalInvoiceValue, invoice.currencyType)}
-            </span>
-          </div>
-          <div className="flex justify-end gap-16 border-b border-gray-300 py-1 text-sm font-bold">
-            <span>Rate</span>
-            <span>Amount</span>
-          </div>
-          <div className="flex justify-end gap-16 border-b border-gray-800 py-1 mb-1">
-            <span className="w-10 text-center">-</span>
-            <span className="w-10 text-center">-</span>
+        {/* Totals Section */}
+        <div className="flex flex-col items-end mb-8">
+          <div className="w-full max-w-md">
+            <div className="flex justify-between py-2 border-b border-gray-300 text-sm">
+              <span className="font-bold text-gray-700">Total</span>
+              <span className="font-bold text-gray-900">{formatCurrency(invoice.totalInvoiceValue, invoice.currencyType)}</span>
+            </div>
+            {/* Optional Rate/Amount breakdown row if needed per image, usually redundant with bottom totals but adding placeholder */}
+            <div className="flex justify-end gap-12 py-1 text-xs text-gray-500 border-b border-gray-200">
+              <span className="w-20 text-right">Rate</span>
+              <span className="w-20 text-right">Amount</span>
+            </div>
+            <div className="flex justify-end gap-12 py-1 text-sm border-b border-gray-800 mb-2">
+              <span className="w-20 text-right">-</span>
+              <span className="w-20 text-right">-</span>
+            </div>
+
+            <div className="flex justify-between py-2 text-sm border-b border-gray-300">
+              <span className="font-bold text-gray-700">Total Invoice Value (in Figures)</span>
+              <span className="font-bold text-gray-900">{formatCurrency(invoice.totalInvoiceValue, invoice.currencyType)}</span>
+            </div>
           </div>
 
-          <div className="flex justify-between items-center border-b border-gray-400 py-2 font-bold text-sm">
-            <span>Total Invoice Value (in Figures)</span>
-            <span>
-              {formatCurrency(invoice.totalInvoiceValue, invoice.currencyType)}
-            </span>
-          </div>
-          <div className="flex items-start gap-2 border-b border-gray-800 py-2 font-bold text-sm">
-            <span>Total Invoice Value (in Words):</span>
-            <span className="uppercase">
-              {invoice.totalInvoiceValueInWords || "—"} Only
-            </span>
+          <div className="w-full mt-4 p-3 bg-gray-50 border border-gray-200 rounded lg:w-full">
+            <div className="flex gap-2 text-sm">
+              <span className="font-bold text-gray-700 whitespace-nowrap">Total Invoice Value (in Words):</span>
+              <span className="uppercase font-medium text-gray-900">{invoice.totalInvoiceValueInWords || "—"} ONLY</span>
+            </div>
           </div>
         </div>
 
