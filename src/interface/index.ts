@@ -76,13 +76,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-  | string
-  | []
-  | {
-    firstName?: string;
-    lastName?: string;
-    middleName?: string;
-  };
+    | string
+    | []
+    | {
+        firstName?: string;
+        lastName?: string;
+        middleName?: string;
+      };
 }
 
 export interface DepartmentPayload {
@@ -95,11 +95,15 @@ export interface FabricatorPayload {
   drive?: string;
   fabStage?: "RFQ" | "PRODUCTION";
   files?: File | string | "";
+  approvalPercentage?: number;
+  paymenTDueDate?: number;
+  fabricatPercentage?: number;
 }
 export interface FabricatorEditPayload {
   fabName: string;
   website?: string;
   drive?: string;
+  fabStage?: "RFQ" | "PRODUCTION";
   files?: File | [] | "";
 }
 
@@ -128,7 +132,13 @@ export interface Fabricator {
   fabName: string;
   website: string;
   drive: string;
+  fabStage?: "RFQ" | "PRODUCTION";
   accountId?: string;
+  SAC?: string;
+  fabricatPercentage?: number;
+  approvalPercentage?: number;
+  paymenTDueDate?: number;
+  currencyType?: string;
   files: File[] | [];
   branches: Branch[];
   project: any[];

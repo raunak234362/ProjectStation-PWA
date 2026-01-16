@@ -31,6 +31,22 @@ const AddFabricator = () => {
       formData.append("drive", data.drive || "");
       formData.append("fabStage", data.fabStage || "");
 
+      if (data.approvalPercentage !== undefined)
+        formData.append(
+          "approvalPercentage",
+          String(parseFloat(String(data.approvalPercentage)))
+        );
+      if (data.paymenTDueDate !== undefined)
+        formData.append(
+          "paymenTDueDate",
+          String(parseFloat(String(data.paymenTDueDate)))
+        );
+      if (data.fabricatPercentage !== undefined)
+        formData.append(
+          "fabricatPercentage",
+          String(parseFloat(String(data.fabricatPercentage)))
+        );
+
       if (Array.isArray(data.files) && data.files.length > 0) {
         // Append each file to the FormData
         // The backend should be set up to receive an array for the 'files' field
@@ -87,7 +103,6 @@ const AddFabricator = () => {
           )}
         </div>
 
-      
         {/* Website */}
         <div>
           <label className="block text-gray-700 font-semibold mb-1">
@@ -134,6 +149,48 @@ const AddFabricator = () => {
               {String(errors.fabStage.message)}
             </p>
           )}
+        </div>
+
+        {/* Fabricat Percentage */}
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Fabricat Percentage (%)
+          </label>
+          <Input
+            label=""
+            type="number"
+            {...register("fabricatPercentage", { valueAsNumber: true })}
+            placeholder="0"
+            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+          />
+        </div>
+
+        {/* Approval Percentage */}
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Approval Percentage (%)
+          </label>
+          <Input
+            label=""
+            type="number"
+            {...register("approvalPercentage", { valueAsNumber: true })}
+            placeholder="0"
+            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+          />
+        </div>
+
+        {/* Payment Due Date */}
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Payment Due Date (Days)
+          </label>
+          <Input
+            label=""
+            type="number"
+            {...register("paymenTDueDate", { valueAsNumber: true })}
+            placeholder="0"
+            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+          />
         </div>
 
         {/* File Upload - FIXED */}
