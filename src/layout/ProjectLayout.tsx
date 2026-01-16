@@ -93,12 +93,13 @@ const ProjectLayout = () => {
           <div className="flex flex-row gap-4 items-center justify-end">
             <button
               onClick={() => setActiveTab("projectDashboard")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-[1.25rem] font-semibold transition-all ${activeTab === "projectDashboard"
+              className={`flex items-center gap-2 px-6 py-3 rounded-[1.25rem] font-semibold transition-all ${
+                activeTab === "projectDashboard"
                   ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
                   : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
-                }`}
+              }`}
             >
-              Project Dashboard
+              Project Home
             </button>
             {/* <button
               onClick={() => setActiveTab("allProject")}
@@ -111,15 +112,25 @@ const ProjectLayout = () => {
               All Project
             </button> */}
 
-            <button
-              onClick={() => setActiveTab("addProject")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-[1.25rem] font-semibold transition-all ${activeTab === "addProject"
-                  ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+            {[
+              "admin",
+              "project_manager_officer",
+              "project_manager",
+              "deputy_manager",
+            ].includes(
+              sessionStorage.getItem("userRole")?.toLowerCase() || ""
+            ) && (
+              <button
+                onClick={() => setActiveTab("addProject")}
+                className={`flex items-center gap-2 px-6 py-3 rounded-[1.25rem] font-semibold transition-all ${
+                  activeTab === "addProject"
+                    ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
+                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
                 }`}
-            >
-              Add New Project
-            </button>
+              >
+                Add New Project
+              </button>
+            )}
           </div>
         </div>
       </div>
