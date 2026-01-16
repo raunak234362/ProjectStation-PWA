@@ -21,6 +21,7 @@ import MultipleFileUpload from "../fields/MultipleFileUpload";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
 import ToggleField from "../fields/Toggle";
+import RichTextEditor from "../fields/RichTextEditor";
 import type { AddProjectPayload } from "../../interface";
 import { addProject } from "../../store/projectSlice";
 
@@ -39,9 +40,8 @@ const AddProject: React.FC = () => {
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
   const rfqData = useSelector((state: any) => state.RFQInfos?.RFQData || []);
 
-
   console.log(teamDatas);
-  
+
   const { register, handleSubmit, control, watch, setValue } =
     useForm<AddProjectPayload>({
       defaultValues: {
@@ -236,10 +236,20 @@ const AddProject: React.FC = () => {
                 {...register("name", { required: "Required" })}
               />
               <div className="md:col-span-2">
-                <Input
-                  label="Description *"
-                  placeholder="Full structural steel detailing for 40-story commercial building..."
-                  {...register("description", { required: "Required" })}
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Description *
+                </label>
+                <Controller
+                  name="description"
+                  control={control}
+                  rules={{ required: "Required" }}
+                  render={({ field }) => (
+                    <RichTextEditor
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      placeholder="Full structural steel detailing for 40-story commercial building..."
+                    />
+                  )}
                 />
               </div>
             </div>
