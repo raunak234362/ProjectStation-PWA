@@ -127,13 +127,7 @@ const CDdashboard = () => {
             .map(([name, count]) => ({ name, count }))
             .sort((a, b) => b.count - a.count);
 
-        let finalStateData = sortedStates;
-        if (sortedStates.length > 5) {
-            const top5 = sortedStates.slice(0, 5);
-            const othersCount = sortedStates.slice(5).reduce((sum, item) => sum + item.count, 0);
-            finalStateData = [...top5, { name: 'Others', count: othersCount }];
-        }
-        setStateDist(finalStateData);
+        setStateDist(sortedStates);
 
         // 3. Recent Activity (Sort by updatedAt)
         const sortedByUpdate = [...data].sort((a, b) => {
