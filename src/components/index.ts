@@ -30,6 +30,7 @@ import ProjectDashboard from "./dashboard/ProjectDashboard";
 import AddInvoice from "./invoices/AddInvoice";
 import AllInvoices from "./invoices/AllInvoices";
 import GetInvoiceById from "./invoices/GetInvoiceById";
+import InvoiceDashboard from "./invoices/dashboard/InvoiceDashboard";
 import TeamDashboard from "./manageTeam/teamDashboard/TeamDashboard";
 
 export {
@@ -52,7 +53,9 @@ export {
   AddInvoice,
   AllInvoices,
   GetInvoiceById,
+  InvoiceDashboard,
   TeamDashboard,
 };
+
 
 export { default as WBTDashboard } from "./dashboard/WBTDashboard";
