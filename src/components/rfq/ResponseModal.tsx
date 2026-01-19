@@ -214,7 +214,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             <!-- Standard Deliverables -->
             <div style="margin-bottom: 20px;">
               <h3 style="color: #6bbd45; font-size: 14px; margin-bottom: 10px; border-bottom: 2px solid #6bbd45; display: inline-block; padding-bottom: 2px;">Our Standard Deliverables</h3>
-              <ul style="list-style-type: disc; margin: 5px 0 0 0; padding-left: 25px; font-size: 11px; line-height: 1.6; color: #444;">
+              <ul style="list-style-type: disc; margin: 5px 0 0 0; padding-left: 25px; font-size: 12px; line-height: 1.6; color: #444;">
                 <li>Erection drawings</li>
                 <li>Shop drawings.</li>
                 <li>Embed plan</li>
@@ -234,7 +234,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             <!-- Terms and Conditions -->
             <div style="margin-bottom: 20px;">
               <h3 style="color: #6bbd45; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 2px solid #6bbd45; display: inline-block; padding-bottom: 2px;">Our Proposal terms and conditions</h3>
-              <ul style="list-style-type: decimal; margin: 0; padding-left: 25px; font-size: 11px; line-height: 1.4; color: #444;">
+              <ul style="list-style-type: decimal; margin: 0; padding-left: 25px; font-size: 12px; line-height: 1.4; color: #444;">
                 <li style="margin-bottom: 8px;">ORIGINAL SUBCONTRACT BID DOCUMENTS: The full and complete extent of the original subcontract bid documents is given at the time of bidding.</li>
                 <li style="margin-bottom: 8px;">ORIGINAL SUBCONTRACT SCOPE: The full and complete extent of the original subcontract work scope is given above in this proposal.</li>
                 <li style="margin-bottom: 8px;"><span style="font-weight: bold; color: #333;">EXTRA WORK RATE: USD 50 / hour.</span></li>
