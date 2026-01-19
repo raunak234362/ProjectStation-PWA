@@ -24,6 +24,18 @@ class Service {
     }
   }
 
+  // Update employee
+  static async UpdateEmployee(id: string, employeeData: EmployeePayload) {
+    try {
+      const response = await api.put(`employee/${id}`, employeeData);
+      console.log(response);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error while updating Employee", error);
+    }
+  }
+
   //Add New Employee
   static async AddEmployee(employeeData: EmployeePayload) {
     try {
@@ -136,6 +148,22 @@ class Service {
       //alert(error);
       console.log("Error fetching Employee by ID", error);
       console.log("Error fetching Employee by ID", error);
+    }
+  }
+
+  //Edit Department 
+  static async EditDepartment(id: string, departmentData: DepartmentPayload) {
+    try {
+      const response = await api.put(`department/department/${id}`, departmentData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error editing Department", error);
     }
   }
 
@@ -1733,7 +1761,7 @@ class Service {
   //get bank account by ID
   static async GetBankAccountById(id: string) {
     try {
-      const response = await api.get(`invoice/accounts/${id}`);
+      const response = await api.get(`invoice/account/${id}`);
       console.log("Bank account fetched:", response.data);
       return response.data;
     } catch (error) {
@@ -1773,12 +1801,18 @@ class Service {
     fileId: string | undefined
   ) {
     try {
-      const response = await api.get(`${table}/share/${parentId}/${fileId}`);
+      const response = await api.post(`share/${table}/${parentId}/${fileId}`);
       return response.data;
     } catch (error) {
       console.error("Error creating share link:", error);
       throw error;
     }
   }
+
+  // ===========================================================
+  // DESIGN DRAWINGS SERVICES
+  // ===========================================================
+
+  integra
 }
 export default Service;

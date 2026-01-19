@@ -55,6 +55,10 @@ const Select = ({
       }
     }, [value, options]);
 
+    const [menuPlacement, setMenuPlacement] = useState<"top" | "bottom">(
+      "bottom"
+    );
+
     // Close dropdown when clicking outside
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
@@ -70,6 +74,21 @@ const Select = ({
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // Dynamic menu placement
+    useEffect(() => {
+      if (isOpen && wrapperRef.current) {
+        const rect = wrapperRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const menuHeight = 240; // max-h-60 is 15rem = 240px
+
+        if (spaceBelow < menuHeight && rect.top > menuHeight) {
+          setMenuPlacement("top");
+        } else {
+          setMenuPlacement("bottom");
+        }
+      }
+    }, [isOpen]);
 
     // Handle search input
     const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
@@ -174,19 +193,25 @@ const Select = ({
 
         {/* Dropdown Menu */}
         {isOpen && (
-          <div className="absolute bottom-0 h-auto overflow-y-auto z-10 w-full mt-1 text-sm bg-white border border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
+          <div
+            className={`absolute z-50 w-full mt-1 mb-1 text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto ${
+              menuPlacement === "top" ? "bottom-full" : "top-full"
+            }`}
+          >
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <div
                   key={option.value}
-                  className="px-4 py-1 cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => handleSelect(option)}
                 >
                   {highlightMatch(option.label, searchTerm)}
                 </div>
               ))
             ) : (
-              <div className="px-4 py-1 text-gray-700">No options found</div>
+              <div className="px-4 py-2 text-gray-500 italic">
+                No options found
+              </div>
             )}
           </div>
         )}

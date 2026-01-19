@@ -103,14 +103,14 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2 shrink-0">
         <div>
-          <h2 className="text-md font-semibold text-gray-700 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
             Invoice Trends
-            <span className="text-xs font-normal text-gray-700">
+            <span className="text-sm font-normal text-gray-700">
               | Total: ${totalPeriodAmount.toLocaleString()} ({totalPeriodCount}{" "}
               Invoices)
             </span>
           </h2>
-          <p className="text-[10px] text-gray-500">
+          <p className="text-xs text-gray-500">
             Showing trends for{" "}
             {selectedMonth !== null ? `${months[selectedMonth]} ` : ""}
             {selectedYear}
@@ -121,7 +121,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="py-1 px-2 text-xs border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-white font-medium shadow-sm"
+            className="py-1 px-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-white font-medium shadow-sm"
           >
             {years.map((year) => (
               <option key={year} value={year}>

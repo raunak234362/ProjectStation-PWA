@@ -60,15 +60,15 @@ const AllEmployee = () => {
       ),
     },
     { accessorKey: "designation", header: "Designation" },
-    {
-      accessorKey: "role",
-      header: "Role",
-      cell: ({ row }) => (
-        <span className="px-2 py-1 rounded-full bg-green-100 text-green-800">
-          {row.getValue("role")}
-        </span>
-      ),
-    },
+    // {
+    //   accessorKey: "role",
+    //   header: "Role",
+    //   cell: ({ row }) => (
+    //     <span className="px-2 py-1 rounded-full bg-green-100 text-green-800">
+    //       {row.getValue("role")}
+    //     </span>
+    //   ),
+    // },
   ];
 
   if (loading) return <div className="p-8 text-center">Loading…</div>;

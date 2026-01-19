@@ -20,7 +20,7 @@ const ConnectionLayout = () => {
               Dashboard
             </button>
 
-            {(userRole === "ADMIN" || userRole === "human-resource") && (
+            {(userRole === "ADMIN" || userRole === "DEPUTY_MANAGER" || userRole === "OPERATION_EXECUTIVE") && (
               <button
                 onClick={() => setActiveTab("AddConnectionDesigner")}
                 className={`flex items-center gap-2 px-6 py-3 rounded-[1.25rem] font-semibold transition-all ${activeTab === "AddConnectionDesigner"

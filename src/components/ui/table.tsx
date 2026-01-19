@@ -328,7 +328,7 @@ export default function DataTable<T extends object>({
               value={globalFilter ?? ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder={searchPlaceholder}
-              className="pl-10 pr-4 py-2 w-full md:w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              className="pl-10 pr-4 py-2 w-full md:w-64 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
 
@@ -339,7 +339,12 @@ export default function DataTable<T extends object>({
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 bg-white"
               >
                 Fields
-                <ChevronDown size={14} className={`transition-transform ${showFieldsMenu ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform ${
+                    showFieldsMenu ? "rotate-180" : ""
+                  }`}
+                />
               </button>
               {showFieldsMenu && (
                 <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
@@ -388,13 +393,13 @@ export default function DataTable<T extends object>({
       {/* Table */}
       <div className="overflow-x-auto border rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 text-left text-md font-medium text-gray-700 uppercase tracking-wider"
+                    className="px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-md font-medium text-gray-700 uppercase tracking-wider"
                   >
                     {/* Header + sort */}
                     <div
@@ -440,8 +445,9 @@ export default function DataTable<T extends object>({
                 return (
                   <React.Fragment key={row.id}>
                     <tr
-                      className={`hover:bg-green-50 transition-colors ${onRowClick ? "cursor-pointer" : ""
-                        }`}
+                      className={`hover:bg-green-50 transition-colors ${
+                        onRowClick ? "cursor-pointer" : ""
+                      }`}
                       onClick={() => {
                         onRowClick?.(row.original);
                         if (DetailComponent) toggleRowExpand(row.id);
@@ -450,7 +456,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="text-left px-6 py-4 text-md text-gray-700"
+                          className="text-left px-2 md:px-6 py-2 md:py-4 text-md md:text-md text-gray-700"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -462,8 +468,9 @@ export default function DataTable<T extends object>({
                       {DetailComponent && (
                         <td className="px-2 py-4">
                           <ChevronRight
-                            className={`w-5 h-5 transition-transform ${isExpanded ? "rotate-90" : ""
-                              }`}
+                            className={`w-5 h-5 transition-transform ${
+                              isExpanded ? "rotate-90" : ""
+                            }`}
                           />
                         </td>
                       )}

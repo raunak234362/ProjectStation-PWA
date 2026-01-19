@@ -2,7 +2,18 @@
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-const normalizedBaseURL = baseURL.endsWith("/") ? baseURL : `${baseURL}/`;
+
+if (!baseURL) {
+  console.error(
+    "CRITICAL ERROR: VITE_BASE_URL is not defined in the environment variables."
+  );
+}
+
+const normalizedBaseURL = baseURL
+  ? baseURL.endsWith("/")
+    ? baseURL
+    : `${baseURL}/`
+  : "/"; // Fallback to root if undefined to prevent crash
 
 const instance = axios.create({
   baseURL: normalizedBaseURL,

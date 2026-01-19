@@ -168,15 +168,14 @@ const AddRFQ: React.FC = () => {
     fabOptions.find((opt) => opt.value === selectedFabricatorId) || null;
 
   return (
-    <div className="max-w-5xl mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-lg p-8 my-6">
-      <h2 className="text-3xl font-bold text-center mb-4 text-gray-700">
-        Add New RFQ
-      </h2>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <div className="w-full mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-lg p-3 md:p-5">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-4 md:space-y-8"
+      >
         <SectionTitle title="Project Information" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* FABRICATOR (HIDDEN FOR CLIENTS) */}
           {userRole !== "CLIENT" && (
             <>
@@ -337,7 +336,7 @@ const AddRFQ: React.FC = () => {
         </div>
 
         <Input
-          label="Bid Price (USD)"
+          label={`Bid Price (${selectedFabricator?.currencyType || "USD"})`}
           type="number"
           {...register("bidPrice")}
         />

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/fabricator/EditFabricator.tsx
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { Loader2, X, Check, Trash2, Paperclip } from "lucide-react"; // Added Trash2, Paperclip
 import type { Fabricator } from "../../../interface";
 import Service from "../../../api/Service";
@@ -29,7 +29,13 @@ type FabricatorFormData = {
   fabName: string;
   website?: string;
   drive?: string;
+  fabStage?: "RFQ" | "PRODUCTION";
   accountId?: string;
+  SAC?: string;
+  fabricatPercentage?: number;
+  approvalPercentage?: number;
+  paymenTDueDate?: number;
+  currencyType?: string;
   // Change files to File[] to match what RHF and MultipleFileUpload handle
   files?: File[] | null;
 };
@@ -60,7 +66,13 @@ const EditFabricator = ({
       fabName: "",
       website: "",
       drive: "",
+      fabStage: undefined,
       accountId: "",
+      SAC: "",
+      fabricatPercentage: 0,
+      approvalPercentage: 0,
+      paymenTDueDate: 0,
+      currencyType: "",
       files: null, // Initialize new files to null
     },
   });
@@ -88,7 +100,13 @@ const EditFabricator = ({
       fabName: fabricatorData.fabName || "",
       website: fabricatorData.website || "",
       drive: fabricatorData.drive || "",
+      fabStage: fabricatorData.fabStage,
       accountId: (fabricatorData as any).accountId || "",
+      SAC: fabricatorData.SAC || "",
+      fabricatPercentage: fabricatorData.fabricatPercentage || 0,
+      approvalPercentage: fabricatorData.approvalPercentage || 0,
+      paymenTDueDate: fabricatorData.paymenTDueDate || 0,
+      currencyType: fabricatorData.currencyType || "",
       files: null,
     });
     setFilesToKeep((fabricatorData.files as FabricatorFile[]) || []);
@@ -107,7 +125,7 @@ const EditFabricator = ({
   };
 
   // Submit handler
-  const onSubmit = async (data: FabricatorFormData) => {
+  const onSubmit: SubmitHandler<FabricatorFormData> = async (data) => {
     try {
       setSubmitting(true);
       setError(null);
@@ -118,7 +136,25 @@ const EditFabricator = ({
       if (data.fabName) formData.append("fabName", data.fabName);
       if (data.website) formData.append("website", data.website);
       if (data.drive) formData.append("drive", data.drive);
+      if (data.fabStage) formData.append("fabStage", data.fabStage);
       if (data.accountId) formData.append("accountId", data.accountId);
+      if (data.SAC) formData.append("SAC", data.SAC);
+      if (data.fabricatPercentage !== undefined)
+        formData.append(
+          "fabricatPercentage",
+          String(parseFloat(String(data.fabricatPercentage)))
+        );
+      if (data.approvalPercentage !== undefined)
+        formData.append(
+          "approvalPercentage",
+          String(parseFloat(String(data.approvalPercentage)))
+        );
+      if (data.paymenTDueDate !== undefined)
+        formData.append(
+          "paymenTDueDate",
+          String(parseFloat(String(data.paymenTDueDate)))
+        );
+      if (data.currencyType) formData.append("currencyType", data.currencyType);
 
       // 2. Append IDs of files to KEEP (only if not empty)
       const fileIdsToKeep = filesToKeep.map((file) => file.id);
@@ -202,6 +238,84 @@ const EditFabricator = ({
               </p>
             )}
           </div>
+          <div>
+            <Input
+              label="SAC"
+              {...register("SAC")}
+              placeholder="e.g. 1234567890"
+              className="w-full"
+            />
+            {errors.SAC && (
+              <p className="mt-1 text-xs text-red-600">{errors.SAC.message}</p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Input
+                label="Fabricat Percentage (%)"
+                type="number"
+                {...register("fabricatPercentage", { valueAsNumber: true })}
+                placeholder="0"
+                className="w-full"
+              />
+              {errors.fabricatPercentage && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.fabricatPercentage.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <Input
+                label="Approval Percentage (%)"
+                type="number"
+                {...register("approvalPercentage", { valueAsNumber: true })}
+                placeholder="0"
+                className="w-full"
+              />
+              {errors.approvalPercentage && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.approvalPercentage.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Input
+                label="Payment Due Date (Days)"
+                type="number"
+                {...register("paymenTDueDate", { valueAsNumber: true })}
+                placeholder="0"
+                className="w-full"
+              />
+              {errors.paymenTDueDate && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.paymenTDueDate.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Currency Type
+              </label>
+              <select
+                {...register("currencyType")}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-white"
+              >
+                <option value="">-- Select Currency --</option>
+                <option value="USD">USD</option>
+                <option value="CAD">CAD</option>
+                <option value="Rupees">Rupees</option>
+              </select>
+              {errors.currencyType && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.currencyType.message}
+                </p>
+              )}
+            </div>
+          </div>
 
           {/* Website */}
           <div>
@@ -243,6 +357,25 @@ const EditFabricator = ({
             {errors.drive && (
               <p className="mt-1 text-xs text-red-600">
                 {errors.drive.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1">
+              Stage <span className="text-red-500">*</span>
+            </label>
+            <select
+              {...register("fabStage", { required: "Stage is required" })}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 outline-none bg-white transition-all shadow-sm"
+            >
+              <option value="">Select Stage</option>
+              <option value="RFQ">RFQ</option>
+              <option value="PRODUCTION">PRODUCTION</option>
+            </select>
+            {errors.fabStage && (
+              <p className="text-red-500 text-xs mt-1">
+                {String(errors.fabStage.message)}
               </p>
             )}
           </div>

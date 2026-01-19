@@ -50,33 +50,40 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     : [];
 
   // Step 2: Group files by description
-  const groupedFiles = projectFiles.reduce((acc: Record<string, FileItem[]>, curr) => {
-    if (curr.files && Array.isArray(curr.files)) {
-      // Handle "Document" structure (nested files)
-      const desc = curr.description || "No Description";
-      if (!acc[desc]) acc[desc] = [];
-      curr.files.forEach((f) => {
-        acc[desc].push({
-          ...f,
-          uploadedAt: curr.uploadedAt,
-          user: curr.user,
-          documentID: curr.id,
-          stage: curr.stage,
+  const groupedFiles = projectFiles.reduce(
+    (acc: Record<string, FileItem[]>, curr) => {
+      if (curr.files && Array.isArray(curr.files)) {
+        // Handle "Document" structure (nested files)
+        const desc = curr.description || "No Description";
+        if (!acc[desc]) acc[desc] = [];
+        curr.files.forEach((f) => {
+          acc[desc].push({
+            ...f,
+            uploadedAt: curr.uploadedAt,
+            user: curr.user,
+            documentID: curr.id,
+            stage: curr.stage,
+          });
         });
-      });
-    } else {
-      // Handle "Flat File" structure (e.g., RFI, Submittals)
-      const desc = "Attachments";
-      if (!acc[desc]) acc[desc] = [];
-      acc[desc].push({
-        ...curr,
-        documentID: parentId, // Use passed parentId for flat files
-      });
-    }
-    return acc;
-  }, {});
+      } else {
+        // Handle "Flat File" structure (e.g., RFI, Submittals)
+        const desc = "Attachments";
+        if (!acc[desc]) acc[desc] = [];
+        acc[desc].push({
+          ...curr,
+          documentID: parentId, // Use passed parentId for flat files
+        });
+      }
+      return acc;
+    },
+    {}
+  );
 
-  const getDownloadUrl = (table: string, parentId: string | undefined, fileId: string | undefined) => {
+  const getDownloadUrl = (
+    table: string,
+    parentId: string | undefined,
+    fileId: string | undefined
+  ) => {
     const baseURL = import.meta.env.VITE_BASE_URL?.replace(/\/$/, "");
     switch (table) {
       case "project":
@@ -105,7 +112,11 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     e.preventDefault();
     e.stopPropagation();
     try {
-      const response = await Service.createShareLink(table, file.documentID, file.id);
+      const response = await Service.createShareLink(
+        table,
+        file.documentID,
+        file.id
+      );
       console.log(response);
       if (response.shareUrl) {
         await navigator.clipboard.writeText(response.shareUrl);
@@ -119,11 +130,37 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     }
   };
 
-  const handleDownload = async (e: React.MouseEvent, file: FileItem) => {
+  const handleDownload = async (
+    e: React.MouseEvent | React.TouchEvent,
+    file: FileItem
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     const downloadUrl = getDownloadUrl(table, file.documentID, file.id);
-    window.open(downloadUrl, "_blank");
+
+    try {
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(downloadUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Download failed");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.originalName || "download";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      toast.error("Error downloading file");
+    }
   };
 
   // Step 3: Render grouped sections
@@ -132,7 +169,9 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
       {/* Header */}
       <div className="flex justify-between items-center">
         <h4 className="text-sm font-medium text-gray-700">Project Files</h4>
-        {onAddFilesClick && <Button onClick={onAddFilesClick}>Add Document</Button>}
+        {onAddFilesClick && (
+          <Button onClick={onAddFilesClick}>Add Document</Button>
+        )}
       </div>
 
       {/* Files grouped by description */}
@@ -181,9 +220,8 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
                     className="flex items-center gap-2 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors group"
                   >
                     <a
-                      href={getDownloadUrl(table, file.documentID, file.id)}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href="#"
+                      onClick={(e) => handleDownload(e, file)}
                       className="flex items-center gap-2 flex-1 min-w-0"
                     >
                       <FileText size={18} className="text-green-500" />
@@ -231,10 +269,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
         <div className="text-center py-8 border border-dashed border-gray-200 rounded-lg">
           <p className="text-gray-700">No files available for this project</p>
           {onAddFilesClick && (
-            <Button
-              onClick={onAddFilesClick}
-              className="mt-2"
-            >
+            <Button onClick={onAddFilesClick} className="mt-2">
               <Plus size={14} />
               Upload Files
             </Button>
@@ -246,4 +281,3 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
 };
 
 export default RenderFiles;
-

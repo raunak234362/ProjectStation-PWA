@@ -12,10 +12,34 @@ import {
 } from "lucide-react";
 import { FiPhoneCall } from "react-icons/fi";
 import Button from "../fields/Button";
+import { useState } from "react";
+import EditEmployee from "../manageTeam/employee/EditEmployee";
+import Service from "../../api/Service";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../store/userSlice";
+import { toast } from "react-toastify";
 
 const Profile = () => {
+  const dispatch = useDispatch();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   // Get user data from Redux
   const user = useSelector((state: any) => state.userInfo.userDetail);
+
+  const handleUpdateSuccess = async () => {
+    try {
+      const response = await Service.GetUserByToken();
+      if (response?.data?.user) {
+        dispatch(setUserData(response.data.user));
+        toast.success("Profile updated successfully");
+      }
+    } catch (error) {
+      console.error("Failed to refresh user data:", error);
+      toast.error(
+        "Profile updated, but failed to refresh view. Please reload."
+      );
+    }
+  };
 
   if (!user) {
     return (
@@ -141,9 +165,17 @@ const Profile = () => {
         <div className="border-t border-gray-200 pt-6">
           <div className="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
             <Edit2 className="w-5 h-5 text-green-600" /> Update Detail{" "}
-            <Button>Update </Button>
+            <Button onClick={() => setIsEditModalOpen(true)}>Update </Button>
           </div>
         </div>
+
+        {isEditModalOpen && (
+          <EditEmployee
+            employeeData={user}
+            onClose={() => setIsEditModalOpen(false)}
+            onSuccess={handleUpdateSuccess}
+          />
+        )}
       </div>
     </div>
   );

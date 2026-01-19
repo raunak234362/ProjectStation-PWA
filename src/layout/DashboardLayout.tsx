@@ -61,7 +61,7 @@ const Layout = () => {
         <div className="flex-1 bg-gray-50 rounded-xl shadow-2xl overflow-hidden flex flex-col relative transition-all">
 
           {/* Optional: If Header is needed globally, it goes here inside the white card */}
-          <div className="px-8 pt-6">
+          <div className="px-2 pt-2">
             <Header isMinimized={isMinimized} toggleSidebar={toggleSidebar} />
           </div>
 

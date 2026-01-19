@@ -33,7 +33,14 @@ const Login = () => {
         dispatch(setUserData(userDetail));
       }
 
-      navigate("/dashboard");
+      if (
+        userDetail?.role?.toLowerCase() === "sales" ||
+        userDetail?.role?.toLowerCase() === "sales_manager"
+      ) {
+        navigate("/dashboard/sales");
+      } else {
+        navigate("/dashboard");
+      }
       console.log("Login Successful:", userLogin);
     } catch (error: any) {
       console.error("Error While Logging in:", error);
@@ -51,7 +58,7 @@ const Login = () => {
       <img
         src={Background}
         alt="background"
-        className="absolute inset-0 h-full w-full object-cover blur-[8px] z-0"
+        className="absolute inset-0 h-full w-full object-cover blur-sm z-0"
       />
 
       <div className="relative z-10 grid w-screen h-screen grid-cols-1 md:grid-cols-2">

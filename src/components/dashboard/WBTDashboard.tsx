@@ -1,4 +1,5 @@
 import { useEffect, useState, Suspense, lazy } from "react";
+import { useNavigate } from "react-router-dom";
 import Service from "../../api/Service";
 import { useSelector } from "react-redux";
 
@@ -35,6 +36,15 @@ const SubmittalListModal = lazy(
 import DashboardSkeleton from "./components/DashboardSkeleton";
 
 const WBTDashboard = () => {
+  const navigate = useNavigate();
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+
+  useEffect(() => {
+    if (userRole === "sales" || userRole === "sales_manager") {
+      navigate("/dashboard/sales");
+    }
+  }, [userRole, navigate]);
+
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo.fabricatorData || []
@@ -74,20 +84,15 @@ const WBTDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [
-          sent,
-          received,
-          pendingSubmittalsRes,
-          allInvoices,
-          pendingRFIs,
-        ] = await Promise.all([
-          Service.RfqSent(),
-          Service.RFQRecieved(),
-          Service.GetPendingSubmittal(),
-          Service.GetAllInvoice(),
-          Service.PendingSubmittal(),
-          Service.pendingRFIs(),
-        ]);
+        const [sent, received, pendingSubmittalsRes, allInvoices, pendingRFIs] =
+          await Promise.all([
+            Service.RfqSent(),
+            Service.RFQRecieved(),
+            Service.GetPendingSubmittal(),
+            Service.GetAllInvoice(),
+            Service.PendingSubmittal(),
+            Service.pendingRFIs(),
+          ]);
         console.log(pendingRFIs);
 
         setPendingSubmittals(

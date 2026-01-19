@@ -1,22 +1,26 @@
-import Login from "../pages/Login";
-import App from "../App";
+import { lazy } from "react";
 import RequireAuth from "../middleware/RequireAuth";
-import { WBTDashboard } from "../components";
-import ProfilePage from "../pages/ProfilePage";
-import TeamPage from "../pages/TeamPage";
-import FabricatorPage from "../pages/FabricatorPage";
-import { ChatPage } from "../pages/ChatPage";
-import RFQPage from "../pages/RFQPage";
-import ConnectionPage from "../pages/ConnectionPage";
-import ChangePasswordPage from "../pages/ChangePasswordPage";
-import RFIPage from "../pages/RFIPage";
-import EstimationPage from "../pages/EstimationPage";
-import ProjectPage from "../pages/ProjectPage";
-import invoicePage from "../pages/invoicePage";
-import TaskPage from "../pages/TaskPage";
-import CoTablePage from "../components/co/CoTablePage";
-import AccountPage from "../pages/AccountPage";
-import SalesDashboard from "../components/sales/SalesDashboard";
+
+const Login = lazy(() => import("../pages/Login"));
+const App = lazy(() => import("../App"));
+const WBTDashboard = lazy(() => import("../components/dashboard/WBTDashboard"));
+const ProfilePage = lazy(() => import("../pages/ProfilePage"));
+const TeamPage = lazy(() => import("../pages/TeamPage"));
+const FabricatorPage = lazy(() => import("../pages/FabricatorPage"));
+const ChatPage = lazy(() =>
+  import("../pages/ChatPage").then((m) => ({ default: m.ChatPage }))
+);
+const RFQPage = lazy(() => import("../pages/RFQPage"));
+const ConnectionPage = lazy(() => import("../pages/ConnectionPage"));
+const ChangePasswordPage = lazy(() => import("../pages/ChangePasswordPage"));
+const RFIPage = lazy(() => import("../pages/RFIPage"));
+const EstimationPage = lazy(() => import("../pages/EstimationPage"));
+const ProjectPage = lazy(() => import("../pages/ProjectPage"));
+const invoicePage = lazy(() => import("../pages/invoicePage"));
+const TaskPage = lazy(() => import("../pages/TaskPage"));
+const CoTablePage = lazy(() => import("../components/co/CoTablePage"));
+const AccountPage = lazy(() => import("../pages/AccountPage"));
+const SalesDashboard = lazy(() => import("../components/sales/SalesDashboard"));
 
 const routes = [
   { path: "/", Component: Login },

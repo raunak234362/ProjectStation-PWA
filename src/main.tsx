@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import store from "./store/store";
 import routes from "./routes/routes";
 
+import { Suspense } from "react";
 
 // Define the router configuration
 const router = createBrowserRouter(routes);
@@ -17,7 +18,15 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center h-screen w-screen bg-[#6bbd45]">
+            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }
+      >
+        <RouterProvider router={router} />
+      </Suspense>
     </Provider>
   </>
 );
