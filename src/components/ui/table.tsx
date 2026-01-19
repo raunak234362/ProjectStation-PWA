@@ -456,7 +456,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="text-left px-2 md:px-6 py-2 md:py-4 text-xs md:text-md text-gray-700"
+                          className="text-left px-2 md:px-6 py-2 md:py-4 text-md md:text-md text-gray-700"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,

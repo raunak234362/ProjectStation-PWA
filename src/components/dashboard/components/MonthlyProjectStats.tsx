@@ -137,7 +137,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
   }, [projects, tasks, teams, projectsByTeam, selectedMonth, selectedYear]);
 
   return (
-    <div className="grid grid-cols-1 max-sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+    <div className="overflow-x-auto  grid grid-cols-1 max-sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
       {teamSummary.map((team) => (
         <motion.div
           key={team.teamName}
@@ -196,7 +196,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                       </div>
                     ))}
                   </div>
-                  <div className="grid grid-cols-3 divide-x divide-gray-100">
+                  <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-x divide-gray-100">
                     {["IFA", "IFC", "CO#"].map((stage) => (
                       <div
                         key={stage}
@@ -228,11 +228,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                             }
                             className={`w-full flex items-center justify-between px-1 md:px-1.5 py-0.5 md:py-1 rounded-md hover:bg-${item.color}-50 transition-colors group/btn`}
                           >
-                            <span className="text-[10px] md:text-md font-bold text-gray-800 uppercase group-hover/btn:text-gray-600 truncate mr-1">
+                            <span className="text-md md:text-md font-bold text-gray-800 uppercase group-hover/btn:text-gray-600 truncate mr-1">
                               {item.label}
                             </span>
                             <span
-                              className={`text-[10px] md:text-md font-black text-${item.color}-600`}
+                              className={`text-md md:text-md font-black text-${item.color}-600`}
                             >
                               {(team.stats[stage] as any)?.[item.key] || 0}
                             </span>
