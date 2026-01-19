@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
-import { MoreHorizontal, Eye, Send, Edit, CheckCircle } from "lucide-react";
+import { Eye, Send } from "lucide-react";
 
 interface PendingListProps {
     invoices: any[];
@@ -91,10 +91,21 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
             cell: ({ row }) => {
                 return (
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500" title="View">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedInvoiceId(row.original._id || row.original.id);
+                            }}
+                            className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500"
+                            title="View"
+                        >
                             <Eye size={16} />
                         </button>
-                        <button className="p-1.5 hover:bg-green-50 rounded-md text-green-600" title="Send">
+                        <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-1.5 hover:bg-green-50 rounded-md text-green-600"
+                            title="Send"
+                        >
                             <Send size={16} />
                         </button>
                     </div>
@@ -102,6 +113,8 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
             }
         }
     ];
+
+    const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
@@ -115,11 +128,17 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
                 <DataTable
                     columns={columns}
                     data={pendingInvoices}
-                    detailComponent={({ row }) => <GetInvoiceById id={row.id} />}
+                    onRowClick={(row: any) => setSelectedInvoiceId(row._id || row.id)}
                     searchPlaceholder="Search client or invoice #..."
                     pageSizeOptions={[5, 10]}
                 />
             </div>
+            {selectedInvoiceId && (
+                <GetInvoiceById
+                    id={selectedInvoiceId}
+                    onClose={() => setSelectedInvoiceId(null)}
+                />
+            )}
         </div>
     );
 };
