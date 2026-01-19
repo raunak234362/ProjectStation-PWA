@@ -43,9 +43,19 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
 
   const groupId = activeChat?.group?.id ?? null;
 
+  useEffect(() => {
+    console.log("[ChatMain] Component State:", {
+      groupId,
+      userId: userInfo?.id,
+      socketConnected: socket.connected,
+      activeChatId: activeChat?.id
+    });
+  }, [groupId, userInfo?.id, activeChat]);
+
   const sendMessage = () => {
     const content = input.trim();
     if (!content || !groupId) return;
+
 
     const payload = {
       senderId: userInfo?.id,
@@ -53,6 +63,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
       content,
       taggedUserIds: [] as string[],
     };
+    console.log("[ChatMain] Emitting groupMessages:", payload);
     socket.emit("groupMessages", payload);
 
     // Optimistic update
@@ -72,14 +83,16 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
   const fetchMessages = useCallback(
     async (lastId: string | null = null) => {
       if (!groupId) return;
+      console.log("[ChatMain] Fetching messages...", { groupId, lastId });
       setLoading(true);
       try {
         const res = await Service.ChatByGroupID(groupId, lastId ?? undefined);
+        console.log("[ChatMain] Fetch result:", res);
         const list = Array.isArray(res)
           ? res
           : Array.isArray(res?.data)
-          ? res.data
-          : [];
+            ? res.data
+            : [];
         const newMsgs: DisplayMessage[] = list.map((m: Message) => ({
           id: m.id,
           text: m.content,
@@ -98,15 +111,15 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
 
         const reversed = newMsgs.reverse();
         setMessages((prev) => {
-        const existing = new Set(prev.map((m) => m.id));
-        const filtered = reversed.filter((m) => !existing.has(m.id));
+          const existing = new Set(prev.map((m) => m.id));
+          const filtered = reversed.filter((m) => !existing.has(m.id));
           return [...filtered, ...prev];
         });
 
         setOldestId(reversed[0].id);
         if (newMsgs.length < 20) setHasMore(false);
       } catch (err) {
-        console.error(err);
+        console.error("[ChatMain] Fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -126,11 +139,21 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
   // Real‑time incoming
   useEffect(() => {
     const handler = (msg: any) => {
-      if (!groupId || msg.groupId !== groupId) return;
-      
+      console.log("[ChatMain] Socket received 'receiveGroupMessage':", msg);
+      if (!groupId || msg.groupId !== groupId) {
+        console.warn("[ChatMain] Message ignored - Group mismatch or no GroupID", {
+          currentGroupId: groupId,
+          msgGroupId: msg.groupId
+        });
+        return;
+      }
+
       // Check if message already exists to prevent duplicates
       setMessages((prev) => {
-        if (prev.some(m => m.id === msg.id)) return prev;
+        if (prev.some(m => m.id === msg.id)) {
+          console.log("[ChatMain] Duplicate message ignored:", msg.id);
+          return prev;
+        }
 
         const sender = staffData.find((s) => s?.id === msg.senderId);
         const newMsg: DisplayMessage = {
@@ -140,11 +163,14 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
           sender: msg.senderId === userInfo?.id ? "me" : "other",
           senderName: sender ? `${sender.firstName} ${sender.lastName}` : undefined,
         };
+        console.log("[ChatMain] Adding new real-time message:", newMsg);
         return [...prev, newMsg];
       });
     };
+    console.log("[ChatMain] Setting up 'receiveGroupMessage' listener");
     socket.on("receiveGroupMessage", handler);
     return () => {
+      console.log("[ChatMain] Removing 'receiveGroupMessage' listener");
       socket.off("receiveGroupMessage", handler);
     };
   }, [groupId, userInfo?.id, staffData]);
@@ -213,16 +239,14 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
           return (
             <div
               key={msg?.id}
-              className={`flex ${
-                msg.sender === "me" ? "justify-end" : "justify-start"
-              } mb-3`}
+              className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"
+                } mb-3`}
             >
               <div
-                className={`max-w-xs md:max-w-md p-3 rounded-lg ${
-                  msg.sender === "me"
-                    ? "bg-white/80 rounded-tr-none"
-                    : "bg-green-100/90 rounded-tl-none"
-                }`}
+                className={`max-w-xs md:max-w-md p-3 rounded-lg ${msg.sender === "me"
+                  ? "bg-white/80 rounded-tr-none"
+                  : "bg-green-100/90 rounded-tl-none"
+                  }`}
               >
                 {msg.sender === "other" && msg.senderName && (
                   <p className="text-xs font-semibold text-gray-700 mb-1">
