@@ -151,14 +151,18 @@ class Service {
     }
   }
 
-  //Edit Department 
+  //Edit Department
   static async EditDepartment(id: string, departmentData: DepartmentPayload) {
     try {
-      const response = await api.put(`department/department/${id}`, departmentData, {
-        headers: {
-          "Content-Type": "application/json",
+      const response = await api.put(
+        `department/department/${id}`,
+        departmentData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
       console.log(response);
       return response?.data;
     } catch (error) {
@@ -224,7 +228,7 @@ class Service {
   // Update role of Team Member
   static async UpdateTeamMemberRole(
     teamId: string,
-    MemberData: UpdateTeamRolePayload
+    MemberData: UpdateTeamRolePayload,
   ) {
     try {
       const response = await api.put(`team/updateRole/${teamId}`, MemberData, {
@@ -788,7 +792,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(response);
       return response.data;
@@ -977,7 +981,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(response);
       return response.data;
@@ -1026,7 +1030,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(response);
       return response.data;
@@ -1045,7 +1049,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(response);
       return response.data;
@@ -1073,7 +1077,7 @@ class Service {
   static async GetWBSLineItemById(
     projectId: string,
     id: string,
-    stage: string
+    stage: string,
   ) {
     try {
       const response = await api.get(
@@ -1082,7 +1086,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(response);
       return response.data;
@@ -1095,7 +1099,7 @@ class Service {
   static async UpdateWBSLineItem(
     projectId: string,
     lineItemId: string,
-    data: any
+    data: any,
   ) {
     try {
       const response = await api.patch(
@@ -1105,7 +1109,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(response);
       return response.data;
@@ -1168,7 +1172,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(" Group member deleted", response.data);
       return response.data;
@@ -1202,7 +1206,7 @@ class Service {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       console.log(" Project note created", response.data);
       return response.data;
@@ -1491,7 +1495,7 @@ class Service {
   static async addCOResponse(formData: FormData, responseId: string) {
     const response = await api.post(
       `changeOrder/${responseId}/responses`,
-      formData
+      formData,
     );
 
     return response.data;
@@ -1621,7 +1625,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(" Task started by ID:", response.data);
       return response.data;
@@ -1640,7 +1644,7 @@ class Service {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(" Task resumed by ID:", response.data);
       return response.data;
@@ -1798,7 +1802,7 @@ class Service {
   static async createShareLink(
     table: string,
     parentId: string | undefined,
-    fileId: string | undefined
+    fileId: string | undefined,
   ) {
     try {
       const response = await api.post(`share/${table}/${parentId}/${fileId}`);
@@ -1813,6 +1817,100 @@ class Service {
   // DESIGN DRAWINGS SERVICES
   // ===========================================================
 
-  integra
+  // Create new Design Drawing
+  static async CreateDesignDrawing(data: FormData) {
+    try {
+      const response = await api.post(`design-drawings`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error creating design drawing:", error);
+      throw error;
+    }
+  }
+
+  // Update stage / description of a Design Drawing
+  static async UpdateDesignDrawing(id: string, data: FormData) {
+    try {
+      const response = await api.put(`design-drawings/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error updating design drawing:", error);
+      throw error;
+    }
+  }
+
+  // Get all Design Drawings (Admin)
+  static async GetAllDesignDrawings() {
+    try {
+      const response = await api.get(`design-drawings`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching all design drawings:", error);
+      throw error;
+    }
+  }
+
+  // Get Design Drawings by Project ID
+  static async GetDesignDrawingsByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`design-drawings/project/${projectId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching design drawings by project ID:", error);
+      throw error;
+    }
+  }
+
+  // Get a single Design Drawing by ID
+  static async GetDesignDrawingById(id: string) {
+    try {
+      const response = await api.get(`design-drawings/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching design drawing by ID:", error);
+      throw error;
+    }
+  }
+
+  // Delete a Design Drawing
+  static async DeleteDesignDrawing(id: string) {
+    try {
+      const response = await api.delete(`design-drawings/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting design drawing:", error);
+      throw error;
+    }
+  }
+
+  // Get file metadata (from Design Drawing)
+  static async GetDesignDrawingFileMetadata(designId: string, fileId: string) {
+    try {
+      const response = await api.get(
+        `design-drawings/${designId}/files/${fileId}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching design drawing file metadata:", error);
+      throw error;
+    }
+  }
+
+  // Stream file (from Design Drawing)
+  static async ViewDesignDrawingFile(designId: string, fileId: string) {
+    try {
+      const response = await api.get(
+        `design-drawings/viewFile/${designId}/${fileId}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error viewing design drawing file:", error);
+      throw error;
+    }
+  }
 }
 export default Service;
