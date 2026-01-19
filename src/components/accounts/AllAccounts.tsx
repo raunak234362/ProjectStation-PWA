@@ -2,6 +2,8 @@ import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Loader2, Inbox } from "lucide-react";
 
+import GetAccountByID from "./getAccountByID";
+
 interface AllAccountsProps {
   accounts: any[];
   loading: boolean;
@@ -78,7 +80,11 @@ const AllAccounts = ({ accounts, loading }: AllAccountsProps) => {
 
   return (
     <div className="bg-white p-2 rounded-2xl shadow-md">
-      <DataTable columns={columns} data={accounts} />
+      <DataTable
+        columns={columns}
+        data={accounts}
+        detailComponent={({ row }) => <GetAccountByID id={row.id} />}
+      />
     </div>
   );
 };

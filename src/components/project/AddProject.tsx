@@ -160,7 +160,10 @@ const AddProject: React.FC = () => {
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-100 ">
       <div className="w-full mx-auto">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
-          <form onSubmit={handleSubmit(onSubmit)} className="p-10 space-y-14">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="p-4 md:p-10 space-y-8 md:space-y-14"
+          >
             {/* Link RFQ — Hero Section */}
             <div className="relative ">
               <Controller
@@ -194,12 +197,12 @@ const AddProject: React.FC = () => {
             {selectedRfq && (
               <div className="bg-linear-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl p-8 -mt-6 mb-10 shadow-inner">
                 <div className="flex items-center gap-3 mb-4">
-                  <Zap className="w-7 h-7 text-emerald-600" />
-                  <h3 className="text-2xl font-bold text-emerald-900">
+                  <Zap className="w-5 h-5 md:w-7 md:h-7 text-emerald-600" />
+                  <h3 className="text-lg md:text-2xl font-bold text-emerald-900">
                     RFQ Auto-Filled
                   </h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-sm">
                   <div className="bg-white/70 p-4 rounded-xl">
                     <p className="text-gray-700">Project</p>
                     <p className="font-bold text-gray-700 truncate">
@@ -224,7 +227,7 @@ const AddProject: React.FC = () => {
 
             {/* Project Info */}
             <SectionTitle title="Project Details" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
               <Input
                 label="Project Number *"
                 placeholder="PROJ-2025-089"
@@ -256,7 +259,7 @@ const AddProject: React.FC = () => {
 
             {/* Team Assignment */}
             <SectionTitle title="Team & Assignments" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
               <div>
                 <label className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
                   <Building2 className="w-5 h-5 text-blue-600" /> Fabricator *
@@ -383,7 +386,7 @@ const AddProject: React.FC = () => {
               <div className="flex items-center gap-4 mb-8">
                 <Layers className="w-5 h-5 text-cyan-600" />
                 <div>
-                  <h3 className="text-xl font-bold text-cyan-900">
+                  <h3 className="text-lg md:text-xl font-bold text-cyan-900">
                     Connection Design Scope
                   </h3>
                   <p className="text-cyan-700">
@@ -391,7 +394,7 @@ const AddProject: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
                 {[
                   "connectionDesign::Main Connection Design",
                   "miscDesign::Misc Design",
@@ -423,7 +426,7 @@ const AddProject: React.FC = () => {
               <div className="flex items-center gap-4 mb-8">
                 <Wrench className="w-5 h-5 text-amber-600" />
                 <div>
-                  <h3 className="text-xl font-bold text-amber-900">
+                  <h3 className="text-lg md:text-xl font-bold text-amber-900">
                     Detailing Scope
                   </h3>
                   <p className="text-amber-700">
@@ -431,7 +434,7 @@ const AddProject: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
                 {[
                   "detailingMain::Detailing Main",
                   "detailingMisc::Detailing Misc",
@@ -459,7 +462,7 @@ const AddProject: React.FC = () => {
 
             {/* Timeline & Estimation */}
             <SectionTitle title="Timeline & Estimation" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
               <Input
                 label="Estimated Hours"
                 type="number"
