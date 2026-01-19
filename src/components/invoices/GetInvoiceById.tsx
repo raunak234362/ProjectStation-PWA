@@ -121,7 +121,7 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
               {/* Ensure logo height is proportional */}
               <img src={logo} alt="Logo" className="h-25 object-contain" />
             </div>
-            <div className="h-[1.5px] bg-[#e6554d] w-full mb-3"></div>
+            <div className="h-[1px] bg-[#e6554d] w-full mb-3"></div>
 
             <div className="flex justify-between items-start mb-5 text-[12px]">
               {/* Receiver Details */}
