@@ -1745,7 +1745,7 @@ class Service {
   //get bank account by ID
   static async GetBankAccountById(id: string) {
     try {
-      const response = await api.get(`invoice/accounts/${id}`);
+      const response = await api.get(`invoice/account/${id}`);
       console.log("Bank account fetched:", response.data);
       return response.data;
     } catch (error) {

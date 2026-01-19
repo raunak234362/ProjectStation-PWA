@@ -7,7 +7,6 @@ import {
   Building2,
   CreditCard,
   Landmark,
-  MapPin,
   Hash,
 } from "lucide-react";
 
@@ -81,30 +80,30 @@ const GetAccountByID = ({ id }: GetAccountByIDProps) => {
         />
         <InfoCard
           icon={<Landmark className="w-4 h-4" />}
-          label="IFSC Code"
-          value={account.ifscCode || "—"}
+          label="ABA Routing Number"
+          value={account.abaRoutingNumber || "—"}
         />
         <InfoCard
-          icon={<MapPin className="w-4 h-4" />}
-          label="Branch Name"
-          value={account.branchName || "—"}
+          icon={<Hash className="w-4 h-4" />}
+          label="Institution Number"
+          value={account.institutionNumber || "—"}
+        />
+        <InfoCard
+          icon={<Hash className="w-4 h-4" />}
+          label="Transit Number"
+          value={account.transitNumber || "—"}
         />
         <InfoCard
           icon={<CreditCard className="w-4 h-4" />}
           label="Payment Method"
           value={account.paymentMethod || "—"}
         />
-        <InfoCard
-          icon={<Hash className="w-4 h-4" />}
-          label="Swift Code"
-          value={account.swiftCode || "—"}
-        />
       </div>
 
-      {account.address && (
+      {account.bankAddress && (
         <div className="mt-6 p-4 bg-white/50 rounded-lg border border-gray-100">
           <p className="text-xs uppercase text-gray-500 mb-1">Bank Address</p>
-          <p className="text-gray-700">{account.address}</p>
+          <p className="text-gray-700">{account.bankAddress}</p>
         </div>
       )}
     </div>
