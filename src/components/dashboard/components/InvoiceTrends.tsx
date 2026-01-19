@@ -121,7 +121,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="py-1 px-2 text-xs border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-white font-medium shadow-sm"
+            className="py-1 px-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-white font-medium shadow-sm"
           >
             {years.map((year) => (
               <option key={year} value={year}>

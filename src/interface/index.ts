@@ -761,3 +761,29 @@ export interface CoResponsePayload {
   parentResponseId?: string | null;
   files?: File[];
 }
+export interface DesignDrawingPayload {
+  projectId: string;
+  stage: string;
+  description: string;
+  files?: File[];
+}
+
+export interface DesignDrawingResponsePayload {
+  designDrawingsId: string;
+  files?: File[];
+  reason: string;
+  description: string;
+  status: string;
+  wbtStatus: string;
+  parentResponseId?: string;
+}
+
+export interface DesignDrawing {
+  id: string;
+  projectId: string;
+  stage: string;
+  description: string;
+  files: any[];
+  createdAt: string;
+  updatedAt: string;
+}

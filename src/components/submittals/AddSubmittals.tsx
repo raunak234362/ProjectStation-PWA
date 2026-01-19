@@ -11,7 +11,10 @@ import Service from "../../api/Service";
 import type { SelectOption, Fabricator } from "../../interface";
 import RichTextEditor from "../fields/RichTextEditor";
 
-const AddSubmittal: React.FC<{ project: any }> = ({ project }) => {
+const AddSubmittal: React.FC<{ project: any; initialData?: any }> = ({
+  project,
+  initialData,
+}) => {
   const userDetail = useSelector((state: any) => state.userInfo.userDetail);
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo.fabricatorData
@@ -36,8 +39,14 @@ const AddSubmittal: React.FC<{ project: any }> = ({ project }) => {
     fetchMileStone();
   }, [project.id]);
 
-  const { register, handleSubmit, control, setValue, reset } = useForm<any>();
-  const [description, setDescription] = useState("");
+  const { register, handleSubmit, control, setValue, reset } = useForm<any>({
+    defaultValues: {
+      subject: initialData?.subject || "",
+    },
+  });
+  const [description, setDescription] = useState(
+    initialData?.description || ""
+  );
   const [files, setFiles] = useState<File[]>([]);
 
   const selectedFabricator = fabricators?.find(

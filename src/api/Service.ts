@@ -151,6 +151,22 @@ class Service {
     }
   }
 
+  //Edit Department 
+  static async EditDepartment(id: string, departmentData: DepartmentPayload) {
+    try {
+      const response = await api.put(`department/department/${id}`, departmentData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response?.data;
+    } catch (error) {
+      //alert(error);
+      console.log("Error editing Department", error);
+    }
+  }
+
   // Add team
   static async AddTeam(teamDataPayload: TeamPayload) {
     try {
@@ -1792,5 +1808,11 @@ class Service {
       throw error;
     }
   }
+
+  // ===========================================================
+  // DESIGN DRAWINGS SERVICES
+  // ===========================================================
+
+  integra
 }
 export default Service;

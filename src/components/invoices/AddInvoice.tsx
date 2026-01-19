@@ -56,9 +56,15 @@ export interface InvoiceFormData {
 
 interface AddInvoiceProps {
   onSuccess?: () => void;
+  initialFabricatorId?: string;
+  initialProjectId?: string;
 }
 
-const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
+const AddInvoice = ({
+  onSuccess,
+  initialFabricatorId,
+  initialProjectId,
+}: AddInvoiceProps) => {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [fabricators, setFabricators] = useState<any[]>([]);
   const [allProjects, setAllProjects] = useState<any[]>([]);
@@ -129,6 +135,106 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
     fetchData();
   }, []);
 
+  const selectFabricator = (fabricatorId: string) => {
+    setSelectedFabricatorId(fabricatorId);
+    setValue("fabricatorId", fabricatorId);
+    setSelectedProjectId("");
+    setValue("projectId", "");
+
+    if (!fabricatorId) {
+      setFilteredProjects([]);
+      return;
+    }
+
+    const selectedFabricator = fabricators.find(
+      (f: any) => f.id === fabricatorId || f._id === fabricatorId
+    );
+    console.log(selectedFabricator);
+
+    if (selectedFabricator) {
+      setValue("customerName", selectedFabricator.fabName || "");
+      setValue("address", selectedFabricator.website || "");
+      setContacts(selectedFabricator.pointOfContact || []);
+    }
+
+    const projects = allProjects.filter(
+      (p: any) =>
+        p.fabricatorID === fabricatorId || p.fabricator_id === fabricatorId
+    );
+    setFilteredProjects(projects);
+
+    if (selectedFabricator?.accountId) {
+      const selectedAccount = accounts.find(
+        (a: any) =>
+          a._id === selectedFabricator.accountId ||
+          a.id === selectedFabricator.accountId
+      );
+      if (selectedAccount) {
+        const accountInfo = {
+          abaRoutingNumber: selectedAccount.abaRoutingNumber || "",
+          accountNumber: selectedAccount.accountNumber || "",
+          accountName: selectedAccount.accountName || "",
+          paymentMethod: selectedAccount.paymentMethod || "",
+          institutionNumber: selectedAccount.institutionNumber || "",
+          transitNumber: selectedAccount.transitNumber || "",
+          bankName: selectedAccount.bankName || "",
+          accountType: selectedAccount.accountType || "",
+          beneficiaryInfo: selectedAccount.beneficiaryInfo || "",
+          beneficiaryAddress: selectedAccount.beneficiaryAddress || "",
+          bankInfo: selectedAccount.bankInfo || "",
+          bankAddress: selectedAccount.bankAddress || "",
+        };
+        setValue("accountInfo", [accountInfo]);
+      }
+    }
+  };
+
+  const selectProject = async (projectId: string) => {
+    setSelectedProjectId(projectId);
+    setValue("projectId", projectId);
+
+    if (!projectId) return;
+
+    const project = allProjects.find(
+      (p: any) => p.id === projectId || p._id === projectId
+    );
+    console.log("Project-------", project);
+
+    if (project) {
+      setValue("jobName", project.name || "");
+
+      if (project.rfqId) {
+        try {
+          const rfqRes = await Service.GetRFQbyId(project.rfqId);
+          const rfq = rfqRes.data;
+          console.log("RFQ Data-------", rfq);
+
+          if (rfq && rfq.sender) {
+            const senderName = `${rfq.sender.firstName || ""} ${
+              rfq.sender.lastName || ""
+            }`.trim();
+            setValue("customerName", senderName);
+            setValue("clientId", rfq.senderId || rfq.sender.id);
+          }
+        } catch (error) {
+          console.error("Error fetching RFQ:", error);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (fabricators.length > 0 && initialFabricatorId) {
+      selectFabricator(initialFabricatorId);
+    }
+  }, [fabricators, initialFabricatorId]);
+
+  useEffect(() => {
+    if (filteredProjects.length > 0 && initialProjectId) {
+      selectProject(initialProjectId);
+    }
+  }, [filteredProjects, initialProjectId]);
+
   const handleCalculateTotal = () => {
     if (watchedItems) {
       const total = watchedItems.reduce(
@@ -170,94 +276,13 @@ const AddInvoice = ({ onSuccess }: AddInvoiceProps) => {
   };
 
   const handleFabricatorSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const fabricatorId = e.target.value;
-    setSelectedFabricatorId(fabricatorId);
-    setValue("fabricatorId", fabricatorId);
-    setSelectedProjectId("");
-    setValue("projectId", "");
-
-    if (!fabricatorId) {
-      setFilteredProjects([]);
-      return;
-    }
-
-    const selectedFabricator = fabricators.find(
-      (f: any) => f.id === fabricatorId || f._id === fabricatorId
-    );
-    console.log(selectedFabricator);
-
-    if (selectedFabricator) {
-      setValue("customerName", selectedFabricator.fabName || "");
-      setValue("address", selectedFabricator.website || ""); // Using website as placeholder for address if not available
-      setContacts(selectedFabricator.pointOfContact || []);
-    }
-
-    const projects = allProjects.filter(
-      (p: any) =>
-        p.fabricatorID === fabricatorId || p.fabricator_id === fabricatorId
-    );
-    setFilteredProjects(projects);
-
-    if (selectedFabricator?.accountId) {
-      const selectedAccount = accounts.find(
-        (a: any) =>
-          a._id === selectedFabricator.accountId ||
-          a.id === selectedFabricator.accountId
-      );
-      if (selectedAccount) {
-        const accountInfo = {
-          abaRoutingNumber: selectedAccount.abaRoutingNumber || "",
-          accountNumber: selectedAccount.accountNumber || "",
-          accountName: selectedAccount.accountName || "",
-          paymentMethod: selectedAccount.paymentMethod || "",
-          institutionNumber: selectedAccount.institutionNumber || "",
-          transitNumber: selectedAccount.transitNumber || "",
-          bankName: selectedAccount.bankName || "",
-          accountType: selectedAccount.accountType || "",
-          beneficiaryInfo: selectedAccount.beneficiaryInfo || "",
-          beneficiaryAddress: selectedAccount.beneficiaryAddress || "",
-          bankInfo: selectedAccount.bankInfo || "",
-          bankAddress: selectedAccount.bankAddress || "",
-        };
-        setValue("accountInfo", [accountInfo]);
-      }
-    }
+    selectFabricator(e.target.value);
   };
+
   const handleProjectSelect = async (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const projectId = e.target.value;
-    setSelectedProjectId(projectId);
-    setValue("projectId", projectId);
-
-    if (!projectId) return;
-
-    const project = allProjects.find(
-      (p: any) => p.id === projectId || p._id === projectId
-    );
-    console.log("Project-------", project);
-
-    if (project) {
-      setValue("jobName", project.name || "");
-
-      if (project.rfqId) {
-        try {
-          const rfqRes = await Service.GetRFQbyId(project.rfqId);
-          const rfq = rfqRes.data;
-          console.log("RFQ Data-------", rfq);
-
-          if (rfq && rfq.sender) {
-            const senderName = `${rfq.sender.firstName || ""} ${
-              rfq.sender.lastName || ""
-            }`.trim();
-            setValue("customerName", senderName);
-            setValue("clientId", rfq.senderId || rfq.sender.id);
-          }
-        } catch (error) {
-          console.error("Error fetching RFQ:", error);
-        }
-      }
-    }
+    selectProject(e.target.value);
   };
   const onSubmit = async (data: InvoiceFormData) => {
     // Ensure numeric fields are numbers

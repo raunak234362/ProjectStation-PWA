@@ -1,0 +1,88 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
+import DataTable from "../../ui/table";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { DesignDrawing } from "../../../interface";
+import Service from "../../../api/Service";
+import { Loader2, Inbox } from "lucide-react";
+import DesignDrawingDetails from "./DesignDrawingDetails";
+
+interface AllDesignDrawingsProps {
+  projectId: string;
+}
+
+const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
+  const [drawings, setDrawings] = useState<DesignDrawing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchDrawings = async () => {
+    try {
+      setLoading(true);
+      const response = await Service.GetDesignDrawingsByProjectId(projectId);
+      setDrawings(response.data || []);
+    } catch (error) {
+      console.error("Error fetching design drawings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (projectId) fetchDrawings();
+  }, [projectId]);
+
+  const columns: ColumnDef<DesignDrawing>[] = [
+    { accessorKey: "stage", header: "Stage" },
+    {
+      accessorKey: "description",
+      header: "Description",
+      cell: ({ row }) => (
+        <p className="truncate max-w-[300px]">{row.original.description}</p>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created On",
+      cell: ({ row }) =>
+        new Date(row.original.createdAt).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-gray-700">
+        <Loader2 className="w-6 h-6 animate-spin mb-2" />
+        Loading Design Drawings...
+      </div>
+    );
+  }
+
+  if (!loading && drawings.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-gray-700">
+        <Inbox className="w-10 h-10 mb-3 text-gray-400" />
+        <p className="text-lg font-medium">No Design Drawings Available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white p-2 rounded-2xl shadow-md">
+      <DataTable
+        columns={columns}
+        data={drawings}
+        detailComponent={({ row }) => (
+          <DesignDrawingDetails id={row.id} onUpdate={fetchDrawings} />
+        )}
+        searchPlaceholder="Search Design Drawings..."
+        pageSizeOptions={[5, 10, 25]}
+      />
+    </div>
+  );
+};
+
+export default AllDesignDrawings;
