@@ -39,42 +39,44 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
   ];
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const pieCenterX = "50%";
+  const pieCenterY = "50%"; // slightly lower looks visually perfect
 
   const filteredDesigners = designers.filter(
     (d) =>
       d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       d.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  )
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 h-[500px]">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 lg:h-[500px]">
       {/* LEFT: Connection Designer Directory (Interactive List) */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden"
+        className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden min-h-[400px]"
       >
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+        <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-bold text-gray-800">
+            <h3 className="text-base sm:text-lg font-bold text-gray-800">
               Connection Designer Directory
             </h3>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">
               Click to view details • Hover to see states
             </p>
           </div>
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              size={16}
+              size={14}
             />
             <input
               type="text"
               placeholder="Search designers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-1 focus:ring-green-500 outline-hidden w-48"
+              className="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-green-500 outline-hidden w-full sm:w-48"
             />
           </div>
         </div>
@@ -102,26 +104,26 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                 onMouseEnter={() => setHoveredId(designer.id || designer._id)}
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => onSelect(designer.id || designer._id)}
-                className="group relative flex items-center justify-between p-4 rounded-xl hover:bg-green-50/50 transition-colors border border-transparent hover:border-green-100 cursor-pointer"
+                className="group relative flex items-center justify-between p-3 sm:p-4 rounded-xl hover:bg-green-50/50 transition-colors border border-transparent hover:border-green-100 cursor-pointer overflow-hidden"
               >
                 {/* Main Info */}
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 font-bold text-xs sm:text-sm">
                     {designer.name.charAt(0).toUpperCase()}
                   </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-800">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-semibold text-gray-800 truncate">
                       {designer.name}
                     </h4>
-                    <div className="flex items-center gap-3 mt-1">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-0.5">
                       {designer.email && (
-                        <span className="flex items-center gap-1 text-xs text-gray-400">
-                          <Mail size={12} /> {designer.email}
+                        <span className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-400 truncate max-w-[120px] sm:max-w-none">
+                          <Mail size={10} className="shrink-0" /> {designer.email}
                         </span>
                       )}
                       {designer.contactInfo && (
-                        <span className="flex items-center gap-1 text-xs text-gray-400">
-                          <Phone size={12} /> {designer.contactInfo}
+                        <span className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-400">
+                          <Phone size={10} className="shrink-0" /> {designer.contactInfo}
                         </span>
                       )}
                     </div>
@@ -129,12 +131,12 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                 </div>
 
                 {/* Right Arrow / State Count */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                    {states.length} States
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-2">
+                  <span className="text-[10px] sm:text-xs font-medium text-gray-500 bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                    {states.length} <span className="hidden xs:inline">States</span>
                   </span>
                   <ChevronRight
-                    size={16}
+                    size={14}
                     className="text-gray-300 group-hover:text-green-500 transition-colors"
                   />
                 </div>
@@ -147,7 +149,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-14 top-1/2 -translate-y-1/2 z-50 bg-white p-4 rounded-xl shadow-xl border border-gray-100 w-64 pointer-events-none"
+                      className="absolute right-14 top-1/2 -translate-y-1/2 z-50 bg-white p-4 rounded-xl shadow-xl border border-gray-100 w-64 pointer-events-none hidden sm:block"
                     >
                       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-50">
                         <MapPin size={14} className="text-green-500" />
@@ -186,25 +188,24 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         </div>
       </motion.div>
 
-      {/* RIGHT: State-wise Presence (Keep Pie Chart) */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col"
+        className="lg:col-span-1 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]"
       >
-        <h3 className="text-lg font-bold text-gray-800 mb-6">
+        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-6">
           State Distribution
         </h3>
-        <div className="flex-1 min-h-[250px] relative">
+        <div className="flex-1 min-h-[300px] relative">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={stateData}
-                cx="50%"
-                cy="40%"
-                innerRadius={60}
-                outerRadius={80}
+                cx={pieCenterX}
+                cy={pieCenterY}
+                innerRadius={window.innerWidth < 640 ? 50 : 60}
+                outerRadius={window.innerWidth < 640 ? 70 : 80}
                 paddingAngle={5}
                 dataKey="count"
               >
@@ -220,37 +221,50 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                   borderRadius: "8px",
                   border: "none",
                   boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+                  fontSize: '12px'
                 }}
               />
               <Legend
                 verticalAlign="bottom"
-                height={80}
-                wrapperStyle={{ overflowY: 'auto' }}
+                height={120}
+                wrapperStyle={{
+                  paddingTop: '20px',
+                  fontSize: '10px',
+                  overflowY: 'auto',
+                  scrollbarWidth: 'none'
+                }}
                 iconType="circle"
+                iconSize={8}
                 formatter={(value, entry: any) => (
-                  <span className="text-xs text-gray-600 ml-1">
+                  <span className="text-[10px] sm:text-xs text-gray-600 ml-1">
                     {value} ({entry.payload.count})
                   </span>
                 )}
               />
               <text
-                x="50%"
-                y="40%"
+
+                x={pieCenterX}
+                y={pieCenterY}
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
-                <tspan
-                  x="50%"
-                  dy="-0.5em"
-                  fontSize="24"
+                {/* <tspan
+                  x={pieCenterX}
+                  dy="3em"
+                  fontSize={window.innerWidth < 640 ? "18" : "24"}
                   fontWeight="bold"
                   fill="#1f2937"
                 >
                   {stateData.reduce((a, b) => a + b.count, 0)}
                 </tspan>
-                <tspan x="50%" dy="1.5em" fontSize="12" fill="#6b7280">
+                <tspan
+                  x={pieCenterX}
+                  dy="1.5em"
+                  fontSize={window.innerWidth < 640 ? "10" : "12"}
+                  fill="#6b7280"
+                >
                   Total States
-                </tspan>
+                </tspan> */}
               </text>
             </PieChart>
           </ResponsiveContainer>

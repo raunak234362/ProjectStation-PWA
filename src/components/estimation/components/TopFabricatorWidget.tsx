@@ -18,7 +18,7 @@ const TopFabricatorWidget: React.FC<TopFabricatorWidgetProps> = ({ fabricator })
             </div>
 
             {fabricator ? (
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
+                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 bg-white rounded-full shadow-sm">
                             <Building2 className="text-gray-700" size={28} />

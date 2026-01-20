@@ -34,7 +34,7 @@ const AllFabricator = () => {
   // }, []);
   console.log(fabricators);
 
-  
+
 
   // Handle row click (optional)
   const handleRowClick = (row: Fabricator) => {
@@ -53,7 +53,7 @@ const AllFabricator = () => {
 
   // Render DataTable
   return (
-    <div className=" bg-white p-4 rounded-2xl shadow-sm">
+    <div className=" bg-white p-2 sm:p-4 rounded-2xl shadow-sm">
       <DataTable
         columns={columns}
         data={fabricators}

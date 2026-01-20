@@ -118,11 +118,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "OPEN"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
+            ? "bg-green-100 text-green-700"
+            : "bg-yellow-100 text-yellow-700"
+            }`}
         >
           {row.original.status}
         </span>
@@ -132,55 +131,41 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
   return (
     <>
-      <div className="p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="p-0 sm:p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
-          <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-xl shadow-md space-y-6">
+          <div className="bg-white sm:bg-linear-to-br sm:from-green-50 sm:to-white p-4 sm:p-6 rounded-xl shadow-sm sm:shadow-md space-y-5 sm:space-y-6">
             {/* Header */}
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <h3 className="text-2xl font-bold text-green-700">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <h3 className="text-xl sm:text-2xl font-bold text-green-700 wrap-break-word max-w-full">
                   {rfq.projectName}
                 </h3>
 
                 {/* Status tag */}
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    rfq.status === "RECEIVED"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-green-100 text-green-700"
-                  }`}
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${rfq.status === "RECEIVED"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-green-100 text-green-700"
+                    }`}
                 >
                   {rfq.status}
                 </span>
               </div>
 
               {/* Action buttons */}
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 {/* EDIT RFQ */}
                 <Button
                   onClick={() => alert("Coming soon: Edit RFQ modal")}
-                  className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
+                  className="flex-1 sm:flex-none px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
                 >
                   Edit
                 </Button>
 
                 {/* DELETE RFQ */}
                 <Button
-                  //   onClick={async () => {
-                  //     if (!confirm("Are you sure you want to delete this RFQ?")) return;
-
-                  //     try {
-                  //       await Service.DeleteRFQ(id);
-                  //       alert("RFQ deleted successfully.");
-
-                  //       // optional → redirect to RFQ list page if router available
-                  //     } catch (err) {
-                  //       console.error(err);
-                  //       alert("Failed to delete RFQ.");
-                  //     }
-                  // }}
-                  className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-sm"
+                  className="flex-1 sm:flex-none px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-sm"
                 >
                   Delete
                 </Button>
@@ -200,10 +185,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             </div>
 
             {/* Description */}
-            <div>
-              <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
+            <div className="space-y-2">
+              <h4 className="font-bold text-gray-700 text-sm">Description</h4>
               <div
-                className="text-gray-700 bg-white p-3 rounded-md border prose prose-sm max-w-none"
+                className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm"
                 dangerouslySetInnerHTML={{
                   __html: rfq.description || "No description provided",
                 }}
@@ -211,13 +196,15 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             </div>
 
             {/* Scopes */}
-            <h4 className="font-semibold text-gray-700">Scope Summary</h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-              <Scope label="Main Design" enabled={rfq.connectionDesign} />
-              <Scope label="Misc Design" enabled={rfq.miscDesign} />
-              <Scope label="Customer Design" enabled={rfq.customerDesign} />
-              <Scope label="Main Steel" enabled={rfq.detailingMain} />
-              <Scope label="Misc Steel" enabled={rfq.detailingMisc} />
+            <div className="space-y-3">
+              <h4 className="font-bold text-gray-700 text-sm">Scope Summary</h4>
+              <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-4 text-[10px] sm:text-xs">
+                <Scope label="Main Design" enabled={rfq.connectionDesign} />
+                <Scope label="Misc Design" enabled={rfq.miscDesign} />
+                <Scope label="Customer Design" enabled={rfq.customerDesign} />
+                <Scope label="Main Steel" enabled={rfq.detailingMain} />
+                <Scope label="Misc Steel" enabled={rfq.detailingMisc} />
+              </div>
             </div>
 
             {/* Files */}
@@ -227,13 +214,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               parentId={rfq.id}
               formatDate={(date: string) => new Date(date).toLocaleDateString()}
             />
-            <div className="flex gap-2">
-              <Button onClick={() => setShowEstimationModal(true)}>
+            <div className="flex flex-col gap-2 pt-2">
+              <Button onClick={() => setShowEstimationModal(true)} className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm font-bold bg-green-500 text-white shadow-xs">
                 Raise For Estimation
               </Button>
               <Button
                 onClick={() => handleCDQuotationModal()}
-                className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+                className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight font-bold"
               >
                 Raise for Connection Designer Quotation
               </Button>
@@ -241,23 +228,23 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
           </div>
 
           {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-          <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-xl shadow-md space-y-6">
+          <div className="bg-white sm:bg-linear-to-br sm:from-green-50 sm:to-white p-4 sm:p-6 rounded-xl shadow-sm sm:shadow-md space-y-5 sm:space-y-6">
             {/* Header + Add Response Button */}
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-semibold text-green-700">
+            <div className="flex justify-between items-center gap-4">
+              <h1 className="text-xl sm:text-2xl font-semibold text-green-700">
                 Responses
               </h1>
 
               {(userRole === "ADMIN" ||
                 userRole === "STAFF" ||
                 userRole === "USER") && (
-                <Button
-                  onClick={() => setShowResponseModal(true)}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
-                >
-                  + Add Response
-                </Button>
-              )}
+                  <Button
+                    onClick={() => setShowResponseModal(true)}
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
+                  >
+                    + Add Response
+                  </Button>
+                )}
             </div>
             {showResponseModal && (
               <ResponseModal
@@ -322,19 +309,18 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 };
 
 const Info = ({ label, value }: { label: string; value: string | number }) => (
-  <div className="space-y-1">
-    <p className="text-gray-700 text-xs uppercase">{label}</p>
-    <p className="font-semibold text-gray-700">{value}</p>
+  <div className="space-y-0.5 sm:space-y-1">
+    <p className="text-gray-500 text-[10px] sm:text-xs uppercase font-medium tracking-wider">{label}</p>
+    <p className="font-bold text-gray-800 text-sm sm:text-base">{value}</p>
   </div>
 );
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-md border ${
-      enabled
-        ? "bg-green-100 border-green-400 text-green-700"
-        : "bg-gray-100 border-gray-300 text-gray-700"
-    }`}
+    className={`px-3 py-2 rounded-md border ${enabled
+      ? "bg-green-100 border-green-400 text-green-700"
+      : "bg-gray-100 border-gray-300 text-gray-700"
+      }`}
   >
     {label}
   </div>

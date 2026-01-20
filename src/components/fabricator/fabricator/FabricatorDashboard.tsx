@@ -92,18 +92,25 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
 
   const columns: ColumnDef<ProjectData>[] = [
     { accessorKey: "projectNumber", header: "Project #" },
-    { accessorKey: "name", header: "Project Name" },
+    {
+      accessorKey: "name",
+      header: "Project Name",
+      cell: ({ row }) => (
+        <div className="max-w-[150px] truncate font-medium text-gray-800" title={row.original.name}>
+          {row.original.name}
+        </div>
+      ),
+    },
     { accessorKey: "stage", header: "Stage" },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "ACTIVE"
-              ? "bg-green-100 text-green-700"
-              : "bg-gray-100 text-gray-700"
-          }`}
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "ACTIVE"
+            ? "bg-green-100 text-green-700"
+            : "bg-gray-100 text-gray-700"
+            }`}
         >
           {row.original.status}
         </span>
@@ -136,7 +143,7 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <StatCard
           icon={<Briefcase className="text-blue-600" />}
           label="Total Projects"
@@ -176,14 +183,14 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       </div>
 
       {/* Projects Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 w-full overflow-hidden">
+        <div className="p-4 border-b border-gray-50 flex flex-wrap items-center justify-between gap-2 bg-gray-50/50">
           <h3 className="font-bold text-gray-800 flex items-center gap-2">
             <LayoutDashboard size={18} className="text-green-600" />
             Project Overview
           </h3>
         </div>
-        <div className="p-0">
+        <div>
           <DataTable
             columns={columns}
             data={projects}
@@ -261,10 +268,10 @@ const StatCard = ({
   color: string;
 }) => (
   <div
-    className={`${color} p-4 rounded-xl border border-white/50 shadow-sm flex flex-col items-center justify-center text-center transition-transform hover:scale-105`}
+    className={`${color} p-3 sm:p-4 rounded-xl border border-white/50 shadow-sm flex flex-col items-center justify-center text-center transition-transform hover:scale-105`}
   >
     <div className="mb-2 p-2 bg-white rounded-full shadow-sm">{icon}</div>
-    <p className="text-2xl font-bold text-gray-800">{value}</p>
+    <p className="text-xl sm:text-2xl font-bold text-gray-800">{value}</p>
     <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">
       {label}
     </p>

@@ -40,19 +40,17 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`h-full transition-all duration-300 flex flex-col ${
-        isMinimized ? "w-24" : "w-72"
-      } ${isMobile ? "shadow-2xl bg-background" : "relative"}`}
+      className={`h-full transition-all duration-300 flex flex-col ${isMinimized ? "w-24" : "w-72"
+        } ${isMobile ? "shadow-2xl bg-background" : "relative"}`}
     >
       {/* Header */}
       <div
-        className={`flex items-center pt-6 pb-2 px-6 ${
-          isMobile
+        className={`flex items-center pt-6 pb-2 px-6 ${isMobile
             ? "justify-between"
             : isMinimized
-            ? "justify-center"
-            : "justify-start"
-        }`}
+              ? "justify-center"
+              : "justify-start"
+          }`}
       >
         <div className="flex items-center w-full justify-center">
           {!isMinimized ? (
@@ -89,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <NavLink
                     to={
                       label === "Dashboard" &&
-                      (userRole === "sales" || userRole === "sales_manager")
+                        (userRole === "sales" || userRole === "sales_manager")
                         ? "/dashboard/sales"
                         : to
                     }
@@ -97,24 +95,28 @@ const Sidebar: React.FC<SidebarProps> = ({
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
                       `flex items-center gap-4 py-2.5 transition-all duration-200 font-bold text-md tracking-wide relative 
-                      ${
-                        isActive
-                          ? "bg-white text-green-500 rounded-l-[30px] shadow-sm ml-0 pl-6 z-20"
-                          : "text-white/80 hover:text-background hover:bg-white/80 rounded-l-[30px] pl-6 ml-0"
-                      } ${
-                        isMinimized
-                          ? "justify-center px-0 w-14 h-14 mx-auto rounded-xl! ml-0! pl-0!"
-                          : ""
+                      ${isActive
+                        ? `bg-white text-green-600 shadow-sm z-20 ${isMobile
+                          ? "rounded-xl mx-4 px-4"
+                          : "rounded-l-[30px] ml-0 pl-6"
+                        }`
+                        : `text-white/90 hover:bg-white/10 ${isMobile
+                          ? "rounded-xl mx-4 px-4"
+                          : "rounded-l-[30px] ml-0 pl-6"
+                        }`
+                      } ${isMinimized
+                        ? "justify-center px-0 w-14 h-14 mx-auto rounded-xl! ml-0! pl-0!"
+                        : ""
                       }`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         {/* Inverted Corners for Active State Effect - Desktop Only */}
-                        {!isMinimized && isActive && (
+                        {!isMinimized && isActive && !isMobile && (
                           <>
                             {/* Top Curve */}
-                            <div className="absolute right-0 -top-5 w-5 h-5 bg-transparent rounded-br-3xl shadow-[5px_5px_0_5px_#f9fafb] z-10 pointer-events-none"></div>
+                            <div className="absolute right-0 -top-5 w-5 h-5 bg-transparent rounded-br-[20px] shadow-[5px_5px_0_5px_#f9fafb] z-10 pointer-events-none"></div>
                             {/* Bottom Curve */}
                             <div className="absolute right-0 -bottom-5 w-5 h-5 bg-transparent rounded-tr-[20px] shadow-[5px_-5px_0_5px_#f9fafb] z-10 pointer-events-none"></div>
                           </>
@@ -164,11 +166,10 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <Button
-          className={`w-full flex items-center gap-3 py-3 rounded-xl transition-all ${
-            isMinimized
+          className={`w-full flex items-center gap-3 py-3 rounded-xl transition-all ${isMinimized
               ? "justify-center bg-white/10 text-white hover:bg-white/20"
               : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
-          }`}
+            }`}
           onClick={fetchLogout}
         >
           <LogOut size={20} />
