@@ -55,6 +55,7 @@
     color: rgba(255, 255, 255, 0.87);
     background-color: #ffffff;
   }
+
   a:hover {
     color: #0f9397;
   }
@@ -102,9 +103,12 @@
   --color-green-100: #e3f6db;
   --color-green-200: #c6ecb8;
   --color-green-300: #9bde88;
-  --color-green-400: #6bbd45; /* User provided code as 400/500/600 anchor */
-  --color-green-500: #6bbd45; /* Using as main for 500 too if needed, or slightly lighter */
-  --color-green-600: #6bbd45; /* Main Brand Color requested */
+  --color-green-400: #6bbd45;
+  /* User provided code as 400/500/600 anchor */
+  --color-green-500: #6bbd45;
+  /* Using as main for 500 too if needed, or slightly lighter */
+  --color-green-600: #6bbd45;
+  /* Main Brand Color requested */
   --color-green-700: #559e35;
   --color-green-800: #447d2d;
   --color-green-900: #386626;
@@ -146,15 +150,19 @@
 }
 
 @layer base {
+
   html,
   body,
   #root {
     height: 100%;
-    overflow: hidden; /* prevent page-level scroll; app manages its own scroll */
+    overflow: hidden;
+    /* prevent page-level scroll; app manages its own scroll */
   }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground tracking-wider;
   }
@@ -171,7 +179,8 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1; /* Default slate-300 for neutrality */
+  background: #cbd5e1;
+  /* Default slate-300 for neutrality */
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: content-box;
@@ -183,7 +192,8 @@
 
 /* Custom Class for Content Areas asking for Green Scroll */
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #6bbd45; /* Brand Green */
+  background: #6bbd45;
+  /* Brand Green */
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: content-box;
@@ -194,5 +204,20 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f0fdf4; /* Light Green background for track blending */
+  background: #f0fdf4;
+  /* Light Green background for track blending */
+}
+
+/* Laptop Responsive "Shrink" Utility */
+@media screen and (min-width: 1024px) and (max-width: 1536px) {
+  .laptop-fit {
+    zoom: 0.8;
+    /* Maintaining desktop layout on laptops */
+  }
+}
+
+@media screen and (min-width: 1537px) {
+  .laptop-fit {
+    zoom: 1;
+  }
 }
