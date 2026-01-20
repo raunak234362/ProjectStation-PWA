@@ -130,17 +130,17 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
         : "bg-blue-100 text-blue-800";
 
   return (
-    <div className="bg-linear-to-br from-green-50 to-cyan-50 rounded-2xl p-8 border border-green-200">
+    <div className="bg-linear-to-br from-green-50 to-cyan-50 rounded-2xl p-4 sm:p-6 border border-green-200 shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
         <div>
-          <h3 className="text-xl font-bold text-green-800">
+          <h3 className="text-xl sm:text-2xl font-bold text-green-800 wrap-break-word">
             Estimation #{estimationNumber}
           </h3>
-          <p className="text-gray-700 font-medium">Project: {projectName}</p>
+          <p className="text-gray-700 font-bold mt-1 text-sm sm:text-base">Project: {projectName}</p>
         </div>
         <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor}`}
+          className={`px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider shrink-0 shadow-sm ${statusColor}`}
         >
           {status}
         </span>
@@ -236,31 +236,25 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
         formatDate={formatDate}
       />
 
-      {/* Action Buttons (placeholders for future edit/view actions) */}
-      <div className="py-3 flex gap-3">
+      {/* Action Buttons */}
+      <div className="py-4 flex flex-wrap items-center gap-2 sm:gap-3 border-t border-green-100 mt-6">
         <Button
-          className="py-1 px-2 text-md rounded-xl"
+          className="py-1 px-2 text-lg bg-red-200 text-red-700"
           onClick={() => setIsEstimationTaskOpen(!isEstimationTaskOpen)}
         >
           Estimation Task
         </Button>
         <Button
-          className="py-1 px-2 text-md rounded-xl"
+          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
           onClick={() => setIsHoursOpen(!isHoursOpen)}
         >
           Estimated Hours/Weeks
-        </Button>
-        <Button
-          className="py-1 px-2 text-md rounded-xl"
-          onClick={() => setIsInclusionOpen(!isInclusionOpen)}
-        >
-          Inclusion/Exclusion
         </Button>
         {/* <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           Add To Project
         </Button> */}
         <Button
-          className="py-1 px-2 text-md rounded-xl"
+          className="py-1 px-2 text-lg"
           onClick={() => setIsEditing(!isEditing)}
         >
           Edit Estimation
@@ -351,9 +345,9 @@ const InfoRow = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex justify-between gap-3">
-    <span className="font-bold text-gray-700">{label}:</span>
-    <span className="text-gray-700 text-right wrap-break-words">{value}</span>
+  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-4 border-b border-green-100/50 sm:border-none pb-1.5 sm:pb-0">
+    <span className="font-bold text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider shrink-0">{label}:</span>
+    <span className="text-gray-800 sm:text-right wrap-break-word font-bold text-xs sm:text-sm">{value}</span>
   </div>
 );
 

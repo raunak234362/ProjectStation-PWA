@@ -137,7 +137,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
   }, [projects, tasks, teams, projectsByTeam, selectedMonth, selectedYear]);
 
   return (
-    <div className="overflow-x-auto  grid grid-cols-1 max-sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6">
       {teamSummary.map((team) => (
         <motion.div
           key={team.teamName}
@@ -146,10 +146,10 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:border-green-200 transition-all group"
         >
           {/* Team Header */}
-          <div className="bg-background p-4 text-center border-b border-gray-200">
+          <div className="bg-primary p-3 sm:p-4 text-center border-b border-gray-200">
             <div className="flex items-center justify-center gap-2">
-              <Users className="w-5 h-5 text-white" />
-              <h3 className="text-xl font-bold text-white uppercase tracking-wider truncate">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-wider truncate">
                 {team.teamName}
               </h3>
             </div>
@@ -158,49 +158,49 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           <div className="p-5 space-y-4">
             {/* Main Stats */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center">
-                <span className="text-lg font-bold text-gray-400 uppercase">
+              <div className="p-2 sm:p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-gray-100">
+                <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
                   Projects
                 </span>
-                <div className="flex items-center gap-4">
-                  <span className="text-xl font-black text-gray-800">
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <span className="text-lg sm:text-xl font-black text-gray-800">
                     {team.projectCount}
                   </span>
-                  <Briefcase className="w-5 h-5 text-gray-400" />
+                  <Briefcase className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
-              <div className="p-3 bg-green-50 rounded-xl flex flex-col items-center justify-center">
-                <span className="text-lg font-bold text-green-600 uppercase">
+              <div className="p-2 sm:p-3 bg-green-50 rounded-xl flex flex-col items-center justify-center border border-green-100">
+                <span className="text-[10px] sm:text-xs font-bold text-green-600 uppercase tracking-widest mb-1">
                   Work Done
                 </span>
-                <div className="flex items-center gap-4">
-                  <span className="text-xl font-black text-green-600">
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <span className="text-lg sm:text-xl font-black text-green-600">
                     {formatSeconds(team.totalSeconds)}
                   </span>
-                  <Clock className="w-5 h-5 text-green-400" />
+                  <Clock className="w-4 h-4 text-green-400" />
                 </div>
               </div>
             </div>
 
             {/* IFA/IFC/CO# Grid */}
-            <div className="border border-gray-100 rounded-xl overflow-hidden">
+            <div className="border border-gray-100 rounded-xl overflow-hidden bg-white">
               <div className="overflow-x-auto no-scrollbar">
-                <div className="min-w-[300px]">
+                <div className="min-w-[360px]">
                   <div className="grid grid-cols-3 bg-gray-50 border-b border-gray-100">
                     {["IFA", "IFC", "CO#"].map((s) => (
                       <div
                         key={s}
-                        className="py-1 text-center text-sm md:text-md font-black tracking-wide text-gray-800 border-r last:border-0 border-gray-100"
+                        className="py-2 text-center text-xs sm:text-sm font-black tracking-widest text-gray-800 border-r last:border-0 border-gray-100 uppercase"
                       >
                         {s}
                       </div>
                     ))}
                   </div>
-                  <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-x divide-gray-100">
+                  <div className="grid grid-cols-3 divide-x divide-gray-100">
                     {["IFA", "IFC", "CO#"].map((stage) => (
                       <div
                         key={stage}
-                        className="p-1 md:p-2 space-y-1 md:space-y-2"
+                        className="p-1.5 sm:p-2 space-y-1.5 sm:space-y-2"
                       >
                         {[
                           { label: "Active", key: "active", color: "green" },
@@ -226,13 +226,13 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                                 item.key.toUpperCase() as any
                               )
                             }
-                            className={`w-full flex items-center justify-between px-1 md:px-1.5 py-0.5 md:py-1 rounded-md hover:bg-${item.color}-50 transition-colors group/btn`}
+                            className={`w-full flex items-center justify-between px-1.5 sm:px-2 py-1 rounded-lg hover:bg-${item.color}-50 transition-all group/btn border border-transparent hover:border-${item.color}-100`}
                           >
-                            <span className="text-md md:text-md font-bold text-gray-800 uppercase group-hover/btn:text-gray-600 truncate mr-1">
+                            <span className="text-[10px] sm:text-xs font-bold text-gray-600 uppercase group-hover/btn:text-gray-900 truncate mr-1">
                               {item.label}
                             </span>
                             <span
-                              className={`text-md md:text-md font-black text-${item.color}-600`}
+                              className={`text-[11px] sm:text-sm font-black text-${item.color}-600`}
                             >
                               {(team.stats[stage] as any)?.[item.key] || 0}
                             </span>

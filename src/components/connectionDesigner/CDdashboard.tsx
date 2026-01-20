@@ -150,7 +150,7 @@ const CDdashboard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="h-full p-6 space-y-8 bg-transparent overflow-y-auto custom-scrollbar relative"
+            className="h-full p-4 sm:p-6 space-y-4 sm:space-y-8 bg-transparent overflow-y-auto custom-scrollbar relative"
         >
             {/* Header if needed */}
 

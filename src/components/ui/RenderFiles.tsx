@@ -43,10 +43,10 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
 
   const projectFiles: FileItem[] = Array.isArray(files)
     ? files.map((doc) => {
-        const fileData = doc.file ? { ...doc.file, ...doc } : { ...doc };
-        if (fileData.file) delete fileData.file;
-        return fileData;
-      })
+      const fileData = doc.file ? { ...doc.file, ...doc } : { ...doc };
+      if (fileData.file) delete fileData.file;
+      return fileData;
+    })
     : [];
 
   // Step 2: Group files by description
@@ -188,26 +188,28 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
               className="border border-gray-200 rounded-lg p-4 space-y-3 shadow-sm"
             >
               {/* Description + Stage */}
-              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1.5">
                 <div>
                   <h5
-                    className="text-base font-semibold text-gray-700"
+                    className="text-sm border-l-4 border-green-500 pl-2 sm:text-base font-bold text-gray-800"
                     dangerouslySetInnerHTML={{ __html: description }}
                   />
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5">
                     {firstFile?.stage && (
-                      <p className="text-xs text-blue-600 font-medium">
-                        Stage: {firstFile.stage}
+                      <p className="text-[10px] sm:text-xs text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-full">
+                        {firstFile.stage}
                       </p>
                     )}
                     {firstFile?.uploadedAt && (
-                      <p className="text-xs text-gray-700">
-                        Uploaded on {formatDate(firstFile.uploadedAt)}
+                      <p className="text-[10px] sm:text-xs text-gray-500">
+                        {formatDate(firstFile.uploadedAt)}
                       </p>
                     )}
-                    <p className="text-xs text-gray-700">
-                      by <span className="font-medium">{uploaderName}</span>
-                    </p>
+                    {(firstFile?.user?.f_name || firstFile?.user?.l_name) && (
+                      <p className="text-[10px] sm:text-xs text-gray-500">
+                        by <span className="font-semibold text-gray-700">{uploaderName}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -256,7 +258,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
 
                     <ChevronRight
                       size={16}
-                      className="text-gray-400 flex-shrink-0"
+                      className="text-gray-400 shrink-0"
                     />
                   </div>
                 ))}

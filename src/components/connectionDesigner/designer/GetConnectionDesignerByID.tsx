@@ -90,24 +90,23 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
   // ---------------- Render Main Content ----------------
   return (
-    <div className="bg-gradient-to-br from-green-50 to-green-50 p-6 rounded-xl shadow-inner text-sm">
+    <div className="bg-linear-to-br from-green-50 to-green-50 p-4 sm:p-6 rounded-xl shadow-inner text-sm">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold text-green-800">{designer.name}</h3>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-5">
+        <h3 className="text-lg sm:text-xl font-bold text-green-800 tracking-tight">{designer.name}</h3>
         <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${
-            designer.isDeleted
-              ? "bg-red-100 text-red-700"
-              : "bg-green-100 text-green-800"
-          }`}
+          className={`px-3 py-1 rounded-full text-xs font-medium ${designer.isDeleted
+            ? "bg-red-100 text-red-700"
+            : "bg-green-100 text-green-800"
+            }`}
         >
           {designer.isDeleted ? "Inactive" : "Active"}
         </span>
       </div>
 
       {/* Basic Info Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+        <div className="space-y-2 sm:space-y-3">
           {designer.websiteLink && (
             <InfoRow
               label="Website"
@@ -117,9 +116,9 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
                   target="_blank"
                   rel="noreferrer"
                   title={designer.websiteLink}
-                  className="text-cyan-700 underline hover:text-cyan-900"
+                  className="text-cyan-700 underline hover:text-cyan-900 break-all"
                 >
-                  {truncateText(designer.websiteLink, 25)}
+                  {truncateText(designer.websiteLink, 20)}
                 </a>
               }
             />
@@ -130,7 +129,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
               value={
                 <a
                   href={`mailto:${designer.email}`}
-                  className="text-cyan-700 hover:text-cyan-900"
+                  className="text-cyan-700 hover:text-cyan-900 break-all"
                 >
                   {designer.email}
                 </a>
@@ -145,7 +144,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
               label="Location"
               value={
                 <span className="flex items-center gap-1 text-gray-700">
-                  <MapPin className="w-4 h-4 text-green-600" />{" "}
+                  <MapPin className="w-3.5 h-3.5 text-green-600 shrink-0" />{" "}
                   {designer.location}
                 </span>
               }
@@ -153,7 +152,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
           )}
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           <InfoRow label="Created" value={formatDate(designer.createdAt)} />
           <InfoRow label="Updated" value={formatDate(designer.updatedAt)} />
           <InfoRow
@@ -198,20 +197,20 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         </div>
       )}
 
-      {/* Buttons (future features like Edit, Disable) */}
-      <div className="py-3 flex gap-3">
+      {/* Buttons */}
+      <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">
         <Button
           onClick={() => handleModel(designer)}
-          className="py-1 px-2 text-lg"
+          className="py-1 px-3 text-sm sm:text-base font-semibold"
         >
           Edit
         </Button>
-        <Button className="py-1 px-2 text-lg bg-red-200 text-red-700">
+        <Button className="py-1 px-3 text-sm sm:text-base font-semibold bg-red-200 text-red-700 hover:bg-red-300">
           Archive
         </Button>
         <Button
           onClick={() => handleEngineerModel()}
-          className="py-1 px-2 text-lg"
+          className="py-1 px-3 text-sm sm:text-base font-semibold"
         >
           Connection Designer Engineer
         </Button>
@@ -244,9 +243,9 @@ const InfoRow = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex justify-between">
-    <span className="font-bold text-gray-700">{label}:</span>
-    <span className="text-gray-700 text-right">{value}</span>
+  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-4 border-b border-green-100/50 sm:border-none pb-1 sm:pb-0">
+    <span className="font-bold text-gray-700 shrink-0">{label}:</span>
+    <span className="text-gray-700 sm:text-right overflow-hidden text-ellipsis">{value}</span>
   </div>
 );
 

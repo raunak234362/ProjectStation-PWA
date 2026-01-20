@@ -215,7 +215,7 @@ export default function DataTable<T extends object>({
   return (
     <>
       {/* toolbar */}
-      <div className="flex flex-col md:flex-row justify-between gap-3 mb-4">
+      <div className="flex flex-col md:flex-row justify-between gap-3 mb-4 px-4 pt-4">
         <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
           <input
@@ -231,29 +231,29 @@ export default function DataTable<T extends object>({
       {table
         .getAllColumns()
         .some((c) => (c.columnDef as any).enableColumnFilter) && (
-        <div className="flex flex-wrap items-end gap-4 mb-6 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
-          {table
-            .getAllColumns()
-            .filter((c) => (c.columnDef as any).enableColumnFilter)
-            .map((column) => (
-              <div
-                key={column.id}
-                className="flex flex-col gap-1.5 min-w-[180px]"
-              >
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
-                  {column.columnDef.header as string}
-                </label>
-                <ColumnFilter column={column} />
-              </div>
-            ))}
-          <Button
-            onClick={() => table.resetColumnFilters()}
-            className="text-xs text-gray-500 hover:text-red-600 transition-colors h-9 px-2"
-          >
-            <X className="w-3 h-3 mr-1" /> Clear
-          </Button>
-        </div>
-      )}
+          <div className="flex flex-wrap items-end gap-4 mb-6 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+            {table
+              .getAllColumns()
+              .filter((c) => (c.columnDef as any).enableColumnFilter)
+              .map((column) => (
+                <div
+                  key={column.id}
+                  className="flex flex-col gap-1.5 min-w-[180px]"
+                >
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                    {column.columnDef.header as string}
+                  </label>
+                  <ColumnFilter column={column} />
+                </div>
+              ))}
+            <Button
+              onClick={() => table.resetColumnFilters()}
+              className="text-xs text-gray-500 hover:text-red-600 transition-colors h-9 px-2"
+            >
+              <X className="w-3 h-3 mr-1" /> Clear
+            </Button>
+          </div>
+        )}
 
       {/* responsive body */}
       {isMobile ? (
@@ -263,7 +263,7 @@ export default function DataTable<T extends object>({
           onRowClick={onRowClick}
         />
       ) : (
-        <div className="overflow-x-auto border rounded-lg">
+        <div className="w-full overflow-x-auto border-y border-gray-100">
           <table className="min-w-full divide-y">
             <thead className="bg-gray-50">
               {table.getHeaderGroups().map((hg) => (
@@ -301,9 +301,8 @@ export default function DataTable<T extends object>({
               {table.getPaginationRowModel().rows.map((row) => (
                 <React.Fragment key={row.id}>
                   <tr
-                    className={`hover:bg-gray-50 cursor-pointer transition-colors ${
-                      expandedRowId === row.id ? "bg-gray-50" : ""
-                    }`}
+                    className={`hover:bg-gray-50 cursor-pointer transition-colors ${expandedRowId === row.id ? "bg-gray-50" : ""
+                      }`}
                     onClick={() => {
                       onRowClick?.(row.original);
                       if (DetailComponent) {
@@ -342,30 +341,29 @@ export default function DataTable<T extends object>({
       )}
 
       {/* pagination */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4 text-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm p-4 border-t border-gray-50">
         <div className="flex items-center gap-4">
           <span className="text-gray-600">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-[120px]">
             <span className="text-gray-600">Rows per page:</span>
-            <select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => {
-                table.setPageSize(Number(e.target.value));
-              }}
-              className="border rounded px-2 py-1 bg-white"
-            >
-              {pageSizeOptions.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+            <div className="w-20">
+              <Select
+                showSearch={false}
+                options={pageSizeOptions.map((size) => ({
+                  value: size,
+                  label: String(size),
+                }))}
+                value={String(table.getState().pagination.pageSize)}
+                onChange={(_, val) => table.setPageSize(Number(val))}
+                className="py-1! px-2! text-xs!"
+              />
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <Button
             disabled={!table.getCanPreviousPage()}
             onClick={() => table.previousPage()}
