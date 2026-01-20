@@ -9,6 +9,8 @@ import EditEstimation from "./EditEstimation";
 
 import RenderFiles from "../ui/RenderFiles";
 import type { EstimationTask } from "../../interface";
+import InclusionExclusion from "./InclusionExclusion";
+import EditInclusionExclusion from "./EditInclusionExclusion";
 
 const truncateText = (text: string, max = 40) =>
   text.length > max ? text.substring(0, max) + "..." : text;
@@ -27,6 +29,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isEstimationTaskOpen, setIsEstimationTaskOpen] = useState(false);
   const [isHoursOpen, setIsHoursOpen] = useState(false);
+  const [isInclusionOpen, setIsInclusionOpen] = useState(false);
+  const [isEditingInclusion, setIsEditingInclusion] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchEstimation = async () => {
@@ -56,18 +60,18 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
   const formatDateTime = (date: string | Date | undefined) =>
     date
       ? new Date(date).toLocaleString("en-IN", {
-          dateStyle: "medium",
-          timeStyle: "short",
-        })
+        dateStyle: "medium",
+        timeStyle: "short",
+      })
       : "N/A";
 
   const formatDate = (date: string | Date | undefined) =>
     date
       ? new Date(date).toLocaleDateString("en-IN", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
       : "N/A";
 
   const formatHours = (hours: number | string | undefined) => {
@@ -122,8 +126,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
     status === "DRAFT"
       ? "bg-yellow-100 text-yellow-800"
       : status === "COMPLETED"
-      ? "bg-green-100 text-green-800"
-      : "bg-blue-100 text-blue-800";
+        ? "bg-green-100 text-green-800"
+        : "bg-blue-100 text-blue-800";
 
   return (
     <div className="bg-linear-to-br from-green-50 to-cyan-50 rounded-2xl p-8 border border-green-200">
@@ -235,22 +239,28 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {/* Action Buttons (placeholders for future edit/view actions) */}
       <div className="py-3 flex gap-3">
         <Button
-          className="py-1 px-2 text-lg bg-red-200 text-red-700"
+          className="py-1 px-2 text-md rounded-xl"
           onClick={() => setIsEstimationTaskOpen(!isEstimationTaskOpen)}
         >
           Estimation Task
         </Button>
         <Button
-          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+          className="py-1 px-2 text-md rounded-xl"
           onClick={() => setIsHoursOpen(!isHoursOpen)}
         >
           Estimated Hours/Weeks
+        </Button>
+        <Button
+          className="py-1 px-2 text-md rounded-xl"
+          onClick={() => setIsInclusionOpen(!isInclusionOpen)}
+        >
+          Inclusion/Exclusion
         </Button>
         {/* <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
           Add To Project
         </Button> */}
         <Button
-          className="py-1 px-2 text-lg"
+          className="py-1 px-2 text-md rounded-xl"
           onClick={() => setIsEditing(!isEditing)}
         >
           Edit Estimation
@@ -266,8 +276,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
             Array.isArray(estimation?.tasks)
               ? estimation.tasks
               : Array.isArray(estimation?.estimationTasks)
-              ? estimation.estimationTasks
-              : []
+                ? estimation.estimationTasks
+                : []
           }
           onClose={() => setIsEstimationTaskOpen(false)}
         />
@@ -286,6 +296,36 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
             </button>
           </div>
           <LineItemGroup estimationId={estimation?.id} />
+        </div>
+      )}
+      {isInclusionOpen && (
+        <div className="mt-6 border-t pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-700">
+              Inclusion/Exclusion
+            </h3>
+            <button
+              onClick={() => setIsInclusionOpen(false)}
+              className="text-gray-700 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
+            >
+              Close
+            </button>
+          </div>
+          {isEditingInclusion ? (
+            <EditInclusionExclusion
+              estimationId={estimation?.id || ""}
+              onCancel={() => setIsEditingInclusion(false)}
+              onSuccess={() => {
+                setIsEditingInclusion(false);
+                fetchEstimation();
+              }}
+            />
+          ) : (
+            <InclusionExclusion
+              estimationId={estimation?.id || ""}
+              onEdit={() => setIsEditingInclusion(true)}
+            />
+          )}
         </div>
       )}
       {isEditing && (

@@ -76,13 +76,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-    | string
-    | []
-    | {
-        firstName?: string;
-        lastName?: string;
-        middleName?: string;
-      };
+  | string
+  | []
+  | {
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+  };
 }
 
 export interface DepartmentPayload {
@@ -395,6 +395,8 @@ export interface EstimationTask {
     username: string;
     email: string;
   };
+  inclusions?: string[] | null;
+  exclusions?: string[] | null;
   tasks?: any[];
   estimationTasks?: any[];
 }

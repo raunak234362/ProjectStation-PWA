@@ -84,18 +84,47 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
       </div>
     `;
 
+    // Helper to safely parse JSON arrays
+    const parseArray = (data: any) => {
+      if (Array.isArray(data)) return data;
+      if (typeof data === "string") {
+        try {
+          const parsed = JSON.parse(data);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+      return [];
+    };
+
+    const inclusions = parseArray(est.inclusions);
+    const exclusions = parseArray(est.exclusions);
+
+    const inclusionsHtml =
+      inclusions.length > 0
+        ? inclusions
+          .map((item: string) => `<li><span>${item}</span></li>`)
+          .join("")
+        : `<li><span>No inclusions specified</span></li>`;
+
+    const exclusionsHtml =
+      exclusions.length > 0
+        ? exclusions
+          .map((item: string) => `<li><span>${item}</span></li>`)
+          .join("")
+        : `<li><span>No exclusions specified</span></li>`;
+
     const selectedItems = items.filter((item) => item.selected);
     const tableRows = selectedItems
       .map(
         (item) => `
       <tr style="text-align: center;">
         <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #333;">${item.label.toUpperCase()}</td>
-        <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #0056b3;"><span>${currency}: ${currencySymbol} ${
-          item.price || "—"
-        }/-</span></td>
-        <td style="border: 2px solid #333; padding: 15px; font-weight: bold;"><span>${
-          item.weeks || "—"
-        } weeks</span></td>
+        <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #0056b3;"><span>${currency}: ${currencySymbol} ${item.price || "—"
+          }/-</span></td>
+        <td style="border: 2px solid #333; padding: 15px; font-weight: bold;"><span>${item.weeks || "—"
+          } weeks</span></td>
       </tr>
     `,
       )
@@ -115,38 +144,32 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                 DETAILING <span>${est.projectName || "Project Name"}</span> JOB
               </h1>
               <div style="margin-top: 5px;">
-                <span style="font-weight: bold; font-size: 12px; color: #0056b3;">For ${
-                  est.fabricators?.fabName || "Fabricator Name"
-                }</span>
+                <span style="font-weight: bold; font-size: 12px; color: #0056b3;">For ${est.fabricators?.fabName || "Fabricator Name"
+      }</span>
               </div>
-              ${
-                est.fabricators?.branches?.[0]
-                  ? `
+              ${est.fabricators?.branches?.[0]
+        ? `
                 <div style="display: block; font-size: 11px; margin-top: 8px; color: #555;">
-                  ${est.fabricators.branches[0].address || ""}, ${
-                    est.fabricators.branches[0].city || ""
-                  }, ${est.fabricators.branches[0].state || ""} ${
-                    est.fabricators.branches[0].zipCode || ""
-                  }, Tel: ${est.fabricators.branches[0].phone || ""}
+                  ${est.fabricators.branches[0].address || ""}, ${est.fabricators.branches[0].city || ""
+        }, ${est.fabricators.branches[0].state || ""} ${est.fabricators.branches[0].zipCode || ""
+        }, Tel: ${est.fabricators.branches[0].phone || ""}
                 </div>
               `
-                  : ""
-              }
+        : ""
+      }
             </div>
 
             <!-- Proposal ID & Date -->
             <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-              <div><span>Our Proposal ID: <span>WBT/${
-                est.estimationNumber || "Estimation Number"
-              }/${new Date().getFullYear()}/VER 1.0</span></span></div>
+              <div><span>Our Proposal ID: <span>WBT/${est.estimationNumber || "Estimation Number"
+      }/${new Date().getFullYear()}/VER 1.0</span></span></div>
               <div><span>Date: <span>${new Date().toLocaleDateString()}</span></span></div>
             </div>
 
             <p style="font-size: 12px; margin-bottom: 25px; color: #444;">
               WHITEBOARD TECHNOLOGIES is pleased to submit this proposal for taking some of the detailing activities of 
-              <span style="font-weight: bold; color: #333;">${
-                est.projectName || "SAMPLE PROJECT"
-              }</span> JOB.
+              <span style="font-weight: bold; color: #333;">${est.projectName || "SAMPLE PROJECT"
+      }</span> JOB.
             </p>
 
             <!-- Pricing Table -->
@@ -159,10 +182,9 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                 </tr>
               </thead>
               <tbody>
-                ${
-                  tableRows ||
-                  `<tr><td colspan="3" style="border: 2px solid #333; padding: 10px; text-align: center;">No items selected</td></tr>`
-                }
+                ${tableRows ||
+      `<tr><td colspan="3" style="border: 2px solid #333; padding: 10px; text-align: center;">No items selected</td></tr>`
+      }
               </tbody>
             </table>
 
@@ -173,35 +195,16 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
               <div style="margin-top: 10px;margin-bottom: 10px;">
                 <h4 style="color: #6bbd45; text-decoration: underline; margin-bottom: 12px; font-size: 14px;">Inclusions:</h4>
                 <ul style="list-style-type: disc; margin: 0; padding-left: 25px; font-size: 12px; line-height: 1.5; color: #444;">
-                  <li><span>Columns</span></li>
-                  <li><span>Beams</span></li>
-                  <li><span>Posts</span></li>
-                  <li><span>Vertical braces</span></li>
-                  <li><span>Kickers/knee braces</span></li>
-                  <li><span>Deck edge support</span></li>
-                  <li><span>Lintels/brick veneer supports</span></li>
-                  <li><span>Misc.</span></li>
-                  <li><span>RTU’S</span></li>
-                  <li><span>Joist reinforcement angles</span></li>
-                  <li><span>Bollards</span></li>
+                  ${inclusionsHtml}
                 </ul>
               </div>
               <div style="margin-bottom: 35px;">
               <h4 style="color: #6bbd45; text-decoration: underline; margin-bottom: 12px; font-size: 14px;">Exclusions:</h4>
               <ul style="list-style-type: disc; margin: 0; padding-left: 25px; font-size: 12px; line-height: 1.5; color: #444;">
-                <li><span>Connection design with PE stamping</span></li>
-                <li><span>Joists & joist bridging</span></li>
-                <li><span>Any wood members</span></li>
-                <li><span>Any CFMF & LGMF members</span></li>
-                <li><span>Auto canopy by others as per drawing A103, C2-00</span></li>
-                <li><span>Stainless steel guard rails @ auto canopy as per drawing A103, C2-00</span></li>
-                <li><span>Pre-manufactured aluminium & stainless-steel roof access ladder as per drawing A502</span></li>
-                <li><span>Signage/signposts</span></li>
-                <li><span>Trash enclosure gates (corrugated metal members)</span></li>
-                <li><span>Any stainless steel & aluminium members</span></li>
-                <li><span>Any other item not mentioned in inclusions.</span></li>
+                ${exclusionsHtml}
               </ul>
             </div>
+
             </div>
           </div>
         </div>
@@ -290,9 +293,8 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             </div>
 
             <p style="font-size: 14px; margin-bottom: 20px; color: #444;">
-              We look forward to working with <span style="font-weight: bold; color: #333;">${
-                est.fabricatorName || "Cobb Industrial, Inc"
-              }</span> and supporting your efforts on this job. We are confident that we can meet the challenges ahead and stand ready to partner with you in delivering an effective detailing solution.
+              We look forward to working with <span style="font-weight: bold; color: #333;">${est.fabricatorName || "Cobb Industrial, Inc"
+      }</span> and supporting your efforts on this job. We are confident that we can meet the challenges ahead and stand ready to partner with you in delivering an effective detailing solution.
             </p>
             
             <p style="font-size: 14px; margin-bottom: 30px; color: #444;">
