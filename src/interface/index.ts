@@ -1,7 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AuthInterface {
   username: string;
   password: string;
+}
+
+export interface ChangePasswordPayload {
+  id: string;
+  token: string;
+  newPassword: string;
+  username?: string;
 }
 
 export type Role = "ADMIN" | "STAFF" | "DEPT_MANAGER" | string;
