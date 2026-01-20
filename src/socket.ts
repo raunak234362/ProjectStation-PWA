@@ -7,7 +7,28 @@ console.log("DEBUG: Socket.io connecting to:", baseURL);
 const socket = io(baseURL, {
   transports: ["websocket", "polling"],
   autoConnect: false,
+  reconnection: true,
+  reconnectionAttempts: Infinity,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  timeout: 20000,
 });
+
+// Re-connect when window/app regains focus (crucial for mobile PWAs)
+if (typeof window !== "undefined") {
+  window.addEventListener("focus", () => {
+    const auth = socket.auth; 
+    if (
+      auth &&
+      typeof auth !== "function" &&
+      (auth as any).userId &&
+      !socket.connected
+    ) {
+      console.log("DEBUG: App focused, reconnecting socket...");
+      socket.connect();
+    }
+  });
+}
 
 // Connect socket with userId
 export function connectSocket(userId: string) {

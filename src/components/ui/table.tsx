@@ -104,7 +104,7 @@ function MobileCardView({ table, DetailComponent, onRowClick }: any) {
 
   return (
     <div className="space-y-3">
-      {table.getRowModel().rows.map((row: any) => {
+      {table.getPaginationRowModel().rows.map((row: any) => {
         const isOpen = open === row.id;
         return (
           <div
@@ -171,6 +171,7 @@ export default function DataTable<T extends object>({
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>(initialSorting);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
 
   const columns = useMemo(() => {
     const sNoCol: ExtendedColumnDef<T> = {
@@ -178,7 +179,10 @@ export default function DataTable<T extends object>({
       header: "S.No",
       cell: ({ row, table }) => {
         const { pageIndex, pageSize } = table.getState().pagination;
-        return <span>{pageIndex * pageSize + row.index + 1}</span>;
+        const index = table
+          .getPaginationRowModel()
+          .rows.findIndex((r) => r.id === row.id);
+        return <span>{pageIndex * pageSize + index + 1}</span>;
       },
       enableSorting: false,
       enableColumnFilter: false,
@@ -294,21 +298,43 @@ export default function DataTable<T extends object>({
             </thead>
 
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => onRowClick?.(row.original)}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3 text-sm">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
-                </tr>
+              {table.getPaginationRowModel().rows.map((row) => (
+                <React.Fragment key={row.id}>
+                  <tr
+                    className={`hover:bg-gray-50 cursor-pointer transition-colors ${
+                      expandedRowId === row.id ? "bg-gray-50" : ""
+                    }`}
+                    onClick={() => {
+                      onRowClick?.(row.original);
+                      if (DetailComponent) {
+                        setExpandedRowId(
+                          expandedRowId === row.id ? null : row.id,
+                        );
+                      }
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-3 text-sm">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                  {expandedRowId === row.id && DetailComponent && (
+                    <tr className="bg-gray-50/50">
+                      <td colSpan={columns.length} className="px-4 py-4">
+                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+                          <DetailComponent
+                            row={row.original}
+                            close={() => setExpandedRowId(null)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
