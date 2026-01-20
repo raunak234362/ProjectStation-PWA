@@ -57,38 +57,60 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
       <style dangerouslySetInnerHTML={{
         __html: `
         @media print {
-          html, body { 
-            height: 297mm; 
-            width: 210mm; 
-            margin: 0 !important; 
-            padding: 0 !important;
-            overflow: hidden !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-          body > * { display: none !important; }
-          #root { display: none !important; }
-          .modal-root { 
-            display: block !important; 
-            visibility: visible !important;
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 210mm !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            z-index: 9999 !important;
-          }
-          .modal-root * { visibility: visible !important; }
-          .no-print { display: none !important; }
           @page {
             size: A4;
             margin: 0;
           }
+          html, body { 
+            margin: 0 !important; 
+            padding: 0 !important;
+            height: auto !important;
+            width: 210mm !important;
+            overflow: visible !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          /* Hide everything by default */
+          body > :not(.modal-root) { 
+            display: none !important; 
+          }
+          /* Show modal root */
+          .modal-root { 
+            display: block !important;
+            visibility: visible !important;
+            position: relative !important;
+            width: 210mm !important;
+            height: auto !important;
+            margin: 0 !important; 
+            padding: 0 !important;
+            background: white !important;
+          }
+          .modal-root * {
+            visibility: visible !important;
+          }
+          .no-print { 
+            display: none !important; 
+            visibility: hidden !important;
+          }
+          /* Fix page heights for printing */
+          .print-page {
+            height: 297mm !important;
+            width: 210mm !important;
+            overflow: hidden !important;
+            page-break-after: always !important;
+            break-after: page !important;
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+          .print-page:last-child {
+            page-break-after: auto !important;
+            break-after: auto !important;
+          }
         }
       `}} />
 
-      <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0 print:static print:bg-white">
+      <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0 print:static print:bg-white print:block">
         {/* Action Header - Hidden in Print */}
         <div className="fixed top-6 right-10 z-[110] flex gap-4 no-print print:hidden">
           <button
@@ -110,7 +132,7 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
 
         <div className="w-[210mm] flex flex-col gap-0 shadow-[0_0_100px_rgba(0,0,0,0.5)] print:shadow-none bg-gray-100 print:bg-white  print:my-0">
           {/* Page 1: Main Invoice */}
-          <div className="w-[210mm] min-h-[297mm] bg-white p-[15mm] flex flex-col shadow-none print:shadow-none mx-auto box-border font-roboto">
+          <div className="w-[210mm] min-h-[297mm] bg-white p-[15mm] flex flex-col shadow-none print:shadow-none mx-auto box-border font-roboto print-page">
             {/* Header Letterhead */}
             <div className="flex justify-between items-end mb-5">
               <div>
@@ -126,48 +148,48 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             <div className="flex justify-between items-start mb-5 text-[12px]">
               {/* Receiver Details */}
               <div className="w-1/2">
-      <h2 className="font-bold text-black mb-3 text-[13px]">Details of Receiver (Billed to)</h2>
-      <div className="grid grid-cols-[120px_1fr] gap-y-1">
-        <span className="text-black">Name:</span>
-        <span className="font-bold">{invoice.customerName}</span>
-        
-        <span className="text-black">Contact Name:</span>
-        <span className="font-bold">{invoice.contactPerson || "Mr."}</span>
-        
-        <span className="text-black">Address:</span>
-        <span className="font-bold leading-tight">{invoice.address}</span>
-        
-        <span className="text-black">Country/State/Code:</span>
-        <span className="font-bold">{invoice.stateCode || "-"}</span>
-        
-        <span className="text-black">GSTIN / UNIQUE ID:</span>
-        <span className="font-bold">{invoice.GSTIN || "-"}</span>
-      </div>
-    </div>
+                <h2 className="font-bold text-black mb-3 text-[13px]">Details of Receiver (Billed to)</h2>
+                <div className="grid grid-cols-[120px_1fr] gap-y-1">
+                  <span className="text-black">Name:</span>
+                  <span className="font-bold">{invoice.customerName}</span>
+
+                  <span className="text-black">Contact Name:</span>
+                  <span className="font-bold">{invoice.contactPerson || "Mr."}</span>
+
+                  <span className="text-black">Address:</span>
+                  <span className="font-bold leading-tight">{invoice.address}</span>
+
+                  <span className="text-black">Country/State/Code:</span>
+                  <span className="font-bold">{invoice.stateCode || "-"}</span>
+
+                  <span className="text-black">GSTIN / UNIQUE ID:</span>
+                  <span className="font-bold">{invoice.GSTIN || "-"}</span>
+                </div>
+              </div>
 
               {/* Invoice Metadata */}
               <div className="w-[220px]">
-      <div className="text-right mb-4">
-        <h2 className="font-bold text-[14px]">Original for Recipient</h2>
-      </div>
-      <div className="grid grid-cols-[100px_1fr] gap-y-1">
-        <span className="text-black">Invoice No:</span>
-        <span className="font-bold">{invoice.invoiceNumber}</span>
-        
-        <span className="text-black">Invoice Date:</span>
-        <span className="font-bold">{formatDate(invoice.invoiceDate)}</span>
-        
-        <span className="text-black">Date of Supply:</span>
-        <span className="font-bold">{formatDate(invoice.dateOfSupply)}</span>
-        
-        <span className="text-black">Place of Supply:</span>
-        <span className="font-bold">{invoice.placeOfSupply || "Electronic"}</span>
-        
-        <span className="text-black">Job Name:</span>
-        <span className="font-bold">{invoice.jobName}</span>
-      </div>
-    </div>
-  </div>
+                <div className="text-right mb-4">
+                  <h2 className="font-bold text-[14px]">Original for Recipient</h2>
+                </div>
+                <div className="grid grid-cols-[100px_1fr] gap-y-1">
+                  <span className="text-black">Invoice No:</span>
+                  <span className="font-bold">{invoice.invoiceNumber}</span>
+
+                  <span className="text-black">Invoice Date:</span>
+                  <span className="font-bold">{formatDate(invoice.invoiceDate)}</span>
+
+                  <span className="text-black">Date of Supply:</span>
+                  <span className="font-bold">{formatDate(invoice.dateOfSupply)}</span>
+
+                  <span className="text-black">Place of Supply:</span>
+                  <span className="font-bold">{invoice.placeOfSupply || "Electronic"}</span>
+
+                  <span className="text-black">Job Name:</span>
+                  <span className="font-bold">{invoice.jobName}</span>
+                </div>
+              </div>
+            </div>
 
             {/* Items Table - Only Rows, No Columns */}
             <div className="mb-8">
@@ -270,7 +292,7 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             <div className="mt-auto flex flex-col items-end pr-10">
               <div className="text-left">
 
-              <p className="text-[#6bbd45] font-medium text-[11px] mb-4">Thank you for your business!</p>
+                <p className="text-[#6bbd45] font-medium text-[11px] mb-4">Thank you for your business!</p>
                 <p className="text-[11px] font-bold text-gray-800 mb-2">For Whiteboard Technologies Pvt Ltd</p>
               </div>
               <div className="text-center">
@@ -304,9 +326,9 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
           </div>
 
           {/* Page 2: Bank Info */}
-          <div className="w-[210mm] min-h-[297mm] h-[297mm] bg-white p-[20mm] pt-[15mm] relative flex flex-col shrink-0 overflow-hidden box-border print:break-before-page border-t-[10px] border-gray-50 print:border-none">
+          <div className="w-[210mm] min-h-[297mm] h-[297mm] bg-white p-[20mm] pt-[15mm] relative flex flex-col shrink-0 overflow-hidden box-border border-t-[10px] border-gray-50 print:border-none print-page">
             {/* Header Letterhead */}
-             <div className="flex justify-between items-end mb-5">
+            <div className="flex justify-between items-end mb-5">
               <div>
                 <h1 className="text-[28px] font-medium text-[#6bbd45] mb-2 leading-none" style={{ fontFamily: 'serif' }}>
                   Whiteboard Technologies LLC
@@ -371,7 +393,7 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             <div className="mt-auto pt-8 flex justify-between text-[10px] text-gray-500">
               <div className="flex-1">
                 <p className="mb-4 text-gray-700 font-normal text-[12px]">For any questions please contact Raj:</p>
-                 <div className="flex gap-16">
+                <div className="flex gap-16">
                   <div className="flex flex-col items-start justify-start gap-1">
                     <span className="uppercase font-bold text-[12px]">  <span className="text-[#6bbd45] ">Tel:</span> USA: +1 612.605.5833</span>
                     <span className="uppercase font-bold text-[12px]">INDIA: +1 770.256.6888</span>
