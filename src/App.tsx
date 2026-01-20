@@ -12,13 +12,15 @@ import { loadFabricator } from "./store/fabricatorSlice";
 import { setRFQData } from "./store/rfqSlice";
 import { setProjectData } from "./store/projectSlice";
 import { useSelector } from "react-redux";
+import useNotifications from "./hooks/useNotifications";
 
 const AppContent = () => {
   const dispatch = useDispatch();
+  useNotifications();
   const userType = sessionStorage.getItem("userRole");
 
   const projects = useSelector(
-    (state: any) => state.projectInfo?.projectData || []
+    (state: any) => state.projectInfo?.projectData || [],
   );
 
   // Fetch current user
