@@ -39,18 +39,9 @@ const Layout = () => {
       </div>
 
       {/* Mobile Sidebar */}
-      <div
-        className={`fixed inset-0 bg-black/40 z-40 md:hidden transition-opacity duration-300 ${isMobileOpen ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}
-        onClick={() => setIsMobileOpen(false)}
-      ></div>
-
-      <div
-        className={`fixed top-0 left-0 h-full bg-background z-50 transform transition-transform duration-300 md:hidden ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-      >
+      <div className="md:hidden">
         <Sidebar
-          isMinimized={false}
+          isMinimized={!isMobileOpen}
           toggleSidebar={() => setIsMobileOpen(false)}
           isMobile={true}
         />
