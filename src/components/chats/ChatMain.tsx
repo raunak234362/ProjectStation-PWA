@@ -25,12 +25,17 @@ interface DisplayMessage {
   senderName?: string;
 }
 
-const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent }) => {
+const ChatMain: React.FC<Props> = ({
+  activeChat,
+  setActiveChat,
+  onMessageSent,
+}) => {
   const userInfo = useSelector(
-    (s: any) => (s.userData?.userData ?? s.userInfo?.userDetail ?? {}) as User
+    (s: any) => (s.userData?.userData ?? s.userInfo?.userDetail ?? {}) as User,
   );
   const staffData = useSelector(
-    (s: any) => (s.userData?.staffData ?? s.userInfo?.staffData ?? []) as User[]
+    (s: any) =>
+      (s.userData?.staffData ?? s.userInfo?.staffData ?? []) as User[],
   );
 
   const [input, setInput] = useState("");
@@ -48,14 +53,13 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
       groupId,
       userId: userInfo?.id,
       socketConnected: socket.connected,
-      activeChatId: activeChat?.id
+      activeChatId: activeChat?.id,
     });
   }, [groupId, userInfo?.id, activeChat]);
 
   const sendMessage = () => {
     const content = input.trim();
     if (!content || !groupId) return;
-
 
     const payload = {
       senderId: userInfo?.id,
@@ -124,7 +128,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
         setLoading(false);
       }
     },
-    [groupId, userInfo.id]
+    [groupId, userInfo.id],
   );
 
   // Load initial
@@ -141,16 +145,19 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
     const handler = (msg: any) => {
       console.log("[ChatMain] Socket received 'receiveGroupMessage':", msg);
       if (!groupId || msg.groupId !== groupId) {
-        console.warn("[ChatMain] Message ignored - Group mismatch or no GroupID", {
-          currentGroupId: groupId,
-          msgGroupId: msg.groupId
-        });
+        console.warn(
+          "[ChatMain] Message ignored - Group mismatch or no GroupID",
+          {
+            currentGroupId: groupId,
+            msgGroupId: msg.groupId,
+          },
+        );
         return;
       }
 
       // Check if message already exists to prevent duplicates
       setMessages((prev) => {
-        if (prev.some(m => m.id === msg.id)) {
+        if (prev.some((m) => m.id === msg.id)) {
           console.log("[ChatMain] Duplicate message ignored:", msg.id);
           return prev;
         }
@@ -161,7 +168,9 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
           text: msg.content,
           time: msg.createdAt,
           sender: msg.senderId === userInfo?.id ? "me" : "other",
-          senderName: sender ? `${sender.firstName} ${sender.lastName}` : undefined,
+          senderName: sender
+            ? `${sender.firstName} ${sender.lastName}`
+            : undefined,
         };
         console.log("[ChatMain] Adding new real-time message:", newMsg);
         return [...prev, newMsg];
@@ -207,7 +216,7 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
               </span>
             ) : (
               w + " "
-            )
+            ),
           )}
         </p>
       );
@@ -239,14 +248,16 @@ const ChatMain: React.FC<Props> = ({ activeChat, setActiveChat, onMessageSent })
           return (
             <div
               key={msg?.id}
-              className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"
-                } mb-3`}
+              className={`flex ${
+                msg.sender === "me" ? "justify-end" : "justify-start"
+              } mb-3`}
             >
               <div
-                className={`max-w-xs md:max-w-md p-3 rounded-lg ${msg.sender === "me"
-                  ? "bg-white/80 rounded-tr-none"
-                  : "bg-green-100/90 rounded-tl-none"
-                  }`}
+                className={`max-w-xs md:max-w-md p-3 rounded-lg ${
+                  msg.sender === "me"
+                    ? "bg-white/80 rounded-tr-none"
+                    : "bg-green-100/90 rounded-tl-none"
+                }`}
               >
                 {msg.sender === "other" && msg.senderName && (
                   <p className="text-xs font-semibold text-gray-700 mb-1">
