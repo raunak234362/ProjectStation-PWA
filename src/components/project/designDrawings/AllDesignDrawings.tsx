@@ -71,16 +71,21 @@ const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
   }
 
   return (
-    <div className="bg-white p-2 rounded-2xl shadow-md">
-      <DataTable
-        columns={columns}
-        data={drawings}
-        detailComponent={({ row }) => (
-          <DesignDrawingDetails id={row.id} onUpdate={fetchDrawings} />
-        )}
-        searchPlaceholder="Search Design Drawings..."
-        pageSizeOptions={[5, 10, 25]}
-      />
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="p-4 border-b border-gray-50 bg-gray-50/50">
+        <h3 className="font-bold text-gray-800">Design Drawings</h3>
+      </div>
+      <div className="p-0 overflow-x-auto">
+        <DataTable
+          columns={columns}
+          data={drawings}
+          detailComponent={({ row }) => (
+            <DesignDrawingDetails id={row.id} onUpdate={fetchDrawings} />
+          )}
+          searchPlaceholder="Search Design Drawings..."
+          pageSizeOptions={[5, 10, 25]}
+        />
+      </div>
     </div>
   );
 };
