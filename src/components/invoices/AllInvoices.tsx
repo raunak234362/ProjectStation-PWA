@@ -62,11 +62,10 @@ const AllInvoices = () => {
         const status = row.getValue("paymentStatus");
         return (
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${
-              status
+            className={`px-2 py-1 rounded-full text-xs font-medium ${status
                 ? "bg-green-100 text-green-700"
                 : "bg-yellow-100 text-yellow-700"
-            }`}
+              }`}
           >
             {status ? "Paid" : "Pending"}
           </span>
@@ -74,6 +73,8 @@ const AllInvoices = () => {
       },
     },
   ];
+
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
 
   if (loading) {
     return (
@@ -91,10 +92,16 @@ const AllInvoices = () => {
       <DataTable
         columns={columns}
         data={invoices}
-        detailComponent={({ row }) => <GetInvoiceById id={row.id} />}
+        onRowClick={(row: any) => setSelectedInvoiceId(row._id || row.id)}
         searchPlaceholder="Search invoices..."
         pageSizeOptions={[5, 10, 25]}
       />
+      {selectedInvoiceId && (
+        <GetInvoiceById
+          id={selectedInvoiceId}
+          onClose={() => setSelectedInvoiceId(null)}
+        />
+      )}
     </div>
   );
 };
