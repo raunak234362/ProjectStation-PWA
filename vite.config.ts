@@ -18,10 +18,35 @@ export default defineConfig({
       },
 
       manifest: {
-        name: "projectS-PWA",
-        short_name: "projectS-PWA",
-        description: "projectS-PWA",
+        name: "Project Station",
+        short_name: "Project Station",
+        description: "Project Station",
         theme_color: "#00AEAE",
+        background_color: "#FFFFFF",
+        display: "standalone",
+        icons: [
+          {
+            src: "pwa-64x64.png",
+            sizes: "64x64",
+            type: "image/png",
+          },
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "maskable-icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
       },
 
       workbox: {
