@@ -13,14 +13,7 @@ import {
   type SortingState,
   type ColumnFiltersState,
 } from "@tanstack/react-table";
-import {
-  Search,
-  ChevronDown,
-  ChevronUp,
-  Trash2,
-  ChevronRight,
-  X,
-} from "lucide-react";
+import { Search, ChevronDown, ChevronUp, X } from "lucide-react";
 import { Button } from "./button";
 import Select from "../fields/Select";
 import type { SelectOption } from "../../interface";
@@ -101,10 +94,12 @@ interface DataTableProps<T extends object> {
   searchPlaceholder?: string;
   pageSizeOptions?: number[];
   showColumnFiltersInHeader?: boolean;
+  showColumnToggle?: boolean;
+  initialSorting?: SortingState;
 }
 
 /* -------------------- mobile card view -------------------- */
-function MobileCardView<T>({ table, DetailComponent, onRowClick }: any) {
+function MobileCardView({ table, DetailComponent, onRowClick }: any) {
   const [open, setOpen] = useState<string | null>(null);
 
   return (
@@ -114,7 +109,8 @@ function MobileCardView<T>({ table, DetailComponent, onRowClick }: any) {
         return (
           <div
             key={row.id}
-            className="border rounded-lg p-3 bg-white shadow-sm"
+            className="border rounded-lg p-3 bg-white shadow-sm cursor-pointer"
+            onClick={() => onRowClick?.(row.original)}
           >
             {row.getVisibleCells().map((cell: any) => (
               <div key={cell.id} className="flex justify-between py-1 text-sm">
@@ -130,14 +126,20 @@ function MobileCardView<T>({ table, DetailComponent, onRowClick }: any) {
             {DetailComponent && (
               <>
                 <button
-                  onClick={() => setOpen(isOpen ? null : row.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen(isOpen ? null : row.id);
+                  }}
                   className="mt-2 text-green-600 text-sm"
                 >
                   {isOpen ? "Hide details" : "View details"}
                 </button>
 
                 {isOpen && (
-                  <div className="mt-2 bg-gray-50 p-2 rounded">
+                  <div
+                    className="mt-2 bg-gray-50 p-2 rounded"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <DetailComponent
                       row={row.original}
                       close={() => setOpen(null)}
@@ -162,11 +164,12 @@ export default function DataTable<T extends object>({
   searchPlaceholder = "Search...",
   pageSizeOptions = [5, 10, 25, 50],
   showColumnFiltersInHeader = false,
+  initialSorting = [],
 }: DataTableProps<T>) {
   const { isMobile } = useScreen();
 
   const [globalFilter, setGlobalFilter] = useState("");
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>(initialSorting);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const columns = useMemo(() => {
@@ -205,7 +208,6 @@ export default function DataTable<T extends object>({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-
   return (
     <>
       {/* toolbar */}
@@ -222,13 +224,18 @@ export default function DataTable<T extends object>({
       </div>
 
       {/* Filter Bar */}
-      {table.getAllColumns().some((c) => (c.columnDef as any).enableColumnFilter) && (
+      {table
+        .getAllColumns()
+        .some((c) => (c.columnDef as any).enableColumnFilter) && (
         <div className="flex flex-wrap items-end gap-4 mb-6 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
           {table
             .getAllColumns()
             .filter((c) => (c.columnDef as any).enableColumnFilter)
             .map((column) => (
-              <div key={column.id} className="flex flex-col gap-1.5 min-w-[180px]">
+              <div
+                key={column.id}
+                className="flex flex-col gap-1.5 min-w-[180px]"
+              >
                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
                   {column.columnDef.header as string}
                 </label>
@@ -276,9 +283,10 @@ export default function DataTable<T extends object>({
                         )}
                       </div>
 
-                      {showColumnFiltersInHeader && header.column.getCanFilter() && (
-                        <TextFilter column={header.column} />
-                      )}
+                      {showColumnFiltersInHeader &&
+                        header.column.getCanFilter() && (
+                          <TextFilter column={header.column} />
+                        )}
                     </th>
                   ))}
                 </tr>
