@@ -3,9 +3,8 @@ import { useState, useCallback } from "react";
 import ChatMain from "./ChatMain";
 import ChatSidebar from "./ChatSidebar";
 import useGroupMessages from "../../hooks/userGroupMessages";
-import type { ChatItem, User } from "../../interface";
+import type { ChatItem } from "../../interface";
 import AddChatGroup from "./AddChatGroup";
-import { useSelector } from "react-redux";
 
 const Chats = () => {
   const [recentChats, setRecentChats] = useState<ChatItem[]>([]);
@@ -14,46 +13,30 @@ const Chats = () => {
   const [isAddGroupOpen, setIsAddGroupOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const userInfo = useSelector(
-    (s: any) => (s.userData?.userData ?? s.userInfo?.userDetail ?? {}) as User
-  );
-
   // Real‑time updates
-  const handleGroupMessage = useCallback((msg: any) => {
-    setRecentChats((prev) => {
-      const updated = prev.map((c) =>
-        c.group.id === msg.groupId
-          ? { ...c, lastMessage: msg.content, updatedAt: msg.createdAt }
-          : c
-      );
-      const target = updated.find((c) => c.group.id === msg.groupId);
-      if (!target) return prev;
+  const handleGroupMessage = useCallback(
+    (msg: any) => {
+      setRecentChats((prev) => {
+        const updated = prev.map((c) =>
+          c.group.id === msg.groupId
+            ? { ...c, lastMessage: msg.content, updatedAt: msg.createdAt }
+            : c,
+        );
+        const target = updated.find((c) => c.group.id === msg.groupId);
+        if (!target) return prev;
 
-      const filtered = updated.filter((c) => c.group.id !== msg.groupId);
-      return [target, ...filtered];
-    });
-
-    if (msg.groupId !== activeChat?.group?.id) {
-      setUnreadIds((prev) => (prev.includes(msg.groupId) ? prev : [...prev, msg.groupId]));
-    }
-
-    // Browser Notification
-    if (
-      "Notification" in window &&
-      Notification.permission === "granted" &&
-      msg.senderId !== userInfo?.id &&
-      (document.hidden || msg.groupId !== activeChat?.group?.id)
-    ) {
-      // Find group name
-      const groupName =
-        recentChats.find((c) => c.group.id === msg.groupId)?.group.name || "Group Chat";
-      
-      new Notification(`New message in ${groupName}`, {
-        body: msg.content,
-        icon: "/pwa-192x192.png", // Assuming this exists or browser default
+        const filtered = updated.filter((c) => c.group.id !== msg.groupId);
+        return [target, ...filtered];
       });
-    }
-  }, [activeChat?.group?.id, userInfo?.id, recentChats]);
+
+      if (msg.groupId !== activeChat?.group?.id) {
+        setUnreadIds((prev) =>
+          prev.includes(msg.groupId) ? prev : [...prev, msg.groupId],
+        );
+      }
+    },
+    [activeChat?.group?.id, recentChats],
+  );
 
   useGroupMessages(handleGroupMessage);
 
@@ -62,7 +45,7 @@ const Chats = () => {
       const updated = prev.map((c) =>
         c.group.id === groupId
           ? { ...c, lastMessage: content, updatedAt: new Date().toISOString() }
-          : c
+          : c,
       );
       const target = updated.find((c) => c.group.id === groupId);
       if (!target) return prev;
@@ -101,7 +84,10 @@ const Chats = () => {
         </div>
         <div className="flex-1">
           {isAddGroupOpen ? (
-            <AddChatGroup onClose={handleCloseAddGroup} onCreated={handleGroupCreated} />
+            <AddChatGroup
+              onClose={handleCloseAddGroup}
+              onCreated={handleGroupCreated}
+            />
           ) : activeChat ? (
             <ChatMain
               activeChat={activeChat}
@@ -120,7 +106,10 @@ const Chats = () => {
       {/* Mobile */}
       <div className="md:hidden w-full">
         {isAddGroupOpen ? (
-          <AddChatGroup onClose={handleCloseAddGroup} onCreated={handleGroupCreated} />
+          <AddChatGroup
+            onClose={handleCloseAddGroup}
+            onCreated={handleGroupCreated}
+          />
         ) : !activeChat ? (
           <ChatSidebar
             recentChats={recentChats}
