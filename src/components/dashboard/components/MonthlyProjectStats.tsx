@@ -183,65 +183,55 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
             </div>
 
             {/* IFA/IFC/CO# Grid */}
+            {/* IFA/IFC/CO# Grid - Responsive Stack */}
             <div className="border border-gray-100 rounded-xl overflow-hidden bg-white">
-              <div className="overflow-x-auto no-scrollbar">
-                <div className="min-w-[360px]">
-                  <div className="grid grid-cols-3 bg-gray-50 border-b border-gray-100">
-                    {["IFA", "IFC", "CO#"].map((s) => (
-                      <div
-                        key={s}
-                        className="py-2 text-center text-xs sm:text-sm font-black tracking-widest text-gray-800 border-r last:border-0 border-gray-100 uppercase"
-                      >
-                        {s}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-3 divide-x divide-gray-100">
-                    {["IFA", "IFC", "CO#"].map((stage) => (
-                      <div
-                        key={stage}
-                        className="p-1.5 sm:p-2 space-y-1.5 sm:space-y-2"
-                      >
-                        {[
-                          { label: "Active", key: "active", color: "green" },
-                          { label: "On-Hold", key: "onHold", color: "orange" },
-                          {
-                            label: "Completed",
-                            key: "completed",
-                            color: "blue",
-                          },
-                        ].map((item) => (
-                          <button
-                            key={item.key}
-                            onClick={() =>
-                              handleStatClick(
-                                projectsByTeam[
-                                  Object.keys(projectsByTeam).find(
-                                    (k) =>
-                                      projectsByTeam[k].teamName ===
-                                      team.teamName
-                                  ) || ""
-                                ]?.projects || [],
-                                stage as any,
-                                item.key.toUpperCase() as any
-                              )
-                            }
-                            className={`w-full flex items-center justify-between px-1.5 sm:px-2 py-1 rounded-lg hover:bg-${item.color}-50 transition-all group/btn border border-transparent hover:border-${item.color}-100`}
+              <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+                {["IFA", "IFC", "CO#"].map((stage) => (
+                  <div key={stage} className="flex-1">
+                    {/* Header */}
+                    <div className="bg-gray-50 border-b border-gray-100 py-2 text-center text-xs sm:text-sm font-black tracking-widest text-gray-800 uppercase">
+                      {stage}
+                    </div>
+                    {/* Content */}
+                    <div className="p-1.5 sm:p-2 space-y-1.5 sm:space-y-2">
+                      {[
+                        { label: "Active", key: "active", color: "green" },
+                        { label: "On-Hold", key: "onHold", color: "orange" },
+                        {
+                          label: "Completed",
+                          key: "completed",
+                          color: "blue",
+                        },
+                      ].map((item) => (
+                        <button
+                          key={item.key}
+                          onClick={() =>
+                            handleStatClick(
+                              projectsByTeam[
+                                Object.keys(projectsByTeam).find(
+                                  (k) =>
+                                    projectsByTeam[k].teamName === team.teamName
+                                ) || ""
+                              ]?.projects || [],
+                              stage as any,
+                              item.key.toUpperCase() as any
+                            )
+                          }
+                          className={`w-full flex items-center justify-between px-1.5 sm:px-2 py-1 rounded-lg hover:bg-${item.color}-50 transition-all group/btn border border-transparent hover:border-${item.color}-100`}
+                        >
+                          <span className="text-[10px] sm:text-xs font-bold text-gray-600 uppercase group-hover/btn:text-gray-900 truncate mr-1">
+                            {item.label}
+                          </span>
+                          <span
+                            className={`text-[11px] sm:text-sm font-black text-${item.color}-600`}
                           >
-                            <span className="text-[10px] sm:text-xs font-bold text-gray-600 uppercase group-hover/btn:text-gray-900 truncate mr-1">
-                              {item.label}
-                            </span>
-                            <span
-                              className={`text-[11px] sm:text-sm font-black text-${item.color}-600`}
-                            >
-                              {(team.stats[stage] as any)?.[item.key] || 0}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    ))}
+                            {(team.stats[stage] as any)?.[item.key] || 0}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
 

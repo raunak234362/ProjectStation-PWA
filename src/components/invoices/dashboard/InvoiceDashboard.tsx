@@ -49,7 +49,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({ navigateToCreate })
                 </div>
 
                 {/* Date Filter Pills */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
                     {["All Months", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((filter) => (
                         <button
                             key={filter}
