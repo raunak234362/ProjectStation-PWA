@@ -43,6 +43,14 @@ const Layout = () => {
         />
       </div>
 
+      {/* Mobile Sidebar Overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
       {/* Mobile Sidebar */}
       <div className="md:hidden">
         <Sidebar

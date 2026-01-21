@@ -9,7 +9,7 @@ import Button from "./fields/Button";
 import type { UserData } from "../interface";
 
 interface SidebarProps {
-  isMinimized: boolean; // desktop: collapsed, mobile: open/close
+  isMinimized: boolean;
   toggleSidebar: () => void;
   isMobile?: boolean;
 }
@@ -30,15 +30,21 @@ const Sidebar: React.FC<SidebarProps> = ({
     roles.includes(userRole.toLowerCase());
 
   const fetchLogout = (): void => {
-    sessionStorage.clear();
-    navigate("/");
+    try {
+      sessionStorage.clear();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
     <aside
-      className={`h-full transition-all duration-300 flex flex-col ${
-        isMinimized ? "w-24" : "w-72"
-      } ${isMobile ? "shadow-2xl bg-background" : "relative"}`}
+      className={`h-full transition-all duration-300 flex flex-col 
+        ${isMobile
+          ? `fixed inset-y-0 left-0 z-50 bg-[#6bbd45] shadow-2xl w-72 transform ${isMinimized ? "-translate-x-full" : "translate-x-0"}`
+          : `relative ${isMinimized ? "w-24" : "w-72"}`
+        }`}
     >
       {/* Header */}
       <div
@@ -65,15 +71,15 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-          {isMobile && (
-            <Button
-              onClick={toggleSidebar}
-              className="p-2 bg-white/10 text-white rounded-xl hover:bg-white/20"
-            >
-              <X size={22} />
-            </Button>
-          )}
-        </div>
+        {isMobile && (
+          <Button
+            onClick={toggleSidebar}
+            className="p-2 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
+          >
+            <X size={22} />
+          </Button>
+        )}
+      </div>
 
       <div className="flex-1 py-2 flex flex-col overflow-y-auto custom-scrollbar">
         <ul className="flex flex-col gap-0.5 w-full pl-4">
@@ -84,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <NavLink
                     to={
                       label === "Dashboard" &&
-                      (userRole === "sales" || userRole === "sales_manager")
+                        (userRole === "sales" || userRole === "sales_manager")
                         ? "/dashboard/sales"
                         : to
                     }
@@ -92,24 +98,28 @@ const Sidebar: React.FC<SidebarProps> = ({
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
                       `flex items-center gap-4 py-2.5 transition-all duration-200 font-bold text-md tracking-wide relative 
-                      ${
-                        isActive
-                          ? "bg-white text-green-500 rounded-l-[30px] shadow-sm ml-0 pl-6 z-20"
-                          : "text-white/80 hover:text-background hover:bg-white/80 rounded-l-[30px] pl-6 ml-0"
-                      } ${
-                        isMinimized
-                          ? "justify-center px-0 w-14 h-14 mx-auto rounded-xl! ml-0! pl-0!"
-                          : ""
+                      ${isActive
+                        ? `bg-white text-green-600 shadow-sm z-20 ${isMobile
+                          ? "rounded-xl mx-4 px-4"
+                          : "rounded-l-[30px] ml-0 pl-6"
+                        }`
+                        : `text-white/90 hover:bg-white/10 ${isMobile
+                          ? "rounded-xl mx-4 px-4"
+                          : "rounded-l-[30px] ml-0 pl-6"
+                        }`
+                      } ${isMinimized
+                        ? "justify-center px-0 w-14 h-14 mx-auto rounded-xl! ml-0! pl-0!"
+                        : ""
                       }`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         {/* Inverted Corners for Active State Effect - Desktop Only */}
-                        {!isMinimized && isActive && (
+                        {!isMinimized && isActive && !isMobile && (
                           <>
                             {/* Top Curve */}
-                            <div className="absolute right-0 -top-5 w-5 h-5 bg-transparent rounded-br-3xl shadow-[5px_5px_0_5px_#f9fafb] z-10 pointer-events-none"></div>
+                            <div className="absolute right-0 -top-5 w-5 h-5 bg-transparent rounded-br-[20px] shadow-[5px_5px_0_5px_#f9fafb] z-10 pointer-events-none"></div>
                             {/* Bottom Curve */}
                             <div className="absolute right-0 -bottom-5 w-5 h-5 bg-transparent rounded-tr-[20px] shadow-[5px_-5px_0_5px_#f9fafb] z-10 pointer-events-none"></div>
                           </>
@@ -126,37 +136,37 @@ const Sidebar: React.FC<SidebarProps> = ({
                     )}
                   </NavLink>
 
-                    {/* tooltip */}
-                    {isMinimized && !isMobile && (
-                      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 hidden group-hover:flex">
-                        <span className="bg-gray-800 text-white text-sm font-bold py-2 px-4 rounded-xl shadow-xl">
-                          {label}
-                        </span>
-                      </div>
-                    )}
-                  </li>
-                )
-            )}
-          </ul>
-        </div>
-
-        {/* FOOTER */}
-        <div className="sticky bottom-0 bg-background p-6 z-30">
-          {!isMinimized && (
-            <div className="flex items-center gap-4 mb-4 bg-white/10 p-3 rounded-2xl border border-white/10">
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-green-700 font-extrabold text-lg">
-                {sessionStorage.getItem("username")?.[0] || "U"}
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-sm font-bold text-white truncate">
-                  {sessionStorage.getItem("username")}
-                </p>
-                <p className="text-[10px] text-green-100 font-bold uppercase truncate opacity-80">
-                  {userData?.role || userRole}
-                </p>
-              </div>
-            </div>
+                  {/* Tooltip for minimized sidebar */}
+                  {isMinimized && (
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 hidden group-hover:flex">
+                      <span className="bg-gray-800 text-white text-sm font-bold py-2 px-4 rounded-xl shadow-xl whitespace-nowrap">
+                        {label}
+                      </span>
+                    </div>
+                  )}
+                </li>
+              )
           )}
+        </ul>
+      </div>
+
+      {/* Footer */}
+      <div className="p-6 mt-auto">
+        {!isMinimized && (
+          <div className="flex items-center gap-4 mb-4 bg-white/10 p-3 rounded-2xl border border-white/10 backdrop-blur-sm">
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-green-700 font-extrabold text-lg shadow-sm">
+              {sessionStorage.getItem("username")?.[0] || "U"}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-sm font-bold text-white truncate">
+                {sessionStorage.getItem("username")}
+              </p>
+              <p className="text-[10px] text-green-100 font-bold uppercase tracking-wider truncate opacity-80">
+                {userData?.role || userRole}
+              </p>
+            </div>
+          </div>
+        )}
 
         <Button
           className={`w-full flex items-center gap-3 py-3 rounded-xl transition-all ${isMinimized
@@ -174,3 +184,4 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
+
