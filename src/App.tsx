@@ -12,13 +12,15 @@ import { loadFabricator } from "./store/fabricatorSlice";
 import { setRFQData } from "./store/rfqSlice";
 import { setProjectData } from "./store/projectSlice";
 import { useSelector } from "react-redux";
+import useNotifications from "./hooks/useNotifications";
 
 const AppContent = () => {
   const dispatch = useDispatch();
+  useNotifications();
   const userType = sessionStorage.getItem("userRole");
 
   const projects = useSelector(
-    (state: any) => state.projectInfo?.projectData || []
+    (state: any) => state.projectInfo?.projectData || [],
   );
 
   // Fetch current user
@@ -91,8 +93,10 @@ const AppContent = () => {
           rfqDetail = await Service.RFQRecieved();
         }
         // setRfq(rfqDetail.data);
-        dispatch(setRFQData(rfqDetail.data));
-        console.log(rfqDetail.data);
+        console.log("Raw RFQ Response:", rfqDetail);
+        const rfqData = Array.isArray(rfqDetail) ? rfqDetail : rfqDetail?.data || [];
+        dispatch(setRFQData(rfqData));
+        console.log("Dispatched RFQ Data:", rfqData);
       } catch (error) {
         console.error("Error fetching RFQ:", error);
       }

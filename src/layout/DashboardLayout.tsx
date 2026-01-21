@@ -43,27 +43,26 @@ const Layout = () => {
         />
       </div>
 
-      {/* Mobile Sidebar */}
-      <div
-        className={`fixed inset-0 bg-black/40 z-40 md:hidden transition-opacity duration-300 ${isMobileOpen ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}
-        onClick={() => setIsMobileOpen(false)}
-      ></div>
+      {/* Mobile Sidebar Overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
 
-      <div
-        className={`fixed top-0 left-0 h-full bg-background z-50 transform transition-transform duration-300 md:hidden ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-      >
+      {/* Mobile Sidebar */}
+      <div className="md:hidden">
         <Sidebar
-          isMinimized={false}
+          isMinimized={!isMobileOpen}
           toggleSidebar={() => setIsMobileOpen(false)}
           isMobile={true}
         />
       </div>
 
       {/* Main Content Area - White Card effect */}
-      <div className="flex flex-col flex-1 min-h-0 bg-background p-2 pl-0">
-        <div className="flex-1 bg-gray-50 rounded-xl shadow-2xl overflow-hidden flex flex-col relative transition-all">
+      <div className="flex flex-col flex-1 min-h-0 bg-background p-0 md:p-2 pl-0">
+        <div className="flex-1 bg-gray-50 md:rounded-xl shadow-2xl overflow-hidden flex flex-col relative transition-all">
 
           {/* Optional: If Header is needed globally, it goes here inside the white card */}
           <div className="px-2 pt-2">

@@ -14,6 +14,7 @@ import { FiPhoneCall } from "react-icons/fi";
 import Button from "../fields/Button";
 import { useState } from "react";
 import EditEmployee from "../manageTeam/employee/EditEmployee";
+import ChangePasswordModal from "./ChangePasswordModal";
 import Service from "../../api/Service";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../store/userSlice";
@@ -22,6 +23,7 @@ import { toast } from "react-toastify";
 const Profile = () => {
   const dispatch = useDispatch();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
 
   // Get user data from Redux
   const user = useSelector((state: any) => state.userInfo.userDetail);
@@ -166,6 +168,7 @@ const Profile = () => {
           <div className="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
             <Edit2 className="w-5 h-5 text-green-600" /> Update Detail{" "}
             <Button onClick={() => setIsEditModalOpen(true)}>Update </Button>
+            <Button onClick={() => setIsChangePasswordModalOpen(true)}>Change Password </Button>
           </div>
         </div>
 
@@ -174,6 +177,14 @@ const Profile = () => {
             employeeData={user}
             onClose={() => setIsEditModalOpen(false)}
             onSuccess={handleUpdateSuccess}
+          />
+        )}
+
+        {isChangePasswordModalOpen && (
+          <ChangePasswordModal
+            id={user.id}
+            onClose={() => setIsChangePasswordModalOpen(false)}
+            onSuccess={() => setIsChangePasswordModalOpen(false)}
           />
         )}
       </div>

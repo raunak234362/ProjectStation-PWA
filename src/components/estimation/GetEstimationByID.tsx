@@ -9,6 +9,8 @@ import EditEstimation from "./EditEstimation";
 
 import RenderFiles from "../ui/RenderFiles";
 import type { EstimationTask } from "../../interface";
+import InclusionExclusion from "./InclusionExclusion";
+import EditInclusionExclusion from "./EditInclusionExclusion";
 
 const truncateText = (text: string, max = 40) =>
   text.length > max ? text.substring(0, max) + "..." : text;
@@ -27,6 +29,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isEstimationTaskOpen, setIsEstimationTaskOpen] = useState(false);
   const [isHoursOpen, setIsHoursOpen] = useState(false);
+  const [isInclusionOpen, setIsInclusionOpen] = useState(false);
+  const [isEditingInclusion, setIsEditingInclusion] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchEstimation = async () => {
@@ -161,11 +165,11 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
               value={
                 <div className="flex flex-col text-right">
                   <span className="font-semibold">
-                    {rfq.projectName || "RFQ Linked"}
+                    {rfq?.projectName || "RFQ Linked"}
                   </span>
                   <span className="text-xs text-gray-700">
-                    Project No: {rfq.projectNumber || "N/A"} · Bid:{" "}
-                    {rfq.bidPrice || "-"}
+                    Project No: {rfq?.projectNumber || "N/A"} · Bid:{" "}
+                    {rfq?.bidPrice || "-"}
                   </span>
                 </div>
               }
@@ -189,8 +193,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
               label="Created By"
               value={
                 <span>
-                  {createdBy.firstName} {createdBy.lastName} (
-                  {createdBy.username || createdBy.email || "N/A"})
+                  {createdBy?.firstName} {createdBy?.lastName} (
+                  {createdBy?.username || createdBy?.email || "N/A"})
                 </span>
               }
             />
@@ -235,19 +239,22 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {/* Action Buttons */}
       <div className="py-4 flex flex-wrap items-center gap-2 sm:gap-3 border-t border-green-100 mt-6">
         <Button
-          className="flex-1 sm:flex-none py-1.5 px-3 text-sm sm:text-base font-bold bg-red-100 text-red-700 hover:bg-red-200"
+          className="py-1 px-2 text-lg bg-red-200 text-red-700"
           onClick={() => setIsEstimationTaskOpen(!isEstimationTaskOpen)}
         >
           Estimation Task
         </Button>
         <Button
-          className="flex-1 sm:flex-none py-1.5 px-3 text-sm sm:text-base font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 shadow-xs"
+          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
           onClick={() => setIsHoursOpen(!isHoursOpen)}
         >
           Estimated Hours/Weeks
         </Button>
+        {/* <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
+          Add To Project
+        </Button> */}
         <Button
-          className="flex-1 sm:flex-none py-1.5 px-3 text-sm sm:text-base font-bold shadow-xs hover:bg-green-700 transition-all"
+          className="py-1 px-2 text-lg"
           onClick={() => setIsEditing(!isEditing)}
         >
           Edit Estimation
@@ -283,6 +290,36 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
             </button>
           </div>
           <LineItemGroup estimationId={estimation?.id} />
+        </div>
+      )}
+      {isInclusionOpen && (
+        <div className="mt-6 border-t pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-700">
+              Inclusion/Exclusion
+            </h3>
+            <button
+              onClick={() => setIsInclusionOpen(false)}
+              className="text-gray-700 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
+            >
+              Close
+            </button>
+          </div>
+          {isEditingInclusion ? (
+            <EditInclusionExclusion
+              estimationId={estimation?.id || ""}
+              onCancel={() => setIsEditingInclusion(false)}
+              onSuccess={() => {
+                setIsEditingInclusion(false);
+                fetchEstimation();
+              }}
+            />
+          ) : (
+            <InclusionExclusion
+              estimationId={estimation?.id || ""}
+              onEdit={() => setIsEditingInclusion(true)}
+            />
+          )}
         </div>
       )}
       {isEditing && (

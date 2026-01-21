@@ -53,13 +53,12 @@ const AllRFQ = ({ rfq }: any) => {
       ],
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 text-xs rounded-full ${
-            row.original.status === "IN_REVIEW"
+          className={`px-2 py-1 text-xs rounded-full ${row.original.status === "IN_REVIEW"
               ? "bg-yellow-100 text-yellow-700"
               : row.original.status === "COMPLETED"
                 ? "bg-green-100 text-green-700"
                 : "bg-gray-100 text-gray-700"
-          }`}
+            }`}
         >
           {row.original.status}
         </span>
@@ -79,7 +78,7 @@ const AllRFQ = ({ rfq }: any) => {
     <div className=" bg-white p-4 rounded-2xl shadow-sm">
       <DataTable
         columns={columns}
-        data={rfq}
+        data={rfq || []}
         detailComponent={({ row }) => <GetRFQByID id={row.id} />}
         // onDelete={handleDelete}
         searchPlaceholder="Search employees..."
