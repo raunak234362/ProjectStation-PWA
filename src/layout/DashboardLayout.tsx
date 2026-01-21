@@ -10,10 +10,15 @@ const Layout = () => {
   // Close sidebar automatically when resizing from mobile → desktop
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth < 768) {
         setIsMobileOpen(false);
+      } else if (window.innerWidth >= 768 && window.innerWidth < 1200) {
+        setIsMinimized(true);
+      } else {
+        setIsMinimized(false);
       }
     };
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
