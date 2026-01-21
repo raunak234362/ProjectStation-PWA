@@ -41,20 +41,12 @@ const EmployeeLayout = () => {
               <AllEmployee />
             </div>
           )}
-          {activeTab === "addDepartment" && (
-            <div> {/* <AddDepartment />{" "} */}</div>
-          )}
+        
           {activeTab === "addEmployee" && (
             <div>
               {" "}
               <AddEmployee />{" "}
             </div>
-          )}
-          {activeTab === "allDepartment" && (
-            <div> {/* <AllDepartment />{" "} */}</div>
-          )}
-          {activeTab === "teamDashboard" && (
-            <div> {/* <TeamDashboard />{" "} */}</div>
           )}
         </div>
       </div>
