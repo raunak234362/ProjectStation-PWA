@@ -67,11 +67,11 @@ const InvoiceStatsCards: React.FC<StatsProps> = ({ invoices }) => {
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {stats.map((stat, index) => (
                 <div
                     key={index}
-                    className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                    className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
                 >
                     <div className="flex items-start justify-between mb-4">
                         <div className={`p-3 rounded-xl ${stat.color}`}>
@@ -80,8 +80,8 @@ const InvoiceStatsCards: React.FC<StatsProps> = ({ invoices }) => {
                         {/* Trend Label (Mocked for UI) */}
                         <span
                             className={`text-xs font-medium px-2 py-1 rounded-full ${stat.title === "Overdue Invoices"
-                                    ? "bg-red-100 text-red-600"
-                                    : "bg-green-100 text-green-600"
+                                ? "bg-red-100 text-red-600"
+                                : "bg-green-100 text-green-600"
                                 }`}
                         >
                             {stat.trend}

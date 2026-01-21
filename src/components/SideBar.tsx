@@ -42,13 +42,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       {/* Header */}
       <div
-        className={`flex items-center pt-6 pb-2 px-6 ${
-          isMobile
-            ? "justify-between"
-            : isMinimized
+        className={`flex items-center pt-6 pb-2 px-6 ${isMobile
+          ? "justify-between"
+          : isMinimized
             ? "justify-center"
             : "justify-start"
-        }`}
+          }`}
       >
         <div className="flex items-center w-full justify-center">
           {!isMinimized ? (
@@ -76,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-      <div className="flex-1 py-2 flex flex-col">
+      <div className="flex-1 py-2 flex flex-col overflow-y-auto custom-scrollbar">
         <ul className="flex flex-col gap-0.5 w-full pl-4">
           {navItems.map(
             ({ label, to, roles, icon }) =>
@@ -160,11 +159,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
 
         <Button
-          className={`w-full flex items-center gap-3 py-3 rounded-xl transition-all ${
-            isMinimized
-              ? "justify-center bg-white/10 text-white hover:bg-white/20"
-              : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
-          }`}
+          className={`w-full flex items-center gap-3 py-3 rounded-xl transition-all ${isMinimized
+            ? "justify-center bg-white/10 text-white hover:bg-white/20"
+            : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
+            }`}
           onClick={fetchLogout}
         >
           <LogOut size={20} />

@@ -226,7 +226,7 @@ const ProjectDashboard = () => {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-500 laptop-fit">
       {/* Filters Header */}
       <div className="bg-white p-3 md:p-4 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
         <div className="flex items-center gap-4">
@@ -250,34 +250,32 @@ const ProjectDashboard = () => {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-          <Button
-            onClick={() => setSelectedMonth(null)}
-            className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${
-              selectedMonth === null
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+            <Button
+              onClick={() => setSelectedMonth(null)}
+              className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === null
                 ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
-            }`}
-          >
-            All Months
-          </Button>
-          {months.map((month, index) => (
-            <Button
-              key={month}
-              onClick={() => setSelectedMonth(index)}
-              className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${
-                selectedMonth === index
+                }`}
+            >
+              All Months
+            </Button>
+            {months.map((month, index) => (
+              <Button
+                key={month}
+                onClick={() => setSelectedMonth(index)}
+                className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === index
                   ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
-              }`}
-            >
-              {month}
-            </Button>
-          ))}
-        </div>
+                  }`}
+              >
+                {month}
+              </Button>
+            ))}
+          </div>
         </div>
 
-        
+
       </div>
 
       {/* Monthly Workload Stats */}
@@ -312,7 +310,7 @@ const ProjectDashboard = () => {
     </div>
   );
 };
-
+//added
 export default ProjectDashboard;
 
 const ChevronDown = ({ className }: { className?: string }) => (
