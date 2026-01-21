@@ -173,6 +173,7 @@ export const navItems: NavItem[] = [
     icon: <Users />,
     roles: [
       "admin",
+      "human_resource",
       "department-manager",
       "project-manager",
       "operation_executive",
