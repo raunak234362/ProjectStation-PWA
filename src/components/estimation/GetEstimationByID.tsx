@@ -165,11 +165,11 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
               value={
                 <div className="flex flex-col text-right">
                   <span className="font-semibold">
-                    {rfq.projectName || "RFQ Linked"}
+                    {rfq?.projectName || "RFQ Linked"}
                   </span>
                   <span className="text-xs text-gray-700">
-                    Project No: {rfq.projectNumber || "N/A"} · Bid:{" "}
-                    {rfq.bidPrice || "-"}
+                    Project No: {rfq?.projectNumber || "N/A"} · Bid:{" "}
+                    {rfq?.bidPrice || "-"}
                   </span>
                 </div>
               }
@@ -193,8 +193,8 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
               label="Created By"
               value={
                 <span>
-                  {createdBy.firstName} {createdBy.lastName} (
-                  {createdBy.username || createdBy.email || "N/A"})
+                  {createdBy?.firstName} {createdBy?.lastName} (
+                  {createdBy?.username || createdBy?.email || "N/A"})
                 </span>
               }
             />

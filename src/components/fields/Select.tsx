@@ -18,6 +18,8 @@ interface SelectProps {
   value?: string;
   onChange?: (name: string, value: string) => void;
   showSearch?: boolean;
+  menuPortalTarget?: HTMLElement | null; // Add this
+  styles?: any; // Add this
 }
 
 const Select = ({

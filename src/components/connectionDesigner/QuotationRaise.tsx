@@ -9,12 +9,14 @@ import { toast } from "react-toastify";
 interface ConnectionDesigner {
   id: string;
   name: string;
-  state: string[];
+  state: string[] | string; // Can be string before parsing
   contactInfo: string;
   email: string;
   location: string;
   websiteLink: string;
+  CDEngineers?: { id: string; username: string;[key: string]: any }[];
 }
+
 
 const QuotationRaise = ({
   rfqId,
@@ -25,7 +27,11 @@ const QuotationRaise = ({
   onClose: () => void;
   onSuccess: () => void;
 }) => {
-  const { handleSubmit, control } = useForm<any>();
+  const { handleSubmit, control, watch } = useForm<any>();
+
+
+
+  const selectedDesignerIds = watch("ConnectionDesignerIds");
   const [connectionDesigners, setConnectionDesigners] = useState<
     ConnectionDesigner[]
   >([]);
@@ -38,9 +44,27 @@ const QuotationRaise = ({
   const fetchCD = async () => {
     try {
       const response = await Service.FetchAllConnectionDesigner();
-      const data = response?.data || [];
-      setConnectionDesigners(data);
-      setFilteredDesigners(data);
+      const rawData = response?.data || [];
+
+      // Parse 'state' safely
+      const parsedData = rawData.map((cd: any) => {
+        let parsedState: string[] = [];
+        if (Array.isArray(cd.state)) {
+          parsedState = cd.state;
+        } else if (typeof cd.state === "string") {
+          try {
+            const parsed = JSON.parse(cd.state);
+            parsedState = Array.isArray(parsed) ? parsed : [];
+          } catch (e) {
+            console.warn("Failed to parse state for CD:", cd.name, e);
+            parsedState = [];
+          }
+        }
+        return { ...cd, state: parsedState };
+      });
+
+      setConnectionDesigners(parsedData);
+      setFilteredDesigners(parsedData);
     } catch (error) {
       console.error("Error fetching connection designers:", error);
       toast.error("Failed to load connection designers");
@@ -53,7 +77,11 @@ const QuotationRaise = ({
 
   // Extract unique states from all designers
   const allStates = Array.from(
-    new Set(connectionDesigners.flatMap((cd) => cd.state))
+    new Set(
+      connectionDesigners.flatMap((cd) =>
+        Array.isArray(cd.state) ? cd.state : []
+      )
+    )
   ).map((state) => ({ label: state, value: state }));
 
   // Filter designers when states are selected
@@ -62,19 +90,30 @@ const QuotationRaise = ({
       setFilteredDesigners(connectionDesigners);
     } else {
       const filtered = connectionDesigners.filter((cd) =>
-        cd.state.some((state) => selectedStates.includes(state))
+        Array.isArray(cd.state) && cd.state.some((state) => selectedStates.includes(state))
       );
       setFilteredDesigners(filtered);
     }
   }, [selectedStates, connectionDesigners]);
 
-  // Submit — send only IDs
+  // Derive available engineers from selected designers
+  const availableEngineers = filteredDesigners
+    .filter((cd) => Array.isArray(selectedDesignerIds) && selectedDesignerIds.some((item: any) => item.value === cd.id))
+    .flatMap((cd) => cd.CDEngineers || [])
+    .map((eng) => ({
+      label: eng.username,
+      value: eng.id,
+      designerName: connectionDesigners.find((cd) => cd.CDEngineers?.some(e => e.id === eng.id))?.name
+    }));
+
+  // Submit — send IDs
   const RaiseForQuotation = async (data: any) => {
     try {
       const payload = {
-        ConnectionDesignerIds: data.ConnectionDesignerIds.map(
+        ConnectionDesignerIds: data.ConnectionDesignerIds?.map(
           (cd: any) => cd.value
-        ),
+        ) || [],
+        connectionEngineerIds: data.EngineerIds?.map((eng: any) => eng.value) || [],
       };
 
       console.log("📦 Final Payload:", payload);
@@ -189,7 +228,7 @@ const QuotationRaise = ({
                     <div>
                       <p className="font-medium text-gray-700">{option.label}</p>
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {option.states?.map((s: string) => (
+                        {Array.isArray(option.states) && option.states.map((s: string) => (
                           <span
                             key={s}
                             className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full"
@@ -204,6 +243,51 @@ const QuotationRaise = ({
               )}
             />
           </div>
+
+          {/* Engineer Select (Dependent) */}
+          {availableEngineers.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select Engineers (Optional)
+              </label>
+              <Controller
+                name="EngineerIds"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    isMulti
+                    isSearchable
+                    placeholder="Select engineers..."
+                    options={availableEngineers}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: "#cbd5e1",
+                        boxShadow: "none",
+                        "&:hover": { borderColor: "#0d9488" },
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isFocused
+                          ? "rgba(13,148,136,0.1)"
+                          : "white",
+                        color: "black",
+                      }),
+                    }}
+                    formatOptionLabel={(option: any) => (
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-800">{option.label}</span>
+                        {option.designerName && (
+                          <span className="text-xs text-gray-500">from {option.designerName}</span>
+                        )}
+                      </div>
+                    )}
+                  />
+                )}
+              />
+            </div>
+          )}
 
           {/* Submit */}
           <div className="flex justify-end pt-4 border-t border-gray-200">

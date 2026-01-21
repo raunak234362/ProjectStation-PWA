@@ -93,8 +93,10 @@ const AppContent = () => {
           rfqDetail = await Service.RFQRecieved();
         }
         // setRfq(rfqDetail.data);
-        dispatch(setRFQData(rfqDetail.data));
-        console.log(rfqDetail.data);
+        console.log("Raw RFQ Response:", rfqDetail);
+        const rfqData = Array.isArray(rfqDetail) ? rfqDetail : rfqDetail?.data || [];
+        dispatch(setRFQData(rfqData));
+        console.log("Dispatched RFQ Data:", rfqData);
       } catch (error) {
         console.error("Error fetching RFQ:", error);
       }

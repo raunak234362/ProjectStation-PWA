@@ -12,6 +12,7 @@ import AddEstimation from "../estimation/AddEstimation";
 import RenderFiles from "../ui/RenderFiles";
 import QuotationRaise from "../connectionDesigner/QuotationRaise";
 
+
 interface GetRfqByIDProps {
   id: string;
 }
@@ -129,6 +130,9 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     },
   ];
 
+  /* ---------------- TABLE STATE ---------------- */
+  // Removed redundant useDataTable hook
+
   return (
     <>
       <div className="p-0 sm:p-6">
@@ -139,17 +143,17 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 <h3 className="text-xl sm:text-2xl font-bold text-green-700 wrap-break-word max-w-full">
-                  {rfq.projectName}
+                  {rfq?.projectName}
                 </h3>
 
                 {/* Status tag */}
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${rfq.status === "RECEIVED"
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${rfq?.status === "RECEIVED"
                     ? "bg-yellow-100 text-yellow-700"
                     : "bg-green-100 text-green-700"
                     }`}
                 >
-                  {rfq.status}
+                  {rfq?.status}
                 </span>
               </div>
 
@@ -173,15 +177,15 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Info label="Subject" value={rfq.subject || ""} />
-              <Info label="Project Number" value={rfq.projectNumber || ""} />
-              <Info label="Status" value={rfq.status || ""} />
-              <Info label="Tools" value={rfq.tools} />
+              <Info label="Subject" value={rfq?.subject || ""} />
+              <Info label="Project Number" value={rfq?.projectNumber || ""} />
+              <Info label="Status" value={rfq?.status || ""} />
+              <Info label="Tools" value={rfq?.tools || "N/A"} />
               <Info
                 label="Due Date"
-                value={new Date(rfq.estimationDate).toLocaleDateString()}
+                value={rfq?.estimationDate ? new Date(rfq.estimationDate).toLocaleDateString() : "N/A"}
               />
-              <Info label="Bid Amount (USD)" value={rfq.bidPrice ?? "—"} />
+              <Info label="Bid Amount (USD)" value={rfq?.bidPrice ?? "—"} />
             </div>
 
             {/* Description */}
@@ -190,7 +194,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               <div
                 className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm"
                 dangerouslySetInnerHTML={{
-                  __html: rfq.description || "No description provided",
+                  __html: rfq?.description || "No description provided",
                 }}
               />
             </div>
@@ -199,19 +203,19 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             <div className="space-y-3">
               <h4 className="font-bold text-gray-700 text-sm">Scope Summary</h4>
               <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-4 text-[10px] sm:text-xs">
-                <Scope label="Main Design" enabled={rfq.connectionDesign} />
-                <Scope label="Misc Design" enabled={rfq.miscDesign} />
-                <Scope label="Customer Design" enabled={rfq.customerDesign} />
-                <Scope label="Main Steel" enabled={rfq.detailingMain} />
-                <Scope label="Misc Steel" enabled={rfq.detailingMisc} />
+                <Scope label="Main Design" enabled={rfq?.connectionDesign || false} />
+                <Scope label="Misc Design" enabled={rfq?.miscDesign || false} />
+                <Scope label="Customer Design" enabled={rfq?.customerDesign || false} />
+                <Scope label="Main Steel" enabled={rfq?.detailingMain || false} />
+                <Scope label="Misc Steel" enabled={rfq?.detailingMisc || false} />
               </div>
             </div>
 
             {/* Files */}
             <RenderFiles
-              files={rfq.files || []}
+              files={rfq?.files || []}
               table="rFQ"
-              parentId={rfq.id}
+              parentId={rfq?.id}
               formatDate={(date: string) => new Date(date).toLocaleDateString()}
             />
             <div className="flex flex-col gap-2 pt-2">
@@ -255,7 +259,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             )}
 
             {/* ---- RESPONSE TABLE ---- */}
-            {rfq.responses?.length ? (
+            {rfq?.responses?.length ? (
               <DataTable
                 columns={responseColumns}
                 data={rfq.responses}
