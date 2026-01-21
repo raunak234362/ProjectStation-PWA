@@ -99,13 +99,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                     className={({ isActive }) =>
                       `flex items-center gap-4 py-2.5 transition-all duration-200 font-bold text-md tracking-wide relative 
                       ${isActive
-                        ? `bg-white text-green-600 shadow-sm z-20 ${isMobile
-                          ? "rounded-xl mx-4 px-4"
-                          : "rounded-l-[30px] ml-0 pl-6"
+                        ? `bg-white rounded-xl text-green-600 shadow-sm z-20 ${isMobile
+                          ? " mx-4 px-4"
+                          : "ml-0 pl-6"
                         }`
-                        : `text-white/90 hover:bg-white/10 ${isMobile
-                          ? "rounded-xl mx-4 px-4"
-                          : "rounded-l-[30px] ml-0 pl-6"
+                        : `text-white/90 rounded-xl hover:bg-white/10 ${isMobile
+                          ? " mx-4 px-4"
+                          : " ml-0 pl-6"
                         }`
                       } ${isMinimized
                         ? "justify-center px-0 w-14 h-14 mx-auto rounded-xl! ml-0! pl-0!"
@@ -119,9 +119,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                         {!isMinimized && isActive && !isMobile && (
                           <>
                             {/* Top Curve */}
-                            <div className="absolute right-0 -top-5 w-5 h-5 bg-transparent rounded-br-[20px] shadow-[5px_5px_0_5px_#f9fafb] z-10 pointer-events-none"></div>
+                            {/* <div className="absolute right-0 -top-5 w-5 h-5 bg-transparent rounded-br-[20px] shadow-[5px_5px_0_5px_#f9fafb] z-10 pointer-events-none"></div> */}
                             {/* Bottom Curve */}
-                            <div className="absolute right-0 -bottom-5 w-5 h-5 bg-transparent rounded-tr-[20px] shadow-[5px_-5px_0_5px_#f9fafb] z-10 pointer-events-none"></div>
+                            {/* <div className="absolute right-0 -bottom-5 w-5 h-5 bg-transparent rounded-tr-[20px] shadow-[5px_-5px_0_5px_#f9fafb] z-10 pointer-events-none"></div> */}
                           </>
                         )}
                         <div
