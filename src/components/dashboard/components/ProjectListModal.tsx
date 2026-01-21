@@ -59,9 +59,8 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Worked Hours",
       cell: ({ row }) => (
         <span
-          className={`font-bold ${
-            row.original.isOverrun ? "text-red-600" : "text-green-600"
-          }`}
+          className={`font-bold ${row.original.isOverrun ? "text-red-600" : "text-green-600"
+            }`}
         >
           {formatSeconds(row.original.workedSeconds || 0)}
         </span>
@@ -86,13 +85,12 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 rounded-full text-xs font-bold ${
-            row.original.status === "ACTIVE"
+          className={`px-3 py-1 rounded-full text-xs font-bold ${row.original.status === "ACTIVE"
               ? "bg-green-100 text-green-700"
               : row.original.status === "COMPLETED"
-              ? "bg-blue-100 text-blue-700"
-              : "bg-orange-100 text-orange-700"
-          }`}
+                ? "bg-blue-100 text-blue-700"
+                : "bg-orange-100 text-orange-700"
+            }`}
         >
           {row.original.status}
         </span>
@@ -102,25 +100,24 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-[90%] max-w-[80%] max-h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[95%] md:w-[90%] md:max-w-5xl max-h-[85vh] rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
           <div>
             <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
               <div
-                className={`w-2 h-6 rounded-full ${
-                  status.includes("ACTIVE") || status.includes("IFA")
+                className={`w-2 h-6 rounded-full ${status.includes("ACTIVE") || status.includes("IFA")
                     ? "bg-green-500"
                     : status.includes("COMPLETED") ||
                       status.includes("IFC") ||
                       status.includes("Done")
-                    ? "bg-blue-500"
-                    : status.includes("ON_HOLD") ||
-                      status.includes("CO#") ||
-                      status.includes("On-Hold")
-                    ? "bg-orange-500"
-                    : "bg-gray-500"
-                }`}
+                      ? "bg-blue-500"
+                      : status.includes("ON_HOLD") ||
+                        status.includes("CO#") ||
+                        status.includes("On-Hold")
+                        ? "bg-orange-500"
+                        : "bg-gray-500"
+                  }`}
               ></div>
               {status.replace("_", " ")} Projects
             </h3>

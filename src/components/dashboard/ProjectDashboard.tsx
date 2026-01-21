@@ -250,28 +250,53 @@ const ProjectDashboard = () => {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
-            <Button
-              onClick={() => setSelectedMonth(null)}
-              className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === null
-                ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
-                }`}
-            >
-              All Months
-            </Button>
-            {months.map((month, index) => (
+          <div className="flex-1 w-full md:w-auto min-w-0">
+            {/* Mobile Month Dropdown */}
+            <div className="md:hidden relative w-full">
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <select
+                value={selectedMonth === null ? "all" : selectedMonth}
+                onChange={(e) =>
+                  setSelectedMonth(
+                    e.target.value === "all" ? null : parseInt(e.target.value)
+                  )
+                }
+                className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-gray-100 transition-colors w-full"
+              >
+                <option value="all">All Months</option>
+                {months.map((month, index) => (
+                  <option key={month} value={index}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+            </div>
+
+            {/* Desktop Month Buttons */}
+            <div className="hidden md:flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
               <Button
-                key={month}
-                onClick={() => setSelectedMonth(index)}
-                className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === index
+                onClick={() => setSelectedMonth(null)}
+                className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === null
                   ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
                   }`}
               >
-                {month}
+                All Months
               </Button>
-            ))}
+              {months.map((month, index) => (
+                <Button
+                  key={month}
+                  onClick={() => setSelectedMonth(index)}
+                  className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === index
+                    ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
+                    }`}
+                >
+                  {month}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
 

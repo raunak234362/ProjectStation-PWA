@@ -137,7 +137,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
   }, [projects, tasks, teams, projectsByTeam, selectedMonth, selectedYear]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6">
       {teamSummary.map((team) => (
         <motion.div
           key={team.teamName}
@@ -155,9 +155,9 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
             </div>
           </div>
 
-          <div className="p-5 space-y-4">
+          <div className="p-5 sm:max-w-2xl space-y-4">
             {/* Main Stats */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="p-2 sm:p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-gray-100">
                 <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
                   Projects
