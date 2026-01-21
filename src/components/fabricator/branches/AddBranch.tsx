@@ -183,7 +183,7 @@ const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
             <Input
               label="Extension"
               type="text"
-              {...register("extensionNumber")}
+              {...register("extension")}
               className="input"
               placeholder="Ext"
             />

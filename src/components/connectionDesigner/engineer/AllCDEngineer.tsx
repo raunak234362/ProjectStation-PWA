@@ -45,7 +45,7 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
             address: e.address ?? "",
             role: e.role ?? "ENGINEER",
             isActive: e.isActive ?? true,
-            extensionNumber: e.extensionNumber ?? "",
+            extension: e.extensionNumber ?? e.extension ?? "",
             createdAt: e.createdAt ?? "",
             updatedAt: e.updatedAt ?? "",
           })
@@ -86,9 +86,9 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
         cell: ({ row }) => (
           <span>
             {row.original.phone}
-            {row.original.extensionNumber && (
+            {row.original.extension && (
               <span className="text-gray-700 text-xs ml-1">
-                (Ext: {row.original.extensionNumber})
+                (Ext: {row.original.extension})
               </span>
             )}
           </span>

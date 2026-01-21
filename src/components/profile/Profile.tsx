@@ -89,9 +89,9 @@ const Profile = () => {
             <p className="flex items-center gap-2 text-gray-700 font-medium">
               <Phone className="w-4 h-4 text-green-500" />
               {user.phone || "N/A"}
-              {user.extensionNumber && (
+              {user.extension && (
                 <span className="text-gray-700 text-sm ml-1">
-                  (Ext: {user.extensionNumber})
+                  (Ext: {user.extension})
                 </span>
               )}
             </p>

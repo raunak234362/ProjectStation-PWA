@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { EmployeePayload } from "../../../interface";
 import { toast } from "react-toastify";
@@ -63,6 +63,27 @@ const AddEmployee: React.FC = () => {
   const selectedRoleOption =
     roleOptions.find((opt) => opt.value === selectedRole) || null;
 
+  const [departmentOptions, setDepartmentOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await Service.AllDepartments();
+        const data = Array.isArray(res) ? res : res?.data || [];
+        const options = data.map((dept: any) => ({
+          label: dept.name,
+          value: dept.id,
+        }));
+        setDepartmentOptions(options);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+    fetchDepartments();
+  }, []);
+
   return (
     <div className="w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-200">
       <h2 className="text-xl font-semibold text-gray-700 mb-6">
@@ -123,7 +144,7 @@ const AddEmployee: React.FC = () => {
             <Input
               label="Extension"
               type="text"
-              {...register("extensionNumber")}
+              {...register("extension")}
               placeholder="Ext"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
             />
@@ -206,12 +227,18 @@ const AddEmployee: React.FC = () => {
 
         {/* Department */}
         <div className="md:col-span-2">
-          <Input
-            label="Department ID"
-            type="text"
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Department
+          </label>
+          <Select
+            options={departmentOptions}
             {...register("departmentId")}
-            placeholder="Optional: UUID of department"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
+            // We need to handle the value and onChange slightly differently for this custom Select
+            // if it behaves like the Role select above
+            value={watch("departmentId")}
+            onChange={(_, value) => setValue("departmentId", value as string)}
+            placeholder="Select Department..."
+            className="mt-1"
           />
         </div>
 

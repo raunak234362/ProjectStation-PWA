@@ -57,9 +57,9 @@ const AllBranches = ({ fabricator, onClose }: AllBranchProps) => {
                     <td className="px-3 py-2">{branch.email}</td>
                     <td className="px-3 py-2">
                       {branch.phone}
-                      {branch.extensionNumber && (
+                      {branch.extension && (
                         <span className="text-gray-700 text-xs ml-1">
-                          (Ext: {branch.extensionNumber})
+                          (Ext: {branch.extension})
                         </span>
                       )}
                     </td>

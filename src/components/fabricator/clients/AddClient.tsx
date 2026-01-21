@@ -147,7 +147,7 @@ const AddClients: React.FC<AddClientProps> = ({
             <Input
               label="Extension"
               type="text"
-              {...register("extensionNumber")}
+              {...register("extension")}
               placeholder="Ext"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
             />

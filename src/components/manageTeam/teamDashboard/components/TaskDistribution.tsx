@@ -7,41 +7,25 @@ interface TaskDistributionProps {
 
 const TaskDistribution: React.FC<TaskDistributionProps> = ({ teamStats }) => {
   const distributionData = useMemo(() => {
-    const projects = teamStats.projects || [];
-
-    // Initialize counters
-    let modelling = 0;
-    let modelChecking = 0;
-    let detailing = 0;
-    let detailChecking = 0;
-    let erection = 0;
-    let erectionChecking = 0;
-
-    projects.forEach((proj: any) => {
-      modelling += Number(proj.modelingHours || 0);
-      modelChecking += Number(proj.modelCheckingHours || 0);
-      detailing += Number(proj.detailingHours || 0);
-      detailChecking += Number(proj.detailCheckingHours || 0);
-      erection += Number(proj.executionHours || 0);
-      erectionChecking += Number(proj.executionCheckingHours || 0);
-    });
+    const counts = teamStats.taskTypeCounts || {};
 
     return [
-      { label: "Modelling", value: modelling, icon: Layers, color: "text-green-700", bg: "bg-green-100" },
-      { label: "Model Checking", value: modelChecking, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
-      { label: "Detailing", value: detailing, icon: PenTool, color: "text-teal-600", bg: "bg-teal-50" },
-      { label: "Detail Checking", value: detailChecking, icon: FileSearch, color: "text-cyan-600", bg: "bg-cyan-50" },
-      { label: "Erection", value: erection, icon: HardHat, color: "text-green-800", bg: "bg-green-50" },
-      { label: "Erection Checking", value: erectionChecking, icon: Circle, color: "text-lime-600", bg: "bg-lime-50" },
+      { label: "Modelling", value: counts.modelling || 0, icon: Layers, color: "text-green-700", bg: "bg-green-100" },
+      { label: "Model Checking", value: counts.modelChecking || 0, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
+      { label: "Detailing", value: counts.detailing || 0, icon: PenTool, color: "text-teal-600", bg: "bg-teal-50" },
+      { label: "Detail Checking", value: counts.detailChecking || 0, icon: FileSearch, color: "text-cyan-600", bg: "bg-cyan-50" },
+      { label: "Erection", value: counts.erection || 0, icon: HardHat, color: "text-green-800", bg: "bg-green-50" },
+      { label: "Erection Checking", value: counts.erectionChecking || 0, icon: Circle, color: "text-lime-600", bg: "bg-lime-50" },
     ];
-  }, [teamStats.projects]);
+  }, [teamStats.taskTypeCounts]);
 
   return (
     <div className="bg-white p-6 rounded-[2rem] border border-green-50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] mb-8 h-full">
       <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
         <Layers className="text-green-600" size={24} />
         Task Distribution
-        <span className="text-xs font-bold text-green-700 ml-auto bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">Total Hours</span>
+        Task Distribution
+        <span className="text-xs font-bold text-green-700 ml-auto bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">Task Counts</span>
       </h3>
 
       <div className="space-y-4">

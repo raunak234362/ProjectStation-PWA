@@ -186,7 +186,7 @@ const EditEmployee = ({
                   },
                 })}
               />
-              <Input label="Extension" {...register("extensionNumber")} />
+              <Input label="Extension" {...register("extension")} />
             </div>
             <Input label="Alt Phone" {...register("altPhone")} />
             <Input
