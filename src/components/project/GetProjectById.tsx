@@ -126,7 +126,7 @@ const GetProjectById = ({ id }: { id: string }) => {
 
   return (
     <>
-      <div className="w-full bg-white h-auto p-3 md:p-6 rounded-lg shadow-sm border relative laptop-fit">
+      <div className="w-full bg-white h-auto p-3 md:p-6 rounded-lg shadow-sm border relative">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3 mb-3">
           <div>
@@ -202,7 +202,7 @@ const GetProjectById = ({ id }: { id: string }) => {
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-sm rounded-md font-medium transition-colors whitespace-nowrap ${activeTab === key
+                className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-md rounded-md font-medium transition-colors whitespace-nowrap ${activeTab === key
                     ? "bg-green-600 text-white font-bold"
                     : "text-gray-700 hover:text-green-700 font-semibold hover:bg-gray-50"
                   }`}
@@ -528,7 +528,7 @@ const InfoRow = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex justify-between border-b border-gray-100 pb-1">
+  <div className="flex justify-between border-b border-gray-100 md:text-md text-sm pb-1">
     <span className="font-medium text-gray-700">{label}:</span>
     <span className="text-gray-700">{value}</span>
   </div>
@@ -537,7 +537,7 @@ const InfoRow = ({
 // ✅ ScopeTag Component
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-xs font-medium rounded-full ${active
+    className={`px-3 py-1 text-sm font-medium rounded-full ${active
         ? "bg-green-100 text-green-800 border border-green-300"
         : "bg-gray-100 text-gray-700 border border-gray-200"
       }`}

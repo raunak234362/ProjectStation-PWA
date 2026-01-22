@@ -45,6 +45,7 @@ const EditFabricator = ({
   onClose,
   onSuccess,
 }: EditFabricatorProps) => {
+  const userRole = sessionStorage.getItem("userRole");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -238,85 +239,7 @@ const EditFabricator = ({
               </p>
             )}
           </div>
-          <div>
-            <Input
-              label="SAC"
-              {...register("SAC")}
-              placeholder="e.g. 1234567890"
-              className="w-full"
-            />
-            {errors.SAC && (
-              <p className="mt-1 text-xs text-red-600">{errors.SAC.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-           
-            <div>
-              <Input
-                label="Approval Percentage (%)"
-                type="number"
-                {...register("approvalPercentage", { valueAsNumber: true })}
-                placeholder="0"
-                className="w-full"
-              />
-              {errors.approvalPercentage && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errors.approvalPercentage.message}
-                </p>
-              )}
-            </div>
-             <div>
-              <Input
-                label="Fabrication Percentage (%)"
-                type="number"
-                {...register("fabricatPercentage", { valueAsNumber: true })}
-                placeholder="0"
-                className="w-full"
-              />
-              {errors.fabricatPercentage && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errors.fabricatPercentage.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Input
-                label="Payment Due Date (Days)"
-                type="number"
-                {...register("paymenTDueDate", { valueAsNumber: true })}
-                placeholder="0"
-                className="w-full"
-              />
-              {errors.paymenTDueDate && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errors.paymenTDueDate.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Currency Type
-              </label>
-              <select
-                {...register("currencyType")}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-white"
-              >
-                <option value="">-- Select Currency --</option>
-                <option value="USD">USD</option>
-                <option value="CAD">CAD</option>
-                <option value="Rupees">Rupees</option>
-              </select>
-              {errors.currencyType && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errors.currencyType.message}
-                </p>
-              )}
-            </div>
-          </div>
+       
 
           {/* Website */}
           <div>
@@ -348,7 +271,7 @@ const EditFabricator = ({
                 pattern: {
                   value:
                     /^$|^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/i,
-                  message: "Please enter a valid URL",
+                    message: "Please enter a valid URL",
                 },
               })}
               type="url"
@@ -361,7 +284,85 @@ const EditFabricator = ({
               </p>
             )}
           </div>
-
+            {(userRole === "ADMIN" || userRole === "PROJECT_MANAGER_OFFICER") && (
+              <>
+                 <div>
+            <Input
+              label="SAC"
+              {...register("SAC")}
+              placeholder="e.g. 1234567890"
+              className="w-full"
+            />
+            {errors.SAC && (
+              <p className="mt-1 text-xs text-red-600">{errors.SAC.message}</p>
+            )}
+          </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       
+                        <div>
+                          <Input
+                            label="Approval Percentage (%)"
+                            type="number"
+                            {...register("approvalPercentage", { valueAsNumber: true })}
+                            placeholder="0"
+                            className="w-full"
+                          />
+                          {errors.approvalPercentage && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {errors.approvalPercentage.message}
+                            </p>
+                          )}
+                        </div>
+                         <div>
+                          <Input
+                            label="Fabrication Percentage (%)"
+                            type="number"
+                            {...register("fabricatPercentage", { valueAsNumber: true })}
+                            placeholder="0"
+                            className="w-full"
+                          />
+                          {errors.fabricatPercentage && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {errors.fabricatPercentage.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Input
+                            label="Payment Due Date (Days)"
+                            type="number"
+                            {...register("paymenTDueDate", { valueAsNumber: true })}
+                            placeholder="0"
+                            className="w-full"
+                          />
+                          {errors.paymenTDueDate && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {errors.paymenTDueDate.message}
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Currency Type
+                          </label>
+                          <select
+                            {...register("currencyType")}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-white"
+                          >
+                            <option value="">-- Select Currency --</option>
+                            <option value="USD">USD</option>
+                            <option value="CAD">CAD</option>
+                            <option value="Rupees">Rupees</option>
+                          </select>
+                          {errors.currencyType && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {errors.currencyType.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Stage <span className="text-red-500">*</span>
@@ -380,8 +381,6 @@ const EditFabricator = ({
               </p>
             )}
           </div>
-
-          {/* Bank Account Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Bank Account
@@ -402,6 +401,10 @@ const EditFabricator = ({
               ))}
             </select>
           </div>
+              </>
+            )}
+
+
 
           {/* --- Existing Files Display/Deletion --- */}
           {filesToKeep.length > 0 && (

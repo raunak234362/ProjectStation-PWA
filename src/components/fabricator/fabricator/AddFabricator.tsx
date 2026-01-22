@@ -15,6 +15,7 @@ const AddFabricator = () => {
   const [addedFabricatorId, setAddedFabricatorId] = useState<string | null>(
     null
   );
+  const userRole = sessionStorage.getItem("userRole");
   const {
     register,
     handleSubmit,
@@ -150,47 +151,49 @@ const AddFabricator = () => {
             </p>
           )}
         </div>
+        {(userRole === "ADMIN" || userRole === "PROJECT_MANAGER_OFFICER") && (
+          <>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Approval Percentage (%)
+              </label>
+              <Input
+                label=""
+                type="number"
+                {...register("approvalPercentage", { valueAsNumber: true })}
+                placeholder="0"
+                className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
 
-        {/* Approval Percentage */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-1">
-            Approval Percentage (%)
-          </label>
-          <Input
-            label=""
-            type="number"
-            {...register("approvalPercentage", { valueAsNumber: true })}
-            placeholder="0"
-            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
-          {/* Fabricat Percentage */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-1">
-            FabricatION Percentage (%)
-          </label>
-          <Input
-            label=""
-            type="number"
-            {...register("fabricatPercentage", { valueAsNumber: true })}
-            placeholder="0"
-            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                FabricatION Percentage (%)
+              </label>
+              <Input
+                label=""
+                type="number"
+                {...register("fabricatPercentage", { valueAsNumber: true })}
+                placeholder="0"
+                className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Payment Due Date (Days)
+              </label>
+              <Input
+                label=""
+                type="number"
+                {...register("paymenTDueDate", { valueAsNumber: true })}
+                placeholder="0"
+                className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+          </>
+        )}
 
         {/* Payment Due Date */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-1">
-            Payment Due Date (Days)
-          </label>
-          <Input
-            label=""
-            type="number"
-            {...register("paymenTDueDate", { valueAsNumber: true })}
-            placeholder="0"
-            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
 
         {/* File Upload - FIXED */}
         {/* This container div was missing, and there was a stray </div> */}

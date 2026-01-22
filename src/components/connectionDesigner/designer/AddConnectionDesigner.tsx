@@ -255,7 +255,7 @@ const AddConnectionDesigner: React.FC = () => {
           />
 
           {/* City (Optional) */}
-          <Controller
+          {/* <Controller
             name="headquater.city"
             control={control}
             render={({ field }) => (
@@ -272,7 +272,7 @@ const AddConnectionDesigner: React.FC = () => {
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
               />
             )}
-          />
+          /> */}
         </div>
 
         {/* Submit Button */}
