@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import RequireAuth from "../middleware/RequireAuth";
+import VendorPage from "../pages/VendorPage";
 
 const Login = lazy(() => import("../pages/Login"));
 const App = lazy(() => import("../App"));
@@ -40,6 +41,7 @@ const routes = [
           { path: "profile", Component: ProfilePage },
           { path: "manage-team", Component: TeamPage },
           { path: "connection-designer", Component: ConnectionPage },
+          { path: "vendor", Component: VendorPage },
           { path: "fabricator", Component: FabricatorPage },
           { path: "estimation", Component: EstimationPage },
           { path: "projects", Component: ProjectPage },

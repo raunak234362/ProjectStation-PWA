@@ -12,6 +12,7 @@ import {
   MessageCircle,
   UserCircle,
   DollarSign,
+  Factory,
 } from "lucide-react";
 import type { JSX } from "react";
 
@@ -65,6 +66,12 @@ export const navItems: NavItem[] = [
     label: "Connection Designer",
     to: "connection-designer",
     icon: <PenTool />,
+    roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
+  },
+  {
+    label: "Vendor",
+    to: "vendor",
+    icon: <Factory />,
     roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
   },
   // {

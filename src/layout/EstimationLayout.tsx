@@ -36,7 +36,7 @@ const EstimationLayout = () => {
                 : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
             }`}
           >
-            Dashboard
+            Estimation Home
           </button>
 
           <button

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { AddConnectionDesigner } from "../components";
 import CDdashboard from "../components/connectionDesigner/CDdashboard";
+import AddVendor from "../components/vendor/designer/AddVendor";
 
 const ConnectionLayout = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -17,7 +17,7 @@ const ConnectionLayout = () => {
               : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
               }`}
           >
-            Connection Designer Home
+           Vendor Home
           </button>
 
           {(userRole === "ADMIN" || userRole === "DEPUTY_MANAGER" || userRole === "OPERATION_EXECUTIVE") && (
@@ -28,7 +28,7 @@ const ConnectionLayout = () => {
                 : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
                 }`}
             >
-              Add Connection Designer
+              Add Vendor
             </button>
           )}
         </div>
@@ -41,7 +41,7 @@ const ConnectionLayout = () => {
           {activeTab === "AddConnectionDesigner" && (
             <div>
               {" "}
-              <AddConnectionDesigner />
+              <AddVendor />
             </div>
           )}
         </div>

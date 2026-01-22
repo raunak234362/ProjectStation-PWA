@@ -349,6 +349,20 @@ export interface ConnectionDesignerForm {
     city?: string;
   };
 }
+export interface VendorForm {
+  name: string;
+  website?: string;
+  drive?: string;
+  contactInfo?: string;
+  email?: string;
+  insuranceLiability?: string;
+  certificate?: File[];
+  headquater: {
+    country: string;
+    states: string[];
+    city?: string;
+  };
+}
 
 export interface ConnectionDesigner {
   id: string;
