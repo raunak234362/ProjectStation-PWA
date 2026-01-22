@@ -3,12 +3,12 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import Input from "../../fields/input";
 // import Select from "react-select";
-import Button from "../../fields/Button";
 // import { State, City } from "country-state-city";
+// import Service from "../../../api/Service";
+import Button from "../../fields/Button";
 import type { VendorForm } from "../../../interface";
 import { toast } from "react-toastify";
 import Service from "../../../api/Service";
-// import Service from "../../../api/Service";
 
 const AddVendor: React.FC = () => {
   // const [stateOptions, setStateOptions] = useState<
@@ -86,7 +86,7 @@ const AddVendor: React.FC = () => {
       formData.append("contactInfo", data.contactInfo || "");
       formData.append("websiteLink", data.website || "");
       formData.append("email", data.email || "");
-      formData.append("insurenceLiability", data.insuranceLiability || "");
+      // formData.append("insurenceLiability", data.insuranceLiability || "");
 
       // Append states as JSON string if backend expects it that way,
       // or multiple appends if it expects multiple values with same key.
@@ -108,7 +108,7 @@ const AddVendor: React.FC = () => {
       console.log("🚀 FormData to send:", formData);
       await Service.AddVendor(formData); // ✅ Send to backend
       toast.success("Vendor created successfully!");
-      reset();
+      // reset();
     } catch (error) {
       console.error("❌ Failed to create vendor:", error);
       toast.error("Failed to create Vendor");
@@ -151,12 +151,12 @@ const AddVendor: React.FC = () => {
 
         {/* Insurance Liability & Certificate */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
+          {/* <Input
             label="Insurance Liability (optional)"
             type="text"
             {...register("insuranceLiability")}
             placeholder="Enter Insurance Liability"
-          />
+          /> */}
           {/* <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">
               Certificate (optional)

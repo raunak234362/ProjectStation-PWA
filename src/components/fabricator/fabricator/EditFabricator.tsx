@@ -251,20 +251,7 @@ const EditFabricator = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Input
-                label="Fabricat Percentage (%)"
-                type="number"
-                {...register("fabricatPercentage", { valueAsNumber: true })}
-                placeholder="0"
-                className="w-full"
-              />
-              {errors.fabricatPercentage && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errors.fabricatPercentage.message}
-                </p>
-              )}
-            </div>
+           
             <div>
               <Input
                 label="Approval Percentage (%)"
@@ -276,6 +263,20 @@ const EditFabricator = ({
               {errors.approvalPercentage && (
                 <p className="mt-1 text-xs text-red-600">
                   {errors.approvalPercentage.message}
+                </p>
+              )}
+            </div>
+             <div>
+              <Input
+                label="Fabrication Percentage (%)"
+                type="number"
+                {...register("fabricatPercentage", { valueAsNumber: true })}
+                placeholder="0"
+                className="w-full"
+              />
+              {errors.fabricatPercentage && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.fabricatPercentage.message}
                 </p>
               )}
             </div>

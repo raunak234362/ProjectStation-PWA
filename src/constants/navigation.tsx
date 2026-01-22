@@ -68,12 +68,7 @@ export const navItems: NavItem[] = [
     icon: <PenTool />,
     roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
   },
-  {
-    label: "Vendor",
-    to: "vendor",
-    icon: <Factory />,
-    roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
-  },
+ 
   // {
   //   label: "Connection Designing Quotation",
   //   to: "connection-designing-quotation",
@@ -85,6 +80,17 @@ export const navItems: NavItem[] = [
   //     "deputy_manager",
   //   ],
   // },
+   {
+    label: "Sales",
+    to: "sales",
+    icon: <DollarSign />,
+    roles: [
+      "admin",
+      "sales",
+      "sales_manager",
+      "system-admin",
+    ],
+  },
   {
     label: "RFQ",
     to: "rfq",
@@ -163,17 +169,7 @@ export const navItems: NavItem[] = [
       "human-resource",
     ],
   },
-  {
-    label: "Sales",
-    to: "sales",
-    icon: <DollarSign />,
-    roles: [
-      "admin",
-      "sales",
-      "sales_manager",
-      "system-admin",
-    ],
-  },
+ 
   {
     label: "Manage Team",
     to: "manage-team",
@@ -188,6 +184,12 @@ export const navItems: NavItem[] = [
       "user",
       "human-resource",
     ],
+  },
+   {
+    label: "Vendor",
+    to: "vendor",
+    icon: <Factory />,
+    roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
   },
   {
     label: "Chats",

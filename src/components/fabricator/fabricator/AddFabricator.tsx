@@ -151,20 +151,6 @@ const AddFabricator = () => {
           )}
         </div>
 
-        {/* Fabricat Percentage */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-1">
-            Fabricat Percentage (%)
-          </label>
-          <Input
-            label=""
-            type="number"
-            {...register("fabricatPercentage", { valueAsNumber: true })}
-            placeholder="0"
-            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
-
         {/* Approval Percentage */}
         <div>
           <label className="block text-gray-700 font-semibold mb-1">
@@ -174,6 +160,19 @@ const AddFabricator = () => {
             label=""
             type="number"
             {...register("approvalPercentage", { valueAsNumber: true })}
+            placeholder="0"
+            className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+          />
+        </div>
+          {/* Fabricat Percentage */}
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            FabricatION Percentage (%)
+          </label>
+          <Input
+            label=""
+            type="number"
+            {...register("fabricatPercentage", { valueAsNumber: true })}
             placeholder="0"
             className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
           />

@@ -133,11 +133,18 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
       }
     });
 
-    return Object.values(summary);
+    const teamOrder = ["Tekla", "SDS/2", "PEMB", "PEMB Designing"];
+    return Object.values(summary).sort((a, b) => {
+      const indexA = teamOrder.indexOf(a.teamName);
+      const indexB = teamOrder.indexOf(b.teamName);
+      const aIndex = indexA === -1 ? teamOrder.length : indexA;
+      const bIndex = indexB === -1 ? teamOrder.length : indexB;
+      return aIndex - bIndex;
+    });
   }, [projects, tasks, teams, projectsByTeam, selectedMonth, selectedYear]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-2 gap-4 sm:gap-6">
       {teamSummary.map((team) => (
         <motion.div
           key={team.teamName}
@@ -155,20 +162,29 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
             </div>
           </div>
 
-          <div className="p-5 sm:max-w-2xl space-y-4">
+          <div className="p-5 sm:max-w-3xl space-y-4">
             {/* Main Stats */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="p-2 sm:p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-gray-100">
-                <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <button
+                onClick={() => {
+                  const teamId = Object.keys(projectsByTeam).find(
+                    (k) => projectsByTeam[k].teamName === team.teamName
+                  );
+                  const teamProjects = teamId ? projectsByTeam[teamId]?.projects || [] : [];
+                  handleStatClick(teamProjects, "IFA", "TOTAL");
+                }}
+                className="p-2 sm:p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-gray-100 hover:bg-gray-100 hover:border-gray-200 transition-all cursor-pointer group/projects"
+              >
+                <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover/projects:text-gray-600">
                   Projects
                 </span>
                 <div className="flex items-center gap-2 sm:gap-4">
                   <span className="text-lg sm:text-xl font-black text-gray-800">
                     {team.projectCount}
                   </span>
-                  <Briefcase className="w-4 h-4 text-gray-400" />
+                  <Briefcase className="w-4 h-4 text-gray-400 group-hover/projects:text-gray-600" />
                 </div>
-              </div>
+              </button>
               <div className="p-2 sm:p-3 bg-green-50 rounded-xl flex flex-col items-center justify-center border border-green-100">
                 <span className="text-[10px] sm:text-xs font-bold text-green-600 uppercase tracking-widest mb-1">
                   Work Done
