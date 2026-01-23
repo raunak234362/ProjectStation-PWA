@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import Input from "../../fields/input";
 import Select from "react-select";
 import Button from "../../fields/Button";
-import { State, City } from "country-state-city";
+import { State } from "country-state-city";
 import type { ConnectionDesignerForm } from "../../../interface";
 import { toast } from "react-toastify";
 import Service from "../../../api/Service";
@@ -14,9 +14,6 @@ const AddConnectionDesigner: React.FC = () => {
   const [stateOptions, setStateOptions] = useState<
     { label: string; value: string }[]
   >([]);
-  const [cityOptions, setCityOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
 
   const countryMap: Record<string, string> = {
     "United States": "US",
@@ -24,7 +21,7 @@ const AddConnectionDesigner: React.FC = () => {
     India: "IN",
   };
 
-  const {   
+  const {
     register,
     handleSubmit,
     control,
@@ -43,7 +40,6 @@ const AddConnectionDesigner: React.FC = () => {
   });
 
   const country = watch("headquater.country");
-  const selectedStates = watch("headquater.states");
 
   // --- Load states when country changes ---
   useEffect(() => {
@@ -51,44 +47,18 @@ const AddConnectionDesigner: React.FC = () => {
       const countryCode = countryMap[country];
       const statesData = State.getStatesOfCountry(countryCode) || [];
       setStateOptions(
-        statesData.map((s) => ({ label: s.name, value: s.name }))
+        statesData.map((s) => ({ label: s.name, value: s.name })),
       );
 
       setValue("headquater.states", []);
       setValue("headquater.city", "");
-      setCityOptions([]);
     } else {
       setStateOptions([]);
-      setCityOptions([]);
+
       setValue("headquater.states", []);
       setValue("headquater.city", "");
     }
   }, [country, setValue]);
-
-  // --- Load cities for all selected states ---
-  useEffect(() => {
-    if (selectedStates.length > 0 && country && countryMap[country]) {
-      const countryCode = countryMap[country];
-      const allCities: { label: string; value: string }[] = [];
-
-      selectedStates.forEach((stateName) => {
-        const stateObj = State.getStatesOfCountry(countryCode).find(
-          (s) => s.name === stateName
-        );
-        if (stateObj) {
-          const cities =
-            City.getCitiesOfState(countryCode, stateObj.isoCode) || [];
-          allCities.push(
-            ...cities.map((c) => ({ label: c.name, value: c.name }))
-          );
-        }
-      });
-
-      setCityOptions(allCities);
-    } else {
-      setCityOptions([]);
-    }
-  }, [selectedStates, country]);
 
   // --- Submit Form ---
   const onSubmit = async (data: ConnectionDesignerForm) => {
@@ -239,7 +209,7 @@ const AddConnectionDesigner: React.FC = () => {
                 placeholder="Select State(s)"
                 options={stateOptions}
                 value={stateOptions.filter((opt) =>
-                  field.value.includes(opt.value)
+                  field.value.includes(opt.value),
                 )}
                 onChange={(options) => {
                   const selected = options

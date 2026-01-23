@@ -40,7 +40,6 @@ const AllProjects = () => {
         data={projects}
         onRowClick={handleRowClick}
         detailComponent={ProjectDetailComponent}
-        searchPlaceholder="Search projects..."
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

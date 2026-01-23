@@ -69,7 +69,6 @@ console.log(departmentID)
         onRowClick={handleRowClick}
         detailComponent={({ row }) => <GetDepartmentById id={row.id || ""} />}
         // onDelete={handleDelete}
-        searchPlaceholder="Search employees..."
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

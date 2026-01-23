@@ -244,7 +244,6 @@ const AllActiveTask = () => {
             // detailComponent={({ row, close }) => (
             //   <GetTaskByID id={row.id} onClose={close} />
             // )}
-            searchPlaceholder="Search active tasks..."
             pageSizeOptions={[10, 25, 50]}
           />
         </div>

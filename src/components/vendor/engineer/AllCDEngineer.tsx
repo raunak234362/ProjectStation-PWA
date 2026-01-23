@@ -165,7 +165,6 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
               data={engineers}
               onRowClick={handleRowClick}
               detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
-              searchPlaceholder="Search engineers..."
               pageSizeOptions={[5, 10, 25]}
             />
           ) : (

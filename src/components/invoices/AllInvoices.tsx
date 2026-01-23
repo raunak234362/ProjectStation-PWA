@@ -93,7 +93,6 @@ const AllInvoices = () => {
         columns={columns}
         data={invoices}
         onRowClick={(row: any) => setSelectedInvoiceId(row._id || row.id)}
-        searchPlaceholder="Search invoices..."
         pageSizeOptions={[5, 10, 25]}
       />
       {selectedInvoiceId && (

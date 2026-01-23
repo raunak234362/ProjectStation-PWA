@@ -263,7 +263,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               <DataTable
                 columns={responseColumns}
                 data={rfq.responses}
-                searchPlaceholder="Search responses..."
                 pageSizeOptions={[5, 10]}
                 onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
               />

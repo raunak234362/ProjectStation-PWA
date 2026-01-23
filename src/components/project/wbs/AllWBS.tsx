@@ -145,7 +145,6 @@ const AllWBS = ({ id, stage }: { id: string; stage: string }) => {
             initialData={row}
           />
         )}
-        searchPlaceholder="Search bundles by name..."
         pageSizeOptions={[10, 25, 50, 100]}
         initialSorting={[
           { id: "totalQtyNo", desc: true },

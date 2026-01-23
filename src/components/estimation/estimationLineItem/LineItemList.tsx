@@ -435,7 +435,6 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                 <DataTable
                     columns={columns}
                     data={lineItem}
-                    searchPlaceholder="Search line items..."
                     pageSizeOptions={[10, 20, 40]}
                 />
             </div>

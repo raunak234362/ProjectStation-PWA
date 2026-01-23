@@ -121,7 +121,6 @@ const AllAssignedTask = () => {
                   row.id ?? row.estimationId ?? "";
                 return <EstimationTaskByID id={estimationUniqueId} onClose={close} refresh={fetchEstimations} />;
               }}
-              searchPlaceholder="Search tasks..."
               pageSizeOptions={[5, 10, 25]}
             />
           ) : (

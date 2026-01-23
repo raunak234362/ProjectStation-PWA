@@ -314,7 +314,6 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             columns={columns}
             data={filteredProjects}
             onRowClick={onProjectSelect}
-            searchPlaceholder="Search projects..."
             pageSizeOptions={[5, 10, 25]}
           />
         </div>

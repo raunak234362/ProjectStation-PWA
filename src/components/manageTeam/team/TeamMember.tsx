@@ -119,7 +119,6 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
           <DataTable
             columns={columns}
             data={teamData?.members || []}
-            searchPlaceholder="Search teams..."
             pageSizeOptions={[10, 20, 50]}
           />
         </div>

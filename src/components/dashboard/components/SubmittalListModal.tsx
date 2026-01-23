@@ -95,7 +95,6 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
             <DataTable
               columns={columns}
               data={data}
-              searchPlaceholder="Search submittals..."
               pageSizeOptions={[10, 25, 50]}
             />
           ) : (

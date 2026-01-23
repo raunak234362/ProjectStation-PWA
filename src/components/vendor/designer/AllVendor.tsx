@@ -44,7 +44,6 @@ const AllConnectionDesigner = () => {
             (row as any).id ?? (row as any).fabId ?? "";
           return <GetConnectionDesignerByID id={fabricatorUniqueId} />;
         }}
-        searchPlaceholder="Search fabricators..."
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

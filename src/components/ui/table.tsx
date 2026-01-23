@@ -91,7 +91,7 @@ interface DataTableProps<T extends object> {
   onRowClick?: (row: T) => void;
   detailComponent?: React.ComponentType<{ row: T; close: () => void }>;
   onDelete?: (rows: T[]) => void;
-  searchPlaceholder?: string;
+
   pageSizeOptions?: number[];
   showColumnFiltersInHeader?: boolean;
   showColumnToggle?: boolean;
@@ -161,7 +161,7 @@ export default function DataTable<T extends object>({
   data,
   onRowClick,
   detailComponent: DetailComponent,
-  searchPlaceholder = "Search...",
+
   pageSizeOptions = [5, 10, 25, 50],
   showColumnFiltersInHeader = false,
   initialSorting = [],

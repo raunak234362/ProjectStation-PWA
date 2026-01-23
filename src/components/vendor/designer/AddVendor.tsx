@@ -24,10 +24,9 @@ const AddVendor: React.FC = () => {
   //   India: "IN",
   // };
 
-  const {   
+  const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<VendorForm>();
 
@@ -128,9 +127,7 @@ const AddVendor: React.FC = () => {
           placeholder="Enter Vendor Organization Name"
         />
         {errors.name && (
-          <p className="text-red-500 text-xs mt-1">
-            {errors.name.message}
-          </p>
+          <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
         )}
 
         {/* Contact Info & Email */}

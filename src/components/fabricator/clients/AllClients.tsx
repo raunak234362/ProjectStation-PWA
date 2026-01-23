@@ -181,7 +181,6 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
               data={clients}
               onRowClick={handleRowClick}
               detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
-              searchPlaceholder="Search POCs..."
               pageSizeOptions={[5, 10, 25]}
             />
           )}

@@ -117,7 +117,6 @@ const columns: ColumnDef<any>[] = [
         columns={columns}
         data={submittals}
         detailComponent={({ row }) => <GetSubmittalByID id={row.id} />}
-        searchPlaceholder="Search Submittals..."
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

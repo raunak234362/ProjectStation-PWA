@@ -94,7 +94,6 @@ const AllFabricator = () => {
             (row as any).id ?? (row as any).fabId ?? "";
           return <GetFabricatorByID id={fabricatorUniqueId} />;
         }}
-        searchPlaceholder="Search fabricators..."
         pageSizeOptions={[5, 10, 25]}
       />
     </div>
