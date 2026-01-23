@@ -125,9 +125,9 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
                     className="text-green-600 hover:underline"
                   >
                     {team.manager.phone}
-                    {team.manager.extensionNumber && (
+                    {team.manager.extension && (
                       <span className="text-gray-700 text-xs ml-1">
-                        (Ext: {team.manager.extensionNumber})
+                        (Ext: {team.manager.extension})
                       </span>
                     )}
                   </a>

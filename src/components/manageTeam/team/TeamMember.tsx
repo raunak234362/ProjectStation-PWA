@@ -54,9 +54,9 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
       cell: ({ row }) => (
         <span>
           {row.original.member.phone || "—"}
-          {row.original.member.extensionNumber && (
+          {row.original.member.extension && (
             <span className="text-gray-700 text-xs ml-1">
-              (Ext: {row.original.member.extensionNumber})
+              (Ext: {row.original.member.extension})
             </span>
           )}
         </span>
@@ -119,7 +119,6 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
           <DataTable
             columns={columns}
             data={teamData?.members || []}
-            searchPlaceholder="Search teams..."
             pageSizeOptions={[10, 20, 50]}
           />
         </div>

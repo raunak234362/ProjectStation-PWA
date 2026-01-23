@@ -75,7 +75,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
         Project Stats
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {projectCards.map((card) => {
           const colors = colorClasses[card.color as keyof typeof colorClasses];
           const isClickable = card.clickable;

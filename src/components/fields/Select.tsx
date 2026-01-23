@@ -1,11 +1,7 @@
 "use client";
 
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  type ChangeEvent,
-} from "react";
+import React, { useState, useRef, useEffect, type ChangeEvent } from "react";
+import { createPortal } from "react-dom";
 import { Search } from "lucide-react";
 import type { SelectOption } from "../../interface";
 
@@ -18,8 +14,8 @@ interface SelectProps {
   value?: string;
   onChange?: (name: string, value: string) => void;
   showSearch?: boolean;
-  menuPortalTarget?: HTMLElement | null; // Add this
-  styles?: any; // Add this
+  menuPortalTarget?: HTMLElement | null;
+  styles?: any;
 }
 
 const Select = ({
@@ -34,13 +30,15 @@ const Select = ({
 }: SelectProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<SelectOption | null>(
-    null
+    null,
   );
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredOptions, setFilteredOptions] =
     useState<SelectOption[]>(options);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyles, setMenuStyles] = useState<React.CSSProperties>({});
 
   // Sync filtered options when options prop changes
   useEffect(() => {
@@ -56,38 +54,40 @@ const Select = ({
     }
   }, [value, options]);
 
-  const [menuPlacement, setMenuPlacement] = useState<"top" | "bottom">(
-    "bottom"
-  );
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
+      const isOutsideWrapper =
         wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
+        !wrapperRef.current.contains(event.target as Node);
+      const isOutsideMenu =
+        menuRef.current && !menuRef.current.contains(event.target as Node);
+
+      if (isOutsideWrapper && isOutsideMenu) {
         setIsOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Dynamic menu placement
+  // Dynamic menu placement and portal positioning
   useEffect(() => {
     if (isOpen && wrapperRef.current) {
       const rect = wrapperRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
       const menuHeight = 240; // max-h-60 is 15rem = 240px
+      const shouldPlaceTop = spaceBelow < menuHeight && rect.top > menuHeight;
 
-      if (spaceBelow < menuHeight && rect.top > menuHeight) {
-        setMenuPlacement("top");
-      } else {
-        setMenuPlacement("bottom");
-      }
+      setMenuStyles({
+        position: "fixed",
+        top: shouldPlaceTop ? rect.top - 4 : rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+        transform: shouldPlaceTop ? "translateY(-100%)" : "none",
+        zIndex: 9999,
+      });
     }
   }, [isOpen]);
 
@@ -96,7 +96,7 @@ const Select = ({
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
     const filtered = options.filter(
-      (option) => option && option.label.toLowerCase().includes(term)
+      (option) => option && option.label.toLowerCase().includes(term),
     );
     setFilteredOptions(filtered);
   };
@@ -112,10 +112,7 @@ const Select = ({
   };
 
   // Highlight matching text in options
-  const highlightMatch = (
-    text: string,
-    highlight: string
-  ): React.ReactNode => {
+  const highlightMatch = (text: string, highlight: string): React.ReactNode => {
     if (!highlight.trim()) {
       return text;
     }
@@ -131,7 +128,7 @@ const Select = ({
             </mark>
           ) : (
             part
-          )
+          ),
         )}
       </>
     );
@@ -149,8 +146,9 @@ const Select = ({
             }, 100);
           }
         }}
-        className={`flex items-center justify-between p-2 text-sm border rounded-md bg-white cursor-pointer transition-all ${isOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-300"
-          } ${className}`}
+        className={`flex items-center justify-between p-2 text-sm border rounded-md bg-white cursor-pointer transition-all ${
+          isOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-300"
+        } ${className}`}
       >
         <div className="flex-1">
           {isOpen && showSearch ? (
@@ -177,8 +175,9 @@ const Select = ({
           )}
         </div>
         <svg
-          className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "transform rotate-180" : ""
-            }`}
+          className={`w-4 h-4 text-gray-400 transition-transform ${
+            isOpen ? "transform rotate-180" : ""
+          }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -192,29 +191,31 @@ const Select = ({
         </svg>
       </div>
 
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div
-          className={`absolute z-50 min-w-full w-max text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto ${menuPlacement === "top" ? "bottom-full mb-1" : "top-full mt-1"
-            }`}
-        >
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((option) => (
-              <div
-                key={option.value}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleSelect(option)}
-              >
-                {highlightMatch(option.label, searchTerm)}
+      {isOpen &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={menuStyles}
+            className="text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
+          >
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <div
+                  key={option.value}
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 transition-colors"
+                  onClick={() => handleSelect(option)}
+                >
+                  {highlightMatch(option.label, searchTerm)}
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-2 text-gray-500 italic">
+                No options found
               </div>
-            ))
-          ) : (
-            <div className="px-4 py-2 text-gray-500 italic">
-              No options found
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

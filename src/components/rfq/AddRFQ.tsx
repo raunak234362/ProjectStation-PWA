@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useForm, type SubmitHandler, Controller } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import Input from "../fields/input";
 import Button from "../fields/Button";
@@ -14,10 +14,16 @@ import SectionTitle from "../ui/SectionTitle";
 import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
 import RichTextEditor from "../fields/RichTextEditor";
+import { addRFQ } from "../../store/rfqSlice";
 
-const AddRFQ: React.FC = () => {
+interface AddRFQProps {
+  onSuccess?: () => void;
+}
+
+const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
+  const dispatch = useDispatch();
   const fabricators = useSelector(
-    (state: any) => state.fabricatorInfo?.fabricatorData
+    (state: any) => state.fabricatorInfo?.fabricatorData,
   ) as Fabricator[];
 
   const staffData = useSelector((state: any) => state.userInfo.staffData);
@@ -31,6 +37,7 @@ const AddRFQ: React.FC = () => {
     control,
     setValue,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<RFQpayload>({
     defaultValues: {
@@ -58,7 +65,7 @@ const AddRFQ: React.FC = () => {
   const recipientOption: SelectOption[] =
     staffData
       ?.filter(
-        (u: { role: string }) => u.role === "SALES" || u.role === "ADMIN"
+        (u: { role: string }) => u.role === "SALES" || u.role === "ADMIN",
       )
       .map(
         (u: {
@@ -69,7 +76,7 @@ const AddRFQ: React.FC = () => {
         }) => ({
           label: `${u.firstName} ${u.middleName ?? ""} ${u.lastName}`,
           value: String(u.id),
-        })
+        }),
       ) ?? [];
   // useEffect(() => {
   //   if (tools !== "OTHER") setValue("otherTool", "");
@@ -83,7 +90,7 @@ const AddRFQ: React.FC = () => {
     })) ?? [];
 
   const selectedFabricator = fabricators?.find(
-    (fab) => String(fab.id) === String(selectedFabricatorId)
+    (fab) => String(fab.id) === String(selectedFabricatorId),
   );
 
   const clientOptions: SelectOption[] =
@@ -155,9 +162,39 @@ const AddRFQ: React.FC = () => {
         }
       }
 
-      await Service.addRFQ(formData);
+      const response = await Service.addRFQ(formData);
+      const createdRFQ = response.data || response.rfq || response;
+
+      if (createdRFQ) {
+        // Enrich with form data for immediate display in the table
+        const selectedFab = fabricators?.find(
+          (f) => String(f.id) === String(data.fabricatorId),
+        );
+        const selectedSender = clientOptions?.find(
+          (c) => String(c.value) === String(data.senderId),
+        );
+
+        const enrichedRFQ = {
+          ...createdRFQ,
+          projectName: data.projectName,
+          projectNumber: data.projectNumber,
+          status: "IN_REVIEW",
+          estimationDate: data.estimationDate,
+          tools: data.tools,
+          fabricator: selectedFab || createdRFQ.fabricator,
+          sender: selectedSender
+            ? {
+                firstName: selectedSender.label.split(" ")[0],
+                lastName: selectedSender.label.split(" ").slice(1).join(" "),
+              }
+            : userDetail,
+        };
+        dispatch(addRFQ(enrichedRFQ));
+      }
       toast.success("RFQ Created Successfully");
       setDescription("");
+      reset();
+      onSuccess?.();
     } catch (err) {
       console.error(err);
       toast.error("Failed to create RFQ");
@@ -379,8 +416,8 @@ const AddRFQ: React.FC = () => {
           )}
         />
 
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
+        <div className="flex justify-center w-full mt-6">
+          <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? "Creating..." : "Create RFQ"}
           </Button>
         </div>

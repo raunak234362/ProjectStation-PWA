@@ -7,6 +7,8 @@ import type { EditEmployeePayload, UserData } from "../../../interface";
 import { Loader2, X, Check } from "lucide-react";
 import Input from "../../fields/input";
 import Select from "../../fields/Select";
+import { useDispatch, useSelector } from "react-redux";
+import { updateStaffData, setUserData } from "../../../store/userSlice";
 
 interface EditEmployeeProps {
   employeeData: UserData;
@@ -19,6 +21,8 @@ const EditEmployee = ({
   onClose,
   onSuccess,
 }: EditEmployeeProps) => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state: any) => state.userInfo.userDetail);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,6 +105,19 @@ const EditEmployee = ({
       setError(null);
 
       const response = await Service.EditEmployeeByID(employeeData?.id, data);
+      const updatedEmployee =
+        response?.data?.user || response?.data || response;
+
+      if (updatedEmployee) {
+        // Update staff list
+        dispatch(updateStaffData(updatedEmployee));
+
+        // Update current user profile if editing self
+        if (String(currentUser?.id) === String(employeeData?.id)) {
+          dispatch(setUserData(updatedEmployee));
+        }
+      }
+
       console.log(response);
       onSuccess?.();
       onClose();
@@ -186,7 +203,7 @@ const EditEmployee = ({
                   },
                 })}
               />
-              <Input label="Extension" {...register("extensionNumber")} />
+              <Input label="Extension" {...register("extension")} />
             </div>
             <Input label="Alt Phone" {...register("altPhone")} />
             <Input
@@ -271,7 +288,11 @@ const ModalOverlay = ({
 }) => (
   <div
     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-80 p-4"
-    onClick={onClick}
+    onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        onClick();
+      }
+    }}
   >
     {children}
   </div>

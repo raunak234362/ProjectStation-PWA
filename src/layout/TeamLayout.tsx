@@ -21,7 +21,7 @@ const TeamLayout = () => {
               All Team
             </button>
 
-            {(userRole === "ADMIN" || userRole === "human-resource") && (
+            {(userRole === "ADMIN" || userRole === "HUMAN_RESOURCE") && (
               <button
                 onClick={() => setActiveTab("addTeam")}
                 className={`px-1.5 md:px-4 py-2 rounded-lg ${

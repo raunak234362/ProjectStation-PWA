@@ -115,10 +115,10 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
         <SectionTitle title="Files" />
         <MultipleFileUpload onFilesChange={setFiles} />
 
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-center w-full pt-4">
           <Button
             type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg transition-all"
+            className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg transition-all"
           >
             Save & Continue
           </Button>

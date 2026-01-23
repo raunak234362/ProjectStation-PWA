@@ -194,7 +194,6 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
           <DataTable
             columns={columns}
             data={projects}
-            searchPlaceholder="Filter projects..."
           />
         </div>
       </div>

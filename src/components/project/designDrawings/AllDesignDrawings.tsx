@@ -82,7 +82,6 @@ const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
           detailComponent={({ row }) => (
             <DesignDrawingDetails id={row.id} onUpdate={fetchDrawings} />
           )}
-          searchPlaceholder="Search Design Drawings..."
           pageSizeOptions={[5, 10, 25]}
         />
       </div>

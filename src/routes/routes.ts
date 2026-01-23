@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import RequireAuth from "../middleware/RequireAuth";
+import VendorPage from "../pages/VendorPage";
 
 const Login = lazy(() => import("../pages/Login"));
 const App = lazy(() => import("../App"));
@@ -8,7 +9,7 @@ const ProfilePage = lazy(() => import("../pages/ProfilePage"));
 const TeamPage = lazy(() => import("../pages/TeamPage"));
 const FabricatorPage = lazy(() => import("../pages/FabricatorPage"));
 const ChatPage = lazy(() =>
-  import("../pages/ChatPage").then((m) => ({ default: m.ChatPage }))
+  import("../pages/ChatPage").then((m) => ({ default: m.ChatPage })),
 );
 const RFQPage = lazy(() => import("../pages/RFQPage"));
 const ConnectionPage = lazy(() => import("../pages/ConnectionPage"));
@@ -21,6 +22,9 @@ const TaskPage = lazy(() => import("../pages/TaskPage"));
 const CoTablePage = lazy(() => import("../components/co/CoTablePage"));
 const AccountPage = lazy(() => import("../pages/AccountPage"));
 const SalesDashboard = lazy(() => import("../components/sales/SalesDashboard"));
+const DesignerLandingDashboard = lazy(
+  () => import("../components/dashboard/DesignerLandingDashboard"),
+);
 
 const routes = [
   { path: "/", Component: Login },
@@ -40,6 +44,7 @@ const routes = [
           { path: "profile", Component: ProfilePage },
           { path: "manage-team", Component: TeamPage },
           { path: "connection-designer", Component: ConnectionPage },
+          { path: "vendor", Component: VendorPage },
           { path: "fabricator", Component: FabricatorPage },
           { path: "estimation", Component: EstimationPage },
           { path: "projects", Component: ProjectPage },
@@ -50,6 +55,7 @@ const routes = [
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },
           { path: "sales", Component: SalesDashboard },
+          { path: "designer", Component: DesignerLandingDashboard },
         ],
       },
     ],

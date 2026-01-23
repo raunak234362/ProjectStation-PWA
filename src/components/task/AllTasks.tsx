@@ -250,7 +250,6 @@ const AllTasks = () => {
             columns={columns}
             data={tasks}
             detailComponent={TaskDetailWrapper}
-            searchPlaceholder="Search tasks..."
             pageSizeOptions={[10, 25, 50]}
           />
         </div>

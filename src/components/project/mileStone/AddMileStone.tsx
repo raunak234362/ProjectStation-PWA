@@ -152,18 +152,18 @@ const AddMileStone = ({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 pt-4 border-t mt-2">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t mt-2">
             <Button
               type="button"
               onClick={onClose}
-              className="px-5 bg-gray-100 text-gray-700 hover:bg-gray-200"
+              className="w-full sm:w-auto px-5 bg-gray-100 text-gray-700 hover:bg-gray-200"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-green-600 hover:bg-green-700 text-white px-6"
+              className="w-full bg-green-600 hover:bg-green-700 text-white px-6"
             >
               {isSubmitting ? "Adding..." : "Add Milestone"}
             </Button>

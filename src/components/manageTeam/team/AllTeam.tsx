@@ -143,7 +143,6 @@ const AllTeam = () => {
           data={teams}
           onRowClick={handleRowClick}
           onDelete={handleDelete}
-          searchPlaceholder="Search teams..."
           pageSizeOptions={[10, 20, 50]}
           detailComponent={({row})=><GetTeamById id={row.id}/>}
         />

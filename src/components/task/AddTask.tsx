@@ -59,10 +59,10 @@ const AddTask: React.FC = () => {
 
   const dispatch = useDispatch();
   const projects = useSelector(
-    (state: any) => state.projectInfo?.projectData || []
+    (state: any) => state.projectInfo?.projectData || [],
   );
   const milestonesByProject = useSelector(
-    (state: any) => state.milestoneInfo?.milestonesByProject || {}
+    (state: any) => state.milestoneInfo?.milestonesByProject || {},
   );
 
   useEffect(() => {
@@ -74,7 +74,7 @@ const AddTask: React.FC = () => {
   }, [dispatch, projects.length]);
 
   const employees = useSelector(
-    (state: any) => state.userInfo?.staffData || []
+    (state: any) => state.userInfo?.staffData || [],
   );
 
   const {
@@ -137,7 +137,7 @@ const AddTask: React.FC = () => {
             setMilestonesForProject({
               projectId: selectedProjectId,
               milestones: res?.data || [],
-            })
+            }),
           );
         });
       }
@@ -218,7 +218,7 @@ const AddTask: React.FC = () => {
       });
       const total = filtered.reduce(
         (sum: number, t: any) => sum + Number(t.hours || 0),
-        0
+        0,
       );
       setExistingWbsHours(total);
     } else {
@@ -274,7 +274,7 @@ const AddTask: React.FC = () => {
           (t: any) =>
             String(t.project_bundle_id || t.wbs_id) ===
               String(data.project_bundle_id) &&
-            String(t.user_id) === String(assignment.employeeId)
+            String(t.user_id) === String(assignment.employeeId),
         );
 
         const isRework = isOverLimit || isDuplicateUser;
@@ -348,7 +348,7 @@ const AddTask: React.FC = () => {
     });
     const existing = filtered.reduce(
       (sum: number, t: any) => sum + Number(t.hours || 0),
-      0
+      0,
     );
     const remaining = Math.max(0, total - existing);
 
@@ -373,7 +373,7 @@ const AddTask: React.FC = () => {
             onSubmit={handleSubmit(onSubmit, (errors) => {
               console.log("Form Validation Errors:", errors);
               toast.error(
-                "Please fix the errors in the form before submitting."
+                "Please fix the errors in the form before submitting.",
               );
             })}
             className="p-8 space-y-10"
@@ -717,9 +717,9 @@ const AddTask: React.FC = () => {
                                   const isDuplicate = allTasks.some(
                                     (t: any) =>
                                       String(
-                                        t.project_bundle_id || t.wbs_id
+                                        t.project_bundle_id || t.wbs_id,
                                       ) === String(selectedWbsId) &&
-                                      String(t.user_id) === String(field.value)
+                                      String(t.user_id) === String(field.value),
                                   );
                                   const isOverLimit =
                                     existingWbsHours + totalAssignedHours >
@@ -759,7 +759,7 @@ const AddTask: React.FC = () => {
                                 `assignments.${index}.duration` as const,
                                 {
                                   required: "Duration is required",
-                                }
+                                },
                               )}
                             />
                             {errors.assignments?.[index]?.duration && (
@@ -803,11 +803,11 @@ const AddTask: React.FC = () => {
                 </section>
 
                 {/* Footer */}
-                <div className="flex justify-end gap-4 pt-6 border-t border-slate-100">
+                <div className="flex justify-center w-full pt-6 border-t border-slate-100">
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-10 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
+                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
                   >
                     {isSubmitting ? "Assigning..." : "Confirm & Assign Tasks"}
                   </Button>

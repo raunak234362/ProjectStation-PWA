@@ -185,7 +185,6 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
                   <EstimationTaskByID id={estimationUniqueId} onClose={close} />
                 );
               }}
-              searchPlaceholder="Search tasks..."
               pageSizeOptions={[5, 10, 25]}
             />
           ) : (

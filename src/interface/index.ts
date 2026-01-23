@@ -35,7 +35,7 @@ export interface UserData {
   isActive: boolean;
   branchId?: string;
   isFirstLogin: boolean;
-  extensionNumber?: string;
+  extension?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -53,7 +53,7 @@ export interface EmployeePayload {
   designation: string;
   role: "ADMIN" | "MANAGER" | "STAFF" | "EMPLOYEE" | string;
   departmentId: string;
-  extensionNumber?: string;
+  extension?: string;
 }
 
 export interface EditEmployeePayload {
@@ -73,7 +73,7 @@ export interface EditEmployeePayload {
   zipCode?: string;
   landline?: string;
   altLandline?: string;
-  extensionNumber?: string;
+  extension?: string;
 }
 
 export interface Department {
@@ -124,7 +124,7 @@ export interface Branch {
   country: string;
   zipCode: string;
   phone: string;
-  extensionNumber?: string;
+  extension?: string;
   branchId?: string;
   email: string;
   isHeadquarters: boolean;
@@ -161,7 +161,7 @@ export interface Manager {
   lastName: string;
   email: string;
   phone: string;
-  extensionNumber?: string;
+  extension?: string;
 }
 
 export interface TeamPayload {
@@ -337,6 +337,20 @@ export interface SelectOption {
 
 export interface ConnectionDesignerForm {
   connectionDesignerName: string;
+  website?: string;
+  drive?: string;
+  contactInfo?: string;
+  email?: string;
+  insuranceLiability?: string;
+  certificate?: File[];
+  headquater: {
+    country: string;
+    states: string[];
+    city?: string;
+  };
+}
+export interface VendorForm {
+  name: string;
   website?: string;
   drive?: string;
   contactInfo?: string;

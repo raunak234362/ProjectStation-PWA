@@ -150,7 +150,6 @@ const GetWBSLineItem = ({
             columns={columns}
             data={lineItems}
             onRowClick={handleRowClick}
-            searchPlaceholder="Search line items..."
             initialSorting={[
               { id: "qtyNo", desc: true },
               { id: "description", desc: false },

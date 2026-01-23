@@ -81,7 +81,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
         Pending Actions
       </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {actions.map((action) => {
           const colors =
             colorClasses[action.color as keyof typeof colorClasses];

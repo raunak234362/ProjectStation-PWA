@@ -81,7 +81,6 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
           data={milestones}
           onRowClick={handleRowClick}
           detailComponent={GetMilestoneByID}
-          searchPlaceholder="Search projects..."
           pageSizeOptions={[5, 10, 25]}
         />
       ) : (

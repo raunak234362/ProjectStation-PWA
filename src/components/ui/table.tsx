@@ -91,7 +91,7 @@ interface DataTableProps<T extends object> {
   onRowClick?: (row: T) => void;
   detailComponent?: React.ComponentType<{ row: T; close: () => void }>;
   onDelete?: (rows: T[]) => void;
-  searchPlaceholder?: string;
+
   pageSizeOptions?: number[];
   showColumnFiltersInHeader?: boolean;
   showColumnToggle?: boolean;
@@ -161,7 +161,7 @@ export default function DataTable<T extends object>({
   data,
   onRowClick,
   detailComponent: DetailComponent,
-  searchPlaceholder = "Search...",
+
   pageSizeOptions = [5, 10, 25, 50],
   showColumnFiltersInHeader = false,
   initialSorting = [],
@@ -186,6 +186,8 @@ export default function DataTable<T extends object>({
       },
       enableSorting: false,
       enableColumnFilter: false,
+      size: 50,
+      minSize: 50,
     };
     return [sNoCol, ...userColumns];
   }, [userColumns]);
@@ -215,7 +217,7 @@ export default function DataTable<T extends object>({
   return (
     <>
       {/* toolbar */}
-      <div className="flex flex-col md:flex-row justify-between gap-3 mb-4 px-4 pt-4">
+      {/* <div className="flex flex-col md:flex-row justify-between gap-3 mb-4 px-4 pt-4">
         <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
           <input
@@ -225,35 +227,35 @@ export default function DataTable<T extends object>({
             className="pl-9 pr-3 py-2 w-full border rounded-lg text-sm"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Filter Bar */}
       {table
         .getAllColumns()
         .some((c) => (c.columnDef as any).enableColumnFilter) && (
-          <div className="flex flex-wrap items-end gap-4 mb-6 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
-            {table
-              .getAllColumns()
-              .filter((c) => (c.columnDef as any).enableColumnFilter)
-              .map((column) => (
-                <div
-                  key={column.id}
-                  className="flex flex-col gap-1.5 min-w-[180px]"
-                >
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
-                    {column.columnDef.header as string}
-                  </label>
-                  <ColumnFilter column={column} />
-                </div>
-              ))}
-            <Button
-              onClick={() => table.resetColumnFilters()}
-              className="text-xs text-gray-500 hover:text-red-600 transition-colors h-9 px-2"
-            >
-              <X className="w-3 h-3 mr-1" /> Clear
-            </Button>
-          </div>
-        )}
+        <div className="flex flex-wrap items-end gap-4 mb-6 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+          {table
+            .getAllColumns()
+            .filter((c) => (c.columnDef as any).enableColumnFilter)
+            .map((column) => (
+              <div
+                key={column.id}
+                className="flex flex-col gap-1.5 min-w-[180px]"
+              >
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                  {column.columnDef.header as string}
+                </label>
+                <ColumnFilter column={column} />
+              </div>
+            ))}
+          <Button
+            onClick={() => table.resetColumnFilters()}
+            className="text-xs text-gray-500 hover:text-red-600 transition-colors h-9 px-2"
+          >
+            <X className="w-3 h-3 mr-1" /> Clear
+          </Button>
+        </div>
+      )}
 
       {/* responsive body */}
       {isMobile ? (
@@ -263,80 +265,83 @@ export default function DataTable<T extends object>({
           onRowClick={onRowClick}
         />
       ) : (
-        <div className="w-full overflow-x-auto border-y border-gray-100">
-          <table className="min-w-full divide-y">
-            <thead className="bg-gray-50">
-              {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id}>
-                  {hg.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-3 text-left text-sm font-medium"
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      <div className="flex items-center gap-1 cursor-pointer">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                        {header.column.getIsSorted() === "asc" && (
-                          <ChevronUp className="w-4 h-4" />
-                        )}
-                        {header.column.getIsSorted() === "desc" && (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                      </div>
+        <div className="w-full border border-gray-100 rounded-lg overflow-hidden">
+          <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
+            <table className="min-w-full divide-y">
+              <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
+                {table.getHeaderGroups().map((hg) => (
+                  <tr key={hg.id}>
+                    {hg.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="px-4 py-3 text-left text-sm font-medium bg-gray-50"
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        <div className="flex items-center gap-1 cursor-pointer">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {header.column.getIsSorted() === "asc" && (
+                            <ChevronUp className="w-4 h-4" />
+                          )}
+                          {header.column.getIsSorted() === "desc" && (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
+                        </div>
 
-                      {showColumnFiltersInHeader &&
-                        header.column.getCanFilter() && (
-                          <TextFilter column={header.column} />
-                        )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-
-            <tbody>
-              {table.getPaginationRowModel().rows.map((row) => (
-                <React.Fragment key={row.id}>
-                  <tr
-                    className={`hover:bg-gray-50 cursor-pointer transition-colors ${expandedRowId === row.id ? "bg-gray-50" : ""
-                      }`}
-                    onClick={() => {
-                      onRowClick?.(row.original);
-                      if (DetailComponent) {
-                        setExpandedRowId(
-                          expandedRowId === row.id ? null : row.id,
-                        );
-                      }
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-3 text-sm">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
+                        {showColumnFiltersInHeader &&
+                          header.column.getCanFilter() && (
+                            <TextFilter column={header.column} />
+                          )}
+                      </th>
                     ))}
                   </tr>
-                  {expandedRowId === row.id && DetailComponent && (
-                    <tr className="bg-gray-50/50">
-                      <td colSpan={columns.length} className="px-4 py-4">
-                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-                          <DetailComponent
-                            row={row.original}
-                            close={() => setExpandedRowId(null)}
-                          />
-                        </div>
-                      </td>
+                ))}
+              </thead>
+
+              <tbody className="bg-white divide-y divide-gray-100">
+                {table.getPaginationRowModel().rows.map((row) => (
+                  <React.Fragment key={row.id}>
+                    <tr
+                      className={`hover:bg-gray-50 cursor-pointer transition-colors ${
+                        expandedRowId === row.id ? "bg-gray-50" : ""
+                      }`}
+                      onClick={() => {
+                        onRowClick?.(row.original);
+                        if (DetailComponent) {
+                          setExpandedRowId(
+                            expandedRowId === row.id ? null : row.id,
+                          );
+                        }
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} className="px-4 py-3 text-sm">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </td>
+                      ))}
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
+                    {expandedRowId === row.id && DetailComponent && (
+                      <tr className="bg-gray-50/50">
+                        <td colSpan={columns.length} className="px-4 py-4">
+                          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+                            <DetailComponent
+                              row={row.original}
+                              close={() => setExpandedRowId(null)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

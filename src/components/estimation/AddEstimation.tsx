@@ -9,7 +9,7 @@ import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
-import { setRFQData } from "../../store/rfqSlice";
+import { setRFQData, addEstimation } from "../../store/rfqSlice";
 import type { RFQItem, Fabricator } from "../../interface";
 import RichTextEditor from "../fields/RichTextEditor";
 
@@ -44,10 +44,10 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
   const [files, setFiles] = useState<File[]>([]);
 
   const rfqData = useSelector(
-    (state: any) => state.RFQInfos.RFQData || []
+    (state: any) => state.RFQInfos.RFQData || [],
   ) as RFQItem[];
   const fabricators = useSelector(
-    (state: any) => state.fabricatorInfo?.fabricatorData || []
+    (state: any) => state.fabricatorInfo?.fabricatorData || [],
   ) as Fabricator[];
 
   const userType = sessionStorage.getItem("userRole");
@@ -148,7 +148,11 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
         }
       });
 
-      await Service.AddEstimation(formData);
+      const response = await Service.AddEstimation(formData);
+      const createdEstimation = response.data || response;
+      if (createdEstimation) {
+        dispatch(addEstimation(createdEstimation));
+      }
       toast.success("Estimation created successfully!");
       onSuccess?.();
       reset();
@@ -277,17 +281,8 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
           </p>
         )}
 
-        <div className="flex justify-end gap-4 pt-8 border-t border-gray-200">
-          <Button
-            type="button"
-            onClick={() => {
-              reset();
-              setFiles([]);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
+        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-gray-200">
+          <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? "Creating..." : "Create Estimation"}
           </Button>
         </div>

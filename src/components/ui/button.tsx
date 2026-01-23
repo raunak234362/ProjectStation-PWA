@@ -29,11 +29,13 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function Button({
   className,
+  variant,
+  size,
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
@@ -45,7 +47,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ className }))}
+      className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
   );

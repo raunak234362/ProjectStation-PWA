@@ -109,11 +109,11 @@ const AddDesignDrawing = ({ projectId, onSuccess }: AddDesignDrawingProps) => {
         </div>
       </div>
 
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-center pt-4">
         <Button
           type="submit"
           disabled={loading}
-          className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-8 py-2.5 rounded-xl shadow-lg shadow-green-200 transition-all disabled:opacity-50"
+          className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-2.5 rounded-xl shadow-lg shadow-green-200 transition-all disabled:opacity-50"
         >
           {loading ? (
             <div className="flex items-center gap-2">

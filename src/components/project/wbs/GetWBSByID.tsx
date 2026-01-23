@@ -318,7 +318,6 @@ const GetWBSByID = ({
                   columns={columns}
                   data={lineItems}
                   onRowClick={(row) => setSelectedWbsId(row.id)}
-                  searchPlaceholder="Search WBS items..."
                   initialSorting={[
                     { id: "qtyNo", desc: true },
                     { id: "description", desc: false },

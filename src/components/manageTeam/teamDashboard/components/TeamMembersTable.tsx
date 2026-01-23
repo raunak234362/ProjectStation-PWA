@@ -124,7 +124,6 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         <DataTable
           columns={columns}
           data={tableData}
-          searchPlaceholder="Search members..."
           showColumnToggle={false}
         />
       </div>

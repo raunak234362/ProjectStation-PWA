@@ -26,7 +26,7 @@ const AddTeam = () => {
   const [staffs, setStaffs] = useState<any[]>([]);
 
   const departments = useSelector(
-    (state: any) => state.userInfo.departmentData || []
+    (state: any) => state.userInfo.departmentData || [],
   );
 
   // ── Safely fetch managers (no errors shown) ──
@@ -44,7 +44,7 @@ const AddTeam = () => {
       const promises = rolesToFetch.map((role) =>
         Service.FetchEmployeeByRole(role).catch(() => ({
           data: { employees: [] },
-        }))
+        })),
       );
 
       const responses = await Promise.all(promises);
@@ -190,11 +190,11 @@ const AddTeam = () => {
         </div>
 
         {/* Submit */}
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-center w-full pt-4">
           <Button
             type="submit"
             disabled={isSubmitting || !hasManagers || !hasDepartments}
-            className={`px-8 py-3 rounded-lg font-medium transition ${
+            className={`w-full px-8 py-3 rounded-lg font-medium transition ${
               isSubmitting || !hasManagers || !hasDepartments
                 ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                 : "bg-green-600 text-white hover:bg-green-700"

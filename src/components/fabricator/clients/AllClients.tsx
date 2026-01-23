@@ -56,6 +56,7 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         departmentId: c.departmentId ?? "",
         isActive: c.isActive ?? true,
         branchId: c.branchId,
+        extension: c.extensionNumber ?? c.extension ?? "",
         isFirstLogin: c.isFirstLogin ?? false,
         createdAt: c.createdAt ?? "",
         updatedAt: c.updatedAt ?? "",
@@ -99,9 +100,9 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         cell: ({ row }) => (
           <span>
             {row.original.phone}
-            {row.original.extensionNumber && (
+            {row.original.extension && (
               <span className="text-gray-700 text-xs ml-1">
-                (Ext: {row.original.extensionNumber})
+                (Ext: {row.original.extension})
               </span>
             )}
           </span>
@@ -180,7 +181,6 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
               data={clients}
               onRowClick={handleRowClick}
               detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
-              searchPlaceholder="Search POCs..."
               pageSizeOptions={[5, 10, 25]}
             />
           )}

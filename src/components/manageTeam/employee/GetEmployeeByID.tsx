@@ -1,5 +1,5 @@
 // components/employee/GetEmployeeByID.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Service from "../../../api/Service";
 import type { UserData } from "../../../interface";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -16,30 +16,30 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<UserData | null>(null);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
-  useEffect(() => {
-    const fetchEmployee = async () => {
-      if (!id) {
-        setError("Invalid employee ID");
-        setLoading(false);
-        return;
-      }
+  const fetchEmployee = useCallback(async () => {
+    if (!id) {
+      setError("Invalid employee ID");
+      setLoading(false);
+      return;
+    }
 
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await Service.FetchEmployeeByID(id);
-        setEmployee(response?.data?.user || null);
-      } catch (err) {
-        const msg = "Failed to load employee";
-        setError(msg);
-        console.error("Error fetching employee:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEmployee();
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await Service.FetchEmployeeByID(id);
+      setEmployee(response?.data?.user || null);
+    } catch (err) {
+      const msg = "Failed to load employee";
+      setError(msg);
+      console.error("Error fetching employee:", err);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    fetchEmployee();
+  }, [fetchEmployee]);
 
   const handleModel = (employee: UserData) => {
     console.log(employee);
@@ -107,9 +107,9 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
             value={
               <span>
                 {employee.phone}
-                {employee.extensionNumber && (
+                {employee.extension && (
                   <span className="text-gray-700 text-xs ml-1">
-                    (Ext: {employee.extensionNumber})
+                    (Ext: {employee.extension})
                   </span>
                 )}
               </span>
@@ -189,7 +189,11 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         )}
       </div>
       {editModel && (
-        <EditEmployee employeeData={employee} onClose={handleModelClose} />
+        <EditEmployee
+          employeeData={employee}
+          onClose={handleModelClose}
+          onSuccess={fetchEmployee}
+        />
       )}
     </div>
   );

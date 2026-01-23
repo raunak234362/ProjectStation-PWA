@@ -1,5 +1,5 @@
-import React from "react";
-import { X as CloseIcon } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { X as CloseIcon, Filter, XCircle } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatSeconds } from "../../../utils/timeUtils";
@@ -19,7 +19,89 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
   projects,
   onProjectSelect,
 }) => {
+  // Early return before any hooks to avoid hook call count mismatch
   if (!isOpen) return null;
+
+  const [selectedManager, setSelectedManager] = useState<string>("");
+  const [selectedFabricator, setSelectedFabricator] = useState<string>("");
+  const [selectedStage, setSelectedStage] = useState<string>("");
+  const [showOverrunOnly, setShowOverrunOnly] = useState<boolean>(false);
+
+
+  // Extract unique values for filters
+  const managers = useMemo(() => {
+    const uniqueManagers = Array.from(
+      new Set(
+        projects
+          .filter((p) => p.manager)
+          .map((p) => {
+            const manager = p.manager;
+            const fullName = `${manager.firstName || ""} ${manager.middleName || ""} ${manager.lastName || ""}`.trim();
+            return fullName || manager.username || "Unknown";
+          })
+      )
+    ).sort();
+    return uniqueManagers;
+  }, [projects]);
+
+  const fabricators = useMemo(() => {
+    const uniqueFabricators = Array.from(
+      new Set(
+        projects
+          .filter((p) => p.fabricator?.fabName)
+          .map((p) => p.fabricator.fabName)
+      )
+    ).sort();
+    return uniqueFabricators;
+  }, [projects]);
+
+  const stages = useMemo(() => {
+    const uniqueStages = Array.from(
+      new Set(projects.filter((p) => p.stage).map((p) => p.stage))
+    ).sort();
+    return uniqueStages;
+  }, [projects]);
+
+  // Filter projects based on selected filters
+  const filteredProjects = useMemo(() => {
+    return projects.filter((project) => {
+      // Manager filter
+      if (selectedManager) {
+        const manager = project.manager;
+        if (!manager) return false;
+        const fullName = `${manager.firstName || ""} ${manager.middleName || ""} ${manager.lastName || ""}`.trim();
+        const managerName = fullName || manager.username || "Unknown";
+        if (managerName !== selectedManager) return false;
+      }
+
+      // Fabricator filter
+      if (selectedFabricator) {
+        if (project.fabricator?.fabName !== selectedFabricator) return false;
+      }
+
+      // Stage filter
+      if (selectedStage) {
+        if (project.stage !== selectedStage) return false;
+      }
+
+      // Overrun filter
+      if (showOverrunOnly) {
+        if (!project.isOverrun) return false;
+      }
+
+      return true;
+    });
+  }, [projects, selectedManager, selectedFabricator, selectedStage, showOverrunOnly]);
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSelectedManager("");
+    setSelectedFabricator("");
+    setSelectedStage("");
+    setShowOverrunOnly(false);
+  };
+
+  const hasActiveFilters = selectedManager || selectedFabricator || selectedStage || showOverrunOnly;
 
   const columns: ColumnDef<any>[] = [
     {
@@ -34,7 +116,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Fabricator Name",
       cell: ({ row }) => (
         <span className="text-gray-700">
-          {row.original.fabricator?.name || "N/A"}
+          {row.original.fabricator?.fabName || "N/A"}
         </span>
       ),
     },
@@ -59,9 +141,8 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Worked Hours",
       cell: ({ row }) => (
         <span
-          className={`font-bold ${
-            row.original.isOverrun ? "text-red-600" : "text-green-600"
-          }`}
+          className={`font-bold ${row.original.isOverrun ? "text-red-600" : "text-green-600"
+            }`}
         >
           {formatSeconds(row.original.workedSeconds || 0)}
         </span>
@@ -86,13 +167,12 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 rounded-full text-xs font-bold ${
-            row.original.status === "ACTIVE"
-              ? "bg-green-100 text-green-700"
-              : row.original.status === "COMPLETED"
+          className={`px-3 py-1 rounded-full text-xs font-bold ${row.original.status === "ACTIVE"
+            ? "bg-green-100 text-green-700"
+            : row.original.status === "COMPLETED"
               ? "bg-blue-100 text-blue-700"
               : "bg-orange-100 text-orange-700"
-          }`}
+            }`}
         >
           {row.original.status}
         </span>
@@ -102,30 +182,29 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-[90%] max-w-[80%] max-h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[95%] md:w-[90%] md:max-w-5xl max-h-[85vh] rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
           <div>
             <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
               <div
-                className={`w-2 h-6 rounded-full ${
-                  status.includes("ACTIVE") || status.includes("IFA")
-                    ? "bg-green-500"
-                    : status.includes("COMPLETED") ||
-                      status.includes("IFC") ||
-                      status.includes("Done")
+                className={`w-2 h-6 rounded-full ${status.includes("ACTIVE") || status.includes("IFA")
+                  ? "bg-green-500"
+                  : status.includes("COMPLETED") ||
+                    status.includes("IFC") ||
+                    status.includes("Done")
                     ? "bg-blue-500"
                     : status.includes("ON_HOLD") ||
                       status.includes("CO#") ||
                       status.includes("On-Hold")
-                    ? "bg-orange-500"
-                    : "bg-gray-500"
-                }`}
+                      ? "bg-orange-500"
+                      : "bg-gray-500"
+                  }`}
               ></div>
               {status.replace("_", " ")} Projects
             </h3>
             <p className="text-sm text-gray-700 mt-1">
-              Showing {projects.length} projects
+              Showing {filteredProjects.length} of {projects.length} projects
             </p>
           </div>
           <button
@@ -136,13 +215,105 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
           </button>
         </div>
 
+        {/* Filters Section */}
+        <div className="p-4 border-b border-gray-100 bg-gray-50/30">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter size={16} className="text-gray-600" />
+            <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wide">
+              Filters
+            </h4>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="ml-auto flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold transition-colors"
+              >
+                <XCircle size={14} />
+                Clear Filters
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Manager Filter */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Manager
+              </label>
+              <select
+                value={selectedManager}
+                onChange={(e) => setSelectedManager(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+              >
+                <option value="">All Managers</option>
+                {managers.map((manager) => (
+                  <option key={manager} value={manager}>
+                    {manager}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Fabricator Filter */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Fabricator
+              </label>
+              <select
+                value={selectedFabricator}
+                onChange={(e) => setSelectedFabricator(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+              >
+                <option value="">All Fabricators</option>
+                {fabricators.map((fabricator) => (
+                  <option key={fabricator} value={fabricator}>
+                    {fabricator}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Stage Filter */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Stage
+              </label>
+              <select
+                value={selectedStage}
+                onChange={(e) => setSelectedStage(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+              >
+                <option value="">All Stages</option>
+                {stages.map((stage) => (
+                  <option key={stage} value={stage}>
+                    {stage}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Overrun Filter */}
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors w-full">
+                <input
+                  type="checkbox"
+                  checked={showOverrunOnly}
+                  onChange={(e) => setShowOverrunOnly(e.target.checked)}
+                  className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
+                />
+                <span className="text-sm font-semibold text-gray-700">
+                  Overrun Only
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6">
           <DataTable
             columns={columns}
-            data={projects}
+            data={filteredProjects}
             onRowClick={onProjectSelect}
-            searchPlaceholder="Search projects..."
             pageSizeOptions={[5, 10, 25]}
           />
         </div>

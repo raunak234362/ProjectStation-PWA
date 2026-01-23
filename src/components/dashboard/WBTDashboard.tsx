@@ -23,14 +23,14 @@ const ProjectStats = lazy(() => import("./components/ProjectStats"));
 const PendingActions = lazy(() => import("./components/PendingActions"));
 const InvoiceTrends = lazy(() => import("./components/InvoiceTrends"));
 const UpcomingSubmittals = lazy(
-  () => import("./components/UpcomingSubmittals")
+  () => import("./components/UpcomingSubmittals"),
 );
 const ProjectListModal = lazy(() => import("./components/ProjectListModal"));
 const ProjectDetailsModal = lazy(
-  () => import("./components/ProjectDetailsModal")
+  () => import("./components/ProjectDetailsModal"),
 );
 const SubmittalListModal = lazy(
-  () => import("./components/SubmittalListModal")
+  () => import("./components/SubmittalListModal"),
 );
 
 import DashboardSkeleton from "./components/DashboardSkeleton";
@@ -42,18 +42,20 @@ const WBTDashboard = () => {
   useEffect(() => {
     if (userRole === "sales" || userRole === "sales_manager") {
       navigate("/dashboard/sales");
+    } else if (userRole === "connection_designer_engineer") {
+      navigate("/dashboard/designer");
     }
   }, [userRole, navigate]);
 
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
   const fabricators = useSelector(
-    (state: any) => state.fabricatorInfo.fabricatorData || []
+    (state: any) => state.fabricatorInfo.fabricatorData || [],
   );
   const projects = useSelector(
-    (state: any) => state.projectInfo.projectData || []
+    (state: any) => state.projectInfo.projectData || [],
   );
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
-    null
+    null,
   );
 
   const [stats, setStats] = useState({
@@ -98,10 +100,10 @@ const WBTDashboard = () => {
         setPendingSubmittals(
           Array.isArray(pendingSubmittalsRes)
             ? pendingSubmittalsRes
-            : pendingSubmittalsRes?.data || []
+            : pendingSubmittalsRes?.data || [],
         );
         setInvoices(
-          Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || []
+          Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
 
         const dashboardData = await Service.GetDashboardData();
@@ -111,13 +113,13 @@ const WBTDashboard = () => {
 
         const totalProjects = projects.length;
         const activeProjects = projects.filter(
-          (p: any) => p.status === "ACTIVE"
+          (p: any) => p.status === "ACTIVE",
         ).length;
         const completedProjects = projects.filter(
-          (p: any) => p.status === "COMPLETED"
+          (p: any) => p.status === "COMPLETED",
         ).length;
         const onHoldProjects = projects.filter(
-          (p: any) => p.status === "ON_HOLD"
+          (p: any) => p.status === "ON_HOLD",
         ).length;
 
         setStats({

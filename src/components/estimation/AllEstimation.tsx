@@ -53,7 +53,6 @@ const AllEstimation: React.FC<AllEstimationProps> = ({ estimations, onRefresh })
             row.id ?? row.fabId ?? "";
           return <GetEstimationByID id={estimationUniqueId} onRefresh={onRefresh} />;
         }}
-        searchPlaceholder="Search estimations..."
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

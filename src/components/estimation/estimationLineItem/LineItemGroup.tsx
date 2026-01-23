@@ -62,7 +62,6 @@ const LineItemGroup: React.FC<LineItemGroupProps> = ({ estimationId, refreshTrig
         columns={columns}
         data={lineItem}
         onRowClick={handleRowClick}
-        searchPlaceholder="Search groups..."
         pageSizeOptions={[5, 10, 25]}
       />
       {selectedGroupId && (

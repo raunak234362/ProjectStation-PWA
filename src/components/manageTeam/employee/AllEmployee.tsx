@@ -51,9 +51,9 @@ const AllEmployee = () => {
       cell: ({ row }) => (
         <span>
           {row.original.phone}
-          {row.original.extensionNumber && (
+          {row.original.extension && (
             <span className="text-gray-700 text-xs ml-1">
-              (Ext: {row.original.extensionNumber})
+              (Ext: {row.original.extension})
             </span>
           )}
         </span>
@@ -82,7 +82,6 @@ const AllEmployee = () => {
         onRowClick={handleRowClick}
         detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
         onDelete={handleDelete}
-        searchPlaceholder="Search employees..."
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

@@ -391,6 +391,41 @@ const TeamDashboard = () => {
 
       const projectCount = uniqueProjects.length;
 
+      // ── Task Type Counts ──
+      const taskTypeCounts = {
+        modelling: 0,
+        modelChecking: 0,
+        detailing: 0,
+        detailChecking: 0,
+        erection: 0,
+        erectionChecking: 0,
+      };
+
+      allFilteredTasks.forEach((task: any) => {
+        // Determine type based on wbsTemplate name (priority) or task name/title
+        const typeString = (
+          task.wbsData?.name ||
+          task.wbsTemplate?.name ||
+          task.name ||
+          task.title ||
+          ""
+        ).toLowerCase();
+
+        if (typeString.includes("model checking") || typeString.includes("checking model")) {
+          taskTypeCounts.modelChecking++;
+        } else if (typeString.includes("modelling") || typeString.includes("modeling")) {
+          taskTypeCounts.modelling++;
+        } else if (typeString.includes("detail checking") || typeString.includes("checking detail")) {
+          taskTypeCounts.detailChecking++;
+        } else if (typeString.includes("detailing")) {
+          taskTypeCounts.detailing++;
+        } else if (typeString.includes("erection checking") || typeString.includes("checking erection")) {
+          taskTypeCounts.erectionChecking++;
+        } else if (typeString.includes("erection")) {
+          taskTypeCounts.erection++;
+        }
+      });
+
       const completedTasks = filteredStats.reduce(
         (total, member) =>
           total +
@@ -443,6 +478,7 @@ const TeamDashboard = () => {
         memberStats: filteredStats,
         projects: uniqueProjects,
         projectCount,
+        taskTypeCounts,
       });
 
     } catch (error) {

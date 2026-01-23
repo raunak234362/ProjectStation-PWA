@@ -12,6 +12,7 @@ import {
   MessageCircle,
   UserCircle,
   DollarSign,
+  Factory,
 } from "lucide-react";
 import type { JSX } from "react";
 
@@ -31,6 +32,7 @@ export const navItems: NavItem[] = [
       "admin",
       "staff",
       "project_manager_officer",
+      "connection_designer_engineer",
       "operation_executive",
       "estimation_head",
       "deputy_manager",
@@ -67,6 +69,7 @@ export const navItems: NavItem[] = [
     icon: <PenTool />,
     roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
   },
+ 
   // {
   //   label: "Connection Designing Quotation",
   //   to: "connection-designing-quotation",
@@ -74,10 +77,21 @@ export const navItems: NavItem[] = [
   //   roles: [
   //     "admin",
   //     "department-manager",
-  //     "connection_designer_engineer",
+  //     "connection_designer_engineer",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
   //     "deputy_manager",
   //   ],
   // },
+   {
+    label: "Sales",
+    to: "sales",
+    icon: <DollarSign />,
+    roles: [
+      "admin",
+      "sales",
+      "sales_manager",
+      "system-admin",
+    ],
+  },
   {
     label: "RFQ",
     to: "rfq",
@@ -156,23 +170,14 @@ export const navItems: NavItem[] = [
       "human-resource",
     ],
   },
-  {
-    label: "Sales",
-    to: "sales",
-    icon: <DollarSign />,
-    roles: [
-      "admin",
-      "sales",
-      "sales_manager",
-      "system-admin",
-    ],
-  },
+ 
   {
     label: "Manage Team",
     to: "manage-team",
     icon: <Users />,
     roles: [
       "admin",
+      "human_resource",
       "department-manager",
       "project-manager",
       "operation_executive",
@@ -180,6 +185,12 @@ export const navItems: NavItem[] = [
       "user",
       "human-resource",
     ],
+  },
+   {
+    label: "Vendor",
+    to: "vendor",
+    icon: <Factory />,
+    roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
   },
   {
     label: "Chats",
@@ -204,7 +215,6 @@ export const navItems: NavItem[] = [
     icon: <UserCircle />,
     roles: [
       "admin",
-      "connection_designer_engineer",
       "project_manager_officer",
       "user",
       "estimation_head",

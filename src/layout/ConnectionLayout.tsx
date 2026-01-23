@@ -17,7 +17,7 @@ const ConnectionLayout = () => {
               : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
               }`}
           >
-            Dashboard
+            Connection Designer Home
           </button>
 
           {(userRole === "ADMIN" || userRole === "DEPUTY_MANAGER" || userRole === "OPERATION_EXECUTIVE") && (

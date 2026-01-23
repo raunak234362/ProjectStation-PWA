@@ -21,7 +21,7 @@ const EmployeeLayout = () => {
               All Employee
             </button>
 
-            {(userRole === "ADMIN" || userRole === "human-resource") && (
+          {(userRole === "ADMIN" || userRole === "HUMAN_RESOURCE") && (
               <button
                 onClick={() => setActiveTab("addEmployee")}
                 className={`px-1.5 md:px-4 py-2 rounded-lg ${
@@ -41,20 +41,12 @@ const EmployeeLayout = () => {
               <AllEmployee />
             </div>
           )}
-          {activeTab === "addDepartment" && (
-            <div> {/* <AddDepartment />{" "} */}</div>
-          )}
+        
           {activeTab === "addEmployee" && (
             <div>
               {" "}
               <AddEmployee />{" "}
             </div>
-          )}
-          {activeTab === "allDepartment" && (
-            <div> {/* <AllDepartment />{" "} */}</div>
-          )}
-          {activeTab === "teamDashboard" && (
-            <div> {/* <TeamDashboard />{" "} */}</div>
           )}
         </div>
       </div>

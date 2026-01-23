@@ -11,13 +11,17 @@ import Button from "../fields/Button";
 import AddEstimation from "../estimation/AddEstimation";
 import RenderFiles from "../ui/RenderFiles";
 import QuotationRaise from "../connectionDesigner/QuotationRaise";
-
+import { Trash2, X } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { deleteRFQ } from "../../store/rfqSlice";
+import { toast } from "react-toastify";
 
 interface GetRfqByIDProps {
   id: string;
 }
 
 const GetRFQByID = ({ id }: GetRfqByIDProps) => {
+  console.log("GetRFQByID initialized with ID:", id);
   const [rfq, setRfq] = useState<RFQItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +29,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
   const [showEstimationModal, setShowEstimationModal] = useState(false);
   const [showCDQuotationModal, setShowCDQuotationModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const dispatch = useDispatch();
   const fetchRfq = async () => {
     try {
       setLoading(true);
@@ -47,6 +55,38 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   useEffect(() => {
     if (id) fetchRfq();
   }, [id]);
+
+  const handleDelete = async () => {
+    console.log(
+      "handleDelete called with text:",
+      deleteConfirmText,
+      "and ID:",
+      id,
+    );
+    if (deleteConfirmText !== "DELETE") {
+      console.log("Confirmation text mismatch");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      console.log("Calling Service.DeleteRFQById...");
+      const res = await Service.DeleteRFQById(id);
+      console.log("Service.DeleteRFQById response:", res);
+      dispatch(deleteRFQ(id));
+      toast.success("RFQ deleted successfully");
+      // Redirect or close view - assuming we want to close/go back
+      // Since this is a detail view, we might need a way to tell the parent to refresh or close
+      // For now, let's just show success and maybe the parent handles the state sync via Redux
+    } catch (err) {
+      console.error("Delete failed:", err);
+      toast.error("Failed to delete RFQ");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setDeleteConfirmText("");
+    }
+  };
 
   if (loading) {
     return (
@@ -119,10 +159,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
-            ? "bg-green-100 text-green-700"
-            : "bg-yellow-100 text-yellow-700"
-            }`}
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.original.status === "OPEN"
+              ? "bg-green-100 text-green-700"
+              : "bg-yellow-100 text-yellow-700"
+          }`}
         >
           {row.original.status}
         </span>
@@ -148,10 +189,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
                 {/* Status tag */}
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${rfq?.status === "RECEIVED"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-green-100 text-green-700"
-                    }`}
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${
+                    rfq?.status === "RECEIVED"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
                 >
                   {rfq?.status}
                 </span>
@@ -160,16 +202,22 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               {/* Action buttons */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 {/* EDIT RFQ */}
-                <Button
+                {/* <Button
                   onClick={() => alert("Coming soon: Edit RFQ modal")}
                   className="flex-1 sm:flex-none px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
                 >
                   Edit
-                </Button>
+                </Button> */}
 
                 {/* DELETE RFQ */}
                 <Button
-                  className="flex-1 sm:flex-none px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-sm"
+                  type="button"
+                  variant="destructive"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteModal(true);
+                  }}
+                  className="flex-1 sm:flex-none px-3 py-1 text-white rounded-md transition text-sm"
                 >
                   Delete
                 </Button>
@@ -183,7 +231,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               <Info label="Tools" value={rfq?.tools || "N/A"} />
               <Info
                 label="Due Date"
-                value={rfq?.estimationDate ? new Date(rfq.estimationDate).toLocaleDateString() : "N/A"}
+                value={
+                  rfq?.estimationDate
+                    ? new Date(rfq.estimationDate).toLocaleDateString()
+                    : "N/A"
+                }
               />
               <Info label="Bid Amount (USD)" value={rfq?.bidPrice ?? "—"} />
             </div>
@@ -203,11 +255,23 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             <div className="space-y-3">
               <h4 className="font-bold text-gray-700 text-sm">Scope Summary</h4>
               <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-4 text-[10px] sm:text-xs">
-                <Scope label="Main Design" enabled={rfq?.connectionDesign || false} />
+                <Scope
+                  label="Main Design"
+                  enabled={rfq?.connectionDesign || false}
+                />
                 <Scope label="Misc Design" enabled={rfq?.miscDesign || false} />
-                <Scope label="Customer Design" enabled={rfq?.customerDesign || false} />
-                <Scope label="Main Steel" enabled={rfq?.detailingMain || false} />
-                <Scope label="Misc Steel" enabled={rfq?.detailingMisc || false} />
+                <Scope
+                  label="Customer Design"
+                  enabled={rfq?.customerDesign || false}
+                />
+                <Scope
+                  label="Main Steel"
+                  enabled={rfq?.detailingMain || false}
+                />
+                <Scope
+                  label="Misc Steel"
+                  enabled={rfq?.detailingMisc || false}
+                />
               </div>
             </div>
 
@@ -219,7 +283,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               formatDate={(date: string) => new Date(date).toLocaleDateString()}
             />
             <div className="flex flex-col gap-2 pt-2">
-              <Button onClick={() => setShowEstimationModal(true)} className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm font-bold bg-green-500 text-white shadow-xs">
+              <Button
+                onClick={() => setShowEstimationModal(true)}
+                className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm font-bold bg-green-500 text-white shadow-xs"
+              >
                 Raise For Estimation
               </Button>
               <Button
@@ -242,13 +309,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               {(userRole === "ADMIN" ||
                 userRole === "STAFF" ||
                 userRole === "USER") && (
-                  <Button
-                    onClick={() => setShowResponseModal(true)}
-                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
-                  >
-                    + Add Response
-                  </Button>
-                )}
+                <Button
+                  onClick={() => setShowResponseModal(true)}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
+                >
+                  + Add Response
+                </Button>
+              )}
             </div>
             {showResponseModal && (
               <ResponseModal
@@ -263,7 +330,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               <DataTable
                 columns={responseColumns}
                 data={rfq.responses}
-                searchPlaceholder="Search responses..."
                 pageSizeOptions={[5, 10]}
                 onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
               />
@@ -308,23 +374,81 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-red-600 flex items-center gap-2">
+                <Trash2 size={24} /> Delete RFQ
+              </h3>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this RFQ? This action cannot be
+              undone.
+              <br />
+              <span className="font-semibold text-sm mt-2 block">
+                Please type <span className="text-red-600">DELETE</span> to
+                confirm:
+              </span>
+            </p>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="Type DELETE here"
+              className="w-full px-4 py-2 border rounded-lg mb-6 focus:ring-2 focus:ring-red-500 outline-none transition-all"
+            />
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleteConfirmText !== "DELETE" || isDeleting}
+                className={`flex-1 ${
+                  deleteConfirmText === "DELETE"
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-red-300 cursor-not-allowed"
+                } text-white`}
+              >
+                {isDeleting ? "Deleting..." : "Confirm Delete"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
 const Info = ({ label, value }: { label: string; value: string | number }) => (
   <div className="space-y-0.5 sm:space-y-1">
-    <p className="text-gray-500 text-[10px] sm:text-xs uppercase font-medium tracking-wider">{label}</p>
+    <p className="text-gray-500 text-[10px] sm:text-xs uppercase font-medium tracking-wider">
+      {label}
+    </p>
     <p className="font-bold text-gray-800 text-sm sm:text-base">{value}</p>
   </div>
 );
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-md border ${enabled
-      ? "bg-green-100 border-green-400 text-green-700"
-      : "bg-gray-100 border-gray-300 text-gray-700"
-      }`}
+    className={`px-3 py-2 rounded-md border ${
+      enabled
+        ? "bg-green-100 border-green-400 text-green-700"
+        : "bg-gray-100 border-gray-300 text-gray-700"
+    }`}
   >
     {label}
   </div>

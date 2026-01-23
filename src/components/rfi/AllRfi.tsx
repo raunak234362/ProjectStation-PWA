@@ -119,7 +119,6 @@ console.log(rfiData);
         data={rfis}
 
         detailComponent={({ row }) => <GetRFIByID id={row.id} />}
-        searchPlaceholder="Search RFIs..."
         pageSizeOptions={[5, 10, 25]}
       />
 
