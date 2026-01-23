@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import type { AuthInterface } from "../../interface";
 import AuthService from "../../api/auth";
-import Background from "../../assets/background-image.jpg";
+import Background from "../../assets/Green Banana Leaf Pattern Reminder Facebook Post(1).jpg";
 import LOGO from "../../assets/logo.png";
 import Input from "../fields/input";
 import Button from "../fields/Button";
@@ -75,14 +75,14 @@ const Login = () => {
 
         {/* Login form */}
         <div className="flex items-center bg-black/70 backdrop-blur-lg justify-center">
-          <div className="bg-white/10  shadow-2xl shadow-green-100 bg-opacity-90 h-fit w-full md:w-2/3 rounded-2xl  border-4 border-green-500 p-5">
-            <h1 className="mb-10 text-4xl font-bold text-center text-white">
+          <div className="bg-green-100/40 bg-opacity-90 h-fit w-full md:w-2/3 rounded-2xl  border- border-green-900 p-5">
+            <h1 className="mb-10 text-4xl font-bold text-center text-green-600">
               Login
             </h1>
 
             <form
               onSubmit={handleSubmit(Submit)}
-              className="flex flex-col w-full gap-5"
+              className="flex flex-col w-full gap-5 "
             >
               <div>
                 <Input

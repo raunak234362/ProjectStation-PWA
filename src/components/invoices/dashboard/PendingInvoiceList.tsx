@@ -129,6 +129,7 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
           columns={columns}
           data={pendingInvoices}
           detailComponent={({ row }) => <GetInvoiceById id={row.id} />}
+          searchPlaceholder="Search client or invoice #..."
           pageSizeOptions={[5, 10]}
         />
       </div>
