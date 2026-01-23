@@ -61,51 +61,34 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             size: A4;
             margin: 0;
           }
-          html, body { 
-            margin: 0 !important; 
-            padding: 0 !important;
-            height: auto !important;
-            width: 210mm !important;
-            overflow: visible !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+          body {
+            visibility: hidden;
           }
-          /* Hide everything by default */
-          body > :not(.modal-root) { 
-            display: none !important; 
-          }
-          /* Show modal root */
-          .modal-root { 
-            display: block !important;
+          .modal-root {
             visibility: visible !important;
-            position: relative !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
             width: 210mm !important;
             height: auto !important;
-            margin: 0 !important; 
+            margin: 0 !important;
             padding: 0 !important;
             background: white !important;
+            z-index: 9999 !important;
           }
           .modal-root * {
             visibility: visible !important;
           }
-          .no-print { 
-            display: none !important; 
-            visibility: hidden !important;
+          .no-print {
+            display: none !important;
           }
-          /* Fix page heights for printing */
           .print-page {
-            height: 297mm !important;
-            width: 210mm !important;
-            overflow: hidden !important;
+            box-shadow: none !important;
+            margin: 0 !important;
             page-break-after: always !important;
-            break-after: page !important;
-            position: relative !important;
-            display: flex !important;
-            flex-direction: column !important;
           }
           .print-page:last-child {
             page-break-after: auto !important;
-            break-after: auto !important;
           }
         }
       `}} />
