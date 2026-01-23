@@ -282,16 +282,6 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
         )}
 
         <div className="flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-gray-200">
-          <Button
-            type="button"
-            className="w-full sm:w-auto"
-            onClick={() => {
-              reset();
-              setFiles([]);
-            }}
-          >
-            Cancel
-          </Button>
           <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? "Creating..." : "Create Estimation"}
           </Button>
