@@ -64,7 +64,7 @@ const Login = () => {
       <div className="relative z-10 grid w-screen h-screen grid-cols-1 md:grid-cols-2">
         {/* Logo section */}
         <div className="flex items-center justify-center">
-          <div className="flex items-center justify-center px-2 mx-20 bg-white border-4 bg-opacity-70 rounded-2xl md:py-14 md:px-20">
+          <div className="flex items-center justify-center px-2 mx-20 shadow-2xl shadow-green-950 bg-white border-4 bg-opacity-70 rounded-2xl md:py-14 md:px-20">
             <img src={LOGO} alt="Logo" />
           </div>
         </div>
@@ -72,7 +72,7 @@ const Login = () => {
         {/* Login form */}
         <div className="flex items-center bg-black/70 backdrop-blur-lg justify-center">
           <div className="bg-green-100/40 bg-opacity-90 h-fit w-full md:w-2/3 rounded-2xl  border- border-green-900 p-5">
-            <h1 className="mb-10 text-4xl font-bold text-center text-green-600">
+            <h1 className="mb-10 text-4xl font-bold text-center text-gray-900 ">
               Login
             </h1>
 
