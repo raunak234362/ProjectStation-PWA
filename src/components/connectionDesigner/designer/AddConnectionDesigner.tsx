@@ -246,7 +246,7 @@ const AddConnectionDesigner: React.FC = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end mt-6">
+        <div className="w-full justify-center mt-6">
           <Button
             type="submit"
             disabled={isSubmitting}

@@ -37,6 +37,7 @@ const Select = ({
     useState<SelectOption[]>(options);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [menuStyles, setMenuStyles] = useState<React.CSSProperties>({});
 
   // Sync filtered options when options prop changes
@@ -56,10 +57,13 @@ const Select = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
+      const isOutsideWrapper =
         wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
+        !wrapperRef.current.contains(event.target as Node);
+      const isOutsideMenu =
+        menuRef.current && !menuRef.current.contains(event.target as Node);
+
+      if (isOutsideWrapper && isOutsideMenu) {
         setIsOpen(false);
       }
     };
@@ -187,10 +191,10 @@ const Select = ({
         </svg>
       </div>
 
-      {/* Dropdown Menu via Portal */}
       {isOpen &&
         createPortal(
           <div
+            ref={menuRef}
             style={menuStyles}
             className="text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
           >
