@@ -11,13 +11,16 @@ import SectionTitle from "../ui/SectionTitle";
 import Select from "react-select";
 import RichTextEditor from "../fields/RichTextEditor";
 
-const AddRFI: React.FC<{ project?: any }> = ({ project }) => {
+const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
+  project,
+  onSuccess,
+}) => {
   console.log(project);
 
   const userDetail = useSelector((state: any) => state.userInfo.userDetail);
   const userRole = userDetail?.role; // CLIENT | ADMIN | STAFF etc.
   const fabricators = useSelector(
-    (state: any) => state.fabricatorInfo.fabricatorData
+    (state: any) => state.fabricatorInfo.fabricatorData,
   );
   const staff = useSelector((state: any) => state.userInfo.staffData);
   const project_id = project?.id;
@@ -31,7 +34,7 @@ const AddRFI: React.FC<{ project?: any }> = ({ project }) => {
 
   // Match selected fabricator
   const selectedFabricator = fabricators?.find(
-    (f: Fabricator) => String(f.id) === String(fabricatorID)
+    (f: Fabricator) => String(f.id) === String(fabricatorID),
   );
   // Correct POC mapping
   const pocOptions: SelectOption[] =
@@ -83,6 +86,7 @@ const AddRFI: React.FC<{ project?: any }> = ({ project }) => {
       reset();
       setDescription("");
       setFiles([]);
+      onSuccess?.();
     } catch (err) {
       console.error(err);
       toast.error("Failed to create RFI");
@@ -175,8 +179,10 @@ const AddRFI: React.FC<{ project?: any }> = ({ project }) => {
 
         <MultipleFileUpload onFilesChange={setFiles} />
 
-        <div className="flex justify-end">
-          <Button type="submit">Submit RFI</Button>
+        <div className="flex justify-center w-full mt-6">
+          <Button type="submit" className="w-full">
+            Submit RFI
+          </Button>
         </div>
       </form>
     </div>

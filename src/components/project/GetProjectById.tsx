@@ -103,9 +103,9 @@ const GetProjectById = ({ id }: { id: string }) => {
   const formatDate = (date?: string) =>
     date
       ? new Date(date).toLocaleString("en-IN", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
       : "—";
 
   if (loading)
@@ -139,10 +139,11 @@ const GetProjectById = ({ id }: { id: string }) => {
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${project.status === "ACTIVE"
+              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                project.status === "ACTIVE"
                   ? "bg-green-100 text-green-800"
                   : "bg-red-100 text-red-700"
-                }`}
+              }`}
             >
               {project.status}
             </span>
@@ -202,10 +203,11 @@ const GetProjectById = ({ id }: { id: string }) => {
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-md rounded-md font-medium transition-colors whitespace-nowrap ${activeTab === key
+                className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-md rounded-md font-medium transition-colors whitespace-nowrap ${
+                  activeTab === key
                     ? "bg-green-600 text-white font-bold"
                     : "text-gray-700 hover:text-green-700 font-semibold hover:bg-gray-50"
-                  }`}
+                }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -372,9 +374,10 @@ const GetProjectById = ({ id }: { id: string }) => {
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        rfiView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -385,9 +388,10 @@ const GetProjectById = ({ id }: { id: string }) => {
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          rfiView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -401,7 +405,13 @@ const GetProjectById = ({ id }: { id: string }) => {
               {rfiView === "list" ? (
                 <AllRFI rfiData={rfiData} />
               ) : (
-                <AddRFI project={project} />
+                <AddRFI
+                  project={project}
+                  onSuccess={() => {
+                    fetchProject();
+                    setRfiView("list");
+                  }}
+                />
               )}
             </div>
           )}
@@ -414,9 +424,10 @@ const GetProjectById = ({ id }: { id: string }) => {
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        submittalView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -427,9 +438,10 @@ const GetProjectById = ({ id }: { id: string }) => {
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          submittalView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -443,7 +455,13 @@ const GetProjectById = ({ id }: { id: string }) => {
               {submittalView === "list" ? (
                 <AllSubmittals submittalData={submittalData} />
               ) : (
-                <AddSubmittal project={project} />
+                <AddSubmittal
+                  project={project}
+                  onSuccess={() => {
+                    fetchProject();
+                    setSubmittalView("list");
+                  }}
+                />
               )}
             </div>
           )}
@@ -456,9 +474,10 @@ const GetProjectById = ({ id }: { id: string }) => {
                     onClick={() => setChangeOrderView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${changeOrderView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        changeOrderView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -469,9 +488,10 @@ const GetProjectById = ({ id }: { id: string }) => {
                       onClick={() => setChangeOrderView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${changeOrderView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          changeOrderView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -537,10 +557,11 @@ const InfoRow = ({
 // ✅ ScopeTag Component
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-medium rounded-full ${active
+    className={`px-3 py-1 text-sm font-medium rounded-full ${
+      active
         ? "bg-green-100 text-green-800 border border-green-300"
         : "bg-gray-100 text-gray-700 border border-gray-200"
-      }`}
+    }`}
   >
     {label}
   </span>

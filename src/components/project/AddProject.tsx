@@ -31,10 +31,10 @@ const AddProject: React.FC = () => {
   const [connectionDesigners, setConnectionDesigners] = useState<any[]>([]);
 
   const fabricators = useSelector(
-    (state: any) => state.fabricatorInfo?.fabricatorData || []
+    (state: any) => state.fabricatorInfo?.fabricatorData || [],
   );
   const departmentDatas = useSelector(
-    (state: any) => state.userInfo?.departmentData || []
+    (state: any) => state.userInfo?.departmentData || [],
   );
   const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
@@ -96,7 +96,7 @@ const AddProject: React.FC = () => {
   const selectedRfqId = watch("rfqId");
   const selectedDeptId = watch("departmentID");
   const selectedRfq = rfqData.find(
-    (r: any) => String(r.id) === String(selectedRfqId)
+    (r: any) => String(r.id) === String(selectedRfqId),
   );
 
   useEffect(() => {
@@ -107,8 +107,8 @@ const AddProject: React.FC = () => {
       "projectNumber",
       selectedRfq.projectNumber ||
         `PROJ-${new Date().getFullYear()}-${String(
-          rfqData.indexOf(selectedRfq) + 1
-        ).padStart(3, "0")}`
+          rfqData.indexOf(selectedRfq) + 1,
+        ).padStart(3, "0")}`,
     );
     setValue("description", selectedRfq.description || "");
     setValue("fabricatorID", String(selectedRfq.fabricatorId || ""));
@@ -272,7 +272,7 @@ const AddProject: React.FC = () => {
                     <Select
                       options={options.fabricators}
                       value={options.fabricators.find(
-                        (o) => o.value === field.value
+                        (o) => o.value === field.value,
                       )}
                       onChange={(o) => field.onChange(o?.value || "")}
                       placeholder="Select..."
@@ -294,7 +294,7 @@ const AddProject: React.FC = () => {
                     <Select
                       options={options.managers}
                       value={options.managers.find(
-                        (o) => o.value === field.value
+                        (o) => o.value === field.value,
                       )}
                       onChange={(o) => field.onChange(o?.value || "")}
                       placeholder="Assign manager"
@@ -315,7 +315,7 @@ const AddProject: React.FC = () => {
                     <Select
                       options={options.departments}
                       value={options.departments.find(
-                        (o) => o.value === field.value
+                        (o) => o.value === field.value,
                       )}
                       onChange={(o) => field.onChange(o?.value || "")}
                       placeholder="Select dept"
@@ -336,7 +336,7 @@ const AddProject: React.FC = () => {
                       <Select
                         options={options.tools}
                         value={options.tools.find(
-                          (o) => o.value === field.value
+                          (o) => o.value === field.value,
                         )}
                         onChange={(o) => field.onChange(o?.value || "TEKLA")}
                       />
@@ -357,7 +357,8 @@ const AddProject: React.FC = () => {
                       const filteredTeams = teamDatas
                         .filter(
                           (t: any) =>
-                            !selectedDeptId || t.departmentID === selectedDeptId
+                            !selectedDeptId ||
+                            t.departmentID === selectedDeptId,
                         )
                         .map((t: any) => ({
                           label: t.name,
@@ -368,7 +369,7 @@ const AddProject: React.FC = () => {
                         <Select
                           options={filteredTeams}
                           value={filteredTeams.find(
-                            (o: any) => o.value === field.value
+                            (o: any) => o.value === field.value,
                           )}
                           onChange={(o: any) => field.onChange(o?.value || "")}
                           placeholder="Select team"
@@ -496,9 +497,9 @@ const AddProject: React.FC = () => {
             </div>
 
             {/* Submit */}
-            <div className="flex justify-end gap-6 pt-10 border-t-2 border-gray-200">
+            <div className="flex justify-center w-full pt-10 border-t-2 border-gray-200">
               <Button
-                className=" flex items-center gap-3"
+                className="w-full flex items-center justify-center gap-3"
                 type="submit"
                 disabled={isSubmitting}
               >

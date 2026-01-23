@@ -25,7 +25,7 @@ const roles = [
 const AddTeamMembers = ({ teamMember, onClose }: AllTeamProps) => {
   const teamId = teamMember?.id || "";
   console.log(teamMember);
-  
+
   const staffData = useSelector((state: any) => state.userInfo.staffData);
   const {
     register,
@@ -109,11 +109,11 @@ const AddTeamMembers = ({ teamMember, onClose }: AllTeamProps) => {
           )}
         </div>
         {/* Actions */}
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-col sm:flex-row justify-center gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
             disabled={isSubmitting}
           >
             Cancel
@@ -121,7 +121,7 @@ const AddTeamMembers = ({ teamMember, onClose }: AllTeamProps) => {
 
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Adding..." : "Add"}

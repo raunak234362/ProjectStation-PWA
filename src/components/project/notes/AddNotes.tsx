@@ -169,11 +169,15 @@ const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" onClick={onClose}>
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
+            <Button
+              type="button"
+              onClick={onClose}
+              className="w-full sm:w-auto"
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="w-full">
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />

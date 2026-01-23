@@ -40,7 +40,9 @@ const AddChatGroup: React.FC<AddChatGroupProps> = ({ onClose, onCreated }) => {
             <div className="p-2 bg-green-50 rounded-lg text-green-600">
               <Users size={20} />
             </div>
-            <h2 className="text-lg font-bold text-gray-700">Create New Group</h2>
+            <h2 className="text-lg font-bold text-gray-700">
+              Create New Group
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -55,7 +57,8 @@ const AddChatGroup: React.FC<AddChatGroupProps> = ({ onClose, onCreated }) => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <p className="text-sm text-gray-700 mb-4">
-                Give your group a name. You can add members after creating the group.
+                Give your group a name. You can add members after creating the
+                group.
               </p>
               <Input
                 label="Group Name"
@@ -65,22 +68,24 @@ const AddChatGroup: React.FC<AddChatGroupProps> = ({ onClose, onCreated }) => {
                 className="w-full"
               />
               {errors.name?.message && (
-                <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Button
                 type="button"
                 onClick={onClose}
-                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                className="w-full sm:flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-green-600 text-white hover:bg-green-700"
+                className="w-full sm:flex-1 bg-green-600 text-white hover:bg-green-700"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Creating..." : "Create Group"}

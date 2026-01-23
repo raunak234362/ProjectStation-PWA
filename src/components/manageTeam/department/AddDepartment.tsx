@@ -38,7 +38,7 @@ const AddDepartment: React.FC = () => {
       const deptMgrRes = await Service.FetchEmployeeByRole("DEPT_MANAGER");
       const deptMgrs = deptMgrRes?.data?.employees || [];
       const pmoRes = await Service.FetchEmployeeByRole(
-        "PROJECT_MANAGER_OFFICER"
+        "PROJECT_MANAGER_OFFICER",
       );
       const pmoMgrs = pmoRes?.data?.employees || [];
       setStaffs([...employees, ...deptMgrs, ...pmoMgrs]);
@@ -157,11 +157,11 @@ const AddDepartment: React.FC = () => {
           </div>
 
           {/* ── Submit Button ── */}
-          <div className="flex justify-end">
+          <div className="flex justify-center w-full">
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+              className="w-full bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>

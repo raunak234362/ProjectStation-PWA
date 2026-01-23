@@ -37,7 +37,7 @@ const AddClients: React.FC<AddClientProps> = ({
     try {
       const response = await Service.AddClientByFabricator(
         fabricator.id,
-        payload
+        payload,
       );
       console.log("Employee created:", response);
       dispatch(addStaff(response?.data?.user));
@@ -45,7 +45,7 @@ const AddClients: React.FC<AddClientProps> = ({
     } catch (error: any) {
       console.error("Error creating employee:", error);
       toast.error(
-        error?.response?.data?.message || "Failed to create employee"
+        error?.response?.data?.message || "Failed to create employee",
       );
     }
   };
@@ -240,11 +240,11 @@ const AddClients: React.FC<AddClientProps> = ({
         </div>
 
         {/* Submit */}
-        <div className="md:col-span-2 flex justify-end mt-6">
+        <div className="md:col-span-2 flex justify-center mt-6">
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+            className="w-full bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
