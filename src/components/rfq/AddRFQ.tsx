@@ -163,9 +163,33 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       }
 
       const response = await Service.addRFQ(formData);
-      const createdRFQ = response.data || response;
+      const createdRFQ = response.data || response.rfq || response;
+
       if (createdRFQ) {
-        dispatch(addRFQ(createdRFQ));
+        // Enrich with form data for immediate display in the table
+        const selectedFab = fabricators?.find(
+          (f) => String(f.id) === String(data.fabricatorId),
+        );
+        const selectedSender = clientOptions?.find(
+          (c) => String(c.value) === String(data.senderId),
+        );
+
+        const enrichedRFQ = {
+          ...createdRFQ,
+          projectName: data.projectName,
+          projectNumber: data.projectNumber,
+          status: "IN_REVIEW",
+          estimationDate: data.estimationDate,
+          tools: data.tools,
+          fabricator: selectedFab || createdRFQ.fabricator,
+          sender: selectedSender
+            ? {
+                firstName: selectedSender.label.split(" ")[0],
+                lastName: selectedSender.label.split(" ").slice(1).join(" "),
+              }
+            : userDetail,
+        };
+        dispatch(addRFQ(enrichedRFQ));
       }
       toast.success("RFQ Created Successfully");
       setDescription("");

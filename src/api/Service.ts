@@ -429,6 +429,17 @@ class Service {
       console.error("cannot update rfq", error);
     }
   }
+
+  //Delete RFQ by ID
+  static async DeleteRFQById(rfqId: string) {
+    try {
+      const response = await api.delete(`rfq/${rfqId}`);
+      console.log("RFQ deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot delete rfq", error);
+    }
+  }
   //RESPONSES
   //response post request
 

@@ -56,6 +56,11 @@ const RFQSlice = createSlice({
   },
 });
 
-export const { addRFQ, addEstimation, setRFQData, setEstimationData } =
-  RFQSlice.actions;
+export const {
+  addRFQ,
+  addEstimation,
+  setRFQData,
+  setEstimationData,
+  deleteRFQ,
+} = RFQSlice.actions;
 export default RFQSlice.reducer;
