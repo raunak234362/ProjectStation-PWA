@@ -231,29 +231,29 @@ export default function DataTable<T extends object>({
       {table
         .getAllColumns()
         .some((c) => (c.columnDef as any).enableColumnFilter) && (
-          <div className="flex flex-wrap items-end gap-4 mb-6 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
-            {table
-              .getAllColumns()
-              .filter((c) => (c.columnDef as any).enableColumnFilter)
-              .map((column) => (
-                <div
-                  key={column.id}
-                  className="flex flex-col gap-1.5 min-w-[180px]"
-                >
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
-                    {column.columnDef.header as string}
-                  </label>
-                  <ColumnFilter column={column} />
-                </div>
-              ))}
-            <Button
-              onClick={() => table.resetColumnFilters()}
-              className="text-xs text-gray-500 hover:text-red-600 transition-colors h-9 px-2"
-            >
-              <X className="w-3 h-3 mr-1" /> Clear
-            </Button>
-          </div>
-        )}
+        <div className="flex flex-wrap items-end gap-4 mb-6 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+          {table
+            .getAllColumns()
+            .filter((c) => (c.columnDef as any).enableColumnFilter)
+            .map((column) => (
+              <div
+                key={column.id}
+                className="flex flex-col gap-1.5 min-w-[180px]"
+              >
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                  {column.columnDef.header as string}
+                </label>
+                <ColumnFilter column={column} />
+              </div>
+            ))}
+          <Button
+            onClick={() => table.resetColumnFilters()}
+            className="text-xs text-gray-500 hover:text-red-600 transition-colors h-9 px-2"
+          >
+            <X className="w-3 h-3 mr-1" /> Clear
+          </Button>
+        </div>
+      )}
 
       {/* responsive body */}
       {isMobile ? (
@@ -302,8 +302,9 @@ export default function DataTable<T extends object>({
                 {table.getPaginationRowModel().rows.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr
-                      className={`hover:bg-gray-50 cursor-pointer transition-colors ${expandedRowId === row.id ? "bg-gray-50" : ""
-                        }`}
+                      className={`hover:bg-gray-50 cursor-pointer transition-colors ${
+                        expandedRowId === row.id ? "bg-gray-50" : ""
+                      }`}
                       onClick={() => {
                         onRowClick?.(row.original);
                         if (DetailComponent) {
