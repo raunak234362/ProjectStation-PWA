@@ -128,7 +128,9 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
         <DataTable
           columns={columns}
           data={pendingInvoices}
-          detailComponent={({ row }) => <GetInvoiceById id={row.id} />}
+          detailComponent={({ row, close }) => (
+            <GetInvoiceById id={row.id} close={close} />
+          )}
           pageSizeOptions={[5, 10]}
         />
       </div>

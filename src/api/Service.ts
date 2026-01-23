@@ -370,8 +370,24 @@ class Service {
 
     return response.data;
   }
-  //Fetch all the RFQ
-  static async FetchAllRFQ(rfqId: string) {
+
+  //Fetch All RFQ
+  static async getAllRFQ() {
+    try {
+      const response = await api.get(`rfq/all`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All RFQ fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfqs", error);
+    }
+  }
+
+  //Fetch RFQ by ID
+  static async FetchRFQByID(rfqId: string) {
     try {
       const response = await api.get(`rfq/${rfqId}`, {
         headers: {
