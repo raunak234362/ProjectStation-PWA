@@ -5,14 +5,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { showDepartment, showTeam } from "../store/userSlice";
 
 const ProjectLayout = () => {
-  const [activeTab, setActiveTab] = useState("projectDashboard");
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const [activeTab, setActiveTab] = useState(
+    userRole === "connection_designer_engineer"
+      ? "allProject"
+      : "projectDashboard",
+  );
   const dispatch = useDispatch();
   const departmentDatas = useSelector(
-    (state: any) => state?.userInfo?.departmentData
+    (state: any) => state?.userInfo?.departmentData,
   );
   const teamDatas = useSelector((state: any) => state?.userInfo?.teamData);
   const projects = useSelector(
-    (state: any) => state?.projectInfo?.projectData || []
+    (state: any) => state?.projectInfo?.projectData || [],
   );
 
   const stats = {
@@ -91,16 +96,41 @@ const ProjectLayout = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
-            <button
-              onClick={() => setActiveTab("projectDashboard")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-semibold transition-all ${
-                activeTab === "projectDashboard"
-                  ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
-              }`}
-            >
-              Project Home
-            </button>
+            {[
+              "admin",
+              "project_manager_officer",
+              "operation_executive",
+              "project_manager",
+              "deputy_manager",
+            ].includes(
+              sessionStorage.getItem("userRole")?.toLowerCase() || "",
+            ) && (
+              <button
+                onClick={() => setActiveTab("projectDashboard")}
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-semibold transition-all ${
+                  activeTab === "projectDashboard"
+                    ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
+                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                }`}
+              >
+                Project Home
+              </button>
+            )}
+
+            {["connection_designer_engineer"].includes(
+              sessionStorage.getItem("userRole")?.toLowerCase() || "",
+            ) && (
+              <button
+                onClick={() => setActiveTab("allProject")}
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-semibold transition-all ${
+                  activeTab === "allProject"
+                    ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
+                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                }`}
+              >
+                All Projects
+              </button>
+            )}
 
             {[
               "admin",
@@ -109,7 +139,7 @@ const ProjectLayout = () => {
               "project_manager",
               "deputy_manager",
             ].includes(
-              sessionStorage.getItem("userRole")?.toLowerCase() || ""
+              sessionStorage.getItem("userRole")?.toLowerCase() || "",
             ) && (
               <button
                 onClick={() => setActiveTab("addProject")}

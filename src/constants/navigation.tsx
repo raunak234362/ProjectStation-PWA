@@ -32,6 +32,7 @@ export const navItems: NavItem[] = [
       "admin",
       "staff",
       "project_manager_officer",
+      "connection_designer_engineer",
       "operation_executive",
       "estimation_head",
       "deputy_manager",
@@ -76,7 +77,7 @@ export const navItems: NavItem[] = [
   //   roles: [
   //     "admin",
   //     "department-manager",
-  //     "connection_designer_engineer",
+  //     "connection_designer_engineer",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
   //     "deputy_manager",
   //   ],
   // },
@@ -214,7 +215,6 @@ export const navItems: NavItem[] = [
     icon: <UserCircle />,
     roles: [
       "admin",
-      "connection_designer_engineer",
       "project_manager_officer",
       "user",
       "estimation_head",

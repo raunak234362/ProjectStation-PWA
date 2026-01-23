@@ -186,6 +186,8 @@ export default function DataTable<T extends object>({
       },
       enableSorting: false,
       enableColumnFilter: false,
+      size: 50,
+      minSize: 50,
     };
     return [sNoCol, ...userColumns];
   }, [userColumns]);

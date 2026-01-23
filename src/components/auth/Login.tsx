@@ -38,6 +38,10 @@ const Login = () => {
         userDetail?.role?.toLowerCase() === "sales_manager"
       ) {
         navigate("/dashboard/sales");
+      } else if (
+        userDetail?.role?.toLowerCase() === "connection_designer_engineer"
+      ) {
+        navigate("/dashboard/designer");
       } else {
         navigate("/dashboard");
       }
