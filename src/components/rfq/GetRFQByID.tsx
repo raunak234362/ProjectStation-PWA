@@ -21,6 +21,7 @@ interface GetRfqByIDProps {
 }
 
 const GetRFQByID = ({ id }: GetRfqByIDProps) => {
+  console.log("GetRFQByID initialized with ID:", id);
   const [rfq, setRfq] = useState<RFQItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

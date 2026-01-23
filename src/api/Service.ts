@@ -432,13 +432,9 @@ class Service {
 
   //Delete RFQ by ID
   static async DeleteRFQById(rfqId: string) {
-    try {
-      const response = await api.delete(`rfq/${rfqId}`);
-      console.log("RFQ deleted:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot delete rfq", error);
-    }
+    const response = await api.delete(`rfq/${rfqId}`);
+    console.log("RFQ deleted:", response.data);
+    return response.data;
   }
   //RESPONSES
   //response post request
@@ -453,74 +449,74 @@ class Service {
     return response.data;
   }
 
-//Add Vendor
-static async AddVendor(data: FormData | any) {
-  console.log(data);
+  //Add Vendor
+  static async AddVendor(data: FormData | any) {
+    console.log(data);
 
-  try {
-    const response = await api.post(`vendors/`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+    try {
+      const response = await api.post(`vendors/`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
-//Fetch All Vendor
-static async FetchAllVendor() {
-  try {
-    const response = await api.get(`vendors/all`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(" All vendor fetched:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("cannot find vendor", error);
+  //Fetch All Vendor
+  static async FetchAllVendor() {
+    try {
+      const response = await api.get(`vendors/all`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All vendor fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find vendor", error);
+    }
   }
-}
 
-//Fetch Vendor By ID
-static async FetchVendorByID(id: string) {
-  try {
-    const response = await api.get(`vendors/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(" All vendor fetched by vendor ID:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("cannot find vendor", error);
+  //Fetch Vendor By ID
+  static async FetchVendorByID(id: string) {
+    try {
+      const response = await api.get(`vendors/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All vendor fetched by vendor ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find vendor", error);
+    }
   }
-}
 
-//Update Vendor By ID
-static async UpdateVendorByID(id: string, data: any) {
-  try {
-    const response = await api.put(`vendors/update/${id}`, data);
-    console.log("Vendor updated:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("cannot update vendor", error);
+  //Update Vendor By ID
+  static async UpdateVendorByID(id: string, data: any) {
+    try {
+      const response = await api.put(`vendors/update/${id}`, data);
+      console.log("Vendor updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot update vendor", error);
+    }
   }
-}
 
-//Delete Vendor By ID
-static async DeleteVendorByID(id: string) {
-  try {
-    const response = await api.delete(`vendors/id/${id}`);
-    console.log("Vendor deleted:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("cannot delete vendor", error);
+  //Delete Vendor By ID
+  static async DeleteVendorByID(id: string) {
+    try {
+      const response = await api.delete(`vendors/id/${id}`);
+      console.log("Vendor deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot delete vendor", error);
+    }
   }
-}
 
   //Add Connection Designer
   static async AddConnectionDesigner(data: FormData | any) {
