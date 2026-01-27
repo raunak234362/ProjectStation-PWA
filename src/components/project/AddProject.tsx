@@ -37,10 +37,23 @@ const AddProject: React.FC = () => {
     (state: any) => state.userInfo?.departmentData || [],
   );
   const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
-  const users = useSelector((state: any) => state.userInfo?.staffData || []);
   const rfqData = useSelector((state: any) => state.RFQInfos?.RFQData || []);
-
-  console.log(teamDatas);
+  const managerOption = useSelector((state: any) =>
+    (state.userInfo?.staffData || [])
+      .filter((user: any) =>
+        [
+          "PROJECT_MANAGER",
+          "DEPUTY_MANAGER",
+          "ESTIMATION_HEAD",
+          "OPERATION_EXECUTIVE",
+          "DEPT_MANAGER",
+        ].includes(user.role),
+      )
+      .map((user: any) => ({
+        label: `${user.firstName}${user.middleName ? " " + user.middleName : ""} ${user.lastName}`,
+        value: String(user.id),
+      })),
+  );
 
   const { register, handleSubmit, control, watch, setValue } =
     useForm<AddProjectPayload>({
@@ -73,10 +86,6 @@ const AddProject: React.FC = () => {
     departments: departmentDatas.map((d: any) => ({
       label: d.name,
       value: String(d.id),
-    })) as { label: string; value: string }[],
-    managers: users.map((u: any) => ({
-      label: `${u.firstName} ${u.lastName}`,
-      value: String(u.id),
     })) as { label: string; value: string }[],
     teams: teamDatas.map((t: any) => ({
       label: t.name,
@@ -292,9 +301,9 @@ const AddProject: React.FC = () => {
                   rules={{ required: true }}
                   render={({ field }) => (
                     <Select
-                      options={options.managers}
-                      value={options.managers.find(
-                        (o) => o.value === field.value,
+                      options={managerOption}
+                      value={managerOption.find(
+                        (o: any) => String(o.value) === String(field.value),
                       )}
                       onChange={(o) => field.onChange(o?.value || "")}
                       placeholder="Assign manager"
