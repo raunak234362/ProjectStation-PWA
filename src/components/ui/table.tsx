@@ -266,7 +266,7 @@ export default function DataTable<T extends object>({
         />
       ) : (
         <div className="w-full border border-gray-100 rounded-lg overflow-hidden">
-          <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
+          <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
             <table className="min-w-full divide-y">
               <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
                 {table.getHeaderGroups().map((hg) => (
