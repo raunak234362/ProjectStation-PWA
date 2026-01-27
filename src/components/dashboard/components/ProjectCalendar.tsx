@@ -4,7 +4,7 @@ import {
   ChevronRight,
   Calendar as CalendarIcon,
 } from "lucide-react";
-import type { ProjectData } from "../../../interface";
+import { type ProjectData } from "../../../interface";
 
 interface ProjectCalendarProps {
   projects: ProjectData[];
@@ -122,9 +122,8 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
           return (
             <div
               key={idx}
-              className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${
-                day === null ? "bg-gray-50/30" : ""
-              }`}
+              className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${day === null ? "bg-gray-50/30" : ""
+                }`}
             >
               {day && (
                 <>

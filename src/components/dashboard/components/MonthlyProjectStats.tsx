@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Users, Clock, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
-import type { ProjectData } from "../../../interface";
+import { type ProjectData } from "../../../interface";
 import { formatSeconds } from "../../../utils/timeUtils";
 
 interface MonthlyProjectStatsProps {

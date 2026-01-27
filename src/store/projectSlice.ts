@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { ProjectData } from "../interface";
+import { type ProjectData } from "../interface";
 
 interface ProjectState {
   projectData: ProjectData[];

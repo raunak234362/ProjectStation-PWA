@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import type { ProjectData, UserData } from "../../interface";
+import { type ProjectData, type UserData } from "../../interface";
 
 const DesignerLandingDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -109,7 +109,7 @@ const DesignerLandingDashboard: React.FC = () => {
         <QuickActionCard
           icon={<MessageSquare className="w-5 h-5" />}
           label="Support"
-          onClick={() => {}} // Add support logic if needed
+          onClick={() => { }} // Add support logic if needed
           color="bg-green-50 text-green-600"
         />
       </motion.section>
@@ -294,11 +294,10 @@ const ProjectCard = ({
     </div>
     <div className="flex items-center gap-4">
       <span
-        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-          project.status === "ACTIVE"
+        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${project.status === "ACTIVE"
             ? "bg-green-100 text-green-700"
             : "bg-gray-100 text-gray-600"
-        }`}
+          }`}
       >
         {project.status}
       </span>
