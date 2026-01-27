@@ -136,6 +136,7 @@ const ProjectLayout = () => {
               "admin",
               "project_manager_officer",
               "operation_executive",
+              "estimation_head",
               "project_manager",
               "deputy_manager",
             ].includes(
