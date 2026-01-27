@@ -46,6 +46,8 @@ const WBTDashboard = () => {
       navigate("/dashboard/designer");
     } else if (userRole === "estimation_head") {
       navigate("/dashboard/estimation");
+    } else if (userRole === "HUMAN_RESOURCE") {
+      navigate("/dashboard/manage-team");
     }
   }, [userRole, navigate]);
 

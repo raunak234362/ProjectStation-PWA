@@ -92,6 +92,8 @@ const AppContent = () => {
         } else if (
           userType === "OPERATION_EXECUTIVE" ||
           userType === "DEPUTY_MANAGER" ||
+          userType === "CLIENT" ||
+          userType === "ESTIMATION_HEAD" ||
           userType === "ADMIN"
         ) {
           rfqDetail = await Service.getAllRFQ();
