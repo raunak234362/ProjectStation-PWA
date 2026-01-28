@@ -29,9 +29,6 @@ const ProjectListModal = lazy(() => import("./components/ProjectListModal"));
 const ProjectDetailsModal = lazy(
   () => import("./components/ProjectDetailsModal"),
 );
-const ClientProjectDirectory = lazy(
-  () => import("./components/ClientProjectDirectory"),
-);
 const SubmittalListModal = lazy(
   () => import("./components/SubmittalListModal"),
 );
