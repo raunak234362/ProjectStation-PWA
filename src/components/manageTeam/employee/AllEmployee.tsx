@@ -21,7 +21,7 @@ const AllEmployee = () => {
       console.log("Deleting employees:", ids);
 
       // Remove from UI
-      setEmployees((prev) => prev.filter((emp) => !ids.includes(emp.id)));
+      setEmployees((prev) => prev.filter((emp) => !ids?.includes(emp.id)));
       toast.success(`${selectedRows.length} employee(s) deleted`);
     } catch (err) {
       console.log(err);
@@ -41,7 +41,9 @@ const AllEmployee = () => {
     { accessorKey: "email", header: "Email" },
     {
       accessorFn: (r) =>
-        [r.firstName, r.middleName, r.lastName].filter(Boolean).join(" "),
+        [r?.firstName, r?.middleName, r?.lastName]
+          .filter(Boolean)
+          .join(" "),
       header: "Full Name",
       id: "fullName",
     },
@@ -50,10 +52,10 @@ const AllEmployee = () => {
       header: "Phone",
       cell: ({ row }) => (
         <span>
-          {row.original.phone}
-          {row.original.extension && (
+          {row.original?.phone}
+          {row.original?.extension && (
             <span className="text-gray-700 text-xs ml-1">
-              (Ext: {row.original.extension})
+              (Ext: {row.original?.extension})
             </span>
           )}
         </span>
