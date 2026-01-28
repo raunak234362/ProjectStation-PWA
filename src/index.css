@@ -11,30 +11,36 @@
   color-scheme: light dark;
   color: #213547;
   background-color: #242424;
+  background-color: #6bbd45;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --radius: 0.625rem;
+  --radius: 1.5rem;
   --background: #6bbd45;
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --foreground: #1a1a1b;
+  --card: #ffffff;
+  --card-accent: #f9fdf7;
+  /* Very light green for definition */
+  --card-foreground: #1a1a1b;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1b;
   --primary: #6bbd45;
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: #6bbd45;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f7f2;
+  --secondary-foreground: #1d3812;
+  --muted: #f9f9f9;
+  --muted-foreground: #6b7280;
+  --accent: #f0fdf4;
+  --accent-foreground: #6bbd45;
+  --destructive: #ef4444;
+  --border: #eef2ed;
+  --input: #f3f4f6;
+  --ring: rgba(107, 189, 69, 0.5);
+  --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 2px 10px -2px rgba(0, 0, 0, 0.02);
+  --shadow-medium: 0 10px 30px -4px rgba(0, 0, 0, 0.04), 0 4px 15px -4px rgba(0, 0, 0, 0.02);
+  --shadow-highlight: 0 0 15px rgba(107, 189, 69, 0.1);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -188,6 +194,19 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Sidebar Specific Scrollbar - Invisible but Scrollable */
+.sidebar-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 /* Custom Class for Content Areas asking for Green Scroll */

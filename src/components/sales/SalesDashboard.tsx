@@ -135,28 +135,32 @@ const SalesDashboard = () => {
     }
 
     return (
-        <div className="h-full p-8 space-y-10 font-sans text-slate-800">
+        <div className="h-full p-6 space-y-8 font-sans text-slate-900 bg-transparent">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Sales Dashboard</h1>
+                    <p className="text-slate-500 text-sm mt-1">Monitor your sales performance and conversion rates.</p>
+                </div>
 
-                <div className="flex gap-4">
-                    <button className="flex items-center gap-2 px-4 py-1 bg-white border border-gray-100 rounded-[1.25rem] text-gray-600 font-semibold hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all shadow-sm">
-                        <Filter size={20} />
+                <div className="flex gap-3">
+                    <button className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all shadow-soft border border-slate-100">
+                        <Filter size={18} />
                         All Time
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-1 bg-green-500 text-white rounded-[1.25rem] font-semibold hover:bg-green-600 transition-all shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]">
-                        <Download size={20} />
+                    <button className="flex items-center gap-2 px-5 py-2.5 bg-[#6bbd45] text-white rounded-2xl font-bold hover:shadow-highlight transition-all shadow-medium">
+                        <Download size={18} />
                         Export Report
                     </button>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-10 border-b-2 border-gray-100 pb-0.5">
-                {['Overview'].map((tab, i) => (
-                    <button key={tab} className={`pb-2 text-base font-bold transition-all relative px-2 ${i === 0 ? 'text-green-700' : 'text-gray-400 hover:text-gray-600'}`}>
+            <div className="flex gap-8 pb-1">
+                {['Overview', 'Performance', 'Leads'].map((tab, i) => (
+                    <button key={tab} className={`pb-3 text-base font-bold transition-all relative px-1 ${i === 0 ? 'text-[#6bbd45]' : 'text-slate-400 hover:text-slate-600'}`}>
                         {tab}
-                        {i === 0 && <motion.div layoutId="activeTab" className="absolute -bottom-1 left-0 right-0 h-1 bg-green-600 rounded-full" />}
+                        {i === 0 && <motion.div layoutId="activeTab" className="absolute -bottom-0 left-0 right-0 h-1 bg-[#6bbd45] rounded-full" />}
                     </button>
                 ))}
             </div>

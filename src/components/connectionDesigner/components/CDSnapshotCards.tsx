@@ -25,28 +25,28 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({ stats }) => {
             value: `${stats.totalCountries} Countries`,
             subText: `${stats.totalStates} States`,
             icon: Globe,
-            color: "blue",
+            color: "green",
         },
         {
             label: "Total Engineers",
             value: stats.totalEngineers,
             subText: "Avg engineers per CD", // Placeholder
             icon: HardHat,
-            color: "orange",
+            color: "green",
         },
         {
             label: "Active RFQs",
             value: stats.activeRFQs,
             subText: "Designers involved",
             icon: FileText,
-            color: "purple",
+            color: "green",
         }
     ];
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {cards.map((card, index) => (
-                <div key={index} className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between relative overflow-hidden group">
+                <div key={index} className="bg-green-50 p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between relative overflow-hidden group">
                     <div className="min-w-0">
                         <p className="text-[10px] sm:text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider truncate">{card.label}</p>
                         <h3 className="text-xl sm:text-2xl font-bold text-gray-800 truncate">{card.value}</h3>

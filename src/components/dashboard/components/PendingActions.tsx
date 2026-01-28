@@ -7,6 +7,7 @@ import {
   Search,
 } from "lucide-react";
 import type { DashboardStats } from "../WBTDashboard";
+import { cn } from "../../../lib/utils";
 
 interface PendingActionsProps {
   dashboardStats: DashboardStats | null;
@@ -75,13 +76,13 @@ const PendingActions: React.FC<PendingActionsProps> = ({
   };
 
   return (
-    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center h-full">
-      <h3 className="font-semibold text-lg text-gray-800 mb-3 flex items-center gap-2">
-        <ClipboardList className="text-green-600" size={20} />
+    <div className="flex flex-col justify-center h-full">
+      <h3 className="font-extrabold text-xl text-slate-800 mb-4 flex items-center gap-2 px-2">
+        <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
         Pending Actions
       </h3>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {actions.map((action) => {
           const colors =
             colorClasses[action.color as keyof typeof colorClasses];
@@ -94,27 +95,33 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   onActionClick("PENDING_SUBMITTALS");
                 }
               }}
-              className="flex flex-row items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 cursor-pointer group bg-white border border-transparent hover:border-gray-100"
+              className="flex flex-row items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft transition-all duration-300 cursor-pointer hover:shadow-medium hover:scale-[1.02] active:scale-[0.98] group"
             >
               <div
-                className={`p-2 rounded-lg ${colors.bg} ${colors.text} group-hover:${colors.hoverBg} transition-colors`}
+                className={cn(
+                  "p-3 rounded-xl shadow-sm transition-colors",
+                  colors.bg,
+                  colors.text
+                )}
               >
-                <action.icon size={25} />
+                <action.icon size={22} strokeWidth={2.5} />
               </div>
 
-              <div className="flex flex-col">
-                <span className="font-semibold text-md text-gray-700 truncate">
+              <div className="flex flex-col min-w-0">
+                <span className="font-bold text-sm text-slate-500 uppercase tracking-tight truncate">
                   {action.title}
                 </span>
-                <span
-                  className="text-lg lg:text-xl font-bold mt-0.5"
-                  style={{ color: colors.text.replace("text-", "#") }}
-                >
-                  {action.count}
-                </span>
-                <span className="text-sm text-gray-400 uppercase tracking-wider mt-1 truncate">
-                  {action.subtitle} - {action.subcount || 0}
-                </span>
+                <div className="flex items-baseline gap-2">
+                  <span
+                    className="text-2xl font-extrabold tracking-tight"
+                    style={{ color: colors.text.replace("text-", "#") }}
+                  >
+                    {action.count}
+                  </span>
+                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest truncate">
+                    {action.subtitle}
+                  </span>
+                </div>
               </div>
             </div>
           );
