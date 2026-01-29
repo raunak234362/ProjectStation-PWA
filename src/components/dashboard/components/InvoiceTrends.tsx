@@ -86,7 +86,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     }
   }, [invoices, selectedYear, selectedMonth]);
 
-  const { totalPeriodAmount, totalPeriodCount } = useMemo(() => {
+  const { totalPeriodAmount } = useMemo(() => {
     const amount = processedChartData.reduce(
       (sum, item) => sum + item.amount,
       0
