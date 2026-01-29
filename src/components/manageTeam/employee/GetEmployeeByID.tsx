@@ -173,7 +173,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
               onClick={() => handleModel(employee)}
               className="py-1 px-2 text-lg"
             >
-              Employee Progress Status
+              Update Employee Data
             </Button>
           )}
         {userRole === "admin" && (

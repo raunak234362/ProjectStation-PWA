@@ -89,12 +89,22 @@ const AppContent = () => {
         let rfqDetail;
         if (userType === "CLIENT") {
           rfqDetail = await Service.RfqSent();
+        } else if (
+          userType === "OPERATION_EXECUTIVE" ||
+          userType === "DEPUTY_MANAGER" ||
+          userType === "CLIENT" ||
+          userType === "ESTIMATION_HEAD" ||
+          userType === "ADMIN"
+        ) {
+          rfqDetail = await Service.getAllRFQ();
         } else {
           rfqDetail = await Service.RFQRecieved();
         }
         // setRfq(rfqDetail.data);
         console.log("Raw RFQ Response:", rfqDetail);
-        const rfqData = Array.isArray(rfqDetail) ? rfqDetail : rfqDetail?.data || [];
+        const rfqData = Array.isArray(rfqDetail)
+          ? rfqDetail
+          : rfqDetail?.data || [];
         dispatch(setRFQData(rfqData));
         console.log("Dispatched RFQ Data:", rfqData);
       } catch (error) {
