@@ -41,21 +41,19 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       className={`h-full transition-all duration-300 flex flex-col 
-        ${
-          isMobile
-            ? `fixed inset-y-0 left-0 z-50 bg-[#6bbd45] shadow-2xl w-72 transform ${isMinimized ? "-translate-x-full" : "translate-x-0"}`
-            : `relative ${isMinimized ? "w-24" : "w-72"}`
+        ${isMobile
+          ? `fixed inset-y-0 left-0 z-50 bg-[#6bbd45] shadow-2xl w-72 transform ${isMinimized ? "-translate-x-full" : "translate-x-0"}`
+          : `relative rounded-[2rem] bg-[#6bbd45] text-white shadow-soft ${isMinimized ? "w-24" : "w-72"}`
         }`}
     >
       {/* Header */}
       <div
-        className={`flex items-center pt-6 pb-2 px-6 ${
-          isMobile
-            ? "justify-between"
-            : isMinimized
-              ? "justify-center"
-              : "justify-start"
-        }`}
+        className={`flex items-center pt-6 pb-2 px-6 ${isMobile
+          ? "justify-between"
+          : isMinimized
+            ? "justify-center"
+            : "justify-start"
+          }`}
       >
         <div className="flex items-center w-full justify-center">
           {!isMinimized ? (
@@ -83,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      <div className="flex-1 py-2 flex flex-col overflow-y-auto custom-scrollbar">
+      <div className="flex-1 py-2 flex flex-col overflow-y-auto sidebar-scrollbar">
         <ul className="flex flex-col gap-0.5 w-full pl-4">
           {navItems.map(
             ({ label, to, roles, icon }) =>
@@ -92,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <NavLink
                     to={
                       label === "Dashboard" &&
-                      (userRole === "sales" || userRole === "sales_manager")
+                        (userRole === "sales" || userRole === "sales_manager")
                         ? "/dashboard/sales"
                         : to
                     }
@@ -100,18 +98,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
                       `flex items-center gap-4 py-2.5 transition-all duration-200 font-bold text-md tracking-wide relative 
-                      ${
-                        isActive
-                          ? `bg-white rounded-xl text-green-600 shadow-sm z-20 ${
-                              isMobile ? " mx-4 px-4" : "ml-0 pl-6"
-                            }`
-                          : `text-white/90 rounded-xl hover:bg-white/10 ${
-                              isMobile ? " mx-4 px-4" : " ml-0 pl-6"
-                            }`
-                      } ${
-                        isMinimized
-                          ? "justify-center px-0 w-14 h-14 mx-auto rounded-xl! ml-0! pl-0!"
-                          : ""
+                      ${isActive
+                        ? `bg-white rounded-xl text-green-600 shadow-sm z-20 ${isMobile ? " mx-4 px-4" : "ml-0 pl-6"
+                        }`
+                        : `text-white/90 rounded-xl hover:bg-white/10 ${isMobile ? " mx-4 px-4" : " ml-0 pl-6"
+                        }`
+                      } ${isMinimized
+                        ? "justify-center px-0 w-14 h-14 mx-auto rounded-xl! ml-0! pl-0!"
+                        : ""
                       }`
                     }
                   >
@@ -171,11 +165,10 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <Button
-          className={`w-full flex items-center gap-3 py-3 rounded-xl transition-all ${
-            isMinimized
-              ? "justify-center bg-white/10 text-white hover:bg-white/20"
-              : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
-          }`}
+          className={`w-full flex items-center gap-3 py-3 rounded-xl transition-all ${isMinimized
+            ? "justify-center bg-white/10 text-white hover:bg-white/20"
+            : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
+            }`}
           onClick={fetchLogout}
         >
           <LogOut size={20} />

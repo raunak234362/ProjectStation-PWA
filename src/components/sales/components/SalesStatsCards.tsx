@@ -57,7 +57,7 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats }) => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-white p-6 rounded-[2rem] border border-green-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(22,163,74,0.1)] transition-all duration-300 relative overflow-hidden group"
+                        className="bg-[#f9fdf7] p-6 rounded-3xl shadow-soft hover:shadow-medium transition-all duration-300 relative overflow-hidden group border-0"
                     >
                         {/* Decorative Background Blob */}
                         <div className="absolute -right-6 -top-6 w-24 h-24 bg-green-50 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-500" />

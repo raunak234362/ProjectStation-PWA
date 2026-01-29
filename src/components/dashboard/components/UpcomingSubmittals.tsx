@@ -6,14 +6,18 @@ import AddSubmittal from "../../submittals/AddSubmittals";
 interface UpcomingSubmittalsProps {
   pendingSubmittals: any[];
   invoices?: any[];
+  initialTab?: "submittals" | "invoices";
+  hideTabs?: boolean;
 }
 
 const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   pendingSubmittals,
   invoices = [],
+  initialTab = "submittals",
+  hideTabs = false,
 }) => {
   const [activeTab, setActiveTab] = useState<"submittals" | "invoices">(
-    "submittals"
+    initialTab
   );
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,33 +50,47 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
 
   return (
     <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 shrink-0">
-        <div className="flex gap-2 bg-white/50 p-1 rounded-lg self-start sm:self-auto">
-          <button
-            onClick={() => setActiveTab("submittals")}
-            className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${activeTab === "submittals"
-              ? "bg-green-500 text-white shadow-md shadow-green-200"
-              : "text-gray-500 hover:text-gray-700 hover:bg-white"
-              }`}
-          >
-            Upcoming Submittals
-          </button>
-          <button
-            onClick={() => setActiveTab("invoices")}
-            className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${activeTab === "invoices"
-              ? "bg-green-500 text-white shadow-md shadow-green-200"
-              : "text-gray-500 hover:text-gray-700 hover:bg-white"
-              }`}
-          >
-            Invoice Need Raise
-          </button>
+      {!hideTabs && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 shrink-0">
+          <div className="flex gap-2 bg-white/50 p-1 rounded-lg self-start sm:self-auto">
+            <button
+              onClick={() => setActiveTab("submittals")}
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${activeTab === "submittals"
+                ? "bg-green-500 text-white shadow-md shadow-green-200"
+                : "text-gray-500 hover:text-gray-700 hover:bg-white"
+                }`}
+            >
+              Upcoming Submittals
+            </button>
+            <button
+              onClick={() => setActiveTab("invoices")}
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${activeTab === "invoices"
+                ? "bg-green-500 text-white shadow-md shadow-green-200"
+                : "text-gray-500 hover:text-gray-700 hover:bg-white"
+                }`}
+            >
+              Invoice Need Raise
+            </button>
+          </div>
+          <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm self-start sm:self-auto">
+            {activeTab === "submittals"
+              ? `${pendingSubmittals.length} Pending`
+              : `${invoiceNeedRaise.length} Need Raise`}
+          </span>
         </div>
-        <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm self-start sm:self-auto">
-          {activeTab === "submittals"
-            ? `${pendingSubmittals.length} Pending`
-            : `${invoiceNeedRaise.length} Need Raise`}
-        </span>
-      </div>
+      )}
+      {hideTabs && (
+        <div className="flex items-center justify-between mb-4 shrink-0">
+          <h3 className="text-lg font-bold text-gray-700">
+            {activeTab === "submittals" ? "Upcoming Submittals" : "Invoice Need Raise"}
+          </h3>
+          <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm">
+            {activeTab === "submittals"
+              ? `${pendingSubmittals.length} Pending`
+              : `${invoiceNeedRaise.length} Need Raise`}
+          </span>
+        </div>
+      )}
 
       <div className="flex-1 space-y-4 min-h-0">
         {activeTab === "submittals" ? (
