@@ -224,9 +224,12 @@ const GetProjectById = ({ id }: { id: string }) => {
                   <FolderOpenDot className="w-4 h-4" />
                   Project Description
                 </h4>
-                <p className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
-                  {project.description || "No description available."}
-                </p>
+                <div
+                  className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: project.description || "No description available."
+                  }}
+                />
               </div>
               <div className="space-y-3">
                 <InfoRow

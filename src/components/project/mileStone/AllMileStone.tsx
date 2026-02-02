@@ -23,6 +23,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
     (state: any) => state.milestoneInfo?.milestonesByProject || {}
   );
   const milestones = milestonesByProject[project.id] || [];
+console.log(milestones);
 
   const fetchMileStone = async () => {
     try {
@@ -56,7 +57,6 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
 
   const columns: ColumnDef<any>[] = [
     { accessorKey: "subject", header: "Subject" },
-    { accessorKey: "description", header: "Description" },
     { accessorKey: "approvalDate", header: "Approval Date" },
     { accessorKey: "status", header: "Status" },
   ];
