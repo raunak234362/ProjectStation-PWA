@@ -3,7 +3,16 @@ import { Loader2, AlertCircle, X, Download } from "lucide-react";
 import Service from "../../api/Service";
 import logo from "../../assets/logo.png";
 
-const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) => {
+const GetInvoiceById = ({
+  id,
+  onClose,
+  close,
+}: {
+  id: string;
+  onClose?: () => void;
+  close?: () => void;
+}) => {
+  const handleClose = onClose || close;
   const [invoice, setInvoice] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,8 +63,9 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @media print {
           @page {
             size: A4;
@@ -91,7 +101,9 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             page-break-after: auto !important;
           }
         }
-      `}} />
+      `,
+        }}
+      />
 
       <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0 print:static print:bg-white print:block">
         {/* Action Header - Hidden in Print */}
@@ -103,12 +115,14 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
             Download PDF
           </button>
-          {onClose && (
+          <br />
+          {handleClose && (
             <button
-              onClick={onClose}
-              className="flex items-center justify-center w-12 h-12 bg-white text-gray-900 rounded-full shadow-2xl hover:bg-red-50 hover:text-red-600 transition-all border border-gray-100 scale-110"
+              onClick={handleClose}
+              className="flex items-center gap-2 px-3 py-3 bg-white text-gray-900 rounded-full shadow-2xl hover:bg-red-50 hover:text-red-600 transition-all border border-gray-100 scale-110 font-bold"
             >
-              <X className="w-8 h-8" />
+              <X className="w-5 h-3" />
+              Close
             </button>
           )}
         </div>
@@ -119,7 +133,10 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             {/* Header Letterhead */}
             <div className="flex justify-between items-end mb-5">
               <div>
-                <h1 className="text-[28px] font-medium text-[#6bbd45] mb-2 leading-none" style={{ fontFamily: 'serif' }}>
+                <h1
+                  className="text-[28px] font-medium text-[#6bbd45] mb-2 leading-none"
+                  style={{ fontFamily: "serif" }}
+                >
                   Whiteboard Technologies LLC
                 </h1>
               </div>
@@ -131,16 +148,22 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             <div className="flex justify-between items-start mb-5 text-[12px]">
               {/* Receiver Details */}
               <div className="w-1/2">
-                <h2 className="font-bold text-black mb-3 text-[13px]">Details of Receiver (Billed to)</h2>
+                <h2 className="font-bold text-black mb-3 text-[13px]">
+                  Details of Receiver (Billed to)
+                </h2>
                 <div className="grid grid-cols-[120px_1fr] gap-y-1">
                   <span className="text-black">Name:</span>
                   <span className="font-bold">{invoice.customerName}</span>
 
                   <span className="text-black">Contact Name:</span>
-                  <span className="font-bold">{invoice.contactPerson || "Mr."}</span>
+                  <span className="font-bold">
+                    {invoice.contactPerson || "Mr."}
+                  </span>
 
                   <span className="text-black">Address:</span>
-                  <span className="font-bold leading-tight">{invoice.address}</span>
+                  <span className="font-bold leading-tight">
+                    {invoice.address}
+                  </span>
 
                   <span className="text-black">Country/State/Code:</span>
                   <span className="font-bold">{invoice.stateCode || "-"}</span>
@@ -153,20 +176,28 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
               {/* Invoice Metadata */}
               <div className="w-[220px]">
                 <div className="text-right mb-4">
-                  <h2 className="font-bold text-[14px]">Original for Recipient</h2>
+                  <h2 className="font-bold text-[14px]">
+                    Original for Recipient
+                  </h2>
                 </div>
                 <div className="grid grid-cols-[100px_1fr] gap-y-1">
                   <span className="text-black">Invoice No:</span>
                   <span className="font-bold">{invoice.invoiceNumber}</span>
 
                   <span className="text-black">Invoice Date:</span>
-                  <span className="font-bold">{formatDate(invoice.invoiceDate)}</span>
+                  <span className="font-bold">
+                    {formatDate(invoice.invoiceDate)}
+                  </span>
 
                   <span className="text-black">Date of Supply:</span>
-                  <span className="font-bold">{formatDate(invoice.dateOfSupply)}</span>
+                  <span className="font-bold">
+                    {formatDate(invoice.dateOfSupply)}
+                  </span>
 
                   <span className="text-black">Place of Supply:</span>
-                  <span className="font-bold">{invoice.placeOfSupply || "Electronic"}</span>
+                  <span className="font-bold">
+                    {invoice.placeOfSupply || "Electronic"}
+                  </span>
 
                   <span className="text-black">Job Name:</span>
                   <span className="font-bold">{invoice.jobName}</span>
@@ -179,43 +210,83 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-green-600 text-white">
-                    <th className="py-2 px-3 border-r border-gray-300 text-left w-[50px] font-bold text-[11px] uppercase">SL #</th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center font-bold text-[11px] uppercase">Description of Engineering Services</th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[70px] font-bold text-[11px] uppercase">SAC</th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[50px] font-bold text-[11px] uppercase">Unit</th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px] font-bold text-[11px] uppercase whitespace-nowrap">Rate (USD)</th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px] font-bold text-[11px] uppercase whitespace-nowrap">Total</th>
-                    <th className="py-2 px-3 text-center w-[110px] font-bold text-[11px] uppercase whitespace-nowrap">Total (USD)</th>
+                    <th className="py-2 px-3 border-r border-gray-300 text-left w-[50px] font-bold text-[11px] uppercase">
+                      SL #
+                    </th>
+                    <th className="py-2 px-3 border-r border-gray-300 text-center font-bold text-[11px] uppercase">
+                      Description of Engineering Services
+                    </th>
+                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[70px] font-bold text-[11px] uppercase">
+                      SAC
+                    </th>
+                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[50px] font-bold text-[11px] uppercase">
+                      Unit
+                    </th>
+                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px] font-bold text-[11px] uppercase whitespace-nowrap">
+                      Rate (USD)
+                    </th>
+                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px] font-bold text-[11px] uppercase whitespace-nowrap">
+                      Total
+                    </th>
+                    <th className="py-2 px-3 text-center w-[110px] font-bold text-[11px] uppercase whitespace-nowrap">
+                      Total (USD)
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="text-[12px] text-black">
                   {invoice.invoiceItems?.map((item: any, index: number) => (
                     <tr key={index} className="border-b border-black">
-                      <td className="py-1 px-3 text-left align-top">{index + 1}.</td>
+                      <td className="py-1 px-3 text-left align-top">
+                        {index + 1}.
+                      </td>
                       <td className="py-1 px-3 text-center align-top whitespace-pre-wrap leading-relaxed">
                         <div className="font-medium">{item.description}</div>
                         {item.remarks && (
-                          <div className="text-[10px] text-gray-400 italic">({item.remarks})</div>
+                          <div className="text-[10px] text-gray-400 italic">
+                            ({item.remarks})
+                          </div>
                         )}
                       </td>
-                      <td className="py-1 px-3 text-center align-top">{item.sacCode || "998333"}</td>
-                      <td className="py-1 px-3 text-center align-top">{item.unit}</td>
-                      <td className="py-1 px-3 text-center align-top">{item.rateUSD?.toFixed(0) || "000"}</td>
-                      <td className="py-1 px-3 text-center align-top">{item.totalUSD?.toFixed(0) || "000"}</td>
-                      <td className="py-1 px-3 text-center align-top">{item.totalUSD?.toFixed(0) || "000"}</td>
+                      <td className="py-1 px-3 text-center align-top">
+                        {item.sacCode || "998333"}
+                      </td>
+                      <td className="py-1 px-3 text-center align-top">
+                        {item.unit}
+                      </td>
+                      <td className="py-1 px-3 text-center align-top">
+                        {item.rateUSD?.toFixed(0) || "000"}
+                      </td>
+                      <td className="py-1 px-3 text-center align-top">
+                        {item.totalUSD?.toFixed(0) || "000"}
+                      </td>
+                      <td className="py-1 px-3 text-center align-top">
+                        {item.totalUSD?.toFixed(0) || "000"}
+                      </td>
                     </tr>
                   ))}
                   {/* Filler Rows */}
-                  {[...Array(Math.max(0, 3 - (invoice.invoiceItems?.length || 0)))].map((_, i) => (
-                    <tr key={`filler-${i}`} className="border-b border-black h-7">
+                  {[
+                    ...Array(
+                      Math.max(0, 3 - (invoice.invoiceItems?.length || 0)),
+                    ),
+                  ].map((_, i) => (
+                    <tr
+                      key={`filler-${i}`}
+                      className="border-b border-black h-7"
+                    >
                       <td colSpan={7}>&nbsp;</td>
                     </tr>
                   ))}
 
                   {/* Summary Section */}
                   <tr className="border-b border-black font-bold h-7">
-                    <td colSpan={5} className="px-16 text-left">Total</td>
-                    <td colSpan={2} className="px-3 text-right font-bold text-[15px]">
+                    <td colSpan={5} className="px-16 text-left">
+                      Total
+                    </td>
+                    <td
+                      colSpan={2}
+                      className="px-3 text-right font-bold text-[15px]"
+                    >
                       $ {invoice.totalInvoiceValue?.toFixed(0) || "0000"}
                     </td>
                   </tr>
@@ -242,7 +313,9 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
                   </tr>
 
                   <tr className="font-bold h-7 text-[13px] border-b border-black">
-                    <td colSpan={6} className="px-3 text-left">Total Invoice Value (in Figures)</td>
+                    <td colSpan={6} className="px-3 text-left">
+                      Total Invoice Value (in Figures)
+                    </td>
                     <td className="px-3 text-right text-sm">
                       $ {invoice.totalInvoiceValue?.toFixed(2) || "0000.00"}
                     </td>
@@ -251,8 +324,12 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
                   <tr className="border-b border-black">
                     <td colSpan={7} className="px-3 py-1">
                       <div className="flex gap-2 text-[12px] items-center">
-                        <span className="font-bold">Total Invoice Value (in Words):</span>
-                        <span className="font-bold uppercase tracking-tight text-gray-700">US Dollars</span>
+                        <span className="font-bold">
+                          Total Invoice Value (in Words):
+                        </span>
+                        <span className="font-bold uppercase tracking-tight text-gray-700">
+                          US Dollars
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -262,21 +339,32 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
 
             {/* Instructions */}
             <div className="mb-3">
-              <h4 className="text-green-600 font-bold text-[12px] mb-1 tracking-tight">Instructions</h4>
+              <h4 className="text-green-600 font-bold text-[12px] mb-1 tracking-tight">
+                Instructions
+              </h4>
               <p className="text-xs text-gray-700 leading-relaxed border-[1px] border-gray-600 p-1 mb-1">
-                Consulting Proforma Invoice for Steel Detailing of {invoice.jobName} - <span className="font-bold">Cobb P.O #</span>
+                Consulting Proforma Invoice for Steel Detailing of{" "}
+                {invoice.jobName} -{" "}
+                <span className="font-bold">Cobb P.O #</span>
               </p>
               <p className="text-xs text-black">
-                All payments to be made to <span className="font-bold uppercase">Whiteboard Technologies LLC</span> in US Dollars via Wire Transfers within 15 days.
+                All payments to be made to{" "}
+                <span className="font-bold uppercase">
+                  Whiteboard Technologies LLC
+                </span>{" "}
+                in US Dollars via Wire Transfers within 15 days.
               </p>
             </div>
 
             {/* Signature Area at Base */}
             <div className="mt-auto flex flex-col items-end pr-10">
               <div className="text-left">
-
-                <p className="text-[#6bbd45] font-medium text-[11px] mb-4">Thank you for your business!</p>
-                <p className="text-[11px] font-bold text-gray-800 mb-2">For Whiteboard Technologies Pvt Ltd</p>
+                <p className="text-[#6bbd45] font-medium text-[11px] mb-4">
+                  Thank you for your business!
+                </p>
+                <p className="text-[11px] font-bold text-gray-800 mb-2">
+                  For Whiteboard Technologies Pvt Ltd
+                </p>
               </div>
               <div className="text-center">
                 <div className="relative h-[80px] w-[180px] mb-2 flex flex-col items-center justify-center">
@@ -286,22 +374,42 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
                   </div>
                   <div className="w-full border-gray-300 mt-auto"></div>
                 </div>
-                <p className="text-[10px] font-bold text-black tracking-wider">Authorised signatory</p>
+                <p className="text-[10px] font-bold text-black tracking-wider">
+                  Authorised signatory
+                </p>
               </div>
             </div>
 
             {/* Contact Footer */}
             <div className="mt-12 pt-8 flex justify-between text-[12px] text-gray-500">
               <div className="flex-1">
-                <p className="mb-4 text-gray-700 font-normal">For any questions please contact Raj:</p>
+                <p className="mb-4 text-gray-700 font-normal">
+                  For any questions please contact Raj:
+                </p>
                 <div className="flex gap-16">
                   <div className="flex flex-col items-start justify-start gap-1">
-                    <span className="uppercase font-bold text-[12px]">  <span className="text-[#6bbd45] ">Tel:</span> USA: +1 612.605.5833</span>
-                    <span className="uppercase font-bold text-[12px]">INDIA: +1 770.256.6888</span>
+                    <span className="uppercase font-bold text-[12px]">
+                      {" "}
+                      <span className="text-[#6bbd45] ">Tel:</span> USA: +1
+                      612.605.5833
+                    </span>
+                    <span className="uppercase font-bold text-[12px]">
+                      INDIA: +1 770.256.6888
+                    </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">Email: <span className="text-gray-500 normal-case font-medium">raj@whiteboardtec.com</span></span>
-                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">Web: <span className="text-gray-500 normal-case font-medium">www.whiteboardtec.com</span></span>
+                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">
+                      Email:{" "}
+                      <span className="text-gray-500 normal-case font-medium">
+                        raj@whiteboardtec.com
+                      </span>
+                    </span>
+                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">
+                      Web:{" "}
+                      <span className="text-gray-500 normal-case font-medium">
+                        www.whiteboardtec.com
+                      </span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -313,7 +421,10 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             {/* Header Letterhead */}
             <div className="flex justify-between items-end mb-5">
               <div>
-                <h1 className="text-[28px] font-medium text-[#6bbd45] mb-2 leading-none" style={{ fontFamily: 'serif' }}>
+                <h1
+                  className="text-[28px] font-medium text-[#6bbd45] mb-2 leading-none"
+                  style={{ fontFamily: "serif" }}
+                >
                   Whiteboard Technologies LLC
                 </h1>
               </div>
@@ -322,7 +433,9 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             </div>
             <div className="h-[1px] bg-[#e6554d] w-full mb-3"></div>
             <p className="mb-10 text-[14px] leading-relaxed text-gray-700">
-              Please initiate the ACH/Wire Transfer in <span className="font-bold underline">USD</span> currency from your local Bank with the following information:
+              Please initiate the ACH/Wire Transfer in{" "}
+              <span className="font-bold underline">USD</span> currency from
+              your local Bank with the following information:
             </p>
 
             <h3 className="font-bold text-[15px] text-gray-800 mb-10">
@@ -332,20 +445,24 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             {invoice.accountInfo && invoice.accountInfo.length > 0 ? (
               <div className="grid grid-cols-[250px_1fr] gap-y-10 text-[14px] text-gray-700">
                 <span className="">ABA/Routing number:</span>
-                <span className="font-medium text-gray-900">{invoice.accountInfo[0].abaRoutingNumber || "121145349"}</span>
+                <span className="font-medium text-gray-900">
+                  {invoice.accountInfo[0].abaRoutingNumber || "121145349"}
+                </span>
 
                 <span className="">Account number:</span>
-                <span className="font-medium text-gray-900">{invoice.accountInfo[0].accountNumber || "201408414172265"}</span>
+                <span className="font-medium text-gray-900">
+                  {invoice.accountInfo[0].accountNumber || "201408414172265"}
+                </span>
 
                 <span className="">Account type:</span>
                 <span className="text-gray-900">
                   {invoice.accountInfo[0].accountType || "Business checking"}
                 </span>
 
-                <span className="">
-                  Recipient / beneficiary information*:
+                <span className="">Recipient / beneficiary information*:</span>
+                <span className="text-gray-900">
+                  Whiteboard Technologies LLC.
                 </span>
-                <span className="text-gray-900">Whiteboard Technologies LLC.</span>
 
                 <span className="">Beneficiary address:</span>
                 <span className="text-gray-900 whitespace-pre-wrap leading-snug">
@@ -354,7 +471,9 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
                 </span>
 
                 <span className="">Bank information:</span>
-                <span className="text-gray-900">{invoice.accountInfo[0].bankName || "Column Bank"}</span>
+                <span className="text-gray-900">
+                  {invoice.accountInfo[0].bankName || "Column Bank"}
+                </span>
 
                 <span className="">Bank Address:</span>
                 <span className="text-gray-900 whitespace-pre-wrap leading-snug">
@@ -364,7 +483,9 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
               </div>
             ) : (
               <div className="bg-red-50 p-8 rounded text-center">
-                <p className="text-red-500 font-bold">No bank account information attached to this invoice.</p>
+                <p className="text-red-500 font-bold">
+                  No bank account information attached to this invoice.
+                </p>
               </div>
             )}
 
@@ -375,15 +496,33 @@ const GetInvoiceById = ({ id, onClose }: { id: string; onClose?: () => void }) =
             {/* Contact Footer Page 2 */}
             <div className="mt-auto pt-8 flex justify-between text-[10px] text-gray-500">
               <div className="flex-1">
-                <p className="mb-4 text-gray-700 font-normal text-[12px]">For any questions please contact Raj:</p>
+                <p className="mb-4 text-gray-700 font-normal text-[12px]">
+                  For any questions please contact Raj:
+                </p>
                 <div className="flex gap-16">
                   <div className="flex flex-col items-start justify-start gap-1">
-                    <span className="uppercase font-bold text-[12px]">  <span className="text-[#6bbd45] ">Tel:</span> USA: +1 612.605.5833</span>
-                    <span className="uppercase font-bold text-[12px]">INDIA: +1 770.256.6888</span>
+                    <span className="uppercase font-bold text-[12px]">
+                      {" "}
+                      <span className="text-[#6bbd45] ">Tel:</span> USA: +1
+                      612.605.5833
+                    </span>
+                    <span className="uppercase font-bold text-[12px]">
+                      INDIA: +1 770.256.6888
+                    </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">Email: <span className="text-gray-500 normal-case font-medium">raj@whiteboardtec.com</span></span>
-                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">Web: <span className="text-gray-500 normal-case font-medium">www.whiteboardtec.com</span></span>
+                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">
+                      Email:{" "}
+                      <span className="text-gray-500 normal-case font-medium">
+                        raj@whiteboardtec.com
+                      </span>
+                    </span>
+                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">
+                      Web:{" "}
+                      <span className="text-gray-500 normal-case font-medium">
+                        www.whiteboardtec.com
+                      </span>
+                    </span>
                   </div>
                 </div>
               </div>

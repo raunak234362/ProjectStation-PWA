@@ -32,6 +32,12 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [newStatus, setNewStatus] = useState("");
+  const [statusReason, setStatusReason] = useState("");
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
   const dispatch = useDispatch();
   const fetchRfq = async () => {
     try {
@@ -88,6 +94,36 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     }
   };
 
+  const handleStatusUpdate = async () => {
+    if (!newStatus) {
+      toast.error("Please select a status");
+      return;
+    }
+    if (!statusReason) {
+      toast.error("Please provide a reason");
+      return;
+    }
+
+    try {
+      setIsUpdatingStatus(true);
+      const payload = {
+        wbtStatus: newStatus,
+        reason: statusReason,
+      };
+      await Service.UpdateRFQById(id, payload);
+      toast.success("RFQ status updated successfully");
+      setShowStatusModal(false);
+      setNewStatus("");
+      setStatusReason("");
+      fetchRfq(); // Refresh data
+    } catch (err) {
+      console.error("Status update failed:", err);
+      toast.error("Failed to update RFQ status");
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8 text-gray-700">
@@ -129,9 +165,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     {
       accessorKey: "description",
       header: "Message",
-      cell: ({ row }) => (
-        <p className="truncate max-w-[180px]">{row.original.description}</p>
-      ),
+      cell: ({ row }) => {
+        const plainText =
+          row.original.description?.replace(/<[^>]*>?/gm, "") || "";
+        return <p className="truncate max-w-[180px]">{plainText}</p>;
+      },
     },
     {
       accessorKey: "files",
@@ -202,15 +240,26 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               {/* Action buttons */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 {/* EDIT RFQ */}
-                {/* <Button
-                  onClick={() => alert("Coming soon: Edit RFQ modal")}
-                  className="flex-1 sm:flex-none px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
-                >
-                  Edit
-                </Button> */}
+                {userRole !== "CLIENT" && (
+                  <>
+                    <Button
+                      onClick={() => alert("Coming soon: Edit RFQ modal")}
+                      className="flex-1 sm:flex-none px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
+                    >
+                      Edit
+                    </Button>
+
+                    <Button
+                      onClick={() => setShowStatusModal(true)}
+                      className="flex-1 sm:flex-none px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+                    >
+                      Change Status
+                    </Button>
+                  </>
+                )}
 
                 {/* DELETE RFQ */}
-                <Button
+                {/* <Button
                   type="button"
                   variant="destructive"
                   onClick={(e) => {
@@ -220,7 +269,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                   className="flex-1 sm:flex-none px-3 py-1 text-white rounded-md transition text-sm"
                 >
                   Delete
-                </Button>
+                </Button> */}
               </div>
             </div>
 
@@ -282,20 +331,22 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               parentId={rfq?.id}
               formatDate={(date: string) => new Date(date).toLocaleDateString()}
             />
-            <div className="flex flex-col gap-2 pt-2">
-              <Button
-                onClick={() => setShowEstimationModal(true)}
-                className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm font-bold bg-green-500 text-white shadow-xs"
-              >
-                Raise For Estimation
-              </Button>
-              <Button
-                onClick={() => handleCDQuotationModal()}
-                className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight font-bold"
-              >
-                Raise for Connection Designer Quotation
-              </Button>
-            </div>
+            {userRole !== "CLIENT" && (
+              <div className="flex flex-col gap-2 pt-2">
+                <Button
+                  onClick={() => setShowEstimationModal(true)}
+                  className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm font-bold bg-green-500 text-white shadow-xs"
+                >
+                  Raise For Estimation
+                </Button>
+                <Button
+                  onClick={() => handleCDQuotationModal()}
+                  className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight font-bold"
+                >
+                  Raise for Connection Designer Quotation
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
@@ -307,7 +358,8 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               </h1>
 
               {(userRole === "ADMIN" ||
-                userRole === "STAFF" ||
+                userRole === "DEPUTY_MANAGER" ||
+                userRole === "OPERATION_EXECUTIVE" ||
                 userRole === "USER") && (
                 <Button
                   onClick={() => setShowResponseModal(true)}
@@ -424,6 +476,72 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 } text-white`}
               >
                 {isDeleting ? "Deleting..." : "Confirm Delete"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status Change Modal */}
+      {showStatusModal && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-blue-600 flex items-center gap-2">
+                Change RFQ Status
+              </h3>
+              <button
+                onClick={() => setShowStatusModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  New Status
+                </label>
+                <select
+                  value={newStatus}
+                  onChange={(e) => setNewStatus(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                >
+                  <option value="">Select Status</option>
+                  <option value="OPEN">OPEN</option>
+                  <option value="IN_PROGRESS">IN_PROGRESS</option>
+                  <option value="CLOSED">CLOSED</option>
+                  <option value="AWARDED">AWARDED</option>
+                  <option value="RE_APPROVED">RE_APPROVED</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Reason for Change
+                </label>
+                <textarea
+                  value={statusReason}
+                  onChange={(e) => setStatusReason(e.target.value)}
+                  placeholder="Enter reason..."
+                  rows={3}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <Button
+                onClick={() => setShowStatusModal(false)}
+                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleStatusUpdate}
+                disabled={isUpdatingStatus}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isUpdatingStatus ? "Updating..." : "Update Status"}
               </Button>
             </div>
           </div>
