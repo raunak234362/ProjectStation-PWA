@@ -23,12 +23,12 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
   const headerTitle = activeTab ? activeTab.label : "Whiteboard Technologies";
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-2 px-6 bg-white rounded-xl mb-2">
+    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-2 px-6 bg-white rounded-[6px] mb-2">
       {/* Left: Sidebar Toggle & Title */}
       <div className="flex items-center gap-4">
         <Button
           onClick={toggleSidebar}
-          className="w-9 h-9 flex items-center justify-center bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all shadow-[0_4px_10px_-2px_rgba(34,197,94,0.4)]"
+          className="w-9 h-9 flex items-center justify-center bg-green-500 text-white rounded-[6px] hover:bg-green-600 transition-all shadow-[0_4px_10px_-2px_rgba(34,197,94,0.4)]"
         >
           {isMinimized ? (
             <Menu size={18} strokeWidth={2.5} />
@@ -53,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
             </span>
           </span>
         </div>
-        <button className="relative p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-[0.75rem] transition-all shadow-sm group">
+        <button className="relative p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-[6px] transition-all shadow-sm group">
           <Bell
             size={18}
             strokeWidth={2.5}

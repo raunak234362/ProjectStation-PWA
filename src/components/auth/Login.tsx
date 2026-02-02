@@ -65,50 +65,71 @@ const Login = () => {
         className="absolute inset-0 h-full w-full object-cover blur-sm z-0"
       />
 
-      <div className="relative z-10 grid w-screen h-screen grid-cols-1 md:grid-cols-2">
+      <div className="relative z-10 grid w-screen min-h-screen grid-cols-1 md:grid-cols-2 overflow-x-hidden">
         {/* Logo section */}
-        <div className="flex items-center justify-center">
-          <div className="flex items-center justify-center px-2 mx-20 shadow-2xl shadow-green-950 bg-white border-4 bg-opacity-70 rounded-2xl md:py-14 md:px-20">
-            <img src={LOGO} alt="Logo" />
+        <div className="flex items-center justify-center md:min-h-screen">
+          <div className="flex items-center justify-center p-6 md:p-16 shadow-2xl shadow-green-950/20 bg-white/90 backdrop-blur-sm border-4 border-white rounded-[6px] mx-6 md:mx-20">
+            <img src={LOGO} alt="Logo" className="max-w-[220px] md:max-w-md w-full h-auto" />
           </div>
         </div>
 
         {/* Login form */}
-        <div className="flex items-center bg-black/70 backdrop-blur-lg justify-center">
-          <div className="bg-green-100/40 bg-opacity-90 h-fit w-full md:w-2/3 rounded-2xl  border- border-green-900 p-5">
-            <h1 className="mb-10 text-4xl font-bold text-center text-gray-900 ">
-              Login
-            </h1>
+        <div className="flex items-center md:bg-white/30 md:backdrop-blur-xl justify-center p-6 md:p-0">
+          <div className="bg-white/95 h-fit w-full max-w-lg md:w-3/4 lg:w-2/3 rounded-[6px] border border-green-900/10 p-8 md:p-12 shadow-2xl shadow-green-950/20">
+
+            {/* Welcome Message */}
+            <div className="mb-8">
+              <p className="text-center text-4xl md:text-5xl text-gray-700 font-light leading-tight">
+                Welcome to <br />
+                <span className="font-bold text-green-700">
+                  Project Station
+                </span>
+              </p>
+
+              <p className="text-center text-lg text-gray-500 mt-4">
+                Powered by{" "}
+                <span className="font-semibold text-gray-700">
+                  Whiteboard Technologies
+                </span>
+              </p>
+            </div>
 
             <form
               onSubmit={handleSubmit(Submit)}
-              className="flex flex-col w-full gap-5 "
+              className="flex flex-col w-full gap-6"
             >
               <div>
                 <Input
                   label="Username:"
                   placeholder="USERNAME"
+                  className="rounded-[6px] border-gray-200 focus:border-green-600 focus:ring-green-600"
                   type="text"
                   {...register("username", {
                     required: "Username is required",
                   })}
                 />
               </div>
+
               <div>
                 <Input
                   label="Password:"
                   placeholder="PASSWORD"
                   type="password"
+                  className="rounded-[6px] border-gray-200 focus:border-green-600 focus:ring-green-600"
                   {...register("password", {
                     required: "Password is required",
                   })}
                 />
               </div>
-              <div className="flex justify-center w-full my-5">
-                <Button type="submit">Sign In</Button>
+
+              <div className="mt-4">
+                <Button type="submit" className="w-full text-2xl font-bold py-4 rounded-[6px] bg-green-600 hover:bg-green-700 transition-all duration-300 shadow-lg shadow-green-600/30">
+                  Login
+                </Button>
               </div>
             </form>
           </div>
+
         </div>
       </div>
     </div>

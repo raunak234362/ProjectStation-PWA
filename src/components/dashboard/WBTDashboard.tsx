@@ -165,10 +165,10 @@ const WBTDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col w-full p-2 space-y-3 pb-8">
+    <div className="flex flex-col w-full p-1 space-y-3 pb-8">
       <Suspense fallback={<DashboardSkeleton />}>
         {/* Stats Grid - Top Section */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 shrink-0">
+        <div className="grid grid-cols-1 max-md:grid-cols-2 lg:grid-cols-3 gap-3 shrink-0">
           {/* Project Stats */}
           <div className="w-full">
             <ProjectStats stats={stats} onCardClick={handleCardClick} />

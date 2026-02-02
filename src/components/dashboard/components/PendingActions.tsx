@@ -20,7 +20,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
 }) => {
   const actions = [
     {
-      title: "Pending RFI",
+      title: "RFI",
       count: dashboardStats?.pendingRFI || 0,
       subtitle: "New RFI",
       subcount: dashboardStats?.newRFI || 0,
@@ -28,7 +28,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
       color: "amber",
     },
     {
-      title: "Pending Submittals",
+      title: "Submittals",
       count: dashboardStats?.pendingSubmittals || 0,
       subtitle: "Response Pending",
       icon: RefreshCw,
@@ -43,7 +43,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
       color: "rose",
     },
     {
-      title: "Pending RFQ",
+      title: "RFQ",
       count: dashboardStats?.pendingRFQ || 0,
       subcount: dashboardStats?.newRFQ || 0,
       subtitle: "New RFQ",
@@ -76,8 +76,8 @@ const PendingActions: React.FC<PendingActionsProps> = ({
   };
 
   return (
-    <div className="flex flex-col justify-center h-full">
-      <h3 className="font-extrabold text-xl text-slate-800 mb-4 flex items-center gap-2 px-2">
+    <div className="flex flex-col justify-center h-full bg-white shadow-sm rounded-2xl p-4">
+      <h3 className="font-bold text-xl text-slate-800 mb-4 flex items-center gap-2 px-2">
         <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
         Pending Actions
       </h3>
@@ -107,21 +107,21 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                 <action.icon size={22} strokeWidth={2.5} />
               </div>
 
-              <div className="flex flex-col min-w-0">
-                <span className="font-bold text-sm text-slate-500 uppercase tracking-tight truncate">
+              <div className="flex flex-row gap-5 items-center min-w-0">
+                <div className="font-bold text-md text-slate-800 uppercase tracking-tight truncate">
                   {action.title}
-                </span>
-                <div className="flex items-baseline gap-2">
-                  <span
-                    className="text-2xl font-extrabold tracking-tight"
-                    style={{ color: colors.text.replace("text-", "#") }}
-                  >
-                    {action.count}
-                  </span>
+                </div>
+                <div
+                  className="text-2xl font-extrabold tracking-tight"
+                  style={{ color: colors.text.replace("text-", "#") }}
+                >
+                  {action.count}
+                </div>
+                {/* <div className="flex items-baseline gap-2">
                   <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest truncate">
                     {action.subtitle}
                   </span>
-                </div>
+                </div> */}
               </div>
             </div>
           );
