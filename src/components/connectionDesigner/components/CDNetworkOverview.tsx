@@ -104,7 +104,8 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                 onMouseEnter={() => setHoveredId(designer.id || designer._id)}
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => onSelect(designer.id || designer._id)}
-                className="group relative flex items-center justify-between p-3 sm:p-4 rounded-xl hover:bg-green-50/50 transition-colors border border-transparent hover:border-green-100 cursor-pointer overflow-hidden"
+                className={`group relative flex items-center justify-between p-3 sm:p-4 rounded-xl hover:bg-green-50/50 transition-colors border border-transparent hover:border-green-100 cursor-pointer ${hoveredId === (designer.id || designer._id) ? "z-50" : "z-0"
+                  }`}
               >
                 {/* Main Info */}
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
