@@ -33,6 +33,7 @@ const GetInvoiceById = ({
         setLoading(false);
       }
     };
+    console.log(invoice);
 
     if (id) fetchInvoice();
   }, [id]);
@@ -79,37 +80,40 @@ const GetInvoiceById = ({
             margin: 0;
           }
           body {
-            margin: 0;
-            padding: 0;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            visibility: hidden;
+          }
+          .modal-root {
+            visibility: visible !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 210mm !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            z-index: 9999 !important;
+          }
+          .modal-root * {
+            visibility: visible !important;
+          }
+          .no-print {
+            display: none !important;
           }
           .print-page {
             box-shadow: none !important;
             margin: 0 !important;
             page-break-after: always !important;
-            page-break-inside: avoid !important;
-            width: 210mm !important;
-            min-height: 297mm !important;
-            padding: 15mm !important;
-            box-sizing: border-box !important;
-            display: flex !important;
-            flex-direction: column !important;
-            background: white !important;
           }
           .print-page:last-child {
             page-break-after: auto !important;
-          }
-          /* Hide default headers/footers if browser adds them */
-          html, body {
-            height: auto !important;
           }
         }
       `,
         }}
       />
 
-      <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0 print:static print:bg-white print:block">
+      <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0 print:static print:block print:bg-white">
         {/* Action Header - Hidden in Print */}
         <div className="fixed top-6 right-10 z-[110] flex gap-4 no-print">
           <button
@@ -131,10 +135,7 @@ const GetInvoiceById = ({
           )}
         </div>
 
-        <div
-          ref={componentRef}
-          className="w-[210mm] flex flex-col gap-0 shadow-[0_0_100px_rgba(0,0,0,0.5)] bg-slate-500/10 print:bg-white print:shadow-none"
-        >
+        <div className="w-[210mm] flex flex-col gap-0 shadow-[0_0_100px_rgba(0,0,0,0.5)] print:shadow-none bg-gray-100 print:bg-white  print:my-0">
           {/* Page 1: Main Invoice */}
           <div className="w-[210mm] min-h-[297mm] bg-white p-[15mm] flex flex-col shadow-none print:shadow-none mx-auto box-border font-roboto print-page">
             {/* Header Letterhead */}
@@ -164,7 +165,7 @@ const GetInvoiceById = ({
 
                   <span className="text-black">Contact Name:</span>
                   <span className="font-bold">
-                    {invoice.contactPerson || "Mr."}
+                    {invoice.contactName || "—"}
                   </span>
 
                   <span className="text-black">Address:</span>
@@ -335,7 +336,7 @@ const GetInvoiceById = ({
                           Total Invoice Value (in Words):
                         </span>
                         <span className="font-bold uppercase tracking-tight text-gray-700">
-                          US Dollars
+                          {invoice.totalInvoiceValueInWords || "—"}
                         </span>
                       </div>
                     </td>
@@ -424,7 +425,7 @@ const GetInvoiceById = ({
           </div>
 
           {/* Page 2: Bank Info */}
-          <div className="w-[210mm] min-h-[297mm] bg-white p-[20mm] pt-[15mm] relative flex flex-col shrink-0 overflow-hidden box-border border-t-[10px] border-gray-50 print-page print:border-none print:p-[20mm] print:pt-[15mm]">
+          <div className="w-[210mm] min-h-[297mm] h-[297mm] bg-white p-[20mm] pt-[15mm] relative flex flex-col shrink-0 overflow-hidden box-border border-t-[10px] border-gray-50 print:border-none print-page">
             {/* Header Letterhead */}
             <div className="flex justify-between items-end mb-5">
               <div>
@@ -449,43 +450,42 @@ const GetInvoiceById = ({
               ACH / Domestic Wire instructions:
             </h3>
 
-            {invoice.accountInfo && invoice.accountInfo.length > 0 ? (
+            {invoice?.fabricator?.bankAccount ? (
               <div className="grid grid-cols-[250px_1fr] gap-y-10 text-[14px] text-gray-700">
                 <span className="">ABA/Routing number:</span>
                 <span className="font-medium text-gray-900">
-                  {invoice.accountInfo[0].abaRoutingNumber || "121145349"}
+                  {invoice.fabricator.bankAccount.abaRoutingNumber || "—"}
                 </span>
 
                 <span className="">Account number:</span>
                 <span className="font-medium text-gray-900">
-                  {invoice.accountInfo[0].accountNumber || "201408414172265"}
+                  {invoice.fabricator.bankAccount.accountNumber || "—"}
                 </span>
 
                 <span className="">Account type:</span>
                 <span className="text-gray-900">
-                  {invoice.accountInfo[0].accountType || "Business checking"}
+                  {invoice.fabricator.bankAccount.accountType || "—"}
                 </span>
 
                 <span className="">Recipient / beneficiary information*:</span>
                 <span className="text-gray-900">
-                  Whiteboard Technologies LLC.
+                  {invoice.fabricator.bankAccount.accountName ||
+                    "Whiteboard Technologies LLC."}
                 </span>
 
                 <span className="">Beneficiary address:</span>
                 <span className="text-gray-900 whitespace-pre-wrap leading-snug">
-                  {invoice.accountInfo[0].beneficiaryAddress ||
-                    "2055, Limestone Rd STE 200-C, Wilmington New Castle Country,\nWilmington, DE, 19808."}
+                  {invoice.fabricator.bankAccount.beneficiaryAddress || "—"}
                 </span>
 
                 <span className="">Bank information:</span>
                 <span className="text-gray-900">
-                  {invoice.accountInfo[0].bankName || "Column Bank"}
+                  {invoice.fabricator.bankAccount.bankName || "—"}
                 </span>
 
                 <span className="">Bank Address:</span>
                 <span className="text-gray-900 whitespace-pre-wrap leading-snug">
-                  {invoice.accountInfo[0].bankAddress ||
-                    "1110, Gorgas Ave Suite A4-700, San Francisco, CA 94129."}
+                  {invoice.fabricator.bankAccount.bankAddress || "—"}
                 </span>
               </div>
             ) : (

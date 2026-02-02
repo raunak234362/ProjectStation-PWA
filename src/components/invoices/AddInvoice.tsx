@@ -27,7 +27,7 @@ export interface InvoiceItem {
   rateUSD: number;
   totalUSD: number;
   unit: number;
-  sacCode?: number;
+  sacCode?: any;
   remarks?: string;
 }
 
@@ -93,7 +93,7 @@ const AddInvoice = ({
           unit: 1,
           rateUSD: 0,
           totalUSD: 0,
-          sacCode: 0,
+          sacCode: "",
           remarks: "",
         },
       ],
@@ -155,6 +155,17 @@ const AddInvoice = ({
       setValue("customerName", selectedFabricator.fabName || "");
       setValue("address", selectedFabricator.website || "");
       setContacts(selectedFabricator.pointOfContact || []);
+
+      if (selectedFabricator.SAC) {
+        const currentItems = watch("invoiceItems");
+        if (currentItems) {
+          const updatedItems = currentItems.map((item) => ({
+            ...item,
+            sacCode: selectedFabricator.SAC,
+          }));
+          setValue("invoiceItems", updatedItems);
+        }
+      }
     }
 
     const projects = allProjects.filter(
@@ -210,9 +221,8 @@ const AddInvoice = ({
           console.log("RFQ Data-------", rfq);
 
           if (rfq && rfq.sender) {
-            const senderName = `${rfq.sender.firstName || ""} ${
-              rfq.sender.lastName || ""
-            }`.trim();
+            const senderName = `${rfq.sender.firstName || ""} ${rfq.sender.lastName || ""
+              }`.trim();
             setValue("customerName", senderName);
             setValue("clientId", rfq.senderId || rfq.sender.id);
           }
@@ -418,9 +428,8 @@ const AddInvoice = ({
                 {contacts.map((contact: any) => (
                   <option
                     key={contact.id || contact._id}
-                    value={`${contact.firstName || ""} ${
-                      contact.lastName || ""
-                    }`.trim()}
+                    value={`${contact.firstName || ""} ${contact.lastName || ""
+                      }`.trim()}
                   >
                     {contact.firstName} {contact.lastName}
                   </option>
@@ -552,10 +561,7 @@ const AddInvoice = ({
                   <Input
                     label={index === 0 ? "SAC" : ""}
                     placeholder="SAC"
-                    type="number"
-                    {...register(`invoiceItems.${index}.sacCode` as const, {
-                      valueAsNumber: true,
-                    })}
+                    {...register(`invoiceItems.${index}.sacCode` as const)}
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -609,16 +615,21 @@ const AddInvoice = ({
             ))}
             <Button
               type="button"
-              onClick={() =>
+              onClick={() => {
+                const selectedFab = fabricators.find(
+                  (f: any) =>
+                    f.id === selectedFabricatorId ||
+                    f._id === selectedFabricatorId
+                );
                 append({
                   description: "",
                   unit: 1,
                   rateUSD: 0,
                   totalUSD: 0,
-                  sacCode: 0,
+                  sacCode: selectedFab?.SAC || "",
                   remarks: "",
-                })
-              }
+                });
+              }}
               className="flex items-center gap-2 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
             >
               <Plus size={18} /> Add Item

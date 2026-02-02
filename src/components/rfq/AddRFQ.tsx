@@ -65,7 +65,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   const recipientOption: SelectOption[] =
     staffData
       ?.filter(
-        (u: { role: string }) => u.role === "SALES" || u.role === "ADMIN",
+        (u: { role: string }) => u.role === "SALES_MANAGER" || u.role === "ADMIN",
       )
       .map(
         (u: {
