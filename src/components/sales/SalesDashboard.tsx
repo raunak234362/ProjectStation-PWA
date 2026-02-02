@@ -1,27 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Service from "../../api/Service";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import SalesStatsCards from "./components/SalesStatsCards";
 import SalesSecondaryStats from "./components/SalesSecondaryStats";
 import SalesPerformanceChart from "./components/SalesPerformanceChart";
-import { Download, Filter } from "lucide-react";
+import { Download, Filter, ChevronDown, Check } from "lucide-react";
+import { subDays, isAfter, startOfDay } from "date-fns";
+import { cn } from "../../lib/utils";
 
 const SalesDashboard = () => {
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({
-        totalRfqs: 0,
-        projectsAwarded: 0,
-        winRate: 0,
-        totalSalesValue: 0,
-        activeProjects: 0,
-        completed: 0,
-        onHold: 0,
-        delayed: 0,
-        conversionRate: 0,
-        totalClients: 0,
+    const [timeFilter, setTimeFilter] = useState<"All Time" | "Last 7 Days" | "Last 30 Days" | "Last 12 Months">("All Time");
+    const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+    const [allData, setAllData] = useState<{ projects: any[], rfqs: any[], clients: any[] }>({
+        projects: [],
+        rfqs: [],
+        clients: [],
     });
-    const [performanceData, setPerformanceData] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,89 +29,11 @@ const SalesDashboard = () => {
                     Service.GetAllFabricators(),
                 ]);
 
-                const projects = projectsRes?.data || [];
-                const rfqs = rfqRes?.data || [];
-                const clients = clientsRes?.data || clientsRes || [];
-
-                // 1. Basic Counts
-                const totalRfqs = rfqs.length;
-                const awardedProjects = projects.filter((p: any) => p.status === "ACTIVE" || p.status === "COMPLETED" || p.status === "AWARDED").length;
-                const activeProjects = projects.filter((p: any) => p.status === "ACTIVE" || p.status === "AWARDED").length;
-                const completed = projects.filter((p: any) => p.status === "COMPLETED").length;
-                const onHold = projects.filter((p: any) => p.status === "ON_HOLD").length;
-
-                // 2. Delayed Projects (EndDate passed and not completed)
-                const today = new Date();
-                const delayed = projects.filter((p: any) => {
-                    if (p.status === "COMPLETED") return false;
-                    if (!p.endDate) return false;
-                    return new Date(p.endDate) < today;
-                }).length;
-
-                // 3. Win Rate & Conversion
-                const winRate = totalRfqs > 0 ? Math.round((awardedProjects / totalRfqs) * 100) : 0;
-                const conversionRate = totalRfqs > 0 ? Math.round((awardedProjects / totalRfqs) * 100) : 0;
-
-                // 4. Total Sales Value (Sum bidPrice of Awarded/Completed projects)
-                const totalSalesValue = rfqs.reduce((acc: number, rfq: any) => {
-                    const isAwarded = projects.some((p: any) => p.rfqId === rfq.id && (p.status === "ACTIVE" || p.status === "COMPLETED" || p.status === "AWARDED"));
-                    if (isAwarded && rfq.bidPrice) {
-                        const numericPrice = parseFloat(String(rfq.bidPrice).replace(/[^0-9.]/g, "")) || 0;
-                        return acc + numericPrice;
-                    }
-                    return acc;
-                }, 0);
-
-                // 5. Monthly Performance Data (Last 12 Months)
-                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-                // Use an array to maintain order and avoid collisions
-                const performance = [];
-                for (let i = 11; i >= 0; i--) {
-                    const d = new Date();
-                    d.setMonth(today.getMonth() - i);
-                    const m = d.getMonth();
-                    const y = d.getFullYear();
-
-                    const rfqsInMonth = rfqs.filter((r: any) => {
-                        const rd = new Date(r.createdAt);
-                        return rd.getMonth() === m && rd.getFullYear() === y;
-                    }).length;
-
-                    const awardedInMonth = projects.filter((p: any) => {
-                        if (!["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status)) return false;
-                        const pd = new Date(p.startDate);
-                        return pd.getMonth() === m && pd.getFullYear() === y;
-                    }).length;
-
-                    const completedInMonth = projects.filter((p: any) => {
-                        if (p.status !== "COMPLETED" || !p.endDate) return false;
-                        const pd = new Date(p.endDate);
-                        return pd.getMonth() === m && pd.getFullYear() === y;
-                    }).length;
-
-                    performance.push({
-                        name: months[m],
-                        RFQs: rfqsInMonth,
-                        Awarded: awardedInMonth,
-                        Completed: completedInMonth
-                    });
-                }
-
-                setStats({
-                    totalRfqs,
-                    projectsAwarded: awardedProjects,
-                    winRate,
-                    totalSalesValue,
-                    activeProjects,
-                    completed,
-                    onHold,
-                    delayed,
-                    conversionRate,
-                    totalClients: clients.length,
+                setAllData({
+                    projects: projectsRes?.data || [],
+                    rfqs: rfqRes?.data || [],
+                    clients: clientsRes?.data || clientsRes || [],
                 });
-                setPerformanceData(performance);
-
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching sales data", error);
@@ -125,6 +43,134 @@ const SalesDashboard = () => {
 
         fetchData();
     }, []);
+
+    const computedData = useMemo(() => {
+        const { projects, rfqs, clients } = allData;
+        const now = new Date();
+        const today = startOfDay(now);
+
+        let filteredRfqs = rfqs;
+        let filteredProjects = projects;
+
+        if (timeFilter !== "All Time") {
+            let days = 0;
+            if (timeFilter === "Last 7 Days") days = 7;
+            else if (timeFilter === "Last 30 Days") days = 30;
+            else if (timeFilter === "Last 12 Months") days = 365;
+
+            const cutoff = subDays(today, days);
+            filteredRfqs = rfqs.filter((r: any) => isAfter(new Date(r.createdAt), cutoff));
+            filteredProjects = projects.filter((p: any) => isAfter(new Date(p.startDate), cutoff));
+        }
+
+        // 1. Basic Counts
+        const totalRfqs = filteredRfqs.length;
+        const awardedProjects = filteredProjects.filter((p: any) => ["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status)).length;
+        const activeProjects = filteredProjects.filter((p: any) => ["ACTIVE", "AWARDED"].includes(p.status)).length;
+        const completed = filteredProjects.filter((p: any) => p.status === "COMPLETED").length;
+        const onHold = filteredProjects.filter((p: any) => p.status === "ON_HOLD").length;
+
+        // 2. Delayed Projects
+        const delayed = filteredProjects.filter((p: any) => {
+            if (p.status === "COMPLETED") return false;
+            if (!p.endDate) return false;
+            return new Date(p.endDate) < today;
+        }).length;
+
+        // 3. Win Rate
+        const winRate = totalRfqs > 0 ? Math.round((awardedProjects / totalRfqs) * 100) : 0;
+        const conversionRate = totalRfqs > 0 ? Math.round((awardedProjects / totalRfqs) * 100) : 0;
+
+        // 4. Total Sales Value
+        const totalSalesValue = filteredRfqs.reduce((acc: number, rfq: any) => {
+            const isAwarded = projects.some((p: any) => p.rfqId === rfq.id && ["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status));
+            if (isAwarded && rfq.bidPrice) {
+                const numericPrice = parseFloat(String(rfq.bidPrice).replace(/[^0-9.]/g, "")) || 0;
+                return acc + numericPrice;
+            }
+            return acc;
+        }, 0);
+
+        // 5. Monthly Performance Data
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const performance = [];
+        for (let i = 11; i >= 0; i--) {
+            const d = new Date();
+            d.setMonth(now.getMonth() - i);
+            const m = d.getMonth();
+            const y = d.getFullYear();
+
+            const rfqsInMonth = rfqs.filter((r: any) => {
+                const rd = new Date(r.createdAt);
+                return rd.getMonth() === m && rd.getFullYear() === y;
+            }).length;
+
+            const awardedInMonth = projects.filter((p: any) => {
+                if (!["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status)) return false;
+                const pd = new Date(p.startDate);
+                return pd.getMonth() === m && pd.getFullYear() === y;
+            }).length;
+
+            const completedInMonth = projects.filter((p: any) => {
+                if (p.status !== "COMPLETED" || !p.endDate) return false;
+                const pd = new Date(p.endDate);
+                return pd.getMonth() === m && pd.getFullYear() === y;
+            }).length;
+
+            performance.push({
+                name: months[m],
+                RFQs: rfqsInMonth,
+                Awarded: awardedInMonth,
+                Completed: completedInMonth
+            });
+        }
+
+        return {
+            stats: {
+                totalRfqs,
+                projectsAwarded: awardedProjects,
+                winRate,
+                totalSalesValue,
+                activeProjects,
+                completed,
+                onHold,
+                delayed,
+                conversionRate,
+                totalClients: clients.length,
+            },
+            performance
+        };
+    }, [allData, timeFilter]);
+
+    const { stats, performance: performanceData } = computedData;
+
+    const handleExport = () => {
+        const headers = ["Metric", "Value"];
+        const rows = [
+            ["Report Period", timeFilter],
+            ["Total RFQs Received", stats.totalRfqs],
+            ["Projects Awarded", stats.projectsAwarded],
+            ["Win Rate", `${stats.winRate}%`],
+            ["Total Sales Value", `$${stats.totalSalesValue}`],
+            ["Active Projects", stats.activeProjects],
+            ["Completed Projects", stats.completed],
+            ["On Hold", stats.onHold],
+            ["Delayed Projects", stats.delayed],
+            ["Conversion Rate", `${stats.conversionRate}%`],
+            ["Total Clients", stats.totalClients]
+        ];
+
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Sales_Report_${timeFilter.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     if (loading) {
         return (
@@ -143,12 +189,52 @@ const SalesDashboard = () => {
                     <p className="text-slate-500 text-sm mt-1">Monitor your sales performance and conversion rates.</p>
                 </div>
 
-                <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all shadow-soft border border-slate-100">
-                        <Filter size={18} />
-                        All Time
-                    </button>
-                    <button className="flex items-center gap-2 px-5 py-2.5 bg-[#6bbd45] text-white rounded-2xl font-bold hover:shadow-highlight transition-all shadow-medium">
+                <div className="flex gap-3 relative">
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all shadow-soft border border-slate-100 min-w-[140px] justify-between"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Filter size={18} className="text-slate-400" />
+                                {timeFilter}
+                            </div>
+                            <ChevronDown size={16} className={cn("transition-transform", showFilterDropdown ? "rotate-180" : "")} />
+                        </button>
+
+                        <AnimatePresence>
+                            {showFilterDropdown && (
+                                <>
+                                    <div className="fixed inset-0 z-10" onClick={() => setShowFilterDropdown(false)} />
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-20"
+                                    >
+                                        {(["All Time", "Last 7 Days", "Last 30 Days", "Last 12 Months"] as const).map((option) => (
+                                            <button
+                                                key={option}
+                                                onClick={() => {
+                                                    setTimeFilter(option);
+                                                    setShowFilterDropdown(false);
+                                                }}
+                                                className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                                            >
+                                                {option}
+                                                {timeFilter === option && <Check size={16} className="text-[#6bbd45]" />}
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                </>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-[#6bbd45] text-white rounded-2xl font-bold hover:shadow-highlight transition-all shadow-medium"
+                    >
                         <Download size={18} />
                         Export Report
                     </button>
