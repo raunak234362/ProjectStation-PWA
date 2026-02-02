@@ -80,40 +80,51 @@ const GetInvoiceById = ({
             margin: 0;
           }
           body {
-            visibility: hidden;
-          }
-          .modal-root {
-            visibility: visible !important;
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 210mm !important;
-            height: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-            z-index: 9999 !important;
-          }
-          .modal-root * {
-            visibility: visible !important;
-          }
-          .no-print {
-            display: none !important;
+            background: white;
+            margin: 0;
+            padding: 0;
           }
           .print-page {
-            box-shadow: none !important;
-            margin: 0 !important;
-            page-break-after: always !important;
+             box-shadow: none !important;
+             margin: 0 !important;
+             page-break-after: always !important;
+             page-break-inside: avoid !important;
+          }
+          .print-content {
+             display: block !important;
+             overflow: visible !important;
+             height: auto !important;
+             width: 100% !important;
+          }
+          .print-page {
+             box-shadow: none !important;
+             margin: 0 !important;
+             page-break-after: always !important;
+             page-break-inside: avoid !important;
+             break-after: page !important;
+             width: 100% !important;
+             min-height: 297mm !important;
+             height: auto !important;
+             padding: 15mm !important;
+             box-sizing: border-box !important;
+             display: flex !important;
+             flex-direction: column !important;
+             background: white !important;
+             position: relative !important;
           }
           .print-page:last-child {
             page-break-after: auto !important;
+          }
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
         }
       `,
         }}
       />
 
-      <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0 print:static print:block print:bg-white">
+      <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0">
         {/* Action Header - Hidden in Print */}
         <div className="fixed top-6 right-10 z-[110] flex gap-4 no-print">
           <button
@@ -135,7 +146,10 @@ const GetInvoiceById = ({
           )}
         </div>
 
-        <div className="w-[210mm] flex flex-col gap-0 shadow-[0_0_100px_rgba(0,0,0,0.5)] print:shadow-none bg-gray-100 print:bg-white  print:my-0">
+        <div
+          ref={componentRef}
+          className="w-[210mm] flex flex-col gap-0 shadow-[0_0_100px_rgba(0,0,0,0.5)] bg-gray-100 print-content"
+        >
           {/* Page 1: Main Invoice */}
           <div className="w-[210mm] min-h-[297mm] bg-white p-[15mm] flex flex-col shadow-none print:shadow-none mx-auto box-border font-roboto print-page">
             {/* Header Letterhead */}
@@ -425,7 +439,7 @@ const GetInvoiceById = ({
           </div>
 
           {/* Page 2: Bank Info */}
-          <div className="w-[210mm] min-h-[297mm] h-[297mm] bg-white p-[20mm] pt-[15mm] relative flex flex-col shrink-0 overflow-hidden box-border border-t-[10px] border-gray-50 print:border-none print-page">
+          <div className="w-[210mm] min-h-[297mm] bg-white p-[20mm] pt-[15mm] relative flex flex-col shrink-0 overflow-visible box-border border-t-[10px] border-gray-50 print-page">
             {/* Header Letterhead */}
             <div className="flex justify-between items-end mb-5">
               <div>

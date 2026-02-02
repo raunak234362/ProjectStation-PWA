@@ -48,7 +48,7 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange
                 </div>
             </div>
 
-            <div className="flex-1 min-h-[300px] w-full px-1">
+            <div className="h-[350px] w-full px-1">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />

@@ -4,9 +4,6 @@ import { Loader2 } from "lucide-react";
 import { type ProjectData, type RFQItem } from "../../../interface";
 import FabricatorStatsCards from "./components/FabricatorStatsCards";
 import RFQComparisonChart from "./components/RFQComparisonChart";
-import RFQConversionFunnel from "./components/RFQConversionFunnel";
-import TimeTrendAnalysis from "./components/TimeTrendAnalysis";
-import LiveRFQStatusTable from "./components/LiveRFQStatusTable";
 import { motion } from "motion/react";
 
 const FabricatorOverview = () => {
@@ -82,18 +79,6 @@ const FabricatorOverview = () => {
         ];
     }, [timeRange]);
 
-    const funnelData = useMemo(() => ({
-        raised: aggregateStats.totalRFQs,
-        inProduction: aggregateStats.inProduction,
-        completed: aggregateStats.completed
-    }), [aggregateStats]);
-
-    const trendData = useMemo(() => ([
-        { name: "Week 1", avgDelay: 2, productionTime: 12 },
-        { name: "Week 2", avgDelay: 4, productionTime: 14 },
-        { name: "Week 3", avgDelay: 1, productionTime: 10 },
-        { name: "Week 4", avgDelay: 5, productionTime: 18 },
-    ]), []);
 
     if (loading) {
         return (
@@ -102,7 +87,7 @@ const FabricatorOverview = () => {
             </div>
         );
     }
-   
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -116,27 +101,14 @@ const FabricatorOverview = () => {
 
             <FabricatorStatsCards stats={aggregateStats} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 min-h-[400px]">
-                    <RFQComparisonChart
-                        data={chartData}
-                        timeRange={timeRange}
-                        setTimeRange={setTimeRange}
-                    />
-                </div>
-                <div className="lg:col-span-1 min-h-[400px]">
-                    <RFQConversionFunnel data={funnelData} />
-                </div>
+            <div className="w-full min-h-[400px]">
+                <RFQComparisonChart
+                    data={chartData}
+                    timeRange={timeRange}
+                    setTimeRange={setTimeRange}
+                />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-1 min-h-[300px]">
-                    <TimeTrendAnalysis data={trendData} />
-                </div>
-                <div className="lg:col-span-2 min-h-[300px]">
-                    <LiveRFQStatusTable rfqs={rfqs} />
-                </div>
-            </div>
         </motion.div>
     );
 };
