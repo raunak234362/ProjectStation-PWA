@@ -99,6 +99,7 @@ export const navItems: NavItem[] = [
       "admin",
       "sales_manager",
       "operation_executive",
+      "estimation_head",
       "deputy_manager",
       "client_admin",
       "client",

@@ -29,7 +29,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   const staffData = useSelector((state: any) => state.userInfo.staffData);
 
   // const userType =
-  typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
+  typeof window !== "undefined" ? sessionStorage.getItem("userType")?.toLowerCase() : null;
 
   const {
     register,
@@ -65,7 +65,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   const recipientOption: SelectOption[] =
     staffData
       ?.filter(
-        (u: { role: string }) => u.role === "SALES" || u.role === "ADMIN",
+        (u: { role: string }) => u.role === "sales_manager" || u.role === "admin",
       )
       .map(
         (u: {
