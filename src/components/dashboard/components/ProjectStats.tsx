@@ -1,5 +1,6 @@
 import React from "react";
 import { Files, Activity, CheckCircle2, PauseCircle } from "lucide-react";
+import { cn } from "../../../lib/utils";
 
 interface ProjectStatsProps {
   stats: {
@@ -70,12 +71,12 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   };
 
   return (
-    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center h-full">
-      <h2 className="text-xl font-semibold text-gray-800 mb-3">
-        Project Stats
+    <div className="flex flex-col justify-center h-full">
+      <h2 className="text-xl font-extrabold text-slate-800 mb-4 px-2">
+        Project Statistics
       </h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {projectCards.map((card) => {
           const colors = colorClasses[card.color as keyof typeof colorClasses];
           const isClickable = card.clickable;
@@ -84,24 +85,28 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
             <div
               key={card.label}
               onClick={() => isClickable && card.status && onCardClick(card.status)}
-              className={`
-                flex items-center gap-3 p-3 rounded-lg border bg-white
-                ${isClickable ? colors.hoverBg + " cursor-pointer" : ""} 
-                ${isClickable ? "transition-all duration-200 hover:shadow-md" : ""}
-                border-gray-200
-              `}
+              className={cn(
+                "flex items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft transition-all duration-300",
+                isClickable ? "cursor-pointer hover:shadow-medium hover:scale-[1.02] active:scale-[0.98]" : ""
+              )}
             >
               <div
-                className={`p-2 rounded-lg ${colors.iconBg} text-white shrink-0`}
+                className={cn(
+                  "p-3 rounded-xl shadow-sm text-white shrink-0",
+                  colors.iconBg
+                )}
               >
-                <card.icon size={25} />
+                <card.icon size={22} strokeWidth={2.5} />
               </div>
 
-              <div className="flex flex-col">
-                <span className="text-md font-bold text-gray-600 truncate">
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-bold text-slate-500 uppercase tracking-tight truncate">
                   {card.label}
                 </span>
-                <span className={`text-lg lg:text-xl font-bold mt-0.5 ${colors.text}`}>
+                <span className={cn(
+                  "text-2xl font-extrabold tracking-tight",
+                  colors.text
+                )}>
                   {card.value}
                 </span>
               </div>

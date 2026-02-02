@@ -55,7 +55,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden min-h-[400px]"
+        className="lg:col-span-2 bg-green-50 rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden min-h-[400px]"
       >
         <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -192,7 +192,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="lg:col-span-1 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]"
+        className="lg:col-span-1 bg-green-50 p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]"
       >
         <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-6">
           State Distribution

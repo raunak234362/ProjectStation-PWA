@@ -98,7 +98,7 @@ const AddConnectionDesigner: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-auto mx-auto bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg p-8 mt-8 border border-gray-200 overflow-visible">
+    <div className="w-full h-auto mx-auto bg-green-50 backdrop-blur-lg rounded-2xl shadow-lg p-8 mt-8 border border-gray-200 overflow-visible">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {/* Connection Designer Name */}
         <Input
@@ -250,7 +250,7 @@ const AddConnectionDesigner: React.FC = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-linear-to-r from-green-600 to-emerald-500 text-white px-8 py-2.5 rounded-lg hover:opacity-90 shadow-md transition"
+            className="bg-green-700 py-5 rounded-lg hover:opacity-60 shadow-2xl"
           >
             {isSubmitting ? "Creating..." : "Create Connection Designer"}
           </Button>

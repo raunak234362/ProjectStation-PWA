@@ -38,6 +38,7 @@ import DashboardSkeleton from "./components/DashboardSkeleton";
 const WBTDashboard = () => {
   const navigate = useNavigate();
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+  const isClient = userRole === "client" || userRole === "client_admin";
 
   useEffect(() => {
     if (userRole === "sales" || userRole === "sales_manager") {
@@ -182,18 +183,50 @@ const WBTDashboard = () => {
           </div>
         </div>
 
-        {/* Charts Section - Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
-          <div className="w-full min-h-[400px]">
-            <InvoiceTrends invoices={invoices} />
-          </div>
-          <div className="w-full min-h-[400px]">
-            <UpcomingSubmittals
-              pendingSubmittals={pendingSubmittals}
-              invoices={invoices}
-            />
-          </div>
-        </div>
+        {/* Charts & Actions Section */}
+        {isClient ? (
+          <>
+            {/* Client View: Split Upcoming sections */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
+              <div className="w-full min-h-[400px]">
+                <UpcomingSubmittals
+                  pendingSubmittals={pendingSubmittals}
+                  invoices={invoices}
+                  initialTab="submittals"
+                  hideTabs={true}
+                />
+              </div>
+              <div className="w-full min-h-[400px]">
+                <UpcomingSubmittals
+                  pendingSubmittals={pendingSubmittals}
+                  invoices={invoices}
+                  initialTab="invoices"
+                  hideTabs={true}
+                />
+              </div>
+            </div>
+
+            {/* Client Specific Section */}
+            {/* <div className="w-full">
+              <ClientProjectDirectory projects={projects} />
+            </div> */}
+          </>
+        ) : (
+          <>
+            {/* Admin/PMO View: Original InvoiceTrends and Tabbed UpcomingSubmittals */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
+              <div className="w-full min-h-[400px]">
+                <InvoiceTrends invoices={invoices} />
+              </div>
+              <div className="w-full min-h-[400px]">
+                <UpcomingSubmittals
+                  pendingSubmittals={pendingSubmittals}
+                  invoices={invoices}
+                />
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Modals */}
         <ProjectListModal

@@ -12,7 +12,7 @@ import {
   CheckCircle2,
   FileText,
 } from "lucide-react";
-import type { Fabricator, ProjectData, RFQItem } from "../../../interface";
+import { type Fabricator, type ProjectData, type RFQItem } from "../../../interface";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 

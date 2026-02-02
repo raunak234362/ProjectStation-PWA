@@ -27,7 +27,7 @@ const CDLocationCharts: React.FC<CDLocationChartsProps> = ({ stateData }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       {/* Network Growth Trend (Main Visual) - Takes up 2/3 */}
-      <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="lg:col-span-2 bg-green-50 p-6 rounded-2xl shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-lg font-bold text-gray-800">

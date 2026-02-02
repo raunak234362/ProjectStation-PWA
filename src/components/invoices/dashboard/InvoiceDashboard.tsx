@@ -15,6 +15,8 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({ navigateToCreate })
     const [invoices, setInvoices] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [dateFilter, setDateFilter] = useState("This Month");
+    const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+    const isClient = userRole === "client" || userRole === "client_admin";
 
     useEffect(() => {
         const fetchInvoices = async () => {
@@ -43,10 +45,6 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({ navigateToCreate })
             {/* Header & Filter */}
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    {/* <div>
-                        <h2 className="text-2xl font-bold text-gray-800">Invoice Dashboard</h2>
-                        <p className="text-gray-500">Welcome back! Here's your financial overview.</p>
-                    </div> */}
                 </div>
 
                 {/* Date Filter Pills */}
@@ -86,20 +84,24 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({ navigateToCreate })
                 </div>
             </div>
 
-            {/* 1. Stats Cards */}
-            <InvoiceStatsCards invoices={invoices} />
+            {!isClient && (
+                <>
+                    {/* 1. Stats Cards */}
+                    <InvoiceStatsCards invoices={invoices} />
 
-            {/* 2. Quick Actions */}
-            <QuickActionsPanel
-                onRaiseInvoice={navigateToCreate}
-                onDownloadReport={() => alert("Report download feature coming soon!")}
-                onSendReminders={() => alert("Reminders sent successfully!")}
-            />
+                    {/* 2. Quick Actions */}
+                    <QuickActionsPanel
+                        onRaiseInvoice={navigateToCreate}
+                        onDownloadReport={() => alert("Report download feature coming soon!")}
+                        onSendReminders={() => alert("Reminders sent successfully!")}
+                    />
+                </>
+            )}
 
-            {/* 3. Analytics (Charts) */}
+            {/* Analytics (Charts) */}
             <InvoiceAnalytics invoices={invoices} />
 
-            {/* 4. Bottom Section: List + Activity */}
+            {/* Bottom Section: List + Activity */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <div className="xl:col-span-2">
                     <PendingInvoiceList invoices={invoices} />

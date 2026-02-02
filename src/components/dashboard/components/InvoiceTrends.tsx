@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   Area,
 } from "recharts";
+import { cn } from "../../../lib/utils";
 
 interface InvoiceTrendsProps {
   invoices: any[];
@@ -85,7 +86,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     }
   }, [invoices, selectedYear, selectedMonth]);
 
-  const { totalPeriodAmount, totalPeriodCount } = useMemo(() => {
+  const { totalPeriodAmount } = useMemo(() => {
     const amount = processedChartData.reduce(
       (sum, item) => sum + item.amount,
       0
@@ -100,20 +101,14 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   }, []);
 
   return (
-    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2 shrink-0">
+    <div className="bg-[#f9fdf7] p-6 rounded-3xl shadow-soft border-0 flex flex-col h-full border border-slate-50">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 shrink-0">
         <div>
-          <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+          <h2 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
             Invoice Trends
-            <span className="text-sm font-normal text-gray-700">
-              | Total: ${totalPeriodAmount.toLocaleString()} ({totalPeriodCount}{" "}
-              Invoices)
-            </span>
           </h2>
-          <p className="text-xs text-gray-500">
-            Showing trends for{" "}
-            {selectedMonth !== null ? `${months[selectedMonth]} ` : ""}
-            {selectedYear}
+          <p className="text-sm text-slate-500 font-bold mt-1">
+            Total Revenue: <span className="text-[#6bbd45]">${totalPeriodAmount.toLocaleString()}</span>
           </p>
         </div>
 
@@ -121,7 +116,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="py-1 px-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500 bg-white font-medium shadow-sm"
+            className="py-2 px-4 text-sm border border-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] bg-slate-50 font-bold shadow-soft transition-all"
           >
             {years.map((year) => (
               <option key={year} value={year}>
@@ -133,13 +128,15 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
       </div>
 
       {/* Month Filter Row */}
-      <div className="flex items-center gap-2 mb-2 overflow-x-auto pb-2 no-scrollbar shrink-0">
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar shrink-0">
         <button
           onClick={() => setSelectedMonth(null)}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shadow-sm ${selectedMonth === null
-            ? "bg-green-500 text-white shadow-green-200"
-            : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
-            }`}
+          className={cn(
+            "px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shadow-soft border",
+            selectedMonth === null
+              ? "bg-[#6bbd45] text-white border-[#6bbd45] shadow-highlight"
+              : "bg-white text-slate-500 hover:bg-slate-50 border-slate-100"
+          )}
         >
           All Months
         </button>
@@ -147,17 +144,19 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           <button
             key={month}
             onClick={() => setSelectedMonth(index)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shadow-sm ${selectedMonth === index
-              ? "bg-green-500 text-white shadow-green-200"
-              : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
-              }`}
+            className={cn(
+              "px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shadow-soft border",
+              selectedMonth === index
+                ? "bg-[#6bbd45] text-white border-[#6bbd45] shadow-highlight"
+                : "bg-white text-slate-500 hover:bg-slate-50 border-slate-100"
+            )}
           >
             {month}
           </button>
         ))}
       </div>
 
-      <div className="flex-1 min-h-0 w-full">
+      <div className="flex-1 min-h-0 w-full px-1">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={processedChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid
@@ -213,7 +212,8 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               fill="#0d9488"
               fillOpacity={0.1}
               stroke="#6bbd45"
-              strokeWidth={2}
+              strokeWidth={4}
+              strokeLinecap="round"
             />
           </ComposedChart>
         </ResponsiveContainer>

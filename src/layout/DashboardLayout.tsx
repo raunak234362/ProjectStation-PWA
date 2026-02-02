@@ -32,10 +32,10 @@ const Layout = () => {
   };
 
   return (
-    // Outer container matches the Sidebar's Green Theme (Brand Color #6bbd45)
+    // Reverted to Brand Green Background
     <div className="flex h-screen w-screen overflow-hidden bg-[#6bbd45]">
       {/* Sidebar Area */}
-      <div className="hidden md:flex relative z-10">
+      <div className="hidden md:flex relative z-10 py-4 pl-4">
         <Sidebar
           isMinimized={isMinimized}
           toggleSidebar={toggleSidebar}
@@ -46,7 +46,7 @@ const Layout = () => {
       {/* Mobile Sidebar Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 z-40 bg-black/20 md:hidden backdrop-blur-[2px] transition-opacity"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -60,16 +60,16 @@ const Layout = () => {
         />
       </div>
 
-      {/* Main Content Area - White Card effect */}
-      <div className="flex flex-col flex-1 min-h-0 bg-background p-0 md:p-2 pl-0">
-        <div className="flex-1 bg-gray-50 md:rounded-xl shadow-2xl overflow-hidden flex flex-col relative transition-all">
+      {/* Main Content Area - "Floating Island" effect */}
+      <div className="flex flex-col flex-1 min-h-0 bg-transparent p-2 md:p-4">
+        <div className="flex-1 bg-white md:rounded-[2rem] shadow-medium overflow-hidden flex flex-col relative transition-all border border-white/50 backdrop-blur-sm">
 
-          {/* Optional: If Header is needed globally, it goes here inside the white card */}
-          <div className="px-2 pt-2">
+          {/* Optional: If Header is needed globally, it goes here */}
+          <div className="px-6 pt-4">
             <Header isMinimized={isMinimized} toggleSidebar={toggleSidebar} />
           </div>
 
-          <main className="flex-1 w-full overflow-y-auto custom-scrollbar">
+          <main className="flex-1 w-full overflow-y-auto custom-scrollbar px-6 pb-6">
             <Outlet />
           </main>
         </div>
