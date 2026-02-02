@@ -165,12 +165,12 @@ const GetInvoiceById = ({
               {/* Ensure logo height is proportional */}
               <img src={logo} alt="Logo" className="h-25 object-contain" />
             </div>
-            <div className="h-[1px] bg-[#e6554d] w-full mb-3"></div>
+            <div className="h-[1px] bg-[#e6554d] w-full mb-2"></div>
 
-            <div className="flex justify-between items-start mb-5 text-[12px]">
+            <div className="flex justify-between items-start mb-2 text-[12px]">
               {/* Receiver Details */}
               <div className="w-1/2">
-                <h2 className="font-bold text-black mb-3 text-[13px]">
+                <h2 className="font-bold text-black mb-2 text-[13px]">
                   Details of Receiver (Billed to)
                 </h2>
                 <div className="grid grid-cols-[120px_1fr] gap-y-1">
@@ -187,11 +187,12 @@ const GetInvoiceById = ({
                     {invoice.address}
                   </span>
 
-                  <span className="text-black">Country/State/Code:</span>
-                  <span className="font-bold">{invoice.stateCode || "-"}</span>
+                  <span className="text-black ">Country/State  /Code:</span>
 
-                  <span className="text-black">GSTIN / UNIQUE ID:</span>
-                  <span className="font-bold">{invoice.GSTIN || "-"}</span>
+                  <span className="font-bold ">  {invoice.stateCode || "-"}  </span>
+
+                  <span className="text-black ">GSTIN / UNIQUE ID:</span>
+                  <span className="font-bold ">{invoice.GSTIN || "-"}</span>
                 </div>
               </div>
 
@@ -202,7 +203,7 @@ const GetInvoiceById = ({
                     Original for Recipient
                   </h2>
                 </div>
-                <div className="grid grid-cols-[100px_1fr] gap-y-1">
+                <div className="grid grid-cols-[100px_1fr] gap-y-2">
                   <span className="text-black">Invoice No:</span>
                   <span className="font-bold">{invoice.invoiceNumber}</span>
 
