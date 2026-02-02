@@ -55,7 +55,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="lg:col-span-2 bg-green-50 rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden min-h-[400px]"
+        className="lg:col-span-2 bg-green-50 rounded-md shadow-sm border border-gray-100 flex flex-col overflow-hidden min-h-[400px]"
       >
         <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -76,7 +76,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
               placeholder="Search designers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-green-500 outline-hidden w-full sm:w-48"
+              className="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-sm text-xs sm:text-sm focus:ring-1 focus:ring-green-500 outline-hidden w-full sm:w-48"
             />
           </div>
         </div>
@@ -133,7 +133,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
 
                 {/* Right Arrow / State Count */}
                 <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-2">
-                  <span className="text-[10px] sm:text-xs font-medium text-gray-500 bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                  <span className="text-[10px] sm:text-xs font-medium text-gray-500 bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-sm whitespace-nowrap">
                     {states.length} <span className="hidden xs:inline">States</span>
                   </span>
                   <ChevronRight
@@ -150,7 +150,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-14 top-1/2 -translate-y-1/2 z-50 bg-white p-4 rounded-xl shadow-xl border border-gray-100 w-64 pointer-events-none hidden sm:block"
+                      className="absolute right-14 top-1/2 -translate-y-1/2 z-50 bg-white p-4 rounded-md shadow-xl border border-gray-100 w-64 pointer-events-none hidden sm:block"
                     >
                       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-50">
                         <MapPin size={14} className="text-green-500" />
@@ -163,7 +163,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                           states.slice(0, 8).map((s, i) => (
                             <span
                               key={i}
-                              className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-md border border-green-100"
+                              className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-sm border border-green-100"
                             >
                               {s}
                             </span>
@@ -193,7 +193,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="lg:col-span-1 bg-green-50 p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]"
+        className="lg:col-span-1 bg-green-50 p-4 sm:p-6 rounded-md shadow-sm border border-gray-100 flex flex-col min-h-[400px]"
       >
         <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-6">
           State Distribution
@@ -219,7 +219,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
               </Pie>
               <RechartsTooltip
                 contentStyle={{
-                  borderRadius: "8px",
+                  borderRadius: "4px",
                   border: "none",
                   boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
                   fontSize: '12px'

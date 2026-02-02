@@ -19,7 +19,7 @@ interface RFQComparisonChartProps {
 
 const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange, setTimeRange }) => {
     return (
-        <div className="bg-[#f9fdf7] p-6 rounded-3xl shadow-soft flex flex-col h-full border border-slate-50">
+        <div className="bg-[#f9fdf7] p-6 rounded-md shadow-soft flex flex-col h-full border border-slate-50">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 shrink-0">
                 <div>
                     <h2 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
@@ -30,7 +30,7 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange
                     </p>
                 </div>
 
-                <div className="flex bg-slate-100/50 p-1 rounded-xl shadow-inner divide-x divide-slate-200">
+                <div className="flex bg-slate-100/50 p-1 rounded-sm shadow-inner divide-x divide-slate-200">
                     {(["weekly", "monthly", "yearly"] as const).map((range) => (
                         <button
                             key={range}
@@ -38,7 +38,7 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange
                             className={cn(
                                 "px-4 py-1.5 text-xs font-bold transition-all capitalize",
                                 timeRange === range
-                                    ? "bg-white text-[#6bbd45] shadow-sm rounded-lg"
+                                    ? "bg-white text-[#6bbd45] shadow-sm rounded-sm"
                                     : "text-slate-400 hover:text-slate-600"
                             )}
                         >
@@ -69,7 +69,7 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange
                             content={({ active, payload, label }) => {
                                 if (active && payload && payload.length) {
                                     return (
-                                        <div className="bg-white p-3 rounded-xl shadow-xl border border-slate-50 text-xs">
+                                        <div className="bg-white p-3 rounded-md shadow-xl border border-slate-50 text-xs">
                                             <p className="font-extrabold text-slate-800 mb-2 uppercase tracking-wider border-b border-slate-50 pb-1">
                                                 {label}
                                             </p>
