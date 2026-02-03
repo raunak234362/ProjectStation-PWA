@@ -418,7 +418,7 @@ const EditFabricator = ({
             <Button
               type="submit"
               disabled={submitting}
-              className="px-10 py-3 bg-linear-to-r from-green-600 to-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-green-100 transition-all active:scale-95 flex items-center gap-3"
+              className="px-10 py-3 bg-green-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-green-100 transition-all active:scale-95 flex items-center gap-3"
             >
               {submitting ? (
                 <>
