@@ -52,32 +52,92 @@ const FabricatorOverview = () => {
     }, [rfqs, projects]);
 
     const chartData = useMemo(() => {
+        const now = new Date();
+
         if (timeRange === "weekly") {
-            return [
-                { name: "Mon", total: 14, production: 8, completed: 4 },
-                { name: "Tue", total: 18, production: 10, completed: 6 },
-                { name: "Wed", total: 22, production: 15, completed: 10 },
-                { name: "Thu", total: 12, production: 5, completed: 3 },
-                { name: "Fri", total: 20, production: 12, completed: 8 },
-            ];
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const last7Days = Array.from({ length: 7 }, (_, i) => {
+                const d = new Date();
+                d.setDate(now.getDate() - (6 - i));
+                return {
+                    name: days[d.getDay()],
+                    dateStr: d.toDateString(),
+                    total: 0,
+                    production: 0,
+                    completed: 0
+                };
+            });
+
+            rfqs.forEach(r => {
+                const d = new Date(r.createdAt).toDateString();
+                const day = last7Days.find(ld => ld.dateStr === d);
+                if (day) day.total++;
+            });
+
+            projects.forEach(p => {
+                const dateVal = (p as any).createdAt || p.startDate;
+                if (!dateVal) return;
+                const d = new Date(dateVal).toDateString();
+                const day = last7Days.find(ld => ld.dateStr === d);
+                if (day) {
+                    if (p.status === "ACTIVE") day.production++;
+                    if (p.status === "COMPLETED") day.completed++;
+                }
+            });
+
+            return last7Days;
         }
+
         if (timeRange === "monthly") {
-            return [
-                { name: "Week 1", total: 60, production: 40, completed: 25 },
-                { name: "Week 2", total: 75, production: 50, completed: 35 },
-                { name: "Week 3", total: 45, production: 30, completed: 20 },
-                { name: "Week 4", total: 90, production: 65, completed: 45 },
-            ];
+            // Group by weeks of the current month
+            const weeks = ["Week 1", "Week 2", "Week 3", "Week 4"];
+            const monthlyData = weeks.map(w => ({ name: w, total: 0, production: 0, completed: 0 }));
+
+            rfqs.forEach(r => {
+                const date = new Date(r.createdAt);
+                if (date.getMonth() === now.getMonth()) {
+                    const weekIdx = Math.min(Math.floor((date.getDate() - 1) / 7), 3);
+                    monthlyData[weekIdx].total++;
+                }
+            });
+
+            projects.forEach(p => {
+                const dateVal = (p as any).createdAt || p.startDate;
+                if (!dateVal) return;
+                const date = new Date(dateVal);
+                if (date.getMonth() === now.getMonth()) {
+                    const weekIdx = Math.min(Math.floor((date.getDate() - 1) / 7), 3);
+                    if (p.status === "ACTIVE") monthlyData[weekIdx].production++;
+                    if (p.status === "COMPLETED") monthlyData[weekIdx].completed++;
+                }
+            });
+
+            return monthlyData;
         }
-        return [
-            { name: "Jan", total: 245, production: 180, completed: 120 },
-            { name: "Feb", total: 282, production: 210, completed: 145 },
-            { name: "Mar", total: 198, production: 135, completed: 90 },
-            { name: "Apr", total: 320, production: 250, completed: 180 },
-            { name: "May", total: 260, production: 190, completed: 130 },
-            { name: "Jun", total: 295, production: 220, completed: 160 },
-        ];
-    }, [timeRange]);
+
+        // Yearly: group by months
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const yearlyData = months.map(m => ({ name: m, total: 0, production: 0, completed: 0 }));
+
+        rfqs.forEach(r => {
+            const date = new Date(r.createdAt);
+            if (date.getFullYear() === now.getFullYear()) {
+                yearlyData[date.getMonth()].total++;
+            }
+        });
+
+        projects.forEach(p => {
+            const dateVal = (p as any).createdAt || p.startDate;
+            if (!dateVal) return;
+            const date = new Date(dateVal);
+            if (date.getFullYear() === now.getFullYear()) {
+                if (p.status === "ACTIVE") yearlyData[date.getMonth()].production++;
+                if (p.status === "COMPLETED") yearlyData[date.getMonth()].completed++;
+            }
+        });
+
+        return yearlyData;
+    }, [timeRange, rfqs, projects]);
 
 
     if (loading) {

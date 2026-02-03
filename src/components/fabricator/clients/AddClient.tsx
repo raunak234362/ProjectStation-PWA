@@ -9,6 +9,8 @@ import Input from "../../fields/input";
 import { useDispatch } from "react-redux";
 import { addStaff } from "../../../store/userSlice";
 import Select from "../../fields/Select";
+import { X, UserPlus, Check, Loader2 } from "lucide-react";
+import { motion } from "motion/react";
 
 interface AddClientProps {
   fabricator: Fabricator;
@@ -18,7 +20,7 @@ interface AddClientProps {
 const AddClients: React.FC<AddClientProps> = ({
   fabricator,
   onClose,
-}: AddClientProps) => {
+}) => {
   const dispatch = useDispatch();
   const {
     register,
@@ -26,7 +28,11 @@ const AddClients: React.FC<AddClientProps> = ({
     watch,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<EmployeePayload>();
+  } = useForm<EmployeePayload>({
+    defaultValues: {
+      role: "CLIENT"
+    }
+  });
 
   const onSubmit = async (data: EmployeePayload) => {
     const payload = {
@@ -39,239 +45,185 @@ const AddClients: React.FC<AddClientProps> = ({
         fabricator.id,
         payload,
       );
-      console.log("Employee created:", response);
       dispatch(addStaff(response?.data?.user));
-      toast.success("Employee created successfully!");
+      toast.success("Stakeholder profile synchronized!");
+      if (onClose) onClose();
     } catch (error: any) {
       console.error("Error creating employee:", error);
-      toast.error(
-        error?.response?.data?.message || "Failed to create employee",
-      );
+      toast.error(error?.response?.data?.message || "Failed to create employee");
     }
   };
 
   const roleOptions = [
-    { label: "CLIENT", value: "CLIENT" },
-    { label: "CLIENT ADMIN", value: "CLIENT_ADMIN" },
-    {
-      label: "CLIENT PROJECT COORDINATOR",
-      value: "CLIENT_PROJECT_COORDINATOR",
-    },
-    {
-      label: "CLIENT GENERAL CONSTRUCTOR",
-      value: "CLIENT_GENERAL_CONSTRUCTOR",
-    },
+    { label: "Partner Client", value: "CLIENT" },
+    { label: "Partner Administrator", value: "CLIENT_ADMIN" },
+    { label: "Project Coordinator", value: "CLIENT_PROJECT_COORDINATOR" },
+    { label: "General Constructor", value: "CLIENT_GENERAL_CONSTRUCTOR" },
   ];
 
-  // Watch current role value (string)
   const selectedRole = watch("role");
-
-  // Find the full option object for display
-  const selectedRoleOption =
-    roleOptions.find((opt) => opt.value === selectedRole) || null;
+  const selectedRoleOption = roleOptions.find((opt) => opt.value === selectedRole) || null;
 
   return (
-    <div className="w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-200">
-      <Button onClick={onClose}>Close</Button>
-      <h2 className="text-xl font-semibold text-gray-700 mb-6">
-        Add New Employee
-      </h2>
-
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-2 gap-5"
-      >
-        {/* Fabricator Branches */}
+    <motion.div
+      initial={{ scale: 0.95, opacity: 0, y: 20 }}
+      animate={{ scale: 1, opacity: 1, y: 0 }}
+      exit={{ scale: 0.95, opacity: 0, y: 20 }}
+      onClick={(e) => e.stopPropagation()}
+      className="w-full max-w-4xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] relative border border-slate-100"
+    >
+      {/* Header */}
+      <div className="flex justify-between items-center px-10 py-8 border-b border-slate-100 shrink-0 bg-slate-50/50">
         <div>
-          <Select
-            label="Fabricator Branches"
-            placeholder="Select branch"
-            options={fabricator.branches
-              .filter((branch) => branch.id !== undefined)
-              .map((branch) => ({
-                label: branch.name,
-                value: String(branch.id),
-              }))}
-            {...register("branchId")}
-            onChange={(_, value) => setValue("branchId", value as string)}
-          />
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-none mb-2 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600">
+              <UserPlus className="w-6 h-6" />
+            </div>
+            Onboard Stakeholder
+          </h2>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Registering a new point of contact for {fabricator.fabName}</p>
         </div>
+        <button
+          onClick={onClose}
+          className="p-3 bg-white shadow-sm border border-slate-100 rounded-2xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-90"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
 
-        {/* Username */}
-        <div>
-          <Input
-            label="Username"
-            type="text"
-            {...register("username", { required: "Username is required" })}
-            placeholder="Enter username"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
-          {errors.username && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.username.message}
-            </p>
-          )}
-        </div>
-
-        {/* Email */}
-        <div>
-          <Input
-            label="Email"
-            type="email"
-            {...register("email", { required: "Email is required" })}
-            placeholder="employee@company.com"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-          )}
-        </div>
-
-        {/* Phone & Extension */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <Input
-              label="Phone"
-              type="tel"
-              {...register("phone", { required: "Phone number is required" })}
-              placeholder="+91XXXXXXXXXX"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
-            {errors.phone && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.phone.message}
-              </p>
-            )}
+      <form onSubmit={handleSubmit(onSubmit)} className="px-10 py-8 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
+        {/* Core Identity */}
+        <section className="space-y-6">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            Authentication & Role
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Unique Identifier (Username)</label>
+              <Input
+                label=""
+                {...register("username", { required: "Username is required" })}
+                placeholder="e.g. JDOE_STEELWORKS"
+                className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white"
+              />
+              {errors.username && <p className="mt-2 text-[10px] font-bold text-rose-600 uppercase tracking-wider">{errors.username.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">System Role</label>
+              <Select
+                options={roleOptions}
+                {...register("role")}
+                value={selectedRoleOption?.value}
+                onChange={(_, value) => setValue("role", value as string)}
+                placeholder="Select role..."
+                className="mt-0"
+              />
+            </div>
           </div>
-          <div>
-            <Input
-              label="Extension"
-              type="text"
-              {...register("extension")}
-              placeholder="Ext"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Assigned Branch</label>
+              <Select
+                label=""
+                placeholder="Select location node"
+                options={fabricator.branches
+                  .filter((branch) => branch.id !== undefined)
+                  .map((branch) => ({
+                    label: branch.name,
+                    value: String(branch.id),
+                  }))}
+                {...register("branchId")}
+                onChange={(_, value) => setValue("branchId", value as string)}
+                className="mt-0"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Corporate Email</label>
+              <Input
+                label=""
+                type="email"
+                {...register("email", { required: "Email is required" })}
+                placeholder="stakeholder@partner.corp"
+                className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white"
+              />
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* First Name */}
-        <div>
-          <Input
-            label="First Name"
-            type="text"
-            {...register("firstName", { required: "First name is required" })}
-            placeholder="John"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
-          {errors.firstName && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.firstName.message}
-            </p>
-          )}
-        </div>
+        {/* Profile Details */}
+        <section className="space-y-6 pt-8 border-t border-slate-50">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            Personal Intelligence
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">First Name</label>
+              <Input label="" {...register("firstName", { required: "Required" })} placeholder="John" className="bg-slate-50 rounded-2xl" />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Middle Initial</label>
+              <Input label="" {...register("middleName")} placeholder="M." className="bg-slate-50 rounded-2xl" />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Last Name</label>
+              <Input label="" {...register("lastName")} placeholder="Doe" className="bg-slate-50 rounded-2xl" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Telephone</label>
+              <div className="flex gap-2">
+                <Input label="" {...register("phone", { required: "Required" })} placeholder="+1 XXX..." className="flex-1 bg-slate-50 rounded-2xl" />
+                <Input label="" {...register("extension")} placeholder="Ext" className="w-24 bg-slate-50 rounded-2xl" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Designation</label>
+              <Input label="" {...register("designation", { required: "Required" })} placeholder="e.g. Lead Procurement" className="bg-slate-50 rounded-2xl" />
+            </div>
+          </div>
+        </section>
 
-        {/* Middle Name */}
-        <div>
-          <Input
-            label="Middle Name"
-            type="text"
-            {...register("middleName")}
-            placeholder="M."
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
+        {/* Org Unit */}
+        <section className="space-y-6 pt-8 border-t border-slate-50">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            Organizational Context
+          </h3>
+          <div>
+            <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Department Token (Optional)</label>
+            <Input label="" {...register("departmentId")} placeholder="UUID or Code" className="bg-slate-50 rounded-2xl" />
+          </div>
+        </section>
 
-        {/* Last Name */}
-        <div>
-          <Input
-            label="Last Name"
-            type="text"
-            {...register("lastName")}
-            placeholder="Doe"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
-
-        {/* Designation */}
-        <div>
-          <Input
-            label="Designation"
-            type="text"
-            {...register("designation", {
-              required: "Designation is required",
-            })}
-            placeholder="Software Engineer"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
-          {errors.designation && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.designation.message}
-            </p>
-          )}
-        </div>
-
-        {/* Role – FIXED */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Role
-          </label>
-          <Select
-            options={roleOptions}
-            {...register("role")}
-            value={selectedRoleOption?.value}
-            onChange={(_, value) => setValue("role", value as string)}
-            placeholder="Select role..."
-            className="mt-1"
-          />
-          {errors.role && (
-            <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>
-          )}
-        </div>
-
-        {/* Department */}
-        <div className="md:col-span-2">
-          <Input
-            label="Department ID"
-            type="text"
-            {...register("departmentId")}
-            placeholder="Optional: UUID of department"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
-
-        {/* Submit */}
-        <div className="md:col-span-2 flex justify-center mt-6">
+        {/* Footer Actions */}
+        <div className="flex items-center justify-end gap-4 pt-10 border-t border-slate-100 sticky bottom-0 bg-white pb-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-8 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all active:scale-95"
+          >
+            Discard Draft
+          </button>
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+            className="px-10 py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-100 transition-all active:scale-95 flex items-center gap-3 border-none"
           >
             {isSubmitting ? (
               <>
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    className="opacity-25"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    className="opacity-75"
-                  />
-                </svg>
-                Creating...
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Synchronizing...
               </>
             ) : (
-              "Create POC"
+              <>
+                <Check className="w-5 h-5" />
+                Create Stakeholder
+              </>
             )}
           </Button>
         </div>
       </form>
-    </div>
+    </motion.div>
   );
 };
 

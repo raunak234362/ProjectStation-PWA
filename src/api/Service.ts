@@ -296,7 +296,18 @@ class Service {
       console.log("Fabricators Edited:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find fabricators", error);
+      console.error("cannot edit fabricator", error);
+    }
+  }
+
+  // Delete Fabricator by ID
+  static async DeleteFabricator(id: string) {
+    try {
+      const response = await api.delete(`fabricator/${id}`);
+      console.log("Fabricator deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot delete fabricator", error);
     }
   }
 

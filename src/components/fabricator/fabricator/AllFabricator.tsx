@@ -1,41 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from "react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetFabricatorByID from "./GetFabricatorByID";
 import type { Fabricator } from "../../../interface";
 import { useSelector } from "react-redux";
 
+
 const AllFabricator = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedFabricatorId, setSelectedFabricatorId] = useState<string | null>(null);
 
-  // const [fabricators, setFabricators] = useState<Fabricator[]>([]);
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo?.fabricatorData
   );
 
-  // Fetch all fabricators on component mount
-  // useEffect(() => {
-  //   const fetchFabricators = async () => {
-  //     try {
-  //       setLoading(true);
-  //       setError(null);
-  //       const response = await Service.GetAllFabricators();
-  //       console.log(response);
-  //       const data = response.data || [];
-  //       setFabricators(data);
-  //     } catch (err) {
-  //       console.error("Failed to fetch fabricators:", err);
-  //       setError("Failed to load fabricators");
-  //       toast.error("Failed to load fabricators");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchFabricators();
-  // }, []);
   console.log(fabricators);
 
   // Filter fabricators based on search query
@@ -48,52 +27,56 @@ const AllFabricator = () => {
     );
   }, [fabricators, searchQuery]);
 
-  // Handle row click (optional)
+  // Handle row click to open modal
   const handleRowClick = (row: Fabricator) => {
     const fabricatorUniqueId = (row as any).id ?? (row as any).fabId ?? "";
-    console.debug("Selected fabricator:", fabricatorUniqueId);
+    setSelectedFabricatorId(fabricatorUniqueId);
   };
 
   // Define columns for DataTable
   const columns: ColumnDef<Fabricator>[] = [
-    { accessorKey: "fabName", header: "Fabricator Name" },
+    {
+      accessorKey: "fabName",
+      header: "Fabricator Name",
+      cell: ({ row }) => (
+        <div className="font-bold text-slate-800 tracking-tight">
+          {row.original.fabName}
+        </div>
+      )
+    },
+    {
+      accessorKey: "fabStage",
+      header: "Stage",
+      cell: ({ row }) => (
+        <span className={`px-2 py-1 rounded-lg text-xs font-black uppercase tracking-widest ${row.original.fabStage === 'PRODUCTION' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'
+          }`}>
+          {row.original.fabStage || 'N/A'}
+        </span>
+      )
+    }
   ];
 
-  // Loading and error states
-  // if (loading) return <div className="p-8 text-center">Loading…</div>;
-  // if (error) return <div className="p-8 text-red-600">{error}</div>;
-
-  // Render DataTable
   return (
-    <div className="bg-white p-2 sm:p-4 rounded-2xl shadow-sm">
+    <div className="bg-white/40 backdrop-blur-md p-4 sm:p-6 rounded-[32px] shadow-soft border border-white/50 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Search Bar */}
-      <div className="mb-4">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+      <div className="mb-6">
+        <div className="relative w-full md:w-96 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-green-500 transition-colors" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search fabricators by name..."
-            className="pl-9 pr-3 py-2 w-full border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            placeholder="Filter engineering partners..."
+            className="pl-11 pr-4 py-3 w-full border border-slate-200 rounded-2xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all bg-white"
           />
         </div>
-        {searchQuery && (
-          <p className="text-xs text-gray-500 mt-2">
-            Showing {filteredFabricators.length} of {fabricators?.length || 0} fabricators
-          </p>
-        )}
       </div>
 
       <DataTable
         columns={columns}
         data={filteredFabricators}
+        detailComponent={GetFabricatorByID }
         onRowClick={handleRowClick}
-        detailComponent={({ row }) => {
-          const fabricatorUniqueId =
-            (row as any).id ?? (row as any).fabId ?? "";
-          return <GetFabricatorByID id={fabricatorUniqueId} />;
-        }}
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

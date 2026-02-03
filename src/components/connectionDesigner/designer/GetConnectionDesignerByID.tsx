@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import Service from "../../../api/Service";
 import {
@@ -279,11 +280,13 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       </div>
 
       <AnimatePresence>
-        {editModel && (
-          <EditConnectionDesigner onClose={() => setEditModel(null)} designerData={designer} />
+        {editModel && createPortal(
+          <EditConnectionDesigner onClose={() => setEditModel(null)} designerData={designer} />,
+          document.body
         )}
-        {engineerModel && (
-          <AllCDEngineer onClose={() => setEnginnerModel(null)} designerData={designer} />
+        {engineerModel && createPortal(
+          <AllCDEngineer onClose={() => setEnginnerModel(null)} designerData={designer} />,
+          document.body
         )}
       </AnimatePresence>
     </div>

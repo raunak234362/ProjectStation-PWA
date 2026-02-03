@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/components/fabricator/AllClients.tsx
 import { useEffect, useState, useMemo } from "react";
 import type { Fabricator, UserData } from "../../../interface";
 import Button from "../../fields/Button";
-import { X } from "lucide-react";
+import { X, UserCheck, Plus, MoreVertical } from "lucide-react";
 import AddClients from "./AddClient";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
-import DataTable from "../../ui/table"; // Assuming this is the correct path
+import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetEmployeeByID from "../../manageTeam/employee/GetEmployeeByID";
+import { motion, AnimatePresence } from "motion/react";
 
 interface AllClientProps {
   fabricator: Fabricator;
@@ -21,20 +21,12 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
   const [clients, setClients] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ── Fetch clients from API ──
   const fetchAllClientsByFabricatorID = async (fabId: string) => {
     if (!fabId) return;
-
     setIsLoading(true);
     try {
       const response = await Service.FetchAllClientsByFabricatorID(fabId);
-
-      // API returns: { data: [ {...}, ... ], message: "..." }
-      const rawClients: any[] = Array.isArray(response.data)
-        ? response.data
-        : [];
-
-      // Map raw → UserData (safe fallback)
+      const rawClients: any[] = Array.isArray(response.data) ? response.data : [];
       const mappedClients: UserData[] = rawClients.map((c) => ({
         id: c.id ?? "",
         username: c.username ?? "",
@@ -61,7 +53,6 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         createdAt: c.createdAt ?? "",
         updatedAt: c.updatedAt ?? "",
       }));
-
       setClients(mappedClients);
     } catch (error: any) {
       console.error("Failed to fetch clients:", error);
@@ -72,7 +63,6 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
     }
   };
 
-  // ── Load on mount & fabricator change ──
   useEffect(() => {
     fetchAllClientsByFabricatorID(fabricator.id);
   }, [fabricator.id]);
@@ -80,117 +70,121 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
   const openAddClient = () => setAddClientModal(true);
   const closeAddClient = () => {
     setAddClientModal(false);
-    // Refresh list after adding
     fetchAllClientsByFabricatorID(fabricator.id);
   };
 
-  // ── DataTable Columns Definition ──
   const columns: ColumnDef<UserData>[] = useMemo(
     () => [
       {
-        accessorFn: (r) =>
-          [r.firstName, r.middleName, r.lastName].filter(Boolean).join(" "),
+        accessorFn: (r) => [r.firstName, r.lastName].filter(Boolean).join(" "),
         header: "Name",
         id: "fullName",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-500 uppercase">
+              {row.original.firstName.charAt(0)}{row.original.lastName.charAt(0)}
+            </div>
+            <span className="font-bold text-slate-700">{row.getValue("fullName")}</span>
+          </div>
+        )
       },
       { accessorKey: "email", header: "Email" },
       {
         accessorKey: "phone",
         header: "Phone",
         cell: ({ row }) => (
-          <span>
-            {row.original.phone}
+          <div className="flex items-center gap-2 font-bold text-slate-500">
+            <span>{row.original.phone}</span>
             {row.original.extension && (
-              <span className="text-gray-700 text-xs ml-1">
-                (Ext: {row.original.extension})
-              </span>
+              <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-400 capitalize">Ext: {row.original.extension}</span>
             )}
-          </span>
+          </div>
         ),
       },
-      { accessorKey: "designation", header: "Designation" },
       {
-        accessorFn: (r) => {
-          const parts = [];
-          if (r.address) parts.push(r.address);
-          if (r.city) parts.push(r.city);
-          if (r.state) parts.push(r.state);
-          if (r.zipCode) parts.push(r.zipCode);
-          if (r.country) parts.push(r.country);
-          return parts.join(", ");
-        },
-        header: "Address",
-        id: "fullAddress",
+        accessorKey: "designation",
+        header: "Designation",
         cell: ({ row }) => (
-          <span className="text-gray-700">{row.getValue("fullAddress")}</span>
-        ),
+          <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-blue-100/50">
+            {row.original.designation}
+          </span>
+        )
       },
+      {
+        id: "actions",
+        header: "",
+        cell: () => <MoreVertical size={16} className="text-slate-300" />
+      }
     ],
     []
   );
 
-  const handleRowClick = (row: UserData) => {
-    // Optional: Implement logic to view/edit client details
-    console.log("Client clicked:", row.id);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-150 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-hidden" onClick={onClose}>
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-6xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] relative border border-white/20"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-xl font-bold text-gray-700">
-            Fabricator POCs (Clients)
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-700 hover:text-gray-700 transition"
-            aria-label="Close"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-
-        {/* Fabricator Name */}
-        <div className="px-5 pt-3">
-          <p className="text-sm font-semibold text-gray-700">
-            Fabricator:{" "}
-            <span className="font-bold text-blue-600">
-              {fabricator.fabName}
-            </span>
-          </p>
-        </div>
-
-        {/* Add Button */}
-        <div className="px-5 pt-3">
-          <Button onClick={openAddClient} className="text-sm">
-            + Add POC
-          </Button>
+        <div className="flex items-center justify-between px-10 py-8 border-b border-slate-100 bg-slate-50/50 shrink-0">
+          <div>
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-none mb-2 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600">
+                <UserCheck className="w-6 h-6" />
+              </div>
+              Points of Contact
+            </h2>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Stakeholder management for {fabricator.fabName}</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={openAddClient}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-blue-100 transition-all active:scale-95 border-none"
+            >
+              <Plus size={16} /> Add Stakeholder
+            </Button>
+            <button
+              onClick={onClose}
+              className="p-3 bg-white shadow-sm border border-slate-100 rounded-2xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-90"
+              aria-label="Close"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Table/Data Area */}
-        <div className="flex-1 overflow-auto mt-4 border-t p-4">
+        <div className="flex-1 overflow-auto p-6 md:p-10 custom-scrollbar">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12 text-gray-700">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mr-2"></div>
-              Loading clients...
+            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-100 border-t-blue-600 mb-4"></div>
+              <p className="text-sm font-black uppercase tracking-widest">Synchronizing POC Data...</p>
             </div>
           ) : (
-            <DataTable
-              columns={columns}
-              data={clients}
-              onRowClick={handleRowClick}
-              detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
-              pageSizeOptions={[5, 10, 25]}
-            />
+            <div className="bg-white rounded-[32px] overflow-hidden border border-slate-100 shadow-sm">
+              <DataTable
+                columns={columns}
+                data={clients}
+                onRowClick={() => { }}
+                detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
+                pageSizeOptions={[5, 10, 25]}
+              />
+            </div>
           )}
         </div>
 
         {/* Add Client Modal */}
-        {addClientModal && (
-          <AddClients fabricator={fabricator} onClose={closeAddClient} />
-        )}
-      </div>
+        <AnimatePresence>
+          {addClientModal && (
+            <div className="fixed inset-0 z-200 flex items-center justify-center p-4">
+              <AddClients fabricator={fabricator} onClose={closeAddClient} />
+            </div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };
