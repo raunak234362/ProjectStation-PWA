@@ -15,7 +15,7 @@ interface ProjectStatsProps {
 const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   const projectCards = [
     {
-      label: "Total Projects",
+      label: "Total",
       value: stats.totalProjects,
       icon: Files,
       color: "indigo",
@@ -71,7 +71,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   };
 
   return (
-    <div className="flex flex-col justify-center h-full">
+    <div className="flex flex-col justify-center h-full bg-white shadow-sm rounded-2xl p-4">
       <h2 className="text-xl font-extrabold text-slate-800 mb-4 px-2">
         Project Statistics
       </h2>
@@ -99,15 +99,15 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
                 <card.icon size={22} strokeWidth={2.5} />
               </div>
 
-              <div className="flex flex-col min-w-0">
-                <span className="text-sm font-bold text-slate-500 uppercase tracking-tight truncate">
-                  {card.label}
-                </span>
+              <div className="flex flex-row gap-5 items-center min-w-0">
                 <span className={cn(
                   "text-2xl font-extrabold tracking-tight",
                   colors.text
                 )}>
                   {card.value}
+                </span>
+                <span className="text-sm font-bold text-slate-500 uppercase tracking-tight truncate">
+                  {card.label}
                 </span>
               </div>
             </div>

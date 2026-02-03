@@ -49,13 +49,13 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   }, [invoices]);
 
   return (
-    <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
+    <div className="bg-white p-4 rounded-[6px] shadow-sm border border-gray-100 flex flex-col h-full">
       {!hideTabs && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 shrink-0">
           <div className="flex gap-2 bg-white/50 p-1 rounded-lg self-start sm:self-auto">
             <button
               onClick={() => setActiveTab("submittals")}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${activeTab === "submittals"
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "submittals"
                 ? "bg-green-500 text-white shadow-md shadow-green-200"
                 : "text-gray-500 hover:text-gray-700 hover:bg-white"
                 }`}
@@ -64,7 +64,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             </button>
             <button
               onClick={() => setActiveTab("invoices")}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-md transition-all ${activeTab === "invoices"
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "invoices"
                 ? "bg-green-500 text-white shadow-md shadow-green-200"
                 : "text-gray-500 hover:text-gray-700 hover:bg-white"
                 }`}
@@ -96,14 +96,17 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
         {activeTab === "submittals" ? (
           pendingSubmittals.length > 0 ? (
             Object.entries(groupedSubmittals).map(([projectName, items]) => (
-              <div key={projectName} className="space-y-2">
-                <div className="flex items-center gap-2 sticky top-0 bg-green-50 py-1 z-10">
+              <div key={projectName} className="space-y-2 bg-green-500/20 p-2 rounded-[6px] border border-green-200">
+                <div className="flex items-center gap-2 py-1">
                   <div className="w-1 h-3 bg-green-500 rounded-full"></div>
-                  <h3 className="text-md font-bold text-gray-400 uppercase tracking-wider">
+                  <h3 className="text-md font-bold text-gray-900 uppercase tracking-tight">
                     {projectName}
                   </h3>
-                  <span className="text-sm bg-white text-gray-700 px-1.5 py-0.5 rounded-xl font-bold shadow-sm">
+                  <span className="text-sm bg-white text-green-700 px-1.5 py-0.5 rounded-[4px] font-bold shadow-sm border border-green-100">
                     {items.length}
+                  </span>
+                  <span className="text-md font-bold text-green-900 bg-green-100 px-2 py-0.5 rounded-[4px] ml-auto uppercase tracking-wider">
+                    {items[0]?.fabricator?.fabName || items[0]?.fabName || "N/A"}
                   </span>
                 </div>
                 <div className="space-y-2">
@@ -116,7 +119,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                           setSelectedItem(submittal);
                           setIsModalOpen(true);
                         }}
-                        className={`w-full text-left p-3 rounded-lg border transition-all group ${overdue
+                        className={`w-full text-left p-3 rounded-[6px] border transition-all group ${overdue
                           ? "bg-red-50 border-red-100 hover:bg-red-100/50 hover:border-red-200 shadow-sm shadow-red-50"
                           : "bg-white border-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50"
                           }`}
@@ -127,7 +130,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                               <AlertCircle size={12} className="text-red-500" />
                             )}
                             <h4
-                              className={`font-bold text-md transition-colors ${overdue
+                              className={`font-bold text-sm transition-colors ${overdue
                                 ? "text-red-700"
                                 : "text-gray-700 group-hover:text-green-700"
                                 }`}
@@ -136,7 +139,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                             </h4>
                           </div>
                           <span
-                            className={`text-sm font-bold uppercase tracking-wider ${overdue ? "text-red-500" : "text-gray-400"
+                            className={`text-[10px] font-bold uppercase tracking-wider ${overdue ? "text-red-500" : "text-gray-400"
                               }`}
                           >
                             {submittal.approvalDate
@@ -146,23 +149,12 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                               : "No Date"}
                           </span>
                         </div>
-                        <div className="grid grid-cols-1 gap-1">
-                          <div className="flex flex-row gap-5">
-                            <span
-                              className={`text-xs uppercase font-medium ${overdue ? "text-red-400" : "text-gray-400"
-                                }`}
-                            >
-                              Fabricator
+                        <div className="flex items-center justify-between mt-1">
+                          {overdue && (
+                            <span className="text-[10px] font-bold text-red-500 animate-pulse">
+                              OVERDUE
                             </span>
-                            <span
-                              className={`text-xs font-semibold truncate ${overdue ? "text-red-600" : "text-gray-700"
-                                }`}
-                            >
-                              {submittal.fabricator?.fabName ||
-                                submittal.fabName ||
-                                "N/A"}
-                            </span>
-                          </div>
+                          )}
                         </div>
                       </button>
                     );
@@ -170,6 +162,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                 </div>
               </div>
             ))
+
           ) : (
             <div className="flex flex-col items-center justify-center h-full py-8 text-gray-400">
               <ClipboardList size={32} className="mb-2 opacity-20" />

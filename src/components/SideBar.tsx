@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       className={`h-full transition-all duration-300 flex flex-col 
         ${isMobile
           ? `fixed inset-y-0 left-0 z-50 bg-[#6bbd45] shadow-2xl w-72 transform ${isMinimized ? "-translate-x-full" : "translate-x-0"}`
-          : `relative rounded-[2rem] bg-[#6bbd45] text-white shadow-soft ${isMinimized ? "w-24" : "w-72"}`
+          : `relative rounded-[6px] bg-[#6bbd45] text-white shadow-soft ${isMinimized ? "w-24" : "w-72"}`
         }`}
     >
       {/* Header */}
@@ -60,13 +60,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             <img
               src={LOGO}
               alt="Logo"
-              className="bg-white w-56 object-contain rounded-3xl drop-shadow-sm"
+              className="bg-white w-56 object-contain rounded-[6px] drop-shadow-sm"
             />
           ) : (
             <img
               src={SLOGO}
               alt="Logo"
-              className="bg-white w-16 object-contain p-1 rounded-3xl drop-shadow-sm"
+              className="bg-white w-16 object-contain p-1 rounded-[6px] drop-shadow-sm"
             />
           )}
         </div>
@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {isMobile && (
           <Button
             onClick={toggleSidebar}
-            className="p-2 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
+            className="p-2 bg-white/10 text-white rounded-[6px] hover:bg-white/20 transition-colors"
           >
             <X size={22} />
           </Button>
@@ -97,14 +97,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                     end={to === "/dashboard"}
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
-                      `flex items-center gap-4 py-2.5 transition-all duration-200 font-bold text-md tracking-wide relative 
+                      `flex items-center gap-4 py-2.5 transition-all duration-200 text-xl tracking-wide relative 
                       ${isActive
-                        ? `bg-white rounded-xl text-green-600 shadow-sm z-20 ${isMobile ? " mx-4 px-4" : "ml-0 pl-6"
+                        ? `bg-white rounded-[6px] text-green-600 shadow-sm z-20 ${isMobile ? " mx-4 px-4" : "ml-0 pl-6"
                         }`
-                        : `text-white/90 rounded-xl hover:bg-white/10 ${isMobile ? " mx-4 px-4" : " ml-0 pl-6"
+                        : `text-white rounded-[6px] hover:bg-white/10 ${isMobile ? " mx-4 px-4" : " ml-0 pl-6"
                         }`
                       } ${isMinimized
-                        ? "justify-center px-0 w-14 h-14 mx-auto rounded-xl! ml-0! pl-0!"
+                        ? "justify-center px-0 w-14 h-14 mx-auto rounded-[6px]! ml-0! pl-0!"
                         : ""
                       }`
                     }
@@ -135,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   {/* Tooltip for minimized sidebar */}
                   {isMinimized && (
                     <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 hidden group-hover:flex">
-                      <span className="bg-gray-800 text-white text-sm font-bold py-2 px-4 rounded-xl shadow-xl whitespace-nowrap">
+                      <span className="bg-gray-800 text-white text-sm font-bold py-2 px-4 rounded-[6px] shadow-xl whitespace-nowrap">
                         {label}
                       </span>
                     </div>
@@ -149,8 +149,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Footer */}
       <div className="p-6 mt-auto">
         {!isMinimized && (
-          <div className="flex items-center gap-4 mb-4 bg-white/10 p-3 rounded-2xl border border-white/10 backdrop-blur-sm">
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-green-700 font-extrabold text-lg shadow-sm">
+          <div className="flex items-center gap-4 mb-4 bg-white/10 p-3 rounded-[6px] border border-white/10 backdrop-blur-sm">
+            <div className="w-10 h-10 rounded-[6px] bg-white flex items-center justify-center text-green-700 font-extrabold text-lg shadow-sm">
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
             <div className="overflow-hidden">
@@ -165,7 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <Button
-          className={`w-full flex items-center gap-3 py-3 rounded-xl transition-all ${isMinimized
+          className={`w-full flex items-center gap-3 py-3 rounded-[6px] transition-all ${isMinimized
             ? "justify-center bg-white/10 text-white hover:bg-white/20"
             : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
             }`}

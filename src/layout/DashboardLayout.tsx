@@ -61,8 +61,8 @@ const Layout = () => {
       </div>
 
       {/* Main Content Area - "Floating Island" effect */}
-      <div className="flex flex-col flex-1 min-h-0 bg-transparent p-2 md:p-4">
-        <div className="flex-1 bg-white md:rounded-[2rem] shadow-medium overflow-hidden flex flex-col relative transition-all border border-white/50 backdrop-blur-sm">
+      <div className="flex flex-col flex-1 min-h-0 bg-transparent p-0 md:p-2">
+        <div className="flex-1 bg-white rounded-[6px] shadow-medium overflow-hidden flex flex-col relative transition-all border border-white/50 backdrop-blur-sm">
 
           {/* Optional: If Header is needed globally, it goes here */}
           <div className="px-6 pt-4">
