@@ -17,11 +17,14 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
 
   const formatWorkedHours = (workingHourTask: any[]) => {
     const totalMinutes = (workingHourTask || []).reduce(
-      (sum, entry) => sum + (entry.duration || 0),
+      (sum, entry) => {
+        if (entry.duration_seconds) return sum + (entry.duration_seconds / 60);
+        return sum + (entry.duration || 0);
+      },
       0
     );
     const hrs = Math.floor(totalMinutes / 60);
-    const mins = totalMinutes % 60;
+    const mins = Math.round(totalMinutes % 60);
     return `${hrs.toString().padStart(2, "0")}:${mins
       .toString()
       .padStart(2, "0")}`;
@@ -112,11 +115,10 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
                         </p>
                       </div>
                       <span
-                        className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
-                          task.status === "COMPLETE"
+                        className={`px-2 py-1 rounded-lg text-[10px] font-bold ${task.status === "COMPLETE"
                             ? "bg-green-100 text-green-700"
                             : "bg-blue-100 text-blue-700"
-                        }`}
+                          }`}
                       >
                         {task.status}
                       </span>
