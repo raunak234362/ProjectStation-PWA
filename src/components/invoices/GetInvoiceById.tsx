@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Loader2, AlertCircle, X, Download } from "lucide-react";
+import { useReactToPrint } from "react-to-print";
 import Service from "../../api/Service";
 import logo from "../../assets/logo.png";
 
@@ -37,6 +38,12 @@ const GetInvoiceById = ({
     if (id) fetchInvoice();
   }, [id]);
 
+  const componentRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    contentRef: componentRef,
+    documentTitle: `Invoice_${invoice?.invoiceNumber || "document"}`,
+  });
+
   if (loading)
     return (
       <div className="flex items-center justify-center py-12 text-gray-700">
@@ -73,48 +80,55 @@ const GetInvoiceById = ({
             margin: 0;
           }
           body {
-            visibility: hidden;
-            overflow: visible !important;
-          }
-          .modal-root {
-            visibility: visible !important;
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 210mm !important;
-            height: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-            z-index: 9999 !important;
-            overflow: visible !important;
-            display: block !important;
-          }
-          .modal-root * {
-            visibility: visible !important;
-          }
-          .no-print {
-            display: none !important;
+            background: white;
+            margin: 0;
+            padding: 0;
           }
           .print-page {
-            box-shadow: none !important;
-            margin: 0ter: always !important;
-            break-after: page !important;
-        page-    painsidbea-voidk !important;
-            width: 2f0ex!important;
-            mflex--irechionigcoluenrint-page:last-child {
+             box-shadow: none !important;
+             margin: 0 !important;
+             page-break-after: always !important;
+             page-break-inside: avoid !important;
+          }
+          .print-content {
+             display: block !important;
+             overflow: visible !important;
+             height: auto !important;
+             width: 100% !important;
+          }
+          .print-page {
+             box-shadow: none !important;
+             margin: 0 !important;
+             page-break-after: always !important;
+             page-break-inside: avoid !important;
+             break-after: page !important;
+             width: 100% !important;
+             min-height: 297mm !important;
+             height: auto !important;
+             padding: 15mm !important;
+             box-sizing: border-box !important;
+             display: flex !important;
+             flex-direction: column !important;
+             background: white !important;
+             position: relative !important;
+          }
+          .print-page:last-child {
             page-break-after: auto !important;
-       r  }
+          }
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
         }
       `,
         }}
       />
 
-      <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0 print:static print:block print:bg-white">
+      <div className="modal-root fixed inset-0 z-[100] flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0">
         {/* Action Header - Hidden in Print */}
-        <div className="fixed top-6 right-10 z-[110] flex gap-4 no-print print:hidden">
+        <div className="fixed top-6 right-10 z-[110] flex gap-4 no-print">
           <button
-            onClick={() => window.print()}
+            onClick={() => handlePrint()}
             className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-full shadow-2xl hover:bg-green-700 transition-all font-bold group scale-110"
           >
             <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
@@ -132,7 +146,10 @@ const GetInvoiceById = ({
           )}
         </div>
 
-        <div className="w-[210mm] flex flex-col gap-0 shadow-[0_0_100px_rgba(0,0,0,0.5)] bg-gray-100 print:shadow-none print:bg-white print:my-0 print:block">
+        <div
+          ref={componentRef}
+          className="w-[210mm] flex flex-col gap-0 shadow-[0_0_100px_rgba(0,0,0,0.5)] bg-gray-100 print-content"
+        >
           {/* Page 1: Main Invoice */}
           <div className="w-[210mm] min-h-[297mm] bg-white p-[15mm] flex flex-col shadow-none print:shadow-none mx-auto box-border font-roboto print-page">
             {/* Header Letterhead */}
@@ -148,12 +165,12 @@ const GetInvoiceById = ({
               {/* Ensure logo height is proportional */}
               <img src={logo} alt="Logo" className="h-25 object-contain" />
             </div>
-            <div className="h-[1px] bg-[#e6554d] w-full mb-3"></div>
+            <div className="h-[1px] bg-[#e6554d] w-full mb-2"></div>
 
-            <div className="flex justify-between items-start mb-5 text-[12px]">
+            <div className="flex justify-between items-start mb-2 text-[12px]">
               {/* Receiver Details */}
               <div className="w-1/2">
-                <h2 className="font-bold text-black mb-3 text-[13px]">
+                <h2 className="font-bold text-black mb-2 text-[13px]">
                   Details of Receiver (Billed to)
                 </h2>
                 <div className="grid grid-cols-[120px_1fr] gap-y-1">
@@ -170,11 +187,12 @@ const GetInvoiceById = ({
                     {invoice.address}
                   </span>
 
-                  <span className="text-black">Country/State/Code:</span>
-                  <span className="font-bold">{invoice.stateCode || "-"}</span>
+                  <span className="text-black ">Country/State  /Code:</span>
 
-                  <span className="text-black">GSTIN / UNIQUE ID:</span>
-                  <span className="font-bold">{invoice.GSTIN || "-"}</span>
+                  <span className="font-bold ">  {invoice.stateCode || "-"}  </span>
+
+                  <span className="text-black ">GSTIN / UNIQUE ID:</span>
+                  <span className="font-bold ">{invoice.GSTIN || "-"}</span>
                 </div>
               </div>
 
@@ -185,7 +203,7 @@ const GetInvoiceById = ({
                     Original for Recipient
                   </h2>
                 </div>
-                <div className="grid grid-cols-[100px_1fr] gap-y-1">
+                <div className="grid grid-cols-[100px_1fr] gap-y-2">
                   <span className="text-black">Invoice No:</span>
                   <span className="font-bold">{invoice.invoiceNumber}</span>
 
@@ -347,7 +365,7 @@ const GetInvoiceById = ({
               <h4 className="text-green-600 font-bold text-[12px] mb-1 tracking-tight">
                 Instructions
               </h4>
-              <p className="text-xs text-gray-700 leading-relaxed border-[1px] border-gray-600 p-1 mb-1">
+              <p className="text-xs text-gray-700 leading-relaxed border border-gray-600 p-1 mb-1">
                 Consulting Proforma Invoice for Steel Detailing of{" "}
                 {invoice.jobName} -{" "}
                 <span className="font-bold">Cobb P.O #</span>
@@ -422,7 +440,7 @@ const GetInvoiceById = ({
           </div>
 
           {/* Page 2: Bank Info */}
-          <div className="w-[210mm] min-h-[297mm] bg-white p-[20mm] pt-[15mm] relative flex flex-col shrink-0 box-border border-t-[10px] border-gray-50 print:border-none print-page">
+          <div className="w-[210mm] min-h-[297mm] bg-white p-[20mm] pt-[15mm] relative flex flex-col shrink-0 overflow-visible box-border border-t-[10px] border-gray-50 print-page">
             {/* Header Letterhead */}
             <div className="flex justify-between items-end mb-5">
               <div>

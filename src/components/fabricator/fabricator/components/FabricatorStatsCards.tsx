@@ -59,10 +59,10 @@ const FabricatorStatsCards: React.FC<FabricatorStatsCardsProps> = ({ stats }) =>
             {cards.map((card, index) => (
                 <div
                     key={index}
-                    className="bg-[#f9fdf7] p-5 rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 group relative overflow-hidden flex flex-col gap-3 border border-slate-50"
+                    className="bg-[#f9fdf7] p-5 rounded-md shadow-soft hover:shadow-medium transition-all duration-300 group relative overflow-hidden flex flex-col gap-3 border border-slate-50"
                 >
                     <div className="flex items-start justify-between">
-                        <div className={cn("p-3 rounded-xl shadow-sm transition-colors", card.bgColor, card.color)}>
+                        <div className={cn("p-3 rounded-md shadow-sm transition-colors", card.bgColor, card.color)}>
                             <card.icon size={22} strokeWidth={2.5} />
                         </div>
                         <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-full shadow-sm text-xs font-bold">
