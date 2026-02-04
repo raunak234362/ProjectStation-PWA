@@ -5,7 +5,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import Button from "../fields/Button";
-import { openFileSecurely } from "../../utils/openFileSecurely";
+import RenderFiles from "../ui/RenderFiles";
 import RFIResponseModal from "./RFIResponseModal";
 import RFIResponseDetailsModal from "./RFIResponseDetailsModal";
 
@@ -122,11 +122,10 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "OPEN"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
+            ? "bg-green-100 text-green-700"
+            : "bg-yellow-100 text-yellow-700"
+            }`}
         >
           {row.original.status}
         </span>
@@ -146,11 +145,10 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
                 {rfi.subject}
               </h1>
               <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                  rfi.isAproovedByAdmin
-                    ? "bg-green-100 text-green-700"
-                    : "bg-yellow-100 text-yellow-700"
-                }`}
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${rfi.isAproovedByAdmin
+                  ? "bg-green-100 text-green-700"
+                  : "bg-yellow-100 text-yellow-700"
+                  }`}
               >
                 {rfi.isAproovedByAdmin ? "Approved" : "Pending"}
               </span>
@@ -176,25 +174,11 @@ const GetRFIByID = ({ id }: GetRFIByIDProps) => {
             </div>
 
             {/* Files */}
-            {rfi.files?.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-gray-700 mb-2">
-                  Attachments
-                </h4>
-                <ul className="space-y-1">
-                  {rfi.files.map((file: any, i: number) => (
-                    <li key={file.id}>
-                      <span
-                        className="text-green-700 underline cursor-pointer"
-                        onClick={() => openFileSecurely("rfi", rfi.id, file.id)}
-                      >
-                        {file.originalName || `File ${i + 1}`}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <RenderFiles
+              files={rfi.files}
+              table="rFI"
+              parentId={rfi.id}
+            />
           </div>
 
           {/* RIGHT: Responses */}

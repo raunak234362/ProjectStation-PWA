@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { X } from "lucide-react";
 import type { Fabricator, Branch } from "../../../interface";
 import AddBranch from "./AddBranch";

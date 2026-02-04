@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Service from "../../../api/Service";
-import { Loader2, AlertCircle, FileText, Link2, MapPin } from "lucide-react";
+import { Loader2, AlertCircle, MapPin } from "lucide-react";
 import Button from "../../fields/Button";
-import { openFileSecurely } from "../../../utils/openFileSecurely";
+import RenderFiles from "../../ui/RenderFiles";
 import type { ConnectionDesigner } from "../../../interface";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
@@ -171,31 +171,11 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       </div>
 
       {/* Files Section */}
-      {Array.isArray(designer.files) && designer.files.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-green-200">
-          <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
-            <FileText className="w-4 h-4" /> Files
-          </h4>
-          <ul className="text-gray-700 space-y-1">
-            {designer.files.map((file) => (
-              <li
-                key={file.id}
-                className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
-              >
-                <span>{file.originalName}</span>
-                <a
-                  className="text-green-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
-                  onClick={() =>
-                    openFileSecurely("connection-designer", id, file.id)
-                  }
-                >
-                  <Link2 className="w-3 h-3" /> Open
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <RenderFiles
+        files={designer.files}
+        table="connection-designer"
+        parentId={id}
+      />
 
       {/* Buttons */}
       <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">

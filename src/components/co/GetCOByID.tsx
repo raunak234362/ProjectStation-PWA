@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Service from "../../api/Service";
 import type { ChangeOrderItem } from "../../interface";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { openFileSecurely } from "../../utils/openFileSecurely";
+import RenderFiles from "../ui/RenderFiles";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import Button from "../fields/Button";
@@ -146,11 +146,10 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "OPEN"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
+            ? "bg-green-100 text-green-700"
+            : "bg-yellow-100 text-yellow-700"
+            }`}
         >
           {row.original.status}
         </span>
@@ -171,19 +170,18 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
               </h1>
 
               <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                  co.isAproovedByAdmin === true
-                    ? "bg-green-100 text-green-700"
-                    : co.isAproovedByAdmin === false
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${co.isAproovedByAdmin === true
+                  ? "bg-green-100 text-green-700"
+                  : co.isAproovedByAdmin === false
                     ? "bg-red-100 text-red-700"
                     : "bg-yellow-100 text-yellow-700"
-                }`}
+                  }`}
               >
                 {co.isAproovedByAdmin === true
                   ? "Approved"
                   : co.isAproovedByAdmin === false
-                  ? "Rejected"
-                  : "Pending"}
+                    ? "Rejected"
+                    : "Pending"}
               </span>
             </div>
 
@@ -200,9 +198,8 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
               label="Recipient"
               value={
                 co.recipients
-                  ? `${co.recipients.firstName ?? ""} ${
-                      co.recipients.lastName ?? ""
-                    }`
+                  ? `${co.recipients.firstName ?? ""} ${co.recipients.lastName ?? ""
+                  }`
                   : "—"
               }
             />
@@ -221,27 +218,11 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
               </p>
             </div>
 
-            {(co.files ?? []).length > 0 && (
-              <div>
-                <h4 className="font-semibold text-gray-700 mb-2">
-                  Attachments
-                </h4>
-                <ul className="space-y-1">
-                  {(co.files ?? []).map((file: any) => (
-                    <li key={file.id}>
-                      <span
-                        className="text-green-700 underline cursor-pointer"
-                        onClick={() =>
-                          openFileSecurely("changeOrder", co.id, file.id)
-                        }
-                      >
-                        {file.originalName}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <RenderFiles
+              files={co.files ?? []}
+              table="changeOrders"
+              parentId={co.id}
+            />
 
             <div className="pt-4 border-t">
               <button

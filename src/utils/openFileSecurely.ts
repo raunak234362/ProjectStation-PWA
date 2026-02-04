@@ -1,39 +1,119 @@
-// utils/openFileSecurely.ts
-export const openFileSecurely = async (
-  type: string, // blog | project | rfi | submittals | rfq
-  id: string | number, // blog ID / project ID / etc
-  fileId: string | number
-) => {
-  try {
-    const baseURL = import.meta.env.VITE_BASE_URL;
-    const token = sessionStorage.getItem("token");
+import Service from '../api/Service'
+import { toast } from 'react-toastify'
 
+const getDownloadUrl = (table: string, parentId: string | number, fileId: string | number, versionId?: string | number) => {
+  const baseURL = import.meta.env.VITE_BASE_URL?.replace(/\/$/, '')
+  switch (table) {
+    case 'project':
+      return `${baseURL}/project/viewFile/${parentId}/${fileId}`
+    case 'estimation':
+      return `${baseURL}/estimation/viewFile/${parentId}/${fileId}`
+    case 'rFI':
+    case 'RFI':
+      return `${baseURL}/rfi/viewfile/${parentId}/${fileId}`
+    case 'rFIResponse':
+      return `${baseURL}/rfi/response/viewfile/${parentId}/${fileId}`
+    case 'submittals':
+      return `${baseURL}/submittal/${parentId}/versions/${versionId}/${fileId}`
+    case 'submittalsResponse':
+    case 'submittal/response':
+      return `${baseURL}/submittal/response/${parentId}/viewfile/${fileId}`
+    case 'rFQ':
+      return `${baseURL}/rfq/viewFile/${parentId}/${fileId}`
+    case 'rfqResponse':
+    case 'rfq/response':
+      return `${baseURL}/rfq/response/viewFile/${parentId}/${fileId}`
+    case 'changeOrders':
+    case 'changeOrder/response':
+    case 'cOResponse':
+      return `${baseURL}/co/viewfile/${parentId}/${fileId}`
+    case 'projectNotes':
+      return `${baseURL}/projectNotes/note/viewfile/${parentId}/${fileId}`
+    case 'connection-designer':
+      return `${baseURL}/connectionDesign/viewFile/${parentId}/${fileId}`
+    case 'designDrawings':
+    case 'design-drawings':
+      return `${baseURL}/designDrawings/designdrawing/viewfile/${parentId}/${fileId}`
+    default:
+      return `${baseURL}/${table}/viewFile/${parentId}/${fileId}`
+  }
+}
+
+export const openFileSecurely = async (type: string, id: string | number, fileId: string | number, versionId?: string | number) => {
+  const downloadUrl = getDownloadUrl(type, id, fileId, versionId)
+  try {
+    const token = sessionStorage.getItem('token')
     if (!token) {
-      alert("Authentication token missing");
-      return;
+      toast.error('Authentication token missing')
+      return
     }
 
-    // ✅ final correct URL
-    const url = `${baseURL}${type}/viewFile/${id}/${fileId}`;
-
-    const response = await fetch(url, {
-      method: "GET",
+    const response = await fetch(downloadUrl, {
+      method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-console.log(response);
+        Authorization: `Bearer ${token}`
+      }
+    })
 
     if (!response.ok) {
-      throw new Error("Failed to fetch file");
+      throw new Error('Failed to fetch file')
     }
 
-    const blob = await response.blob();
-    const fileURL = window.URL.createObjectURL(blob);
-
-    window.open(fileURL, "_blank", "noopener,noreferrer");
+    const blob = await response.blob()
+    const fileURL = window.URL.createObjectURL(blob)
+    window.open(fileURL, '_blank', 'noopener,noreferrer')
   } catch (err) {
-    console.error("File open failed:", err);
-    alert("Unable to open file");
+    console.error('File open failed:', err)
+    toast.error('Unable to open file')
   }
-};
+}
+
+export const downloadFileSecurely = async (type: string, id: string | number, fileId: string | number, originalName: string, versionId?: string | number) => {
+  const downloadUrl = getDownloadUrl(type, id, fileId, versionId)
+  try {
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      toast.error('Authentication token missing')
+      return
+    }
+
+    const response = await fetch(downloadUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    if (!response.ok) throw new Error('Download failed')
+
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = originalName || 'download'
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+    toast.success('Download started')
+  } catch (error) {
+    console.error('Error downloading file:', error)
+    toast.error('Error downloading file')
+  }
+}
+
+export const shareFileSecurely = async (type: string, id: string | number, fileId: string | number, versionId?: string | number) => {
+  try {
+    const response = type === 'submittals'
+      ? await Service.createShareLink('submittalVersion', String(versionId), String(fileId))
+      : await Service.createShareLink(type, String(id), String(fileId))
+    if (response?.shareUrl) {
+      await navigator.clipboard.writeText(response.shareUrl)
+      toast.success('Link copied to clipboard!')
+    } else {
+      toast.error('Failed to generate link')
+    }
+  } catch (error) {
+    console.error('Error sharing file:', error)
+    toast.error('Error generating share link')
+  }
+}

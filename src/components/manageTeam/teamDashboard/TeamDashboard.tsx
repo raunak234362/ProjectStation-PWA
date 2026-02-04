@@ -303,7 +303,7 @@ const TeamDashboard = () => {
 
   const generateDatePoints = (start: Date, end: Date, format: string) => {
     const points = [];
-    let current = new Date(start);
+    const current = new Date(start);
 
     while (current <= end) {
       if (format === 'monthly') {

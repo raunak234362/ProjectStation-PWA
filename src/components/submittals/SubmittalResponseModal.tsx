@@ -2,21 +2,22 @@ import { useState } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
 import RichTextEditor from "../fields/RichTextEditor";
+import { toast } from "react-toastify";
 
 interface SubmittalResponseModalProps {
-  submittalId: string;
+  submittal: any;
   parentResponseId?: string | null;
   onClose: () => void;
   onSuccess: () => void;
 }
 
 const SubmittalResponseModal = ({
-  submittalId,
+  submittal,
   onClose,
 
   parentResponseId = null,
 }: SubmittalResponseModalProps) => {
-  console.log(submittalId);
+  console.log(submittal);
 
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
@@ -30,8 +31,9 @@ const SubmittalResponseModal = ({
 
     if (reason) formData.append("reason", reason);
     if (description) formData.append("description", description);
+    formData.append("submittalVersionId", submittal.currentVersion.id);
 
-    formData.append("submittalsId", submittalId);
+    formData.append("submittalsId", submittal.id);
     // formData.append("status", status);
     // formData.append("wbtStatus", wbtStatus);
 
@@ -42,8 +44,11 @@ const SubmittalResponseModal = ({
     files.forEach((file) => formData.append("files", file));
 
     try {
-      await Service.addSubmittalResponse(formData, submittalId);
+      await Service.addSubmittalResponse(formData);
+      toast.success("Submittal response added successfully");
+      onClose();
     } catch (err) {
+      toast.error("Submittal response failed");
       console.error("Submittal response failed:", err);
     }
   };

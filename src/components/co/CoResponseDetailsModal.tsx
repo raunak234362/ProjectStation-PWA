@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { ChangeEvent } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
-import { X, Paperclip } from "lucide-react";
-import { openFileSecurely } from "../../utils/openFileSecurely";
+import { X } from "lucide-react";
+import RenderFiles from "../ui/RenderFiles";
 
 const STATUS_OPTIONS = ["PENDING", "APPROVED", "REJECTED"];
 
@@ -49,22 +49,11 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
 
         <p className="bg-gray-100 p-3 rounded border">{response.description}</p>
 
-        {response.files?.length > 0 && (
-          <div className="space-y-1">
-            {response.files.map((file: any) => (
-              <p
-                key={file.id}
-                className="text-green-600 underline cursor-pointer"
-                onClick={() =>
-                  openFileSecurely("changeOrder/response", response.id, file.id)
-                }
-              >
-                <Paperclip size={14} className="inline mr-1" />
-                {file.originalName}
-              </p>
-            ))}
-          </div>
-        )}
+        <RenderFiles
+          files={response.files}
+          table="cOResponse"
+          parentId={response.id}
+        />
 
         {/* Reply */}
         <textarea

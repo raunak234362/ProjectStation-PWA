@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import React, { useEffect, useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import Service from "../../api/Service";
@@ -57,7 +57,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
     fetchEstimation();
   }, [id]);
 
-  const formatDateTime = (date: string | Date | undefined) =>
+  const formatDateTime = (date: string | number | Date | undefined) =>
     date
       ? new Date(date).toLocaleString("en-IN", {
         dateStyle: "medium",
@@ -65,7 +65,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       })
       : "N/A";
 
-  const formatDate = (date: string | Date | undefined) =>
+  const formatDate = (date: string | number | Date | undefined) =>
     date
       ? new Date(date).toLocaleDateString("en-IN", {
         year: "numeric",

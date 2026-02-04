@@ -1513,10 +1513,14 @@ class Service {
     }
   }
   //submittal responses
-  static async addSubmittalResponse(formData: FormData, SubId: string) {
-    const response = await api.post(`submittal/${SubId}/responses`, formData);
+  static async addSubmittalResponse(formData: FormData) {
+    try {
+      const response = await api.post(`submittal/responses`, formData);
+      return response.data;
+    } catch (error) {
+      console.error("cannot add submittal response", error);
+    }
 
-    return response.data;
   }
   static async GetSubmittalResponsebyId(subId: string) {
     try {

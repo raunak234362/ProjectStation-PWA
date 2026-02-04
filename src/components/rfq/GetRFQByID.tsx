@@ -197,11 +197,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "OPEN"
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
               ? "bg-green-100 text-green-700"
               : "bg-yellow-100 text-yellow-700"
-          }`}
+            }`}
         >
           {row.original.status}
         </span>
@@ -227,11 +226,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
                 {/* Status tag */}
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${
-                    rfq?.status === "RECEIVED"
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${rfq?.status === "RECEIVED"
                       ? "bg-yellow-100 text-yellow-700"
                       : "bg-green-100 text-green-700"
-                  }`}
+                    }`}
                 >
                   {rfq?.status}
                 </span>
@@ -329,7 +327,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               files={rfq?.files || []}
               table="rFQ"
               parentId={rfq?.id}
-              formatDate={(date: string) => new Date(date).toLocaleDateString()}
+              formatDate={(date: string | number | Date) => new Date(date).toLocaleDateString()}
             />
             {userRole !== "CLIENT" && (
               <div className="flex flex-col gap-2 pt-2">
@@ -361,13 +359,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 userRole === "DEPUTY_MANAGER" ||
                 userRole === "OPERATION_EXECUTIVE" ||
                 userRole === "USER") && (
-                <Button
-                  onClick={() => setShowResponseModal(true)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
-                >
-                  + Add Response
-                </Button>
-              )}
+                  <Button
+                    onClick={() => setShowResponseModal(true)}
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
+                  >
+                    + Add Response
+                  </Button>
+                )}
             </div>
             {showResponseModal && (
               <ResponseModal
@@ -469,11 +467,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 type="button"
                 onClick={handleDelete}
                 disabled={deleteConfirmText !== "DELETE" || isDeleting}
-                className={`flex-1 ${
-                  deleteConfirmText === "DELETE"
+                className={`flex-1 ${deleteConfirmText === "DELETE"
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-red-300 cursor-not-allowed"
-                } text-white`}
+                  } text-white`}
               >
                 {isDeleting ? "Deleting..." : "Confirm Delete"}
               </Button>
@@ -562,11 +559,10 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-md border ${
-      enabled
+    className={`px-3 py-2 rounded-md border ${enabled
         ? "bg-green-100 border-green-400 text-green-700"
         : "bg-gray-100 border-gray-300 text-gray-700"
-    }`}
+      }`}
   >
     {label}
   </div>

@@ -1,9 +1,10 @@
-import { X, Paperclip, CalendarDays } from "lucide-react";
+import { X, CalendarDays } from "lucide-react";
 import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
-import { openFileSecurely } from "../../utils/openFileSecurely";
 import Service from "../../api/Service";
 import RichTextEditor from "../fields/RichTextEditor";
+
+import RenderFiles from "../ui/RenderFiles";
 
 // Status options for submittal
 const STATUS_OPTIONS = [
@@ -44,7 +45,7 @@ const SubmittalResponseDetailsModal = ({
     replyFiles.forEach((file) => formData.append("files", file));
 
     try {
-      await Service.addSubmittalResponse(formData, response.submittalsId);
+      await Service.addSubmittalResponse(formData);
       onClose(); // close to refresh parent
     } catch (err) {
       console.error("Failed to send submittal reply:", err);
@@ -74,23 +75,11 @@ const SubmittalResponseDetailsModal = ({
         />
 
         {/* Parent Files */}
-        {response.files?.length > 0 && (
-          <div>
-            <h4 className="text-sm text-gray-700 mb-2">Attachments</h4>
-            {response.files.map((file: any) => (
-              <p
-                key={file.id}
-                className="cursor-pointer text-green-600 underline text-sm"
-                onClick={() =>
-                  openFileSecurely("submittal/response", response.id, file.id)
-                }
-              >
-                <Paperclip size={14} className="inline-block mr-2" />
-                {file.originalName}
-              </p>
-            ))}
-          </div>
-        )}
+        <RenderFiles
+          files={response.files}
+          table="submittalsResponse"
+          parentId={response.id}
+        />
 
         {/* Timestamp */}
         <div className="flex items-center gap-2 text-xs text-gray-700">
@@ -124,30 +113,16 @@ const SubmittalResponseDetailsModal = ({
                 />
 
                 {/* Child Files */}
-                {child.files?.length > 0 && (
-                  <div className="space-y-1">
-                    {child.files.map((file: any) => (
-                      <p
-                        key={file.id}
-                        className="cursor-pointer text-green-600 underline text-xs"
-                        onClick={() =>
-                          openFileSecurely(
-                            "submittal/response",
-                            child.id,
-                            file.id
-                          )
-                        }
-                      >
-                        <Paperclip size={12} className="inline-block mr-1" />
-                        {file.originalName}
-                      </p>
-                    ))}
-                  </div>
-                )}
+                <RenderFiles
+                  files={child.files}
+                  table="submittalsResponse"
+                  parentId={child.id}
+                />
               </div>
             ))}
           </div>
         )}
+
 
         {/* Reply Button */}
         {canReply && !replyMode && (

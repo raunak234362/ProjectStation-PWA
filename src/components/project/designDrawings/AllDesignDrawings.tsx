@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { useEffect, useState } from "react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";

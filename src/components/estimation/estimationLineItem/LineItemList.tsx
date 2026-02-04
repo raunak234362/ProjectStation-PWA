@@ -31,7 +31,7 @@ interface GroupData {
 const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
     const [lineItem, setLineItem] = useState<LineItem[]>([]);
     const [groupData, setGroupData] = useState<GroupData | null>(null);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const [, setLoading] = useState(false);
 
     const groupId = groupData?.group?.id
