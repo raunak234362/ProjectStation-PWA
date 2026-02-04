@@ -35,7 +35,7 @@ const Layout = () => {
     // Reverted to Brand Green Background
     <div className="flex h-screen w-screen overflow-hidden bg-[#6bbd45]">
       {/* Sidebar Area */}
-      <div className="hidden md:flex relative z-10 py-4 pl-4">
+      <div className="hidden md:flex relative z-10 py-6 pl-6">
         <Sidebar
           isMinimized={isMinimized}
           toggleSidebar={toggleSidebar}
@@ -61,15 +61,15 @@ const Layout = () => {
       </div>
 
       {/* Main Content Area - "Floating Island" effect */}
-      <div className="flex flex-col flex-1 min-h-0 bg-transparent p-0 md:p-2">
-        <div className="flex-1 bg-white rounded-[6px] shadow-medium overflow-hidden flex flex-col relative transition-all border border-white/50 backdrop-blur-sm">
+      <div className="flex flex-col flex-1 min-h-0 bg-transparent p-4 md:p-6 md:pl-4">
+        <div className="flex-1 bg-white rounded-3xl shadow-3xl overflow-hidden flex flex-col relative transition-all border border-white/50 backdrop-blur-sm">
 
           {/* Optional: If Header is needed globally, it goes here */}
-          <div className="px-6 pt-4">
+          <div className="px-8 pt-6">
             <Header isMinimized={isMinimized} toggleSidebar={toggleSidebar} />
           </div>
 
-          <main className="flex-1 w-full overflow-y-auto custom-scrollbar px-6 pb-6">
+          <main className="flex-1 w-full overflow-y-auto custom-scrollbar px-8 pb-8">
             <Outlet />
           </main>
         </div>

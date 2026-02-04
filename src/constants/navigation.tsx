@@ -105,6 +105,10 @@ export const navItems: NavItem[] = [
       "client",
       "estimator",
       "sales",
+"connection_designer_engineer",
+
+
+
     ],
   },
   {

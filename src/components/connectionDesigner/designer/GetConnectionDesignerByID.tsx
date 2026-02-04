@@ -11,7 +11,6 @@ import Button from "../../fields/Button";
 import type { ConnectionDesigner } from "../../../interface";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
-import { AnimatePresence } from "motion/react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
 
 interface GetConnectionDesignerByIDProps {
@@ -33,44 +32,45 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<ConnectionDesigner | null>(null);
-  const [engineerModel, setEnginnerModel] = useState<ConnectionDesigner | null>(null);
+  const [engineerModel, setEngineerModel] = useState<ConnectionDesigner | null>(null);
 
   const allProjects = useSelector((state: any) => state.projectInfo.projectData || []);
   const designerProjects = allProjects.filter((p: any) => p.connectionDesignerID === id);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!id) {
-        setError("Invalid Connection Designer ID");
-        setLoading(false);
-        return;
-      }
-      try {
-        setLoading(true);
-        setError(null);
-        const [designerRes, quotationsRes] = await Promise.all([
-          Service.FetchConnectionDesignerByID(id),
-          Service.FetchConnectionQuotationByDesignerID(id)
-        ]);
+  const fetchData = async () => {
+    if (!id) {
+      setError("Invalid Connection Designer ID");
+      setLoading(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      setError(null);
+      const [designerRes, quotationsRes] = await Promise.all([
+        Service.FetchConnectionDesignerByID(id),
+        Service.FetchConnectionQuotationByDesignerID(id)
+      ]);
 
-        let designerData = designerRes?.data || null;
-        if (designerData && typeof designerData.state === 'string') {
-          try {
-            designerData.state = JSON.parse(designerData.state);
-          } catch {
-            designerData.state = [designerData.state];
-          }
+      let designerData = designerRes?.data || null;
+      if (designerData && typeof designerData.state === 'string') {
+        try {
+          designerData.state = JSON.parse(designerData.state);
+        } catch {
+          designerData.state = [designerData.state];
         }
-
-        setDesigner(designerData);
-        setQuotations(quotationsRes?.data || []);
-      } catch (err) {
-        console.error("Error fetching Designer data:", err);
-        setError("Failed to load designer intelligence");
-      } finally {
-        setLoading(false);
       }
-    };
+
+      setDesigner(designerData);
+      setQuotations(quotationsRes?.data || []);
+    } catch (err) {
+      console.error("Error fetching Designer data:", err);
+      setError("Failed to load designer intelligence");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [id]);
 
@@ -88,7 +88,6 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
     </div>
   );
 
-  // Data Preparation
   // Data Preparation
   const getStates = () => {
     const rawState = (designer as any).state;
@@ -108,7 +107,6 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
     const result: string[] = [];
     pool.forEach(item => {
       if (typeof item === 'string') {
-        // Split by comma, semicolon, or newline to handle lists correctly
         item.split(/[,\n;]/).forEach(s => {
           const trimmed = s.trim();
           if (trimmed) result.push(trimmed);
@@ -118,7 +116,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       }
     });
 
-    return [...new Set(result)]; // Ensure unique states
+    return [...new Set(result)];
   };
 
   const states = getStates();
@@ -147,7 +145,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
   return (
     <div className="space-y-8 pb-10">
-      {/* Header with Restore Buttons */}
+      {/* Header with Edit Buttons */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-gray-100 pb-8">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-green-600 to-emerald-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-green-100 shrink-0">
@@ -162,12 +160,12 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => setEditModel(designer)} className="px-6 py-2.5 text-xs font-bold uppercase tracking-widest bg-green-600 hover:bg-green-700 text-white shadow-xl shadow-green-100">Edit Profile</Button>
-          <Button onClick={() => setEnginnerModel(designer)} className="px-6 py-2.5 text-xs font-bold uppercase tracking-widest bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all">Manage Engineers</Button>
+          <Button onClick={() => setEditModel(designer)} className="px-6 py-2.5 text-xs font-bold uppercase tracking-widest bg-green-600 hover:bg-green-700 text-white shadow-xl shadow-green-100 transition-all active:scale-95">Edit Profile</Button>
+          <Button onClick={() => setEngineerModel(designer)} className="px-6 py-2.5 text-xs font-bold uppercase tracking-widest bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all active:scale-95">Manage Engineers</Button>
         </div>
       </div>
 
-      {/* Snapshot Snapshot Row */}
+      {/* Snapshot Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {statsCards.map((card, i) => (
           <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-soft hover:shadow-medium transition-all group overflow-hidden relative">
@@ -188,11 +186,9 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
         {/* Left Section (8 Cols) */}
         <div className="lg:col-span-8 space-y-8">
-
-          {/* Pending Actions Section - MATCHING IMAGE */}
+          {/* Pending Actions */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
             <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
               <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
@@ -217,7 +213,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             </div>
           </div>
 
-          {/* Designer DNA Info */}
+          {/* Profile Details */}
           <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-soft">
             <div className="bg-gray-50/70 px-6 py-4 border-b border-gray-100 flex items-center gap-2">
               <ClipboardList size={16} className="text-green-600" />
@@ -234,7 +230,6 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
         {/* Right Section (4 Cols) */}
         <div className="lg:col-span-4 space-y-8">
-          {/* State Distribution Availability Chart */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-soft flex flex-col min-h-[400px]">
             <div className="flex items-center gap-2 mb-6">
               <Globe size={18} className="text-emerald-500" />
@@ -279,16 +274,14 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         </div>
       </div>
 
-      <AnimatePresence>
-        {editModel && createPortal(
-          <EditConnectionDesigner onClose={() => setEditModel(null)} designerData={designer} />,
-          document.body
-        )}
-        {engineerModel && createPortal(
-          <AllCDEngineer onClose={() => setEnginnerModel(null)} designerData={designer} />,
-          document.body
-        )}
-      </AnimatePresence>
+      {editModel && createPortal(
+        <EditConnectionDesigner onClose={() => setEditModel(null)} designerData={designer} onSuccess={fetchData} />,
+        document.body
+      )}
+      {engineerModel && createPortal(
+        <AllCDEngineer onClose={() => setEngineerModel(null)} designerData={designer} />,
+        document.body
+      )}
     </div>
   );
 };
