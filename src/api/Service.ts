@@ -591,9 +591,24 @@ class Service {
     }
   }
   // Fetch Connection Designer By ID
-  static async FetchConnectionQuotationByDesignerID(id: string) {
+  static async FetchConnectionQuotationByDesignerID(id: any) {
     try {
       const response = await api.get(`connectionDesignerQuota/designer/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // fgetch connectiondesigner All quotatioN
+  static async FetchAllConnectionQuotation() {
+    try {
+      const response = await api.get(`rfq/connectionEngineers`, {
         headers: {
           "Content-Type": "application/json",
         },
