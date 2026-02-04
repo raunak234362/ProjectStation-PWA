@@ -33,7 +33,7 @@ const getDownloadUrl = (table: string, parentId: string | number, fileId: string
       return `${baseURL}/connectionDesign/viewFile/${parentId}/${fileId}`
     case 'designDrawings':
     case 'design-drawings':
-      return `${baseURL}/designDrawings/designdrawing/viewfile/${parentId}/${fileId}`
+      return `${baseURL}/${table}/viewfile/${parentId}/${fileId}`
     default:
       return `${baseURL}/${table}/viewFile/${parentId}/${fileId}`
   }
