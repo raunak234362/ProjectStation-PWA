@@ -11,6 +11,8 @@ import Button from "../fields/Button";
 import AddEstimation from "../estimation/AddEstimation";
 import RenderFiles from "../ui/RenderFiles";
 import QuotationRaise from "../connectionDesigner/QuotationRaise";
+import QuotationResponseModal from "../connectionDesigner/QuotationResponseModal";
+import QuotationResponseDetailsModal from "../connectionDesigner/QuotationResponseDetailsModal";
 import { Trash2, X } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { deleteRFQ } from "../../store/rfqSlice";
@@ -37,6 +39,12 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const [newStatus, setNewStatus] = useState("");
   const [statusReason, setStatusReason] = useState("");
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  // New states for quotation responses
+  const [showQuotationResponseModal, setShowQuotationResponseModal] =
+    useState(false);
+  const [quotations, setQuotations] = useState<any[]>([]);
+  const [selectedQuotation, setSelectedQuotation] = useState<any | null>(null);
 
   const dispatch = useDispatch();
   const fetchRfq = async () => {

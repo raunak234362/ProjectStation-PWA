@@ -9,42 +9,44 @@ const RfqLayout = () => {
   const [activeTab, setActiveTab] = useState("allRFQ");
   const rfq = useSelector((state: any) => state.RFQInfos.RFQData);
   return (
-    <div className="w-full overflow-y-hidden overflow-x-hidden">
-      <div className="flex flex-col w-full h-full">
-        <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 rounded-t-2xl flex flex-col md:flex-row items-center justify-end gap-4">
-          <div className="flex flex-row gap-4 items-center justify-end">
+    <div className="w-full">
+      <div className="flex flex-col w-full h-full mb-6">
+        <div className="px-6 py-4 backdrop-blur-2xl bg-white/60 border border-white/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+          <div className="flex flex-col">
+            <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">RFQ Management</h2>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Manage and track all request for quotations</p>
+          </div>
+          <div className="flex flex-row gap-4 items-center w-full md:w-auto">
             <button
               onClick={() => setActiveTab("allRFQ")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-semibold transition-all ${
-                activeTab === "allRFQ"
-                  ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
-              }`}
+              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest transition-all ${activeTab === "allRFQ"
+                  ? "bg-green-500 text-white shadow-lg shadow-green-100 hover:bg-green-600 scale-[1.02]"
+                  : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                }`}
             >
               All RFQ
             </button>
 
             <button
               onClick={() => setActiveTab("addRFQ")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-semibold transition-all ${
-                activeTab === "addRFQ"
-                  ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
-              }`}
+              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest transition-all ${activeTab === "addRFQ"
+                  ? "bg-green-500 text-white shadow-lg shadow-green-100 hover:bg-green-600 scale-[1.02]"
+                  : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                }`}
             >
               Add RFQ
             </button>
           </div>
         </div>
       </div>
-      <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
+      <div className="flex-1 min-h-0">
         {activeTab === "allRFQ" && (
-          <div>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <AllRFQ rfq={rfq} />
           </div>
         )}
         {activeTab === "addRFQ" && (
-          <div>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <AddRFQ onSuccess={() => setActiveTab("allRFQ")} />
           </div>
         )}

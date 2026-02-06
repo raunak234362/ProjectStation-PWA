@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Service from "../../../api/Service";
-import { Loader2, AlertCircle, Link2, FileText, Link } from "lucide-react";
+import {
+  Loader2, AlertCircle, FileText, Link, Globe,
+  ExternalLink, Calendar, Clock, Paperclip, X
+} from "lucide-react";
 import Button from "../../fields/Button";
 import type { Fabricator } from "../../../interface";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
@@ -8,15 +12,29 @@ import EditFabricator from "./EditFabricator";
 import AllBranches from "../branches/AllBranches";
 import AllClients from "../clients/AllClients";
 import FabricatorDashboard from "./FabricatorDashboard";
+import { toast } from "react-toastify";
 
 interface GetFabricatorIDProps {
-  id: string;
+  id?: string;
+  row?: Fabricator;
+  close?: () => void;
 }
 
 const truncateText = (text: string, max: number = 40) =>
   text.length > max ? text.substring(0, max) + "..." : text;
 
-const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
+const GetFabricatorByID = ({ id: propId, row, close }: GetFabricatorIDProps) => {
+  const id = propId || row?.id;
+
+  if (!id) {
+    return (
+      <div className="flex items-center justify-center py-12 text-red-500 bg-red-50 rounded-xl border border-red-100">
+        <AlertCircle className="w-10 h-10 mb-2" />
+        <p className="font-bold">Invalid Fabricator ID</p>
+      </div>
+    );
+  }
+
   const [fabricator, setFabricator] = useState<Fabricator | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,32 +44,31 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   const [activeTab, setActiveTab] = useState<"details" | "dashboard">(
     "dashboard"
   );
+  const fetchFab = async () => {
+    if (!id) {
+      setError("Invalid Fabricator ID");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await Service.GetFabricatorByID(id);
+      setFabricator(response?.data || null);
+    } catch (err) {
+      setError("Failed to load fabricator");
+      console.error("Error fetching fabricator:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchFab = async () => {
-      if (!id) {
-        setError("Invalid Fabricator ID");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await Service.GetFabricatorByID(id);
-        setFabricator(response?.data || null);
-      } catch (err) {
-        setError("Failed to load fabricator");
-        console.error("Error fetching fabricator:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchFab();
   }, [id]);
 
   const handleModel = (fabricator: Fabricator) => {
-    console.log(fabricator);
     setEditModel(fabricator);
   };
   const handleModelClose = () => {
@@ -59,7 +76,6 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   };
 
   const handleBranch = (fabricator: Fabricator) => {
-    console.log(fabricator);
     setBranch(fabricator);
   };
   const handleBranchClose = () => {
@@ -67,11 +83,24 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
   };
 
   const handlePoc = (fabricator: Fabricator) => {
-    console.log(fabricator);
     setPoc(fabricator);
   };
   const handlePocClose = () => {
     setPoc(null);
+  };
+
+  const handleArchive = async () => {
+    if (!fabricator) return;
+    if (window.confirm(`Are you sure you want to archive ${fabricator.fabName}?`)) {
+      try {
+        await Service.DeleteFabricator(fabricator.id);
+        toast.success("Fabricator archived successfully");
+        fetchFab();
+      } catch (error) {
+        toast.error("Failed to archive fabricator");
+        console.error(error);
+      }
+    }
   };
 
   const formatDate = (date: string) =>
@@ -82,186 +111,207 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-gray-700">
-        <Loader2 className="w-5 h-5 animate-spin mr-2" />
-        Loading fabricator details...
+      <div className="flex items-center justify-center py-12 text-gray-500">
+        <Loader2 className="w-8 h-8 animate-spin text-green-600 mb-2" />
+        <p className="text-sm font-medium">Synchronizing fabricator intelligence...</p>
       </div>
     );
   }
 
   if (error || !fabricator) {
     return (
-      <div className="flex items-center justify-center py-8 text-red-600">
-        <AlertCircle className="w-5 h-5 mr-2" />
-        {error || "Fabricator not found"}
+      <div className="flex flex-col items-center justify-center py-12 text-red-500 bg-red-50 rounded-xl border border-red-100">
+        <AlertCircle className="w-10 h-10 mb-2" />
+        <p className="font-bold">{error || "Fabricator not found"}</p>
       </div>
     );
   }
-  console.log(fabricator);
 
   return (
-    <div className="bg-linear-to-br from-green-50 to-green-50 p-4 sm:p-6 rounded-xl shadow-inner text-sm">
+    <div className="bg-white p-6 md:p-8 rounded-3xl shadow-soft text-sm border border-gray-100">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-2 mb-5">
-        <h3 className="text-xl font-bold text-green-800">
-          {fabricator.fabName}
-        </h3>
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${fabricator.isDeleted
-            ? "bg-red-100 text-red-700"
-            : "bg-green-100 text-green-800"
-            }`}
-        >
-          {fabricator.isDeleted ? "Inactive" : "Active"}
-        </span>
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-green-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-green-100">
+            {fabricator.fabName.charAt(0)}
+          </div>
+          <div>
+            <h3 className="text-2xl font-black text-gray-900 tracking-tight">
+              {fabricator.fabName}
+            </h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Global Operations Partner</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <span
+            className={`px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest ${fabricator.isDeleted
+              ? "bg-red-50 text-red-600 border border-red-100"
+              : "bg-green-50 text-green-700 border border-green-100"
+              }`}
+          >
+            {fabricator.isDeleted ? "Archived" : "Active Pool"}
+          </span>
+          {close && (
+            <button
+              onClick={close}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+              title="Close Details"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-x-4 gap-y-2 mb-6 border-b border-green-200">
+      <div className="flex flex-wrap gap-x-8 gap-y-2 mb-8 border-b border-gray-100">
         <button
           onClick={() => setActiveTab("dashboard")}
-          className={`pb-2 px-1 text-sm font-semibold transition-colors ${activeTab === "dashboard"
-            ? "text-green-700 border-b-2 border-green-600"
-            : "text-gray-500 hover:text-green-600"
+          className={`pb-4 px-1 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === "dashboard"
+            ? "text-green-600"
+            : "text-gray-400 hover:text-gray-600"
             }`}
         >
-          Dashboard
+          Executive Dashboard
+          {activeTab === "dashboard" && <div className="absolute bottom-0 left-0 right-0 h-1 bg-green-500 rounded-t-full" />}
         </button>
         <button
           onClick={() => setActiveTab("details")}
-          className={`pb-2 px-1 text-sm font-semibold transition-colors ${activeTab === "details"
-            ? "text-green-700 border-b-2 border-green-600"
-            : "text-gray-500 hover:text-green-600"
+          className={`pb-4 px-1 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === "details"
+            ? "text-green-600"
+            : "text-gray-400 hover:text-gray-600"
             }`}
         >
-          Basic Details
+          Basic Intelligence
+          {activeTab === "details" && <div className="absolute bottom-0 left-0 right-0 h-1 bg-green-500 rounded-t-full" />}
         </button>
       </div>
 
-      {activeTab === "dashboard" ? (
-        <FabricatorDashboard fabricator={fabricator} />
-      ) : (
-        <>
-          {/* Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-3">
-              {fabricator.website && (
-                <InfoRow
-                  label="Website"
-                  value={
-                    <a
-                      href={fabricator.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      title={fabricator.website}
-                      className="text-cyan-700 underline hover:text-cyan-900"
-                    >
-                      {truncateText(fabricator.website, 20)}
-                    </a>
-                  }
-                />
-              )}
-              {fabricator.drive && (
-                <InfoRow
-                  label="Drive Link"
-                  value={
-                    <a
-                      href={fabricator.drive}
-                      target="_blank"
-                      rel="noreferrer"
-                      title={fabricator.drive}
-                      className="text-cyan-700 underline hover:text-cyan-900 flex gap-1"
-                    >
-                      <Link className="w-4 h-4" />{" "}
-                      {truncateText(fabricator.drive, 20)}
-                    </a>
-                  }
-                />
-              )}
+      <div className="min-h-[400px]">
+        {activeTab === "dashboard" ? (
+          <FabricatorDashboard fabricator={fabricator} />
+        ) : (
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+            {/* Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                {fabricator.website && (
+                  <InfoRow
+                    label="Digital Hub"
+                    value={
+                      <a
+                        href={fabricator.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 font-bold hover:underline underline-offset-4"
+                      >
+                        {truncateText(fabricator.website, 30)}
+                      </a>
+                    }
+                    icon={<Globe size={14} className="text-blue-500" />}
+                  />
+                )}
+                {fabricator.drive && (
+                  <InfoRow
+                    label="Cloud Storage"
+                    value={
+                      <a
+                        href={fabricator.drive}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-green-600 font-bold hover:underline underline-offset-4 flex items-center gap-1.5"
+                      >
+                        Open Drive <ExternalLink size={12} />
+                      </a>
+                    }
+                    icon={<Link size={14} className="text-emerald-500" />}
+                  />
+                )}
+              </div>
+
+              <div className="space-y-6 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                <InfoRow label="Ingested On" value={formatDate(fabricator.createdAt)} icon={<Calendar size={14} className="text-gray-400" />} />
+                <InfoRow label="Modified On" value={formatDate(fabricator.updatedAt)} icon={<Clock size={14} className="text-gray-400" />} />
+                <InfoRow label="Asset Vault" value={`${Array.isArray(fabricator.files) ? fabricator.files.length : 0} Compliance Items`} icon={<FileText size={14} className="text-gray-400" />} />
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <InfoRow
-                label="Created"
-                value={formatDate(fabricator.createdAt)}
-              />
-              <InfoRow
-                label="Updated"
-                value={formatDate(fabricator.updatedAt)}
-              />
-              <InfoRow
-                label="Total Files"
-                value={
-                  Array.isArray(fabricator.files) ? fabricator.files.length : 0
-                }
-              />
-            </div>
+            {/* Files Section */}
+            {Array.isArray(fabricator.files) && fabricator.files.length > 0 && (
+              <div className="mt-10">
+                <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Paperclip size={14} className="text-green-500" /> Compliance Documentation
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {(fabricator.files as { id: string; originalName: string }[]).map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex justify-between items-center bg-gray-50/80 p-4 rounded-xl border border-gray-100 hover:border-green-200 hover:bg-white transition-all group"
+                    >
+                      <span className="font-bold text-gray-700 truncate mr-4">{file.originalName}</span>
+                      <button
+                        onClick={() => openFileSecurely("fabricator", id, file.id)}
+                        className="p-2 bg-white rounded-lg text-green-600 shadow-sm border border-gray-100 hover:bg-green-600 hover:text-white transition-all"
+                      >
+                        <ExternalLink size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+        )}
+      </div>
 
-          {/* Files Section */}
-          {Array.isArray(fabricator.files) && fabricator.files.length > 0 && (
-            <div className="mt-6 pt-5 border-t border-green-200">
-              <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
-                <FileText className="w-4 h-4" /> Files
-              </h4>
-              <ul className="text-gray-700 space-y-1">
-                {(
-                  fabricator.files as { id: string; originalName: string }[]
-                ).map((file) => (
-                  <li
-                    key={file.id}
-                    className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
-                  >
-                    <span>{file.originalName}</span>
-                    <a
-                      className="text-green-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
-                      onClick={() =>
-                        openFileSecurely("fabricator", id, file.id)
-                      }
-                    >
-                      <Link2 className="w-3 h-3" /> Open
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </>
-      )}
-      {/* Buttons */}
-      <div className="py-3 flex flex-wrap gap-2 sm:gap-3">
+      {/* Buttons — MATCHING IMAGE STYLE BUT REFINED */}
+      <div className="mt-10 pt-8 border-t border-gray-100 flex flex-wrap gap-3">
         <Button
           onClick={() => handleBranch(fabricator)}
-          className="py-1 px-2 text-lg"
+          className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-green-100 transition-all active:scale-95"
         >
           View Branches
         </Button>
         <Button
           onClick={() => handlePoc(fabricator)}
-          className="py-1 px-2 text-lg"
+          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-100 transition-all active:scale-95"
         >
           View POC
         </Button>
         <Button
           onClick={() => handleModel(fabricator)}
-          className="py-1 px-2 text-lg"
+          className="px-6 py-2.5 bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-black uppercase tracking-widest rounded-xl transition-all active:scale-95"
         >
           Edit Fabricator
         </Button>
-        <Button className="py-1 px-2 text-lg bg-red-200 text-red-700">
-          Archive
+        <Button
+          onClick={handleArchive}
+          className="px-6 py-2.5 bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-100 text-xs font-black uppercase tracking-widest rounded-xl transition-all active:scale-95"
+        >
+          Archive Partner
         </Button>
       </div>
-      {editModel && (
+
+      {editModel && createPortal(
         <EditFabricator
           fabricatorData={fabricator}
           onClose={handleModelClose}
-        />
+          onSuccess={fetchFab}
+        />,
+        document.body
       )}
-      {branch && (
-        <AllBranches fabricator={fabricator} onClose={handleBranchClose} />
+      {branch && createPortal(
+        <AllBranches
+          fabricator={fabricator}
+          onClose={handleBranchClose}
+          onSubmitSuccess={fetchFab}
+        />,
+        document.body
       )}
-      {poc && <AllClients fabricator={fabricator} onClose={handlePocClose} />}
+      {poc && createPortal(
+        <AllClients fabricator={fabricator} onClose={handlePocClose} />,
+        document.body
+      )}
     </div>
   );
 };
@@ -270,26 +320,22 @@ const GetFabricatorByID = ({ id }: GetFabricatorIDProps) => {
 const InfoRow = ({
   label,
   value,
-  href,
+  icon
 }: {
   label: string;
   value: React.ReactNode;
-  href?: string;
+  icon?: React.ReactNode;
 }) => (
-  <div className="flex justify-between">
-    <span className="font-bold text-gray-700">{label}:</span>
-    {href ? (
-      <a
-        href={href}
-        className="text-green-600 hover:underline hover:text-green-800 transition-colors"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+  <div className="flex flex-col gap-1 group">
+    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-green-500 transition-colors">
+      {label}
+    </span>
+    <div className="flex items-center gap-2">
+      {icon}
+      <div className="text-[13px] font-bold text-gray-700 leading-tight">
         {value}
-      </a>
-    ) : (
-      <span className="text-gray-700">{value}</span>
-    )}
+      </div>
+    </div>
   </div>
 );
 

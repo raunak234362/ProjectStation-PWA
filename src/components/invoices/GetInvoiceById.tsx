@@ -195,7 +195,7 @@ const GetInvoiceById = ({
                   <span className="font-bold ">{invoice.GSTIN || "-"}</span>
                 </div>
               </div>
-
+                                                                                                                    
               {/* Invoice Metadata */}
               <div className="w-[220px]">
                 <div className="text-right mb-4">

@@ -8,19 +8,22 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import { Country, State, City } from "country-state-city";
 import axios from "axios";
+import { X, Plus, Check, Loader2 } from "lucide-react";
+import { motion } from "motion/react";
+
 interface AddBranchProps {
   fabricatorId: string;
   onClose: () => void;
-  onSubmitSuccess?: (branch: Branch) => void; // optional callback
+  onSubmitSuccess?: (branch: Branch) => void;
 }
 
-const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
-  const [stateOptions, setStateOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
-  const [cityOptions, setCityOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
+const AddBranch: React.FC<AddBranchProps> = ({
+  fabricatorId,
+  onClose,
+  onSubmitSuccess
+}) => {
+  const [stateOptions, setStateOptions] = useState<{ label: string; value: string }[]>([]);
+  const [cityOptions, setCityOptions] = useState<{ label: string; value: string }[]>([]);
 
   const {
     register,
@@ -34,7 +37,7 @@ const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
     defaultValues: {
       fabricatorId,
       isHeadquarters: false,
-      country: "IN", // Default to India
+      country: "IN",
     },
   });
 
@@ -42,58 +45,40 @@ const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
   const selectedState = watch("state");
   const zipCode = watch("zipCode");
 
-  // --- Load states when country changes ---
   useEffect(() => {
     if (selectedCountry) {
       const statesData = State.getStatesOfCountry(selectedCountry) || [];
-      setStateOptions(
-        statesData.map((s) => ({ label: s.name, value: s.isoCode }))
-      );
-      // Only reset if the country actually changed and it's not the initial load
-      // But for simplicity, we'll let the user re-select
+      setStateOptions(statesData.map((s) => ({ label: s.name, value: s.isoCode })));
     } else {
       setStateOptions([]);
     }
   }, [selectedCountry]);
 
-  // --- Load cities when state changes ---
   useEffect(() => {
     if (selectedCountry && selectedState) {
-      const citiesData =
-        City.getCitiesOfState(selectedCountry, selectedState) || [];
+      const citiesData = City.getCitiesOfState(selectedCountry, selectedState) || [];
       setCityOptions(citiesData.map((c) => ({ label: c.name, value: c.name })));
     } else {
       setCityOptions([]);
     }
   }, [selectedCountry, selectedState]);
 
-  // --- Pincode Fetching ---
   const handleZipCodeBlur = async () => {
     if (zipCode && zipCode.length === 6 && selectedCountry === "IN") {
       try {
-        const response = await axios.get(
-          `https://api.postalpincode.in/pincode/${zipCode}`
-        );
+        const response = await axios.get(`https://api.postalpincode.in/pincode/${zipCode}`);
         const data = response.data[0];
         if (data.Status === "Success") {
           const postOffice = data.PostOffice[0];
           const stateName = postOffice.State;
           const cityName = postOffice.District;
-
-          // Find state code
           const states = State.getStatesOfCountry("IN");
-          const stateObj = states.find(
-            (s) => s.name.toLowerCase() === stateName.toLowerCase()
-          );
-
+          const stateObj = states.find((s) => s.name.toLowerCase() === stateName.toLowerCase());
           if (stateObj) {
             setValue("state", stateObj.isoCode);
-            // City options will update via useEffect, but we can set the value after a short delay or manually
-            setTimeout(() => {
-              setValue("city", cityName);
-            }, 100);
+            setTimeout(() => { setValue("city", cityName); }, 100);
           }
-          toast.success("Address details fetched from pincode");
+          toast.success("Geo-data extrapolated from pincode");
         }
       } catch (error) {
         console.error("Pincode fetch failed:", error);
@@ -103,237 +88,257 @@ const AddBranch: React.FC<AddBranchProps> = ({ fabricatorId, onClose }) => {
 
   const onSubmit = async (data: Branch) => {
     try {
-      console.log("Branch Form Submitted:", data);
-      const response = await Service.AddBranchByFabricator(data);
-      console.log(response);
-      toast.success("Branch added successfully");
+      await Service.AddBranchByFabricator(data);
+      toast.success("Infrastructure entry created");
       reset();
+      if (onSubmitSuccess) onSubmitSuccess(data);
       if (onClose) onClose();
-
-      // API Request Example ⬇
-      // const response = await Service.AddBranchToFabricator(data);
-      // if (response.success) onSubmitSuccess?.(data);
-
-      // reset();
     } catch (err) {
       console.error("Failed to add branch:", err);
-      toast.error("Failed to add branch");
+      toast.error("Failed to register branch");
     }
   };
 
   return (
-    <>
-      <Button onClick={onClose}>Close</Button>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white shadow rounded"
-      >
-        {/* Hidden fabricatorId */}
-        <input
-          type="hidden"
-          value={fabricatorId}
-          {...register("fabricatorId")}
-        />
-        {/* Name */}
+    <motion.div
+      initial={{ scale: 0.95, opacity: 0, y: 20 }}
+      animate={{ scale: 1, opacity: 1, y: 0 }}
+      exit={{ scale: 0.95, opacity: 0, y: 20 }}
+      onClick={(e) => e.stopPropagation()}
+      className="w-full max-w-4xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] relative border border-slate-100"
+    >
+      {/* Header */}
+      <div className="flex justify-between items-center px-10 py-8 border-b border-slate-100 shrink-0 bg-slate-50/50">
         <div>
-          <Input
-            label="Headquater/ Branches"
-            type="text"
-            {...register("name", { required: "Branch name is required" })}
-            className="input"
-            placeholder="Headquater/ Branches"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-xs">{errors.name.message}</p>
-          )}
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-none mb-2 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-green-100 flex items-center justify-center text-green-600">
+              <Plus className="w-6 h-6" />
+            </div>
+            Initialize New Branch
+          </h2>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Registering a new geographic node in the partner network</p>
         </div>
+        <button
+          onClick={onClose}
+          className="p-3 bg-white shadow-sm border border-slate-100 rounded-2xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-90"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
 
-        {/* Email */}
-        <div>
-          <Input
-            label="email"
-            type="email"
-            {...register("email", {
-              required: "Email required",
-              pattern: { value: /\S+@\S+\.\S+/, message: "Invalid email" },
-            })}
-            className="input"
-            placeholder="branch@company.com"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-xs">{errors.email.message}</p>
-          )}
-        </div>
-
-        {/* Phone & Extension */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <Input
-              label="Phone"
-              type="text"
-              {...register("phone", { required: "Phone required" })}
-              className="input"
-              placeholder="+91XXXXXXXXXX"
-            />
-            {errors.phone && (
-              <p className="text-red-500 text-xs">{errors.phone.message}</p>
-            )}
+      <form onSubmit={handleSubmit(onSubmit)} className="px-10 py-8 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
+        {/* Core Info */}
+        <section className="space-y-6">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            Branch Identity
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Branch Designation</label>
+              <Input
+                label=""
+                {...register("name", { required: "Branch name is required" })}
+                placeholder="e.g. Asia-Pacific Headquarters"
+                className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white"
+              />
+              {errors.name && <p className="mt-2 text-[10px] font-bold text-rose-600 uppercase tracking-wider">{errors.name.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Official Email</label>
+              <Input
+                label=""
+                type="email"
+                {...register("email", {
+                  required: "Email required",
+                  pattern: { value: /\S+@\S+\.\S+/, message: "Invalid email" },
+                })}
+                placeholder="logistics@partner.corp"
+                className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white"
+              />
+              {errors.email && <p className="mt-2 text-[10px] font-bold text-rose-600 uppercase tracking-wider">{errors.email.message}</p>}
+            </div>
           </div>
-          <div>
-            <Input
-              label="Extension"
-              type="text"
-              {...register("extension")}
-              className="input"
-              placeholder="Ext"
-            />
+        </section>
+
+        {/* Contact info */}
+        <section className="space-y-6 pt-8 border-t border-slate-50">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            Communications Hub
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Direct Phone</label>
+              <Input
+                label=""
+                {...register("phone", { required: "Phone required" })}
+                placeholder="+91 XXXXX XXXXX"
+                className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white"
+              />
+              {errors.phone && <p className="mt-2 text-[10px] font-bold text-rose-600 uppercase tracking-wider">{errors.phone.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Extension</label>
+              <Input
+                label=""
+                {...register("extension")}
+                placeholder="808"
+                className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white"
+              />
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* Address */}
-        <div className="md:col-span-2">
-          <Input
-            label="Address"
-            type="text"
-            {...register("address", { required: "Address required" })}
-            className="input"
-            placeholder="123 Industrial Area"
-          />
-          {errors.address && (
-            <p className="text-red-500 text-xs">{errors.address.message}</p>
-          )}
-        </div>
-
-        {/* Country */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Country
-          </label>
-          <Controller
-            name="country"
-            control={control}
-            rules={{ required: "Country is required" }}
-            render={({ field }) => (
-              <Select
-                placeholder="Select Country"
-                options={Country.getAllCountries().map((c) => ({
-                  label: c.name,
-                  value: c.isoCode,
-                }))}
-                value={
-                  Country.getAllCountries()
-                    .filter((c) => c.isoCode === field.value)
-                    .map((c) => ({ label: c.name, value: c.isoCode }))[0] ||
-                  null
-                }
-                onChange={(option) => {
-                  field.onChange(option?.value || "");
-                  setValue("state", "");
-                  setValue("city", "");
-                }}
-                menuPortalTarget={document.body}
-                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+        {/* Geography */}
+        <section className="space-y-6 pt-8 border-t border-slate-50">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            Geographic Presence
+          </h3>
+          <div className="grid grid-cols-1 gap-8">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Physical Address</label>
+              <Input
+                label=""
+                {...register("address", { required: "Address required" })}
+                placeholder="Building 4, Sector 12, Industrial Area"
+                className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white"
               />
-            )}
-          />
-          {errors.country && (
-            <p className="text-red-500 text-xs">{errors.country.message}</p>
-          )}
-        </div>
-
-        {/* State */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            State
-          </label>
-          <Controller
-            name="state"
-            control={control}
-            rules={{ required: "State is required" }}
-            render={({ field }) => (
-              <Select
-                placeholder="Select State"
-                options={stateOptions}
-                value={
-                  stateOptions.find((opt) => opt.value === field.value) || null
-                }
-                onChange={(option) => {
-                  field.onChange(option?.value || "");
-                  setValue("city", "");
-                }}
-                isDisabled={!selectedCountry}
-                menuPortalTarget={document.body}
-                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Pincode</label>
+              <Input
+                label=""
+                {...register("zipCode", { required: "Zip Code required", onBlur: handleZipCodeBlur })}
+                placeholder="560001"
+                className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white"
               />
-            )}
-          />
-          {errors.state && (
-            <p className="text-red-500 text-xs">{errors.state.message}</p>
-          )}
-        </div>
-
-        {/* City */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            City
-          </label>
-          <Controller
-            name="city"
-            control={control}
-            rules={{ required: "City is required" }}
-            render={({ field }) => (
-              <Select
-                placeholder="Select City"
-                options={cityOptions}
-                value={
-                  cityOptions.find((opt) => opt.value === field.value) || null
-                }
-                onChange={(option) => field.onChange(option?.value || "")}
-                isDisabled={!selectedState}
-                menuPortalTarget={document.body}
-                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Country</label>
+              <Controller
+                name="country"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    options={Country.getAllCountries().map(c => ({ label: c.name, value: c.isoCode }))}
+                    value={Country.getAllCountries().filter(c => c.isoCode === field.value).map(c => ({ label: c.name, value: c.isoCode }))[0]}
+                    onChange={(opt) => { field.onChange(opt?.value); setValue("state", ""); setValue("city", ""); }}
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderRadius: '16px',
+                        padding: '4px',
+                        backgroundColor: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        boxShadow: 'none',
+                        '&:hover': { border: '1px solid #cbd5e1' }
+                      }),
+                      menu: (base) => ({ ...base, borderRadius: '16px', overflow: 'hidden', zIndex: 9999 })
+                    }}
+                  />
+                )}
               />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">State</label>
+              <Controller
+                name="state"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    options={stateOptions}
+                    value={stateOptions.find(opt => opt.value === field.value)}
+                    onChange={(opt) => { field.onChange(opt?.value); setValue("city", ""); }}
+                    isDisabled={!selectedCountry}
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderRadius: '16px',
+                        padding: '4px',
+                        backgroundColor: '#f8fafc',
+                        border: '1px solid #e2e8f0'
+                      })
+                    }}
+                  />
+                )}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">City</label>
+              <Controller
+                name="city"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    options={cityOptions}
+                    value={cityOptions.find(opt => opt.value === field.value)}
+                    onChange={(opt) => field.onChange(opt?.value)}
+                    isDisabled={!selectedState}
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderRadius: '16px',
+                        padding: '4px',
+                        backgroundColor: '#f8fafc',
+                        border: '1px solid #e2e8f0'
+                      })
+                    }}
+                  />
+                )}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* System Settings */}
+        <section className="pt-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <input
+              type="checkbox"
+              id="isHeadquarters"
+              {...register("isHeadquarters")}
+              className="w-6 h-6 rounded-lg text-green-600 border-slate-200 focus:ring-green-500 transition-all"
+            />
+            <label htmlFor="isHeadquarters" className="text-xs font-black text-slate-700 uppercase tracking-widest cursor-pointer">Set as Global Headquarters</label>
+          </div>
+        </section>
+
+        {/* Footer Actions */}
+        <div className="flex items-center justify-end gap-4 pt-10 border-t border-slate-100 sticky bottom-0 bg-white pb-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-8 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all active:scale-95"
+          >
+            Cancel Initialization
+          </button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-10 py-3 bg-linear-to-r from-green-600 to-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-green-100 transition-all active:scale-95 flex items-center gap-3 border-none"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Provisioning...
+              </>
+            ) : (
+              <>
+                <Check className="w-5 h-5" />
+                Deploy Branch
+              </>
             )}
-          />
-          {errors.city && (
-            <p className="text-red-500 text-xs">{errors.city.message}</p>
-          )}
-        </div>
-
-        {/* ZipCode */}
-        <div>
-          <Input
-            label="Zipcode"
-            type="text"
-            {...register("zipCode", {
-              required: "Zip Code required",
-              onBlur: handleZipCodeBlur,
-            })}
-            className="input"
-            placeholder="560001"
-          />
-          {errors.zipCode && (
-            <p className="text-red-500 text-xs">{errors.zipCode.message}</p>
-          )}
-        </div>
-
-        {/* Is Headquarters */}
-        <div className=" flex items-center gap-2 mt-2">
-          <Input
-            label="Headquater"
-            type="checkbox"
-            {...register("isHeadquarters")}
-          />
-        </div>
-
-        {/* Submit */}
-        <div className="md:col-span-2">
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Saving..." : "Add Branch"}
           </Button>
         </div>
       </form>
-    </>
+    </motion.div>
   );
 };
 

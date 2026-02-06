@@ -33,6 +33,7 @@ const AppContent = () => {
       sessionStorage.setItem("userId", userDetail.id);
       sessionStorage.setItem("username", userDetail.username);
       sessionStorage.setItem("firstName", userDetail.firstName);
+      sessionStorage.setItem("connectionDesignerId", userDetail.connectionDesignerId);
 
       // setUserId(userDetail.id);
       dispatch(setUserData(userDetail));
@@ -97,7 +98,14 @@ const AppContent = () => {
           userType === "ADMIN"
         ) {
           rfqDetail = await Service.getAllRFQ();
-        } else {
+        }
+        else if (userType === "CONNECTION_DESIGNER_ENGINEER") {
+          const designerId = sessionStorage.getItem("connectionDesignerId");
+          if (designerId) {
+            rfqDetail = await Service.getConnectionEngineerQuotation();
+          }
+        }
+        else {
           rfqDetail = await Service.RFQRecieved();
         }
         // setRfq(rfqDetail.data);

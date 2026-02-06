@@ -296,7 +296,18 @@ class Service {
       console.log("Fabricators Edited:", response.data);
       return response.data;
     } catch (error) {
-      console.error("cannot find fabricators", error);
+      console.error("cannot edit fabricator", error);
+    }
+  }
+
+  // Delete Fabricator by ID
+  static async DeleteFabricator(id: string) {
+    try {
+      const response = await api.delete(`fabricator/${id}`);
+      console.log("Fabricator deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot delete fabricator", error);
     }
   }
 
@@ -445,6 +456,82 @@ class Service {
       console.error("cannot update rfq", error);
     }
   }
+  //rfq for route for adding the connection engineers
+
+  static async getConnectionEngineerQuotation() {
+    try {
+      const response = await api.get(`rfq/connectionEngineers`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Connection Engineer :", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot get connection engineer", error);
+    }
+  }
+
+  // Add Connection Designer Quotation Response
+  static async addConnectionDesignerQuotation(
+    formData: FormData,
+    rfqId: string,
+  ) {
+    try {
+      const response = await api.post(
+        `connectionDesignerQuota/${rfqId}/quotations`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      console.log("Connection Designer Quotation added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot add connection designer quotation", error);
+      throw error;
+    }
+  }
+
+  // Get all quotations for an RFQ
+  static async getQuotationsByRFQ(rfqId: string) {
+    try {
+      const response = await api.get(
+        `connectionDesignerQuota/${rfqId}/quotations`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      console.log("Quotations fetched for RFQ:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot get quotations", error);
+    }
+  }
+
+  // Add reply to quotation response
+  static async addQuotationReply(formData: FormData, quotationId: string) {
+    try {
+      const response = await api.post(
+        `connectionDesignerQuota/${quotationId}/replies`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      console.log("Quotation reply added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot add quotation reply", error);
+      throw error;
+    }
+  }
 
   //Delete RFQ by ID
   static async DeleteRFQById(rfqId: string) {
@@ -580,9 +667,24 @@ class Service {
     }
   }
   // Fetch Connection Designer By ID
-  static async FetchConnectionQuotationByDesignerID(id: string) {
+  static async FetchConnectionQuotationByDesignerID(id: any) {
     try {
       const response = await api.get(`connectionDesignerQuota/designer/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // fgetch connectiondesigner All quotatioN
+  static async FetchAllConnectionQuotation() {
+    try {
+      const response = await api.get(`rfq/connectionEngineers`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1575,6 +1677,22 @@ class Service {
       console.error("cannot find CO", error);
     }
   }
+
+  // Get change order by iD
+  static async GetChangeOrderById(id: string) {
+    try {
+      const response = await api.get(`changeOrder/byId/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All Co fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find CO", error);
+    }
+  }
+
   //update Co
   static async EditCoById(id: string, data: FormData) {
     try {
@@ -1600,7 +1718,7 @@ class Service {
   // Change Order Table Methods
   static async GetAllCOTableRows(coId: string) {
     try {
-      const response = await api.get(`changeOrder/table/${coId}`, {
+      const response = await api.get(`changeOrder/${coId}/table`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1613,7 +1731,7 @@ class Service {
 
   static async addCOTable(data: any, coId: string) {
     try {
-      const response = await api.post(`changeOrder/table/${coId}`, data, {
+      const response = await api.post(`changeOrder/${coId}/table`, data, {
         headers: {
           "Content-Type": "application/json",
         },

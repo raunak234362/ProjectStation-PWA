@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import {
   Loader2,
   AlertCircle,
@@ -521,7 +522,7 @@ const GetProjectById = ({ id }: { id: string }) => {
           )}
         </div>
       </div>
-      {editModel && (
+      {editModel && createPortal(
         <EditProject
           projectId={id}
           onCancel={() => setEditModel(null)}
@@ -529,7 +530,8 @@ const GetProjectById = ({ id }: { id: string }) => {
             setEditModel(null);
             fetchProject();
           }}
-        />
+        />,
+        document.body
       )}
     </>
   );

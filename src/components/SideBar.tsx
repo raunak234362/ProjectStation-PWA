@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       className={`h-full transition-all duration-300 flex flex-col 
         ${isMobile
           ? `fixed inset-y-0 left-0 z-50 bg-[#6bbd45] shadow-2xl w-72 transform ${isMinimized ? "-translate-x-full" : "translate-x-0"}`
-          : `relative rounded-[6px] bg-[#6bbd45] text-white shadow-soft ${isMinimized ? "w-24" : "w-72"}`
+          : `relative rounded-3xl bg-[#6bbd45] text-white shadow-soft ${isMinimized ? "w-24" : "w-72"}`
         }`}
     >
       {/* Header */}
@@ -60,13 +60,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             <img
               src={LOGO}
               alt="Logo"
-              className="bg-white w-56 object-contain rounded-[6px] drop-shadow-sm"
+              className="bg-white w-56 object-contain rounded-xl drop-shadow-sm"
             />
           ) : (
             <img
               src={SLOGO}
               alt="Logo"
-              className="bg-white w-16 object-contain p-1 rounded-[6px] drop-shadow-sm"
+              className="bg-white w-16 object-contain p-1 rounded-xl drop-shadow-sm"
             />
           )}
         </div>
@@ -149,8 +149,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Footer */}
       <div className="p-6 mt-auto">
         {!isMinimized && (
-          <div className="flex items-center gap-4 mb-4 bg-white/10 p-3 rounded-[6px] border border-white/10 backdrop-blur-sm">
-            <div className="w-10 h-10 rounded-[6px] bg-white flex items-center justify-center text-green-700 font-extrabold text-lg shadow-sm">
+          <div className="flex items-center gap-4 mb-4 bg-white/10 p-3 rounded-2xl border border-white/10 backdrop-blur-sm">
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-green-700 font-extrabold text-lg shadow-sm">
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
             <div className="overflow-hidden">
@@ -165,7 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <Button
-          className={`w-full flex items-center gap-3 py-3 rounded-[6px] transition-all ${isMinimized
+          className={`w-full flex items-center gap-3 py-3 rounded-2xl transition-all ${isMinimized
             ? "justify-center bg-white/10 text-white hover:bg-white/20"
             : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
             }`}
