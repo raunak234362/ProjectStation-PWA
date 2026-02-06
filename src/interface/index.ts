@@ -761,3 +761,13 @@ export interface DesignDrawing {
   createdAt: string;
   updatedAt: string;
 }
+export interface Quotation{
+  connectionDesignerId:string;
+  rfqId:string;
+ bidprice:string;
+  estimatedHours:string;
+  weeks:string;
+  approvalStatus:boolean;
+  approvalDate:string;
+  
+}

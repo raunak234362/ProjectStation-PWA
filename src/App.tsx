@@ -102,7 +102,7 @@ const AppContent = () => {
         else if (userType === "CONNECTION_DESIGNER_ENGINEER") {
           const designerId = sessionStorage.getItem("connectionDesignerId");
           if (designerId) {
-            rfqDetail = await Service.FetchAllConnectionQuotation();
+            rfqDetail = await Service.getConnectionEngineerQuotation();
           }
         }
         else {
