@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
@@ -18,7 +17,6 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<Quotation>();
   const [files, setFiles] = useState<File[]>([]);

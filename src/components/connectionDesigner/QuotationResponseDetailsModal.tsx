@@ -75,7 +75,7 @@ const QuotationResponseDetailsModal = ({
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-green-600 to-green-700 text-white p-6 rounded-t-xl flex justify-between items-center">
+        <div className="sticky top-0 bg-linear-to-r from-green-600 to-green-700 text-white p-6 rounded-t-xl flex justify-between items-center">
           <h2 className="text-2xl font-bold">Quotation Details</h2>
           <button
             onClick={onClose}
@@ -211,7 +211,7 @@ const QuotationResponseDetailsModal = ({
           )}
 
           {/* Reply Form */}
-          {isAdmin && (
+          {(isAdmin || userRole === "CONNECTION_DESIGNER_ENGINEER") && (
             <div className="border-t pt-4">
               {!showReplyForm ? (
                 <Button
@@ -279,7 +279,7 @@ const DetailCard = ({
   label: string;
   value: string;
 }) => (
-  <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-lg p-4 flex items-start gap-3">
+  <div className="bg-linear-to-br from-gray-50 to-white border border-gray-200 rounded-lg p-4 flex items-start gap-3">
     <div className="mt-1">{icon}</div>
     <div>
       <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">

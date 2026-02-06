@@ -479,7 +479,7 @@ class Service {
   ) {
     try {
       const response = await api.post(
-        `connectionDesignerQuota/${rfqId}/quotations`,
+        `rfq/connectionDesignerQuota`,
         formData,
         {
           headers: {

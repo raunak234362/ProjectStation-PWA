@@ -50,8 +50,15 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const fetchRfq = async () => {
     try {
       setLoading(true);
-      const response = await Service.GetRFQbyId(id);
-      setRfq(response.data || null);
+      const [rfqRes, quotasRes] = await Promise.all([
+        Service.GetRFQbyId(id),
+        Service.getQuotationsByRFQ(id),
+      ]);
+      setRfq(rfqRes.data || null);
+
+      // Ensure quotations is always an array
+      const quotaData = quotasRes?.data || quotasRes || [];
+      setQuotations(Array.isArray(quotaData) ? quotaData : []);
     } catch {
       setError("Failed to load RFQ");
     } finally {
@@ -162,14 +169,6 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
         </span>
       ),
     },
-    // {
-    //   accessorKey: "description",
-    //   header: "Message",
-    //   cell: ({ row }) => (
-    //     <p className="truncate max-w-[180px]">{row.original.description}</p>
-    //   ),
-    // },
-
     {
       accessorKey: "description",
       header: "Message",
@@ -205,12 +204,100 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.original.status === "OPEN"
               ? "bg-green-100 text-green-700"
               : "bg-yellow-100 text-yellow-700"
-            }`}
+          }`}
         >
           {row.original.status}
+        </span>
+      ),
+    },
+  ];
+
+  /* ---------------- QUOTATION COLUMNS ---------------- */
+  const quotationColumns: ColumnDef<any>[] = [
+    {
+      accessorKey: "connectionDesignerName",
+      header: "Designer",
+      cell: ({ row }) => {
+        const name =
+          row.original.connectionDesignerName ||
+          row.original.connectionDesignerId ||
+          "Unknown";
+        return <span className="font-medium text-sm">{name}</span>;
+      },
+    },
+    {
+      accessorKey: "bidprice",
+      header: "Bid Price",
+      cell: ({ row }) => (
+        <span className="text-sm font-semibold text-gray-700">
+          ${row.original.bidprice}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "estimatedHours",
+      header: "Est. Hours",
+      cell: ({ row }) => (
+        <span className="text-sm text-gray-600">
+          {row.original.estimatedHours} hrs
+        </span>
+      ),
+    },
+    {
+      accessorKey: "weeks",
+      header: "Weeks",
+      cell: ({ row }) => (
+        <span className="text-sm text-gray-600">{row.original.weeks} wks</span>
+      ),
+    },
+    {
+      accessorKey: "approvalStatus",
+      header: "Status",
+      cell: ({ row }) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-bold ${
+            row.original.approvalStatus
+              ? "bg-green-100 text-green-700"
+              : "bg-yellow-100 text-yellow-700"
+          }`}
+        >
+          {row.original.approvalStatus ? "Approved" : "Pending"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "files",
+      header: "Files",
+      cell: ({ row }) => {
+        const count = row.original.files?.length ?? 0;
+        return count > 0 ? (
+          <span className="text-blue-600 font-medium">{count}</span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        );
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }) => (
+        <span className="text-gray-500 text-xs">
+          {new Date(row.original.createdAt).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "approvalDate",
+      header: "Approved Date",
+      cell: ({ row }) => (
+        <span className="text-gray-500 text-xs">
+          {row.original.approvalDate
+            ? new Date(row.original.approvalDate).toLocaleDateString()
+            : "-"}
         </span>
       ),
     },
@@ -234,10 +321,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
                 {/* Status tag */}
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${rfq?.status === "RECEIVED"
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${
+                    rfq?.status === "RECEIVED"
                       ? "bg-yellow-100 text-yellow-700"
                       : "bg-green-100 text-green-700"
-                    }`}
+                  }`}
                 >
                   {rfq?.status}
                 </span>
@@ -335,24 +423,27 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               files={rfq?.files || []}
               table="rFQ"
               parentId={rfq?.id}
-              formatDate={(date: string | number | Date) => new Date(date).toLocaleDateString()}
+              formatDate={(date: string | number | Date) =>
+                new Date(date).toLocaleDateString()
+              }
             />
-            {userRole !== "CLIENT" && (
-              <div className="flex flex-col gap-2 pt-2">
-                <Button
-                  onClick={() => setShowEstimationModal(true)}
-                  className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm font-bold bg-green-500 text-white shadow-xs"
-                >
-                  Raise For Estimation
-                </Button>
-                <Button
-                  onClick={() => handleCDQuotationModal()}
-                  className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight font-bold"
-                >
-                  Raise for Connection Designer Quotation
-                </Button>
-              </div>
-            )}
+            {userRole !== "CLIENT" &&
+              userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
+                <div className="flex flex-col gap-2 pt-2">
+                  <Button
+                    onClick={() => setShowEstimationModal(true)}
+                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm font-bold bg-green-500 text-white shadow-xs"
+                  >
+                    Raise For Estimation
+                  </Button>
+                  <Button
+                    onClick={() => handleCDQuotationModal()}
+                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight font-bold"
+                  >
+                    Raise for Connection Designer Quotation
+                  </Button>
+                </div>
+              )}
           </div>
 
           {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
@@ -367,13 +458,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 userRole === "DEPUTY_MANAGER" ||
                 userRole === "OPERATION_EXECUTIVE" ||
                 userRole === "USER") && (
-                  <Button
-                    onClick={() => setShowResponseModal(true)}
-                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
-                  >
-                    + Add Response
-                  </Button>
-                )}
+                <Button
+                  onClick={() => setShowResponseModal(true)}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
+                >
+                  + Add Response
+                </Button>
+              )}
             </div>
             {showResponseModal && (
               <ResponseModal
@@ -382,18 +473,85 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 onSuccess={fetchRfq}
               />
             )}
+             {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
+            {userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
+              (rfq?.responses?.length ? (
+                <DataTable
+                  columns={responseColumns}
+                  data={rfq.responses} // Ensure rfq.responses is an array
+                  pageSizeOptions={[5, 10]}
+                  onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
+                />
+              ) : (
+                <p className="text-gray-700 italic">No responses yet.</p>
+              ))}
+            <div className="mt-4">
+                <p className="text-xl sm:text-2xl font-semibold text-green-700">CD Quotation</p>
+                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                  // Show their quotation if submitted
+                  <DataTable
+                    columns={quotationColumns}
+                    data={rfq?.CDQuotas || []}
+                    pageSizeOptions={[5]}
+                    onRowClick={(row: any) => setSelectedQuotation(row)}
+                  />
+                ) : (
+                  // Show Submit Button if not submitted
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                    <p className="text-gray-500 mb-4 text-center">
+                      There is no quotation submitted yet for CD.
+                    </p>
+                   
+                  </div>
+                )}
+              </div>
 
-            {/* ---- RESPONSE TABLE ---- */}
-            {rfq?.responses?.length ? (
-              <DataTable
-                columns={responseColumns}
-                data={rfq.responses}
-                pageSizeOptions={[5, 10]}
-                onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
-              />
-            ) : (
-              <p className="text-gray-700 italic">No responses yet.</p>
+           
+
+            {/* ---- CONNECTION DESIGNER SPECIFIC VIEW ---- */}
+            {userRole === "CONNECTION_DESIGNER_ENGINEER" && (
+              <div className="mt-4">
+                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                  // Show their quotation if submitted
+                  <DataTable
+                    columns={quotationColumns}
+                    data={rfq?.CDQuotas || []}
+                    pageSizeOptions={[5]}
+                    onRowClick={(row: any) => setSelectedQuotation(row)}
+                  />
+                ) : (
+                  // Show Submit Button if not submitted
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                    <p className="text-gray-500 mb-4 text-center">
+                      You haven't submitted a quotation yet.
+                    </p>
+                    <Button
+                      onClick={() => setShowQuotationResponseModal(true)}
+                      className="px-6 py-2.5 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition"
+                    >
+                      Submit Quotation Response
+                    </Button>
+                  </div>
+                )}
+              </div>
             )}
+
+            {/* ---- QUOTATIONS TABLE (ADMIN/STAFF ONLY) ---- */}
+            {userRole !== "CLIENT" &&
+              userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
+              quotations.length > 0 && (
+                <div className="pt-6 border-t border-dashed border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 ml-1">
+                    Designer Quotations
+                  </h3>
+                  <DataTable
+                    columns={quotationColumns}
+                    data={quotations}
+                    pageSizeOptions={[5]}
+                    onRowClick={(row: any) => setSelectedQuotation(row)}
+                  />
+                </div>
+              )}
           </div>
         </div>
       </div>
@@ -409,6 +567,24 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
         <ResponseDetailsModal
           response={selectedResponse}
           onClose={() => setSelectedResponse(null)}
+        />
+      )}
+
+      {/* Quotation Submission Modal */}
+      {showQuotationResponseModal && (
+        <QuotationResponseModal
+          rfqId={id}
+          onClose={() => setShowQuotationResponseModal(false)}
+          onSuccess={fetchRfq}
+        />
+      )}
+
+      {/* Quotation Details Modal */}
+      {selectedQuotation && (
+        <QuotationResponseDetailsModal
+          quotation={selectedQuotation}
+          onClose={() => setSelectedQuotation(null)}
+          onSuccess={fetchRfq}
         />
       )}
 
@@ -475,10 +651,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 type="button"
                 onClick={handleDelete}
                 disabled={deleteConfirmText !== "DELETE" || isDeleting}
-                className={`flex-1 ${deleteConfirmText === "DELETE"
+                className={`flex-1 ${
+                  deleteConfirmText === "DELETE"
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-red-300 cursor-not-allowed"
-                  } text-white`}
+                } text-white`}
               >
                 {isDeleting ? "Deleting..." : "Confirm Delete"}
               </Button>
@@ -567,10 +744,11 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-md border ${enabled
+    className={`px-3 py-2 rounded-md border ${
+      enabled
         ? "bg-green-100 border-green-400 text-green-700"
         : "bg-gray-100 border-gray-300 text-gray-700"
-      }`}
+    }`}
   >
     {label}
   </div>

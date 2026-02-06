@@ -1,10 +1,9 @@
- 
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/store";
-import routes from "./routes/routes";
+import routes from "./routes/routes.tsx";
 
 import { Suspense } from "react";
 
@@ -28,5 +27,5 @@ createRoot(rootElement).render(
         <RouterProvider router={router} />
       </Suspense>
     </Provider>
-  </>
+  </>,
 );

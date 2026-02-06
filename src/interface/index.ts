@@ -278,6 +278,7 @@ export interface RFQItem {
   detailingMisc: boolean;
   files?: File[] | string[];
   responses?: RfqResponse[];
+  CDQuotas?: any[]| undefined;
 }
 
 export interface RFQpayload {
