@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { X } from "lucide-react";
+import {
+  X,
+  Building2,
+  Plus,
+  MapPin,
+  Mail,
+  Phone,
+  CheckCircle2,
+} from "lucide-react";
 import type { Fabricator, Branch } from "../../../interface";
 import AddBranch from "./AddBranch";
 import { useState } from "react";
@@ -12,14 +20,21 @@ interface AllBranchProps {
   onSubmitSuccess?: () => void;
 }
 
-const AllBranches = ({ fabricator, onClose, onSubmitSuccess }: AllBranchProps) => {
+const AllBranches = ({
+  fabricator,
+  onClose,
+  onSubmitSuccess,
+}: AllBranchProps) => {
   const [addBranchModal, setAddBranchModal] = useState(false);
 
   const handleOpenAddBranch = () => setAddBranchModal(true);
   const handleCloseAddBranch = () => setAddBranchModal(false);
 
   return (
-    <div className="fixed inset-0 z-150 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-hidden" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-150 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-hidden"
+      onClick={onClose}
+    >
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -36,7 +51,9 @@ const AllBranches = ({ fabricator, onClose, onSubmitSuccess }: AllBranchProps) =
               </div>
               Partner Branches
             </h2>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Managing geographic infrastructure for {fabricator.fabName}</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              Managing geographic infrastructure for {fabricator.fabName}
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <Button
@@ -82,28 +99,43 @@ const AllBranches = ({ fabricator, onClose, onSubmitSuccess }: AllBranchProps) =
 
                   <div className="space-y-4 mt-auto">
                     <div className="flex items-start gap-3 text-slate-500">
-                      <MapPin size={16} className="shrink-0 mt-0.5 text-slate-300" />
+                      <MapPin
+                        size={16}
+                        className="shrink-0 mt-0.5 text-slate-300"
+                      />
                       <p className="text-xs font-bold leading-relaxed truncate-2-lines">
-                        {branch.address}, {branch.city}, {branch.state} {branch.zipCode}, {branch.country}
+                        {branch.address}, {branch.city}, {branch.state}{" "}
+                        {branch.zipCode}, {branch.country}
                       </p>
                     </div>
                     <div className="flex items-center gap-3 text-slate-500">
                       <Mail size={16} className="shrink-0 text-slate-300" />
-                      <p className="text-xs font-bold truncate">{branch.email}</p>
+                      <p className="text-xs font-bold truncate">
+                        {branch.email}
+                      </p>
                     </div>
                     <div className="flex items-center gap-3 text-slate-500">
                       <Phone size={16} className="shrink-0 text-slate-300" />
                       <p className="text-xs font-bold">
-                        {branch.phone} {branch.extension && <span className="text-slate-300 font-medium">(Ext: {branch.extension})</span>}
+                        {branch.phone}{" "}
+                        {branch.extension && (
+                          <span className="text-slate-300 font-medium">
+                            (Ext: {branch.extension})
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-6 pt-6 border-t border-slate-50 flex items-center justify-between">
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${branch.isHeadquarters ? 'text-green-600' : 'text-slate-300'}`}>
-                      {branch.isHeadquarters ? 'Active HQ' : 'Satellite Office'}
+                    <span
+                      className={`text-[10px] font-black uppercase tracking-widest ${branch.isHeadquarters ? "text-green-600" : "text-slate-300"}`}
+                    >
+                      {branch.isHeadquarters ? "Active HQ" : "Satellite Office"}
                     </span>
-                    {branch.isHeadquarters && <CheckCircle2 size={16} className="text-green-500" />}
+                    {branch.isHeadquarters && (
+                      <CheckCircle2 size={16} className="text-green-500" />
+                    )}
                   </div>
                 </div>
               ))}
@@ -113,7 +145,9 @@ const AllBranches = ({ fabricator, onClose, onSubmitSuccess }: AllBranchProps) =
               <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mb-4">
                 <Building2 size={40} className="text-slate-200" />
               </div>
-              <p className="text-sm font-bold uppercase tracking-widest mb-6">Geographic Footprint Empty</p>
+              <p className="text-sm font-bold uppercase tracking-widest mb-6">
+                Geographic Footprint Empty
+              </p>
               <Button
                 onClick={handleOpenAddBranch}
                 className="bg-slate-900 hover:bg-black text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border-none"

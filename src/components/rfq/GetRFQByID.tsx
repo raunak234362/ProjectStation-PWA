@@ -473,7 +473,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 onSuccess={fetchRfq}
               />
             )}
-             {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
+            {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
             {userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
               (rfq?.responses?.length ? (
                 <DataTable
@@ -486,55 +486,40 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 <p className="text-gray-700 italic">No responses yet.</p>
               ))}
             <div className="mt-4">
-                <p className="text-xl sm:text-2xl font-semibold text-green-700">CD Quotation</p>
-                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                  // Show their quotation if submitted
-                  <DataTable
-                    columns={quotationColumns}
-                    data={rfq?.CDQuotas || []}
-                    pageSizeOptions={[5]}
-                    onRowClick={(row: any) => setSelectedQuotation(row)}
-                  />
-                ) : (
-                  // Show Submit Button if not submitted
-                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+              <p className="text-xl sm:text-2xl font-semibold text-green-700">
+                CD Quotation
+              </p>
+              {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                // Show their quotation if submitted
+                <DataTable
+                  columns={quotationColumns}
+                  data={rfq?.CDQuotas || []}
+                  pageSizeOptions={[5]}
+                  onRowClick={(row: any) => setSelectedQuotation(row)}
+                />
+              ) : (
+                // Show Submit Button if not submitted
+                <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                  {userRole === "CONNECTION_DESIGNER_ENGINEER" ? (
+                    <>
+                      <p className="text-gray-500 mb-4 text-center">
+                        You haven't submitted a quotation yet.
+                      </p>
+                      <Button
+                        onClick={() => setShowQuotationResponseModal(true)}
+                        className="px-6 py-2.5 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition"
+                      >
+                        Submit Quotation Response
+                      </Button>
+                    </>
+                  ) : (
                     <p className="text-gray-500 mb-4 text-center">
                       There is no quotation submitted yet for CD.
                     </p>
-                   
-                  </div>
-                )}
-              </div>
-
-           
-
-            {/* ---- CONNECTION DESIGNER SPECIFIC VIEW ---- */}
-            {userRole === "CONNECTION_DESIGNER_ENGINEER" && (
-              <div className="mt-4">
-                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                  // Show their quotation if submitted
-                  <DataTable
-                    columns={quotationColumns}
-                    data={rfq?.CDQuotas || []}
-                    pageSizeOptions={[5]}
-                    onRowClick={(row: any) => setSelectedQuotation(row)}
-                  />
-                ) : (
-                  // Show Submit Button if not submitted
-                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                    <p className="text-gray-500 mb-4 text-center">
-                      You haven't submitted a quotation yet.
-                    </p>
-                    <Button
-                      onClick={() => setShowQuotationResponseModal(true)}
-                      className="px-6 py-2.5 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition"
-                    >
-                      Submit Quotation Response
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* ---- QUOTATIONS TABLE (ADMIN/STAFF ONLY) ---- */}
             {userRole !== "CLIENT" &&

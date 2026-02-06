@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useSelector } from "react-redux";
 import Service from "../../../api/Service";
 import {
   Loader2,
@@ -8,68 +7,25 @@ import {
   FileText,
   Link2,
   MapPin,
-  HardHat,
-  Activity,
-  CheckCircle2,
-  Globe,
-  RefreshCw,
-  Search,
   Calendar,
-  ExternalLink,
 } from "lucide-react";
 import Button from "../../fields/Button";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
 import type { ConnectionDesigner } from "../../../interface";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip as RechartsTooltip,
-  Legend,
-} from "recharts";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
 }
 
-const COLORS = [
-  "#10b981",
-  "#3b82f6",
-  "#f59e0b",
-  "#8b5cf6",
-  "#ec4899",
-  "#14b8a6",
-  "#6366f1",
-  "#ef4444",
-  "#84cc16",
-  "#0ea5e9",
-  "#d946ef",
-  "#f97316",
-  "#64748b",
-  "#a855f7",
-];
-
-const truncateText = (text: string, max: number = 40) =>
-  text.length > max ? text.substring(0, max) + "..." : text;
-
 const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   const [designer, setDesigner] = useState<ConnectionDesigner | null>(null);
-  const [quotations, setQuotations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<ConnectionDesigner | null>(null);
   const [engineerModel, setEngineerModel] = useState<ConnectionDesigner | null>(
     null,
-  );
-
-  const allProjects = useSelector(
-    (state: any) => state.projectInfo.projectData || [],
-  );
-  const designerProjects = allProjects.filter(
-    (p: any) => p.connectionDesignerID === id,
   );
 
   const fetchData = async () => {
@@ -81,10 +37,8 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
     try {
       setLoading(true);
       setError(null);
-      const [designerRes, quotationsRes] = await Promise.all([
-        Service.FetchConnectionDesignerByID(id),
-        Service.FetchConnectionQuotationByDesignerID(id),
-      ]);
+      // Fetch only designer data as statistics were unused
+      const designerRes = await Service.FetchConnectionDesignerByID(id);
 
       let designerData = designerRes?.data || null;
       if (designerData && typeof designerData.state === "string") {
@@ -96,7 +50,6 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       }
 
       setDesigner(designerData);
-      setQuotations(quotationsRes?.data || []);
     } catch (err) {
       console.error("Error fetching Designer data:", err);
       setError("Failed to load designer intelligence");
@@ -108,6 +61,9 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   useEffect(() => {
     fetchData();
   }, [id]);
+
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleString("en-IN", { dateStyle: "medium" });
 
   if (loading)
     return (
@@ -128,114 +84,6 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         </p>
       </div>
     );
-
-  // Data Preparation
-  const getStates = () => {
-    const rawState = (designer as any).state;
-    let pool: string[] = [];
-
-    if (Array.isArray(rawState)) {
-      pool = rawState;
-    } else if (typeof rawState === "string") {
-      try {
-        const parsed = JSON.parse(rawState);
-        pool = Array.isArray(parsed) ? parsed : [parsed];
-      } catch {
-        pool = [rawState];
-      }
-    }
-
-    const result: string[] = [];
-    pool.forEach((item) => {
-      if (typeof item === "string") {
-        item.split(/[,\n;]/).forEach((s) => {
-          const trimmed = s.trim();
-          if (trimmed) result.push(trimmed);
-        });
-      } else if (item) {
-        result.push(String(item).trim());
-      }
-    });
-
-    return [...new Set(result)];
-  };
-
-  const states = getStates();
-  const stateData = states.map((s: string) => ({ name: s, value: 1 }));
-  const engineerCount = designer.CDEngineers?.length || 0;
-
-  const activeProjects = designerProjects.filter(
-    (p: any) => p.status === "ACTIVE",
-  ).length;
-  const pendingQuotations = quotations.filter(
-    (q: any) => q.status === "PENDING",
-  ).length;
-
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleString("en-IN", { dateStyle: "medium" });
-
-  const statsCards = [
-    {
-      label: "Execution Power",
-      value: `${engineerCount} Engineers`,
-      icon: HardHat,
-      sub: "Live resource pool",
-      color: "green",
-    },
-    {
-      label: "Active Pipeline",
-      value: `${activeProjects} Projects`,
-      icon: Activity,
-      sub: "Currently in progress",
-      color: "blue",
-    },
-    {
-      label: "Status",
-      value: designer.isDeleted ? "Inactive" : "Active",
-      icon: CheckCircle2,
-      sub: "Operational cycle",
-      color: "emerald",
-      isStatus: true,
-    },
-    {
-      label: "Availability",
-      value: `${states.length} States`,
-      icon: Globe,
-      sub: designer.location || "North America",
-      color: "amber",
-    },
-  ];
-
-  const pendingActions = [
-    {
-      title: "RFI",
-      count: 0,
-      icon: FileText,
-      color: "bg-amber-50",
-      iconColor: "text-amber-600",
-    },
-    {
-      title: "SUBMITTALS",
-      count: 0,
-      icon: RefreshCw,
-      color: "bg-purple-50",
-      iconColor: "text-purple-600",
-    },
-    {
-      title: "CHANGE ORDERS",
-      count: 0,
-      icon: Activity,
-      color: "bg-rose-50",
-      iconColor: "text-rose-600",
-    },
-    {
-      title: "RFQ",
-      count: pendingQuotations,
-      icon: Search,
-      color: "bg-cyan-50",
-      iconColor: "text-cyan-600",
-    },
-  ];
 
   return (
     <div className="space-y-8 pb-10">
@@ -343,41 +191,5 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
     </div>
   );
 };
-
-// Tactical UI Components
-const DetailRow = ({
-  label,
-  value,
-  link,
-  isExternal,
-}: {
-  label: string;
-  value?: string | number;
-  link?: string;
-  isExternal?: boolean;
-}) => (
-  <div className="group/row">
-    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest block mb-0.5 group-hover/row:text-green-500 transition-colors">
-      {label}
-    </span>
-    <div className="flex items-center gap-2">
-      <p className="text-[13px] font-bold text-gray-700 break-all leading-tight">
-        {link ? (
-          <a
-            href={link}
-            target={isExternal ? "_blank" : undefined}
-            rel="noreferrer"
-            className="text-green-600 hover:text-green-700 underline flex items-center gap-1.5 underline-offset-2"
-          >
-            {truncateText(String(value || "N/A"), 30)}{" "}
-            {isExternal && <ExternalLink size={11} className="shrink-0" />}
-          </a>
-        ) : (
-          value || "Not available"
-        )}
-      </p>
-    </div>
-  </div>
-);
 
 export default GetConnectionDesignerByID;

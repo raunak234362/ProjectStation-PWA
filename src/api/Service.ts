@@ -473,20 +473,13 @@ class Service {
   }
 
   // Add Connection Designer Quotation Response
-  static async addConnectionDesignerQuotation(
-    formData: FormData,
-    rfqId: string,
-  ) {
+  static async addConnectionDesignerQuotation(formData: FormData) {
     try {
-      const response = await api.post(
-        `rfq/connectionDesignerQuota`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await api.post(`rfq/connectionDesignerQuota`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       console.log("Connection Designer Quotation added:", response.data);
       return response.data;
     } catch (error) {
@@ -1622,7 +1615,6 @@ class Service {
     } catch (error) {
       console.error("cannot add submittal response", error);
     }
-
   }
   static async GetSubmittalResponsebyId(subId: string) {
     try {

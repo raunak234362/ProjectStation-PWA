@@ -49,7 +49,7 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
         });
       }
 
-      await Service.addConnectionDesignerQuotation(formData, rfqId);
+      await Service.addConnectionDesignerQuotation(formData);
       toast.success("Quotation submitted successfully!");
       onSuccess();
       onClose();

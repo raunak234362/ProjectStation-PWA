@@ -3,7 +3,7 @@
 // src/components/fabricator/EditFabricator.tsx
 import { useEffect, useState } from "react";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
-import { Loader2, X, Check, Trash2, Paperclip, Globe, Link } from "lucide-react";
+import { Loader2, X, Check, Trash2, Paperclip } from "lucide-react";
 import { motion } from "motion/react";
 import type { Fabricator } from "../../../interface";
 import Service from "../../../api/Service";
@@ -54,7 +54,7 @@ const EditFabricator = ({
 
   // State to manage existing files that the user decides to KEEP
   const [filesToKeep, setFilesToKeep] = useState<FabricatorFile[]>(
-    (fabricatorData.files as FabricatorFile[]) || []
+    (fabricatorData.files as FabricatorFile[]) || [],
   );
 
   const {
@@ -118,7 +118,7 @@ const EditFabricator = ({
   const handleRemoveExistingFile = (fileId: string, fileName: string) => {
     if (
       window.confirm(
-        `Are you sure you want to delete the file: ${fileName}? This change will take effect on save.`
+        `Are you sure you want to delete the file: ${fileName}? This change will take effect on save.`,
       )
     ) {
       setFilesToKeep((prev) => prev.filter((file) => file.id !== fileId));
@@ -144,17 +144,17 @@ const EditFabricator = ({
       if (data.fabricatPercentage !== undefined)
         formData.append(
           "fabricatPercentage",
-          String(parseFloat(String(data.fabricatPercentage)))
+          String(parseFloat(String(data.fabricatPercentage))),
         );
       if (data.approvalPercentage !== undefined)
         formData.append(
           "approvalPercentage",
-          String(parseFloat(String(data.approvalPercentage)))
+          String(parseFloat(String(data.approvalPercentage))),
         );
       if (data.paymenTDueDate !== undefined)
         formData.append(
           "paymenTDueDate",
-          String(parseFloat(String(data.paymenTDueDate)))
+          String(parseFloat(String(data.paymenTDueDate))),
         );
       if (data.currencyType) formData.append("currencyType", data.currencyType);
 
@@ -174,7 +174,7 @@ const EditFabricator = ({
       // API Call
       const response = await Service.EditFabricatorByID(
         fabricatorData.id,
-        formData
+        formData,
       );
       console.log(response);
 
@@ -185,7 +185,7 @@ const EditFabricator = ({
       setError(err?.response?.data?.message || "Failed to update fabricator");
       console.error(err);
       toast.error(
-        err?.response?.data?.message || "Failed to update fabricator"
+        err?.response?.data?.message || "Failed to update fabricator",
       );
     } finally {
       setSubmitting(false);
@@ -213,7 +213,9 @@ const EditFabricator = ({
               </div>
               Edit Engineering Partner
             </h2>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Update global fabricator intelligence and credentials</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              Update global fabricator intelligence and credentials
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -242,7 +244,9 @@ const EditFabricator = ({
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Partner Name</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  Partner Name
+                </label>
                 <Input
                   label=""
                   {...register("fabName", {
@@ -258,7 +262,9 @@ const EditFabricator = ({
                 )}
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Partner Stage</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  Partner Stage
+                </label>
                 <select
                   {...register("fabStage", { required: "Stage is required" })}
                   className="w-full h-[46px] border border-slate-200 bg-slate-50 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all shadow-sm font-bold text-slate-800"
@@ -271,7 +277,9 @@ const EditFabricator = ({
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Digital Hub (URL)</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  Digital Hub (URL)
+                </label>
                 <Input
                   label=""
                   {...register("website")}
@@ -281,7 +289,9 @@ const EditFabricator = ({
                 />
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Shared Repository (Cloud)</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  Shared Repository (Cloud)
+                </label>
                 <Input
                   label=""
                   {...register("drive")}
@@ -301,7 +311,9 @@ const EditFabricator = ({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">SAC Code</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                    SAC Code
+                  </label>
                   <Input
                     label=""
                     {...register("SAC")}
@@ -310,7 +322,9 @@ const EditFabricator = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Primary Currency</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                    Primary Currency
+                  </label>
                   <select
                     {...register("currencyType")}
                     className="w-full h-[46px] border border-slate-200 bg-slate-50 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all shadow-sm font-bold text-slate-800"
@@ -322,7 +336,9 @@ const EditFabricator = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Vault Settlement</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                    Vault Settlement
+                  </label>
                   <select
                     {...register("accountId")}
                     className="w-full h-[46px] border border-slate-200 bg-slate-50 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all shadow-sm font-bold text-slate-800"
@@ -343,18 +359,41 @@ const EditFabricator = ({
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Approval %</label>
-                  <Input label="" type="number" {...register("approvalPercentage", { valueAsNumber: true })} className="w-full bg-slate-50 border-slate-200 rounded-2xl" />
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                    Approval %
+                  </label>
+                  <Input
+                    label=""
+                    type="number"
+                    {...register("approvalPercentage", { valueAsNumber: true })}
+                    className="w-full bg-slate-50 border-slate-200 rounded-2xl"
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Fabrication %</label>
-                  <Input label="" type="number" {...register("fabricatPercentage", { valueAsNumber: true })} className="w-full bg-slate-50 border-slate-200 rounded-2xl" />
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                    Fabrication %
+                  </label>
+                  <Input
+                    label=""
+                    type="number"
+                    {...register("fabricatPercentage", { valueAsNumber: true })}
+                    className="w-full bg-slate-50 border-slate-200 rounded-2xl"
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Settlement Cycle</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                    Settlement Cycle
+                  </label>
                   <div className="relative">
-                    <Input label="" type="number" {...register("paymenTDueDate", { valueAsNumber: true })} className="w-full bg-slate-50 border-slate-200 rounded-2xl pr-12" />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">DAYS</span>
+                    <Input
+                      label=""
+                      type="number"
+                      {...register("paymenTDueDate", { valueAsNumber: true })}
+                      className="w-full bg-slate-50 border-slate-200 rounded-2xl pr-12"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">
+                      DAYS
+                    </span>
                   </div>
                 </div>
               </div>
@@ -377,11 +416,15 @@ const EditFabricator = ({
                   >
                     <div className="flex items-center gap-3 truncate">
                       <Paperclip className="w-4 h-4 text-slate-400 group-hover:text-green-500 transition-colors" />
-                      <span className="text-xs font-bold text-slate-700 truncate">{file?.filename}</span>
+                      <span className="text-xs font-bold text-slate-700 truncate">
+                        {file?.filename}
+                      </span>
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleRemoveExistingFile(file.id, file.filename)}
+                      onClick={() =>
+                        handleRemoveExistingFile(file.id, file.filename)
+                      }
                       className="p-2 bg-white rounded-xl text-slate-300 hover:text-rose-600 hover:shadow-sm transition-all"
                     >
                       <Trash2 className="w-4 h-4" />

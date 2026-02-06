@@ -1,18 +1,16 @@
 import { useState, useMemo } from "react";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetFabricatorByID from "./GetFabricatorByID";
 import type { Fabricator } from "../../../interface";
 import { useSelector } from "react-redux";
 
-
 const AllFabricator = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedFabricatorId, setSelectedFabricatorId] = useState<string | null>(null);
 
   const fabricators = useSelector(
-    (state: any) => state.fabricatorInfo?.fabricatorData
+    (state: any) => state.fabricatorInfo?.fabricatorData,
   );
 
   console.log(fabricators);
@@ -23,15 +21,9 @@ const AllFabricator = () => {
 
     const query = searchQuery.toLowerCase();
     return (fabricators || []).filter((fabricator: Fabricator) =>
-      fabricator.fabName?.toLowerCase().includes(query)
+      fabricator.fabName?.toLowerCase().includes(query),
     );
   }, [fabricators, searchQuery]);
-
-  // Handle row click to open modal
-  const handleRowClick = (row: Fabricator) => {
-    const fabricatorUniqueId = (row as any).id ?? (row as any).fabId ?? "";
-    setSelectedFabricatorId(fabricatorUniqueId);
-  };
 
   // Define columns for DataTable
   const columns: ColumnDef<Fabricator>[] = [
@@ -42,18 +34,23 @@ const AllFabricator = () => {
         <div className="font-bold text-slate-800 tracking-tight">
           {row.original.fabName}
         </div>
-      )
+      ),
     },
     {
       accessorKey: "fabStage",
       header: "Stage",
       cell: ({ row }) => (
-        <span className={`px-2 py-1 rounded-lg text-xs font-black uppercase tracking-widest ${row.original.fabStage === 'PRODUCTION' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'
-          }`}>
-          {row.original.fabStage || 'N/A'}
+        <span
+          className={`px-2 py-1 rounded-lg text-xs font-black uppercase tracking-widest ${
+            row.original.fabStage === "PRODUCTION"
+              ? "bg-blue-50 text-blue-600"
+              : "bg-orange-50 text-orange-600"
+          }`}
+        >
+          {row.original.fabStage || "N/A"}
         </span>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -75,8 +72,7 @@ const AllFabricator = () => {
       <DataTable
         columns={columns}
         data={filteredFabricators}
-        detailComponent={GetFabricatorByID }
-        onRowClick={handleRowClick}
+        detailComponent={GetFabricatorByID}
         pageSizeOptions={[5, 10, 25]}
       />
     </div>
