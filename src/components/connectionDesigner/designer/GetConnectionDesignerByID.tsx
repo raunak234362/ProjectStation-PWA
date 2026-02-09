@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import Service from "../../../api/Service";
-import { Loader2, AlertCircle, FileText, Link2, MapPin } from "lucide-react";
+import { Loader2, AlertCircle, FileText, Link2, MapPin, HardHat, Activity, CheckCircle2, Globe, RefreshCw, Search, Calendar, ExternalLink } from "lucide-react";
 import Button from "../../fields/Button";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
 import type { ConnectionDesigner } from "../../../interface";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
@@ -140,6 +140,13 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
     { title: "RFQ", count: pendingQuotations, icon: Search, color: "bg-cyan-50", iconColor: "text-cyan-600" },
   ];
 
+  const colorClasses: Record<string, string> = {
+    green: "border-l-green-500 text-green-600 bg-green-50",
+    blue: "border-l-blue-500 text-blue-600 bg-blue-50",
+    emerald: "border-l-emerald-500 text-emerald-600 bg-emerald-50",
+    amber: "border-l-amber-500 text-amber-600 bg-amber-50",
+  };
+
   return (
     <div className="space-y-8 pb-10">
       {/* Header with Edit Buttons */}
@@ -159,6 +166,96 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         <div className="flex gap-2">
           <Button onClick={() => setEditModel(designer)} className="px-6 py-2.5 text-xs font-bold uppercase tracking-widest bg-green-600 hover:bg-green-700 text-white shadow-xl shadow-green-100 transition-all active:scale-95">Edit Profile</Button>
           <Button onClick={() => setEngineerModel(designer)} className="px-6 py-2.5 text-xs font-bold uppercase tracking-widest bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all active:scale-95">Manage Engineers</Button>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {statsCards.map((card, idx) => (
+          <div key={idx} className={`p-4 rounded-xl border border-gray-100 bg-white shadow-sm flex items-start gap-4 transition-all hover:shadow-md border-l-4 ${colorClasses[card.color]?.split(' ')[0]}`}>
+            <div className={`p-2 rounded-lg ${colorClasses[card.color]?.split(' ').slice(1).join(' ')}`}>
+              <card.icon size={20} />
+            </div>
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{card.label}</p>
+              <p className="text-lg font-bold text-gray-900">{card.value}</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">{card.sub}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Pending Actions */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {pendingActions.map((action, idx) => (
+          <div key={idx} className={`${action.color} p-4 rounded-xl border border-white/50 flex flex-col items-center justify-center text-center gap-2 group cursor-pointer hover:shadow-lg transition-all`}>
+            <div className={`${action.iconColor} p-2 rounded-full bg-white/80 group-hover:scale-110 transition-transform`}>
+              <action.icon size={18} />
+            </div>
+            <div>
+              <p className={`text-xl font-black ${action.iconColor}`}>{action.count}</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{action.title}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Details Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <FileText className="text-green-500" size={20} />
+              Company Intelligence
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+              <DetailRow label="Primary Email" value={designer.email} />
+              <DetailRow label="Phone Number" value={designer.contactInfo} />
+              <DetailRow label="Office Address" value={designer.location} />
+              <DetailRow label="Operating States" value={states.join(", ")} />
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Globe className="text-green-500" size={20} />
+              Territory Distribution
+            </h3>
+            <div className="h-48 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={stateData.length > 0 ? stateData : [{ name: "None", value: 1 }]}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={60}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {(stateData.length > 0 ? stateData : [{ name: "None", value: 1 }]).map((_entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-2 space-y-1">
+              {states.slice(0, 5).map((s, i) => (
+                <div key={s} className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }}></span>
+                    {s}
+                  </span>
+                  <span className="text-gray-400 font-medium">Active</span>
+                </div>
+              ))}
+              {states.length > 5 && <p className="text-[10px] text-center text-gray-400 mt-2">+{states.length - 5} more regions</p>}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -192,7 +289,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       {/* Buttons */}
       <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">
         <Button
-          onClick={() => handleModel(designer)}
+          onClick={() => setEditModel(designer)}
           className="py-1 px-3 text-sm sm:text-base font-semibold"
         >
           Edit
@@ -201,7 +298,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
           Archive
         </Button>
         <Button
-          onClick={() => handleEngineerModel()}
+          onClick={() => setEngineerModel(designer)}
           className="py-1 px-3 text-sm sm:text-base font-semibold"
         >
           Connection Designer Engineer

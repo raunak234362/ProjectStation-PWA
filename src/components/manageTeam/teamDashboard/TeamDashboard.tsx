@@ -85,6 +85,18 @@ const TeamDashboard = () => {
     fetchTeams();
   }, []);
 
+  useCallback(() => {
+    const fetchAnalyticsScore = async () => {
+      try {
+        const response = await Service.GetAnalyticsScore();
+        console.log("Analytics Score:", response.data);
+      } catch (error) {
+        console.error("Error fetching analytics score:", error);
+      }
+    };
+    fetchAnalyticsScore();
+  }, []);
+
   // Fetch all tasks once on mount to populate the dashboard faster
   useEffect(() => {
     const fetchInitialTasks = async () => {

@@ -2034,5 +2034,17 @@ class Service {
       throw error;
     }
   }
+
+  // Analytics
+  static async GetAnalyticsScore() {
+    try {
+      const response = await api.get(`analytics/scores`);
+      console.log("Analytics Score:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      throw error;
+    }
+  }
 }
 export default Service;
