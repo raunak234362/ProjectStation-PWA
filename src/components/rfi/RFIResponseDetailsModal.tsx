@@ -1,9 +1,9 @@
-import { X, Paperclip, CalendarDays } from "lucide-react";
+import { X, CalendarDays } from "lucide-react";
 import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
-import { openFileSecurely } from "../../utils/openFileSecurely";
 import Service from "../../api/Service";
 import RichTextEditor from "../fields/RichTextEditor";
+import RenderFiles from "../ui/RenderFiles";
 
 // Status dropdown options
 const STATUS_OPTIONS = [
@@ -66,23 +66,11 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
         />
 
         {/* Files */}
-        {response.files?.length > 0 && (
-          <div>
-            <h4 className="text-sm text-gray-700 mb-2">Attachments</h4>
-            {response.files.map((file: any) => (
-              <p
-                key={file.id}
-                className="cursor-pointer text-green-600 underline"
-                onClick={() =>
-                  openFileSecurely("rfi/response", response.id, file.id)
-                }
-              >
-                <Paperclip size={16} className="inline-block mr-2" />
-                {file.originalName}
-              </p>
-            ))}
-          </div>
-        )}
+        <RenderFiles
+          files={response.files}
+          table="rFIResponse"
+          parentId={response.id}
+        />
 
         {/* Timestamp */}
         <div className="flex gap-2 items-center text-gray-700 text-xs">
@@ -111,22 +99,11 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
                 />
 
                 {/* Child Files */}
-                {child.files?.length > 0 && (
-                  <div className="space-y-1">
-                    {child.files.map((file: any) => (
-                      <p
-                        key={file.id}
-                        className="cursor-pointer text-green-600 underline text-xs"
-                        onClick={() =>
-                          openFileSecurely("rfi/response", child.id, file.id)
-                        }
-                      >
-                        <Paperclip size={12} className="inline-block mr-1" />
-                        {file.originalName}
-                      </p>
-                    ))}
-                  </div>
-                )}
+                <RenderFiles
+                  files={child.files}
+                  table="rFIResponse"
+                  parentId={child.id}
+                />
               </div>
             ))}
           </div>

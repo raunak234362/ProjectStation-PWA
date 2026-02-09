@@ -87,10 +87,7 @@ const Login = () => {
               </p>
 
               <p className="text-center text-lg text-gray-500 mt-4">
-                Powered by{" "}
-                <span className="font-semibold text-gray-700">
-                  Whiteboard Technologies
-                </span>
+                Please Login to continue
               </p>
             </div>
 

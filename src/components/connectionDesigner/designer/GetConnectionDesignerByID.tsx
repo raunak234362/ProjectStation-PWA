@@ -2,12 +2,9 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import Service from "../../../api/Service";
-import {
-  Loader2, AlertCircle, FileText, MapPin, Globe, HardHat,
-  ExternalLink, Calendar, ClipboardList,
-  Search, RefreshCw, Activity, CheckCircle2
-} from "lucide-react";
+import { Loader2, AlertCircle, FileText, Link2, MapPin } from "lucide-react";
 import Button from "../../fields/Button";
+import { openFileSecurely } from "../../../utils/openFileSecurely";
 import type { ConnectionDesigner } from "../../../interface";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
@@ -165,113 +162,50 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         </div>
       </div>
 
-      {/* Snapshot Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {statsCards.map((card, i) => (
-          <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-soft hover:shadow-medium transition-all group overflow-hidden relative">
-            <div className="relative z-10 flex flex-col justify-between h-full min-h-[80px]">
-              <div className="flex justify-between items-start">
-                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{card.label}</span>
-                <card.icon size={20} className={`text-${card.color}-600 opacity-60 group-hover:opacity-100 transition-opacity`} />
-              </div>
-              <div>
-                <h4 className={`text-xl font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-gray-800"}`}>
-                  {card.value}
-                </h4>
-                <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase truncate">{card.sub}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Section (8 Cols) */}
-        <div className="lg:col-span-8 space-y-8">
-          {/* Pending Actions */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
-              <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Pending Actions</h3>
-            </div>
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {pendingActions.map((action, i) => (
-                <div key={i} className="flex flex-row items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft hover:shadow-medium transition-all group cursor-pointer">
-                  <div className={`p-3 rounded-xl shadow-sm ${action.color} ${action.iconColor}`}>
-                    <action.icon size={22} strokeWidth={2.5} />
-                  </div>
-                  <div className="flex flex-row gap-5 items-center min-w-0">
-                    <div className="font-bold text-xs text-slate-800 uppercase tracking-tight truncate">
-                      {action.title}
-                    </div>
-                    <div className={`text-2xl font-black tracking-tight ${action.iconColor}`}>
-                      {action.count}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Profile Details */}
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-soft">
-            <div className="bg-gray-50/70 px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-              <ClipboardList size={16} className="text-green-600" />
-              <h3 className="text-xs font-black text-gray-600 uppercase tracking-widest">Profile Details</h3>
-            </div>
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 text-sm font-medium">
-              <DetailRow label="Principal Email" value={designer.email} link={`mailto:${designer.email}`} />
-              <DetailRow label="Digital Presence" value={designer.websiteLink} link={designer.websiteLink} isExternal />
-              <DetailRow label="Secure Contact" value={designer.contactInfo} />
-              <DetailRow label="Coverage" value={states.length > 0 ? states.join(", ") : "Not specified"} />
-            </div>
-          </div>
+      {/* Files Section */}
+      {Array.isArray(designer.files) && designer.files.length > 0 && (
+        <div className="mt-6 pt-5 border-t border-green-200">
+          <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
+            <FileText className="w-4 h-4" /> Files
+          </h4>
+          <ul className="text-gray-700 space-y-1">
+            {designer.files.map((file) => (
+              <li
+                key={file.id}
+                className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
+              >
+                <span>{file.originalName}</span>
+                <a
+                  className="text-green-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
+                  onClick={() =>
+                    openFileSecurely("connection-designer", id, file.id)
+                  }
+                >
+                  <Link2 className="w-3 h-3" /> Open
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
+      )}
 
-        {/* Right Section (4 Cols) */}
-        <div className="lg:col-span-4 space-y-8">
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-soft flex flex-col min-h-[400px]">
-            <div className="flex items-center gap-2 mb-6">
-              <Globe size={18} className="text-emerald-500" />
-              <h3 className="text-sm font-black text-gray-800 uppercase tracking-tighter">Availability Coverage</h3>
-            </div>
-            <div className="flex-1 relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={stateData.length > 0 ? stateData : [{ name: 'None', value: 1 }]}
-                    cx="50%" cy="45%"
-                    innerRadius={55}
-                    outerRadius={80}
-                    paddingAngle={states.length > 4 ? 2 : 8}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {stateData.map((_: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                    {states.length === 0 && <Cell fill="#f3f4f6" />}
-                  </Pie>
-                  <RechartsTooltip
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', fontSize: '11px' }}
-                  />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={120}
-                    iconType="circle"
-                    iconSize={6}
-                    wrapperStyle={{ fontSize: '9px', fontWeight: 700, paddingTop: '20px', color: '#6b7280' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              {states.length === 0 && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <p className="text-[10px] text-gray-300 italic font-bold">No States Mapped</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+      {/* Buttons */}
+      <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">
+        <Button
+          onClick={() => handleModel(designer)}
+          className="py-1 px-3 text-sm sm:text-base font-semibold"
+        >
+          Edit
+        </Button>
+        <Button className="py-1 px-3 text-sm sm:text-base font-semibold bg-red-200 text-red-700 hover:bg-red-300">
+          Archive
+        </Button>
+        <Button
+          onClick={() => handleEngineerModel()}
+          className="py-1 px-3 text-sm sm:text-base font-semibold"
+        >
+          Connection Designer Engineer
+        </Button>
       </div>
 
       {editModel && createPortal(

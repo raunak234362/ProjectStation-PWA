@@ -327,7 +327,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               files={rfq?.files || []}
               table="rFQ"
               parentId={rfq?.id}
-              formatDate={(date: string) => new Date(date).toLocaleDateString()}
+              formatDate={(date: string | number | Date) => new Date(date).toLocaleDateString()}
             />
             {userRole !== "CLIENT" && (
               <div className="flex flex-col gap-2 pt-2">

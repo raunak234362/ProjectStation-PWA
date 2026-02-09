@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { Provider, useDispatch } from "react-redux";
 import store from "./store/store";
 import Layout from "./layout/DashboardLayout";

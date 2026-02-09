@@ -5,7 +5,7 @@ import GetRFQByID from "./GetRFQByID";
 const AllRFQ = ({ rfq }: any) => {
   const userType = localStorage.getItem("userType");
 
-  let columns: ExtendedColumnDef<RFQItem>[] = [
+  const columns: ExtendedColumnDef<RFQItem>[] = [
     {
       accessorKey: "projectName",
       header: "Project Name",

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import React, { useEffect, useState } from "react";
 import Service from "../../../api/Service";
 import DataTable from "../../ui/table";
@@ -17,7 +17,7 @@ interface LineItemGroupData {
 
 const LineItemGroup: React.FC<LineItemGroupProps> = ({ estimationId, refreshTrigger }) => {
   const [lineItem, setLineItem] = useState<LineItemGroupData[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const [, setLoading] = useState(false);
 
   const fetchGroups = async () => {

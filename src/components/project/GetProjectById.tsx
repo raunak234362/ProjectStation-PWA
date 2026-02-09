@@ -101,7 +101,7 @@ const GetProjectById = ({ id }: { id: string }) => {
     }
   };
 
-  const formatDate = (date?: string) =>
+  const formatDate = (date: string | number | Date | undefined) =>
     date
       ? new Date(date).toLocaleString("en-IN", {
         dateStyle: "medium",

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import { Loader2, AlertCircle } from "lucide-react";
-import { openFileSecurely } from "../../utils/openFileSecurely";
+import RenderFiles from "../ui/RenderFiles";
 import Button from "../fields/Button";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -110,38 +110,23 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
               <h4 className="font-semibold text-gray-700">Description</h4>
               <div
                 className="p-3 bg-gray-50 border rounded-lg prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: submittal.description }}
+                dangerouslySetInnerHTML={{ __html: submittal.description || submittal.currentVersion?.description || "—" }}
               />
             </div>
 
-            {submittal.files?.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-gray-700 mb-2">
-                  Attachments
-                </h4>
-                <ul className="space-y-1">
-                  {submittal.files.map((file: any) => (
-                    <li key={file.id}>
-                      <span
-                        className="text-green-600 underline cursor-pointer"
-                        onClick={() =>
-                          openFileSecurely("submittal", submittal.id, file.id)
-                        }
-                      >
-                        {file.originalName}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <RenderFiles
+              files={submittal.versions || []}
+              table="submittals"
+              parentId={submittal.id}
+            />
           </div>
+
 
           {/* RIGHT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-green-700">Responses</h2>
-              {userRole === "CLIENT" && (
+              {(userRole === "CLIENT_ADMIN" || userRole === "CLIENT") && (
                 <Button
                   className="bg-green-600 text-white"
                   onClick={() => setShowResponseModal(true)}
@@ -168,7 +153,7 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
       {/* ADD RESPONSE MODAL */}
       {showResponseModal && (
         <SubmittalResponseModal
-          submittalId={submittal.id}
+          submittal={submittal}
           onClose={() => setShowResponseModal(false)}
           onSuccess={() => {
             setShowResponseModal(false);
