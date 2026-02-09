@@ -10,6 +10,7 @@ import {
   Users,
   Clock,
   ClipboardList,
+  X as CloseIcon,
 } from "lucide-react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
@@ -29,7 +30,7 @@ import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
 import CoTable from "../co/CoTable";
 
-const GetProjectById = ({ id }: { id: string }) => {
+const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +38,7 @@ const GetProjectById = ({ id }: { id: string }) => {
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
   const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
   const [editModel, setEditModel] = useState<ProjectData | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [changeOrderView, setChangeOrderView] = useState<
     "list" | "add" | "table"
   >("list");
@@ -45,6 +47,7 @@ const GetProjectById = ({ id }: { id: string }) => {
   const rfiData = useMemo(() => {
     return project?.rfi || [];
   }, [project]);
+  console.log("projects-----ByID", project);
 
   const changeOrderData = useMemo(() => {
     return project?.changeOrders || [];
@@ -62,6 +65,27 @@ const GetProjectById = ({ id }: { id: string }) => {
       setLoading(false);
     }
   };
+  // Fetch analytics data
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const data = {
+          projectId: id,
+          managerId: sessionStorage.getItem("userId")
+
+        }
+        const response = await Service.GetAnalyticsScore(data);
+        console.log("Analytics Score:", response);
+        const analyticsData = response?.data || response || [];
+        setAnalyticsData(analyticsData);
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      }
+    };
+    fetchAnalytics();
+  }, []);
+  console.log(analyticsData);
+
 
   const handleEditModel = (project: ProjectData) => {
     console.log(project);
@@ -147,12 +171,14 @@ const GetProjectById = ({ id }: { id: string }) => {
             >
               {project.status}
             </span>
-            {/* <button
-              onClick={onClose}
-              className="p-2 rounded-full hover:bg-gray-100 text-gray-700"
-            >
-              <X className="w-5 h-5" />
-            </button> */}
+            {close && (
+              <button
+                onClick={close}
+                className="p-2 rounded-full hover:bg-gray-100 text-gray-700"
+              >
+                <CloseIcon size={24} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -187,13 +213,16 @@ const GetProjectById = ({ id }: { id: string }) => {
           {/* Desktop Tabs */}
           <div className="hidden md:flex gap-2 overflow-x-auto">
             {[
+              { key: "overview", label: "Overview", icon: ClipboardList },
               { key: "details", label: "Details", icon: ClipboardList },
               { key: "files", label: "Files", icon: FileText },
               { key: "wbs", label: "WBS", icon: FileText },
               { key: "milestones", label: "Milestones", icon: FileText },
               { key: "notes", label: "Notes", icon: FolderOpenDot },
               { key: "rfi", label: "RFI", icon: FolderOpenDot },
+              { key: "CDrfi", label: "CD RFI", icon: FolderOpenDot },
               { key: "submittals", label: "Submittals", icon: FolderOpenDot },
+              { key: "CDsubmittals", label: "CD Submittals", icon: FolderOpenDot },
               {
                 key: "changeOrder",
                 label: "Change Order",
@@ -415,7 +444,103 @@ const GetProjectById = ({ id }: { id: string }) => {
               )}
             </div>
           )}
+          {activeTab === "CDrfi" && (
+            <div className="space-y-4">
+              {/* Sub-tabs for RFI */}
+              <div className="flex justify-start border-b border-gray-200 mb-4">
+                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                  <button
+                    onClick={() => setRfiView("list")}
+                    className={`
+                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                      ${rfiView === "list"
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      }
+                    `}
+                  >
+                    All RFIs
+                  </button>
+                  {userRole !== "client" && (
+                    <button
+                      onClick={() => setRfiView("add")}
+                      className={`
+                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                        ${rfiView === "add"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        }
+                    `}
+                    >
+                      Create RFI
+                    </button>
+                  )}
+                </nav>
+              </div>
+
+              {/* RFI Content */}
+              {rfiView === "list" ? (
+                <AllRFI rfiData={rfiData} />
+              ) : (
+                <AddRFI
+                  project={project}
+                  onSuccess={() => {
+                    fetchProject();
+                    setRfiView("list");
+                  }}
+                />
+              )}
+            </div>
+          )}
           {activeTab === "submittals" && (
+            <div className="space-y-4">
+              {/* Sub-tabs for RFI */}
+              <div className="flex justify-start border-b border-gray-200 mb-4">
+                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                  <button
+                    onClick={() => setSubmittalView("list")}
+                    className={`
+                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                      ${submittalView === "list"
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      }
+                    `}
+                  >
+                    All Submittals
+                  </button>
+                  {userRole !== "client" && (
+                    <button
+                      onClick={() => setSubmittalView("add")}
+                      className={`
+                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                        ${submittalView === "add"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        }
+                    `}
+                    >
+                      Create Submittal
+                    </button>
+                  )}
+                </nav>
+              </div>
+
+              {/* Submittal Content */}
+              {submittalView === "list" ? (
+                <AllSubmittals submittalData={submittalData} />
+              ) : (
+                <AddSubmittal
+                  project={project}
+                  onSuccess={() => {
+                    fetchProject();
+                    setSubmittalView("list");
+                  }}
+                />
+              )}
+            </div>
+          )}
+          {activeTab === "CDsubmittals" && (
             <div className="space-y-4">
               {/* Sub-tabs for RFI */}
               <div className="flex justify-start border-b border-gray-200 mb-4">

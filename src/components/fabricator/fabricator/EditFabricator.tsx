@@ -201,25 +201,25 @@ const EditFabricator = ({
         initial={{ scale: 0.95, opacity: 0, y: 30 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 30 }}
-        className="bg-white w-full max-w-5xl rounded-[40px] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col relative border border-white/20"
+        className="bg-white dark:bg-slate-900 w-full max-w-5xl rounded-[40px] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col relative border border-white/20 dark:border-slate-800"
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-center px-10 py-8 border-b border-slate-100 shrink-0 bg-slate-50/50">
+        <div className="flex justify-between items-center px-10 py-8 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/50">
           <div>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-none mb-2 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-green-100 flex items-center justify-center text-green-600">
+            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-2 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-green-100 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
                 <Check className="w-6 h-6" />
               </div>
               Edit Engineering Partner
             </h2>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
               Update global fabricator intelligence and credentials
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-3 bg-white shadow-sm border border-slate-100 rounded-2xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-90"
+            className="p-3 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 rounded-2xl text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
             aria-label="Close"
           >
             <X className="w-6 h-6" />
@@ -232,19 +232,19 @@ const EditFabricator = ({
           className="px-10 py-8 space-y-10 overflow-y-auto flex-1 custom-scrollbar"
         >
           {error && (
-            <div className="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-sm font-bold animate-in slide-in-from-top-2">
+            <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30 text-rose-700 dark:text-rose-400 rounded-2xl text-sm font-bold animate-in slide-in-from-top-2">
               Error: {error}
             </div>
           )}
 
           {/* Section 1: Identity */}
           <section className="space-y-6">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
               Core Identity & Access
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                   Partner Name
                 </label>
                 <Input
@@ -253,21 +253,21 @@ const EditFabricator = ({
                     required: "Fabricator name is required",
                   })}
                   placeholder="e.g. SteelWorks Global"
-                  className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white transition-all"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-700 transition-all"
                 />
                 {errors.fabName && (
-                  <p className="mt-2 text-[10px] font-bold text-rose-600 uppercase tracking-wider">
+                  <p className="mt-2 text-[10px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
                     {errors.fabName.message}
                   </p>
                 )}
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                   Partner Stage
                 </label>
                 <select
                   {...register("fabStage", { required: "Stage is required" })}
-                  className="w-full h-[46px] border border-slate-200 bg-slate-50 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all shadow-sm font-bold text-slate-800"
+                  className="w-full h-[46px] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all shadow-sm font-bold text-slate-800 dark:text-white"
                 >
                   <option value="">Select Stage</option>
                   <option value="RFQ">RFQ Analysis</option>
@@ -277,7 +277,7 @@ const EditFabricator = ({
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                   Digital Hub (URL)
                 </label>
                 <Input
@@ -285,11 +285,11 @@ const EditFabricator = ({
                   {...register("website")}
                   type="url"
                   placeholder="https://engineering.hub"
-                  className="w-full bg-slate-50 border-slate-200 rounded-2xl"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl"
                 />
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                   Shared Repository (Cloud)
                 </label>
                 <Input
@@ -297,7 +297,7 @@ const EditFabricator = ({
                   {...register("drive")}
                   type="url"
                   placeholder="https://drive.repository"
-                  className="w-full bg-slate-50 border-slate-200 rounded-2xl"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl"
                 />
               </div>
             </div>
@@ -305,29 +305,29 @@ const EditFabricator = ({
 
           {/* Section 2: Financials & Compliance */}
           {(userRole === "ADMIN" || userRole === "PROJECT_MANAGER_OFFICER") && (
-            <section className="space-y-6 pt-10 border-t border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            <section className="space-y-6 pt-10 border-t border-slate-100 dark:border-slate-800">
+              <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
                 Financial Compliance & Policy
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                     SAC Code
                   </label>
                   <Input
                     label=""
                     {...register("SAC")}
                     placeholder="e.g. 998311"
-                    className="w-full bg-slate-50 border-slate-200 rounded-2xl"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                     Primary Currency
                   </label>
                   <select
                     {...register("currencyType")}
-                    className="w-full h-[46px] border border-slate-200 bg-slate-50 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all shadow-sm font-bold text-slate-800"
+                    className="w-full h-[46px] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all shadow-sm font-bold text-slate-800 dark:text-white"
                   >
                     <option value="">Select Currency</option>
                     <option value="USD">USD (Dollar)</option>
@@ -336,12 +336,12 @@ const EditFabricator = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                     Vault Settlement
                   </label>
                   <select
                     {...register("accountId")}
-                    className="w-full h-[46px] border border-slate-200 bg-slate-50 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all shadow-sm font-bold text-slate-800"
+                    className="w-full h-[46px] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all shadow-sm font-bold text-slate-800 dark:text-white"
                     disabled={fetchingAccounts}
                   >
                     <option value="">Select Account</option>
@@ -359,29 +359,29 @@ const EditFabricator = ({
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                     Approval %
                   </label>
                   <Input
                     label=""
                     type="number"
                     {...register("approvalPercentage", { valueAsNumber: true })}
-                    className="w-full bg-slate-50 border-slate-200 rounded-2xl"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                     Fabrication %
                   </label>
                   <Input
                     label=""
                     type="number"
                     {...register("fabricatPercentage", { valueAsNumber: true })}
-                    className="w-full bg-slate-50 border-slate-200 rounded-2xl"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
                     Settlement Cycle
                   </label>
                   <div className="relative">
@@ -389,9 +389,9 @@ const EditFabricator = ({
                       label=""
                       type="number"
                       {...register("paymenTDueDate", { valueAsNumber: true })}
-                      className="w-full bg-slate-50 border-slate-200 rounded-2xl pr-12"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl pr-12"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400 dark:text-slate-500">
                       DAYS
                     </span>
                   </div>
@@ -401,8 +401,8 @@ const EditFabricator = ({
           )}
 
           {/* Section 3: Assets */}
-          <section className="space-y-6 pt-10 border-t border-slate-100">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+          <section className="space-y-6 pt-10 border-t border-slate-100 dark:border-slate-800">
+            <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
               Compliance Vault (Files)
             </h3>
 
@@ -412,11 +412,11 @@ const EditFabricator = ({
                 {filesToKeep.map((file) => (
                   <div
                     key={file.id}
-                    className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group transition-all hover:bg-white hover:shadow-lg hover:shadow-slate-500/5"
+                    className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 group transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-lg hover:shadow-slate-500/5"
                   >
                     <div className="flex items-center gap-3 truncate">
                       <Paperclip className="w-4 h-4 text-slate-400 group-hover:text-green-500 transition-colors" />
-                      <span className="text-xs font-bold text-slate-700 truncate">
+                      <span className="text-xs font-bold text-slate-700 dark:text-white truncate">
                         {file?.filename}
                       </span>
                     </div>
@@ -425,7 +425,7 @@ const EditFabricator = ({
                       onClick={() =>
                         handleRemoveExistingFile(file.id, file.filename)
                       }
-                      className="p-2 bg-white rounded-xl text-slate-300 hover:text-rose-600 hover:shadow-sm transition-all"
+                      className="p-2 bg-white dark:bg-slate-800 rounded-xl text-slate-300 hover:text-rose-600 hover:shadow-sm transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -449,19 +449,19 @@ const EditFabricator = ({
           </section>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-4 pt-10 border-t border-slate-100 sticky bottom-0 bg-white pb-6 mt-10">
+          <div className="flex items-center justify-end gap-4 pt-10 border-t border-slate-100 dark:border-slate-800 sticky bottom-0 bg-white dark:bg-slate-900 pb-6 mt-10">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-8 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all active:scale-95"
+              className="px-8 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all active:scale-95"
             >
               Cancel Edit
             </button>
             <Button
               type="submit"
               disabled={submitting}
-              className="px-10 py-3 bg-green-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-green-100 transition-all active:scale-95 flex items-center gap-3"
+              className="px-10 py-3 bg-green-600 dark:bg-green-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-green-100 dark:shadow-none transition-all active:scale-95 flex items-center gap-3 border-none"
             >
               {submitting ? (
                 <>

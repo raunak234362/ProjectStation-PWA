@@ -96,7 +96,7 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       accessorKey: "name",
       header: "Project Name",
       cell: ({ row }) => (
-        <div className="max-w-[150px] truncate font-medium text-gray-800" title={row.original.name}>
+        <div className="max-w-[150px] truncate font-medium text-gray-800 dark:text-white" title={row.original.name}>
           {row.original.name}
         </div>
       ),
@@ -108,8 +108,8 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       cell: ({ row }) => (
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "ACTIVE"
-            ? "bg-green-100 text-green-700"
-            : "bg-gray-100 text-gray-700"
+            ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400"
+            : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-400"
             }`}
         >
           {row.original.status}
@@ -120,7 +120,7 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       id: "actions",
       header: "Stats",
       cell: ({ row }) => (
-        <div className="flex gap-3 text-xs text-gray-500">
+        <div className="flex gap-3 text-xs text-gray-500 dark:text-slate-400">
           <span title="RFIs" className="flex items-center gap-1">
             <MessageSquare size={12} /> {row.original.rfi?.length || 0}
           </span>
@@ -145,48 +145,48 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <StatCard
-          icon={<Briefcase className="text-blue-600" />}
+          icon={<Briefcase className="text-blue-600 dark:text-blue-400" />}
           label="Total Projects"
           value={stats.totalProjects}
-          color="bg-blue-50"
+          color="bg-blue-50 dark:bg-blue-900/20"
         />
         <StatCard
-          icon={<TrendingUp className="text-green-600" />}
+          icon={<TrendingUp className="text-green-600 dark:text-green-400" />}
           label="Active Projects"
           value={stats.activeProjects}
-          color="bg-green-50"
+          color="bg-green-50 dark:bg-green-900/20"
         />
         <StatCard
-          icon={<MessageSquare className="text-orange-600" />}
+          icon={<MessageSquare className="text-orange-600 dark:text-orange-400" />}
           label="Pending RFIs"
           value={stats.pendingRFIs}
-          color="bg-orange-50"
+          color="bg-orange-50 dark:bg-orange-900/20"
         />
         <StatCard
-          icon={<FileCheck className="text-purple-600" />}
+          icon={<FileCheck className="text-purple-600 dark:text-purple-400" />}
           label="Submittals"
           value={stats.pendingSubmittals}
-          color="bg-purple-50"
+          color="bg-purple-50 dark:bg-purple-900/20"
         />
         <StatCard
-          icon={<AlertCircle className="text-red-600" />}
+          icon={<AlertCircle className="text-red-600 dark:text-red-400" />}
           label="Change Orders"
           value={stats.pendingCOs}
-          color="bg-red-50"
+          color="bg-red-50 dark:bg-red-900/20"
         />
         <StatCard
-          icon={<FileText className="text-cyan-600" />}
+          icon={<FileText className="text-cyan-600 dark:text-cyan-400" />}
           label="Total RFQs"
           value={stats.totalRFQs}
-          color="bg-cyan-50"
+          color="bg-cyan-50 dark:bg-cyan-900/20"
         />
       </div>
 
       {/* Projects Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 w-full overflow-hidden">
-        <div className="p-4 border-b border-gray-50 flex flex-wrap items-center justify-between gap-2 bg-gray-50/50">
-          <h3 className="font-bold text-gray-800 flex items-center gap-2">
-            <LayoutDashboard size={18} className="text-green-600" />
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 w-full overflow-hidden">
+        <div className="p-4 border-b border-gray-50 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-gray-50/50 dark:bg-slate-800/50">
+          <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+            <LayoutDashboard size={18} className="text-green-600 dark:text-green-400" />
             Project Overview
           </h3>
         </div>
@@ -200,39 +200,39 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
 
       {/* RFQs Section (Simplified) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-          <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <FileText size={18} className="text-cyan-600" />
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-4">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+            <FileText size={18} className="text-cyan-600 dark:text-cyan-400" />
             Recent RFQs
           </h3>
           <div className="space-y-3">
             {rfqs.slice(0, 5).map((rfq) => (
               <div
                 key={rfq.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
               >
                 <div>
-                  <p className="font-medium text-gray-800">{rfq.projectName}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="font-medium text-gray-800 dark:text-white">{rfq.projectName}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">
                     {new Date(rfq.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <span className="text-xs font-semibold text-cyan-700 bg-cyan-50 px-2 py-1 rounded">
+                <span className="text-xs font-semibold text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 px-2 py-1 rounded">
                   {rfq.status || "PENDING"}
                 </span>
               </div>
             ))}
             {rfqs.length === 0 && (
-              <p className="text-gray-500 text-center py-4 text-sm">
+              <p className="text-gray-500 dark:text-slate-400 text-center py-4 text-sm">
                 No RFQs found
               </p>
             )}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-          <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <Clock size={18} className="text-orange-600" />
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-4">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+            <Clock size={18} className="text-orange-600 dark:text-orange-400" />
             Timeline Summary
           </h3>
           <div className="space-y-4">
@@ -240,13 +240,13 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
               label="Latest Project"
               value={projects[0]?.name || "N/A"}
               date={projects[0]?.startDate}
-              icon={<CheckCircle2 className="text-green-500" size={16} />}
+              icon={<CheckCircle2 className="text-green-500 dark:text-green-400" size={16} />}
             />
             <TimelineItem
               label="Upcoming Deadline"
               value={projects.find((p) => p.status === "ACTIVE")?.name || "N/A"}
               date={projects.find((p) => p.status === "ACTIVE")?.endDate}
-              icon={<Clock className="text-orange-500" size={16} />}
+              icon={<Clock className="text-orange-500 dark:text-orange-400" size={16} />}
             />
           </div>
         </div>
@@ -267,11 +267,11 @@ const StatCard = ({
   color: string;
 }) => (
   <div
-    className={`${color} p-3 sm:p-4 rounded-xl border border-white/50 shadow-sm flex flex-col items-center justify-center text-center transition-transform hover:scale-105`}
+    className={`${color} p-3 sm:p-4 rounded-xl border border-white/50 dark:border-slate-800/50 shadow-sm flex flex-col items-center justify-center text-center transition-transform hover:scale-105`}
   >
-    <div className="mb-2 p-2 bg-white rounded-full shadow-sm">{icon}</div>
-    <p className="text-xl sm:text-2xl font-bold text-gray-800">{value}</p>
-    <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">
+    <div className="mb-2 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm">{icon}</div>
+    <p className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{value}</p>
+    <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500 dark:text-slate-400">
       {label}
     </p>
   </div>
@@ -291,10 +291,10 @@ const TimelineItem = ({
   <div className="flex gap-3">
     <div className="mt-1">{icon}</div>
     <div>
-      <p className="text-xs font-semibold text-gray-500 uppercase">{label}</p>
-      <p className="text-sm font-medium text-gray-800">{value}</p>
+      <p className="text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase">{label}</p>
+      <p className="text-sm font-medium text-gray-800 dark:text-white">{value}</p>
       {date && (
-        <p className="text-[10px] text-gray-400">
+        <p className="text-[10px] text-gray-400 dark:text-slate-500">
           {new Date(date).toLocaleDateString()}
         </p>
       )}

@@ -56,11 +56,10 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 rounded-full text-xs font-bold ${
-            row.original.status === "ACTIVE"
+          className={`px-3 py-1 rounded-full text-xs font-bold ${row.original.status === "ACTIVE"
               ? "bg-green-100 text-green-700"
               : "bg-orange-100 text-orange-700"
-          }`}
+            }`}
         >
           {row.original.status}
         </span>
@@ -70,20 +69,20 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-[90%] max-w-[80%] max-h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white dark:bg-slate-900 w-[90%] max-w-[80%] max-h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+        <div className="p-6 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50/50 dark:bg-slate-800/50">
           <div>
-            <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
+            <h3 className="text-xl font-bold text-gray-700 dark:text-slate-100 flex items-center gap-2">
               Pending Submittals
             </h3>
-            <p className="text-sm text-gray-700 mt-1">
+            <p className="text-sm text-gray-700 dark:text-slate-400 mt-1">
               Showing {data.length} pending submittals
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-700"
+            className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full transition-colors text-gray-400 hover:text-gray-700 dark:hover:text-slate-200"
           >
             <CloseIcon size={24} />
           </button>
@@ -98,7 +97,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
               pageSizeOptions={[10, 25, 50]}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+            <div className="flex flex-col items-center justify-center py-12 text-gray-400 dark:text-slate-500">
               <Files size={48} className="mb-4 opacity-20" />
               <p>No pending submittals found.</p>
             </div>
@@ -106,10 +105,10 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+        <div className="p-4 border-t border-gray-100 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-800/50 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-gray-800 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors shadow-lg shadow-gray-200"
+            className="px-6 py-2 bg-gray-800 dark:bg-slate-700 text-white rounded-xl font-semibold hover:bg-gray-700 dark:hover:bg-slate-600 transition-colors shadow-lg shadow-gray-200 dark:shadow-none"
           >
             Close
           </button>

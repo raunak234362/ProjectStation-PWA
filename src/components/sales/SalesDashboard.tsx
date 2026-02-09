@@ -181,22 +181,22 @@ const SalesDashboard = () => {
     }
 
     return (
-        <div className="h-full p-6 space-y-8 font-sans text-slate-900 bg-transparent">
+        <div className="h-full p-6 space-y-8 font-sans text-slate-900 dark:text-white bg-transparent">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Sales Dashboard</h1>
-                    <p className="text-slate-500 text-sm mt-1">Monitor your sales performance and conversion rates.</p>
+                    <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Sales Funnel</h1>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Monitor your sales performance and conversion rates.</p>
                 </div>
 
                 <div className="flex gap-3 relative">
                     <div className="relative">
                         <button
                             onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all shadow-soft border border-slate-100 min-w-[140px] justify-between"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 font-bold rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-soft border border-slate-100 dark:border-slate-700 min-w-[140px] justify-between"
                         >
                             <div className="flex items-center gap-2">
-                                <Filter size={18} className="text-slate-400" />
+                                <Filter size={18} className="text-slate-400 dark:text-slate-500" />
                                 {timeFilter}
                             </div>
                             <ChevronDown size={16} className={cn("transition-transform", showFilterDropdown ? "rotate-180" : "")} />
@@ -210,7 +210,7 @@ const SalesDashboard = () => {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
-                                        className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-20"
+                                        className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-20"
                                     >
                                         {(["All Time", "Last 7 Days", "Last 30 Days", "Last 12 Months"] as const).map((option) => (
                                             <button
@@ -219,7 +219,7 @@ const SalesDashboard = () => {
                                                     setTimeFilter(option);
                                                     setShowFilterDropdown(false);
                                                 }}
-                                                className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                                                className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                                             >
                                                 {option}
                                                 {timeFilter === option && <Check size={16} className="text-[#6bbd45]" />}
@@ -242,9 +242,9 @@ const SalesDashboard = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-8 pb-1">
+            <div className="flex gap-8 pb-1 border-b border-transparent dark:border-slate-800">
                 {['Overview', 'Performance', 'Leads'].map((tab, i) => (
-                    <button key={tab} className={`pb-3 text-base font-bold transition-all relative px-1 ${i === 0 ? 'text-[#6bbd45]' : 'text-slate-400 hover:text-slate-600'}`}>
+                    <button key={tab} className={`pb-3 text-base font-bold transition-all relative px-1 ${i === 0 ? 'text-[#6bbd45]' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>
                         {tab}
                         {i === 0 && <motion.div layoutId="activeTab" className="absolute -bottom-0 left-0 right-0 h-1 bg-[#6bbd45] rounded-full" />}
                     </button>

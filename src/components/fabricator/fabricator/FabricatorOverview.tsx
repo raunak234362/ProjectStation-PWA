@@ -155,8 +155,8 @@ const FabricatorOverview = () => {
             className="space-y-6 lg:p-2"
         >
             <div className="flex flex-col gap-1">
-                <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Fabricator Insights</h2>
-                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Global RFQ & Production Operations</p>
+                <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Fabricator Insights</h2>
+                <p className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Global RFQ & Production Operations</p>
             </div>
 
             <FabricatorStatsCards stats={aggregateStats} />

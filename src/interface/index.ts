@@ -278,7 +278,7 @@ export interface RFQItem {
   detailingMisc: boolean;
   files?: File[] | string[];
   responses?: RfqResponse[];
-  CDQuotas?: any[]| undefined;
+  CDQuotas?: any[] | undefined;
 }
 
 export interface RFQpayload {
@@ -377,6 +377,8 @@ export interface ConnectionDesigner {
   updatedAt: string;
   isDeleted: boolean;
   state: string[];
+  states?: string[];
+  insurenceLiability?: string;
   files?: { id: string; originalName: string }[];
 }
 
@@ -762,13 +764,13 @@ export interface DesignDrawing {
   createdAt: string;
   updatedAt: string;
 }
-export interface Quotation{
-  connectionDesignerId:string;
-  rfqId:string;
- bidprice:string;
-  estimatedHours:string;
-  weeks:string;
-  approvalStatus:boolean;
-  approvalDate:string;
-  
+export interface Quotation {
+  connectionDesignerId: string;
+  rfqId: string;
+  bidprice: string;
+  estimatedHours: string;
+  weeks: string;
+  approvalStatus: boolean;
+  approvalDate: string;
+
 }

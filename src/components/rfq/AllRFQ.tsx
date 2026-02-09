@@ -53,14 +53,14 @@ const AllRFQ = ({ rfq }: any) => {
       ],
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 text-xs rounded-full ${row.original.status === "IN_REVIEW"
-              ? "bg-yellow-100 text-yellow-700"
-              : row.original.status === "COMPLETED"
-                ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-700"
+          className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg ${row.original.status === "IN_REVIEW"
+            ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30"
+            : row.original.status === "COMPLETED"
+              ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30"
+              : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700"
             }`}
         >
-          {row.original.status}
+          {row.original.status?.replace("_", " ")}
         </span>
       ),
     },
@@ -75,12 +75,12 @@ const AllRFQ = ({ rfq }: any) => {
   );
 
   return (
-    <div className=" bg-white p-4 rounded-2xl shadow-sm">
+    <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-md p-6 rounded-[32px] shadow-soft border border-white/50 dark:border-slate-800/50">
       <DataTable
         columns={columns}
         data={rfq || []}
+        onRowClick={() => { }}
         detailComponent={({ row }) => <GetRFQByID id={row.id} />}
-        // onDelete={handleDelete}
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

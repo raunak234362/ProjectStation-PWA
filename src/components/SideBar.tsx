@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
@@ -19,6 +20,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleSidebar,
   isMobile = false,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const userData = useSelector(
     (state: any) => state?.userInfo?.userDetail,
   ) as UserData | null;
@@ -38,35 +40,40 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
+  // The sidebar is effectively expanded if it's not minimized OR if it's being hovered in desktop view
+  const isExpanded = !isMinimized || (isHovered && !isMobile);
+
   return (
     <aside
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
       className={`h-full transition-all duration-300 flex flex-col 
         ${isMobile
-          ? `fixed inset-y-0 left-0 z-50 bg-[#6bbd45] shadow-2xl w-72 transform ${isMinimized ? "-translate-x-full" : "translate-x-0"}`
-          : `relative rounded-3xl bg-[#6bbd45] text-white shadow-soft ${isMinimized ? "w-24" : "w-72"}`
+          ? `fixed inset-y-0 left-0 z-50 bg-[#6bbd45] dark:bg-green-950 shadow-2xl w-72 transform ${isMinimized ? "-translate-x-full" : "translate-x-0"}`
+          : `relative rounded-3xl bg-[#6bbd45] dark:bg-green-950 text-white shadow-soft ${isExpanded ? "w-72" : "w-24"}`
         }`}
     >
       {/* Header */}
       <div
         className={`flex items-center pt-6 pb-2 px-6 ${isMobile
           ? "justify-between"
-          : isMinimized
+          : !isExpanded
             ? "justify-center"
             : "justify-start"
           }`}
       >
         <div className="flex items-center w-full justify-center">
-          {!isMinimized ? (
+          {isExpanded ? (
             <img
               src={LOGO}
               alt="Logo"
-              className="bg-white w-56 object-contain rounded-xl drop-shadow-sm"
+              className="bg-white dark:bg-white/90 w-56 object-contain rounded-xl drop-shadow-sm transition-all duration-300"
             />
           ) : (
             <img
               src={SLOGO}
               alt="Logo"
-              className="bg-white w-16 object-contain p-1 rounded-xl drop-shadow-sm"
+              className="bg-white dark:bg-white/90 w-16 object-contain p-1 rounded-xl drop-shadow-sm transition-all duration-300"
             />
           )}
         </div>
@@ -81,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      <div className="flex-1 py-2 flex flex-col overflow-y-auto sidebar-scrollbar">
+      <div className="flex-1 py-2 flex flex-col overflow-y-auto sidebar-scrollbar overflow-x-hidden">
         <ul className="flex flex-col gap-0.5 w-full pl-4">
           {navItems.map(
             ({ label, to, roles, icon }) =>
@@ -99,45 +106,39 @@ const Sidebar: React.FC<SidebarProps> = ({
                     className={({ isActive }) =>
                       `flex items-center gap-4 py-2.5 transition-all duration-200 text-xl tracking-wide relative 
                       ${isActive
-                        ? `bg-white rounded-[6px] text-green-600 shadow-sm z-20 ${isMobile ? " mx-4 px-4" : "ml-0 pl-6"
+                        ? `bg-white dark:bg-green-600 rounded-[6px] text-green-600 dark:text-white shadow-sm z-20 ${isMobile ? " mx-4 px-4" : "ml-0 pl-6"
                         }`
                         : `text-white rounded-[6px] hover:bg-white/10 ${isMobile ? " mx-4 px-4" : " ml-0 pl-6"
                         }`
-                      } ${isMinimized
+                      } ${!isExpanded
                         ? "justify-center px-0 w-14 h-14 mx-auto rounded-[6px]! ml-0! pl-0!"
-                        : ""
+                        : "w-full"
                       }`
                     }
                   >
-                    {({ isActive }) => (
+                    {() => (
                       <>
-                        {/* Inverted Corners for Active State Effect - Desktop Only */}
-                        {!isMinimized && isActive && !isMobile && (
-                          <>
-                            {/* Top Curve */}
-                            {/* <div className="absolute right-0 -top-5 w-5 h-5 bg-transparent rounded-br-[20px] shadow-[5px_5px_0_5px_#f9fafb] z-10 pointer-events-none"></div> */}
-                            {/* Bottom Curve */}
-                            {/* <div className="absolute right-0 -bottom-5 w-5 h-5 bg-transparent rounded-tr-[20px] shadow-[5px_-5px_0_5px_#f9fafb] z-10 pointer-events-none"></div> */}
-                          </>
-                        )}
                         <div
-                          className={`${isMinimized ? "" : ""} relative z-20`}
+                          className={`${!isExpanded ? "" : ""} relative z-20`}
                         >
                           {icon}
                         </div>
-                        {!isMinimized && (
-                          <span className="relative z-20">{label}</span>
+                        {isExpanded && (
+                          <span className="relative z-20 whitespace-nowrap overflow-hidden transition-all duration-300 opacity-100">
+                            {label}
+                          </span>
                         )}
                       </>
                     )}
                   </NavLink>
 
-                  {/* Tooltip for minimized sidebar */}
-                  {isMinimized && (
-                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 hidden group-hover:flex">
-                      <span className="bg-gray-800 text-white text-sm font-bold py-2 px-4 rounded-[6px] shadow-xl whitespace-nowrap">
+                  {/* Tooltip fallback for minimized sidebar (backup if expansion is disabled or restricted) */}
+                  {!isExpanded && (
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200">
+                      <div className="bg-gray-900 text-white text-xs font-bold py-2 px-3 rounded-lg shadow-2xl whitespace-nowrap flex items-center gap-2">
                         {label}
-                      </span>
+                        <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                      </div>
                     </div>
                   )}
                 </li>
@@ -148,9 +149,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Footer */}
       <div className="p-6 mt-auto">
-        {!isMinimized && (
-          <div className="flex items-center gap-4 mb-4 bg-white/10 p-3 rounded-2xl border border-white/10 backdrop-blur-sm">
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-green-700 font-extrabold text-lg shadow-sm">
+        {isExpanded && (
+          <div className="flex items-center gap-4 mb-4 bg-white/10 dark:bg-green-900/40 p-3 rounded-2xl border border-white/10 dark:border-green-800/20 backdrop-blur-sm transition-all duration-300 overflow-hidden">
+            <div className="w-10 h-10 rounded-xl bg-white dark:bg-green-500 flex items-center justify-center text-green-700 dark:text-white font-extrabold text-lg shadow-sm shrink-0">
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
             <div className="overflow-hidden">
@@ -165,14 +166,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <Button
-          className={`w-full flex items-center gap-3 py-3 rounded-2xl transition-all ${isMinimized
+          className={`w-full flex items-center gap-3 py-3 rounded-2xl transition-all ${!isExpanded
             ? "justify-center bg-white/10 text-white hover:bg-white/20"
             : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
             }`}
           onClick={fetchLogout}
         >
           <LogOut size={20} />
-          {!isMinimized && <span className="font-bold text-sm">Logout</span>}
+          {isExpanded && <span className="font-bold text-sm">Logout</span>}
         </Button>
       </div>
     </aside>

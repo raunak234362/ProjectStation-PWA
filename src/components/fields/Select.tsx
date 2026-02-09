@@ -146,9 +146,8 @@ const Select = ({
             }, 100);
           }
         }}
-        className={`flex items-center justify-between p-2 text-sm border rounded-md bg-white cursor-pointer transition-all ${
-          isOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-300"
-        } ${className}`}
+        className={`flex items-center justify-between p-2 text-sm border rounded-md bg-white dark:bg-slate-800 cursor-pointer transition-all ${isOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-300 dark:border-slate-700"
+          } ${className}`}
       >
         <div className="flex-1">
           {isOpen && showSearch ? (
@@ -159,14 +158,14 @@ const Select = ({
                 type="text"
                 value={searchTerm}
                 onChange={handleSearch}
-                className="w-full bg-transparent outline-none"
+                className="w-full bg-transparent outline-none text-gray-900 dark:text-white"
                 placeholder="Search..."
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
           ) : (
             <span
-              className={selectedOption ? "text-gray-700" : "text-gray-700"}
+              className={selectedOption ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-slate-400"}
             >
               {selectedOption
                 ? selectedOption.label
@@ -175,9 +174,8 @@ const Select = ({
           )}
         </div>
         <svg
-          className={`w-4 h-4 text-gray-400 transition-transform ${
-            isOpen ? "transform rotate-180" : ""
-          }`}
+          className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "transform rotate-180" : ""
+            }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -196,20 +194,20 @@ const Select = ({
           <div
             ref={menuRef}
             style={menuStyles}
-            className="text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
+            className="text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-md shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
           >
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <div
                   key={option.value}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-gray-900 dark:text-white"
                   onClick={() => handleSelect(option)}
                 >
                   {highlightMatch(option.label, searchTerm)}
                 </div>
               ))
             ) : (
-              <div className="px-4 py-2 text-gray-500 italic">
+              <div className="px-4 py-2 text-gray-500 dark:text-slate-400 italic">
                 No options found
               </div>
             )}

@@ -30,6 +30,7 @@ const TeamDashboard = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
   const [allMemberStats, setAllMemberStats] = useState<any[]>([]);
   const [allTasks, setAllTasks] = useState<any[]>([]);
+  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
 
   // Analytics State
   const [selectedComparisonTeams, setSelectedComparisonTeams] = useState<string[]>([]);
@@ -103,6 +104,8 @@ const TeamDashboard = () => {
     };
     fetchInitialTasks();
   }, []);
+
+
 
   // Sync selectedComparisonTeams with selectedTeam (initial selection)
   useEffect(() => {

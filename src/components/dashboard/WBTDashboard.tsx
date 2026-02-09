@@ -168,7 +168,7 @@ const WBTDashboard = () => {
     <div className="flex flex-col w-full p-1 space-y-3 pb-8">
       <Suspense fallback={<DashboardSkeleton />}>
         {/* Stats Grid - Top Section */}
-        <div className="grid grid-cols-1 max-md:grid-cols-2 lg:grid-cols-3 gap-3 shrink-0">
+        <div className="grid grid-cols-1 max-md:grid-cols-2 lg:grid-cols-2 gap-3 shrink-0">
           {/* Project Stats */}
           <div className="w-full">
             <ProjectStats stats={stats} onCardClick={handleCardClick} />
@@ -214,11 +214,11 @@ const WBTDashboard = () => {
         ) : (
           <>
             {/* Admin/PMO View: Original InvoiceTrends and Tabbed UpcomingSubmittals */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
-              <div className="w-full min-h-[400px]">
+            <div className="grid grid-cols-1 gap-4 w-full">
+              <div className="w-full min-h-[500px] lg:h-[600px]">
                 <InvoiceTrends invoices={invoices} />
               </div>
-              <div className="w-full min-h-[400px]">
+              <div className="w-full min-h-[500px] lg:h-[600px]">
                 <UpcomingSubmittals
                   pendingSubmittals={pendingSubmittals}
                   invoices={invoices}

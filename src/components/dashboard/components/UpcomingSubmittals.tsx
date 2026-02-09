@@ -49,15 +49,15 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   }, [invoices]);
 
   return (
-    <div className="bg-white p-4 rounded-[6px] shadow-sm border border-gray-100 flex flex-col h-full">
+    <div className="bg-white  dark:bg-slate-900 p-4 rounded-[6px] shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col h-full transition-colors duration-300">
       {!hideTabs && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 shrink-0">
-          <div className="flex gap-2 bg-white/50 p-1 rounded-lg self-start sm:self-auto">
+          <div className="flex gap-2 bg-white/50 dark:bg-slate-800/50 p-1 rounded-lg self-start sm:self-auto">
             <button
               onClick={() => setActiveTab("submittals")}
               className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "submittals"
-                ? "bg-green-500 text-white shadow-md shadow-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-white"
+                ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-green-900/20"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700"
                 }`}
             >
               Upcoming Submittals
@@ -65,14 +65,14 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             <button
               onClick={() => setActiveTab("invoices")}
               className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "invoices"
-                ? "bg-green-500 text-white shadow-md shadow-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-white"
+                ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-green-900/20"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700"
                 }`}
             >
               Invoice Need Raise
             </button>
           </div>
-          <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm self-start sm:self-auto">
+          <span className="px-3 py-1 bg-white dark:bg-slate-800 text-green-700 dark:text-green-400 text-2xl rounded-full shadow-sm self-start sm:self-auto">
             {activeTab === "submittals"
               ? `${pendingSubmittals.length} Pending`
               : `${invoiceNeedRaise.length} Need Raise`}
@@ -81,10 +81,10 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
       )}
       {hideTabs && (
         <div className="flex items-center justify-between mb-4 shrink-0">
-          <h3 className="text-lg font-bold text-gray-700">
+          <h3 className="text-lg font-bold text-gray-700 dark:text-white">
             {activeTab === "submittals" ? "Upcoming Submittals" : "Invoice Need Raise"}
           </h3>
-          <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm">
+          <span className="px-3 py-1 bg-white dark:bg-slate-800 text-green-700 dark:text-green-400 text-xs font-bold rounded-full shadow-sm">
             {activeTab === "submittals"
               ? `${pendingSubmittals.length} Pending`
               : `${invoiceNeedRaise.length} Need Raise`}
@@ -92,20 +92,20 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
         </div>
       )}
 
-      <div className="flex-1 space-y-4 min-h-0">
+      <div className="flex-1 space-y-4 min-h-0 max-h-[600px] overflow-y-auto">
         {activeTab === "submittals" ? (
           pendingSubmittals.length > 0 ? (
             Object.entries(groupedSubmittals).map(([projectName, items]) => (
-              <div key={projectName} className="space-y-2 bg-green-500/20 p-2 rounded-[6px] border border-green-200">
+              <div key={projectName} className="space-y-2 bg-green-500/20 dark:bg-green-950/30 p-2 rounded-[6px] border border-green-200 dark:border-green-800/20">
                 <div className="flex items-center gap-2 py-1">
                   <div className="w-1 h-3 bg-green-500 rounded-full"></div>
-                  <h3 className="text-md font-bold text-gray-900 uppercase tracking-tight">
+                  <h3 className="text-2xl text-gray-900 dark:text-white uppercase tracking-tight">
                     {projectName}
                   </h3>
-                  <span className="text-sm bg-white text-green-700 px-1.5 py-0.5 rounded-[4px] font-bold shadow-sm border border-green-100">
+                  <span className="text-sm bg-white dark:bg-slate-800 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded-[4px] font-bold shadow-sm border border-green-100 dark:border-slate-700">
                     {items.length}
                   </span>
-                  <span className="text-md font-bold text-green-900 bg-green-100 px-2 py-0.5 rounded-[4px] ml-auto uppercase tracking-wider">
+                  <span className="text-md md:text-xl font-bold text-green-900 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-[4px] ml-auto uppercase tracking-wider">
                     {items[0]?.fabricator?.fabName || items[0]?.fabName || "N/A"}
                   </span>
                 </div>
@@ -120,8 +120,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                           setIsModalOpen(true);
                         }}
                         className={`w-full text-left p-3 rounded-[6px] border transition-all group ${overdue
-                          ? "bg-red-50 border-red-100 hover:bg-red-100/50 hover:border-red-200 shadow-sm shadow-red-50"
-                          : "bg-white border-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50"
+                          ? "bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/40 hover:bg-red-100/50 dark:hover:bg-red-900/30 hover:border-red-200 dark:hover:border-red-800 shadow-sm shadow-red-50 dark:shadow-red-900/20"
+                          : "bg-white dark:bg-slate-800 border-white dark:border-slate-700 hover:border-green-100 dark:hover:border-green-800 hover:shadow-md hover:shadow-green-50/50 dark:hover:shadow-green-900/10"
                           }`}
                       >
                         <div className="flex justify-between items-start mb-1">
@@ -130,16 +130,16 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                               <AlertCircle size={12} className="text-red-500" />
                             )}
                             <h4
-                              className={`font-bold text-sm transition-colors ${overdue
-                                ? "text-red-700"
-                                : "text-gray-700 group-hover:text-green-700"
+                              className={`text-xl transition-colors ${overdue
+                                ? "text-red-700 dark:text-red-400"
+                                : "text-gray-700 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400"
                                 }`}
                             >
                               {submittal.subject || "No Subject"}
                             </h4>
                           </div>
                           <span
-                            className={`text-[10px] font-bold uppercase tracking-wider ${overdue ? "text-red-500" : "text-gray-400"
+                            className={`text-md font-bold uppercase tracking-wider ${overdue ? "text-red-500 dark:text-red-400" : "text-gray-400 dark:text-green-600/60"
                               }`}
                           >
                             {submittal.approvalDate
@@ -151,7 +151,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                         </div>
                         <div className="flex items-center justify-between mt-1">
                           {overdue && (
-                            <span className="text-[10px] font-bold text-red-500 animate-pulse">
+                            <span className="text-[14px] font-bold text-red-500 animate-pulse">
                               OVERDUE
                             </span>
                           )}

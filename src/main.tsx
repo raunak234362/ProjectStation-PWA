@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/store";
 import routes from "./routes/routes";
+import { ThemeProvider } from "./context/ThemeContext";
 
 import { Suspense } from "react";
 
@@ -17,15 +18,17 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <>
     <Provider store={store}>
-      <Suspense
-        fallback={
-          <div className="flex items-center justify-center h-screen w-screen bg-[#6bbd45]">
-            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        }
-      >
-        <RouterProvider router={router} />
-      </Suspense>
+      <ThemeProvider>
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-screen w-screen bg-[#6bbd45]">
+              <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          }
+        >
+          <RouterProvider router={router} />
+        </Suspense>
+      </ThemeProvider>
     </Provider>
   </>,
 );

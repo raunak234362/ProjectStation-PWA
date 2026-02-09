@@ -20,7 +20,6 @@ const ProjectPage = lazy(() => import("../pages/ProjectPage"));
 const invoicePage = lazy(() => import("../pages/invoicePage"));
 const TaskPage = lazy(() => import("../pages/TaskPage"));
 const CoTablePage = lazy(() => import("../components/co/CoTablePage"));
-const AccountPage = lazy(() => import("../pages/AccountPage"));
 const SalesDashboard = lazy(() => import("../components/sales/SalesDashboard"));
 const DesignerLandingDashboard = lazy(
   () => import("../components/dashboard/DesignerLandingDashboard"),
@@ -50,7 +49,6 @@ const routes = [
           { path: "projects", Component: ProjectPage },
           { path: "invoices", Component: invoicePage },
           { path: "tasks", Component: TaskPage },
-          { path: "accounts", Component: AccountPage },
           { path: "chats", Component: ChatPage },
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },

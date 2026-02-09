@@ -10,15 +10,15 @@ const DashboardSkeleton = () => (
     <div className="p-6 space-y-6 animate-pulse">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-28 bg-gray-200 rounded-2xl"></div>
+                <div key={i} className="h-28 bg-gray-200 dark:bg-slate-800 rounded-2xl"></div>
             ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
-            <div className="bg-gray-200 rounded-2xl"></div>
-            <div className="bg-gray-200 rounded-2xl"></div>
+            <div className="bg-gray-200 dark:bg-slate-800 rounded-2xl"></div>
+            <div className="bg-gray-200 dark:bg-slate-800 rounded-2xl"></div>
         </div>
-        <div className="h-[500px] bg-gray-200 rounded-2xl"></div>
-        <div className="h-48 bg-gray-200 rounded-2xl"></div>
+        <div className="h-[500px] bg-gray-200 dark:bg-slate-800 rounded-2xl"></div>
+        <div className="h-48 bg-gray-200 dark:bg-slate-800 rounded-2xl"></div>
     </div>
 );
 
@@ -28,6 +28,7 @@ const CDdashboard = () => {
     const [selectedDesignerId, setSelectedDesignerId] = useState<string | null>(null);
 
     // Processed Data States
+    const [stateDistribution, setStateDistribution] = useState<any[]>([]);
     const [stats, setStats] = useState({
         totalCDs: 0,
         totalCountries: 0,
@@ -58,6 +59,7 @@ const CDdashboard = () => {
         const totalCDs = data.length;
         const allCountries = new Set<string>();
         const allStates = new Set<string>();
+        const stateCounts: { [key: string]: number } = {};
         let totalEngineers = 0;
 
         data.forEach(cd => {
@@ -73,7 +75,10 @@ const CDdashboard = () => {
             }
 
             statesArr.forEach(s => {
-                if (s) allStates.add(s);
+                if (s) {
+                    allStates.add(s);
+                    stateCounts[s] = (stateCounts[s] || 0) + 1;
+                }
             });
 
             const engineers = cd.CDEngineers || [];
@@ -83,6 +88,12 @@ const CDdashboard = () => {
             if (country) allCountries.add(country);
         });
 
+        const dist = Object.entries(stateCounts)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10); // Top 10 for the chart
+
+        setStateDistribution(dist);
         setStats({
             totalCDs,
             totalCountries: allCountries.size,
@@ -106,7 +117,11 @@ const CDdashboard = () => {
             </motion.div>
 
             {/* Network Overview List */}
-            <CDNetworkOverview designers={cdData} onSelect={setSelectedDesignerId} />
+            <CDNetworkOverview
+                designers={cdData}
+                stateData={stateDistribution}
+                onSelect={setSelectedDesignerId}
+            />
 
             {/* Designer Details Popup */}
             <AnimatePresence>
@@ -121,11 +136,11 @@ const CDdashboard = () => {
                             animate={{ scale: 1, y: 0, opacity: 1 }}
                             exit={{ scale: 0.9, y: 30, opacity: 0 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-4xl shadow-3xl w-full max-w-[95vw] max-h-[92vh] overflow-y-auto relative custom-scrollbar border border-gray-100"
+                            className="bg-white dark:bg-slate-900 rounded-[40px] shadow-3xl w-full max-w-[95vw] max-h-[92vh] overflow-y-auto relative custom-scrollbar border border-gray-100 dark:border-slate-800"
                         >
                             <button
                                 onClick={() => setSelectedDesignerId(null)}
-                                className="absolute top-6 right-6 p-2.5 bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-xl transition-all z-50 border border-gray-100 hover:border-red-100 shadow-sm"
+                                className="absolute top-6 right-6 p-2.5 bg-gray-50 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-gray-400 dark:text-slate-500 hover:text-rose-500 dark:hover:text-rose-400 rounded-2xl transition-all z-50 border border-gray-100 dark:border-slate-700 hover:border-rose-100 dark:hover:border-rose-900/30 shadow-sm"
                             >
                                 <X size={22} strokeWidth={2.5} />
                             </button>

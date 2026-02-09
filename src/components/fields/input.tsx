@@ -34,20 +34,20 @@ const Input = React.forwardRef<
 
     // Base styles for inputs
     const baseStyles =
-      "w-full px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200";
+      "w-full px-3 py-2 text-black dark:text-white placeholder-gray-500 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200";
 
     // Variant styles
     const variantStyles = {
-      default: "border border-gray-300 rounded-md bg-white focus:ring-blue-500",
+      default: "border border-gray-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus:ring-blue-500",
       outline:
-        "border border-gray-300 rounded-md bg-transparent focus:ring-blue-500",
-      filled: "border-0 rounded-md bg-gray-100 focus:ring-blue-500",
+        "border border-gray-300 dark:border-slate-700 rounded-md bg-transparent focus:ring-blue-500",
+      filled: "border-0 rounded-md bg-gray-100 dark:bg-slate-700 focus:ring-blue-500",
     };
 
     return (
       <div className="w-full flex flex-col gap-1">
         {label && (
-          <label htmlFor={id} className="text-sm font-medium text-black">
+          <label htmlFor={id} className="text-sm font-medium text-black dark:text-white">
             {label}
           </label>
         )}
@@ -71,7 +71,7 @@ const Input = React.forwardRef<
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 hover:text-gray-700 focus:outline-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 focus:outline-none"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}

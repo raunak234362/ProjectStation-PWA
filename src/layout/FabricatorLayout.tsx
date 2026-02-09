@@ -14,10 +14,10 @@ const FabricatorLayout = () => {
           <button
             onClick={() => setActiveTab("allFabricator")}
             className={cn(
-              "flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all duration-300",
+              "flex items-center gap-2 px-6 py-2.5 rounded-xl transition-all duration-300",
               activeTab === "allFabricator"
                 ? "bg-[#6bbd45] text-white shadow-highlight"
-                : "text-slate-500 hover:text-slate-800 hover:bg-green-100"
+                : "text-slate-500 dark:text-white hover:text-slate-800 hover:bg-green-100"
             )}
           >
             Dashboard & Fabricators
@@ -26,10 +26,10 @@ const FabricatorLayout = () => {
           <button
             onClick={() => setActiveTab("addFabricator")}
             className={cn(
-              "flex items-center gap-2 px-6 py-2.5 rounded-sm font-bold transition-all duration-300",
+              "flex items-center gap-2 px-6 py-2.5 rounded-sm transition-all duration-300",
               activeTab === "addFabricator"
                 ? "bg-[#6bbd45] text-white shadow-highlight"
-                : "text-slate-500 hover:text-slate-800 hover:bg-green-100"
+                : "text-slate-500 dark:text-white hover:text-slate-800 hover:bg-green-100"
             )}
           >
             Add Fabricator
