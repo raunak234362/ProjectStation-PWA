@@ -35,8 +35,8 @@ const AllEstimation: React.FC<AllEstimationProps> = ({ estimations, onRefresh })
     { accessorKey: "projectName", header: "Project Name" },
     { accessorKey: "fabricator.fabName", header: "Fabricator" }, // Assuming fabricator is populated
     { accessorKey: "status", header: "Status" },
-    { 
-      accessorKey: "estimateDate", 
+    {
+      accessorKey: "estimateDate",
       header: "Date",
       cell: ({ row }: { row: { original: Estimation } }) => row.original.estimateDate ? new Date(row.original.estimateDate).toLocaleDateString() : "-"
     }
@@ -48,10 +48,10 @@ const AllEstimation: React.FC<AllEstimationProps> = ({ estimations, onRefresh })
         columns={columns}
         data={estimations || []}
         onRowClick={handleRowClick}
-           detailComponent={({ row }: { row: Estimation }) => {
+        detailComponent={({ row, close }: { row: Estimation; close: () => void }) => {
           const estimationUniqueId =
             row.id ?? row.fabId ?? "";
-          return <GetEstimationByID id={estimationUniqueId} onRefresh={onRefresh} />;
+          return <GetEstimationByID id={estimationUniqueId} onRefresh={() => { onRefresh?.(); close(); }} />;
         }}
         pageSizeOptions={[5, 10, 25]}
       />
