@@ -142,7 +142,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Worked Hours",
       cell: ({ row }) => (
         <span
-          className={`font-bold ${row.original.isOverrun ? "text-red-600" : "text-green-600"
+          className={` ${row.original.isOverrun ? "text-red-600" : "text-green-600"
             }`}
         >
           {formatSeconds(row.original.workedSeconds || 0)}
@@ -154,25 +154,58 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Overrun",
       cell: ({ row }) =>
         row.original.isOverrun ? (
-          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-md font-black uppercase tracking-tighter animate-pulse">
+          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-md  uppercase tracking-tighter animate-pulse">
             OVERRUN
           </span>
         ) : (
-          <span className="text-gray-300 text-md font-bold uppercase">
+          <span className="text-gray-300 text-md  uppercase">
             Normal
           </span>
         ),
+    },
+    {
+      accessorKey: "progress",
+      header: "Progress",
+      cell: ({ row }) => {
+        const estimated = row.original.estimatedHours || 0;
+        const workedHours = (row.original.workedSeconds || 0) / 3600;
+        const percentage = estimated > 0 ? Math.min((workedHours / estimated) * 100, 100) : 0;
+        const actualPercentage = estimated > 0 ? (workedHours / estimated) * 100 : 0;
+        const isOverrun = row.original.isOverrun || actualPercentage > 100;
+
+        return (
+          <div className="flex flex-col w-full min-w-[120px] gap-1.5">
+            <div className="flex justify-between items-center px-0.5">
+              <span className={`text-[10px]  uppercase tracking-tighter ${isOverrun ? "text-red-600" : "text-slate-500"}`}>
+                {actualPercentage.toFixed(0)}% Utilized
+              </span>
+              {isOverrun && (
+                <span className="text-[8px] bg-red-100 text-red-700 px-1 rounded  animate-pulse">
+                  CRITICAL
+                </span>
+              )}
+            </div>
+            <div className="h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200/30">
+              <div
+                className={`h-full transition-all duration-500 rounded-full ${isOverrun ? "bg-red-500" : percentage > 80 ? "bg-orange-500" : "bg-green-500"
+                  }`}
+                style={{ width: `${percentage}%` }}
+              ></div>
+            </div>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 rounded-full text-xs font-bold ${row.original.status === "ACTIVE"
-            ? "bg-green-100 text-green-700"
+          className={`px-3 py-1 rounded-full text-[10px]  uppercase tracking-widest ${row.original.status === "ACTIVE"
+            ? "bg-green-100 text-green-700 shadow-sm shadow-green-100"
             : row.original.status === "COMPLETED"
-              ? "bg-blue-100 text-blue-700"
-              : "bg-orange-100 text-orange-700"
+              ? "bg-blue-100 text-blue-700 shadow-sm shadow-blue-100"
+              : "bg-orange-100 text-orange-700 shadow-sm shadow-orange-100"
             }`}
         >
           {row.original.status}
@@ -187,7 +220,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50/50 dark:bg-slate-800/50">
           <div>
-            <h3 className="text-xl font-bold text-gray-700 dark:text-slate-100 flex items-center gap-2">
+            <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
               <div
                 className={`w-2 h-6 rounded-full ${status.includes("ACTIVE") || status.includes("IFA")
                   ? "bg-green-500"
@@ -220,7 +253,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
         <div className="p-4 border-b border-gray-100 dark:border-slate-800 bg-gray-50/30 dark:bg-slate-800/20">
           <div className="flex items-center gap-2 mb-3">
             <Filter size={16} className="text-gray-600 dark:text-slate-400" />
-            <h4 className="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide">
+            <h4 className="text-sm  text-gray-700 dark:text-slate-300 uppercase tracking-wide">
               Filters
             </h4>
             {hasActiveFilters && (

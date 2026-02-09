@@ -204,11 +204,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "OPEN"
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "OPEN"
               ? "bg-green-100 text-green-700"
               : "bg-yellow-100 text-yellow-700"
-          }`}
+            }`}
         >
           {row.original.status}
         </span>
@@ -259,11 +258,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-bold ${
-            row.original.approvalStatus
+          className={`px-2 py-1 rounded-full text-xs  ${row.original.approvalStatus
               ? "bg-green-100 text-green-700"
               : "bg-yellow-100 text-yellow-700"
-          }`}
+            }`}
         >
           {row.original.approvalStatus ? "Approved" : "Pending"}
         </span>
@@ -315,17 +313,16 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <h3 className="text-xl sm:text-2xl font-bold text-green-700 wrap-break-word max-w-full">
+                <h3 className="text-xl sm:text-2xl  text-green-700 wrap-break-word max-w-full">
                   {rfq?.projectName}
                 </h3>
 
                 {/* Status tag */}
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${
-                    rfq?.status === "RECEIVED"
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${rfq?.status === "RECEIVED"
                       ? "bg-yellow-100 text-yellow-700"
                       : "bg-green-100 text-green-700"
-                  }`}
+                    }`}
                 >
                   {rfq?.status}
                 </span>
@@ -385,7 +382,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
             {/* Description */}
             <div className="space-y-2">
-              <h4 className="font-bold text-gray-700 text-sm">Description</h4>
+              <h4 className=" text-gray-700 text-sm">Description</h4>
               <div
                 className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm"
                 dangerouslySetInnerHTML={{
@@ -396,7 +393,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
             {/* Scopes */}
             <div className="space-y-3">
-              <h4 className="font-bold text-gray-700 text-sm">Scope Summary</h4>
+              <h4 className=" text-gray-700 text-sm">Scope Summary</h4>
               <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-4 text-[10px] sm:text-xs">
                 <Scope
                   label="Main Design"
@@ -432,13 +429,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 <div className="flex flex-col gap-2 pt-2">
                   <Button
                     onClick={() => setShowEstimationModal(true)}
-                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm font-bold bg-green-500 text-white shadow-xs"
+                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
                   >
                     Raise For Estimation
                   </Button>
                   <Button
                     onClick={() => handleCDQuotationModal()}
-                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight font-bold"
+                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight "
                   >
                     Raise for Connection Designer Quotation
                   </Button>
@@ -458,13 +455,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 userRole === "DEPUTY_MANAGER" ||
                 userRole === "OPERATION_EXECUTIVE" ||
                 userRole === "USER") && (
-                <Button
-                  onClick={() => setShowResponseModal(true)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
-                >
-                  + Add Response
-                </Button>
-              )}
+                  <Button
+                    onClick={() => setShowResponseModal(true)}
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
+                  >
+                    + Add Response
+                  </Button>
+                )}
             </div>
             {showResponseModal && (
               <ResponseModal
@@ -507,7 +504,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                       </p>
                       <Button
                         onClick={() => setShowQuotationResponseModal(true)}
-                        className="px-6 py-2.5 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition"
+                        className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
                       >
                         Submit Quotation Response
                       </Button>
@@ -599,7 +596,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
         <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-red-600 flex items-center gap-2">
+              <h3 className="text-xl  text-red-600 flex items-center gap-2">
                 <Trash2 size={24} /> Delete RFQ
               </h3>
               <button
@@ -636,11 +633,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 type="button"
                 onClick={handleDelete}
                 disabled={deleteConfirmText !== "DELETE" || isDeleting}
-                className={`flex-1 ${
-                  deleteConfirmText === "DELETE"
+                className={`flex-1 ${deleteConfirmText === "DELETE"
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-red-300 cursor-not-allowed"
-                } text-white`}
+                  } text-white`}
               >
                 {isDeleting ? "Deleting..." : "Confirm Delete"}
               </Button>
@@ -654,7 +650,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
         <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-blue-600 flex items-center gap-2">
+              <h3 className="text-xl  text-blue-600 flex items-center gap-2">
                 Change RFQ Status
               </h3>
               <button
@@ -723,17 +719,16 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
     <p className="text-gray-500 text-[10px] sm:text-xs uppercase font-medium tracking-wider">
       {label}
     </p>
-    <p className="font-bold text-gray-800 text-sm sm:text-base">{value}</p>
+    <p className=" text-gray-800 text-sm sm:text-base">{value}</p>
   </div>
 );
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-md border ${
-      enabled
+    className={`px-3 py-2 rounded-md border ${enabled
         ? "bg-green-100 border-green-400 text-green-700"
         : "bg-gray-100 border-gray-300 text-gray-700"
-    }`}
+      }`}
   >
     {label}
   </div>

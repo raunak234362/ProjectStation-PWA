@@ -32,7 +32,7 @@ const ErrorBoundary: React.FC = () => {
           <AlertTriangle className="w-8 h-8 text-red-500" />
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl  text-gray-900 mb-2">
           Something went wrong
         </h1>
 

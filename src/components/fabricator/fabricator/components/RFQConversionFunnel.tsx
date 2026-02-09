@@ -38,7 +38,7 @@ const RFQConversionFunnel: React.FC<RFQConversionFunnelProps> = ({ data }) => {
         <div className="bg-[#f9fdf7] p-6 rounded-3xl shadow-soft flex flex-col h-full border border-slate-50">
             <div className="mb-6 shrink-0">
                 <h3 className="text-lg font-extrabold text-slate-800">Conversion Funnel</h3>
-                <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+                <p className="text-xs  text-slate-400 mt-1 uppercase tracking-widest">
                     Pipeline Efficiency
                 </p>
             </div>
@@ -53,7 +53,7 @@ const RFQConversionFunnel: React.FC<RFQConversionFunnelProps> = ({ data }) => {
                                     const data = payload[0].payload;
                                     return (
                                         <div className="bg-white p-2 rounded-lg shadow-xl border border-slate-50 text-xs">
-                                            <span className="font-bold text-slate-600">{data.name}:</span> <span className="font-extrabold">{data.value} RFQs</span>
+                                            <span className=" text-slate-600">{data.name}:</span> <span className="font-extrabold">{data.value} RFQs</span>
                                         </div>
                                     )
                                 }

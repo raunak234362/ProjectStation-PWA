@@ -76,7 +76,7 @@ const QuotationResponseDetailsModal = ({
       <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-linear-to-r from-green-600 to-green-700 text-white p-6 rounded-t-xl flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Quotation Details</h2>
+          <h2 className="text-2xl ">Quotation Details</h2>
           <button
             onClick={onClose}
             className="text-white hover:bg-white/20 rounded-full p-2 transition"
@@ -285,7 +285,7 @@ const DetailCard = ({
       <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">
         {label}
       </p>
-      <p className="font-bold text-gray-800 text-lg">{value}</p>
+      <p className=" text-gray-800 text-lg">{value}</p>
     </div>
   </div>
 );

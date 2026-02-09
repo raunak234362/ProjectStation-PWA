@@ -81,10 +81,10 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         id: "fullName",
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase">
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px]  text-slate-500 dark:text-slate-400 uppercase">
               {row.original.firstName.charAt(0)}{row.original.lastName.charAt(0)}
             </div>
-            <span className="font-bold text-slate-700 dark:text-white">{row.getValue("fullName")}</span>
+            <span className=" text-slate-700 dark:text-white">{row.getValue("fullName")}</span>
           </div>
         )
       },
@@ -93,7 +93,7 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         accessorKey: "phone",
         header: "Phone",
         cell: ({ row }) => (
-          <div className="flex items-center gap-2 font-bold text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2  text-slate-500 dark:text-slate-400">
             <span>{row.original.phone}</span>
             {row.original.extension && (
               <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 dark:text-slate-500 capitalize">Ext: {row.original.extension}</span>
@@ -105,7 +105,7 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         accessorKey: "designation",
         header: "Designation",
         cell: ({ row }) => (
-          <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-blue-100/50 dark:border-blue-900/30">
+          <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-[10px]  uppercase tracking-widest border border-blue-100/50 dark:border-blue-900/30">
             {row.original.designation}
           </span>
         )
@@ -131,18 +131,18 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         {/* Header */}
         <div className="flex items-center justify-between px-10 py-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 shrink-0">
           <div>
-            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-2 flex items-center gap-3">
+            <h2 className="text-3xl  text-slate-900 dark:text-white tracking-tight leading-none mb-2 flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
                 <UserCheck className="w-6 h-6" />
               </div>
               Points of Contact
             </h2>
-            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">POC management for {fabricator.fabName}</p>
+            <p className="text-xs  text-slate-400 dark:text-slate-500 uppercase tracking-widest">POC management for {fabricator.fabName}</p>
           </div>
           <div className="flex items-center gap-4">
             <Button
               onClick={openAddClient}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 border-none"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl text-[10px]  uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 border-none"
             >
               <Plus size={16} /> Add POC
             </Button>
@@ -161,7 +161,7 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-slate-500">
               <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-100 dark:border-slate-800 border-t-blue-600 mb-4"></div>
-              <p className="text-sm font-black uppercase tracking-widest">Synchronizing POC Data...</p>
+              <p className="text-sm  uppercase tracking-widest">Synchronizing POC Data...</p>
             </div>
           ) : (
             <div className="bg-white dark:bg-slate-900 rounded-[32px] overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm">

@@ -242,7 +242,7 @@ export default function DataTable<T extends object>({
                   key={column.id}
                   className="flex flex-col gap-1.5 min-w-[180px]"
                 >
-                  <label className="text-md font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest ml-1">
+                  <label className="text-md  text-gray-500 dark:text-slate-400 uppercase tracking-widest ml-1">
                     {column.columnDef.header as string}
                   </label>
                   <ColumnFilter column={column} />

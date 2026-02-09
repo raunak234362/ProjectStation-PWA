@@ -137,10 +137,10 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             INVOICE TRENDS
           </h2>
           <div className="text-md flex flex-col gap-0.5 mt-1">
-            <p className=" text-slate-700 dark:text-slate-300 font-bold">
+            <p className=" text-slate-700 dark:text-slate-300 ">
               Total Raised: <span className="text-lg text-slate-900 dark:text-white">${totalRaisedAmount.toLocaleString()}</span>
             </p>
-            <p className=" text-slate-700 dark:text-slate-300 font-bold">
+            <p className=" text-slate-700 dark:text-slate-300 ">
               Total Received: <span className="text-lg text-[#6bbd45] dark:text-green-400">${totalReceivedAmount.toLocaleString()}</span>
             </p>
           </div>
@@ -150,7 +150,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="py-2 px-4 text-sm border border-slate-100 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] bg-white dark:bg-slate-800 text-gray-900 dark:text-white font-bold shadow-sm transition-all"
+            className="py-2 px-4 text-sm border border-slate-100 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] bg-white dark:bg-slate-800 text-gray-900 dark:text-white  shadow-sm transition-all"
           >
             {years.map((year) => (
               <option key={year} value={year}>
@@ -166,7 +166,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
         <button
           onClick={() => setSelectedMonth(null)}
           className={cn(
-            "px-4 py-2 rounded-xl text-md font-bold transition-all whitespace-nowrap shadow-sm border",
+            "px-4 py-2 rounded-xl text-md  transition-all whitespace-nowrap shadow-sm border",
             selectedMonth === null
               ? "bg-[#6bbd45] text-white border-[#6bbd45]"
               : "bg-white dark:bg-slate-800 text-slate-500 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-100 dark:border-slate-700"
@@ -179,7 +179,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             key={month}
             onClick={() => setSelectedMonth(index)}
             className={cn(
-              "px-4 py-2 rounded-xl text-md font-bold transition-all whitespace-nowrap shadow-sm border",
+              "px-4 py-2 rounded-xl text-md  transition-all whitespace-nowrap shadow-sm border",
               selectedMonth === index
                 ? "bg-[#6bbd45] text-white border-[#6bbd45]"
                 : "bg-white dark:bg-slate-800 text-slate-500 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-100 dark:border-slate-700"
@@ -221,27 +221,27 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                   const data = payload[0].payload;
                   return (
                     <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 min-w-[140px]">
-                      <p className="font-black text-slate-400 dark:text-green-400 mb-2 uppercase tracking-tight text-md">
+                      <p className=" text-slate-400 dark:text-green-400 mb-2 uppercase tracking-tight text-md">
                         {selectedMonth !== null
                           ? `${months[selectedMonth]} ${label}`
                           : label} {selectedYear}
                       </p>
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between gap-4">
-                          <span className="text-md font-bold text-slate-500 dark:text-slate-300">RAISED</span>
-                          <span className="text-md font-black text-slate-700 dark:text-white">
+                          <span className="text-md  text-slate-500 dark:text-slate-300">RAISED</span>
+                          <span className="text-md  text-slate-700 dark:text-white">
                             ${(data.raised || 0).toLocaleString()}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
-                          <span className="text-md font-bold text-emerald-500 dark:text-green-400">RECEIVED</span>
-                          <span className="text-md font-black text-emerald-600 dark:text-green-400">
+                          <span className="text-md  text-emerald-500 dark:text-green-400">RECEIVED</span>
+                          <span className="text-md  text-emerald-600 dark:text-green-400">
                             ${(data.received || 0).toLocaleString()}
                           </span>
                         </div>
                         <div className="pt-1.5 border-t border-slate-50 dark:border-slate-700 flex items-center justify-between">
-                          <span className="text-md font-bold text-slate-400 dark:text-slate-400">INVOICES</span>
-                          <span className="text-md font-black text-slate-600 dark:text-white">{data.count}</span>
+                          <span className="text-md  text-slate-400 dark:text-slate-400">INVOICES</span>
+                          <span className="text-md  text-slate-600 dark:text-white">{data.count}</span>
                         </div>
                       </div>
                     </div>

@@ -262,7 +262,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
               <ClipboardList className="w-7 h-7 text-green-700" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-700">{task.name}</h2>
+              <h2 className="text-2xl  text-gray-700">{task.name}</h2>
               <p className="text-sm text-gray-700">ID: #{task.id}</p>
             </div>
           </div>
@@ -301,7 +301,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
             <>
               {/* Task Info Card */}
               <div className="bg-green-50 rounded-2xl p-8 border border-green-200">
-                <h3 className="text-2xl font-bold text-green-900 mb-6 flex items-center gap-3">
+                <h3 className="text-2xl  text-green-900 mb-6 flex items-center gap-3">
                   <FileText className="w-7 h-7" />
                   Task Information
                 </h3>
@@ -350,7 +350,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
                       <p className="text-sm font-medium text-gray-700">
                         Priority
                       </p>
-                      <p className={`font-bold mt-1 ${priority.color}`}>
+                      <p className={` mt-1 ${priority.color}`}>
                         {priority.label}
                       </p>
                     </div>
@@ -444,7 +444,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
               {task.workingHourTask && task.workingHourTask.length > 0 && (
                 <div className="bg-green-50 rounded-2xl p-6 border border-green-200">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-indigo-900 flex items-center gap-3">
+                    <h3 className="text-xl  text-indigo-900 flex items-center gap-3">
                       <Timer className="w-6 h-6" />
                       Work Summary
                     </h3>
@@ -543,7 +543,7 @@ const SummaryCard: React.FC<{
     </div>
     <div>
       <p className="text-sm text-gray-700">{label}</p>
-      <p className={`text-xl font-bold mt-2 ${color}`}>{value}</p>
+      <p className={`text-xl  mt-2 ${color}`}>{value}</p>
     </div>
   </div>
 );

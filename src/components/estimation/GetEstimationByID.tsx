@@ -1,4 +1,4 @@
- 
+
 import React, { useEffect, useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import Service from "../../api/Service";
@@ -134,13 +134,13 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
         <div>
-          <h3 className="text-xl sm:text-2xl font-bold text-green-800 wrap-break-word">
+          <h3 className="text-xl sm:text-2xl  text-green-800 wrap-break-word">
             Estimation #{estimationNumber}
           </h3>
-          <p className="text-gray-700 font-bold mt-1 text-sm sm:text-base">Project: {projectName}</p>
+          <p className="text-gray-700  mt-1 text-sm sm:text-base">Project: {projectName}</p>
         </div>
         <span
-          className={`px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider shrink-0 shadow-sm ${statusColor}`}
+          className={`px-3 py-1 rounded-full text-[10px] sm:text-xs  uppercase tracking-wider shrink-0 shadow-sm ${statusColor}`}
         >
           {status}
         </span>
@@ -279,7 +279,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {isHoursOpen && (
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-700">
+            <h3 className="text-lg  text-gray-700">
               Estimated Hours/Weeks
             </h3>
             <button
@@ -295,7 +295,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {isInclusionOpen && (
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-700">
+            <h3 className="text-lg  text-gray-700">
               Inclusion/Exclusion
             </h3>
             <button
@@ -346,8 +346,8 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-4 border-b border-green-100/50 sm:border-none pb-1.5 sm:pb-0">
-    <span className="font-bold text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider shrink-0">{label}:</span>
-    <span className="text-gray-800 sm:text-right wrap-break-word font-bold text-xs sm:text-sm">{value}</span>
+    <span className=" text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider shrink-0">{label}:</span>
+    <span className="text-gray-800 sm:text-right wrap-break-word  text-xs sm:text-sm">{value}</span>
   </div>
 );
 

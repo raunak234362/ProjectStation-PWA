@@ -33,9 +33,9 @@ const GetWBSByID = ({
   const [wbs, setWbs] = useState<WBSData | null>(wbsData);
   const [lineItems, setLineItems] = useState<LineItem[]>(
     initialData?.wbs ||
-      initialData?.bundle?.wbsTemplates ||
-      initialData?.wbsTemplates ||
-      []
+    initialData?.bundle?.wbsTemplates ||
+    initialData?.wbsTemplates ||
+    []
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,9 +46,9 @@ const GetWBSByID = ({
       setWbs(initialData);
       setLineItems(
         initialData?.wbs ||
-          initialData?.bundle?.wbsTemplates ||
-          initialData?.wbsTemplates ||
-          []
+        initialData?.bundle?.wbsTemplates ||
+        initialData?.wbsTemplates ||
+        []
       );
     }
   }, [initialData]);
@@ -114,8 +114,8 @@ const GetWBSByID = ({
       accessorFn: (row) => row.qtyNo ?? row.totalQtyNo ?? 0,
       header: "Qty",
       cell: ({ row }) => (
-        <span className="text-sm font-bold text-green-700 bg-green-50 px-2 py-1 rounded-md">
-          {row.getValue("qtyNo")} 
+        <span className="text-sm  text-green-700 bg-green-50 px-2 py-1 rounded-md">
+          {row.getValue("qtyNo")}
         </span>
       ),
       enableSorting: true,
@@ -124,7 +124,7 @@ const GetWBSByID = ({
       accessorKey: "execHr",
       header: "Exec Total",
       cell: ({ row }) => (
-        <span className="text-sm font-bold text-gray-700">
+        <span className="text-sm  text-gray-700">
           {(row.original.execHr ?? row.original.totalExecHr ?? 0).toFixed(1)}h
         </span>
       ),
@@ -134,7 +134,7 @@ const GetWBSByID = ({
       accessorKey: "checkHr",
       header: "Check Total",
       cell: ({ row }) => (
-        <span className="text-sm font-bold text-gray-700">
+        <span className="text-sm  text-gray-700">
           {(row.original.checkHr ?? row.original.totalCheckHr ?? 0).toFixed(1)}h
         </span>
       ),
@@ -145,9 +145,9 @@ const GetWBSByID = ({
   const formatDate = (date?: string) =>
     date
       ? new Date(date).toLocaleString("en-IN", {
-          dateStyle: "medium",
-          timeStyle: "short",
-        })
+        dateStyle: "medium",
+        timeStyle: "short",
+      })
       : "—";
 
   if (loading && !wbs)
@@ -172,7 +172,7 @@ const GetWBSByID = ({
           <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center">
             <AlertCircle className="w-8 h-8 text-red-600" />
           </div>
-          <h3 className="text-xl font-bold text-gray-700">Oops!</h3>
+          <h3 className="text-xl  text-gray-700">Oops!</h3>
           <p className="text-gray-700">{error || "WBS data not found"}</p>
           <Button
             onClick={onClose}
@@ -200,13 +200,13 @@ const GetWBSByID = ({
               <Layers className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-700 tracking-tight">
+              <h2 className="text-2xl  text-gray-700 tracking-tight">
                 {wbsData?.bundle?.bundleKey ||
                   wbsData?.bundleKey ||
                   "Bundle Details"}
               </h2>
               <div className="flex items-center gap-2 mt-1">
-                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded-md tracking-wider">
+                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px]  uppercase rounded-md tracking-wider">
                   {wbsData?.stage || "—"}
                 </span>
                 <span className="text-gray-400 text-xs">•</span>
@@ -237,13 +237,13 @@ const GetWBSByID = ({
               <p className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-1">
                 Total Quantity
               </p>
-              <h3 className="text-2xl font-bold text-white">
+              <h3 className="text-2xl  text-white">
                 {wbsData?.totalQtyNo || 0}
               </h3>
             </div>
             <div className="pt-4 border-t border-gray-800 mt-4 flex justify-between items-end">
               <div>
-                <p className="text-gray-700 text-[10px] uppercase font-bold">
+                <p className="text-gray-700 text-[10px] uppercase ">
                   Last Updated
                 </p>
                 <p className="text-xs text-gray-300">
@@ -260,7 +260,7 @@ const GetWBSByID = ({
           <section>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-6 bg-green-600 rounded-full"></div>
-              <h3 className="text-lg font-bold text-gray-700">
+              <h3 className="text-lg  text-gray-700">
                 Hours Overview
               </h3>
             </div>
@@ -302,8 +302,8 @@ const GetWBSByID = ({
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-6 bg-green-600 rounded-full"></div>
-                <h3 className="text-lg font-bold text-gray-700">WBS Items</h3>
-                <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-full">
+                <h3 className="text-lg  text-gray-700">WBS Items</h3>
+                <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-700 text-[10px]  rounded-full">
                   {lineItems?.length || 0} Items
                 </span>
                 {loading && (
@@ -377,7 +377,7 @@ const DetailCard = ({
       {icon}
     </div>
     <div>
-      <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">
+      <p className="text-[10px] uppercase  text-gray-400 tracking-wider mb-0.5">
         {label}
       </p>
       <p className="text-sm font-semibold text-gray-700">{value || "—"}</p>
@@ -410,17 +410,17 @@ const StatCard = ({
       className={`p-5 rounded-2xl border ${colors[color]} flex flex-col justify-between h-full`}
     >
       <div>
-        <p className="text-[10px] uppercase font-bold opacity-70 tracking-wider mb-2">
+        <p className="text-[10px] uppercase  opacity-70 tracking-wider mb-2">
           {label}
         </p>
-        <p className="text-2xl font-black tracking-tight">{value ?? 0}h</p>
+        <p className="text-2xl  tracking-tight">{value ?? 0}h</p>
       </div>
       {subValue !== undefined && (
         <div className="mt-3 pt-3 border-t border-current/10 flex items-center justify-between">
-          <span className="text-[9px] uppercase font-bold opacity-60">
+          <span className="text-[9px] uppercase  opacity-60">
             {subLabel}
           </span>
-          <span className="text-xs font-bold">{subValue}h</span>
+          <span className="text-xs ">{subValue}h</span>
         </div>
       )}
     </div>

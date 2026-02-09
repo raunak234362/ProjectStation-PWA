@@ -34,7 +34,7 @@ const HoverPopover = ({ states, targetRect }: { states: string[], targetRect: DO
     >
       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-50 dark:border-slate-700/50">
         <MapPin size={14} className="text-green-500" />
-        <span className="text-xs font-bold text-gray-700 dark:text-slate-200">
+        <span className="text-xs  text-gray-700 dark:text-slate-200">
           Coverage Area
         </span>
       </div>
@@ -95,10 +95,10 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
       >
         <div className="p-6 border-b border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-black text-gray-800 dark:text-white tracking-tight">
+            <h3 className="text-lg  text-gray-800 dark:text-white tracking-tight">
               Connection Designer Directory
             </h3>
-            <p className="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">
+            <p className="text-[10px] text-gray-400 dark:text-slate-500  uppercase tracking-widest mt-1">
               Click to view details • Hover to see states
             </p>
           </div>
@@ -152,16 +152,16 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                     }`}
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-10 h-10 shrink-0 rounded-2xl bg-linear-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-gray-600 dark:text-slate-300 font-bold text-sm shadow-sm transition-transform group-hover:scale-110">
+                    <div className="w-10 h-10 shrink-0 rounded-2xl bg-linear-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-gray-600 dark:text-slate-300  text-sm shadow-sm transition-transform group-hover:scale-110">
                       {designer.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-sm font-black text-gray-800 dark:text-white tracking-tight truncate">
+                      <h4 className="text-sm  text-gray-800 dark:text-white tracking-tight truncate">
                         {designer.name}
                       </h4>
                       <div className="flex flex-wrap items-center gap-3 mt-1">
                         {designer.email && (
-                          <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider truncate max-w-[150px]">
+                          <span className="flex items-center gap-1.5 text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-wider truncate max-w-[150px]">
                             <Mail size={10} className="text-gray-300 dark:text-slate-600" /> {designer.email}
                           </span>
                         )}
@@ -170,7 +170,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-4 shrink-0 ml-2">
-                    <span className="text-[10px] font-black text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-800 px-3 py-1 rounded-lg uppercase tracking-widest border border-slate-200/50 dark:border-slate-700/50">
+                    <span className="text-[10px]  text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-800 px-3 py-1 rounded-lg uppercase tracking-widest border border-slate-200/50 dark:border-slate-700/50">
                       {states.length} <span className="hidden xs:inline">States</span>
                     </span>
                     <ChevronRight size={16} className="text-gray-300 dark:text-slate-700 group-hover:text-green-500 dark:group-hover:text-green-400 transition-colors" />
@@ -194,7 +194,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         transition={{ duration: 0.5, delay: 0.2 }}
         className="lg:col-span-1 bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-soft border border-gray-100 dark:border-slate-800 flex flex-col min-h-[400px]"
       >
-        <h3 className="text-lg font-black text-gray-800 dark:text-white mb-8 tracking-tight">
+        <h3 className="text-lg  text-gray-800 dark:text-white mb-8 tracking-tight">
           State Distribution
         </h3>
         <div className="flex-1 min-h-[300px] relative">

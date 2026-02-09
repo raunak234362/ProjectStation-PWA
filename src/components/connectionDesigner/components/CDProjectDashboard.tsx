@@ -88,7 +88,7 @@ const CDProjectDashboard: React.FC<CDProjectDashboardProps> = ({
                 <div className="lg:col-span-2">
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-[40px] shadow-soft border border-gray-100 dark:border-slate-800">
                         <div className="flex items-center justify-between mb-8">
-                            <h3 className="text-xl font-black text-gray-800 dark:text-white uppercase tracking-tight">Active Project Insights</h3>
+                            <h3 className="text-xl  text-gray-800 dark:text-white uppercase tracking-tight">Active Project Insights</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {projects.filter(p => p.status === "ACTIVE").map(project => (
@@ -99,25 +99,25 @@ const CDProjectDashboard: React.FC<CDProjectDashboardProps> = ({
                                 >
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="min-w-0">
-                                            <h4 className="font-black text-gray-800 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors truncate">{project.name}</h4>
-                                            <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest mt-1">#{project.projectNumber}</p>
+                                            <h4 className=" text-gray-800 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors truncate">{project.name}</h4>
+                                            <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest mt-1">#{project.projectNumber}</p>
                                         </div>
-                                        <span className="px-3 py-1 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-[9px] font-black uppercase tracking-widest border border-green-100 dark:border-green-900/30">
+                                        <span className="px-3 py-1 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-[9px]  uppercase tracking-widest border border-green-100 dark:border-green-900/30">
                                             {project.stage || "Design"}
                                         </span>
                                     </div>
                                     <div className="flex gap-6 mt-4 pt-4 border-t border-gray-50 dark:border-slate-800/50">
                                         <div className="flex flex-col">
-                                            <span className="text-[8px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest">RFIs</span>
-                                            <span className="text-sm font-black text-gray-700 dark:text-slate-300">{project.rfi?.length || 0}</span>
+                                            <span className="text-[8px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest">RFIs</span>
+                                            <span className="text-sm  text-gray-700 dark:text-slate-300">{project.rfi?.length || 0}</span>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[8px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest">COs</span>
-                                            <span className="text-sm font-black text-gray-700 dark:text-slate-300">{Array.isArray(project.changeOrders) ? project.changeOrders.length : 0}</span>
+                                            <span className="text-[8px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest">COs</span>
+                                            <span className="text-sm  text-gray-700 dark:text-slate-300">{Array.isArray(project.changeOrders) ? project.changeOrders.length : 0}</span>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[8px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest">Submittals</span>
-                                            <span className="text-sm font-black text-gray-700 dark:text-slate-300">{project.submittals?.length || 0}</span>
+                                            <span className="text-[8px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest">Submittals</span>
+                                            <span className="text-sm  text-gray-700 dark:text-slate-300">{project.submittals?.length || 0}</span>
                                         </div>
                                     </div>
                                 </div>

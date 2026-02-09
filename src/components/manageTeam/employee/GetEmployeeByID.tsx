@@ -77,15 +77,14 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
     <div className="bg-linear-to-br from-green-50 to-blue-50 p-6 rounded-xl shadow-inner">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold text-green-800">
+        <h3 className="text-xl  text-green-800">
           {employee.firstName} {employee.middleName} {employee.lastName}
         </h3>
         <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${
-            employee.isActive
+          className={`px-3 py-1 rounded-full text-xs font-medium ${employee.isActive
               ? "bg-green-100 text-green-800"
               : "bg-red-100 text-red-800"
-          }`}
+            }`}
         >
           {employee.isActive ? "Active" : "Inactive"}
         </span>
@@ -151,19 +150,19 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         employee.state ||
         employee.country ||
         employee.zipCode) && (
-        <div className="mt-6 pt-5 border-t border-green-200">
-          <h4 className="font-semibold text-green-700 mb-2">Address</h4>
-          <div className="text-sm space-y-1 text-gray-700">
-            {employee.address && <p>{employee.address}</p>}
-            <p>
-              {[employee.city, employee.state, employee.zipCode]
-                .filter(Boolean)
-                .join(", ") || "—"}
-            </p>
-            {employee.country && <p>{employee.country}</p>}
+          <div className="mt-6 pt-5 border-t border-green-200">
+            <h4 className="font-semibold text-green-700 mb-2">Address</h4>
+            <div className="text-sm space-y-1 text-gray-700">
+              {employee.address && <p>{employee.address}</p>}
+              <p>
+                {[employee.city, employee.state, employee.zipCode]
+                  .filter(Boolean)
+                  .join(", ") || "—"}
+              </p>
+              {employee.country && <p>{employee.country}</p>}
+            </div>
           </div>
-        </div>
-      )}
+        )}
       <div className="py-2 flex gap-2">
         {employee?.role !== "CLIENT" &&
           employee?.role !== "CLIENT_ADMIN" &&
@@ -210,7 +209,7 @@ const InfoRow = ({
   href?: string;
 }) => (
   <div className="flex md:justify-between gap-5">
-    <span className="font-bold text-gray-700">{label}:</span>
+    <span className=" text-gray-700">{label}:</span>
     {href ? (
       <a
         href={href}

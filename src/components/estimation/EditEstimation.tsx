@@ -112,7 +112,7 @@ const EditEstimation: React.FC<EditEstimationProps> = ({
       <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gray-50/50">
-          <h2 className="text-2xl font-bold text-gray-700">Edit Estimation</h2>
+          <h2 className="text-2xl  text-gray-700">Edit Estimation</h2>
           <button
             onClick={onCancel}
             className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-700"

@@ -80,7 +80,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
             <CalendarIcon size={20} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-700">
+            <h3 className="text-lg  text-gray-700">
               Project Timeline Calendar
             </h3>
             <p className="text-xs text-gray-700">
@@ -96,7 +96,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
           >
             <ChevronLeft size={18} className="text-gray-700" />
           </button>
-          <span className="text-xs font-bold text-gray-700 min-w-[100px] text-center">
+          <span className="text-xs  text-gray-700 min-w-[100px] text-center">
             {monthName} {year}
           </span>
           <button
@@ -112,7 +112,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
           <div
             key={day}
-            className="bg-gray-50 py-2 text-center text-[10px] font-bold text-gray-400"
+            className="bg-gray-50 py-2 text-center text-[10px]  text-gray-400"
           >
             {day}
           </div>
@@ -127,19 +127,19 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
             >
               {day && (
                 <>
-                  <span className="text-xs font-bold text-gray-400">{day}</span>
+                  <span className="text-xs  text-gray-400">{day}</span>
                   <div className="mt-1 space-y-1">
                     {dayProjects.slice(0, 3).map((project) => (
                       <div
                         key={project.id}
-                        className="px-1.5 py-0.5 bg-green-50 text-green-600 text-[9px] font-bold rounded border border-green-100 truncate"
+                        className="px-1.5 py-0.5 bg-green-50 text-green-600 text-[9px]  rounded border border-green-100 truncate"
                         title={project.name}
                       >
                         {project.name}
                       </div>
                     ))}
                     {dayProjects.length > 3 && (
-                      <div className="text-[8px] font-bold text-gray-400 pl-1">
+                      <div className="text-[8px]  text-gray-400 pl-1">
                         +{dayProjects.length - 3} more
                       </div>
                     )}

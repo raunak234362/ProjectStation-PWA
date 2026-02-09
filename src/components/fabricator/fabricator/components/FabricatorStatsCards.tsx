@@ -70,7 +70,7 @@ const FabricatorStatsCards: React.FC<FabricatorStatsCardsProps> = ({ stats }) =>
                         )}>
                             <card.icon size={22} strokeWidth={2.5} />
                         </div>
-                        <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-full shadow-sm text-[10px] font-bold">
+                        <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-full shadow-sm text-[10px] ">
                             {getTrendIcon(card.trend)}
                             <span className="text-slate-500 dark:text-slate-400">vs last week</span>
                         </div>

@@ -14,13 +14,13 @@ const LiveRFQStatusTable: React.FC<LiveRFQStatusTableProps> = ({ rfqs }) => {
         {
             accessorKey: "projectNumber",
             header: "RFQ ID",
-            cell: ({ row }) => <span className="font-mono text-xs font-bold text-slate-500">{row.original.projectNumber || "N/A"}</span>
+            cell: ({ row }) => <span className="font-mono text-xs  text-slate-500">{row.original.projectNumber || "N/A"}</span>
         },
         {
             accessorKey: "projectName",
             header: "Project Name",
             cell: ({ row }) => (
-                <div className="max-w-[150px] truncate font-bold text-slate-700" title={row.original.projectName}>
+                <div className="max-w-[150px] truncate  text-slate-700" title={row.original.projectName}>
                     {row.original.projectName}
                 </div>
             ),
@@ -72,7 +72,7 @@ const LiveRFQStatusTable: React.FC<LiveRFQStatusTableProps> = ({ rfqs }) => {
                 const now = new Date();
                 const diffTime = Math.abs(now.getTime() - createdDate.getTime());
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                return <span className="text-xs font-bold text-slate-700">{diffDays} Days</span>;
+                return <span className="text-xs  text-slate-700">{diffDays} Days</span>;
             }
         },
         {
@@ -92,7 +92,7 @@ const LiveRFQStatusTable: React.FC<LiveRFQStatusTableProps> = ({ rfqs }) => {
                 <h3 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
                     Live RFQ Status
                 </h3>
-                <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+                <p className="text-xs  text-slate-400 mt-1 uppercase tracking-widest">
                     Real-time tracking of all active requests
                 </p>
             </div>

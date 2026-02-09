@@ -51,7 +51,7 @@ const EstimationStats: React.FC<EstimationStatsProps> = ({ stats }) => {
 
     return (
         <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-soft border border-gray-100 dark:border-slate-800 h-full">
-            <h2 className="text-lg font-black text-slate-800 dark:text-white mb-8 uppercase tracking-tight">
+            <h2 className="text-lg  text-slate-800 dark:text-white mb-8 uppercase tracking-tight">
                 Quantification Intelligence
             </h2>
 
@@ -68,16 +68,16 @@ const EstimationStats: React.FC<EstimationStatsProps> = ({ stats }) => {
                                 <div className={`p-3.5 rounded-2xl ${colors.bg} group-hover:scale-110 transition-transform duration-300`}>
                                     <card.icon size={22} strokeWidth={2.5} className={colors.icon} />
                                 </div>
-                                <span className={`text-[10px] font-black uppercase tracking-widest ${colors.icon}`}>
+                                <span className={`text-[10px]  uppercase tracking-widest ${colors.icon}`}>
                                     Metric {index + 1}
                                 </span>
                             </div>
 
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-2">
+                                <span className="text-[10px]  text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-2">
                                     {card.label}
                                 </span>
-                                <span className="text-3xl font-black text-slate-800 dark:text-white tracking-tighter">
+                                <span className="text-3xl  text-slate-800 dark:text-white tracking-tighter">
                                     {card.value}
                                 </span>
                             </div>

@@ -126,10 +126,10 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
         {/* Header */}
         <div className="flex items-center justify-between p-8 border-b border-gray-100 dark:border-slate-800">
           <div>
-            <h2 className="text-2xl font-black text-gray-800 dark:text-white tracking-tight">
+            <h2 className="text-2xl  text-gray-800 dark:text-white tracking-tight">
               Workforce Intelligence
             </h2>
-            <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest mt-1">
+            <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest mt-1">
               Manage engineering team for {designerData.name}
             </p>
           </div>
@@ -145,17 +145,17 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
         {/* Action Row */}
         <div className="px-8 py-6 bg-slate-50/50 dark:bg-slate-800/30 border-b border-gray-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center ">
               {engineers.length}
             </div>
             <div>
-              <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest">Total Active</p>
-              <p className="text-xs font-bold text-gray-700 dark:text-slate-300">Skilled Engineers</p>
+              <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest">Total Active</p>
+              <p className="text-xs  text-gray-700 dark:text-slate-300">Skilled Engineers</p>
             </div>
           </div>
           <Button
             onClick={openAddEngineer}
-            className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-green-500/20"
+            className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs  uppercase tracking-widest transition-all shadow-lg shadow-green-500/20"
           >
             + Add New Engineer
           </Button>
@@ -166,7 +166,7 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-4"></div>
-              <p className="text-[10px] font-black uppercase tracking-widest">Processing workforce data...</p>
+              <p className="text-[10px]  uppercase tracking-widest">Processing workforce data...</p>
             </div>
           ) : engineers.length > 0 ? (
             <div className="bg-white/50 dark:bg-slate-900/50 rounded-2xl border border-gray-100 dark:border-slate-800 overflow-hidden">
@@ -180,12 +180,12 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
             </div>
           ) : (
             <div className="text-center py-24 bg-slate-50/50 dark:bg-slate-800/20 rounded-[40px] border-2 border-dashed border-gray-100 dark:border-slate-800">
-              <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em]">
+              <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em]">
                 No engineers found in this network
               </p>
               <Button
                 onClick={openAddEngineer}
-                className="mt-6 px-8 py-3 bg-white dark:bg-slate-800 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-900/50 rounded-xl text-xs font-black uppercase tracking-widest"
+                className="mt-6 px-8 py-3 bg-white dark:bg-slate-800 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-900/50 rounded-xl text-xs  uppercase tracking-widest"
               >
                 Onboard First Engineer
               </Button>

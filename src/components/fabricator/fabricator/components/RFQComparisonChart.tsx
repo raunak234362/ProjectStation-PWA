@@ -26,10 +26,10 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange
         <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-soft flex flex-col h-full border border-white/50 dark:border-slate-800/50 backdrop-blur-md">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-6 shrink-0">
                 <div>
-                    <h2 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2 tracking-tight">
+                    <h2 className="text-2xl  text-slate-800 dark:text-white flex items-center gap-2 tracking-tight">
                         RFQ vs Production Analysis
                     </h2>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.2em] mt-2">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500  uppercase tracking-[0.2em] mt-2">
                         Real-time status overview across <span className="text-[#6bbd45] dark:text-green-400">{timeRange}</span> periods
                     </p>
                 </div>
@@ -40,7 +40,7 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange
                             key={range}
                             onClick={() => setTimeRange(range)}
                             className={cn(
-                                "px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all",
+                                "px-6 py-2 text-[10px]  uppercase tracking-widest transition-all",
                                 timeRange === range
                                     ? "bg-white dark:bg-slate-700 text-[#6bbd45] dark:text-green-400 shadow-md rounded-xl"
                                     : "text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
@@ -74,7 +74,7 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange
                                 if (active && payload && payload.length) {
                                     return (
                                         <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-white/20 dark:border-slate-700/50 text-[10px]">
-                                            <p className="font-black text-slate-800 dark:text-white mb-3 uppercase tracking-widest border-b border-slate-100 dark:border-slate-700/50 pb-2">
+                                            <p className=" text-slate-800 dark:text-white mb-3 uppercase tracking-widest border-b border-slate-100 dark:border-slate-700/50 pb-2">
                                                 {label}
                                             </p>
                                             <div className="space-y-2">
@@ -82,9 +82,9 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({ data, timeRange
                                                     <div key={index} className="flex items-center justify-between gap-6">
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: entry.color }} />
-                                                            <span className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">{entry.name}</span>
+                                                            <span className="text-slate-500 dark:text-slate-400  uppercase tracking-wider">{entry.name}</span>
                                                         </div>
-                                                        <span className="font-black text-slate-800 dark:text-white">{entry.value}</span>
+                                                        <span className=" text-slate-800 dark:text-white">{entry.value}</span>
                                                     </div>
                                                 ))}
                                             </div>

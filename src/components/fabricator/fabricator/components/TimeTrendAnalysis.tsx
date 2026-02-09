@@ -19,7 +19,7 @@ const TimeTrendAnalysis: React.FC<TimeTrendAnalysisProps> = ({ data }) => {
         <div className="bg-[#f9fdf7] p-6 rounded-3xl shadow-soft flex flex-col h-full border border-slate-50">
             <div className="mb-6 shrink-0">
                 <h3 className="text-lg font-extrabold text-slate-800">Time Trend & Delays</h3>
-                <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+                <p className="text-xs  text-slate-400 mt-1 uppercase tracking-widest">
                     Production velocity vs Delays
                 </p>
             </div>

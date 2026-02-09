@@ -31,7 +31,7 @@ const AllFabricator = () => {
       accessorKey: "fabName",
       header: "Fabricator Name",
       cell: ({ row }) => (
-        <div className="font-bold text-slate-800 dark:text-white tracking-tight">
+        <div className=" text-slate-800 dark:text-white tracking-tight">
           {row.original.fabName}
         </div>
       ),
@@ -41,7 +41,7 @@ const AllFabricator = () => {
       header: "Stage",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-lg text-xs font-black uppercase tracking-widest ${row.original.fabStage === "PRODUCTION"
+          className={`px-2 py-1 rounded-lg text-xs  uppercase tracking-widest ${row.original.fabStage === "PRODUCTION"
             ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
             : "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"
             }`}
@@ -62,7 +62,7 @@ const AllFabricator = () => {
             .padStart(2, "0")}/${date.getFullYear()}`
           : "N/A";
         return (
-          <div className="font-bold text-slate-800 dark:text-white tracking-tight">
+          <div className=" text-slate-800 dark:text-white tracking-tight">
             {formattedDate}
           </div>
         );

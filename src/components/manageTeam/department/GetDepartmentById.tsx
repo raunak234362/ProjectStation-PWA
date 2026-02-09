@@ -70,7 +70,7 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
     <div className="bg-linear-to-br from-green-50 to-green-50 p-6 rounded-xl shadow-inner">
       {/* Header */}
       {/* <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold text-orange-800">{department.name}</h3>
+        <h3 className="text-xl  text-orange-800">{department.name}</h3>
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             department.isDeleted
@@ -94,23 +94,22 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
         {/* Right Column */}
         <div className="space-y-3">
           <div className="flex justify-between">
-            <span className="font-bold text-gray-700">Managers:</span>
+            <span className=" text-gray-700">Managers:</span>
             <div className="text-gray-700 text-right">
               {Array.isArray(managers) && managers?.length > 0
                 ? managers
-                    .map(
-                      (m: {
-                        firstName?: string;
-                        middleName?: string;
-                        lastName?: string;
-                      }) =>
-                        `${m.firstName || ""} ${m.middleName || ""} ${
-                          m.lastName || ""
+                  .map(
+                    (m: {
+                      firstName?: string;
+                      middleName?: string;
+                      lastName?: string;
+                    }) =>
+                      `${m.firstName || ""} ${m.middleName || ""} ${m.lastName || ""
                         }`
-                          .replace(/\s+/g, " ")
-                          .trim()
-                    )
-                    .join(", ")
+                        .replace(/\s+/g, " ")
+                        .trim()
+                  )
+                  .join(", ")
                 : "No Managers Assigned"}
             </div>
           </div>
@@ -135,7 +134,7 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex justify-between">
-    <span className="font-bold text-gray-700">{label}:</span>
+    <span className=" text-gray-700">{label}:</span>
     <span className="text-gray-700">{value}</span>
   </div>
 );

@@ -15,7 +15,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
   getEfficiencyColorClass,
 }) => {
   console.log(tableData);
-  
+
   const columns = useMemo<ExtendedColumnDef<any>[]>(
     () => [
       {
@@ -69,9 +69,9 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
               <span className="text-xs text-gray-400">
                 {row.original.totalTasks > 0
                   ? Math.round(
-                      (row.original.completedTasks / row.original.totalTasks) *
-                        100
-                    )
+                    (row.original.completedTasks / row.original.totalTasks) *
+                    100
+                  )
                   : 0}
                 %
               </span>
@@ -80,13 +80,12 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
               <div
                 className="h-full bg-green-500 rounded-full transition-all duration-500"
                 style={{
-                  width: `${
-                    row.original.totalTasks > 0
+                  width: `${row.original.totalTasks > 0
                       ? (row.original.completedTasks /
-                          row.original.totalTasks) *
-                        100
+                        row.original.totalTasks) *
+                      100
                       : 0
-                  }%`,
+                    }%`,
                 }}
               ></div>
             </div>
@@ -98,7 +97,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         accessorKey: "efficiency",
         cell: ({ row }) => (
           <span
-            className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${getEfficiencyColorClass(
+            className={`px-3 py-1 inline-flex text-xs leading-5  rounded-full ${getEfficiencyColorClass(
               row.original.efficiency
             )}`}
           >
@@ -113,7 +112,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
       <div className="p-6 border-b border-gray-50">
-        <h3 className="text-lg font-bold text-gray-700">
+        <h3 className="text-lg  text-gray-700">
           Team Members Performance
         </h3>
         <p className="text-sm text-gray-700">

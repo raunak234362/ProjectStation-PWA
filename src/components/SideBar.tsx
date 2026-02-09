@@ -135,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   {/* Tooltip fallback for minimized sidebar (backup if expansion is disabled or restricted) */}
                   {!isExpanded && (
                     <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200">
-                      <div className="bg-gray-900 text-white text-xs font-bold py-2 px-3 rounded-lg shadow-2xl whitespace-nowrap flex items-center gap-2">
+                      <div className="bg-gray-900 text-white text-xs  py-2 px-3 rounded-lg shadow-2xl whitespace-nowrap flex items-center gap-2">
                         {label}
                         <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45" />
                       </div>
@@ -155,10 +155,10 @@ const Sidebar: React.FC<SidebarProps> = ({
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-white truncate">
+              <p className="text-sm  text-white truncate">
                 {sessionStorage.getItem("username")}
               </p>
-              <p className="text-[10px] text-green-100 font-bold uppercase tracking-wider truncate opacity-80">
+              <p className="text-[10px] text-green-100  uppercase tracking-wider truncate opacity-80">
                 {userData?.role || userRole}
               </p>
             </div>
@@ -173,7 +173,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           onClick={fetchLogout}
         >
           <LogOut size={20} />
-          {isExpanded && <span className="font-bold text-sm">Logout</span>}
+          {isExpanded && <span className=" text-sm">Logout</span>}
         </Button>
       </div>
     </aside>

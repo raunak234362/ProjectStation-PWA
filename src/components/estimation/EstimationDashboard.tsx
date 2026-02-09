@@ -132,7 +132,7 @@ const EstimationDashboard = () => {
             <div className="w-8 h-8 bg-white dark:bg-slate-900 rounded-full shadow-inner"></div>
           </div>
         </div>
-        <p className="mt-6 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.3em] animate-pulse">
+        <p className="mt-6 text-[10px] text-slate-400 dark:text-slate-500  uppercase tracking-[0.3em] animate-pulse">
           Synchronizing Intelligence...
         </p>
       </div>
@@ -143,8 +143,8 @@ const EstimationDashboard = () => {
     <div className="h-full p-6 lg:p-8 space-y-8 bg-slate-50 dark:bg-slate-950 overflow-y-auto custom-scrollbar">
       {/* Header Section */}
       <div className="flex flex-col gap-1">
-        <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Estimation Engineering</h2>
-        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Project Quantification & Fabricator Analysis</p>
+        <h2 className="text-3xl  text-slate-800 dark:text-white tracking-tight">Estimation Engineering</h2>
+        <p className="text-[10px]  text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Project Quantification & Fabricator Analysis</p>
       </div>
 
       {/* Stats Grid */}
@@ -169,10 +169,10 @@ const EstimationDashboard = () => {
       {/* List of Estimations */}
       <div className="space-y-6">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-          <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+          <h3 className="text-xl  text-slate-800 dark:text-white uppercase tracking-tight">
             Recent Estimations
           </h3>
-          <span className="bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500 px-4 py-1.5 rounded-full uppercase tracking-widest">
+          <span className="bg-slate-100 dark:bg-slate-800 text-[10px]  text-slate-500 px-4 py-1.5 rounded-full uppercase tracking-widest">
             {estimations.length} Records
           </span>
         </div>

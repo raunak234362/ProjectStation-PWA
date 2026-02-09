@@ -89,7 +89,7 @@ const InvoiceStatsCards: React.FC<StatsProps> = ({ invoices }) => {
                     </div>
                     <div>
                         <p className="text-sm font-medium text-gray-500 mb-1">{stat.title}</p>
-                        <h3 className="text-2xl font-bold text-gray-800 mb-1">{stat.value}</h3>
+                        <h3 className="text-2xl  text-gray-800 mb-1">{stat.value}</h3>
                         <p className="text-xs text-gray-400">{stat.subValue}</p>
                     </div>
                 </div>

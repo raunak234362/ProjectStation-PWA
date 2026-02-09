@@ -71,8 +71,8 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({ stats }) => {
                                 <card.icon size={22} strokeWidth={2.5} />
                             </div>
                             <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-black text-gray-300 dark:text-slate-600 uppercase tracking-widest">{card.label}</span>
-                                <div className="flex items-center gap-1 text-[9px] font-bold text-green-500 dark:text-green-400 mt-1">
+                                <span className="text-[10px]  text-gray-300 dark:text-slate-600 uppercase tracking-widest">{card.label}</span>
+                                <div className="flex items-center gap-1 text-[9px]  text-green-500 dark:text-green-400 mt-1">
                                     <ArrowUpRight size={10} strokeWidth={3} />
                                     <span>{card.trend}</span>
                                 </div>
@@ -80,8 +80,8 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({ stats }) => {
                         </div>
 
                         <div className="mt-auto">
-                            <h3 className="text-3xl font-black text-gray-800 dark:text-white tracking-tighter mb-1 leading-none">{card.value}</h3>
-                            <p className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-tight">{card.subText}</p>
+                            <h3 className="text-3xl  text-gray-800 dark:text-white tracking-tighter mb-1 leading-none">{card.value}</h3>
+                            <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-tight">{card.subText}</p>
                         </div>
                     </div>
 

@@ -1,4 +1,4 @@
- 
+
 
 import React, { useId, useState, forwardRef } from "react";
 
@@ -45,9 +45,8 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         {label && (
           <label
             htmlFor={id}
-            className={`block mb-1 w-fit min-w-28 font-normal text-sm text-gray-700 ${
-              checked ? "font-semibold" : ""
-            }`}
+            className={`block mb-1 w-fit min-w-28 font-normal text-sm text-gray-700 ${checked ? "font-semibold" : ""
+              }`}
           >
             {label}
           </label>
@@ -64,7 +63,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         />
 
         {/* SELECTED TEXT */}
-        {checked && <span className="font-bold text-green-500">Selected</span>}
+        {checked && <span className=" text-green-500">Selected</span>}
       </div>
     );
   }

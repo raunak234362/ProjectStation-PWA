@@ -78,7 +78,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
 
   return (
     <div className="flex flex-col justify-center h-full bg-white dark:bg-slate-900 shadow-soft rounded-[32px] p-6 border border-gray-100 dark:border-slate-800 transition-all duration-300">
-      <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3 px-2 tracking-tight">
+      <h3 className="text-xl md:text-2xl  text-slate-800 dark:text-white mb-6 flex items-center gap-3 px-2 tracking-tight">
         <ClipboardList className="text-[#6bbd45]" size={24} strokeWidth={2.5} />
         PENDING ACTIONS
       </h3>
@@ -109,10 +109,10 @@ const PendingActions: React.FC<PendingActionsProps> = ({
               </div>
 
               <div className="flex flex-row items-center justify-between w-full min-w-0">
-                <div className="text-sm md:text-xl font-black text-slate-700 dark:text-slate-500 uppercase tracking-[0.2em] truncate pr-2">
+                <div className="text-sm md:text-xl  text-slate-700 dark:text-slate-500 uppercase tracking-[0.2em] truncate pr-2">
                   {action.title}
                 </div>
-                <div className="text-2xl md:text-3xl font-black text-[#6bbd45] dark:text-green-400 tracking-tighter">
+                <div className="text-2xl md:text-3xl  text-[#6bbd45] dark:text-green-400 tracking-tighter">
                   {action.count}
                 </div>
               </div>

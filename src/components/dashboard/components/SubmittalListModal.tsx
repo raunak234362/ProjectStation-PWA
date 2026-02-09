@@ -56,9 +56,9 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 rounded-full text-xs font-bold ${row.original.status === "ACTIVE"
-              ? "bg-green-100 text-green-700"
-              : "bg-orange-100 text-orange-700"
+          className={`px-3 py-1 rounded-full text-xs  ${row.original.status === "ACTIVE"
+            ? "bg-green-100 text-green-700"
+            : "bg-orange-100 text-orange-700"
             }`}
         >
           {row.original.status}
@@ -73,7 +73,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50/50 dark:bg-slate-800/50">
           <div>
-            <h3 className="text-xl font-bold text-gray-700 dark:text-slate-100 flex items-center gap-2">
+            <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
               Pending Submittals
             </h3>
             <p className="text-sm text-gray-700 dark:text-slate-400 mt-1">

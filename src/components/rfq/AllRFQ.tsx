@@ -53,7 +53,7 @@ const AllRFQ = ({ rfq }: any) => {
       ],
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg ${row.original.status === "IN_REVIEW"
+          className={`px-3 py-1 text-[10px]  uppercase tracking-widest rounded-lg ${row.original.status === "IN_REVIEW"
             ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30"
             : row.original.status === "COMPLETED"
               ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30"

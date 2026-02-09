@@ -212,7 +212,7 @@ const EditProject: React.FC<EditProjectProps> = ({
         {/* Scrollable Content */}
         <div className="overflow-y-auto p-6">
           <div className="flex justify-between items-center mb-6 border-b pb-4 sticky top-0 bg-white z-10">
-            <h2 className="text-2xl font-bold text-gray-700">Edit Project</h2>
+            <h2 className="text-2xl  text-gray-700">Edit Project</h2>
             <button
               onClick={onCancel}
               className="text-gray-700 hover:text-gray-700"
@@ -348,7 +348,7 @@ const EditProject: React.FC<EditProjectProps> = ({
             <div className="bg-cyan-50/50 rounded-xl p-4 border border-cyan-100">
               <div className="flex items-center gap-2 mb-4">
                 <Layers className="w-5 h-5 text-cyan-600" />
-                <h3 className="text-lg font-bold text-cyan-900">
+                <h3 className="text-lg  text-cyan-900">
                   Connection Design Scope
                 </h3>
               </div>
@@ -383,7 +383,7 @@ const EditProject: React.FC<EditProjectProps> = ({
             <div className="bg-amber-50/50 rounded-xl p-4 border border-amber-100">
               <div className="flex items-center gap-2 mb-4">
                 <Wrench className="w-5 h-5 text-amber-600" />
-                <h3 className="text-lg font-bold text-amber-900">
+                <h3 className="text-lg  text-amber-900">
                   Detailing Scope
                 </h3>
               </div>

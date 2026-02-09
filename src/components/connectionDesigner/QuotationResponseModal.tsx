@@ -71,7 +71,7 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
           <X size={20} />
         </button>
 
-        <h2 className="text-2xl font-bold text-green-700 mb-6">
+        <h2 className="text-2xl  text-green-700 mb-6">
           Submit Quotation Response
         </h2>
 

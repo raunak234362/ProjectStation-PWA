@@ -72,7 +72,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
 
   return (
     <div className="flex flex-col justify-center h-full bg-white dark:bg-slate-900 shadow-soft rounded-[32px] p-6 border border-gray-100 dark:border-slate-800 transition-all duration-300">
-      <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-6 px-2 flex items-center gap-3 tracking-tight">
+      <h2 className="text-xl md:text-2xl  text-slate-800 dark:text-white mb-6 px-2 flex items-center gap-3 tracking-tight">
         <Building2 size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
         PROJECT STATISTICS
       </h2>
@@ -102,10 +102,10 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
               </div>
 
               <div className="flex flex-row items-center justify-between w-full min-w-0">
-                <span className="text-sm md:text-xl font-black text-slate-700 dark:text-slate-500 uppercase tracking-[0.2em] truncate pr-2">
+                <span className="text-sm md:text-xl  text-slate-700 dark:text-slate-500 uppercase tracking-[0.2em] truncate pr-2">
                   {card.label}
                 </span>
-                <span className="text-2xl md:text-3xl font-black text-[#6bbd45] dark:text-green-400 tracking-tighter">
+                <span className="text-2xl md:text-3xl  text-[#6bbd45] dark:text-green-400 tracking-tighter">
                   {card.value}
                 </span>
               </div>

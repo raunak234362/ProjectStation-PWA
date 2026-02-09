@@ -165,7 +165,7 @@ const GetCOByID = ({ id, projectId }: GetCOByIDProps) => {
           {/* ================= LEFT: CO DETAILS ================= */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-green-700">
+              <h1 className="text-2xl  text-green-700">
                 CO #{co.changeOrderNumber}
               </h1>
 

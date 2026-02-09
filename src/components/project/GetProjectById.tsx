@@ -237,7 +237,7 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                 key={key}
                 onClick={() => setActiveTab(key)}
                 className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-md rounded-md font-medium transition-colors whitespace-nowrap ${activeTab === key
-                  ? "bg-green-600 text-white font-bold"
+                  ? "bg-green-600 text-white "
                   : "text-gray-700 hover:text-green-700 font-semibold hover:bg-gray-50"
                   }`}
               >
@@ -283,15 +283,15 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
               {/* Analytics Section if data exists */}
               {analyticsData && analyticsData.length > 0 && (
                 <div className="mt-8">
-                  <h4 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <h4 className="text-lg  text-gray-800 mb-4 flex items-center gap-2">
                     <TrendingUp size={20} className="text-green-600" />
                     Performance Analytics
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {analyticsData.map((item: any, index: number) => (
                       <div key={index} className="p-4 bg-white border rounded-xl shadow-sm">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{item.label || item.name}</p>
-                        <p className="text-xl font-black text-gray-800 mt-1">{item.value || item.score}</p>
+                        <p className="text-xs  text-gray-500 uppercase tracking-wider">{item.label || item.name}</p>
+                        <p className="text-xl  text-gray-800 mt-1">{item.value || item.score}</p>
                       </div>
                     ))}
                   </div>
@@ -301,22 +301,22 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
               {/* Timeline / Progress Section */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
                 <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                  <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  <h4 className=" text-slate-800 mb-4 flex items-center gap-2">
                     <Clock size={18} className="text-indigo-600" />
                     Timeline Overview
                   </h4>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-500 font-medium">Start Date</span>
-                      <span className="text-slate-800 font-bold">{formatDate(project.startDate)}</span>
+                      <span className="text-slate-800 ">{formatDate(project.startDate)}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-500 font-medium">Approval Date</span>
-                      <span className="text-slate-800 font-bold">{formatDate(project.approvalDate)}</span>
+                      <span className="text-slate-800 ">{formatDate(project.approvalDate)}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-500 font-medium">Current Goal</span>
-                      <span className="text-slate-800 font-bold">{formatDate(project.endDate)}</span>
+                      <span className="text-slate-800 ">{formatDate(project.endDate)}</span>
                     </div>
                   </div>
                 </div>
@@ -325,8 +325,8 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                   <div className="mb-4 p-4 bg-white rounded-full shadow-inner border border-slate-200">
                     <Activity size={32} className="text-green-500" />
                   </div>
-                  <h4 className="font-bold text-slate-800 mb-1">Project Status</h4>
-                  <div className={`mt-2 px-6 py-2 rounded-full font-black text-sm uppercase tracking-widest ${project.status === 'ACTIVE' ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                  <h4 className=" text-slate-800 mb-1">Project Status</h4>
+                  <div className={`mt-2 px-6 py-2 rounded-full  text-sm uppercase tracking-widest ${project.status === 'ACTIVE' ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'}`}>
                     {project.status}
                   </div>
                   <p className="text-xs text-slate-400 mt-3 font-medium uppercase tracking-tighter">Current Development Phase: {project.stage}</p>
@@ -799,11 +799,11 @@ const StatCard = ({
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
-      <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+      <p className="text-xs  text-gray-500 uppercase tracking-widest">
         {label}
       </p>
     </div>
-    <p className={`text-2xl font-black ${isAlert ? "text-red-700" : "text-gray-800"} tracking-tight`}>
+    <p className={`text-2xl  ${isAlert ? "text-red-700" : "text-gray-800"} tracking-tight`}>
       {value}
     </p>
     {description && (

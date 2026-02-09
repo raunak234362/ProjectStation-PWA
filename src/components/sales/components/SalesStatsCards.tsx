@@ -74,7 +74,7 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats }) => {
 
                         <div className="flex items-center gap-2 relative z-10">
                             <div className="flex items-center gap-1 bg-green-100/80 dark:bg-green-900/30 px-2.5 py-1 rounded-full">
-                                <span className="text-green-700 dark:text-green-400 text-xs font-bold">
+                                <span className="text-green-700 dark:text-green-400 text-xs ">
                                     {card.change.split(' ')[0]}
                                 </span>
                             </div>

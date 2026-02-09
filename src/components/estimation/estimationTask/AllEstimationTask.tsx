@@ -58,16 +58,14 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
     {
       header: "Assigned To",
       accessorFn: (row: EstimationTask) =>
-        `${row.assignedTo?.firstName ?? ""} ${
-          row.assignedTo?.middleName ?? ""
-        } ${row.assignedTo?.lastName ?? ""}`.trim() || "—",
+        `${row.assignedTo?.firstName ?? ""} ${row.assignedTo?.middleName ?? ""
+          } ${row.assignedTo?.lastName ?? ""}`.trim() || "—",
     },
     {
       header: "Assigned By",
       accessorFn: (row: EstimationTask) =>
-        `${row.assignedBy?.firstName ?? ""} ${
-          row.assignedBy?.middleName ?? ""
-        } ${row.assignedBy?.lastName ?? ""}`.trim() || "—",
+        `${row.assignedBy?.firstName ?? ""} ${row.assignedBy?.middleName ?? ""
+          } ${row.assignedBy?.lastName ?? ""}`.trim() || "—",
     },
     {
       header: "End Date",
@@ -83,10 +81,10 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
           status === "COMPLETED"
             ? "bg-green-100 text-green-800"
             : status === "ASSIGNED"
-            ? "bg-yellow-100 text-yellow-800"
-            : status === "BREAK"
-            ? "bg-orange-100 text-orange-800"
-            : "bg-blue-100 text-blue-800";
+              ? "bg-yellow-100 text-yellow-800"
+              : status === "BREAK"
+                ? "bg-orange-100 text-orange-800"
+                : "bg-blue-100 text-blue-800";
 
         return (
           <span
@@ -140,7 +138,7 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
         <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in duration-200">
             <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-xl font-bold text-gray-700">
+              <h3 className="text-xl  text-gray-700">
                 Add Estimation Task
               </h3>
               <button

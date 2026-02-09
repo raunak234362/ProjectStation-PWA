@@ -156,7 +156,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           <div className="bg-primary p-3 sm:p-4 text-center border-b border-gray-200">
             <div className="flex items-center justify-center gap-2">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-wider truncate">
+              <h3 className="text-lg sm:text-xl  text-white uppercase tracking-wider truncate">
                 {team.teamName}
               </h3>
             </div>
@@ -175,22 +175,22 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                 }}
                 className="p-2 sm:p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-gray-100 hover:bg-gray-100 hover:border-gray-200 transition-all cursor-pointer group/projects"
               >
-                <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover/projects:text-gray-600">
+                <span className="text-[10px] sm:text-xs  text-gray-400 uppercase tracking-widest mb-1 group-hover/projects:text-gray-600">
                   Projects
                 </span>
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <span className="text-lg sm:text-xl font-black text-gray-800">
+                  <span className="text-lg sm:text-xl  text-gray-800">
                     {team.projectCount}
                   </span>
                   <Briefcase className="w-4 h-4 text-gray-400 group-hover/projects:text-gray-600" />
                 </div>
               </button>
               <div className="p-2 sm:p-3 bg-green-50 rounded-xl flex flex-col items-center justify-center border border-green-100">
-                <span className="text-[10px] sm:text-xs font-bold text-green-600 uppercase tracking-widest mb-1">
+                <span className="text-[10px] sm:text-xs  text-green-600 uppercase tracking-widest mb-1">
                   Work Done
                 </span>
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <span className="text-lg sm:text-xl font-black text-green-600">
+                  <span className="text-lg sm:text-xl  text-green-600">
                     {formatSeconds(team.totalSeconds)}
                   </span>
                   <Clock className="w-4 h-4 text-green-400" />
@@ -205,7 +205,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                 {["IFA", "IFC", "CO#"].map((stage) => (
                   <div key={stage} className="flex-1">
                     {/* Header */}
-                    <div className="bg-gray-50 border-b border-gray-100 py-2 text-center text-xs sm:text-sm font-black tracking-widest text-gray-800 uppercase">
+                    <div className="bg-gray-50 border-b border-gray-100 py-2 text-center text-xs sm:text-sm  tracking-widest text-gray-800 uppercase">
                       {stage}
                     </div>
                     {/* Content */}
@@ -235,11 +235,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                           }
                           className={`w-full flex items-center justify-between px-1.5 sm:px-2 py-1 rounded-lg hover:bg-${item.color}-50 transition-all group/btn border border-transparent hover:border-${item.color}-100`}
                         >
-                          <span className="text-[10px] sm:text-xs font-bold text-gray-600 uppercase group-hover/btn:text-gray-900 truncate mr-1">
+                          <span className="text-[10px] sm:text-xs  text-gray-600 uppercase group-hover/btn:text-gray-900 truncate mr-1">
                             {item.label}
                           </span>
                           <span
-                            className={`text-[11px] sm:text-sm font-black text-${item.color}-600`}
+                            className={`text-[11px] sm:text-sm  text-${item.color}-600`}
                           >
                             {(team.stats[stage] as any)?.[item.key] || 0}
                           </span>
@@ -254,7 +254,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
             {/* Monthly Breakdown Section (Only when filtered) */}
             {isFiltered && (
               <div className="space-y-2 pt-2 border-t border-gray-100">
-                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">
+                <h4 className="text-[10px]  text-gray-400 uppercase tracking-widest px-1">
                   Monthly Breakdown
                 </h4>
                 <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
@@ -274,7 +274,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                         <span className="text-[10px] font-medium text-gray-600">
                           {monthYear}
                         </span>
-                        <span className="text-[10px] font-bold text-gray-800">
+                        <span className="text-[10px]  text-gray-800">
                           {formatSeconds(seconds)}
                         </span>
                       </div>

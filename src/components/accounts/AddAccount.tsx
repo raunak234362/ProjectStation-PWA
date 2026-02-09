@@ -200,7 +200,7 @@ const AddAccount = ({ onSuccess }: AddAccountProps) => {
         {/* Submit */}
         <Button
           type="submit"
-          className="mt-8 bg-green-700 hover:bg-green-800 text-white w-full py-3 text-lg font-bold shadow-lg transition"
+          className="mt-8 bg-green-700 hover:bg-green-800 text-white w-full py-3 text-lg  shadow-lg transition"
         >
           Save Bank Account Details
         </Button>
