@@ -11,7 +11,11 @@ import {
   Clock,
   ClipboardList,
   X as CloseIcon,
+  CheckCircle2,
+  TrendingUp,
+  Activity,
 } from "lucide-react";
+import { formatSeconds } from "../../utils/timeUtils";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import AllMileStone from "./mileStone/AllMileStone";
@@ -34,7 +38,7 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("details");
+  const [activeTab, setActiveTab] = useState("overview");
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
   const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
   const [editModel, setEditModel] = useState<ProjectData | null>(null);
@@ -246,6 +250,91 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
 
         {/* Tab Content */}
         <div className="p-2">
+          {/* ✅ Overview */}
+          {activeTab === "overview" && (
+            <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <StatCard
+                  icon={<Clock className="text-blue-600" />}
+                  label="Hours Assigned"
+                  value={`${project.estimatedHours || 0}h`}
+                  color="bg-blue-50"
+                  description="Total estimated hours for project"
+                />
+                <StatCard
+                  icon={<CheckCircle2 className="text-green-600" />}
+                  label="Hours Completed"
+                  value={formatSeconds(project.workedSeconds || project.totalWorkedSeconds || 0)}
+                  color="bg-green-50"
+                  description="Total hours logged by team"
+                />
+                <StatCard
+                  icon={<AlertCircle className={project.isOverrun ? "text-red-600" : "text-gray-400"} />}
+                  label="Overrun / Delay"
+                  value={project.isOverrun
+                    ? formatSeconds((project.workedSeconds || project.totalWorkedSeconds || 0) - (project.estimatedHours || 0) * 3600)
+                    : "00:00"}
+                  color={project.isOverrun ? "bg-red-50" : "bg-gray-50"}
+                  description={project.isOverrun ? "Project is exceeding estimates" : "Project is within estimates"}
+                  isAlert={project.isOverrun}
+                />
+              </div>
+
+              {/* Analytics Section if data exists */}
+              {analyticsData && analyticsData.length > 0 && (
+                <div className="mt-8">
+                  <h4 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <TrendingUp size={20} className="text-green-600" />
+                    Performance Analytics
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {analyticsData.map((item: any, index: number) => (
+                      <div key={index} className="p-4 bg-white border rounded-xl shadow-sm">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{item.label || item.name}</p>
+                        <p className="text-xl font-black text-gray-800 mt-1">{item.value || item.score}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Timeline / Progress Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                  <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <Clock size={18} className="text-indigo-600" />
+                    Timeline Overview
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500 font-medium">Start Date</span>
+                      <span className="text-slate-800 font-bold">{formatDate(project.startDate)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500 font-medium">Approval Date</span>
+                      <span className="text-slate-800 font-bold">{formatDate(project.approvalDate)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500 font-medium">Current Goal</span>
+                      <span className="text-slate-800 font-bold">{formatDate(project.endDate)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col justify-center items-center text-center">
+                  <div className="mb-4 p-4 bg-white rounded-full shadow-inner border border-slate-200">
+                    <Activity size={32} className="text-green-500" />
+                  </div>
+                  <h4 className="font-bold text-slate-800 mb-1">Project Status</h4>
+                  <div className={`mt-2 px-6 py-2 rounded-full font-black text-sm uppercase tracking-widest ${project.status === 'ACTIVE' ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                    {project.status}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-3 font-medium uppercase tracking-tighter">Current Development Phase: {project.stage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ✅ Details */}
           {activeTab === "details" && (
             <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
@@ -686,6 +775,43 @@ const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   >
     {label}
   </span>
+);
+
+// ✅ StatCard Component
+const StatCard = ({
+  icon,
+  label,
+  value,
+  color,
+  description,
+  isAlert = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  color: string;
+  description?: string;
+  isAlert?: boolean;
+}) => (
+  <div
+    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+      }`}
+  >
+    <div className="flex items-center gap-3 mb-3">
+      <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
+      <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+        {label}
+      </p>
+    </div>
+    <p className={`text-2xl font-black ${isAlert ? "text-red-700" : "text-gray-800"} tracking-tight`}>
+      {value}
+    </p>
+    {description && (
+      <p className="text-[10px] text-gray-400 mt-2 font-medium uppercase tracking-tighter">
+        {description}
+      </p>
+    )}
+  </div>
 );
 
 export default GetProjectById;

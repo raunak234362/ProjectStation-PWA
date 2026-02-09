@@ -46,7 +46,7 @@ const AddClients: React.FC<AddClientProps> = ({
         payload,
       );
       dispatch(addStaff(response?.data?.user));
-      toast.success("Stakeholder profile synchronized!");
+      toast.success("POC profile synchronized!");
       if (onClose) onClose();
     } catch (error: any) {
       console.error("Error creating employee:", error);
@@ -55,10 +55,10 @@ const AddClients: React.FC<AddClientProps> = ({
   };
 
   const roleOptions = [
-    { label: "Partner Client", value: "CLIENT" },
-    { label: "Partner Administrator", value: "CLIENT_ADMIN" },
-    { label: "Project Coordinator", value: "CLIENT_PROJECT_COORDINATOR" },
-    { label: "General Constructor", value: "CLIENT_GENERAL_CONSTRUCTOR" },
+    { label: "Client", value: "CLIENT" },
+    { label: "Client Administrator", value: "CLIENT_ADMIN" },
+    { label: "Client Project Coordinator", value: "CLIENT_PROJECT_COORDINATOR" },
+    { label: "Client General Constructor", value: "CLIENT_GENERAL_CONSTRUCTOR" },
   ];
 
   const selectedRole = watch("role");
@@ -79,7 +79,7 @@ const AddClients: React.FC<AddClientProps> = ({
             <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
               <UserPlus className="w-6 h-6" />
             </div>
-            Onboard Stakeholder
+            Onboard POC
           </h2>
           <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Registering a new point of contact for {fabricator.fabName}</p>
         </div>
@@ -99,7 +99,7 @@ const AddClients: React.FC<AddClientProps> = ({
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">Unique Identifier (Username)</label>
+              <label className="block text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">Username</label>
               <Input
                 label=""
                 {...register("username", { required: "Username is required" })}
@@ -217,7 +217,7 @@ const AddClients: React.FC<AddClientProps> = ({
             ) : (
               <>
                 <Check className="w-5 h-5" />
-                Create Stakeholder
+                Create POC
               </>
             )}
           </Button>

@@ -137,14 +137,14 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
               </div>
               Points of Contact
             </h2>
-            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Stakeholder management for {fabricator.fabName}</p>
+            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">POC management for {fabricator.fabName}</p>
           </div>
           <div className="flex items-center gap-4">
             <Button
               onClick={openAddClient}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 border-none"
             >
-              <Plus size={16} /> Add Stakeholder
+              <Plus size={16} /> Add POC
             </Button>
             <button
               onClick={onClose}

@@ -91,21 +91,27 @@ const WBTDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sent, received, pendingSubmittalsRes, allInvoices, pendingRFIs] =
-          await Promise.all([
-            Service.RfqSent(),
-            Service.RFQRecieved(),
-            Service.GetPendingSubmittal(),
-            Service.GetAllInvoice(),
-            Service.PendingSubmittal(),
-            Service.pendingRFIs(),
-          ]);
-        console.log(pendingRFIs);
+        const [
+          sent,
+          received,
+          upcomingSubmittalsRes,
+          allInvoices,
+          _pendingSubmittalsRes, // result of Service.PendingSubmittal()
+          pendingRFIsData, // result of Service.pendingRFIs()
+        ] = await Promise.all([
+          Service.RfqSent(),
+          Service.RFQRecieved(),
+          Service.GetPendingSubmittal(),
+          Service.GetAllInvoice(),
+          Service.PendingSubmittal(),
+          Service.pendingRFIs(),
+        ]);
+        console.log("Pending RFIs Data:", pendingRFIsData);
 
         setPendingSubmittals(
-          Array.isArray(pendingSubmittalsRes)
-            ? pendingSubmittalsRes
-            : pendingSubmittalsRes?.data || [],
+          Array.isArray(upcomingSubmittalsRes)
+            ? upcomingSubmittalsRes
+            : upcomingSubmittalsRes?.data || [],
         );
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
