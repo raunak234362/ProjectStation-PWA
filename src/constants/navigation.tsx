@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   Hammer,
   PenTool,
-  FileQuestion,
   Calculator,
   Briefcase,
   Receipt,
@@ -66,9 +65,9 @@ export const navItems: NavItem[] = [
     label: "Connection Designer",
     to: "connection-designer",
     icon: <PenTool />,
-    roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
+    roles: ["admin", "operation_executive", "department-manager", "deputy_manager"],
   },
- 
+
   // {
   //   label: "Connection Designing Quotation",
   //   to: "connection-designing-quotation",
@@ -80,7 +79,7 @@ export const navItems: NavItem[] = [
   //     "deputy_manager",
   //   ],
   // },
-   {
+  {
     label: "Sales",
     to: "sales",
     icon: <DollarSign />,
@@ -91,7 +90,7 @@ export const navItems: NavItem[] = [
       "system-admin",
     ],
   },
-  {
+  /* {
     label: "RFQ",
     to: "rfq",
     icon: <FileQuestion />,
@@ -105,12 +104,9 @@ export const navItems: NavItem[] = [
       "client",
       "estimator",
       "sales",
-"connection_designer_engineer",
-
-
-
+      "connection_designer_engineer",
     ],
-  },
+  }, */
   {
     label: "Estimations",
     to: "estimation",
@@ -151,13 +147,13 @@ export const navItems: NavItem[] = [
     label: "Invoices",
     to: "invoices",
     icon: <Receipt />,
-    roles: ["admin","project_manager_officer", "client_admin", "pmo", "client"],
+    roles: ["admin", "project_manager_officer", "client_admin", "pmo", "client"],
   },
   {
     label: "Accounts",
     to: "accounts",
     icon: <Landmark />,
-    roles: ["admin","project_manager_officer", "pmo"],
+    roles: ["admin", "project_manager_officer", "pmo"],
   },
   {
     label: "Tasks",
@@ -175,7 +171,7 @@ export const navItems: NavItem[] = [
       "human-resource",
     ],
   },
- 
+
   {
     label: "Manage Team",
     to: "manage-team",
@@ -191,11 +187,11 @@ export const navItems: NavItem[] = [
       "human-resource",
     ],
   },
-   {
+  {
     label: "Vendor",
     to: "vendor",
     icon: <Factory />,
-    roles: ["admin","operation_executive", "department-manager", "deputy_manager"],
+    roles: ["admin", "operation_executive", "department-manager", "deputy_manager"],
   },
   {
     label: "Chats",
@@ -238,5 +234,5 @@ export const navItems: NavItem[] = [
       "human_resource",
     ],
   },
-  
+
 ];

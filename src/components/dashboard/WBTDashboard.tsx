@@ -32,6 +32,9 @@ const ProjectDetailsModal = lazy(
 const SubmittalListModal = lazy(
   () => import("./components/SubmittalListModal"),
 );
+const DashboardNotifications = lazy(
+  () => import("./components/DashboardNotifications"),
+);
 
 import DashboardSkeleton from "./components/DashboardSkeleton";
 
@@ -181,6 +184,13 @@ const WBTDashboard = () => {
               onActionClick={handleActionClick}
             />
           </div>
+
+          {/* Notifications - Admin only */}
+          {userRole === "admin" && (
+            <div className="w-full">
+              <DashboardNotifications />
+            </div>
+          )}
         </div>
 
         {/* Charts & Actions Section */}

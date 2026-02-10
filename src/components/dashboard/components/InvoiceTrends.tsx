@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from "react";
 import {
-  ComposedChart,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Area,
 } from "recharts";
 import { cn } from "../../../lib/utils";
 
@@ -33,25 +33,27 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
 
+  const quarters = ["Q1", "Q2", "Q3", "Q4"];
+
   const processedChartData = useMemo(() => {
     if (selectedMonth === null) {
-      // Yearly view - Monthly grouping
-      return months.map((month, index) => {
-        const monthlyInvoices = invoices.filter((inv) => {
+      // Quarterly view
+      return quarters.map((q, index) => {
+        const quarterlyInvoices = invoices.filter((inv) => {
           const date = new Date(inv.invoiceDate);
-          return (
-            date.getFullYear() === selectedYear && date.getMonth() === index
-          );
+          const month = date.getMonth();
+          const quarterIndex = Math.floor(month / 3);
+          return date.getFullYear() === selectedYear && quarterIndex === index;
         });
 
-        const totalAmount = monthlyInvoices.reduce(
+        const totalAmount = quarterlyInvoices.reduce(
           (sum, inv) => sum + (inv.totalInvoiceValue || 0),
           0
         );
         return {
-          name: month,
+          name: q,
           amount: totalAmount,
-          count: monthlyInvoices.length,
+          count: quarterlyInvoices.length,
         };
       });
     } else {
@@ -88,10 +90,10 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
 
   const { totalPeriodAmount } = useMemo(() => {
     const amount = processedChartData.reduce(
-      (sum, item) => sum + item.amount,
+      (sum: number, item: any) => sum + item.amount,
       0
     );
-    const count = processedChartData.reduce((sum, item) => sum + item.count, 0);
+    const count = processedChartData.reduce((sum: number, item: any) => sum + item.count, 0);
     return { totalPeriodAmount: amount, totalPeriodCount: count };
   }, [processedChartData]);
 
@@ -101,11 +103,11 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   }, []);
 
   return (
-    <div className="bg-[#f9fdf7] p-6 rounded-3xl shadow-soft border-0 flex flex-col h-full border border-slate-50">
+    <div className="bg-[#f9fdf7] p-6 rounded-3xl shadow-soft flex flex-col h-full border border-slate-50">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 shrink-0">
         <div>
           <h2 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-            Invoice Trends
+            Invoice Trends (Quarterly)
           </h2>
           <p className="text-sm text-slate-500 font-bold mt-1">
             Total Revenue: <span className="text-[#6bbd45]">${totalPeriodAmount.toLocaleString()}</span>
@@ -138,7 +140,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               : "bg-white text-slate-500 hover:bg-slate-50 border-slate-100"
           )}
         >
-          All Months
+          Quarterly View
         </button>
         {months.map((month, index) => (
           <button
@@ -158,7 +160,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
 
       <div className="flex-1 min-h-0 w-full px-1">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={processedChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+          <BarChart data={processedChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
@@ -175,7 +177,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#9ca3af", fontSize: 10 }}
-              tickFormatter={(value) =>
+              tickFormatter={(value: number) =>
                 `$${value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`
               }
               width={35}
@@ -205,17 +207,14 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                 return null;
               }}
             />
-            <Area
-              type="monotone"
+            <Bar
               dataKey="amount"
               name="Total Amount"
-              fill="#0d9488"
-              fillOpacity={0.1}
-              stroke="#6bbd45"
-              strokeWidth={4}
-              strokeLinecap="round"
+              fill="#6bbd45"
+              radius={[4, 4, 0, 0]}
+              barSize={selectedMonth === null ? 60 : 20}
             />
-          </ComposedChart>
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </div>

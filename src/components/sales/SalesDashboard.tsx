@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from "react";
-import Service from "../../api/Service";
 import { motion, AnimatePresence } from "framer-motion";
 import SalesStatsCards from "./components/SalesStatsCards";
 import SalesSecondaryStats from "./components/SalesSecondaryStats";
@@ -8,33 +7,34 @@ import SalesPerformanceChart from "./components/SalesPerformanceChart";
 import { Download, Filter, ChevronDown, Check } from "lucide-react";
 import { subDays, isAfter, startOfDay } from "date-fns";
 import { cn } from "../../lib/utils";
+import AllRFQ from "../rfq/AllRFQ";
+import AddRFQ from "../rfq/AddRFQ";
+import { useSelector } from "react-redux";
 
 const SalesDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [timeFilter, setTimeFilter] = useState<"All Time" | "Last 7 Days" | "Last 30 Days" | "Last 12 Months">("All Time");
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-    const [allData, setAllData] = useState<{ projects: any[], rfqs: any[], clients: any[] }>({
-        projects: [],
-        rfqs: [],
-        clients: [],
-    });
+    const [activeTab, setActiveTab] = useState<"Overview" | "RFQs">("Overview");
+    const [rfqSubView, setRfqSubView] = useState<"all" | "add">("all");
+    const reduxRfqs = useSelector((state: any) => state.RFQInfos.RFQData) || [];
+    const reduxProjects = useSelector((state: any) => state.projectInfo.projectData) || [];
+    const reduxClients = useSelector((state: any) => state.fabricatorInfo.fabricatorData) || [];
 
     useEffect(() => {
         const fetchData = async () => {
+            if (reduxRfqs.length > 0 && reduxProjects.length > 0) {
+                setLoading(false);
+                return;
+            }
             try {
                 setLoading(true);
-                const [projectsRes, rfqRes, clientsRes] = await Promise.all([
-                    Service.GetAllProjects(),
-                    Service.RFQRecieved(),
-                    Service.GetAllFabricators(),
-                ]);
-
-                setAllData({
-                    projects: projectsRes?.data || [],
-                    rfqs: rfqRes?.data || [],
-                    clients: clientsRes?.data || clientsRes || [],
-                });
-                setLoading(false);
+                // Data is likely already being fetched by App.tsx, but we can ensure it here if needed
+                // For now, if redux is empty, we wait for it or trigger a fetch if necessary.
+                // However, App.tsx already does this, so we just set loading false if data appears.
+                if (reduxRfqs.length > 0 || reduxProjects.length > 0) {
+                    setLoading(false);
+                }
             } catch (error) {
                 console.error("Error fetching sales data", error);
                 setLoading(false);
@@ -42,10 +42,13 @@ const SalesDashboard = () => {
         };
 
         fetchData();
-    }, []);
+    }, [reduxRfqs.length, reduxProjects.length]);
 
+    // Use Redux data for computations
     const computedData = useMemo(() => {
-        const { projects, rfqs, clients } = allData;
+        const projects = reduxProjects;
+        const rfqs = reduxRfqs;
+        const clients = reduxClients;
         const now = new Date();
         const today = startOfDay(now);
 
@@ -140,7 +143,7 @@ const SalesDashboard = () => {
             },
             performance
         };
-    }, [allData, timeFilter]);
+    }, [reduxRfqs, reduxProjects, reduxClients, timeFilter]);
 
     const { stats, performance: performanceData } = computedData;
 
@@ -189,80 +192,118 @@ const SalesDashboard = () => {
                     <p className="text-slate-500 text-sm mt-1">Monitor your sales performance and conversion rates.</p>
                 </div>
 
-                <div className="flex gap-3 relative">
-                    <div className="relative">
+                {activeTab !== "RFQs" && (
+                    <div className="flex gap-3 relative">
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                                className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all shadow-soft border border-slate-100 min-w-[140px] justify-between"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Filter size={18} className="text-slate-400" />
+                                    {timeFilter}
+                                </div>
+                                <ChevronDown size={16} className={cn("transition-transform", showFilterDropdown ? "rotate-180" : "")} />
+                            </button>
+
+                            <AnimatePresence>
+                                {showFilterDropdown && (
+                                    <>
+                                        <div className="fixed inset-0 z-10" onClick={() => setShowFilterDropdown(false)} />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-20"
+                                        >
+                                            {(["All Time", "Last 7 Days", "Last 30 Days", "Last 12 Months"] as const).map((option) => (
+                                                <button
+                                                    key={option}
+                                                    onClick={() => {
+                                                        setTimeFilter(option);
+                                                        setShowFilterDropdown(false);
+                                                    }}
+                                                    className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                                                >
+                                                    {option}
+                                                    {timeFilter === option && <Check size={16} className="text-[#6bbd45]" />}
+                                                </button>
+                                            ))}
+                                        </motion.div>
+                                    </>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
                         <button
-                            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all shadow-soft border border-slate-100 min-w-[140px] justify-between"
+                            onClick={handleExport}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-[#6bbd45] text-white rounded-2xl font-bold hover:shadow-highlight transition-all shadow-medium"
                         >
-                            <div className="flex items-center gap-2">
-                                <Filter size={18} className="text-slate-400" />
-                                {timeFilter}
-                            </div>
-                            <ChevronDown size={16} className={cn("transition-transform", showFilterDropdown ? "rotate-180" : "")} />
+                            <Download size={18} />
+                            Export Report
                         </button>
-
-                        <AnimatePresence>
-                            {showFilterDropdown && (
-                                <>
-                                    <div className="fixed inset-0 z-10" onClick={() => setShowFilterDropdown(false)} />
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 10 }}
-                                        className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-20"
-                                    >
-                                        {(["All Time", "Last 7 Days", "Last 30 Days", "Last 12 Months"] as const).map((option) => (
-                                            <button
-                                                key={option}
-                                                onClick={() => {
-                                                    setTimeFilter(option);
-                                                    setShowFilterDropdown(false);
-                                                }}
-                                                className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
-                                            >
-                                                {option}
-                                                {timeFilter === option && <Check size={16} className="text-[#6bbd45]" />}
-                                            </button>
-                                        ))}
-                                    </motion.div>
-                                </>
-                            )}
-                        </AnimatePresence>
                     </div>
-
-                    <button
-                        onClick={handleExport}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-[#6bbd45] text-white rounded-2xl font-bold hover:shadow-highlight transition-all shadow-medium"
-                    >
-                        <Download size={18} />
-                        Export Report
-                    </button>
-                </div>
+                )}
             </div>
 
             {/* Tabs */}
             <div className="flex gap-8 pb-1">
-                {['Overview', 'Performance', 'Leads'].map((tab, i) => (
-                    <button key={tab} className={`pb-3 text-base font-bold transition-all relative px-1 ${i === 0 ? 'text-[#6bbd45]' : 'text-slate-400 hover:text-slate-600'}`}>
+                {['Overview', 'RFQs'].map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab as any)}
+                        className={`pb-3 text-base font-bold transition-all relative px-1 ${activeTab === tab ? 'text-[#6bbd45]' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
                         {tab}
-                        {i === 0 && <motion.div layoutId="activeTab" className="absolute -bottom-0 left-0 right-0 h-1 bg-[#6bbd45] rounded-full" />}
+                        {activeTab === tab && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-1 bg-[#6bbd45] rounded-full" />}
                     </button>
                 ))}
             </div>
 
-            {/* Stats Cards */}
-            <SalesStatsCards stats={stats} />
+            {activeTab === "Overview" && (
+                <>
+                    {/* Stats Cards */}
+                    <SalesStatsCards stats={stats} />
 
-            {/* Secondary Stats */}
-            <div className="pt-2">
-                <SalesSecondaryStats stats={stats} />
-            </div>
+                    {/* Secondary Stats */}
+                    <div className="pt-2">
+                        <SalesSecondaryStats stats={stats} />
+                    </div>
 
-            {/* Charts & Details Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 pt-4">
-                <SalesPerformanceChart data={performanceData} />
-            </div>
+                    {/* Charts & Details Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 pt-4">
+                        <SalesPerformanceChart data={performanceData} />
+                    </div>
+                </>
+            )}
+
+
+            {activeTab === "RFQs" && (
+                <div className="space-y-6">
+                    <div className="flex gap-4">
+                        <button
+                            onClick={() => setRfqSubView("all")}
+                            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${rfqSubView === "all" ? "bg-[#6bbd45] text-white shadow-md" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-100"}`}
+                        >
+                            All RFQs
+                        </button>
+                        <button
+                            onClick={() => setRfqSubView("add")}
+                            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${rfqSubView === "add" ? "bg-[#6bbd45] text-white shadow-md" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-100"}`}
+                        >
+                            Add New RFQ
+                        </button>
+                    </div>
+
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {rfqSubView === "all" ? (
+                            <AllRFQ rfq={reduxRfqs} />
+                        ) : (
+                            <AddRFQ onSuccess={() => setRfqSubView("all")} />
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
