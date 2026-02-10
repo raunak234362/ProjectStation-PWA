@@ -2118,19 +2118,5 @@ class Service {
       throw error;
     }
   }
-
-  // Analytics
-  static async GetAnalyticsScore(data:any) {
-    try {
-      const response = await api.post(`analytics/scores/meas/run-manually`,data, {
-        headers: { "Content-Type": "application/json" },
-      });
-      console.log("Analytics Score:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching analytics:", error);
-      throw error;
-    }
-  } 
 }
 export default Service;

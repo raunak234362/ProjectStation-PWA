@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Service from "../../../api/Service";
+<<<<<<<<< Temporary merge branch 1
+import { Loader2, AlertCircle, MapPin } from "lucide-react";
+import Button from "../../fields/Button";
+import RenderFiles from "../../ui/RenderFiles";
+=========
 import {
-  Loader2,
-  AlertCircle,
-  FileText,
-  Link2,
-  MapPin,
-  Calendar,
-  Briefcase,
-  ExternalLink,
-  LayoutDashboard,
+  Loader2, AlertCircle, FileText, MapPin, Globe, HardHat,
+  ExternalLink, Calendar, ClipboardList,
+  Search, RefreshCw, Activity, CheckCircle2
 } from "lucide-react";
 import Button from "../../fields/Button";
-import { openFileSecurely } from "../../../utils/openFileSecurely";
-import type { ConnectionDesigner, ProjectData } from "../../../interface";
+>>>>>>>>> Temporary merge branch 2
+import type { ConnectionDesigner } from "../../../interface";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
-import GetProjectById from "../../project/GetProjectById";
-import CDProjectDashboard from "../components/CDProjectDashboard";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
@@ -100,6 +98,61 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       </div>
     );
 
+  // Data Preparation
+  const getStates = () => {
+    const rawState = (designer as any).state;
+    let pool: string[] = [];
+
+    if (Array.isArray(rawState)) {
+      pool = rawState;
+    } else if (typeof rawState === 'string') {
+      try {
+        const parsed = JSON.parse(rawState);
+        pool = Array.isArray(parsed) ? parsed : [parsed];
+      } catch {
+        pool = [rawState];
+      }
+    }
+
+    const result: string[] = [];
+    pool.forEach(item => {
+      if (typeof item === 'string') {
+        item.split(/[,\n;]/).forEach(s => {
+          const trimmed = s.trim();
+          if (trimmed) result.push(trimmed);
+        });
+      } else if (item) {
+        result.push(String(item).trim());
+      }
+    });
+
+    return [...new Set(result)];
+  };
+
+  const states = getStates();
+  const stateData = states.map((s: string) => ({ name: s, value: 1 }));
+  const engineerCount = designer.CDEngineers?.length || 0;
+
+  const activeProjects = designerProjects.filter((p: any) => p.status === "ACTIVE").length;
+  const pendingQuotations = quotations.filter((q: any) => q.status === "PENDING").length;
+
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleString("en-IN", { dateStyle: "medium" });
+
+  const statsCards = [
+    { label: "Execution Power", value: `${engineerCount} Engineers`, icon: HardHat, sub: "Live resource pool", color: "green" },
+    { label: "Active Pipeline", value: `${activeProjects} Projects`, icon: Activity, sub: "Currently in progress", color: "blue" },
+    { label: "Status", value: designer.isDeleted ? "Inactive" : "Active", icon: CheckCircle2, sub: "Operational cycle", color: "emerald", isStatus: true },
+    { label: "Availability", value: `${states.length} States`, icon: Globe, sub: designer.location || "North America", color: "amber" },
+  ];
+
+  const pendingActions = [
+    { title: "RFI", count: 0, icon: FileText, color: "bg-amber-50", iconColor: "text-amber-600" },
+    { title: "SUBMITTALS", count: 0, icon: RefreshCw, color: "bg-purple-50", iconColor: "text-purple-600" },
+    { title: "CHANGE ORDERS", count: 0, icon: Activity, color: "bg-rose-50", iconColor: "text-rose-600" },
+    { title: "RFQ", count: pendingQuotations, icon: Search, color: "bg-cyan-50", iconColor: "text-cyan-600" },
+  ];
+
   return (
     <div className="space-y-8 pb-10">
       {/* Header with Edit Buttons */}
@@ -150,142 +203,153 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         </div>
       </div>
 
-      {activeTab === "insights" ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            {/* Designer Insights */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Insurance Liability Card */}
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-soft border border-gray-100 dark:border-slate-800 flex flex-col gap-5">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl">
-                    <FileText size={20} />
-                  </div>
-                  <h4 className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest">
-                    Insurance Liability
-                  </h4>
-                </div>
-                <p className="text-xl  text-gray-800 dark:text-white tracking-tight">
-                  {designer.insurenceLiability || "Not Disclosed"}
-                </p>
-              </div>
+<<<<<<<<< Temporary merge branch 1
+      {/* Files Section */}
+      <RenderFiles
+        files={designer.files}
+        table="connection-designer"
+        parentId={id}
+      />
 
-              {/* States/Coverage Card */}
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-soft border border-gray-100 dark:border-slate-800 flex flex-col gap-5">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-xl">
-                    <MapPin size={20} />
-                  </div>
-                  <h4 className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest">
-                    States Coverage
-                  </h4>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {(Array.isArray(designer.states) ? designer.states :
-                    (Array.isArray(designer.state) ? designer.state : [])
-                  ).length > 0 ? (
-                    (Array.isArray(designer.states) ? designer.states : (designer.state || [])).map((st, i) => (
-                      <span key={i} className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-[10px]  uppercase tracking-widest rounded-lg border border-green-100 dark:border-green-900/30">
-                        {st}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-xs text-gray-400 dark:text-slate-500  uppercase tracking-widest">No states listed</span>
-                  )}
-                </div>
+      {/* Buttons */}
+      <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">
+        <Button
+          onClick={() => handleModel(designer)}
+          className="py-1 px-3 text-sm sm:text-base font-semibold"
+        >
+          Edit
+        </Button>
+        <Button className="py-1 px-3 text-sm sm:text-base font-semibold bg-red-200 text-red-700 hover:bg-red-300">
+          Archive
+        </Button>
+        <Button
+          onClick={() => handleEngineerModel()}
+          className="py-1 px-3 text-sm sm:text-base font-semibold"
+        >
+          Connection Designer Engineer
+        </Button>
+      </div>
+      {editModel && (
+        <>
+          <EditConnectionDesigner
+            onClose={handleModelClose}
+            designerData={designer}
+          />
+        </>
+      )}
+      {engineerModel && (
+        <>
+          <AllCDEngineer
+            onClose={handleEngineerModelClose}
+            designerData={designer}
+          />
+        </>
+=========
+      {/* Snapshot Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {statsCards.map((card, i) => (
+          <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-soft hover:shadow-medium transition-all group overflow-hidden relative">
+            <div className="relative z-10 flex flex-col justify-between h-full min-h-[80px]">
+              <div className="flex justify-between items-start">
+                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{card.label}</span>
+                <card.icon size={20} className={`text-${card.color}-600 opacity-60 group-hover:opacity-100 transition-opacity`} />
+              </div>
+              <div>
+                <h4 className={`text-xl font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-gray-800"}`}>
+                  {card.value}
+                </h4>
+                <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase truncate">{card.sub}</p>
               </div>
             </div>
+          </div>
+        ))}
+      </div>
 
-            {/* Associated Projects Section */}
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-[40px] shadow-soft border border-gray-100 dark:border-slate-800">
-              <div className="flex items-center justify-between mb-8">
-                <h4 className="text-xl  text-gray-800 dark:text-white uppercase tracking-tight flex items-center gap-3">
-                  <div className="p-2.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-xl">
-                    <Briefcase size={20} />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Section (8 Cols) */}
+        <div className="lg:col-span-8 space-y-8">
+          {/* Pending Actions */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
+            <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
+              <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Pending Actions</h3>
+            </div>
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {pendingActions.map((action, i) => (
+                <div key={i} className="flex flex-row items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft hover:shadow-medium transition-all group cursor-pointer">
+                  <div className={`p-3 rounded-xl shadow-sm ${action.color} ${action.iconColor}`}>
+                    <action.icon size={22} strokeWidth={2.5} />
                   </div>
-                  Projects
-                </h4>
-                <button
-                  onClick={() => setActiveTab("dashboard")}
-                  className="text-[10px]  text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 uppercase tracking-widest underline underline-offset-8"
-                >
-                  View Full Dashboard
-                </button>
-              </div>
-              {projects.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {projects.map((project) => (
-                    <div
-                      key={project.id}
-                      onClick={() => setSelectedProjectId(project.id)}
-                      className="group border border-gray-100 dark:border-slate-800 p-5 rounded-3xl hover:border-green-200 dark:hover:border-green-900/40 hover:bg-green-50/30 dark:hover:bg-green-900/10 transition-all cursor-pointer flex justify-between items-center"
-                    >
-                      <div className="min-w-0">
-                        <p className="text-[10px]  text-green-600 dark:text-green-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-green-500 dark:bg-green-400 rounded-full animate-pulse shadow-sm shadow-green-500"></span>
-                          {project.projectNumber}
-                        </p>
-                        <h5 className=" text-gray-800 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors truncate">
-                          {project.name}
-                        </h5>
-                        <span className={`mt-3 inline-block px-3 py-1 rounded-lg text-[10px]  tracking-widest uppercase ${project.status === "ACTIVE"
-                          ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-900/30"
-                          : "bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-700"
-                          }`}>
-                          {project.status}
-                        </span>
-                      </div>
-                      <div className="p-3 rounded-2xl bg-gray-50 dark:bg-slate-800 group-hover:bg-green-100 dark:group-hover:bg-green-900/30 text-gray-400 dark:text-slate-500 group-hover:text-green-600 dark:group-hover:text-green-400 transition-all shadow-sm">
-                        <ExternalLink size={20} />
-                      </div>
+                  <div className="flex flex-row gap-5 items-center min-w-0">
+                    <div className="font-bold text-xs text-slate-800 uppercase tracking-tight truncate">
+                      {action.title}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-16 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-[40px] bg-slate-50/50 dark:bg-slate-900/50">
-                  <div className="p-4 bg-white dark:bg-slate-800 rounded-3xl shadow-md mb-4 text-gray-200 dark:text-slate-700">
-                    <Briefcase size={48} />
+                    <div className={`text-2xl font-black tracking-tight ${action.iconColor}`}>
+                      {action.count}
+                    </div>
                   </div>
-                  <p className="text-[10px] text-gray-400 dark:text-slate-500  uppercase tracking-[0.2em]">No projects assigned yet</p>
                 </div>
-              )}
+              ))}
             </div>
           </div>
 
-          <div className="lg:col-span-1 space-y-8">
-            {/* Files Section */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-[40px] shadow-soft border border-gray-100 dark:border-slate-800">
-              <h4 className="text-base  text-gray-800 dark:text-white mb-6 flex items-center gap-3">
-                <div className="p-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl">
-                  <FileText size={18} />
+          {/* Profile Details */}
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-soft">
+            <div className="bg-gray-50/70 px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+              <ClipboardList size={16} className="text-green-600" />
+              <h3 className="text-xs font-black text-gray-600 uppercase tracking-widest">Profile Details</h3>
+            </div>
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 text-sm font-medium">
+              <DetailRow label="Principal Email" value={designer.email} link={`mailto:${designer.email}`} />
+              <DetailRow label="Digital Presence" value={designer.websiteLink} link={designer.websiteLink} isExternal />
+              <DetailRow label="Secure Contact" value={designer.contactInfo} />
+              <DetailRow label="Coverage" value={states.length > 0 ? states.join(", ") : "Not specified"} />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Section (4 Cols) */}
+        <div className="lg:col-span-4 space-y-8">
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-soft flex flex-col min-h-[400px]">
+            <div className="flex items-center gap-2 mb-6">
+              <Globe size={18} className="text-emerald-500" />
+              <h3 className="text-sm font-black text-gray-800 uppercase tracking-tighter">Availability Coverage</h3>
+            </div>
+            <div className="flex-1 relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={stateData.length > 0 ? stateData : [{ name: 'None', value: 1 }]}
+                    cx="50%" cy="45%"
+                    innerRadius={55}
+                    outerRadius={80}
+                    paddingAngle={states.length > 4 ? 2 : 8}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {stateData.map((_: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                    {states.length === 0 && <Cell fill="#f3f4f6" />}
+                  </Pie>
+                  <RechartsTooltip
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', fontSize: '11px' }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={120}
+                    iconType="circle"
+                    iconSize={6}
+                    wrapperStyle={{ fontSize: '9px', fontWeight: 700, paddingTop: '20px', color: '#6b7280' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              {states.length === 0 && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <p className="text-[10px] text-gray-300 italic font-bold">No States Mapped</p>
                 </div>
-                Intelligence Files
-              </h4>
-              {Array.isArray(designer.files) && designer.files.length > 0 ? (
-                <ul className="space-y-3">
-                  {designer.files.map((file) => (
-                    <li
-                      key={file.id}
-                      className="flex justify-between items-center p-3 rounded-2xl bg-gray-50 dark:bg-slate-800/50 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all group border border-transparent hover:border-amber-100 dark:hover:border-amber-900/30"
-                    >
-                      <span className="text-[10px]  text-gray-600 dark:text-slate-300 group-hover:text-amber-700 dark:group-hover:text-amber-400 uppercase tracking-widest truncate pr-4">{file.originalName}</span>
-                      <button
-                        className="shrink-0 p-2.5 bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-sm hover:bg-amber-600 hover:text-white dark:hover:bg-amber-500 transition-all rounded-xl"
-                        onClick={() =>
-                          openFileSecurely("connection-designer", id, file.id)
-                        }
-                      >
-                        <Link2 size={14} />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="py-8 flex flex-col items-center justify-center opacity-50">
-                  <FileText size={32} className="text-gray-300 dark:text-slate-700 mb-2" />
-                  <p className="text-[10px] text-gray-400 dark:text-slate-500  uppercase tracking-widest italic">No documents uploaded</p>
-                </div>
-              )}
+              ))}
+              {states.length > 5 && <p className="text-[10px] text-center text-gray-400 mt-2">+{states.length - 5} more regions</p>}
             </div>
 
             {/* Quick Actions Card */}
@@ -315,46 +379,17 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             </div>
           </div>
         </div>
-      ) : (
-        <CDProjectDashboard
-          projects={projects}
-          onProjectSelect={(project) => setSelectedProjectId(project.id)}
-        />
+      </div>
+
+      {editModel && createPortal(
+        <EditConnectionDesigner onClose={() => setEditModel(null)} designerData={designer} onSuccess={fetchData} />,
+        document.body
       )}
-
-      {editModel &&
-        createPortal(
-          <EditConnectionDesigner
-            onClose={() => setEditModel(null)}
-            designerData={designer}
-            onSuccess={fetchData}
-          />,
-          document.body,
-        )}
-      {engineerModel &&
-        createPortal(
-          <AllCDEngineer
-            onClose={() => setEngineerModel(null)}
-            designerData={designer}
-          />,
-          document.body,
-        )}
-
-      {/* Project Details Modal */}
-      {selectedProjectId &&
-        createPortal(
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-            <div className="bg-white w-[95vw] h-[95vh] rounded-4xl shadow-3xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in duration-200">
-              <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10">
-                <GetProjectById
-                  id={selectedProjectId}
-                  close={() => setSelectedProjectId(null)}
-                />
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
+      {engineerModel && createPortal(
+        <AllCDEngineer onClose={() => setEngineerModel(null)} designerData={designer} />,
+        document.body
+>>>>>>>>> Temporary merge branch 2
+      )}
     </div>
   );
 };

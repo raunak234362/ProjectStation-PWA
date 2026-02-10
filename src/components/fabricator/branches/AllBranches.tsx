@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
-  X,
   Building2,
   Plus,
   MapPin,
@@ -8,6 +8,7 @@ import {
   Phone,
   CheckCircle2,
 } from "lucide-react";
+import { X } from "lucide-react";
 import type { Fabricator, Branch } from "../../../interface";
 import AddBranch from "./AddBranch";
 import { useState } from "react";
