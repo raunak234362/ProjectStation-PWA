@@ -86,7 +86,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
   );
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 lg:h-[500px]">
+    <div className="mb-8 lg:h-[500px]">
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -188,7 +188,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         </div>
       </motion.div>
 
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -222,7 +222,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
             </PieChart>
           </ResponsiveContainer>
         </div>
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 };

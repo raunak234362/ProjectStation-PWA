@@ -1,26 +1,43 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Service from "../../../api/Service";
-<<<<<<<<< Temporary merge branch 1
-import { Loader2, AlertCircle, MapPin } from "lucide-react";
-import Button from "../../fields/Button";
-import RenderFiles from "../../ui/RenderFiles";
-=========
 import {
   Loader2, AlertCircle, FileText, MapPin, Globe, HardHat,
   ExternalLink, Calendar, ClipboardList,
-  Search, RefreshCw, Activity, CheckCircle2
+  Search, RefreshCw, Activity, CheckCircle2,
+  Briefcase, LayoutDashboard
 } from "lucide-react";
 import Button from "../../fields/Button";
->>>>>>>>> Temporary merge branch 2
-import type { ConnectionDesigner } from "../../../interface";
+import type { ConnectionDesigner, ProjectData } from "../../../interface";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
+import RenderFiles from "../../ui/RenderFiles";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
 }
+
+const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
+
+const DetailRow = ({ label, value, link, isExternal }: any) => (
+  <div className="flex flex-col gap-1">
+    <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">{label}</span>
+    {link ? (
+      <a
+        href={link}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className="text-gray-900 dark:text-gray-100 hover:text-green-600 transition-colors truncate font-semibold flex items-center gap-1 group"
+      >
+        {value || "—"}
+        {isExternal && <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
+      </a>
+    ) : (
+      <span className="text-gray-900 dark:text-gray-100 font-semibold truncate">{value || "—"}</span>
+    )}
+  </div>
+);
 
 const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   const [designer, setDesigner] = useState<ConnectionDesigner | null>(null);
@@ -31,8 +48,8 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   const [engineerModel, setEngineerModel] = useState<ConnectionDesigner | null>(
     null,
   );
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"insights" | "dashboard">("insights");
+
+  const [activeTab, setActiveTab] = useState<"insights" | "dashboard">("dashboard");
 
   const fetchData = async () => {
     if (!id) {
@@ -73,10 +90,8 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleString("en-IN", { dateStyle: "medium" });
 
   if (loading)
     return (
@@ -100,6 +115,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
   // Data Preparation
   const getStates = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rawState = (designer as any).state;
     let pool: string[] = [];
 
@@ -133,8 +149,11 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   const stateData = states.map((s: string) => ({ name: s, value: 1 }));
   const engineerCount = designer.CDEngineers?.length || 0;
 
-  const activeProjects = designerProjects.filter((p: any) => p.status === "ACTIVE").length;
-  const pendingQuotations = quotations.filter((q: any) => q.status === "PENDING").length;
+  // Replaced designerProjects with projects
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const activeProjects = projects.filter((p: any) => p.status === "ACTIVE").length;
+  // Replaced undefined quotations with empty array for now
+  const pendingQuotations = 0; // quotations.filter((q: any) => q.status === "PENDING").length;
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleString("en-IN", { dateStyle: "medium" });
@@ -181,16 +200,6 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         {/* Tab Switcher */}
         <div className="flex bg-gray-100/80 dark:bg-slate-800/80 p-1.5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-inner backdrop-blur-sm overflow-hidden">
           <button
-            onClick={() => setActiveTab("insights")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs  uppercase tracking-widest transition-all ${activeTab === "insights"
-              ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
-              : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
-              }`}
-          >
-            <Briefcase size={14} />
-            Insights
-          </button>
-          <button
             onClick={() => setActiveTab("dashboard")}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs  uppercase tracking-widest transition-all ${activeTab === "dashboard"
               ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
@@ -200,186 +209,188 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             <LayoutDashboard size={14} />
             Dashboard
           </button>
+          <button
+            onClick={() => setActiveTab("insights")}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs  uppercase tracking-widest transition-all ${activeTab === "insights"
+              ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
+              : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
+              }`}
+          >
+            <Briefcase size={14} />
+            Files
+          </button>
         </div>
       </div>
 
-<<<<<<<<< Temporary merge branch 1
-      {/* Files Section */}
-      <RenderFiles
-        files={designer.files}
-        table="connection-designer"
-        parentId={id}
-      />
-
-      {/* Buttons */}
-      <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">
-        <Button
-          onClick={() => handleModel(designer)}
-          className="py-1 px-3 text-sm sm:text-base font-semibold"
-        >
-          Edit
-        </Button>
-        <Button className="py-1 px-3 text-sm sm:text-base font-semibold bg-red-200 text-red-700 hover:bg-red-300">
-          Archive
-        </Button>
-        <Button
-          onClick={() => handleEngineerModel()}
-          className="py-1 px-3 text-sm sm:text-base font-semibold"
-        >
-          Connection Designer Engineer
-        </Button>
-      </div>
-      {editModel && (
+      {activeTab === "dashboard" && (
         <>
-          <EditConnectionDesigner
-            onClose={handleModelClose}
-            designerData={designer}
-          />
+          {/* Snapshot Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {statsCards.map((card, i) => (
+              <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-soft hover:shadow-medium transition-all group overflow-hidden relative">
+                <div className="relative z-10 flex flex-col justify-between h-full min-h-[80px]">
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{card.label}</span>
+                    <card.icon size={20} className={`text-${card.color}-600 opacity-60 group-hover:opacity-100 transition-opacity`} />
+                  </div>
+                  <div>
+                    <h4 className={`text-xl font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-gray-800"}`}>
+                      {card.value}
+                    </h4>
+                    <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase truncate">{card.sub}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left Section (8 Cols) */}
+            <div className="lg:col-span-8 space-y-8">
+              {/* Pending Actions */}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
+                  <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Pending Actions</h3>
+                </div>
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {pendingActions.map((action, i) => (
+                    <div key={i} className="flex flex-row items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft hover:shadow-medium transition-all group cursor-pointer">
+                      <div className={`p-3 rounded-xl shadow-sm ${action.color} ${action.iconColor}`}>
+                        <action.icon size={22} strokeWidth={2.5} />
+                      </div>
+                      <div className="flex flex-row gap-5 items-center min-w-0">
+                        <div className="font-bold text-xs text-slate-800 uppercase tracking-tight truncate">
+                          {action.title}
+                        </div>
+                        <div className={`text-2xl font-black tracking-tight ${action.iconColor}`}>
+                          {action.count}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Profile Details */}
+              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-soft">
+                <div className="bg-gray-50/70 px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                  <ClipboardList size={16} className="text-green-600" />
+                  <h3 className="text-xs font-black text-gray-600 uppercase tracking-widest">Profile Details</h3>
+                </div>
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 text-sm font-medium">
+                  <DetailRow label="Principal Email" value={designer.email} link={`mailto:${designer.email}`} />
+                  <DetailRow label="Digital Presence" value={designer.websiteLink} link={designer.websiteLink} isExternal />
+                  <DetailRow label="Secure Contact" value={designer.contactInfo} />
+                  <DetailRow label="Coverage" value={states.length > 0 ? states.join(", ") : "Not specified"} />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Section (4 Cols) */}
+            <div className="lg:col-span-4 space-y-8">
+              <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-soft flex flex-col min-h-[400px]">
+                <div className="flex items-center gap-2 mb-6">
+                  <Globe size={18} className="text-emerald-500" />
+                  <h3 className="text-sm font-black text-gray-800 uppercase tracking-tighter">Availability Coverage</h3>
+                </div>
+                <div className="flex-1 relative">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={stateData.length > 0 ? stateData : [{ name: 'None', value: 1 }]}
+                        cx="50%" cy="45%"
+                        innerRadius={55}
+                        outerRadius={80}
+                        paddingAngle={states.length > 4 ? 2 : 8}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {stateData.map((_: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                        {states.length === 0 && <Cell fill="#f3f4f6" />}
+                      </Pie>
+                      <RechartsTooltip
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', fontSize: '11px' }}
+                      />
+                      <Legend
+                        verticalAlign="bottom"
+                        height={120}
+                        iconType="circle"
+                        iconSize={6}
+                        wrapperStyle={{ fontSize: '9px', fontWeight: 700, paddingTop: '20px', color: '#6b7280' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {states.length === 0 && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <p className="text-[10px] text-gray-300 italic font-bold">No States Mapped</p>
+                    </div>
+                  )}
+                  {states.length > 5 && <p className="text-[10px] text-center text-gray-400 mt-2">+{states.length - 5} more regions</p>}
+                </div>
+
+                {/* Quick Actions Card */}
+                <div className="bg-slate-900 dark:bg-slate-950 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-green-500/20 transition-all"></div>
+                  <h4 className="text-[10px]  uppercase tracking-[0.2em] text-slate-500 mb-8 relative z-10">Administrative Control</h4>
+                  <div className="space-y-4 relative z-10">
+                    <Button
+                      onClick={() => setEditModel(designer)}
+                      className="w-full justify-start gap-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl py-5 text-[10px]  uppercase tracking-widest transition-all"
+                    >
+                      <Briefcase size={18} className="text-slate-500" />
+                      Edit Designer Info
+                    </Button>
+                    <Button
+                      onClick={() => setEngineerModel(designer)}
+                      className="w-full justify-start gap-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl py-5 shadow-xl shadow-green-500/20 text-[10px]  uppercase tracking-widest transition-all"
+                    >
+                      <LayoutDashboard size={18} />
+                      Manage Workforce
+                    </Button>
+                    <Button className="w-full justify-start gap-4 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/10 rounded-2xl py-5 text-[10px]  uppercase tracking-widest transition-all">
+                      <AlertCircle size={18} />
+                      Archive Profile
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </>
       )}
-      {engineerModel && (
-        <>
-          <AllCDEngineer
-            onClose={handleEngineerModelClose}
-            designerData={designer}
+
+      {activeTab === "insights" && (
+        <div className="space-y-6">
+          <RenderFiles
+            files={designer.files}
+            table="connection-designer"
+            parentId={id}
           />
-        </>
-=========
-      {/* Snapshot Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {statsCards.map((card, i) => (
-          <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-soft hover:shadow-medium transition-all group overflow-hidden relative">
-            <div className="relative z-10 flex flex-col justify-between h-full min-h-[80px]">
-              <div className="flex justify-between items-start">
-                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{card.label}</span>
-                <card.icon size={20} className={`text-${card.color}-600 opacity-60 group-hover:opacity-100 transition-opacity`} />
-              </div>
-              <div>
-                <h4 className={`text-xl font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-gray-800"}`}>
-                  {card.value}
-                </h4>
-                <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase truncate">{card.sub}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Section (8 Cols) */}
-        <div className="lg:col-span-8 space-y-8">
-          {/* Pending Actions */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
-              <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Pending Actions</h3>
-            </div>
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {pendingActions.map((action, i) => (
-                <div key={i} className="flex flex-row items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft hover:shadow-medium transition-all group cursor-pointer">
-                  <div className={`p-3 rounded-xl shadow-sm ${action.color} ${action.iconColor}`}>
-                    <action.icon size={22} strokeWidth={2.5} />
-                  </div>
-                  <div className="flex flex-row gap-5 items-center min-w-0">
-                    <div className="font-bold text-xs text-slate-800 uppercase tracking-tight truncate">
-                      {action.title}
-                    </div>
-                    <div className={`text-2xl font-black tracking-tight ${action.iconColor}`}>
-                      {action.count}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Profile Details */}
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-soft">
-            <div className="bg-gray-50/70 px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-              <ClipboardList size={16} className="text-green-600" />
-              <h3 className="text-xs font-black text-gray-600 uppercase tracking-widest">Profile Details</h3>
-            </div>
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 text-sm font-medium">
-              <DetailRow label="Principal Email" value={designer.email} link={`mailto:${designer.email}`} />
-              <DetailRow label="Digital Presence" value={designer.websiteLink} link={designer.websiteLink} isExternal />
-              <DetailRow label="Secure Contact" value={designer.contactInfo} />
-              <DetailRow label="Coverage" value={states.length > 0 ? states.join(", ") : "Not specified"} />
-            </div>
+          <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">
+            <Button
+              onClick={() => setEditModel(designer)}
+              className="py-1 px-3 text-sm sm:text-base font-semibold"
+            >
+              Edit
+            </Button>
+            <Button className="py-1 px-3 text-sm sm:text-base font-semibold bg-red-200 text-red-700 hover:bg-red-300">
+              Archive
+            </Button>
+            <Button
+              onClick={() => setEngineerModel(designer)}
+              className="py-1 px-3 text-sm sm:text-base font-semibold"
+            >
+              Connection Designer Engineer
+            </Button>
           </div>
         </div>
-
-        {/* Right Section (4 Cols) */}
-        <div className="lg:col-span-4 space-y-8">
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-soft flex flex-col min-h-[400px]">
-            <div className="flex items-center gap-2 mb-6">
-              <Globe size={18} className="text-emerald-500" />
-              <h3 className="text-sm font-black text-gray-800 uppercase tracking-tighter">Availability Coverage</h3>
-            </div>
-            <div className="flex-1 relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={stateData.length > 0 ? stateData : [{ name: 'None', value: 1 }]}
-                    cx="50%" cy="45%"
-                    innerRadius={55}
-                    outerRadius={80}
-                    paddingAngle={states.length > 4 ? 2 : 8}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {stateData.map((_: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                    {states.length === 0 && <Cell fill="#f3f4f6" />}
-                  </Pie>
-                  <RechartsTooltip
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', fontSize: '11px' }}
-                  />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={120}
-                    iconType="circle"
-                    iconSize={6}
-                    wrapperStyle={{ fontSize: '9px', fontWeight: 700, paddingTop: '20px', color: '#6b7280' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              {states.length === 0 && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <p className="text-[10px] text-gray-300 italic font-bold">No States Mapped</p>
-                </div>
-              ))}
-              {states.length > 5 && <p className="text-[10px] text-center text-gray-400 mt-2">+{states.length - 5} more regions</p>}
-            </div>
-
-            {/* Quick Actions Card */}
-            <div className="bg-slate-900 dark:bg-slate-950 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-green-500/20 transition-all"></div>
-              <h4 className="text-[10px]  uppercase tracking-[0.2em] text-slate-500 mb-8 relative z-10">Administrative Control</h4>
-              <div className="space-y-4 relative z-10">
-                <Button
-                  onClick={() => setEditModel(designer)}
-                  className="w-full justify-start gap-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl py-5 text-[10px]  uppercase tracking-widest transition-all"
-                >
-                  <Briefcase size={18} className="text-slate-500" />
-                  Edit Designer Info
-                </Button>
-                <Button
-                  onClick={() => setEngineerModel(designer)}
-                  className="w-full justify-start gap-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl py-5 shadow-xl shadow-green-500/20 text-[10px]  uppercase tracking-widest transition-all"
-                >
-                  <LayoutDashboard size={18} />
-                  Manage Workforce
-                </Button>
-                <Button className="w-full justify-start gap-4 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/10 rounded-2xl py-5 text-[10px]  uppercase tracking-widest transition-all">
-                  <AlertCircle size={18} />
-                  Archive Profile
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
 
       {editModel && createPortal(
         <EditConnectionDesigner onClose={() => setEditModel(null)} designerData={designer} onSuccess={fetchData} />,
@@ -388,7 +399,6 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       {engineerModel && createPortal(
         <AllCDEngineer onClose={() => setEngineerModel(null)} designerData={designer} />,
         document.body
->>>>>>>>> Temporary merge branch 2
       )}
     </div>
   );

@@ -2118,5 +2118,15 @@ class Service {
       throw error;
     }
   }
+  // Get Analytics Score
+  static async GetAnalyticsScore(data?: any) {
+    try {
+      const response = await api.get(`analytics/score`, { params: data });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching analytics score:", error);
+      throw error;
+    }
+  }
 }
 export default Service;

@@ -12,11 +12,13 @@ import { cn } from "../../../lib/utils";
 interface PendingActionsProps {
   dashboardStats: DashboardStats | null;
   onActionClick?: (actionType: string) => void;
+  filter?: ("RFQ" | "RFI" | "Submittals" | "Change Orders")[];
 }
 
 const PendingActions: React.FC<PendingActionsProps> = ({
   dashboardStats,
   onActionClick,
+  filter,
 }) => {
   const actions = [
     {
@@ -50,8 +52,11 @@ const PendingActions: React.FC<PendingActionsProps> = ({
       icon: Activity,
       color: "rose",
     },
-
   ];
+
+  const filteredActions = filter
+    ? actions.filter((action) => filter.includes(action.title as any))
+    : actions;
 
   const colorClasses = {
     amber: {
@@ -84,8 +89,9 @@ const PendingActions: React.FC<PendingActionsProps> = ({
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {actions.map((action) => {
-          const colors = colorClasses[action.color as keyof typeof colorClasses];
+        {filteredActions.map((action) => {
+          const colors =
+            colorClasses[action.color as keyof typeof colorClasses];
 
           return (
             <div
@@ -102,7 +108,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   "p-3.5 rounded-xl shadow-sm transition-all group-hover:scale-110",
                   colors.bg,
                   colors.text,
-                  "dark:bg-slate-700 dark:text-green-400"
+                  "dark:bg-slate-700 dark:text-green-400",
                 )}
               >
                 <action.icon size={25} strokeWidth={2.5} />

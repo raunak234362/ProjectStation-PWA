@@ -7,7 +7,7 @@ import { showDepartment, showTeam } from "../store/userSlice";
 const ProjectLayout = () => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const [activeTab, setActiveTab] = useState(
-    userRole === "connection_designer_engineer" || userRole === "estimation_head" || userRole === "client_admin"
+    userRole === "connection_designer_engineer" || userRole === "estimation_head" || userRole === "client_admin" || userRole === "client"
       ? "allProject"
       : "projectDashboard",
   );

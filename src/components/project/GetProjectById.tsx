@@ -75,9 +75,8 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
       try {
         const data = {
           projectId: id,
-          managerId: sessionStorage.getItem("userId")
-
-        }
+          managerId: sessionStorage.getItem("userId"),
+        };
         const response = await Service.GetAnalyticsScore(data);
         console.log("Analytics Score:", response);
         const analyticsData = response?.data || response || [];
@@ -89,7 +88,6 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
     fetchAnalytics();
   }, []);
   console.log(analyticsData);
-
 
   const handleEditModel = (project: ProjectData) => {
     console.log(project);
@@ -132,10 +130,52 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
   const formatDate = (date: string | number | Date | undefined) =>
     date
       ? new Date(date).toLocaleString("en-IN", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
       : "—";
+
+  const isClient = userRole === "client" || userRole === "client_admin";
+
+  const clientTabs = [
+    { key: "overview", label: "Overview", icon: ClipboardList },
+    { key: "details", label: "Details", icon: ClipboardList },
+    { key: "files", label: "Files", icon: FileText },
+    { key: "milestones", label: "Milestones", icon: FileText },
+    { key: "rfi", label: "RFI", icon: FolderOpenDot },
+    { key: "submittals", label: "Submittals", icon: FolderOpenDot },
+    { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
+  ];
+
+  const defaultDesktopTabs = [
+    { key: "overview", label: "Overview", icon: ClipboardList },
+    { key: "details", label: "Details", icon: ClipboardList },
+    { key: "files", label: "Files", icon: FileText },
+    { key: "wbs", label: "WBS", icon: FileText },
+    { key: "milestones", label: "Milestones", icon: FileText },
+    { key: "notes", label: "Notes", icon: FolderOpenDot },
+    { key: "rfi", label: "RFI", icon: FolderOpenDot },
+    { key: "CDrfi", label: "CD RFI", icon: FolderOpenDot },
+    { key: "submittals", label: "Submittals", icon: FolderOpenDot },
+    { key: "CDsubmittals", label: "CD Submittals", icon: FolderOpenDot },
+    { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
+  ];
+
+  const defaultMobileTabs = [
+    { key: "details", label: "Details" },
+    { key: "files", label: "Files" },
+    { key: "wbs", label: "WBS" },
+    { key: "milestones", label: "Milestones" },
+    { key: "team", label: "Team" },
+    { key: "timeline", label: "Timeline" },
+    { key: "notes", label: "Notes" },
+    { key: "rfi", label: "RFI" },
+    { key: "submittals", label: "Submittals" },
+    { key: "changeOrder", label: "Change Order" },
+  ];
+
+  const tabsToShow = isClient ? clientTabs : defaultDesktopTabs;
+  const mobileTabsToShow = isClient ? clientTabs : defaultMobileTabs;
 
   if (loading)
     return (
@@ -168,10 +208,11 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${project.status === "ACTIVE"
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-700"
-                }`}
+              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                project.status === "ACTIVE"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-700"
+              }`}
             >
               {project.status}
             </span>
@@ -195,18 +236,7 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
               onChange={(e) => setActiveTab(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md bg-primary text-white focus:outline-none focus:ring-2 focus:ring-green-500"
             >
-              {[
-                { key: "details", label: "Details" },
-                { key: "files", label: "Files" },
-                { key: "wbs", label: "WBS" },
-                { key: "milestones", label: "Milestones" },
-                { key: "team", label: "Team" },
-                { key: "timeline", label: "Timeline" },
-                { key: "notes", label: "Notes" },
-                { key: "rfi", label: "RFI" },
-                { key: "submittals", label: "Submittals" },
-                { key: "changeOrder", label: "Change Order" },
-              ].map((tab) => (
+              {mobileTabsToShow.map((tab) => (
                 <option key={tab.key} value={tab.key}>
                   {tab.label}
                 </option>
@@ -216,30 +246,15 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
 
           {/* Desktop Tabs */}
           <div className="hidden md:flex gap-2 overflow-x-auto">
-            {[
-              { key: "overview", label: "Overview", icon: ClipboardList },
-              { key: "details", label: "Details", icon: ClipboardList },
-              { key: "files", label: "Files", icon: FileText },
-              { key: "wbs", label: "WBS", icon: FileText },
-              { key: "milestones", label: "Milestones", icon: FileText },
-              { key: "notes", label: "Notes", icon: FolderOpenDot },
-              { key: "rfi", label: "RFI", icon: FolderOpenDot },
-              { key: "CDrfi", label: "CD RFI", icon: FolderOpenDot },
-              { key: "submittals", label: "Submittals", icon: FolderOpenDot },
-              { key: "CDsubmittals", label: "CD Submittals", icon: FolderOpenDot },
-              {
-                key: "changeOrder",
-                label: "Change Order",
-                icon: FolderOpenDot,
-              },
-            ].map(({ key, label, icon: Icon }) => (
+            {tabsToShow.map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-md rounded-md font-medium transition-colors whitespace-nowrap ${activeTab === key
-                  ? "bg-green-600 text-white "
-                  : "text-gray-700 hover:text-green-700 font-semibold hover:bg-gray-50"
-                  }`}
+                className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-md rounded-md font-medium transition-colors whitespace-nowrap ${
+                  activeTab === key
+                    ? "bg-green-600 text-white "
+                    : "text-gray-700 hover:text-green-700 font-semibold hover:bg-gray-50"
+                }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -264,18 +279,37 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                 <StatCard
                   icon={<CheckCircle2 className="text-green-600" />}
                   label="Hours Completed"
-                  value={formatSeconds(project.workedSeconds || project.totalWorkedSeconds || 0)}
+                  value={formatSeconds(
+                    project.workedSeconds || project.totalWorkedSeconds || 0,
+                  )}
                   color="bg-green-50"
                   description="Total hours logged by team"
                 />
                 <StatCard
-                  icon={<AlertCircle className={project.isOverrun ? "text-red-600" : "text-gray-400"} />}
+                  icon={
+                    <AlertCircle
+                      className={
+                        project.isOverrun ? "text-red-600" : "text-gray-400"
+                      }
+                    />
+                  }
                   label="Overrun / Delay"
-                  value={project.isOverrun
-                    ? formatSeconds((project.workedSeconds || project.totalWorkedSeconds || 0) - (project.estimatedHours || 0) * 3600)
-                    : "00:00"}
+                  value={
+                    project.isOverrun
+                      ? formatSeconds(
+                          (project.workedSeconds ||
+                            project.totalWorkedSeconds ||
+                            0) -
+                            (project.estimatedHours || 0) * 3600,
+                        )
+                      : "00:00"
+                  }
                   color={project.isOverrun ? "bg-red-50" : "bg-gray-50"}
-                  description={project.isOverrun ? "Project is exceeding estimates" : "Project is within estimates"}
+                  description={
+                    project.isOverrun
+                      ? "Project is exceeding estimates"
+                      : "Project is within estimates"
+                  }
                   isAlert={project.isOverrun}
                 />
               </div>
@@ -289,9 +323,16 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {analyticsData.map((item: any, index: number) => (
-                      <div key={index} className="p-4 bg-white border rounded-xl shadow-sm">
-                        <p className="text-xs  text-gray-500 uppercase tracking-wider">{item.label || item.name}</p>
-                        <p className="text-xl  text-gray-800 mt-1">{item.value || item.score}</p>
+                      <div
+                        key={index}
+                        className="p-4 bg-white border rounded-xl shadow-sm"
+                      >
+                        <p className="text-xs  text-gray-500 uppercase tracking-wider">
+                          {item.label || item.name}
+                        </p>
+                        <p className="text-xl  text-gray-800 mt-1">
+                          {item.value || item.score}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -307,16 +348,28 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                   </h4>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-500 font-medium">Start Date</span>
-                      <span className="text-slate-800 ">{formatDate(project.startDate)}</span>
+                      <span className="text-slate-500 font-medium">
+                        Start Date
+                      </span>
+                      <span className="text-slate-800 ">
+                        {formatDate(project.startDate)}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-500 font-medium">Approval Date</span>
-                      <span className="text-slate-800 ">{formatDate(project.approvalDate)}</span>
+                      <span className="text-slate-500 font-medium">
+                        Approval Date
+                      </span>
+                      <span className="text-slate-800 ">
+                        {formatDate(project.approvalDate)}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-500 font-medium">Current Goal</span>
-                      <span className="text-slate-800 ">{formatDate(project.endDate)}</span>
+                      <span className="text-slate-500 font-medium">
+                        Current Goal
+                      </span>
+                      <span className="text-slate-800 ">
+                        {formatDate(project.endDate)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -326,10 +379,14 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                     <Activity size={32} className="text-green-500" />
                   </div>
                   <h4 className=" text-slate-800 mb-1">Project Status</h4>
-                  <div className={`mt-2 px-6 py-2 rounded-full  text-sm uppercase tracking-widest ${project.status === 'ACTIVE' ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                  <div
+                    className={`mt-2 px-6 py-2 rounded-full  text-sm uppercase tracking-widest ${project.status === "ACTIVE" ? "bg-green-500 text-white" : "bg-slate-200 text-slate-500"}`}
+                  >
                     {project.status}
                   </div>
-                  <p className="text-xs text-slate-400 mt-3 font-medium uppercase tracking-tighter">Current Development Phase: {project.stage}</p>
+                  <p className="text-xs text-slate-400 mt-3 font-medium uppercase tracking-tighter">
+                    Current Development Phase: {project.stage}
+                  </p>
                 </div>
               </div>
             </div>
@@ -346,7 +403,7 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                 <div
                   className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm prose prose-sm max-w-none"
                   dangerouslySetInnerHTML={{
-                    __html: project.description || "No description available."
+                    __html: project.description || "No description available.",
                   }}
                 />
               </div>
@@ -494,9 +551,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        rfiView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -507,9 +565,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          rfiView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -542,9 +601,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        rfiView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -555,9 +615,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          rfiView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -590,9 +651,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        submittalView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -603,9 +665,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          submittalView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -638,9 +701,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        submittalView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -651,9 +715,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          submittalView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -686,9 +751,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                     onClick={() => setChangeOrderView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${changeOrderView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        changeOrderView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -699,9 +765,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                       onClick={() => setChangeOrderView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${changeOrderView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          changeOrderView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -736,17 +803,18 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
           )}
         </div>
       </div>
-      {editModel && createPortal(
-        <EditProject
-          projectId={id}
-          onCancel={() => setEditModel(null)}
-          onSuccess={() => {
-            setEditModel(null);
-            fetchProject();
-          }}
-        />,
-        document.body
-      )}
+      {editModel &&
+        createPortal(
+          <EditProject
+            projectId={id}
+            onCancel={() => setEditModel(null)}
+            onSuccess={() => {
+              setEditModel(null);
+              fetchProject();
+            }}
+          />,
+          document.body,
+        )}
     </>
   );
 };
@@ -768,10 +836,11 @@ const InfoRow = ({
 // ✅ ScopeTag Component
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-medium rounded-full ${active
-      ? "bg-green-100 text-green-800 border border-green-300"
-      : "bg-gray-100 text-gray-700 border border-gray-200"
-      }`}
+    className={`px-3 py-1 text-sm font-medium rounded-full ${
+      active
+        ? "bg-green-100 text-green-800 border border-green-300"
+        : "bg-gray-100 text-gray-700 border border-gray-200"
+    }`}
   >
     {label}
   </span>
@@ -794,8 +863,9 @@ const StatCard = ({
   isAlert?: boolean;
 }) => (
   <div
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-      }`}
+    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
+      isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+    }`}
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
@@ -803,7 +873,9 @@ const StatCard = ({
         {label}
       </p>
     </div>
-    <p className={`text-2xl  ${isAlert ? "text-red-700" : "text-gray-800"} tracking-tight`}>
+    <p
+      className={`text-2xl  ${isAlert ? "text-red-700" : "text-gray-800"} tracking-tight`}
+    >
       {value}
     </p>
     {description && (

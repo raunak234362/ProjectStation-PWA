@@ -4,6 +4,7 @@ import AccountLayout from "./AccountLayout";
 
 const InvoiceLayout = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
@@ -18,7 +19,8 @@ const InvoiceLayout = () => {
           >
             Invoice Home
           </button>
-
+{userRole === "sales" || userRole === "sales_manager" ? (
+<>
           <button
             onClick={() => setActiveTab("allInvoices")}
             className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-semibold transition-all ${activeTab === "allInvoices"
@@ -48,6 +50,8 @@ const InvoiceLayout = () => {
           >
             Accounts
           </button>
+          </>
+) : (null)}
         </div>
       </div>
       <div className="flex-1 min-h-0 bg-white p-2 rounded-[6px] overflow-y-auto laptop-fit">

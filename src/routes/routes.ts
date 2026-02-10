@@ -21,6 +21,9 @@ const invoicePage = lazy(() => import("../pages/invoicePage"));
 const TaskPage = lazy(() => import("../pages/TaskPage"));
 const CoTablePage = lazy(() => import("../components/co/CoTablePage"));
 const SalesDashboard = lazy(() => import("../components/sales/SalesDashboard"));
+const ClientDashboard = lazy(
+  () => import("../components/dashboard/ClientDashboard"),
+);
 const DesignerLandingDashboard = lazy(
   () => import("../components/dashboard/DesignerLandingDashboard"),
 );
@@ -53,6 +56,7 @@ const routes = [
           { path: "rfq", Component: RFQPage },
           { path: "rfi", Component: RFIPage },
           { path: "sales", Component: SalesDashboard },
+          { path: "client", Component: ClientDashboard },
           { path: "designer", Component: DesignerLandingDashboard },
         ],
       },
