@@ -2128,5 +2128,38 @@ class Service {
       throw error;
     }
   }
+  //client dashboard data routes.
+  static async DashboardData() {
+    try {
+      const response = await api.get(`dashBoardData/clientAdmin`);
+      console.log("Client Dashboard Data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      throw error;
+    }
+  }
+  // INVOICE DASHBOARD DATA
+  static async InvoiceDashboardData() {
+    try {
+      const response = await api.get(`invoice/pending/fabricator`);
+      console.log("Invoice Dashboard Data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching invoice dashboard data:", error);
+      throw error;
+    }
+  }
+  //dashboard milestone
+  static async DashboardMilestone() {
+    try {
+      const response = await api.get(`milestone/pendingSubmittals/clientAdmin`);
+      console.log("Dashboard Milestone Data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching dashboard milestone:", error);
+      throw error;
+    }
+  }
 }
 export default Service;

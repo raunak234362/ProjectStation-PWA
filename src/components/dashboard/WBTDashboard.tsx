@@ -98,17 +98,28 @@ const WBTDashboard = () => {
           received,
           upcomingSubmittalsRes,
           allInvoices,
-          _pendingSubmittalsRes, // result of Service.PendingSubmittal()
-          pendingRFIsData, // result of Service.pendingRFIs()
+          _pendingSubmittalsRes,
+          pendingRFIsData,
+          dashboardData,
         ] = await Promise.all([
           Service.RfqSent(),
           Service.RFQRecieved(),
-          Service.GetPendingSubmittal(),
-          Service.GetAllInvoice(),
+          isClient
+            ? Service.DashboardMilestone()
+            : Service.GetPendingSubmittal(),
+          isClient ? Service.InvoiceDashboardData() : Service.GetAllInvoice(),
           Service.PendingSubmittal(),
           Service.pendingRFIs(),
+          isClient ? Service.DashboardData() : Service.GetDashboardData(),
         ]);
-        console.log("Pending RFIs Data:", pendingRFIsData);
+        console.log("WBT Dashboard Combined Data:", {
+          sent,
+          received,
+          upcomingSubmittalsRes,
+          allInvoices,
+          dashboardData,
+          pendingRFIsData,
+        });
 
         setPendingSubmittals(
           Array.isArray(upcomingSubmittalsRes)
@@ -119,8 +130,7 @@ const WBTDashboard = () => {
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
 
-        const dashboardData = await Service.GetDashboardData();
-        setDashboardStats(dashboardData.data);
+        setDashboardStats(dashboardData?.data || dashboardData || null);
         const sentCount = sent?.length || 0;
         const receivedCount = received?.length || 0;
 

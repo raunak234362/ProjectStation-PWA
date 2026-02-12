@@ -60,13 +60,26 @@ const ClientDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sent, received, upcomingSubmittalsRes, allInvoices] =
-          await Promise.all([
-            Service.RfqSent(),
-            Service.RFQRecieved(),
-            Service.GetPendingSubmittal(),
-            Service.GetAllInvoice(),
-          ]);
+        const [
+          sent,
+          received,
+          upcomingSubmittalsRes,
+          allInvoices,
+          dashboardData,
+        ] = await Promise.all([
+          Service.RfqSent(),
+          Service.RFQRecieved(),
+          Service.DashboardMilestone(),
+          Service.InvoiceDashboardData(),
+          Service.DashboardData(),
+        ]);
+        console.log("Client Dashboard Combined Data:", {
+          sent,
+          received,
+          upcomingSubmittalsRes,
+          allInvoices,
+          dashboardData,
+        });
 
         setPendingSubmittals(
           Array.isArray(upcomingSubmittalsRes)
@@ -77,8 +90,7 @@ const ClientDashboard = () => {
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
 
-        const dashboardData = await Service.GetDashboardData();
-        setDashboardStats(dashboardData.data);
+        setDashboardStats(dashboardData?.data || dashboardData || null);
         const sentCount = sent?.length || 0;
         const receivedCount = received?.length || 0;
 

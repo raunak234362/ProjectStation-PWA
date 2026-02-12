@@ -76,7 +76,7 @@ const Layout = () => {
             border border-green-500/20 dark:border-green-400/20
             shadow-lg
             before:absolute before:inset-0 before:rounded-3xl
-            before:bg-gradient-to-b before:from-white/30 before:to-transparent
+            before:bg-linear-to-b before:from-white/30 before:to-transparent
             before:pointer-events-none
             transition-all
           "
