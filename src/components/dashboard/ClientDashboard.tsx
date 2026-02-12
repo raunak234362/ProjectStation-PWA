@@ -157,7 +157,7 @@ const ClientDashboard = () => {
               <PendingActions
                 dashboardStats={dashboardStats}
                 onActionClick={handleActionClick}
-                filter={["RFQ"]}
+                filter={["RFQ", "RFI", "CO", "Submittals"]}
               />
             </div>
           </div>

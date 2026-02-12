@@ -175,7 +175,6 @@ const EditEmployee = ({
               label="Email"
               type="email"
               {...register("email", {
-                required: "Email is required",
                 pattern: {
                   value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                   message: "Invalid email address",
@@ -183,20 +182,13 @@ const EditEmployee = ({
               })}
             />
 
-            <Input
-              label="First Name"
-              {...register("firstName", { required: "First name is required" })}
-            />
+            <Input label="First Name" {...register("firstName")} />
             <Input label="Middle Name" {...register("middleName")} />
-            <Input
-              label="Last Name"
-              {...register("lastName", { required: "Last name is required" })}
-            />
+            <Input label="Last Name" {...register("lastName")} />
             <div className="grid grid-cols-2 gap-2">
               <Input
                 label="Phone"
                 {...register("phone", {
-                  required: "Phone is required",
                   pattern: {
                     value: /^\+?[0-9]{10,15}$/,
                     message: "Invalid phone (10–15 digits)",
