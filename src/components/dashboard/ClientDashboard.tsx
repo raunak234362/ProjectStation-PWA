@@ -17,11 +17,10 @@ const ProjectDetailsModal = lazy(
 const SubmittalListModal = lazy(
   () => import("./components/SubmittalListModal"),
 );
+const ActionListModal = lazy(() => import("./components/ActionListModal"));
 
 const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
-  // const userRole = sessionStorage.getItem("userRole");
-  const userName = sessionStorage.getItem("firstName") || "Client";
 
   // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
@@ -29,10 +28,16 @@ const ClientDashboard = () => {
   );
   const [invoices, setInvoices] = useState<any[]>([]);
   const [pendingSubmittals, setPendingSubmittals] = useState<any[]>([]);
-
+  const [pendingRFQs, setPendingRFQs] = useState<any[]>([]);
+  const [pendingRFIs, setPendingRFIs] = useState<any[]>([]);
+  const [pendingCOs, setPendingCOs] = useState<any[]>([]);
+  const [upcomingSubmittals, setUpcomingSubmittals] = useState<any[]>([]);
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmittalModalOpen, setIsSubmittalModalOpen] = useState(false);
+  const [isRfqModalOpen, setIsRfqModalOpen] = useState(false);
+  const [isRfiModalOpen, setIsRfiModalOpen] = useState(false);
+  const [isCoModalOpen, setIsCoModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
@@ -63,32 +68,26 @@ const ClientDashboard = () => {
         const [
           sent,
           received,
-          upcomingSubmittalsRes,
           allInvoices,
+          pendingRFIsData,
+          pendingCOsData,
           dashboardData,
         ] = await Promise.all([
           Service.RfqSent(),
           Service.RFQRecieved(),
-          Service.DashboardMilestone(),
+          Service.SubmittalRecieved(),
           Service.InvoiceDashboardData(),
+          Service.pendingRFIs(),
+          Service.PendingCo(),
           Service.DashboardData(),
         ]);
-        console.log("Client Dashboard Combined Data:", {
-          sent,
-          received,
-          upcomingSubmittalsRes,
-          allInvoices,
-          dashboardData,
-        });
 
-        setPendingSubmittals(
-          Array.isArray(upcomingSubmittalsRes)
-            ? upcomingSubmittalsRes
-            : upcomingSubmittalsRes?.data || [],
-        );
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
+        setPendingRFQs(received?.data || received || []);
+        setPendingRFIs(pendingRFIsData?.data || pendingRFIsData || []);
+        setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 
         setDashboardStats(dashboardData?.data || dashboardData || null);
         const sentCount = sent?.length || 0;
@@ -125,6 +124,34 @@ const ClientDashboard = () => {
     fetchData();
   }, [employees.length, fabricators.length, projects.length]);
 
+
+  const fetchUpcomingSubmittals = async () => {
+    try {
+      const response = await Service.GetPendingSubmittal();     
+      console.log(response);
+       
+      setUpcomingSubmittals(response?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch submittals", error);
+    }
+  };
+
+  const fetchPendingSubmittals = async () => {
+    try {
+      const response = await Service.SubmittalRecieved();     
+      console.log(response);
+       
+      setPendingSubmittals(response?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch submittals", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUpcomingSubmittals();
+    fetchPendingSubmittals();
+  }, []);
+
   const handleCardClick = (status: string) => {
     const filtered = projects.filter((p: any) => p.status === status);
     setFilteredProjects(filtered);
@@ -135,6 +162,12 @@ const ClientDashboard = () => {
   const handleActionClick = (actionType: string) => {
     if (actionType === "PENDING_SUBMITTALS") {
       setIsSubmittalModalOpen(true);
+    } else if (actionType === "PENDING_RFQ") {
+      setIsRfqModalOpen(true);
+    } else if (actionType === "PENDING_RFI") {
+      setIsRfiModalOpen(true);
+    } else if (actionType === "PENDING_CO") {
+      setIsCoModalOpen(true);
     }
   };
 
@@ -158,6 +191,7 @@ const ClientDashboard = () => {
                 dashboardStats={dashboardStats}
                 onActionClick={handleActionClick}
                 filter={["RFQ", "RFI", "CO", "Submittals"]}
+                submittalsCount={pendingSubmittals.length}
               />
             </div>
           </div>
@@ -173,7 +207,7 @@ const ClientDashboard = () => {
             </div>
             <div className="p-2">
               <UpcomingSubmittals
-                pendingSubmittals={pendingSubmittals}
+                pendingSubmittals={upcomingSubmittals}
                 invoices={invoices}
                 initialTab="submittals"
                 hideTabs={true}
@@ -192,12 +226,12 @@ const ClientDashboard = () => {
           <div className="w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden min-h-[400px]">
             <div className="p-4 border-b border-gray-100 dark:border-slate-700">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-                Recent Invoices
+                Invoices Received
               </h2>
             </div>
             <div className="p-2">
               <UpcomingSubmittals
-                pendingSubmittals={pendingSubmittals}
+                pendingSubmittals={upcomingSubmittals}
                 invoices={invoices}
                 initialTab="invoices"
                 hideTabs={true}
@@ -224,6 +258,27 @@ const ClientDashboard = () => {
         <ProjectDetailsModal
           project={selectedProject}
           onClose={() => setSelectedProject(null)}
+        />
+
+        <ActionListModal
+          isOpen={isRfqModalOpen}
+          onClose={() => setIsRfqModalOpen(false)}
+          type="PENDING_RFQ"
+          data={pendingRFQs}
+        />
+
+        <ActionListModal
+          isOpen={isRfiModalOpen}
+          onClose={() => setIsRfiModalOpen(false)}
+          type="PENDING_RFI"
+          data={pendingRFIs}
+        />
+
+        <ActionListModal
+          isOpen={isCoModalOpen}
+          onClose={() => setIsCoModalOpen(false)}
+          type="PENDING_CO"
+          data={pendingCOs}
         />
       </Suspense>
     </div>

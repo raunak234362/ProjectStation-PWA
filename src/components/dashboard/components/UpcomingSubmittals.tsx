@@ -25,7 +25,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   );
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
   const isOverdue = (dateString: string) => {
     if (!dateString) return false;
     const today = new Date();
@@ -90,7 +90,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
           <h3 className="text-lg text-gray-700 dark:text-white">
             {activeTab === "submittals"
               ? "Upcoming Submittals"
-              : "Invoice Need Raise"}
+              : ""}
           </h3>
           <span className="px-3 py-1 bg-white dark:bg-slate-800 text-green-700 dark:text-green-400 text-xs  rounded-full shadow-sm">
             {activeTab === "submittals"
@@ -237,7 +237,11 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center h-full py-8 text-gray-400">
             <ClipboardList size={32} className="mb-2 opacity-20" />
-            <p className="text-xs">No invoices need raising.</p>
+            {userRole === "client" ? (
+              <p className="text-xs">No invoices received.</p>
+            ) : (
+              <p className="text-xs">No invoices need raising.</p>
+            )}
           </div>
         )}
       </div>

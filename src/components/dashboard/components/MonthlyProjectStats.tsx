@@ -25,7 +25,7 @@ interface MonthlyProjectStatsProps {
   handleStatClick: (
     projects: ProjectData[],
     stage: "IFA" | "IFC" | "CO#",
-    status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL"
+    status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
   ) => void;
 }
 
@@ -124,7 +124,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
         if (matchesYear && matchesMonth) {
           const hours = (task.workingHourTask || []).reduce(
             (sum: number, wht: any) => sum + (wht.duration_seconds || 0),
-            0
+            0,
           );
           const monthYear = `${months[m]} ${y}`;
           summary[teamId].monthlyBreakdown[monthYear] =
@@ -133,7 +133,13 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
       }
     });
 
-    const teamOrder = ["Tekla", "SDS/2", "PEMB", "PEMB Designing"];
+    const teamOrder = [
+      "Tekla",
+      "SDS/2",
+      "SDS/2 Team 2",
+      "PEMB",
+      "PEMB Designing",
+    ];
     return Object.values(summary).sort((a, b) => {
       const indexA = teamOrder.indexOf(a.teamName);
       const indexB = teamOrder.indexOf(b.teamName);
@@ -168,9 +174,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
               <button
                 onClick={() => {
                   const teamId = Object.keys(projectsByTeam).find(
-                    (k) => projectsByTeam[k].teamName === team.teamName
+                    (k) => projectsByTeam[k].teamName === team.teamName,
                   );
-                  const teamProjects = teamId ? projectsByTeam[teamId]?.projects || [] : [];
+                  const teamProjects = teamId
+                    ? projectsByTeam[teamId]?.projects || []
+                    : [];
                   handleStatClick(teamProjects, "IFA", "TOTAL");
                 }}
                 className="p-2 sm:p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-gray-100 hover:bg-gray-100 hover:border-gray-200 transition-all cursor-pointer group/projects"
@@ -226,11 +234,12 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                               projectsByTeam[
                                 Object.keys(projectsByTeam).find(
                                   (k) =>
-                                    projectsByTeam[k].teamName === team.teamName
+                                    projectsByTeam[k].teamName ===
+                                    team.teamName,
                                 ) || ""
                               ]?.projects || [],
                               stage as any,
-                              item.key.toUpperCase() as any
+                              item.key.toUpperCase() as any,
                             )
                           }
                           className={`w-full flex items-center justify-between px-1.5 sm:px-2 py-1 rounded-lg hover:bg-${item.color}-50 transition-all group/btn border border-transparent hover:border-${item.color}-100`}

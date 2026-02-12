@@ -25,6 +25,7 @@ const InvoiceTrends = lazy(() => import("./components/InvoiceTrends"));
 const UpcomingSubmittals = lazy(
   () => import("./components/UpcomingSubmittals"),
 );
+const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const ProjectListModal = lazy(() => import("./components/ProjectListModal"));
 const ProjectDetailsModal = lazy(
   () => import("./components/ProjectDetailsModal"),
@@ -89,6 +90,14 @@ const WBTDashboard = () => {
 
   // Pending Submittals state
   const [pendingSubmittals, setPendingSubmittals] = useState<any[]>([]);
+  const [pendingRFQs, setPendingRFQs] = useState<any[]>([]);
+  const [pendingRFIs, setPendingRFIs] = useState<any[]>([]);
+  const [pendingCOs, setPendingCOs] = useState<any[]>([]);
+
+  // Modal visibility state
+  const [isRfqModalOpen, setIsRfqModalOpen] = useState(false);
+  const [isRfiModalOpen, setIsRfiModalOpen] = useState(false);
+  const [isCoModalOpen, setIsCoModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,6 +109,7 @@ const WBTDashboard = () => {
           allInvoices,
           _pendingSubmittalsRes,
           pendingRFIsData,
+          pendingCOsData,
           dashboardData,
         ] = await Promise.all([
           Service.RfqSent(),
@@ -110,6 +120,7 @@ const WBTDashboard = () => {
           isClient ? Service.InvoiceDashboardData() : Service.GetAllInvoice(),
           Service.PendingSubmittal(),
           Service.pendingRFIs(),
+          Service.PendingCo(),
           isClient ? Service.DashboardData() : Service.GetDashboardData(),
         ]);
         console.log("WBT Dashboard Combined Data:", {
@@ -129,6 +140,10 @@ const WBTDashboard = () => {
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
+
+        setPendingRFQs(received?.data || received || []);
+        setPendingRFIs(pendingRFIsData?.data || pendingRFIsData || []);
+        setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 
         setDashboardStats(dashboardData?.data || dashboardData || null);
         const sentCount = sent?.length || 0;
@@ -175,6 +190,12 @@ const WBTDashboard = () => {
   const handleActionClick = (actionType: string) => {
     if (actionType === "PENDING_SUBMITTALS") {
       setIsSubmittalModalOpen(true);
+    } else if (actionType === "PENDING_RFQ") {
+      setIsRfqModalOpen(true);
+    } else if (actionType === "PENDING_RFI") {
+      setIsRfiModalOpen(true);
+    } else if (actionType === "PENDING_CO") {
+      setIsCoModalOpen(true);
     }
   };
 
@@ -264,6 +285,27 @@ const WBTDashboard = () => {
         <ProjectDetailsModal
           project={selectedProject}
           onClose={() => setSelectedProject(null)}
+        />
+
+        <ActionListModal
+          isOpen={isRfqModalOpen}
+          onClose={() => setIsRfqModalOpen(false)}
+          type="PENDING_RFQ"
+          data={pendingRFQs}
+        />
+
+        <ActionListModal
+          isOpen={isRfiModalOpen}
+          onClose={() => setIsRfiModalOpen(false)}
+          type="PENDING_RFI"
+          data={pendingRFIs}
+        />
+
+        <ActionListModal
+          isOpen={isCoModalOpen}
+          onClose={() => setIsCoModalOpen(false)}
+          type="PENDING_CO"
+          data={pendingCOs}
         />
       </Suspense>
     </div>

@@ -1558,7 +1558,6 @@ class Service {
           "Content-Type": "application/json",
         },
       });
-      console.log(" Pending submittals:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find submittals", error);
@@ -1573,7 +1572,6 @@ class Service {
           "Content-Type": "application/json",
         },
       });
-      console.log(" Submittals sents:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find submittals", error);
@@ -1588,7 +1586,6 @@ class Service {
         },
       });
 
-      console.log("  Submittal received:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find submittal's", error);
@@ -1601,7 +1598,6 @@ class Service {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All submittal fetched by submittalID:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find submittal", error);

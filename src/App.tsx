@@ -1,4 +1,3 @@
- 
 import { Provider, useDispatch } from "react-redux";
 import store from "./store/store";
 import Layout from "./layout/DashboardLayout";
@@ -33,7 +32,10 @@ const AppContent = () => {
       sessionStorage.setItem("userId", userDetail.id);
       sessionStorage.setItem("username", userDetail.username);
       sessionStorage.setItem("firstName", userDetail.firstName);
-      sessionStorage.setItem("connectionDesignerId", userDetail.connectionDesignerId);
+      sessionStorage.setItem(
+        "connectionDesignerId",
+        userDetail.connectionDesignerId,
+      );
 
       // setUserId(userDetail.id);
       dispatch(setUserData(userDetail));
@@ -98,14 +100,12 @@ const AppContent = () => {
           userType === "ADMIN"
         ) {
           rfqDetail = await Service.getAllRFQ();
-        }
-        else if (userType === "CONNECTION_DESIGNER_ENGINEER") {
+        } else if (userType === "CONNECTION_DESIGNER_ENGINEER") {
           const designerId = sessionStorage.getItem("connectionDesignerId");
           if (designerId) {
             rfqDetail = await Service.getConnectionEngineerQuotation();
           }
-        }
-        else {
+        } else {
           rfqDetail = await Service.RFQRecieved();
         }
         // setRfq(rfqDetail.data);
@@ -120,8 +120,10 @@ const AppContent = () => {
       }
     };
 
-    fetchAllFabricator();
-    fetchAllEmployee();
+    if (userType !== "CLIENT" && userType !== "CLIENT_ADMIN") {
+      fetchAllFabricator();
+      fetchAllEmployee();
+    }
     fetchInboxRFQ();
     // Cleanup socket on unmount
     return () => {

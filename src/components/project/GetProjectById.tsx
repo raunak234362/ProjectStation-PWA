@@ -22,6 +22,7 @@ import AllMileStone from "./mileStone/AllMileStone";
 import AllDocument from "./projectDocument/AllDocument";
 import { type ProjectData } from "../../interface";
 import WBS from "./wbs/WBS";
+import ProjectAnalyticsDashboard from "./ProjectAnalyticsDashboard";
 
 import AllRFI from "../rfi/AllRfi";
 import AddRFI from "../rfi/AddRFI";
@@ -139,6 +140,7 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
 
   const clientTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
+    { key: "analytics", label: "Analytics", icon: TrendingUp },
     { key: "details", label: "Details", icon: ClipboardList },
     { key: "files", label: "Files", icon: FileText },
     { key: "milestones", label: "Milestones", icon: FileText },
@@ -149,6 +151,7 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
 
   const defaultDesktopTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
+    { key: "analytics", label: "Analytics", icon: TrendingUp },
     { key: "details", label: "Details", icon: ClipboardList },
     { key: "files", label: "Files", icon: FileText },
     { key: "wbs", label: "WBS", icon: FileText },
@@ -163,6 +166,7 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
 
   const defaultMobileTabs = [
     { key: "details", label: "Details" },
+    { key: "analytics", label: "Analytics" },
     { key: "files", label: "Files" },
     { key: "wbs", label: "WBS" },
     { key: "milestones", label: "Milestones" },
@@ -390,6 +394,10 @@ const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
                 </div>
               </div>
             </div>
+          )}
+          {/* ✅ Analytics Dashboard */}
+          {activeTab === "analytics" && (
+            <ProjectAnalyticsDashboard projectId={id} />
           )}
 
           {/* ✅ Details */}

@@ -56,10 +56,11 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 rounded-full text-xs  ${row.original.status === "ACTIVE"
-            ? "bg-green-100 text-green-700"
-            : "bg-orange-100 text-orange-700"
-            }`}
+          className={`px-3 py-1 rounded-full text-xs  ${
+            row.original.status === "ACTIVE"
+              ? "bg-green-100 text-green-700"
+              : "bg-orange-100 text-orange-700"
+          }`}
         >
           {row.original.status}
         </span>
@@ -68,7 +69,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-slate-900 w-[90%] max-w-[80%] max-h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50/50 dark:bg-slate-800/50">

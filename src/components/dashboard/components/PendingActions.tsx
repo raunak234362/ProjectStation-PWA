@@ -13,12 +13,14 @@ interface PendingActionsProps {
   dashboardStats: DashboardStats | null;
   onActionClick?: (actionType: string) => void;
   filter?: ("RFQ" | "RFI" | "Submittals" | "CO")[];
+  submittalsCount?: number;
 }
 
 const PendingActions: React.FC<PendingActionsProps> = ({
   dashboardStats,
   onActionClick,
   filter,
+  submittalsCount,
 }) => {
   const actions = [
     {
@@ -39,7 +41,10 @@ const PendingActions: React.FC<PendingActionsProps> = ({
     },
     {
       title: "Submittals",
-      count: dashboardStats?.pendingSubmittals || 0,
+      count:
+        submittalsCount !== undefined
+          ? submittalsCount
+          : dashboardStats?.pendingSubmittals || 0,
       subtitle: "Response Pending",
       icon: RefreshCw,
       color: "purple",
@@ -97,8 +102,14 @@ const PendingActions: React.FC<PendingActionsProps> = ({
             <div
               key={action.title}
               onClick={() => {
-                if (action.title === "Submittals" && onActionClick) {
-                  onActionClick("PENDING_SUBMITTALS");
+                if (onActionClick) {
+                  const actionMap: Record<string, string> = {
+                    Submittals: "PENDING_SUBMITTALS",
+                    RFQ: "PENDING_RFQ",
+                    RFI: "PENDING_RFI",
+                    CO: "PENDING_CO",
+                  };
+                  onActionClick(actionMap[action.title] || action.title);
                 }
               }}
               className="flex flex-row items-center gap-5 p-5 rounded-[24px] bg-slate-50/50 dark:bg-slate-800/30 shadow-sm transition-all duration-300 cursor-pointer hover:shadow-md hover:scale-[1.02] hover:bg-white dark:hover:bg-slate-800 active:scale-[0.98] group border border-transparent dark:border-slate-800/50"

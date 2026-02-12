@@ -32,29 +32,49 @@ const EditEmployee = ({
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm<EditEmployeePayload>({
     defaultValues: {
       role: "STAFF",
     },
   });
 
-  const roleOptions = [
-    { label: "STAFF", value: "STAFF" },
-    { label: "ADMIN", value: "ADMIN" },
-    { label: "OPERATION_EXECUTIVE", value: "OPERATION_EXECUTIVE" },
-    { label: "PROJECT_MANAGER_OFFICER", value: "PROJECT_MANAGER_OFFICER" },
-    { label: "DEPUTY_MANAGER", value: "DEPUTY_MANAGER" },
-    { label: "DEPT_MANAGER", value: "DEPT_MANAGER" },
-    { label: "PROJECT_MANAGER", value: "PROJECT_MANAGER" },
-    { label: "TEAM_LEAD", value: "TEAM_LEAD" },
-    { label: "SALES_MANAGER", value: "SALES_MANAGER" },
-    { label: "SALES_PERSON", value: "SALES_PERSON" },
-    { label: "SYSTEM_ADMIN", value: "SYSTEM_ADMIN" },
-    { label: "ESTIMATION_HEAD", value: "ESTIMATION_HEAD" },
-    { label: "ESTIMATOR", value: "ESTIMATOR" },
-    { label: "HUMAN_RESOURCE", value: "HUMAN_RESOURCE" },
-  ];
+  const isClientRole = [
+    "CLIENT",
+    "CLIENT_ADMIN",
+    "CLIENT_PROJECT_COORDINATOR",
+    "CLIENT_GENERAL_CONSTRUCTOR",
+  ].includes(employeeData?.role || "");
+
+  const roleOptions = isClientRole
+    ? [
+        { label: "Client", value: "CLIENT" },
+        { label: "Client Administrator", value: "CLIENT_ADMIN" },
+        {
+          label: "Client Project Coordinator",
+          value: "CLIENT_PROJECT_COORDINATOR",
+        },
+        {
+          label: "Client General Constructor",
+          value: "CLIENT_GENERAL_CONSTRUCTOR",
+        },
+      ]
+    : [
+        { label: "STAFF", value: "STAFF" },
+        { label: "ADMIN", value: "ADMIN" },
+        { label: "OPERATION_EXECUTIVE", value: "OPERATION_EXECUTIVE" },
+        { label: "PROJECT_MANAGER_OFFICER", value: "PROJECT_MANAGER_OFFICER" },
+        { label: "DEPUTY_MANAGER", value: "DEPUTY_MANAGER" },
+        { label: "DEPT_MANAGER", value: "DEPT_MANAGER" },
+        { label: "PROJECT_MANAGER", value: "PROJECT_MANAGER" },
+        { label: "TEAM_LEAD", value: "TEAM_LEAD" },
+        { label: "SALES_MANAGER", value: "SALES_MANAGER" },
+        { label: "SALES_PERSON", value: "SALES_PERSON" },
+        { label: "SYSTEM_ADMIN", value: "SYSTEM_ADMIN" },
+        { label: "ESTIMATION_HEAD", value: "ESTIMATION_HEAD" },
+        { label: "ESTIMATOR", value: "ESTIMATOR" },
+        { label: "HUMAN_RESOURCE", value: "HUMAN_RESOURCE" },
+      ];
 
   // Watch current role value (string)
   const selectedRole = watch("role");
@@ -104,7 +124,22 @@ const EditEmployee = ({
       setSubmitting(true);
       setError(null);
 
-      const response = await Service.EditEmployeeByID(employeeData?.id, data);
+      // Create a payload with only dirty fields
+      const dirtyData = Object.keys(dirtyFields).reduce((acc: any, key) => {
+        acc[key] = (data as any)[key];
+        return acc;
+      }, {});
+
+      // If nothing changed, just close the modal
+      if (Object.keys(dirtyData).length === 0) {
+        onClose();
+        return;
+      }
+
+      const response = await Service.EditEmployeeByID(
+        employeeData?.id,
+        dirtyData,
+      );
       const updatedEmployee =
         response?.data?.user || response?.data || response;
 
@@ -167,43 +202,18 @@ const EditEmployee = ({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* ── Basic Info ── */}
-            <Input
-              label="Username"
-              {...register("username", { required: "Username is required" })}
-            />
-            <Input
-              label="Email"
-              type="email"
-              {...register("email", {
-                pattern: {
-                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                  message: "Invalid email address",
-                },
-              })}
-            />
+            <Input label="Username" {...register("username")} />
+            <Input label="Email" type="email" {...register("email")} />
 
             <Input label="First Name" {...register("firstName")} />
             <Input label="Middle Name" {...register("middleName")} />
             <Input label="Last Name" {...register("lastName")} />
             <div className="grid grid-cols-2 gap-2">
-              <Input
-                label="Phone"
-                {...register("phone", {
-                  pattern: {
-                    value: /^\+?[0-9]{10,15}$/,
-                    message: "Invalid phone (10–15 digits)",
-                  },
-                })}
-              />
+              <Input label="Phone" {...register("phone")} />
               <Input label="Extension" {...register("extension")} />
             </div>
             <Input label="Alt Phone" {...register("altPhone")} />
-            <Input
-              label="Designation"
-              {...register("designation", {
-                required: "Designation is required",
-              })}
-            />
+            <Input label="Designation" {...register("designation")} />
 
             {/* Role */}
             <div>
@@ -214,7 +224,9 @@ const EditEmployee = ({
                 options={roleOptions}
                 {...register("role")}
                 value={selectedRoleOption?.value}
-                onChange={(_, value) => setValue("role", value as any)}
+                onChange={(_, value) =>
+                  setValue("role", value as any, { shouldDirty: true })
+                }
                 placeholder="Select role..."
                 className="mt-1"
               />

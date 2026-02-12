@@ -485,10 +485,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 <p className="text-gray-700 italic">No responses yet.</p>
               ))}
             <div className="mt-4">
+              {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                <>
               <p className="text-xl sm:text-2xl font-semibold text-green-700">
                 CD Quotation
               </p>
-              {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
                 // Show their quotation if submitted
                 <DataTable
                   columns={quotationColumns}
@@ -496,6 +497,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                   pageSizeOptions={[5]}
                   onRowClick={(row: any) => setSelectedQuotation(row)}
                 />
+                </>
               ) : (
                 // Show Submit Button if not submitted
                 <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
@@ -512,9 +514,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                       </Button>
                     </>
                   ) : (
-                    <p className="text-gray-500 mb-4 text-center">
-                      There is no quotation submitted yet for CD.
-                    </p>
+                    null
                   )}
                 </div>
               )}
