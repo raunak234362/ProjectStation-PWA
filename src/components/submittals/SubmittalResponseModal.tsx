@@ -21,6 +21,8 @@ const SubmittalResponseModal = ({
 
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("NOT_APPROVED");
+  const [wbtStatus, setWbtStatus] = useState();
 
   // ENUMS
 
@@ -34,7 +36,7 @@ const SubmittalResponseModal = ({
     formData.append("submittalVersionId", submittal.currentVersion.id);
 
     formData.append("submittalsId", submittal.id);
-    // formData.append("status", status);
+    formData.append("status", status);
     // formData.append("wbtStatus", wbtStatus);
 
     if (parentResponseId) {
@@ -87,21 +89,21 @@ const SubmittalResponseModal = ({
         </div>
 
         {/* STATUS ENUM */}
-        {/* <div>
+        <div>
           <label className="text-sm font-medium">Status</label>
           <select
             value={status}
             onChange={(e) => {
               setStatus(e.target.value as any);
-              setWbtStatus(e.target.value as any);
+              // setWbtStatus(e.target.value as any);
             }}
             className="w-full border rounded-md p-2 mt-1"
           >
-            <option value="PENDING">Pending</option>
             <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
+            <option value="PARTIAL">Partially Approved</option>
+            <option value="NOT_APPROVED">Not Approved</option>
           </select>
-        </div> */}
+        </div>
 
         {/* FILE UPLOAD */}
         <div>

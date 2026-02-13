@@ -65,22 +65,15 @@ const ClientDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [
-          sent,
-          received,
-          allInvoices,
-          pendingRFIsData,
-          pendingCOsData,
-          dashboardData,
-        ] = await Promise.all([
-          Service.RfqSent(),
-          Service.RFQRecieved(),
-          Service.SubmittalRecieved(),
-          Service.InvoiceDashboardData(),
-          Service.pendingRFIs(),
-          Service.PendingCo(),
-          Service.DashboardData(),
-        ]);
+        const [sent, received, allInvoices, pendingRFIsData, pendingCOsData] =
+          await Promise.all([
+            Service.RfqSent(),
+            Service.RFQRecieved(),
+            Service.SubmittalRecieved(),
+            Service.InvoiceDashboardData(),
+            Service.pendingRFIs(),
+            Service.PendingCo(),
+          ]);
 
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
@@ -89,7 +82,6 @@ const ClientDashboard = () => {
         setPendingRFIs(pendingRFIsData?.data || pendingRFIsData || []);
         setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 
-        setDashboardStats(dashboardData?.data || dashboardData || null);
         const sentCount = sent?.length || 0;
         const receivedCount = received?.length || 0;
 
@@ -124,12 +116,20 @@ const ClientDashboard = () => {
     fetchData();
   }, [employees.length, fabricators.length, projects.length]);
 
+  const fetchDashboardData = async () => {
+    try {
+      const response = await Service.DashboardData();
+      setDashboardStats(response?.data || response || null);
+    } catch (error) {
+      console.error("Failed to fetch dashboard data", error);
+    }
+  };
 
   const fetchUpcomingSubmittals = async () => {
     try {
-      const response = await Service.GetPendingSubmittal();     
+      const response = await Service.ClientAdminPendingSubmittals();
       console.log(response);
-       
+
       setUpcomingSubmittals(response?.data || []);
     } catch (error) {
       console.error("Failed to fetch submittals", error);
@@ -138,9 +138,9 @@ const ClientDashboard = () => {
 
   const fetchPendingSubmittals = async () => {
     try {
-      const response = await Service.SubmittalRecieved();     
+      const response = await Service.SubmittalRecieved();
       console.log(response);
-       
+
       setPendingSubmittals(response?.data || []);
     } catch (error) {
       console.error("Failed to fetch submittals", error);
@@ -148,6 +148,7 @@ const ClientDashboard = () => {
   };
 
   useEffect(() => {
+    fetchDashboardData();
     fetchUpcomingSubmittals();
     fetchPendingSubmittals();
   }, []);
@@ -217,7 +218,8 @@ const ClientDashboard = () => {
                     submittal.project ||
                     (submittal.projectId ? { id: submittal.projectId } : null);
                   if (project) {
-                    setSelectedProject(project);
+                    // Add a flag to indicate we want to show analytics
+                    setSelectedProject({ ...project, showAnalytics: true });
                   }
                 }}
               />

@@ -1,23 +1,20 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-} from "recharts";
 import { motion, AnimatePresence } from "motion/react";
 import { Mail, MapPin, ChevronRight, Search } from "lucide-react";
 
 interface CDNetworkOverviewProps {
   designers: any[]; // Full designer data
-  stateData: { name: string; count: number }[]; // State distribution for Pie
   onSelect: (id: string) => void;
 }
 
-const HoverPopover = ({ states, targetRect }: { states: string[], targetRect: DOMRect }) => {
+const HoverPopover = ({
+  states,
+  targetRect,
+}: {
+  states: string[];
+  targetRect: DOMRect;
+}) => {
   return createPortal(
     <motion.div
       initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -25,65 +22,94 @@ const HoverPopover = ({ states, targetRect }: { states: string[], targetRect: DO
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.15 }}
       style={{
-        position: 'fixed',
-        left: targetRect.left - 270, // 256 for width + some margin
+        position: "fixed",
+        left: targetRect.left - 290,
         top: targetRect.top + targetRect.height / 2,
-        transform: 'translateY(-50%)',
+        transform: "translateY(-50%)",
       }}
-      className="z-100 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-2xl border border-gray-100 dark:border-slate-700 w-64 pointer-events-none hidden sm:block"
+      className="z-100 bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-700 w-72 pointer-events-none hidden sm:block"
     >
-      <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-50 dark:border-slate-700/50">
-        <MapPin size={14} className="text-green-500" />
-        <span className="text-xs  text-gray-700 dark:text-slate-200">
-          Coverage Area
-        </span>
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {states.length > 0 ? (
-          states.slice(0, 12).map((s, i) => (
-            <span
-              key={i}
-              className="text-[10px] bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-md border border-green-100 dark:border-green-800/50"
-            >
-              {s}
-            </span>
-          ))
-        ) : (
-          <span className="text-xs text-gray-400 dark:text-slate-500 italic">
-            No specific states listed
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-slate-700/50">
+        <div className="w-8 h-8 rounded-xl bg-linear-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+          <MapPin size={16} className="text-white" />
+        </div>
+        <div>
+          <span className="text-xs font-bold text-gray-800 dark:text-slate-100 block">
+            Coverage Area
           </span>
-        )}
-        {states.length > 12 && (
-          <span className="text-[10px] text-gray-400 dark:text-slate-500 pl-1">
-            +{states.length - 12} more
+          <span className="text-[10px] text-gray-400 dark:text-slate-500 font-medium">
+            {states.length} {states.length === 1 ? "State" : "States"}
           </span>
-        )}
+        </div>
       </div>
+
+      <div className="max-h-64 overflow-y-auto custom-scrollbar pr-1">
+        <div className="flex flex-wrap gap-2">
+          {states.length > 0 ? (
+            states.map((s, i) => (
+              <button
+                key={i}
+                className="group relative px-3 py-2 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 text-green-700 dark:text-green-400 rounded-xl border border-green-200/50 dark:border-green-800/50 hover:border-green-300 dark:hover:border-green-700 transition-all duration-200 shadow-sm hover:shadow-md text-[11px] font-semibold tracking-wide"
+              >
+                <span className="relative z-10">{s}</span>
+                <div className="absolute inset-0 bg-linear-to-br from-green-400/0 to-emerald-400/0 group-hover:from-green-400/10 group-hover:to-emerald-400/10 rounded-xl transition-all duration-200"></div>
+              </button>
+            ))
+          ) : (
+            <div className="w-full text-center py-6">
+              <MapPin
+                size={32}
+                className="mx-auto text-gray-300 dark:text-slate-600 mb-2"
+              />
+              <span className="text-xs text-gray-400 dark:text-slate-500 italic font-medium">
+                No specific states listed
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Arrow */}
       <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-3 h-3 bg-white dark:bg-slate-800 border-t border-r border-gray-100 dark:border-slate-700 rotate-45 transform"></div>
     </motion.div>,
-    document.body
+    document.body,
   );
 };
 
 const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
   designers,
-  stateData,
   onSelect,
 }) => {
-  const COLORS = [
-    "#10b981", "#3b82f6", "#f59e0b", "#8b5cf6", "#ec4899",
-    "#14b8a6", "#6366f1", "#ef4444", "#84cc16", "#0ea5e9",
-  ];
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [hoverRect, setHoverRect] = useState<DOMRect | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredDesigners = designers.filter(
-    (d) =>
-      d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDesigners = designers.filter((d) => {
+    const searchLower = searchTerm.toLowerCase();
+
+    // Check name and email
+    const matchesNameOrEmail =
+      d.name.toLowerCase().includes(searchLower) ||
+      d.email?.toLowerCase().includes(searchLower);
+
+    // Check states
+    let states: string[] = [];
+    if (Array.isArray(d.state)) {
+      states = d.state;
+    } else if (typeof d.state === "string") {
+      try {
+        states = d.state.startsWith("[") ? JSON.parse(d.state) : [d.state];
+      } catch {
+        states = [d.state];
+      }
+    }
+
+    const matchesState = states.some((state) =>
+      state?.toLowerCase().includes(searchLower),
+    );
+
+    return matchesNameOrEmail || matchesState;
+  });
 
   return (
     <div className="mb-8 lg:h-[500px]">
@@ -109,7 +135,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
             />
             <input
               type="text"
-              placeholder="Search designers..."
+              placeholder="Search by name, email, or state..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-1 focus:ring-green-500 outline-none w-full sm:w-56 text-gray-900 dark:text-white transition-all"
@@ -146,10 +172,11 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                     setHoverRect(null);
                   }}
                   onClick={() => onSelect(designer.id || designer._id)}
-                  className={`group flex items-center justify-between p-4 rounded-2xl transition-all border border-transparent cursor-pointer ${isHovered
-                    ? "bg-green-50/50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30 shadow-sm"
-                    : "hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-100 dark:hover:border-slate-700"
-                    }`}
+                  className={`group flex items-center justify-between p-4 rounded-2xl transition-all border border-transparent cursor-pointer ${
+                    isHovered
+                      ? "bg-green-50/50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30 shadow-sm"
+                      : "hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-100 dark:hover:border-slate-700"
+                  }`}
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <div className="w-10 h-10 shrink-0 rounded-2xl bg-linear-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-gray-600 dark:text-slate-300  text-sm shadow-sm transition-transform group-hover:scale-110">
@@ -162,7 +189,11 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                       <div className="flex flex-wrap items-center gap-3 mt-1">
                         {designer.email && (
                           <span className="flex items-center gap-1.5 text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-wider truncate max-w-[150px]">
-                            <Mail size={10} className="text-gray-300 dark:text-slate-600" /> {designer.email}
+                            <Mail
+                              size={10}
+                              className="text-gray-300 dark:text-slate-600"
+                            />{" "}
+                            {designer.email}
                           </span>
                         )}
                       </div>
@@ -171,9 +202,13 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
 
                   <div className="flex items-center gap-4 shrink-0 ml-2">
                     <span className="text-[10px]  text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-800 px-3 py-1 rounded-lg uppercase tracking-widest border border-slate-200/50 dark:border-slate-700/50">
-                      {states.length} <span className="hidden xs:inline">States</span>
+                      {states.length}{" "}
+                      <span className="hidden xs:inline">States</span>
                     </span>
-                    <ChevronRight size={16} className="text-gray-300 dark:text-slate-700 group-hover:text-green-500 dark:group-hover:text-green-400 transition-colors" />
+                    <ChevronRight
+                      size={16}
+                      className="text-gray-300 dark:text-slate-700 group-hover:text-green-500 dark:group-hover:text-green-400 transition-colors"
+                    />
                   </div>
                 </motion.div>
 

@@ -36,8 +36,8 @@ const Layout = () => {
     <div
       className="
         flex h-screen w-screen overflow-hidden
-        bg-white
-        dark:from-slate-950 dark:via-slate-950 dark:to-slate-900
+        bg-gray-200
+        dark:bg-slate-700
         transition-colors duration-300
       "
     >
@@ -90,7 +90,7 @@ const Layout = () => {
           </div>
 
           {/* Page Content */}
-          <main className="flex-1 w-full overflow-y-auto custom-scrollbar px-8 pb-8">
+          <main className="flex-1 w-full overflow-y-auto custom-scrollbar ">
             <Outlet />
           </main>
         </div>

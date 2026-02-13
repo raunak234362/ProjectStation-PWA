@@ -3,8 +3,12 @@ import { createPortal } from "react-dom";
 
 const GetProjectById = React.lazy(() =>
   import("../../project/GetProjectById").then((module) => ({
-    default: module.default as React.ComponentType<{ id: string; close?: () => void }>,
-  }))
+    default: module.default as React.ComponentType<{
+      id: string;
+      close?: () => void;
+      initialTab?: string;
+    }>,
+  })),
 );
 
 interface ProjectDetailsModalProps {
@@ -22,8 +26,18 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
       <div className="bg-white dark:bg-slate-900 w-[80%] max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         <div className="flex-1 overflow-y-auto p-4">
-          <Suspense fallback={<div className="text-gray-500 dark:text-slate-400">Loading...</div>}>
-            <GetProjectById id={project.id || project._id} close={onClose} />
+          <Suspense
+            fallback={
+              <div className="text-gray-500 dark:text-slate-400">
+                Loading...
+              </div>
+            }
+          >
+            <GetProjectById
+              id={project.id || project._id}
+              close={onClose}
+              initialTab={project.showAnalytics ? "analytics" : "overview"}
+            />
           </Suspense>
         </div>
         <div className="p-4 border-t border-gray-100 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-800/50 flex justify-end">
@@ -36,7 +50,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

@@ -41,10 +41,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
     },
     {
       title: "Submittals",
-      count:
-        submittalsCount !== undefined
-          ? submittalsCount
-          : dashboardStats?.pendingSubmittals || 0,
+      count: dashboardStats?.pendingSubmittals,
       subtitle: "Response Pending",
       icon: RefreshCw,
       color: "purple",
@@ -58,6 +55,9 @@ const PendingActions: React.FC<PendingActionsProps> = ({
       color: "rose",
     },
   ];
+
+  console.log(dashboardStats,"============");
+  
 
   const filteredActions = filter
     ? actions.filter((action) => filter.includes(action.title as any))

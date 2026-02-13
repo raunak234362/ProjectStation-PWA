@@ -1,8 +1,9 @@
-import { Menu, ChevronLeft, Bell, Sun, Moon } from "lucide-react";
+import { Menu, ChevronLeft, Sun, Moon } from "lucide-react";
 import Button from "./fields/Button";
 import { useLocation } from "react-router-dom";
 import { navItems } from "../constants/navigation";
 import { useTheme } from "../context/ThemeContext";
+import NotificationPopup from "./NotificationPopup";
 
 interface HeaderProps {
   isMinimized: boolean;
@@ -21,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
     return location.pathname === fullPath;
   });
 
-  const headerTitle = activeTab ? activeTab.label : "Whiteboard Technologies";
+  const headerTitle = activeTab ? activeTab.label : "Dashboard";
 
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between w-full py-3 px-6 bg-white dark:bg-slate-900 rounded-2xl mb-4 border border-gray-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
@@ -60,23 +61,27 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
         <button
           onClick={toggleTheme}
           className="p-2.5 bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-all shadow-sm group"
-          title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+          title={
+            theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"
+          }
         >
           {theme === "light" ? (
-            <Moon size={22} strokeWidth={2.5} className="group-hover:rotate-12 transition-transform" />
+            <Moon
+              size={22}
+              strokeWidth={2.5}
+              className="group-hover:rotate-12 transition-transform"
+            />
           ) : (
-            <Sun size={22} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform" />
+            <Sun
+              size={22}
+              strokeWidth={2.5}
+              className="group-hover:rotate-90 transition-transform"
+            />
           )}
         </button>
 
-        <button className="relative p-2.5 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-xl transition-all shadow-sm group">
-          <Bell
-            size={25}
-            strokeWidth={2.5}
-            className="group-hover:scale-110 transition-transform"
-          />
-          <span className="absolute top-2.5 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
-        </button>
+        {/* Notification Bell */}
+        <NotificationPopup />
       </div>
     </header>
   );

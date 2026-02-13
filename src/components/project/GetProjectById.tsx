@@ -35,11 +35,19 @@ import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
 import CoTable from "../co/CoTable";
 
-const GetProjectById = ({ id, close }: { id: string; close?: () => void }) => {
+const GetProjectById = ({
+  id,
+  close,
+  initialTab = "overview",
+}: {
+  id: string;
+  close?: () => void;
+  initialTab?: string;
+}) => {
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
   const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
   const [editModel, setEditModel] = useState<ProjectData | null>(null);

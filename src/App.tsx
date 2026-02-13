@@ -1,16 +1,15 @@
-import { Provider, useDispatch } from "react-redux";
-import store from "./store/store";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Layout from "./layout/DashboardLayout";
 import Service from "./api/Service";
 import { setUserData, showStaff } from "./store/userSlice";
-import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import socket, { connectSocket } from "./socket";
 import PWABadge from "./PWABadge";
 import { loadFabricator } from "./store/fabricatorSlice";
 import { setRFQData } from "./store/rfqSlice";
 import { setProjectData } from "./store/projectSlice";
-import { useSelector } from "react-redux";
+import { setNotifications } from "./store/notificationSlice";
 import useNotifications from "./hooks/useNotifications";
 
 const AppContent = () => {
@@ -31,6 +30,7 @@ const AppContent = () => {
 
       sessionStorage.setItem("userId", userDetail.id);
       sessionStorage.setItem("username", userDetail.username);
+      sessionStorage.setItem("userDesignation", userDetail.designation);
       sessionStorage.setItem("firstName", userDetail.firstName);
       sessionStorage.setItem(
         "connectionDesignerId",
@@ -87,6 +87,17 @@ const AppContent = () => {
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        const response = await Service.Notifications();
+        const data = response?.data || [];
+        dispatch(setNotifications(data));
+      } catch (err) {
+        console.error("Failed to fetch notifications:", err);
+        toast.error("Failed to load notifications");
+      }
+    };
+
     const fetchInboxRFQ = async () => {
       try {
         let rfqDetail;
@@ -122,8 +133,9 @@ const AppContent = () => {
 
     if (userType !== "CLIENT" && userType !== "CLIENT_ADMIN") {
       fetchAllFabricator();
-      fetchAllEmployee();
     }
+    fetchAllEmployee();
+    fetchNotifications();
     fetchInboxRFQ();
     // Cleanup socket on unmount
     return () => {
@@ -144,10 +156,10 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <Provider store={store}>
+  <>
     <AppContent />
     <PWABadge />
-  </Provider>
+  </>
 );
 
 export default App;

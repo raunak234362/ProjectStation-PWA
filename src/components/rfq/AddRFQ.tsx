@@ -65,7 +65,10 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   const recipientOption: SelectOption[] =
     staffData
       ?.filter(
-        (u: { role: string }) => u.role === "SALES_MANAGER" || u.role === "ADMIN",
+        (u: { role: string }) =>
+          u.role === "ADMIN" ||
+          u.role === "SALES" ||
+          u.role === "SALES_MANAGER",
       )
       .map(
         (u: {
@@ -210,11 +213,11 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-4 md:space-y-8"
       >
-        <SectionTitle title="Project Information" />
+        <SectionTitle title="RFQ Information" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* FABRICATOR (HIDDEN FOR CLIENTS) */}
-          {userRole !== "CLIENT" && (
+          {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
             <>
               <div>
                 <label className="font-semibold text-gray-700 mb-1 block">
@@ -323,7 +326,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </div>
 
           <Input
-            label="Project Number"
+            label="RFQ Number"
             {...register("projectNumber")}
             placeholder="Optional"
           />
@@ -336,7 +339,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
         <div className="space-y-1">
           <label className="text-sm font-medium text-gray-700">
-            Description
+            Project Scope & Description
           </label>
           <RichTextEditor
             value={description}
@@ -348,7 +351,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         {/* TOOLS */}
         <div>
           <label className="font-semibold text-gray-700 mb-1 block">
-            Tools *
+            Prefered Tools *
           </label>
 
           <Controller

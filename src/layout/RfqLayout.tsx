@@ -11,11 +11,7 @@ const RfqLayout = () => {
   return (
     <div className="w-full">
       <div className="flex flex-col w-full h-full mb-6">
-        <div className="px-6 py-4 backdrop-blur-2xl bg-white/60 dark:bg-slate-900/60 border border-white/50 dark:border-slate-800/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-          <div className="flex flex-col">
-            <h2 className="text-xl  text-gray-800 dark:text-white uppercase tracking-tight">RFQ Management</h2>
-            <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest">Manage and track all request for quotations</p>
-          </div>
+        <div className="mx-2 px-6 py-4 backdrop-blur-2xl dark:bg-slate-900/60 border border-white/50 dark:border-slate-800/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="flex flex-row gap-4 items-center w-full md:w-auto">
             <button
               onClick={() => setActiveTab("allRFQ")}
@@ -34,7 +30,7 @@ const RfqLayout = () => {
                 : "bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-green-600 shadow-sm"
                 }`}
             >
-              Add RFQ
+              Create RFQ
             </button>
           </div>
         </div>

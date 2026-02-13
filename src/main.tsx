@@ -6,7 +6,7 @@ import store from "./store/store";
 import routes from "./routes/routes";
 import { ThemeProvider } from "./context/ThemeContext";
 
-import { Suspense } from "react";
+import { StrictMode, Suspense } from "react";
 
 // Define the router configuration
 const router = createBrowserRouter(routes);
@@ -22,7 +22,7 @@ createRoot(rootElement).render(
         <Suspense
           fallback={
             <div className="flex items-center justify-center h-screen w-screen ">
-              <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin"></div>
             </div>
           }
         >

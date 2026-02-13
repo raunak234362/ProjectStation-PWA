@@ -63,12 +63,12 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
       header: "Message",
       cell: ({ row }) => (
         <div
+          className="prose prose-sm max-w-none"
           style={{
             marginLeft: row.original.parentResponseId ? "20px" : "0px",
           }}
-        >
-          {row.original.description}
-        </div>
+          dangerouslySetInnerHTML={{ __html: row.original.description || "—" }}
+        />
       ),
     },
     {
@@ -92,9 +92,7 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* LEFT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-            <h1 className="text-2xl  text-green-700">
-              {submittal.subject}
-            </h1>
+            <h1 className="text-2xl  text-green-700">{submittal.subject}</h1>
 
             <Info label="Project" value={submittal.project?.name || "—"} />
             <Info
@@ -110,7 +108,12 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
               <h4 className="font-semibold text-gray-700">Description</h4>
               <div
                 className="p-3 bg-gray-50 border rounded-lg prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: submittal.description || submittal.currentVersion?.description || "—" }}
+                dangerouslySetInnerHTML={{
+                  __html:
+                    submittal.description ||
+                    submittal.currentVersion?.description ||
+                    "—",
+                }}
               />
             </div>
 
@@ -121,11 +124,12 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
             />
           </div>
 
-
           {/* RIGHT PANEL */}
           <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-green-700">Responses</h2>
+              <h2 className="text-xl font-semibold text-green-700">
+                Responses
+              </h2>
               {(userRole === "CLIENT_ADMIN" || userRole === "CLIENT") && (
                 <Button
                   className="bg-green-600 text-white"

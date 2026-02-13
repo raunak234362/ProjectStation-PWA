@@ -2000,6 +2000,18 @@ class Service {
     }
   }
 
+  //upcoming rfi
+  static async ClientAdminPendingSubmittals() {
+    try {
+      const response = await api.get(`mileStone/pendingSubmittals/clientAdmin`);
+      console.log("Upcoming RFI fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching upcoming RFI:", error);
+      throw error;
+    }
+  }
+
   // Create Share Link
   static async createShareLink(
     table: string,
@@ -2154,6 +2166,260 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("Error fetching dashboard milestone:", error);
+      throw error;
+    }
+  }
+  static async Notifications() {
+    try {
+      const response = await api.get(`notifications`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      throw error;
+    }
+  }
+
+  static async MarkNotificationAsRead(id: string) {
+    try {
+      const response = await api.patch(`notifications/read/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      throw error;
+    }
+  }
+
+  // ==================== MEETINGS API ====================
+
+  // Create a new meeting
+  static async CreateMeeting(data: any) {
+    try {
+      const response = await api.post(`meetings`, data);
+      console.log("Meeting created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating meeting:", error);
+      throw error;
+    }
+  }
+
+  // Record attendance for a meeting
+  static async RecordAttendance(data: any) {
+    try {
+      const response = await api.post(`meetings/attendance`, data);
+      console.log("Attendance recorded:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error recording attendance:", error);
+      throw error;
+    }
+  }
+
+  // Get attendance history
+  static async GetAttendanceHistory() {
+    try {
+      const response = await api.get(`meetings/attendance/history`);
+      console.log("Attendance history:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching attendance history:", error);
+      throw error;
+    }
+  }
+
+  // Add participants to a meeting
+  static async AddMeetingParticipants(data: any) {
+    try {
+      const response = await api.post(`meetings/participants`, data);
+      console.log("Participants added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding participants:", error);
+      throw error;
+    }
+  }
+
+  // Delete a participant from a meeting
+  static async DeleteMeetingParticipant(attendeeId: string) {
+    try {
+      const response = await api.delete(`meetings/participants/${attendeeId}`);
+      console.log("Participant deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting participant:", error);
+      throw error;
+    }
+  }
+
+  // Update a participant in a meeting
+  static async UpdateMeetingParticipant(attendeeId: string, data: any) {
+    try {
+      const response = await api.put(
+        `meetings/participants/${attendeeId}`,
+        data,
+      );
+      console.log("Participant updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating participant:", error);
+      throw error;
+    }
+  }
+
+  // Get meeting status count
+  static async GetMeetingStatusCount() {
+    try {
+      const response = await api.get(`meetings/status/count`);
+      console.log("Meeting status count:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting status count:", error);
+      throw error;
+    }
+  }
+
+  // Get current user's meetings
+  static async GetMyMeetings() {
+    try {
+      const response = await api.get(`meetings/user/me`);
+      console.log("My meetings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching my meetings:", error);
+      throw error;
+    }
+  }
+
+  // Get current user's past meetings
+  static async GetMyPastMeetings() {
+    try {
+      const response = await api.get(`meetings/user/me/past`);
+      console.log("My past meetings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching my past meetings:", error);
+      throw error;
+    }
+  }
+
+  // Get current user's upcoming meetings
+  static async GetMyUpcomingMeetings() {
+    try {
+      const response = await api.get(`meetings/user/me/upcoming`);
+      console.log("My upcoming meetings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching my upcoming meetings:", error);
+      throw error;
+    }
+  }
+
+  // View a file from a meeting
+  static async ViewMeetingFile(meetingId: string, fileId: string) {
+    try {
+      const response = await api.get(
+        `meetings/viewFile/${meetingId}/${fileId}`,
+      );
+      console.log("Meeting file:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error viewing meeting file:", error);
+      throw error;
+    }
+  }
+
+  // Delete a meeting by ID
+  static async DeleteMeeting(id: string) {
+    try {
+      const response = await api.delete(`meetings/${id}`);
+      console.log("Meeting deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting meeting:", error);
+      throw error;
+    }
+  }
+
+  // Get a meeting by ID
+  static async GetMeetingById(id: string) {
+    try {
+      const response = await api.get(`meetings/${id}`);
+      console.log("Meeting details:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting by ID:", error);
+      throw error;
+    }
+  }
+
+  // Update a meeting by ID
+  static async UpdateMeeting(id: string, data: any) {
+    try {
+      const response = await api.put(`meetings/${id}`, data);
+      console.log("Meeting updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating meeting:", error);
+      throw error;
+    }
+  }
+
+  // Update meeting status
+  static async UpdateMeetingStatus(id: string, data: any) {
+    try {
+      const response = await api.patch(`meetings/${id}/status`, data);
+      console.log("Meeting status updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating meeting status:", error);
+      throw error;
+    }
+  }
+
+  // Get meeting summary
+  static async GetMeetingSummary(id: string) {
+    try {
+      const response = await api.get(`meetings/${id}/summary`);
+      console.log("Meeting summary:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting summary:", error);
+      throw error;
+    }
+  }
+
+  // Get attendance for a specific meeting
+  static async GetMeetingAttendance(meetingId: string) {
+    try {
+      const response = await api.get(`meetings/${meetingId}/attendance`);
+      console.log("Meeting attendance:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting attendance:", error);
+      throw error;
+    }
+  }
+
+  // Get a specific file from a meeting
+  static async GetMeetingFileById(meetingId: string, fileId: string) {
+    try {
+      const response = await api.get(`meetings/${meetingId}/files/${fileId}`);
+      console.log("Meeting file:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting file:", error);
+      throw error;
+    }
+  }
+
+  // Update RSVP for a meeting
+  static async UpdateMeetingRSVP(meetingId: string, data: any) {
+    try {
+      const response = await api.patch(`meetings/${meetingId}/rsvp`, data);
+      console.log("RSVP updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating RSVP:", error);
       throw error;
     }
   }

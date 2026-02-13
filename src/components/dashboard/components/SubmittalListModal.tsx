@@ -2,6 +2,7 @@ import React from "react";
 import { X as CloseIcon, Files } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
+import GetSubmittalByID from "../../submittals/GetSubmittalByID";
 
 interface SubmittalListModalProps {
   isOpen: boolean;
@@ -68,6 +69,10 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
     },
   ];
 
+  const renderDetail = ({ row }: { row: any }) => {
+    return <GetSubmittalByID id={row.id} />;
+  };
+
   return (
     <div className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-slate-900 w-[90%] max-w-[80%] max-h-[80vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 dark:border-slate-800 animate-in fade-in zoom-in duration-200">
@@ -96,6 +101,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
               columns={columns}
               data={data}
               pageSizeOptions={[10, 25, 50]}
+              detailComponent={renderDetail}
             />
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-gray-400 dark:text-slate-500">
