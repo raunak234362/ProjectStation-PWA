@@ -153,13 +153,7 @@ const AddMileStone = ({
 
           {/* Footer */}
           <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t mt-2">
-            <Button
-              type="button"
-              onClick={onClose}
-              className="w-full sm:w-auto px-5 bg-gray-100 text-gray-700 hover:bg-gray-200"
-            >
-              Cancel
-            </Button>
+            
             <Button
               type="submit"
               disabled={isSubmitting}

@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense, lazy } from "react";
+import { useEffect, useState, Suspense, lazy, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Service from "../../api/Service";
 import { useSelector } from "react-redux";
@@ -94,6 +94,9 @@ const WBTDashboard = () => {
   const [pendingRFIs, setPendingRFIs] = useState<any[]>([]);
   const [pendingCOs, setPendingCOs] = useState<any[]>([]);
 
+  // Tasks state for stats calculation
+  const [allTasks, setAllTasks] = useState<any[]>([]);
+
   // Modal visibility state
   const [isRfqModalOpen, setIsRfqModalOpen] = useState(false);
   const [isRfiModalOpen, setIsRfiModalOpen] = useState(false);
@@ -111,6 +114,7 @@ const WBTDashboard = () => {
           pendingRFIsData,
           pendingCOsData,
           dashboardData,
+          tasksRes,
         ] = await Promise.all([
           Service.RfqSent(),
           Service.RFQRecieved(),
@@ -122,6 +126,7 @@ const WBTDashboard = () => {
           Service.pendingRFIs(),
           Service.PendingCo(),
           isClient ? Service.DashboardData() : Service.GetDashboardData(),
+          Service.GetAllTask(),
         ]);
         console.log("WBT Dashboard Combined Data:", {
           sent,
@@ -140,6 +145,10 @@ const WBTDashboard = () => {
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
+
+        if (tasksRes?.data) {
+          setAllTasks(Array.isArray(tasksRes.data) ? tasksRes.data : []);
+        }
 
         setPendingRFQs(received?.data || received || []);
         setPendingRFIs(pendingRFIsData?.data || pendingRFIsData || []);
@@ -180,8 +189,35 @@ const WBTDashboard = () => {
     fetchData();
   }, [employees.length, fabricators.length, projects.length]);
 
+  const projectsWithStats = useMemo(() => {
+    return projects.map((project: any) => {
+      const projectTasks = allTasks.filter(
+        (task) => task.project_id === project.id,
+      );
+
+      const workedSeconds = projectTasks.reduce((sum, task) => {
+        const taskSeconds = (task.workingHourTask || []).reduce(
+          (tSum: number, wht: any) => tSum + (wht.duration_seconds || 0),
+          0,
+        );
+        return sum + taskSeconds;
+      }, 0);
+
+      const estimatedHours = project.estimatedHours || 0;
+      const workedHours = workedSeconds / 3600;
+      const isOverrun = workedHours > estimatedHours && estimatedHours > 0;
+
+      return {
+        ...project,
+        workedSeconds,
+        workedHours,
+        isOverrun,
+      };
+    });
+  }, [projects, allTasks]);
+
   const handleCardClick = (status: string) => {
-    const filtered = projects.filter((p: any) => p.status === status);
+    const filtered = projectsWithStats.filter((p: any) => p.status === status);
     setFilteredProjects(filtered);
     setSelectedStatus(status);
     setIsModalOpen(true);

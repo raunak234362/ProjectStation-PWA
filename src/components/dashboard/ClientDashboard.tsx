@@ -1,6 +1,7 @@
 import { useEffect, useState, Suspense, lazy } from "react";
 import Service from "../../api/Service";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
 import { X, Loader2 } from "lucide-react";
@@ -61,6 +62,41 @@ const ClientDashboard = () => {
   const projects = useSelector(
     (state: any) => state.projectInfo.projectData || [],
   );
+
+  const dispatch = useDispatch();
+
+  // Effect to handle modal open/close state in Redux
+  useEffect(() => {
+    const isAnyModalOpen =
+      isModalOpen ||
+      isSubmittalModalOpen ||
+      isRfqModalOpen ||
+      isRfiModalOpen ||
+      isCoModalOpen ||
+      !!selectedProject ||
+      !!selectedInvoiceId ||
+      !!selectedMilestoneProjectId;
+
+    if (isAnyModalOpen) {
+      dispatch(incrementModalCount());
+    }
+
+    return () => {
+      if (isAnyModalOpen) {
+        dispatch(decrementModalCount());
+      }
+    };
+  }, [
+    isModalOpen,
+    isSubmittalModalOpen,
+    isRfqModalOpen,
+    isRfiModalOpen,
+    isCoModalOpen,
+    selectedProject,
+    selectedInvoiceId,
+    selectedMilestoneProjectId,
+    dispatch,
+  ]);
 
   const [stats, setStats] = useState({
     employees: 0,
@@ -269,7 +305,7 @@ const ClientDashboard = () => {
           </div>
           <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
             <div className="p-4 border-b border-green-500/10">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg text-gray-800">
                 Invoices Received
               </h2>
             </div>

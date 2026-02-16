@@ -60,6 +60,7 @@ const GetProjectById = ({
     "list" | "add" | "table"
   >("list");
   const [selectedCoId, setSelectedCoId] = useState<string | null>(null);
+  const [allTasks, setAllTasks] = useState<any[]>([]); // Tasks for stats
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const rfiData = useMemo(() => {
     return project?.rfi || [];
@@ -112,6 +113,45 @@ const GetProjectById = ({
       setLoading(false);
     }
   };
+
+  // Fetch tasks for stats
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await Service.GetAllTask();
+        if (response && response.data) {
+          setAllTasks(Array.isArray(response.data) ? response.data : []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch tasks for stats", error);
+      }
+    };
+    fetchTasks();
+  }, [id]);
+
+  const projectStats = useMemo(() => {
+    if (!project || allTasks.length === 0) return null;
+
+    const projectTasks = allTasks.filter((task) => task.project_id === id);
+
+    const workedSeconds = projectTasks.reduce((sum, task) => {
+      const taskSeconds = (task.workingHourTask || []).reduce(
+        (tSum: number, wht: any) => tSum + (wht.duration_seconds || 0),
+        0,
+      );
+      return sum + taskSeconds;
+    }, 0);
+
+    const estimatedHours = project.estimatedHours || 0;
+    const workedHours = workedSeconds / 3600;
+    const isOverrun = workedHours > estimatedHours && estimatedHours > 0;
+
+    return {
+      workedSeconds,
+      isOverrun,
+    };
+  }, [project, allTasks, id]);
+
   // Fetch analytics data
 
   // Fetch analytics data
@@ -326,13 +366,12 @@ const GetProjectById = ({
             ))}
           </div>
         </div>
-
         {/* Tab Content */}
         <div className="p-2">
           {/* ✅ Overview */}
           {activeTab === "overview" && (
             <div className="space-y-6 animate-in fade-in duration-500">
-              {!isClient && (
+              {userRole !== "client" && userRole !== "client_admin" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <StatCard
                     icon={<Clock className="text-blue-600" />}
@@ -345,7 +384,10 @@ const GetProjectById = ({
                     icon={<CheckCircle2 className="text-green-600" />}
                     label="Hours Completed"
                     value={formatSeconds(
-                      project.workedSeconds || project.totalWorkedSeconds || 0,
+                      projectStats?.workedSeconds ||
+                        project.workedSeconds ||
+                        project.totalWorkedSeconds ||
+                        0,
                     )}
                     color="bg-green-50"
                     description="Total hours logged by team"
@@ -354,28 +396,35 @@ const GetProjectById = ({
                     icon={
                       <AlertCircle
                         className={
-                          project.isOverrun ? "text-red-600" : "text-gray-400"
+                          (projectStats?.isOverrun ?? project.isOverrun)
+                            ? "text-red-600"
+                            : "text-gray-400"
                         }
                       />
                     }
                     label="Overrun / Delay"
                     value={
-                      project.isOverrun
+                      (projectStats?.isOverrun ?? project.isOverrun)
                         ? formatSeconds(
-                            (project.workedSeconds ||
+                            (projectStats?.workedSeconds ||
+                              project.workedSeconds ||
                               project.totalWorkedSeconds ||
                               0) -
                               (project.estimatedHours || 0) * 3600,
                           )
                         : "00:00"
                     }
-                    color={project.isOverrun ? "bg-red-50" : "bg-gray-50"}
+                    color={
+                      (projectStats?.isOverrun ?? project.isOverrun)
+                        ? "bg-red-50"
+                        : "bg-gray-50"
+                    }
                     description={
-                      project.isOverrun
+                      (projectStats?.isOverrun ?? project.isOverrun)
                         ? "Project is exceeding estimates"
                         : "Project is within estimates"
                     }
-                    isAlert={project.isOverrun}
+                    isAlert={projectStats?.isOverrun ?? project.isOverrun}
                   />
                 </div>
               )}
@@ -434,6 +483,7 @@ const GetProjectById = ({
               </div>
             </div>
           )}
+
           {/* ✅ Analytics Dashboard */}
           {activeTab === "analytics" && (
             <ProjectAnalyticsDashboard projectId={id} />

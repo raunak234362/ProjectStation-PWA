@@ -393,7 +393,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             columns={columns}
             data={filteredProjects}
             onRowClick={onProjectSelect}
-            pageSizeOptions={[5, 10, 25]}
+            pageSizeOptions={[25]}
           />
         </div>
 

@@ -150,7 +150,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
       <div>
         <h4 className="text-lg text-gray-800 dark:text-white mb-4 flex items-center gap-2 uppercase tracking-tight">
           <CalendarCheck size={20} className="text-green-600" />
-          Milestone Approvals
+          Approval Milestones
         </h4>
         {milestoneStats.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -173,6 +173,18 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                       }`}
                     >
                       {ms.status || "PENDING"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm text-gray-500 dark:text-slate-500 mb-2">
+                    <span>Stage:</span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-widest ${
+                        ms.status === "APPROVED" || ms.status === "COMPLETED"
+                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                          : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                      }`}
+                    >
+                      {ms.stage || "PENDING"}
                     </span>
                   </div>
                 </div>
