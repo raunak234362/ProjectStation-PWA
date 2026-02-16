@@ -6,7 +6,7 @@ import store from "./store/store";
 import routes from "./routes/routes";
 import { ThemeProvider } from "./context/ThemeContext";
 
-import { StrictMode, Suspense } from "react";
+import { Suspense } from "react";
 
 // Define the router configuration
 const router = createBrowserRouter(routes);

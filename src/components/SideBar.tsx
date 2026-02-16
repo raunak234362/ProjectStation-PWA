@@ -5,9 +5,6 @@ import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
 import { LogOut, X, RefreshCw } from "lucide-react";
-import { useSelector } from "react-redux";
-import Button from "./fields/Button";
-import type { UserData } from "../interface";
 
 interface SidebarProps {
   isMinimized: boolean;
@@ -21,10 +18,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   isMobile = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  const userData = useSelector(
-    (state: any) => state?.userInfo?.userDetail,
-  ) as UserData | null;
 
   const navigate = useNavigate();
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";

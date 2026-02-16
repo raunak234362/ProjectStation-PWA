@@ -13,14 +13,12 @@ interface PendingActionsProps {
   dashboardStats: DashboardStats | null;
   onActionClick?: (actionType: string) => void;
   filter?: ("RFQ" | "RFI" | "Submittals" | "CO")[];
-  submittalsCount?: number;
 }
 
 const PendingActions: React.FC<PendingActionsProps> = ({
   dashboardStats,
   onActionClick,
   filter,
-  submittalsCount,
 }) => {
   const actions = [
     {
@@ -56,8 +54,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
     },
   ];
 
-  console.log(dashboardStats,"============");
-  
+  console.log(dashboardStats, "============");
 
   const filteredActions = filter
     ? actions.filter((action) => filter.includes(action.title as any))

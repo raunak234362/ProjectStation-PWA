@@ -19,7 +19,7 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
           >
             Invoice Home
           </button>
-{userRole === "sales" || userRole === "sales_manager" ? (
+{userRole === "sales" || userRole === "sales_manager" || userRole === "admin" || userRole === "project_manager_officer" ? (
 <>
           <button
             onClick={() => setActiveTab("allInvoices")}

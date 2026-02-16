@@ -280,51 +280,53 @@ const GetProjectById = ({
           {/* ✅ Overview */}
           {activeTab === "overview" && (
             <div className="space-y-6 animate-in fade-in duration-500">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <StatCard
-                  icon={<Clock className="text-blue-600" />}
-                  label="Hours Assigned"
-                  value={`${project.estimatedHours || 0}h`}
-                  color="bg-blue-50"
-                  description="Total estimated hours for project"
-                />
-                <StatCard
-                  icon={<CheckCircle2 className="text-green-600" />}
-                  label="Hours Completed"
-                  value={formatSeconds(
-                    project.workedSeconds || project.totalWorkedSeconds || 0,
-                  )}
-                  color="bg-green-50"
-                  description="Total hours logged by team"
-                />
-                <StatCard
-                  icon={
-                    <AlertCircle
-                      className={
-                        project.isOverrun ? "text-red-600" : "text-gray-400"
-                      }
-                    />
-                  }
-                  label="Overrun / Delay"
-                  value={
-                    project.isOverrun
-                      ? formatSeconds(
-                          (project.workedSeconds ||
-                            project.totalWorkedSeconds ||
-                            0) -
-                            (project.estimatedHours || 0) * 3600,
-                        )
-                      : "00:00"
-                  }
-                  color={project.isOverrun ? "bg-red-50" : "bg-gray-50"}
-                  description={
-                    project.isOverrun
-                      ? "Project is exceeding estimates"
-                      : "Project is within estimates"
-                  }
-                  isAlert={project.isOverrun}
-                />
-              </div>
+              {!isClient && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <StatCard
+                    icon={<Clock className="text-blue-600" />}
+                    label="Hours Assigned"
+                    value={`${project.estimatedHours || 0}h`}
+                    color="bg-blue-50"
+                    description="Total estimated hours for project"
+                  />
+                  <StatCard
+                    icon={<CheckCircle2 className="text-green-600" />}
+                    label="Hours Completed"
+                    value={formatSeconds(
+                      project.workedSeconds || project.totalWorkedSeconds || 0,
+                    )}
+                    color="bg-green-50"
+                    description="Total hours logged by team"
+                  />
+                  <StatCard
+                    icon={
+                      <AlertCircle
+                        className={
+                          project.isOverrun ? "text-red-600" : "text-gray-400"
+                        }
+                      />
+                    }
+                    label="Overrun / Delay"
+                    value={
+                      project.isOverrun
+                        ? formatSeconds(
+                            (project.workedSeconds ||
+                              project.totalWorkedSeconds ||
+                              0) -
+                              (project.estimatedHours || 0) * 3600,
+                          )
+                        : "00:00"
+                    }
+                    color={project.isOverrun ? "bg-red-50" : "bg-gray-50"}
+                    description={
+                      project.isOverrun
+                        ? "Project is exceeding estimates"
+                        : "Project is within estimates"
+                    }
+                    isAlert={project.isOverrun}
+                  />
+                </div>
+              )}
 
               {/* Analytics Section if data exists */}
               {analyticsData && analyticsData.length > 0 && (

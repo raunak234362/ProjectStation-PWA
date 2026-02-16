@@ -22,7 +22,6 @@ const SubmittalResponseModal = ({
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("NOT_APPROVED");
-  const [wbtStatus, setWbtStatus] = useState();
 
   // ENUMS
 

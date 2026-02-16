@@ -33,7 +33,7 @@ const CDdashboard = () => {
   );
 
   // Processed Data States
-  const [stateDistribution, setStateDistribution] = useState<any[]>([]);
+
   const [countriesList, setCountriesList] = useState<string[]>([]);
   const [stats, setStats] = useState({
     totalCDs: 0,
@@ -100,12 +100,6 @@ const CDdashboard = () => {
       if (country) allCountries.add(country);
     });
 
-    const dist = Object.entries(stateCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10); // Top 10 for the chart
-
-    setStateDistribution(dist);
     setCountriesList(Array.from(allCountries).sort());
     setStats({
       totalCDs,

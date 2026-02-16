@@ -196,7 +196,6 @@ const ClientDashboard = () => {
                 dashboardStats={dashboardStats}
                 onActionClick={handleActionClick}
                 filter={["RFQ", "RFI", "CO", "Submittals"]}
-                submittalsCount={pendingSubmittals.length}
               />
             </div>
           </div>
