@@ -239,6 +239,12 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
           Add To Project
         </Button> */}
         <Button
+          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+          onClick={() => setIsInclusionOpen(!isInclusionOpen)}
+        >
+          Inclusion/Exclusion
+        </Button>
+        <Button
           className="py-1 px-2 text-lg"
           onClick={() => setIsEditing(!isEditing)}
         >

@@ -2,6 +2,11 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import {
+  incrementModalCount,
+  decrementModalCount,
+} from "../../../store/uiSlice";
 import Service from "../../../api/Service";
 import AddTeam from "../team/AddTeam";
 import GetTeamById from "../team/GetTeamById";
@@ -17,6 +22,7 @@ import TeamCalendar from "./components/TeamCalendar";
 import { toast } from "react-toastify";
 
 const TeamDashboard = () => {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [teams, setTeams] = useState<any[]>([]);
   const [filteredTeams, setFilteredTeams] = useState<any[]>([]);
@@ -28,6 +34,23 @@ const TeamDashboard = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
+
+  useEffect(() => {
+    const isAnyModal =
+      isModalOpen || isViewModalOpen || isReportModalOpen || !!selectedEmployee;
+    if (isAnyModal) {
+      dispatch(incrementModalCount());
+      return () => {
+        dispatch(decrementModalCount());
+      };
+    }
+  }, [
+    isModalOpen,
+    isViewModalOpen,
+    isReportModalOpen,
+    selectedEmployee,
+    dispatch,
+  ]);
   const [allMemberStats, setAllMemberStats] = useState<any[]>([]);
   const [allTasks, setAllTasks] = useState<any[]>([]);
 
@@ -831,8 +854,8 @@ const TeamDashboard = () => {
 
       {/* Modals */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
@@ -847,8 +870,8 @@ const TeamDashboard = () => {
       )}
 
       {isViewModalOpen && selectedTeam && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-3xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
             <button
               onClick={() => setIsViewModalOpen(false)}
               className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
@@ -863,8 +886,8 @@ const TeamDashboard = () => {
       )}
 
       {selectedEmployee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-3xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
             <button
               onClick={handleCloseModal}
               className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"

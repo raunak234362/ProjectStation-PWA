@@ -4,7 +4,7 @@ import GetRFQByID from "./GetRFQByID";
 import { formatDate } from "../../utils/dateUtils";
 
 const AllRFQ = ({ rfq }: any) => {
-  const userType = localStorage.getItem("userType");
+  const userRole = sessionStorage.getItem("userRole");
 
   const columns: ExtendedColumnDef<RFQItem>[] = [
     {
@@ -22,7 +22,7 @@ const AllRFQ = ({ rfq }: any) => {
   ];
 
   // ➕ Only Admin / Staff see Fabricator
-  if (userType !== "CLIENT") {
+  if (userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN") {
     columns.push({
       accessorKey: "fabricator",
       header: "Fabricator",

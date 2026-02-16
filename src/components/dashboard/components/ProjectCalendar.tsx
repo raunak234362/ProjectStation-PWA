@@ -20,12 +20,12 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
   const daysInMonth = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth() + 1,
-    0
+    0,
   ).getDate();
   const firstDayOfMonth = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth(),
-    1
+    1,
   ).getDay();
 
   const monthName = currentDate.toLocaleString("default", { month: "long" });
@@ -33,13 +33,13 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
 
   const handlePrevMonth = () => {
     setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1),
     );
   };
 
   const handleNextMonth = () => {
     setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
     );
   };
 
@@ -50,7 +50,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     const date = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
-      day
+      day,
     );
     date.setHours(0, 0, 0, 0);
 
@@ -73,7 +73,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
+    <div className="bg-white p-6 rounded-2xl border border-green-500/10 shadow-sm mb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-green-50 text-green-600 rounded-lg">
@@ -89,7 +89,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-2 py-1">
+        <div className="flex items-center gap-2 bg-white border border-green-500/20 rounded-xl px-2 py-1">
           <button
             onClick={handlePrevMonth}
             className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
@@ -108,11 +108,11 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-100 border border-gray-100 rounded-xl overflow-hidden">
+      <div className="grid grid-cols-7 gap-px bg-green-500/10 border border-green-500/10 rounded-xl overflow-hidden">
         {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
           <div
             key={day}
-            className="bg-gray-50 py-2 text-center text-[10px]  text-gray-400"
+            className="bg-white/80 py-2 text-center text-[10px]  text-gray-400"
           >
             {day}
           </div>
@@ -122,8 +122,9 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
           return (
             <div
               key={idx}
-              className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${day === null ? "bg-gray-50/30" : ""
-                }`}
+              className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${
+                day === null ? "bg-gray-50/30" : ""
+              }`}
             >
               {day && (
                 <>

@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
+import { useSelector } from "react-redux";
 
 const Layout = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { activeModalCount } = useSelector((state: any) => state.ui);
+  const isModalOpen = activeModalCount > 0;
 
   // Responsive sidebar behavior
   useEffect(() => {
@@ -37,18 +40,19 @@ const Layout = () => {
       className="
         flex h-screen w-screen overflow-hidden
         bg-white
-        dark:bg-slate-700
         transition-colors duration-300
       "
     >
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex relative z-20 py-2 pl-2">
-        <Sidebar
-          isMinimized={isMinimized}
-          toggleSidebar={toggleSidebar}
-          isMobile={false}
-        />
-      </div>
+      {!isModalOpen && (
+        <div className="hidden md:flex relative z-20 py-2 pl-2">
+          <Sidebar
+            isMinimized={isMinimized}
+            toggleSidebar={toggleSidebar}
+            isMobile={false}
+          />
+        </div>
+      )}
 
       {/* Mobile Overlay */}
       {isMobileOpen && (
@@ -59,34 +63,31 @@ const Layout = () => {
       )}
 
       {/* Mobile Sidebar */}
-      <div className="md:hidden z-50">
-        <Sidebar
-          isMinimized={!isMobileOpen}
-          toggleSidebar={() => setIsMobileOpen(false)}
-          isMobile={true}
-        />
-      </div>
+      {!isModalOpen && (
+        <div className="md:hidden z-50">
+          <Sidebar
+            isMinimized={!isMobileOpen}
+            toggleSidebar={() => setIsMobileOpen(false)}
+            isMobile={true}
+          />
+        </div>
+      )}
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1 min-h-0 p-2 pl-0 relative z-10">
+      <div
+        className={`flex flex-col flex-1 min-h-0 ${isModalOpen ? "p-0" : "p-2 pl-0"} relative z-10`}
+      >
         <div
-          className="
-            flex-1 flex flex-col relative overflow-hidden rounded-3xl
-            bg-white/75 dark:bg-slate-900/70 backdrop-blur-xl
-            border border-green-500/20 dark:border-green-400/20
-            shadow-lg
-            before:absolute before:inset-0 before:rounded-3xl
-            before:bg-linear-to-b before:from-white/30 before:to-transparent
-            before:pointer-events-none
+          className={`
+            flex-1 flex flex-col relative overflow-hidden ${isModalOpen ? "rounded-none" : "rounded-3xl"}
+            bg-white
+            ${isModalOpen ? "" : "border border-green-500 shadow-sm"}
             transition-all
-          "
+          `}
         >
           {/* Header */}
           <div className="px-8 pt-6 border-b border-green-500/10">
-            <Header
-              isMinimized={isMinimized}
-              toggleSidebar={toggleSidebar}
-            />
+            <Header isMinimized={isMinimized} toggleSidebar={toggleSidebar} />
           </div>
 
           {/* Page Content */}

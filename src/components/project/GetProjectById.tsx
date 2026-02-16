@@ -14,8 +14,6 @@ import {
   CheckCircle2,
   TrendingUp,
   Activity,
-  CalendarCheck,
-  Calendar,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
@@ -39,6 +37,7 @@ import RenderFiles from "../ui/RenderFiles";
 import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
 import CoTable from "../co/CoTable";
+import ProjectMilestoneMetrics from "./ProjectMilestoneMetrics";
 
 const GetProjectById = ({
   id,
@@ -73,8 +72,6 @@ const GetProjectById = ({
   const milestonesByProject = useSelector(
     (state: any) => state.milestoneInfo?.milestonesByProject || {},
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const milestones = milestonesByProject[id] || [];
 
   // Fetch milestones if not available
   useEffect(() => {
@@ -160,93 +157,6 @@ const GetProjectById = ({
 
   // Group tasks by milestone (subject + id) and compute completion percentage
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getMilestoneStatus = () => {
-    // Use the milestones from Redux/API directly
-    const milestoneList = milestones || [];
-    const groups = new Map();
-
-    // 1. Initialize groups from milestones array
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    milestoneList.forEach((ms: any) => {
-      const id = ms.id;
-      const subject = ms.subject || ms.Subject || ms.name;
-      const key = `${id || subject}`;
-      // Handle both 'Tasks' and 'tasks'
-      const msTasks = ms.Tasks || ms.tasks || [];
-
-      groups.set(key, {
-        id: id || key,
-        subject: subject || "Unnamed Milestone",
-        tasks: msTasks,
-        startDate:
-          ms.startDate || ms.StartDate || ms.date || project?.startDate,
-        endDate: ms.endDate || ms.EndDate,
-        approvalDate:
-          ms.approvalDate || ms.ApprovalDate || ms.endDate || ms.EndDate,
-        percentage: ms.percentage,
-      });
-    });
-
-    return Array.from(groups.values()).map((group) => {
-      // Logic for Progress Calculation based on TASKS
-      const totalTasks = group.tasks.length;
-      let taskProgress = 0;
-
-      if (totalTasks > 0) {
-        const completedStatuses = [
-          "COMPLETE",
-          "VALIDATE_COMPLETE",
-          "COMPLETE_OTHER",
-          "USER_FAULT",
-          "COMPLETED",
-        ];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const completedCount = group.tasks.filter((t: any) =>
-          completedStatuses.includes(t.status),
-        ).length;
-        taskProgress = Math.round((completedCount / totalTasks) * 100);
-      }
-
-      // 2. Daily Percentage Distribution Logic (Time Progress)
-      const start = new Date(group.startDate);
-      const approval = new Date(group.approvalDate);
-      let timeProgress = 0;
-
-      if (
-        group.startDate &&
-        group.approvalDate &&
-        !isNaN(start.getTime()) &&
-        !isNaN(approval.getTime())
-      ) {
-        const totalDuration = approval.getTime() - start.getTime();
-        const elapsed = Date.now() - start.getTime();
-
-        if (totalDuration > 0) {
-          timeProgress = Math.min(
-            100,
-            Math.max(0, Math.round((elapsed / totalDuration) * 100)),
-          );
-        } else if (Date.now() > approval.getTime()) {
-          timeProgress = 100;
-        }
-      }
-
-      // Use Manual Percentage if available, else use calculated Task Progress
-      const finalProgress =
-        group.percentage !== undefined &&
-        group.percentage !== null &&
-        group.percentage !== ""
-          ? Number(group.percentage)
-          : taskProgress;
-
-      return {
-        ...group,
-        progress: finalProgress,
-        taskPercentage: taskProgress,
-        timePercent: timeProgress,
-      };
-    });
-  };
 
   const handleEditModel = (project: ProjectData) => {
     console.log(project);
@@ -470,151 +380,7 @@ const GetProjectById = ({
                 </div>
               )}
 
-              {/* Project Status Section */}
-              <div className="grid grid-cols-1 gap-6">
-                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <Calendar size={20} className="text-teal-600" />
-                    Project Status
-                  </h3>
-                  <div className="space-y-6">
-                    {/* Task Completion */}
-                    {/* <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-1">
-                        Project Completion
-                      </h4>
-                      <p className="text-gray-800 font-semibold mb-1">
-                        {getTaskCompletionPercentage(allTasks)}%
-                      </p>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div
-                          className="bg-teal-500 h-2.5 rounded-full transition-all duration-500"
-                          style={{
-                            width: `${getTaskCompletionPercentage(allTasks)}%`,
-                          }}
-                        ></div>
-                      </div>
-                    </div> */}
-
-                    {/* Milestones Progress */}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-3">
-                        Milestones
-                      </h4>
-                      {getMilestoneStatus().length > 0 ? (
-                        <div className="space-y-4">
-                          {getMilestoneStatus().map(
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (ms: any) => (
-                              <div key={ms.id}>
-                                <div className="flex justify-between items-center mb-1">
-                                  <span className="text-gray-800 font-medium text-sm">
-                                    {ms.subject}
-                                  </span>
-                                  <span className="text-xs text-gray-500">
-                                    Completion % : {ms.taskPercentage}%
-                                  </span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
-                                  {/* Time Progress (background shadow layer) */}
-                                  <div
-                                    className="absolute top-0 left-0 h-2 bg-gray-400 opacity-40 transition-all duration-500"
-                                    style={{ width: `${ms.timePercent}%` }}
-                                  ></div>
-                                  {/* Task Completion (real progress) */}
-                                  <div
-                                    className="absolute top-0 left-0 h-2 rounded-full bg-teal-500 transition-all duration-500"
-                                    style={{ width: `${ms.taskPercentage}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            ),
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-gray-500 text-sm italic">
-                          No milestones available
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Analytics Section if data exists */}
-              {analyticsData && analyticsData.length > 0 && (
-                <div className="mt-8">
-                  <h4 className="text-lg  text-gray-800 mb-4 flex items-center gap-2">
-                    <TrendingUp size={20} className="text-green-600" />
-                    Performance Analytics
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {analyticsData.map((item: any, index: number) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-white border rounded-xl shadow-sm"
-                      >
-                        <p className="text-xs  text-gray-500 uppercase tracking-wider">
-                          {item.label || item.name}
-                        </p>
-                        <p className="text-xl  text-gray-800 mt-1">
-                          {item.value || item.score}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* ✅ Milestone Approval Section */}
-              <div className="mt-8">
-                <h4 className="text-lg text-gray-800 mb-4 flex items-center gap-2">
-                  <CalendarCheck size={20} className="text-green-600" />
-                  Milestone Approvals
-                </h4>
-                {milestones && milestones.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                    {milestones.map((milestone: any, index: number) => (
-                      <div
-                        key={milestone.id || index}
-                        className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col justify-between"
-                      >
-                        <div>
-                          <h5 className="font-semibold text-gray-800 mb-1 line-clamp-1">
-                            {milestone.subject}
-                          </h5>
-                          <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
-                            <span>Status:</span>
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                milestone.status === "APPROVED" ||
-                                milestone.status === "COMPLETED"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                              }`}
-                            >
-                              {milestone.status || "PENDING"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="border-t border-gray-100 pt-2 mt-2">
-                          <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-500">Approval Date</span>
-                            <span className="font-medium text-gray-700">
-                              {formatDate(milestone.approvalDate)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-6 bg-gray-50 rounded-xl border border-gray-100 text-center text-gray-500 italic">
-                    No milestones found for this project.
-                  </div>
-                )}
-              </div>
+              <ProjectMilestoneMetrics projectId={id} />
 
               {/* Timeline / Progress Section */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
@@ -841,7 +607,7 @@ const GetProjectById = ({
                   >
                     All RFIs
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setRfiView("add")}
                       className={`
@@ -891,7 +657,7 @@ const GetProjectById = ({
                   >
                     All RFIs
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setRfiView("add")}
                       className={`
@@ -941,7 +707,7 @@ const GetProjectById = ({
                   >
                     All Submittals
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setSubmittalView("add")}
                       className={`
@@ -991,7 +757,7 @@ const GetProjectById = ({
                   >
                     All Submittals
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setSubmittalView("add")}
                       className={`
@@ -1041,7 +807,7 @@ const GetProjectById = ({
                   >
                     All Change Order
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setChangeOrderView("add")}
                       className={`

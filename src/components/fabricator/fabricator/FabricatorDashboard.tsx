@@ -12,7 +12,11 @@ import {
   CheckCircle2,
   FileText,
 } from "lucide-react";
-import { type Fabricator, type ProjectData, type RFQItem } from "../../../interface";
+import {
+  type Fabricator,
+  type ProjectData,
+  type RFQItem,
+} from "../../../interface";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -41,7 +45,7 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
         // Fetch projects for this fabricator
         const allProjectsResponse = await Service.GetAllProjects();
         const fabProjects = (allProjectsResponse || []).filter(
-          (p: ProjectData) => p.fabricatorID === fabricator.id
+          (p: ProjectData) => p.fabricatorID === fabricator.id,
         );
         setProjects(fabProjects);
 
@@ -49,13 +53,13 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
         const rfqReceived = await Service.RFQRecieved();
         const fabRfqs = (rfqReceived || []).filter(
           (r: RFQItem) =>
-            r.recipientId === fabricator.id || r.senderId === fabricator.id
+            r.recipientId === fabricator.id || r.senderId === fabricator.id,
         );
         setRfqs(fabRfqs);
 
         // Calculate Stats
         const active = fabProjects.filter(
-          (p: ProjectData) => p.status === "ACTIVE"
+          (p: ProjectData) => p.status === "ACTIVE",
         ).length;
 
         let rfiCount = 0;
@@ -96,7 +100,10 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       accessorKey: "name",
       header: "Project Name",
       cell: ({ row }) => (
-        <div className="max-w-[150px] truncate font-medium text-gray-800 dark:text-white" title={row.original.name}>
+        <div
+          className="max-w-[150px] truncate font-medium text-gray-800 dark:text-white"
+          title={row.original.name}
+        >
           {row.original.name}
         </div>
       ),
@@ -107,10 +114,11 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "ACTIVE"
-            ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400"
-            : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-400"
-            }`}
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.original.status === "ACTIVE"
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-700"
+          }`}
         >
           {row.original.status}
         </span>
@@ -145,85 +153,82 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <StatCard
-          icon={<Briefcase className="text-blue-600 dark:text-blue-400" />}
+          icon={<Briefcase className="text-blue-600" />}
           label="Total Projects"
           value={stats.totalProjects}
-          color="bg-blue-50 dark:bg-blue-900/20"
+          color="bg-blue-50"
         />
         <StatCard
-          icon={<TrendingUp className="text-green-600 dark:text-green-400" />}
+          icon={<TrendingUp className="text-green-600" />}
           label="Active Projects"
           value={stats.activeProjects}
-          color="bg-green-50 dark:bg-green-900/20"
+          color="bg-green-50"
         />
         <StatCard
-          icon={<MessageSquare className="text-orange-600 dark:text-orange-400" />}
+          icon={<MessageSquare className="text-orange-600" />}
           label="Pending RFIs"
           value={stats.pendingRFIs}
-          color="bg-orange-50 dark:bg-orange-900/20"
+          color="bg-orange-50"
         />
         <StatCard
-          icon={<FileCheck className="text-purple-600 dark:text-purple-400" />}
+          icon={<FileCheck className="text-purple-600" />}
           label="Submittals"
           value={stats.pendingSubmittals}
-          color="bg-purple-50 dark:bg-purple-900/20"
+          color="bg-purple-50"
         />
         <StatCard
-          icon={<AlertCircle className="text-red-600 dark:text-red-400" />}
+          icon={<AlertCircle className="text-red-600" />}
           label="Change Orders"
           value={stats.pendingCOs}
-          color="bg-red-50 dark:bg-red-900/20"
+          color="bg-red-50"
         />
         <StatCard
-          icon={<FileText className="text-cyan-600 dark:text-cyan-400" />}
+          icon={<FileText className="text-cyan-600" />}
           label="Total RFQs"
           value={stats.totalRFQs}
-          color="bg-cyan-50 dark:bg-cyan-900/20"
+          color="bg-cyan-50"
         />
       </div>
 
       {/* Projects Table */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 w-full overflow-hidden">
-        <div className="p-4 border-b border-gray-50 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-gray-50/50 dark:bg-slate-800/50">
-          <h3 className=" text-gray-800 dark:text-white flex items-center gap-2">
-            <LayoutDashboard size={18} className="text-green-600 dark:text-green-400" />
+      <div className="bg-white rounded-xl shadow-sm border border-green-500/10 w-full overflow-hidden">
+        <div className="p-4 border-b border-green-50/50 flex flex-wrap items-center justify-between gap-2 bg-green-50/50">
+          <h3 className=" text-gray-800 flex items-center gap-2">
+            <LayoutDashboard size={18} className="text-green-600" />
             Project Overview
           </h3>
         </div>
         <div>
-          <DataTable
-            columns={columns}
-            data={projects}
-          />
+          <DataTable columns={columns} data={projects} />
         </div>
       </div>
 
       {/* RFQs Section (Simplified) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-4">
-          <h3 className=" text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-            <FileText size={18} className="text-cyan-600 dark:text-cyan-400" />
+        <div className="bg-white rounded-xl shadow-sm border border-green-500/10 p-4">
+          <h3 className=" text-gray-800 mb-4 flex items-center gap-2">
+            <FileText size={18} className="text-cyan-600" />
             Recent RFQs
           </h3>
           <div className="space-y-3">
             {rfqs.slice(0, 5).map((rfq) => (
               <div
                 key={rfq.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                className="flex items-center justify-between p-3 rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
               >
                 <div>
-                  <p className="font-medium text-gray-800 dark:text-white">{rfq.projectName}</p>
-                  <p className="text-xs text-gray-500 dark:text-slate-400">
+                  <p className="font-medium text-gray-800">{rfq.projectName}</p>
+                  <p className="text-xs text-gray-500">
                     {new Date(rfq.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <span className="text-xs font-semibold text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 px-2 py-1 rounded">
+                <span className="text-xs font-semibold text-cyan-700 bg-cyan-50 px-2 py-1 rounded">
                   {rfq.status || "PENDING"}
                 </span>
               </div>
             ))}
             {rfqs.length === 0 && (
-              <p className="text-gray-500 dark:text-slate-400 text-center py-4 text-sm">
+              <p className="text-gray-500 text-center py-4 text-sm">
                 No RFQs found
               </p>
             )}
@@ -240,13 +245,23 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
               label="Latest Project"
               value={projects[0]?.name || "N/A"}
               date={projects[0]?.startDate}
-              icon={<CheckCircle2 className="text-green-500 dark:text-green-400" size={16} />}
+              icon={
+                <CheckCircle2
+                  className="text-green-500 dark:text-green-400"
+                  size={16}
+                />
+              }
             />
             <TimelineItem
               label="Upcoming Deadline"
               value={projects.find((p) => p.status === "ACTIVE")?.name || "N/A"}
               date={projects.find((p) => p.status === "ACTIVE")?.endDate}
-              icon={<Clock className="text-orange-500 dark:text-orange-400" size={16} />}
+              icon={
+                <Clock
+                  className="text-orange-500 dark:text-orange-400"
+                  size={16}
+                />
+              }
             />
           </div>
         </div>
@@ -269,8 +284,12 @@ const StatCard = ({
   <div
     className={`${color} p-3 sm:p-4 rounded-xl border border-white/50 dark:border-slate-800/50 shadow-sm flex flex-col items-center justify-center text-center transition-transform hover:scale-105`}
   >
-    <div className="mb-2 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm">{icon}</div>
-    <p className="text-xl sm:text-2xl  text-gray-800 dark:text-white">{value}</p>
+    <div className="mb-2 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm">
+      {icon}
+    </div>
+    <p className="text-xl sm:text-2xl  text-gray-800 dark:text-white">
+      {value}
+    </p>
     <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500 dark:text-slate-400">
       {label}
     </p>
@@ -291,8 +310,12 @@ const TimelineItem = ({
   <div className="flex gap-3">
     <div className="mt-1">{icon}</div>
     <div>
-      <p className="text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase">{label}</p>
-      <p className="text-sm font-medium text-gray-800 dark:text-white">{value}</p>
+      <p className="text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase">
+        {label}
+      </p>
+      <p className="text-sm font-medium text-gray-800 dark:text-white">
+        {value}
+      </p>
       {date && (
         <p className="text-[10px] text-gray-400 dark:text-slate-500">
           {new Date(date).toLocaleDateString()}

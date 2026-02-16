@@ -204,7 +204,7 @@ const WBTDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col w-full p-1 space-y-3 pb-8">
+    <div className="flex flex-col w-full p-1 space-y-3 pb-8 bg-white min-h-full">
       <Suspense fallback={<DashboardSkeleton />}>
         {/* Stats Grid - Top Section */}
         <div className="grid grid-cols-1 max-md:grid-cols-2 lg:grid-cols-2 gap-3 shrink-0">

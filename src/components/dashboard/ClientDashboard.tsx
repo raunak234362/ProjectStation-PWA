@@ -3,6 +3,8 @@ import Service from "../../api/Service";
 import { useSelector } from "react-redux";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
+import { X, Loader2 } from "lucide-react";
+import ProjectMilestoneMetrics from "../project/ProjectMilestoneMetrics";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -22,7 +24,6 @@ const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
 
 const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
-  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
 
   // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
@@ -46,6 +47,11 @@ const ClientDashboard = () => {
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
     null,
   );
+  const [selectedMilestoneProjectId, setSelectedMilestoneProjectId] = useState<
+    string | null
+  >(null);
+  const [selectedMilestoneProjectName, setSelectedMilestoneProjectName] =
+    useState<string | null>(null);
 
   // Redux Data
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
@@ -203,17 +209,17 @@ const ClientDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col w-full p-4 space-y-6 pb-8 bg-gray-50/50 dark:bg-slate-900/50 min-h-full">
+    <div className="flex flex-col w-full p-4 space-y-6 pb-8 bg-white min-h-full">
       <Suspense fallback={<DashboardSkeleton />}>
         {/* Stats Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="w-full">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-1">
+            <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-1">
               <ProjectStats stats={stats} onCardClick={handleCardClick} />
             </div>
           </div>
           <div className="w-full">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 h-full">
+            <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 h-full">
               <PendingActions
                 dashboardStats={dashboardStats}
                 onActionClick={handleActionClick}
@@ -225,7 +231,7 @@ const ClientDashboard = () => {
 
         {/* Detailed Info Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-          <div className="w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden min-h-[400px]">
+          <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
             <div className="p-2">
               <UpcomingSubmittals
                 pendingSubmittals={upcomingSubmittals}
@@ -247,35 +253,10 @@ const ClientDashboard = () => {
                       : null);
 
                   if (projectId) {
-                    // Try to find the full project from the projects list (Redux)
-                    const fullProject = projects.find(
-                      (p: any) => p.id === projectId || p._id === projectId,
+                    setSelectedMilestoneProjectId(projectId);
+                    setSelectedMilestoneProjectName(
+                      submittal.project?.name || submittal.name || "Project",
                     );
-
-                    if (fullProject) {
-                      setSelectedProject({
-                        ...fullProject,
-                        showAnalytics:
-                          userRole !== "client" && userRole !== "client_admin",
-                      });
-                    } else {
-                      // Fallback: create a minimal project object with ProjectId
-                      // ProjectDetailsModal will use this ID to fetch details via GetProjectById
-                      setSelectedProject({
-                        id: projectId,
-                        showAnalytics:
-                          userRole !== "client" && userRole !== "client_admin",
-                      });
-                    }
-                  } else if (
-                    submittal.project &&
-                    typeof submittal.project === "object"
-                  ) {
-                    // Fallback: if submittal.project is an object, use it directly
-                    setSelectedProject({
-                      ...submittal.project,
-                      showAnalytics: true,
-                    });
                   } else {
                     console.warn(
                       "Could not extract Project ID from submittal:",
@@ -286,9 +267,9 @@ const ClientDashboard = () => {
               />
             </div>
           </div>
-          <div className="w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden min-h-[400px]">
-            <div className="p-4 border-b border-gray-100 dark:border-slate-700">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+          <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
+            <div className="p-4 border-b border-green-500/10">
+              <h2 className="text-lg font-semibold text-gray-800">
                 Invoices Received
               </h2>
             </div>
@@ -309,13 +290,57 @@ const ClientDashboard = () => {
           </div>
         </div>
 
-        {/* Invoice Details Modal */}
         {selectedInvoiceId && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-0">
             <GetInvoiceById
               id={selectedInvoiceId}
               onClose={() => setSelectedInvoiceId(null)}
             />
+          </div>
+        )}
+
+        {/* Milestone Metrics Modal */}
+        {selectedMilestoneProjectId && (
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-green-500/10 animate-in fade-in zoom-in duration-200">
+              <div className="p-6 border-b border-green-500/10 flex justify-between items-center bg-green-50/50">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    {selectedMilestoneProjectName}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Milestone Performance & Status
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedMilestoneProjectId(null)}
+                  className="p-2 hover:bg-green-100 rounded-full transition-colors text-gray-400 hover:text-green-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto max-h-[70vh]">
+                <Suspense
+                  fallback={
+                    <div className="flex justify-center p-12">
+                      <Loader2 className="animate-spin text-green-600" />
+                    </div>
+                  }
+                >
+                  <ProjectMilestoneMetrics
+                    projectId={selectedMilestoneProjectId}
+                  />
+                </Suspense>
+              </div>
+              <div className="p-4 border-t border-green-500/10 bg-green-50/50 flex justify-end">
+                <button
+                  onClick={() => setSelectedMilestoneProjectId(null)}
+                  className="px-6 py-2 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-colors shadow-sm shadow-green-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

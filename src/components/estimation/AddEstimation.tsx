@@ -38,7 +38,7 @@ interface EstimationFormData {
 
 const AddEstimation: React.FC<AddEstimationProps> = ({
   initialRfqId = null,
-  onSuccess = () => { },
+  onSuccess = () => {},
 }) => {
   const dispatch = useDispatch();
   const [files, setFiles] = useState<File[]>([]);
@@ -57,7 +57,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
       if (rfqData.length === 0) {
         try {
           let rfqDetail;
-          if (userType === "CLIENT") {
+          if (userType === "CLIENT" || userType === "CLIENT_ADMIN") {
             rfqDetail = await Service.RfqSent();
           } else {
             rfqDetail = await Service.RFQRecieved();

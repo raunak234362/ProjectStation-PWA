@@ -4,27 +4,27 @@ const DashboardSkeleton = () => {
       {/* Stats Grid Skeleton */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* Project Stats Skeleton */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-500/10 space-y-6">
           <div className="flex justify-between items-center">
-            <div className="h-8 w-48 bg-gray-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-10 w-32 bg-gray-200 dark:bg-slate-800 rounded"></div>
+            <div className="h-8 w-48 bg-gray-100 rounded"></div>
+            <div className="h-10 w-32 bg-gray-100 rounded"></div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="space-y-2">
-                <div className="h-4 w-20 bg-gray-200 dark:bg-slate-800 rounded"></div>
-                <div className="h-8 w-16 bg-gray-200 dark:bg-slate-800 rounded"></div>
+                <div className="h-4 w-20 bg-gray-100 rounded"></div>
+                <div className="h-8 w-16 bg-gray-100 rounded"></div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Pending Actions Skeleton */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
-          <div className="h-8 w-48 bg-gray-200 dark:bg-slate-800 rounded"></div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-500/10 space-y-6">
+          <div className="h-8 w-48 bg-gray-100 rounded"></div>
           <div className="grid grid-cols-2 gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-24 bg-gray-200 dark:bg-slate-800 rounded-xl"></div>
+              <div key={i} className="h-24 bg-gray-100 rounded-xl"></div>
             ))}
           </div>
         </div>
@@ -33,7 +33,7 @@ const DashboardSkeleton = () => {
       {/* Charts Section Skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Invoice Trends Skeleton */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-500/10 space-y-6">
           <div className="flex justify-between items-center">
             <div className="h-8 w-40 bg-gray-200 dark:bg-slate-800 rounded"></div>
             <div className="h-8 w-24 bg-gray-200 dark:bg-slate-800 rounded"></div>
@@ -42,7 +42,7 @@ const DashboardSkeleton = () => {
         </div>
 
         {/* Upcoming Submittals Skeleton */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-500/10 space-y-6">
           <div className="h-8 w-48 bg-gray-200 dark:bg-slate-800 rounded"></div>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (

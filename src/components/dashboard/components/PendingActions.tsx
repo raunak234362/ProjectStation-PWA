@@ -84,8 +84,8 @@ const PendingActions: React.FC<PendingActionsProps> = ({
   };
 
   return (
-    <div className="flex flex-col justify-center h-full bg-white dark:bg-slate-900 shadow-soft rounded-[32px] p-6 border border-gray-100 dark:border-slate-800 transition-all duration-300">
-      <h3 className="text-xl md:text-2xl  text-slate-800 dark:text-white mb-6 flex items-center gap-3 px-2 tracking-tight">
+    <div className="flex flex-col justify-center h-full bg-white rounded-2xl p-6 transition-all duration-300">
+      <h3 className="text-xl md:text-2xl text-gray-800 mb-6 flex items-center gap-3 px-2 tracking-tight">
         <ClipboardList className="text-[#6bbd45]" size={24} strokeWidth={2.5} />
         PENDING ACTIONS
       </h3>
@@ -109,24 +109,23 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   onActionClick(actionMap[action.title] || action.title);
                 }
               }}
-              className="flex flex-row items-center gap-5 p-5 rounded-[24px] bg-slate-50/50 dark:bg-slate-800/30 shadow-sm transition-all duration-300 cursor-pointer hover:shadow-md hover:scale-[1.02] hover:bg-white dark:hover:bg-slate-800 active:scale-[0.98] group border border-transparent dark:border-slate-800/50"
+              className="flex flex-row gap-5 hover-card p-5 group"
             >
               <div
                 className={cn(
                   "p-3.5 rounded-xl shadow-sm transition-all group-hover:scale-110",
                   colors.bg,
                   colors.text,
-                  "dark:bg-slate-700 dark:text-green-400",
                 )}
               >
                 <action.icon size={25} strokeWidth={2.5} />
               </div>
 
               <div className="flex flex-row items-center justify-between w-full min-w-0">
-                <div className="text-sm md:text-xl  text-slate-700 dark:text-slate-500 uppercase tracking-[0.2em] truncate pr-2">
+                <div className="text-sm md:text-lg font-semibold text-gray-600 uppercase tracking-widest truncate pr-2">
                   {action.title}
                 </div>
-                <div className="text-2xl md:text-3xl  text-[#6bbd45] dark:text-green-400 tracking-tighter">
+                <div className="text-2xl md:text-3xl font-bold text-[#6bbd45] tracking-tighter">
                   {action.count}
                 </div>
               </div>

@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
   const headerTitle = activeTab ? activeTab.label : "Dashboard";
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-3 px-6 bg-white dark:bg-slate-900 rounded-2xl mb-4 border border-gray-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
+    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-3 px-6 bg-white rounded-2xl mb-4 border border-green-500/10 shadow-sm transition-colors duration-300">
       {/* Left: Sidebar Toggle & Title */}
       <div className="flex items-center gap-4">
         <Button
@@ -45,10 +45,14 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
             </h1>
           </div>
           <div className="flex-col items-end hidden sm:flex">
-            <span className="text-md md:text-lg font-medium text-gray-800 dark:text-slate-200 tracking-widest">
+            <span className="text-md md:text-lg font-medium text-gray-800 tracking-widest">
               Welcome Back,
               <span className="ml-1 text-md md:text-lg  text-green-500 tracking-widest uppercase">
-                {sessionStorage.getItem("username") || "User"}
+                {sessionStorage.getItem("firstName") || ""}{" "}
+                {sessionStorage.getItem("lastName") || ""}
+                {!sessionStorage.getItem("firstName") &&
+                  !sessionStorage.getItem("lastName") &&
+                  (sessionStorage.getItem("username") || "User")}
               </span>
             </span>
           </div>
@@ -60,7 +64,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="p-2.5 bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-all shadow-sm group"
+          className="p-2.5 bg-green-50 text-gray-600 hover:bg-green-100 rounded-xl transition-all shadow-sm group"
           title={
             theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"
           }

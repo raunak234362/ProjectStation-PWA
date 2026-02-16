@@ -333,7 +333,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               {/* Action buttons */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 {/* EDIT RFQ */}
-                {userRole !== "CLIENT" && (
+                {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
                   <>
                     <Button
                       onClick={() => alert("Coming soon: Edit RFQ modal")}
@@ -417,12 +417,12 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               parentId={rfq?.id}
               formatDate={formatDate}
             />
-            {userRole !== "CLIENT" &&
-              userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
-                <div className="flex flex-col gap-2 pt-2">
-                  <Button
-                    onClick={() => setShowEstimationModal(true)}
-                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
+            {userRole !=="CLIENT_ADMIN" && userRole !== "CLIENT" &&
+            userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
+              <div className="flex flex-col gap-2 pt-2">
+                <Button
+                  onClick={() => setShowEstimationModal(true)}
+                  className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
                   >
                     Raise For Estimation
                   </Button>
@@ -431,7 +431,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                     className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight "
                   >
                     Raise for Connection Designer Quotation
-                  </Button>
+                  </Button> 
                 </div>
               )}
           </div>
