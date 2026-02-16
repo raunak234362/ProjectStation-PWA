@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { ClipboardList, AlertCircle, X } from "lucide-react";
-import AddInvoice from "../../invoices/AddInvoice";
+
 import AddSubmittal from "../../submittals/AddSubmittals";
 
 interface UpcomingSubmittalsProps {
@@ -25,7 +25,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   );
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
   const isOverdue = (dateString: string) => {
     if (!dateString) return false;
     const today = new Date();
@@ -59,21 +59,19 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
           <div className="flex gap-2 bg-white/50 dark:bg-slate-800/50 p-1 rounded-lg self-start sm:self-auto">
             <button
               onClick={() => setActiveTab("submittals")}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${
-                activeTab === "submittals"
-                  ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-green-900/20"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700"
-              }`}
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "submittals"
+                ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-green-900/20"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700"
+                }`}
             >
               Upcoming Submittals
             </button>
             <button
               onClick={() => setActiveTab("invoices")}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${
-                activeTab === "invoices"
-                  ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-green-900/20"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700"
-              }`}
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "invoices"
+                ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-green-900/20"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700"
+                }`}
             >
               Invoice Need Raise
             </button>
@@ -138,11 +136,10 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
                             setIsModalOpen(true);
                           }
                         }}
-                        className={`w-full text-left p-3 rounded-[6px] border transition-all group ${
-                          overdue
-                            ? "bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/40 hover:bg-red-100/50 dark:hover:bg-red-900/30 hover:border-red-200 dark:hover:border-red-800 shadow-sm shadow-red-50 dark:shadow-red-900/20"
-                            : "bg-white dark:bg-slate-800 border-white dark:border-slate-700 hover:border-green-100 dark:hover:border-green-800 hover:shadow-md hover:shadow-green-50/50 dark:hover:shadow-green-900/10"
-                        }`}
+                        className={`w-full text-left p-3 rounded-[6px] border transition-all group ${overdue
+                          ? "bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/40 hover:bg-red-100/50 dark:hover:bg-red-900/30 hover:border-red-200 dark:hover:border-red-800 shadow-sm shadow-red-50 dark:shadow-red-900/20"
+                          : "bg-white dark:bg-slate-800 border-white dark:border-slate-700 hover:border-green-100 dark:hover:border-green-800 hover:shadow-md hover:shadow-green-50/50 dark:hover:shadow-green-900/10"
+                          }`}
                       >
                         <div className="flex justify-between items-start mb-1">
                           <div className="flex items-center gap-2">
@@ -150,26 +147,24 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
                               <AlertCircle size={12} className="text-red-500" />
                             )}
                             <h4
-                              className={`text-xl transition-colors ${
-                                overdue
-                                  ? "text-red-700 dark:text-red-400"
-                                  : "text-gray-700 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400"
-                              }`}
+                              className={`text-xl transition-colors ${overdue
+                                ? "text-red-700 dark:text-red-400"
+                                : "text-gray-700 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400"
+                                }`}
                             >
                               {submittal.subject || "No Subject"}
                             </h4>
                           </div>
                           <span
-                            className={`text-md  uppercase tracking-wider ${
-                              overdue
-                                ? "text-red-500 dark:text-red-400"
-                                : "text-gray-400 dark:text-green-600/60"
-                            }`}
+                            className={`text-md  uppercase tracking-wider ${overdue
+                              ? "text-red-500 dark:text-red-400"
+                              : "text-gray-400 dark:text-green-600/60"
+                              }`}
                           >
                             {submittal.approvalDate
                               ? new Date(
-                                  submittal.approvalDate,
-                                ).toLocaleDateString()
+                                submittal.approvalDate,
+                              ).toLocaleDateString()
                               : "No Date"}
                           </span>
                         </div>
@@ -195,16 +190,12 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
         ) : invoiceNeedRaise.length > 0 ? (
           <div className="space-y-2">
             {invoiceNeedRaise.map((invoice, index) => (
-              <button
+              <div
                 key={invoice.id || index}
-                onClick={() => {
-                  setSelectedItem(invoice);
-                  setIsModalOpen(true);
-                }}
-                className="w-full text-left p-3 rounded-lg border border-white bg-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50 transition-all group"
+                className="w-full text-left p-3 rounded-lg border border-white bg-white"
               >
                 <div className="flex justify-between items-start mb-1">
-                  <h4 className=" text-sm text-gray-700 group-hover:text-green-700 transition-colors">
+                  <h4 className=" text-sm text-gray-700 transition-colors">
                     {invoice.invoiceNumber || "No Number"}
                   </h4>
                   <span className="text-sm  text-gray-400 uppercase tracking-wider">
@@ -231,7 +222,7 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
                     </span>
                   </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         ) : (
@@ -252,9 +243,7 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
               <h3 className="text-lg  text-gray-700">
-                {activeTab === "submittals"
-                  ? "Create Submittal"
-                  : "Create Invoice"}
+                Create Submittal
               </h3>
               <button
                 onClick={() => {
@@ -267,28 +256,13 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
-              {activeTab === "submittals" ? (
-                <AddSubmittal
-                  project={selectedItem?.project || selectedItem}
-                  initialData={{
-                    subject: selectedItem?.subject,
-                    description: selectedItem?.description,
-                  }}
-                />
-              ) : (
-                <AddInvoice
-                  initialFabricatorId={
-                    selectedItem?.fabricatorId || selectedItem?.fabricator_id
-                  }
-                  initialProjectId={
-                    selectedItem?.projectId || selectedItem?.project_id
-                  }
-                  onSuccess={() => {
-                    setIsModalOpen(false);
-                    setSelectedItem(null);
-                  }}
-                />
-              )}
+              <AddSubmittal
+                project={selectedItem?.project || selectedItem}
+                initialData={{
+                  subject: selectedItem?.subject,
+                  description: selectedItem?.description,
+                }}
+              />
             </div>
           </div>
         </div>
