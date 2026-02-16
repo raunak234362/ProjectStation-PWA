@@ -13,6 +13,7 @@ import type { WBSData, LineItem } from "../../../interface";
 import { Button } from "../../ui/button";
 import DataTable, { type ExtendedColumnDef } from "../../ui/table";
 import GetWBSLineItem from "./GetWBSLineItem";
+import { formatDateTime } from "../../../utils/dateUtils";
 
 const GetWBSByID = ({
   id,
@@ -33,9 +34,9 @@ const GetWBSByID = ({
   const [wbs, setWbs] = useState<WBSData | null>(wbsData);
   const [lineItems, setLineItems] = useState<LineItem[]>(
     initialData?.wbs ||
-    initialData?.bundle?.wbsTemplates ||
-    initialData?.wbsTemplates ||
-    []
+      initialData?.bundle?.wbsTemplates ||
+      initialData?.wbsTemplates ||
+      [],
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,9 +47,9 @@ const GetWBSByID = ({
       setWbs(initialData);
       setLineItems(
         initialData?.wbs ||
-        initialData?.bundle?.wbsTemplates ||
-        initialData?.wbsTemplates ||
-        []
+          initialData?.bundle?.wbsTemplates ||
+          initialData?.wbsTemplates ||
+          [],
       );
     }
   }, [initialData]);
@@ -141,14 +142,6 @@ const GetWBSByID = ({
       enableSorting: true,
     },
   ];
-
-  const formatDate = (date?: string) =>
-    date
-      ? new Date(date).toLocaleString("en-IN", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
-      : "—";
 
   if (loading && !wbs)
     return (
@@ -247,7 +240,7 @@ const GetWBSByID = ({
                   Last Updated
                 </p>
                 <p className="text-xs text-gray-300">
-                  {formatDate(wbsData?.updatedAt)}
+                  {formatDateTime(wbsData?.updatedAt)}
                 </p>
               </div>
               <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -260,9 +253,7 @@ const GetWBSByID = ({
           <section>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-6 bg-green-600 rounded-full"></div>
-              <h3 className="text-lg  text-gray-700">
-                Hours Overview
-              </h3>
+              <h3 className="text-lg  text-gray-700">Hours Overview</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <StatCard
@@ -417,9 +408,7 @@ const StatCard = ({
       </div>
       {subValue !== undefined && (
         <div className="mt-3 pt-3 border-t border-current/10 flex items-center justify-between">
-          <span className="text-[9px] uppercase  opacity-60">
-            {subLabel}
-          </span>
+          <span className="text-[9px] uppercase  opacity-60">{subLabel}</span>
           <span className="text-xs ">{subValue}h</span>
         </div>
       )}

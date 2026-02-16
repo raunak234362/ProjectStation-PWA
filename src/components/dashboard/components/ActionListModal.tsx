@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   X as CloseIcon,
   Files,
@@ -11,6 +12,12 @@ import type { ColumnDef } from "@tanstack/react-table";
 import GetRFQByID from "../../rfq/GetRFQByID";
 import GetRFIByID from "../../rfi/GetRFIByID";
 import GetCOByID from "../../co/GetCOByID";
+import { formatDate } from "../../../utils/dateUtils";
+import { useDispatch } from "react-redux";
+import {
+  incrementModalCount,
+  decrementModalCount,
+} from "../../../store/uiSlice";
 
 interface ActionListModalProps {
   isOpen: boolean;
@@ -25,8 +32,24 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   data,
   type,
 }) => {
-  if (!isOpen) return null;
-  console.log("===============",data);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isOpen) {
+      dispatch(incrementModalCount());
+      return () => {
+        dispatch(decrementModalCount());
+      };
+    }
+  }, [isOpen, dispatch]);
+
+  console.log("ActionListModal Rendered:", {
+    isOpen,
+    type,
+    dataLength: data?.length,
+    data,
+  });
+  console.log("===============", data);
 
   const getTitle = () => {
     switch (type) {
@@ -88,7 +111,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Due Date",
             cell: ({ row }) =>
               row.original.estimationDate
-                ? new Date(row.original.estimationDate).toLocaleDateString()
+                ? formatDate(row.original.estimationDate)
                 : "—",
           },
         ];
@@ -99,12 +122,15 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             accessorKey: "sender",
             header: "Sender",
             cell: ({ row }) => {
-              const s = row.original.sender;
-              return s
-                ? `${s.firstName ?? ""} ${s.middleName ?? ""} ${s.lastName ?? ""}`.trim() ||
-                    s.username ||
-                    "—"
-                : "—";
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const s = (row.original as any).sender;
+              if (!s) return "—";
+
+              const fullName = [s.firstName, s.middleName, s.lastName]
+                .filter(Boolean)
+                .join(" ");
+
+              return fullName || s.username || s.email || "—";
             },
           },
           {
@@ -171,11 +197,13 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-900 w-[90%] max-w-[80%] max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-100 dark:border-slate-800 animate-in fade-in zoom-in duration-200">
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-green-500/20 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50/50 dark:bg-slate-800/50">
+        <div className="p-6 border-b border-green-500/10 flex items-center justify-between bg-green-50/50">
           <div>
             <h3 className="text-xl text-gray-700 dark:text-slate-100 flex items-center gap-2">
               {getIcon()}
@@ -187,7 +215,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full transition-colors text-gray-400 hover:text-gray-700 dark:hover:text-slate-200"
+            className="p-2 hover:bg-green-100 rounded-full transition-colors text-gray-400 hover:text-green-700"
           >
             <CloseIcon size={24} />
           </button>
@@ -211,16 +239,17 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-gray-100 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-800/50 flex justify-end">
+        <div className="p-4 border-t border-green-500/10 bg-green-50/50 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-gray-800 dark:bg-slate-700 text-white rounded-xl font-semibold hover:bg-gray-700 dark:hover:bg-slate-600 transition-colors shadow-lg shadow-gray-200 dark:shadow-none"
+            className="px-6 py-2 bg-gray-800 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors shadow-lg shadow-green-100"
           >
             Close
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

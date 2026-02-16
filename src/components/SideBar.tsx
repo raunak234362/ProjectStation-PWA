@@ -5,9 +5,6 @@ import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
 import { LogOut, X, RefreshCw } from "lucide-react";
-import { useSelector } from "react-redux";
-import Button from "./fields/Button";
-import type { UserData } from "../interface";
 
 interface SidebarProps {
   isMinimized: boolean;
@@ -21,10 +18,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   isMobile = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  const userData = useSelector(
-    (state: any) => state?.userInfo?.userDetail,
-  ) as UserData | null;
 
   const navigate = useNavigate();
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
@@ -49,8 +42,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       onMouseLeave={() => !isMobile && setIsHovered(false)}
       className={`
         h-full flex flex-col transition-all duration-500
-        backdrop-blur-xl 
-        hover:shadow-[0_15px_50px_-10px_rgba(0,0,0,0.2)]
+        backdrop-blur-xl z-0
+        hover:shadow-[#6bbd45]
         ${
           isMobile
             ? `fixed inset-y-0 left-0 z-50 w-72 transform shadow-2xl ${
@@ -75,13 +68,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             <img
               src={LOGO}
               alt="Logo"
-              className="bg-white w-56 object-contain rounded-3xl shadow-[0_10px_25px_rgba(0,0,0,0.2)] group-hover:scale-105 transition-transform duration-500"
+              className="bg-white w-56 object-contain rounded-3xl  group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
             <img
               src={SLOGO}
               alt="Logo"
-              className="bg-white w-20 h-20 object-contain p-2 rounded-2xl shadow-[0_5px_15px_rgba(0,0,0,0.2)] group-hover:rotate-12 transition-all duration-500"
+              className="bg-white w-20 h-20 object-contain p-2 rounded-2xl  group-hover:rotate-12 transition-all duration-500"
             />
           )}
         </div>
@@ -98,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Navigation */}
       <div className="flex-1 py-6 flex flex-col overflow-y-auto sidebar-scrollbar">
-        <nav className="flex flex-col gap-1 w-full px-4">
+        <nav className="flex flex-col gap-4 w-full px-4">
           {navItems.map(
             ({ label, to, roles, icon }) =>
               canView(roles) && (
@@ -125,8 +118,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                       `flex items-center gap-4 py-3.5 transition-all duration-500 text-sm font-black tracking-tight relative overflow-hidden
                       ${
                         isActive
-                          ? "bg-[#6bbd45] text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] rounded-2xl px-6 scale-105 z-10"
-                          : "text-gray-900 dark:text-gray-100 hover:bg-white/10 hover:text-black dark:hover:text-white px-6 rounded-2xl hover:translate-x-1"
+                          ? " text-black bg-gray-300 border-2 border-[#6bbd45] rounded-2xl px-6 scale-105 z-10"
+                          : "text-gray-900 border border-[#6bbd45] dark:text-gray-100 hover:bg-white/10 hover:text-black dark:hover:text-white px-6 rounded-2xl hover:translate-x-1"
                       } ${isExpanded ? "" : "justify-center w-14 h-14 mx-auto rounded-2xl shadow-md px-0"}`
                     }
                   >
@@ -164,8 +157,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
             <div className="overflow-hidden text-gray-900 dark:text-gray-100">
-              <p className="text-sm font-black truncate uppercase tracking-tight">
-                {sessionStorage.getItem("username")}
+              <p className="text-sm truncate uppercase tracking-widest">
+                {sessionStorage.getItem("firstName")}
               </p>
               <p className="text-[10px] uppercase tracking-widest truncate opacity-80 font-bold">
                 {sessionStorage.getItem("userDesignation")}

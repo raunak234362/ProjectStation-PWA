@@ -1,9 +1,10 @@
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
+import { formatDate } from "../../utils/dateUtils";
 
 const AllRFQ = ({ rfq }: any) => {
-  const userType = localStorage.getItem("userType");
+  const userRole = sessionStorage.getItem("userRole");
 
   const columns: ExtendedColumnDef<RFQItem>[] = [
     {
@@ -21,7 +22,7 @@ const AllRFQ = ({ rfq }: any) => {
   ];
 
   // ➕ Only Admin / Staff see Fabricator
-  if (userType !== "CLIENT") {
+  if (userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN") {
     columns.push({
       accessorKey: "fabricator",
       header: "Fabricator",
@@ -53,12 +54,13 @@ const AllRFQ = ({ rfq }: any) => {
       ],
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 text-[10px]  uppercase tracking-widest rounded-lg ${row.original.status === "IN_REVIEW"
-            ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30"
-            : row.original.status === "COMPLETED"
-              ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30"
-              : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700"
-            }`}
+          className={`px-3 py-1 text-[10px]  uppercase tracking-widest rounded-lg ${
+            row.original.status === "IN_REVIEW"
+              ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30"
+              : row.original.status === "COMPLETED"
+                ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30"
+                : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700"
+          }`}
         >
           {row.original.status?.replace("_", " ")}
         </span>
@@ -67,10 +69,7 @@ const AllRFQ = ({ rfq }: any) => {
     {
       accessorKey: "estimationDate",
       header: "Due Date",
-      cell: ({ row }) =>
-        row.original.estimationDate
-          ? new Date(row.original.estimationDate).toLocaleDateString()
-          : "—",
+      cell: ({ row }) => formatDate(row.original.estimationDate),
     },
   );
 
@@ -79,7 +78,7 @@ const AllRFQ = ({ rfq }: any) => {
       <DataTable
         columns={columns}
         data={rfq || []}
-        onRowClick={() => { }}
+        onRowClick={() => {}}
         detailComponent={({ row }) => <GetRFQByID id={row.id} />}
         pageSizeOptions={[25]}
       />

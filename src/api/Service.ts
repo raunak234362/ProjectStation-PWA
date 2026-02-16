@@ -12,7 +12,6 @@ import type {
 } from "../interface";
 import api from "./api";
 class Service {
-
   //Get Logged-In User Detail
   static async GetUserByToken() {
     try {
@@ -433,6 +432,20 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find rfqs", error);
+    }
+  }
+
+  // Client Admin Pending RFQs (Received)
+  static async ClientAdminPendingRFQs() {
+    try {
+      // Assuming existing dashboard logic uses 'received' and filters it locally.
+      // We'll use a specific endpoint if available, but for now mimicking the likely pattern or reusing received if auth handles it.
+      // Given the pattern, let's try `rfq/received/clientAdmin`
+      const response = await api.get(`rfq/pending/clientAdmin`);
+      console.log("Client Admin RFQ received:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfqs for Client Admin", error);
     }
   }
   //getting rfqbyID
@@ -1468,6 +1481,35 @@ class Service {
     }
   }
 
+  // Client Admin Pending RFIs
+  static async ClientAdminPendingRFIs() {
+    try {
+      const response = await api.get(`rfi/pending/clientAdmin`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Client Admin pending RFIs:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find pending RFIs for Client Admin", error);
+    }
+  }
+
+  static async ClientAdminPendingSubmittals(){
+    try {
+      const response = await api.get(`submittal/pending/clientAdmin`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Client Admin pending RFIs:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find pending RFIs for Client Admin", error);
+    }
+  }
+
   static async RfiSent() {
     try {
       const response = await api.get(`rfi/sents`, {
@@ -1650,6 +1692,21 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find Co", error);
+    }
+  }
+
+  // Client Admin Pending COs
+  static async ClientAdminPendingCOs() {
+    try {
+      const response = await api.get(`changeOrder/pending/clientAdmin`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Client Admin Pending Co:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Co for Client Admin", error);
     }
   }
 
@@ -2002,7 +2059,7 @@ class Service {
   }
 
   //upcoming rfi
-  static async ClientAdminPendingSubmittals() {
+  static async ClientAdminPendingMilestoneSubmittals() {
     try {
       const response = await api.get(`mileStone/pendingSubmittals/clientAdmin`);
       console.log("Upcoming RFI fetched:", response.data);

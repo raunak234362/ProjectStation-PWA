@@ -3,6 +3,8 @@ import Service from "../../api/Service";
 import { useSelector } from "react-redux";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
+import { X, Loader2 } from "lucide-react";
+import ProjectMilestoneMetrics from "../project/ProjectMilestoneMetrics";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -18,6 +20,7 @@ const SubmittalListModal = lazy(
   () => import("./components/SubmittalListModal"),
 );
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
+const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
 
 const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -41,6 +44,14 @@ const ClientDashboard = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
+    null,
+  );
+  const [selectedMilestoneProjectId, setSelectedMilestoneProjectId] = useState<
+    string | null
+  >(null);
+  const [selectedMilestoneProjectName, setSelectedMilestoneProjectName] =
+    useState<string | null>(null);
 
   // Redux Data
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
@@ -65,25 +76,18 @@ const ClientDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sent, received, allInvoices, pendingRFIsData, pendingCOsData] =
-          await Promise.all([
+        const [sent, received, allInvoices, pendingCOsData] = await Promise.all(
+          [
             Service.RfqSent(),
-            Service.RFQRecieved(),
             Service.SubmittalRecieved(),
             Service.InvoiceDashboardData(),
-            Service.pendingRFIs(),
-            Service.PendingCo(),
-          ]);
+            Service.ClientAdminPendingCOs(), // Updated
+          ],
+        );
 
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
-        const rfqs = received?.data || received || [];
-        const filteredRfqs = rfqs.filter(
-          (rfq: any) => !rfq.responses || rfq.responses.length === 0,
-        );
-        setPendingRFQs(filteredRfqs);
-        setPendingRFIs(pendingRFIsData?.data || pendingRFIsData || []);
         setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 
         const sentCount = sent?.length || 0;
@@ -131,7 +135,7 @@ const ClientDashboard = () => {
 
   const fetchUpcomingSubmittals = async () => {
     try {
-      const response = await Service.ClientAdminPendingSubmittals();
+      const response = await Service.ClientAdminPendingMilestoneSubmittals();
       console.log(response);
 
       setUpcomingSubmittals(response?.data || []);
@@ -142,8 +146,8 @@ const ClientDashboard = () => {
 
   const fetchPendingSubmittals = async () => {
     try {
-      const response = await Service.SubmittalRecieved();
-      console.log(response);
+      const response = await Service.ClientAdminPendingSubmittals();
+      console.log("RFI___________________+++", response);
 
       setPendingSubmittals(response?.data || []);
     } catch (error) {
@@ -151,7 +155,31 @@ const ClientDashboard = () => {
     }
   };
 
+  const fetchPendingRFIs = async () => {
+    try {
+      const response = await Service.ClientAdminPendingRFIs();
+      console.log(response);
+
+      setPendingRFIs(response?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch RFIs", error);
+    }
+  };
+
+  const fetchPendingRFQs = async () => {
+    try {
+      const response = await Service.ClientAdminPendingRFQs();
+      console.log(response);
+
+      setPendingRFQs(response?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch RFQs", error);
+    }
+  };
+
   useEffect(() => {
+    fetchPendingRFQs();
+    fetchPendingRFIs();
     fetchDashboardData();
     fetchUpcomingSubmittals();
     fetchPendingSubmittals();
@@ -181,22 +209,21 @@ const ClientDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col w-full p-4 space-y-6 pb-8 bg-gray-50/50 dark:bg-slate-900/50 min-h-full">
+    <div className="flex flex-col w-full p-4 space-y-6 pb-8 bg-white min-h-full">
       <Suspense fallback={<DashboardSkeleton />}>
         {/* Stats Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="w-full">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-1">
+            <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-1">
               <ProjectStats stats={stats} onCardClick={handleCardClick} />
             </div>
           </div>
           <div className="w-full">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 h-full">
+            <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 h-full">
               <PendingActions
                 dashboardStats={dashboardStats}
                 onActionClick={handleActionClick}
                 filter={["RFQ", "RFI", "CO", "Submittals"]}
-                submittalsCount={pendingSubmittals.length}
               />
             </div>
           </div>
@@ -204,12 +231,7 @@ const ClientDashboard = () => {
 
         {/* Detailed Info Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-          <div className="w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden min-h-[400px]">
-            <div className="p-4 border-b border-gray-100 dark:border-slate-700">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-                Pending Submittals
-              </h2>
-            </div>
+          <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
             <div className="p-2">
               <UpcomingSubmittals
                 pendingSubmittals={upcomingSubmittals}
@@ -218,20 +240,36 @@ const ClientDashboard = () => {
                 hideTabs={true}
                 hideFabricator={true}
                 onSubmittalClick={(submittal) => {
-                  const project =
-                    submittal.project ||
-                    (submittal.projectId ? { id: submittal.projectId } : null);
-                  if (project) {
-                    // Add a flag to indicate we want to show analytics
-                    setSelectedProject({ ...project, showAnalytics: true });
+                  console.log("Clicked submittal:", submittal);
+
+                  // Extract Project ID from various possible locations
+                  const projectId =
+                    submittal.projectId ||
+                    submittal.project_id ||
+                    submittal.project?.id ||
+                    submittal.project?._id ||
+                    (typeof submittal.project === "string"
+                      ? submittal.project
+                      : null);
+
+                  if (projectId) {
+                    setSelectedMilestoneProjectId(projectId);
+                    setSelectedMilestoneProjectName(
+                      submittal.project?.name || submittal.name || "Project",
+                    );
+                  } else {
+                    console.warn(
+                      "Could not extract Project ID from submittal:",
+                      submittal,
+                    );
                   }
                 }}
               />
             </div>
           </div>
-          <div className="w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden min-h-[400px]">
-            <div className="p-4 border-b border-gray-100 dark:border-slate-700">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+          <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
+            <div className="p-4 border-b border-green-500/10">
+              <h2 className="text-lg font-semibold text-gray-800">
                 Invoices Received
               </h2>
             </div>
@@ -241,10 +279,70 @@ const ClientDashboard = () => {
                 invoices={invoices}
                 initialTab="invoices"
                 hideTabs={true}
+                onInvoiceClick={(invoice: any) => {
+                  console.log("Clicked invoice:", invoice);
+                  if (invoice?.id) {
+                    setSelectedInvoiceId(invoice.id);
+                  }
+                }}
               />
             </div>
           </div>
         </div>
+
+        {selectedInvoiceId && (
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-0">
+            <GetInvoiceById
+              id={selectedInvoiceId}
+              onClose={() => setSelectedInvoiceId(null)}
+            />
+          </div>
+        )}
+
+        {/* Milestone Metrics Modal */}
+        {selectedMilestoneProjectId && (
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-green-500/10 animate-in fade-in zoom-in duration-200">
+              <div className="p-6 border-b border-green-500/10 flex justify-between items-center bg-green-50/50">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    {selectedMilestoneProjectName}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Milestone Performance & Status
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedMilestoneProjectId(null)}
+                  className="p-2 hover:bg-green-100 rounded-full transition-colors text-gray-400 hover:text-green-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto max-h-[70vh]">
+                <Suspense
+                  fallback={
+                    <div className="flex justify-center p-12">
+                      <Loader2 className="animate-spin text-green-600" />
+                    </div>
+                  }
+                >
+                  <ProjectMilestoneMetrics
+                    projectId={selectedMilestoneProjectId}
+                  />
+                </Suspense>
+              </div>
+              <div className="p-4 border-t border-green-500/10 bg-green-50/50 flex justify-end">
+                <button
+                  onClick={() => setSelectedMilestoneProjectId(null)}
+                  className="px-6 py-2 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-colors shadow-sm shadow-green-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modals */}
         <ProjectListModal

@@ -2,6 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
 import { Eye, Send } from "lucide-react";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface PendingListProps {
   invoices: any[];
@@ -31,7 +32,7 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
       header: "Issued Date",
       cell: ({ row }) => {
         const date = row.getValue("invoiceDate") as string;
-        return date ? new Date(date).toLocaleDateString() : "N/A";
+        return date ? formatDate(date) : "N/A";
       },
     },
     {
@@ -46,7 +47,7 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
           <span
             className={isOverdue ? "text-red-500 font-medium" : "text-gray-600"}
           >
-            {new Date(date).toLocaleDateString()}
+            {formatDate(date)}
           </span>
         );
       },

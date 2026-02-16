@@ -137,7 +137,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
       let payload;
 
-      if (userRole === "CLIENT") {
+      if (userRole === "CLIENT" || userRole === "CLIENT_ADMIN") {
         payload = {
           ...basePayload,
           senderId: userDetail?.id,
@@ -227,7 +227,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <Controller
                   name="fabricatorId"
                   control={control}
-                  disabled={userRole === "CLIENT"}
+                  disabled={
+                    userRole === "CLIENT" || userRole === "CLIENT_ADMIN"
+                  }
                   rules={{ required: "Fabricator is required" }}
                   render={({ field }) => {
                     const normalizedValue =
@@ -266,7 +268,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <Controller
                   name="senderId"
                   control={control}
-                  disabled={userRole === "CLIENT"}
+                  disabled={
+                    userRole === "CLIENT" || userRole === "CLIENT_ADMIN"
+                  }
                   rules={{ required: "Fabricator contact is required" }}
                   render={({ field }) => (
                     <Select

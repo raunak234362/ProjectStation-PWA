@@ -3,6 +3,7 @@ import Service from "../../api/Service";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import GetInvoiceById from "./GetInvoiceById";
+import { formatDate } from "../../utils/dateUtils";
 
 const AllInvoices = () => {
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -38,10 +39,7 @@ const AllInvoices = () => {
     {
       accessorKey: "invoiceDate",
       header: "Date",
-      cell: ({ row }) => {
-        const date = row.getValue("invoiceDate") as string;
-        return date ? new Date(date).toLocaleDateString() : "N/A";
-      },
+      cell: ({ row }) => formatDate(row.getValue("invoiceDate")),
     },
     {
       accessorKey: "totalInvoiceValue",
@@ -62,10 +60,11 @@ const AllInvoices = () => {
         const status = row.getValue("paymentStatus");
         return (
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${status
+            className={`px-2 py-1 rounded-full text-xs font-medium ${
+              status
                 ? "bg-green-100 text-green-700"
                 : "bg-yellow-100 text-yellow-700"
-              }`}
+            }`}
           >
             {status ? "Paid" : "Pending"}
           </span>
@@ -74,7 +73,9 @@ const AllInvoices = () => {
     },
   ];
 
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
+    null,
+  );
 
   if (loading) {
     return (

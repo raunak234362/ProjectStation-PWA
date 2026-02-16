@@ -1,6 +1,7 @@
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Loader2, Inbox } from "lucide-react";
+import { formatDate } from "../../utils/dateUtils";
 
 import GetAccountByID from "./getAccountByID";
 
@@ -46,14 +47,7 @@ const AllAccounts = ({ accounts, loading }: AllAccountsProps) => {
     {
       accessorKey: "createdAt",
       header: "Created On",
-      cell: ({ row }) =>
-        row.original.createdAt
-          ? new Date(row.original.createdAt).toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
-          : "—",
+      cell: ({ row }) => formatDate(row.original.createdAt),
     },
   ];
 

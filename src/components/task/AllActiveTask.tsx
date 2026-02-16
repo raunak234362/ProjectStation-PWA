@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
+import { formatDate } from "../../utils/dateUtils";
 // import GetTaskByID from "./GetTaskByID";
 
 const AllActiveTask = () => {
@@ -40,15 +41,6 @@ const AllActiveTask = () => {
     };
     fetchTasks();
   }, []);
-
-  const formatDate = (date?: string) =>
-    date
-      ? new Date(date).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
-      : "—";
 
   const getStatusColor = (status: string) => {
     switch (status?.toUpperCase()) {
@@ -144,7 +136,7 @@ const AllActiveTask = () => {
         cell: ({ row }) => (
           <span
             className={`px-3 py-1 rounded-full text-xs  border ${getStatusColor(
-              row.original.status
+              row.original.status,
             )}`}
           >
             {row.original.status}
@@ -163,7 +155,7 @@ const AllActiveTask = () => {
               <span
                 className={`w-2 h-2 rounded-full ${priority.color.replace(
                   "text",
-                  "bg"
+                  "bg",
                 )}`}
               ></span>
               {priority.label}
@@ -182,7 +174,7 @@ const AllActiveTask = () => {
         ),
       },
     ],
-    []
+    [],
   );
 
   if (loading) {

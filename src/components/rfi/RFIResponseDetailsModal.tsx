@@ -1,4 +1,5 @@
 import { X, CalendarDays } from "lucide-react";
+import { formatDateTime } from "../../utils/dateUtils";
 import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
@@ -75,7 +76,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
         {/* Timestamp */}
         <div className="flex gap-2 items-center text-gray-700 text-xs">
           <CalendarDays size={14} />
-          {new Date(response.createdAt).toLocaleString()}
+          {formatDateTime(response.createdAt)}
         </div>
 
         {/* Child Responses (Thread) */}
@@ -91,7 +92,7 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
                   <span className="font-medium text-gray-700">
                     {child.user?.name || "User"} ({child.user?.role || "N/A"})
                   </span>
-                  <span>{new Date(child.createdAt).toLocaleString()}</span>
+                  <span>{formatDateTime(child.createdAt)}</span>
                 </div>
                 <div
                   className="text-gray-700 mb-2 prose prose-sm max-w-none"

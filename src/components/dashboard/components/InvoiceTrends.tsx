@@ -143,23 +143,23 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   const { theme } = useTheme();
 
   return (
-    <div className="bg-[#f9fdf7] dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col h-full transition-colors duration-300">
+    <div className="bg-white p-6 rounded-3xl shadow-sm border border-green-500/10 flex flex-col h-full transition-colors duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 shrink-0">
         <div>
-          <h2 className="text-lg md:text-2xl text-slate-800 dark:text-white flex items-center gap-2">
+          <h2 className="text-lg md:text-2xl text-slate-800 flex items-center gap-2">
             INVOICE TRENDS
           </h2>
           <div className="flex flex-row items-center gap-5">
             <div className="text-md flex flex-col gap-0.5 mt-1">
-              <p className=" text-slate-700 dark:text-slate-300 ">
+              <p className=" text-slate-700 ">
                 Total Raised:{" "}
-                <span className="text-lg text-slate-900 dark:text-white">
+                <span className="text-lg text-slate-900">
                   ${totalRaisedAmount.toLocaleString()}
                 </span>
               </p>
-              <p className=" text-slate-700 dark:text-slate-300 ">
+              <p className=" text-slate-700 ">
                 Total Received:{" "}
-                <span className="text-lg text-[#6bbd45] dark:text-green-400">
+                <span className="text-lg text-[#6bbd45]">
                   ${totalReceivedAmount.toLocaleString()}
                 </span>
               </p>
@@ -167,7 +167,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="py-2 px-4 text-sm border border-slate-100 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] bg-white dark:bg-slate-800 text-gray-900 dark:text-white  shadow-sm transition-all"
+              className="py-2 px-4 text-sm border border-green-500/10 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] bg-white text-gray-900  shadow-sm transition-all"
             >
               {years.map((year) => (
                 <option key={year} value={year}>
@@ -189,7 +189,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             "px-4 py-2 rounded-xl text-md  transition-all whitespace-nowrap shadow-sm border",
             selectedMonth === null
               ? "bg-[#6bbd45] text-white border-[#6bbd45]"
-              : "bg-white dark:bg-slate-800 text-slate-500 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-100 dark:border-slate-700",
+              : "bg-white text-slate-500 hover:bg-green-50 border-green-500/10",
           )}
         >
           All (Q1 - Q4)
@@ -202,7 +202,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               "px-4 py-2 rounded-xl text-md  transition-all whitespace-nowrap shadow-sm border",
               selectedMonth === index
                 ? "bg-[#6bbd45] text-white border-[#6bbd45]"
-                : "bg-white dark:bg-slate-800 text-slate-500 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-100 dark:border-slate-700",
+                : "bg-white text-slate-500 hover:bg-green-50 border-green-500/10",
             )}
           >
             {month}
@@ -219,7 +219,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
-              stroke={theme === "dark" ? "#1e293b" : "#f1f5f9"}
+              stroke={"#f1f5f9"}
             />
             <XAxis
               dataKey="name"
@@ -254,8 +254,8 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   return (
-                    <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 min-w-[140px]">
-                      <p className=" text-slate-400 dark:text-green-400 mb-2 uppercase tracking-tight text-md">
+                    <div className="bg-white p-3 rounded-2xl shadow-xl border border-green-500/10 min-w-[140px]">
+                      <p className=" text-slate-400 mb-2 uppercase tracking-tight text-md">
                         {selectedMonth !== null
                           ? `${months[selectedMonth]} ${label}`
                           : label}{" "}
@@ -263,26 +263,26 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                       </p>
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between gap-4">
-                          <span className="text-md  text-slate-500 dark:text-slate-300">
+                          <span className="text-md  text-slate-500">
                             RAISED
                           </span>
-                          <span className="text-md  text-slate-700 dark:text-white">
+                          <span className="text-md  text-slate-700">
                             ${(data.raised || 0).toLocaleString()}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
-                          <span className="text-md  text-emerald-500 dark:text-green-400">
+                          <span className="text-md  text-emerald-500">
                             RECEIVED
                           </span>
-                          <span className="text-md  text-emerald-600 dark:text-green-400">
+                          <span className="text-md  text-emerald-600">
                             ${(data.received || 0).toLocaleString()}
                           </span>
                         </div>
-                        <div className="pt-1.5 border-t border-slate-50 dark:border-slate-700 flex items-center justify-between">
-                          <span className="text-md  text-slate-400 dark:text-slate-400">
+                        <div className="pt-1.5 border-t border-green-500/10 flex items-center justify-between">
+                          <span className="text-md  text-slate-400">
                             INVOICES
                           </span>
-                          <span className="text-md  text-slate-600 dark:text-white">
+                          <span className="text-md  text-slate-600">
                             {data.count}
                           </span>
                         </div>
@@ -318,7 +318,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               dataKey="pending"
               name="Pending Amount"
               stackId="a"
-              fill={theme === "dark" ? "#334155" : "#cbd5e1"}
+              fill={"#cbd5e1"}
               radius={[4, 4, 0, 0]}
               barSize={40}
             />

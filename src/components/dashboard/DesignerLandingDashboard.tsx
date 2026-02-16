@@ -109,7 +109,7 @@ const DesignerLandingDashboard: React.FC = () => {
         <QuickActionCard
           icon={<MessageSquare className="w-5 h-5" />}
           label="Support"
-          onClick={() => { }} // Add support logic if needed
+          onClick={() => {}} // Add support logic if needed
           color="bg-green-50 text-green-600"
         />
       </motion.section>
@@ -168,7 +168,7 @@ const DesignerLandingDashboard: React.FC = () => {
                 />
               ))}
               {myProjects.length === 0 && (
-                <div className="p-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                <div className="p-8 text-center bg-green-50/20 rounded-2xl border border-dashed border-green-500/20">
                   <p className="text-gray-400 font-medium">
                     No projects assigned yet.
                   </p>
@@ -181,10 +181,10 @@ const DesignerLandingDashboard: React.FC = () => {
         {/* Sidebar Info */}
         <div className="space-y-8">
           {/* Coverage Summary */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-500/10 space-y-6">
             <h2 className="text-lg  text-gray-800">My Coverage</h2>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div className="flex items-center justify-between p-3 bg-green-50/50 rounded-xl">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white rounded-lg shadow-sm">
                     <MapPin className="w-4 h-4 text-green-600" />
@@ -197,7 +197,7 @@ const DesignerLandingDashboard: React.FC = () => {
                   {userDetail?.state ? 1 : 0}
                 </span>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div className="flex items-center justify-between p-3 bg-green-50/50 rounded-xl">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white rounded-lg shadow-sm">
                     <Users className="w-4 h-4 text-blue-600" />
@@ -239,7 +239,7 @@ const DesignerLandingDashboard: React.FC = () => {
 const QuickActionCard = ({ icon, label, onClick, color }: any) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 p-4 rounded-2xl transition-all hover:shadow-md hover:-translate-y-1 bg-white border border-gray-100 group`}
+    className={`flex items-center gap-3 p-4 rounded-2xl transition-all hover:bg-green-50/50 bg-white border border-green-500/10 group`}
   >
     <div
       className={`p-2 rounded-xl ${color} group-hover:scale-110 transition-transform`}
@@ -252,7 +252,7 @@ const QuickActionCard = ({ icon, label, onClick, color }: any) => (
 
 const StatCard = ({ label, value, icon, color, bgColor }: any) => (
   <div
-    className={`p-6 rounded-2xl border border-gray-100 bg-white shadow-sm space-y-4`}
+    className={`p-6 rounded-2xl border border-green-500/10 bg-white shadow-sm space-y-4`}
   >
     <div
       className={`w-12 h-12 ${bgColor} ${color} rounded-xl flex items-center justify-center`}
@@ -260,9 +260,7 @@ const StatCard = ({ label, value, icon, color, bgColor }: any) => (
       {icon}
     </div>
     <div>
-      <p className="text-sm  text-gray-400 uppercase tracking-wider">
-        {label}
-      </p>
+      <p className="text-sm  text-gray-400 uppercase tracking-wider">{label}</p>
       <p className={`text-3xl  ${color}`}>{value}</p>
     </div>
   </div>
@@ -277,7 +275,7 @@ const ProjectCard = ({
 }) => (
   <div
     onClick={onClick}
-    className="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
+    className="p-4 bg-white border border-green-500/10 rounded-2xl hover:border-green-500/30 hover:bg-green-50/20 transition-all cursor-pointer flex items-center justify-between group"
   >
     <div className="flex items-center gap-4">
       <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 ">
@@ -294,10 +292,11 @@ const ProjectCard = ({
     </div>
     <div className="flex items-center gap-4">
       <span
-        className={`px-3 py-1 rounded-full text-[10px]  uppercase tracking-wider ${project.status === "ACTIVE"
-          ? "bg-green-100 text-green-700"
-          : "bg-gray-100 text-gray-600"
-          }`}
+        className={`px-3 py-1 rounded-full text-[10px]  uppercase tracking-wider ${
+          project.status === "ACTIVE"
+            ? "bg-green-100 text-green-700"
+            : "bg-gray-100 text-gray-600"
+        }`}
       >
         {project.status}
       </span>
@@ -308,7 +307,7 @@ const ProjectCard = ({
 
 const ActivityItem = ({ label, time, icon }: any) => (
   <div className="flex items-start gap-3">
-    <div className="mt-1 p-1.5 bg-gray-100 rounded-full text-gray-500">
+    <div className="mt-1 p-1.5 bg-green-50 rounded-full text-green-600">
       {icon}
     </div>
     <div>

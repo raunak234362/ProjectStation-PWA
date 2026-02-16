@@ -32,6 +32,7 @@ const AppContent = () => {
       sessionStorage.setItem("username", userDetail.username);
       sessionStorage.setItem("userDesignation", userDetail.designation);
       sessionStorage.setItem("firstName", userDetail.firstName);
+      sessionStorage.setItem("lastName", userDetail.lastName);
       sessionStorage.setItem(
         "connectionDesignerId",
         userDetail.connectionDesignerId,
@@ -124,8 +125,8 @@ const AppContent = () => {
         const rfqData = Array.isArray(rfqDetail)
           ? rfqDetail
           : rfqDetail?.data || [];
-          console.log(rfqData);
-          
+        console.log(rfqData);
+
         dispatch(setRFQData(rfqData));
         console.log("Dispatched RFQ Data:", rfqData);
       } catch (error) {

@@ -14,6 +14,7 @@ import QuotationRaise from "../connectionDesigner/QuotationRaise";
 import QuotationResponseModal from "../connectionDesigner/QuotationResponseModal";
 import QuotationResponseDetailsModal from "../connectionDesigner/QuotationResponseDetailsModal";
 import { Trash2, X } from "lucide-react";
+import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { useDispatch } from "react-redux";
 import { deleteRFQ } from "../../store/rfqSlice";
 import { toast } from "react-toastify";
@@ -195,7 +196,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Created",
       cell: ({ row }) => (
         <span className="text-gray-700 text-sm">
-          {new Date(row.original.createdAt).toLocaleString()}
+          {formatDateTime(row.original.createdAt)}
         </span>
       ),
     },
@@ -259,10 +260,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs  ${row.original.approvalStatus
+          className={`px-2 py-1 rounded-full text-xs  ${
+            row.original.approvalStatus
               ? "bg-green-100 text-green-700"
               : "bg-yellow-100 text-yellow-700"
-            }`}
+          }`}
         >
           {row.original.approvalStatus ? "Approved" : "Pending"}
         </span>
@@ -285,7 +287,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Date",
       cell: ({ row }) => (
         <span className="text-gray-500 text-xs">
-          {new Date(row.original.createdAt).toLocaleDateString()}
+          {formatDate(row.original.createdAt)}
         </span>
       ),
     },
@@ -294,9 +296,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Approved Date",
       cell: ({ row }) => (
         <span className="text-gray-500 text-xs">
-          {row.original.approvalDate
-            ? new Date(row.original.approvalDate).toLocaleDateString()
-            : "-"}
+          {formatDate(row.original.approvalDate)}
         </span>
       ),
     },
@@ -333,7 +333,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               {/* Action buttons */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 {/* EDIT RFQ */}
-                {userRole !== "CLIENT" && (
+                {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
                   <>
                     <Button
                       onClick={() => alert("Coming soon: Edit RFQ modal")}
@@ -371,14 +371,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               <Info label="Project Number" value={rfq?.projectNumber || ""} />
               <Info label="Status" value={rfq?.status || ""} />
               <Info label="Tools" value={rfq?.tools || "N/A"} />
-              <Info
-                label="Due Date"
-                value={
-                  rfq?.estimationDate
-                    ? new Date(rfq.estimationDate).toLocaleDateString()
-                    : "N/A"
-                }
-              />
+              <Info label="Due Date" value={formatDate(rfq?.estimationDate)} />
               <Info label="Bid Amount (USD)" value={rfq?.bidPrice ?? "—"} />
             </div>
 
@@ -422,16 +415,14 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               files={rfq?.files || []}
               table="rFQ"
               parentId={rfq?.id}
-              formatDate={(date: string | number | Date) =>
-                new Date(date).toLocaleDateString()
-              }
+              formatDate={formatDate}
             />
-            {userRole !== "CLIENT" &&
-              userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
-                <div className="flex flex-col gap-2 pt-2">
-                  <Button
-                    onClick={() => setShowEstimationModal(true)}
-                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
+            {userRole !=="CLIENT_ADMIN" && userRole !== "CLIENT" &&
+            userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
+              <div className="flex flex-col gap-2 pt-2">
+                <Button
+                  onClick={() => setShowEstimationModal(true)}
+                  className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
                   >
                     Raise For Estimation
                   </Button>
@@ -440,7 +431,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                     className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight "
                   >
                     Raise for Connection Designer Quotation
-                  </Button>
+                  </Button> 
                 </div>
               )}
           </div>
@@ -487,16 +478,16 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             <div className="mt-4">
               {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
                 <>
-              <p className="text-xl sm:text-2xl font-semibold text-green-700">
-                CD Quotation
-              </p>
-                // Show their quotation if submitted
-                <DataTable
-                  columns={quotationColumns}
-                  data={rfq?.CDQuotas || []}
-                  pageSizeOptions={[5]}
-                  onRowClick={(row: any) => setSelectedQuotation(row)}
-                />
+                  <p className="text-xl sm:text-2xl font-semibold text-green-700">
+                    CD Quotation
+                  </p>
+                  // Show their quotation if submitted
+                  <DataTable
+                    columns={quotationColumns}
+                    data={rfq?.CDQuotas || []}
+                    pageSizeOptions={[5]}
+                    onRowClick={(row: any) => setSelectedQuotation(row)}
+                  />
                 </>
               ) : (
                 // Show Submit Button if not submitted
@@ -513,9 +504,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                         Submit Quotation Response
                       </Button>
                     </>
-                  ) : (
-                    null
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>

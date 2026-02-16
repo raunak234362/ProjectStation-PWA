@@ -10,6 +10,7 @@ import ASCI from "../../assets/asci.webp";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import Select from "../fields/Select";
+import { formatDate } from "../../utils/dateUtils";
 
 interface ResponseModalProps {
   rfqId: string;
@@ -170,7 +171,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
               <div><span>Our Proposal ID: <span>WBT/${
                 est.estimationNumber || "Estimation Number"
               }/${new Date().getFullYear()}/VER 1.0</span></span></div>
-              <div><span>Date: <span>${new Date().toLocaleDateString()}</span></span></div>
+              <div><span>Date: <span>${formatDate(new Date())}</span></span></div>
             </div>
 
             <p style="font-size: 12px; margin-bottom: 25px; color: #444;">

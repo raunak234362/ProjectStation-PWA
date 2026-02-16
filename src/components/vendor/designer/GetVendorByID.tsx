@@ -6,6 +6,7 @@ import RenderFiles from "../../ui/RenderFiles";
 import type { ConnectionDesigner } from "../../../interface";
 import EditConnectionDesigner from "./EditVendor";
 import { AllCDEngineer } from "../..";
+import { formatDateTime } from "../../../utils/dateUtils";
 
 interface GetVendorByIDProps {
   id: string;
@@ -20,7 +21,7 @@ const GetVendorByID = ({ id }: GetVendorByIDProps) => {
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<ConnectionDesigner | null>(null);
   const [engineerModel, setEnginnerModel] = useState<ConnectionDesigner | null>(
-    null
+    null,
   );
 
   // Fetch Connection Designer details
@@ -63,12 +64,6 @@ const GetVendorByID = ({ id }: GetVendorByIDProps) => {
     setEnginnerModel(null);
   };
 
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-
   // ---------------- Loading / Error states ----------------
   if (loading) {
     return (
@@ -93,12 +88,15 @@ const GetVendorByID = ({ id }: GetVendorByIDProps) => {
     <div className="bg-linear-to-br from-green-50 to-green-50 p-4 sm:p-6 rounded-xl shadow-inner text-sm">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-2 mb-5">
-        <h3 className="text-lg sm:text-xl  text-green-800 tracking-tight">{designer.name}</h3>
+        <h3 className="text-lg sm:text-xl  text-green-800 tracking-tight">
+          {designer.name}
+        </h3>
         <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${designer.isDeleted
-            ? "bg-red-100 text-red-700"
-            : "bg-green-100 text-green-800"
-            }`}
+          className={`px-3 py-1 rounded-full text-xs font-medium ${
+            designer.isDeleted
+              ? "bg-red-100 text-red-700"
+              : "bg-green-100 text-green-800"
+          }`}
         >
           {designer.isDeleted ? "Inactive" : "Active"}
         </span>
@@ -153,8 +151,8 @@ const GetVendorByID = ({ id }: GetVendorByIDProps) => {
         </div>
 
         <div className="space-y-2 sm:space-y-3">
-          <InfoRow label="Created" value={formatDate(designer.createdAt)} />
-          <InfoRow label="Updated" value={formatDate(designer.updatedAt)} />
+          <InfoRow label="Created" value={formatDateTime(designer.createdAt)} />
+          <InfoRow label="Updated" value={formatDateTime(designer.updatedAt)} />
           <InfoRow
             label="Total Files"
             value={Array.isArray(designer.files) ? designer.files.length : 0}
@@ -225,7 +223,9 @@ const InfoRow = ({
 }) => (
   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-4 border-b border-green-100/50 sm:border-none pb-1 sm:pb-0">
     <span className=" text-gray-700 shrink-0">{label}:</span>
-    <span className="text-gray-700 sm:text-right overflow-hidden text-ellipsis">{value}</span>
+    <span className="text-gray-700 sm:text-right overflow-hidden text-ellipsis">
+      {value}
+    </span>
   </div>
 );
 

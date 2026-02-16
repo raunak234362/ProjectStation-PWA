@@ -17,7 +17,9 @@ const EstimationDashboard = () => {
   // Chart Data State
   const [chartData, setChartData] = useState<any[]>([]);
   const [chartFabricators, setChartFabricators] = useState<string[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear(),
+  );
 
   useEffect(() => {
     fetchData();
@@ -57,7 +59,7 @@ const EstimationDashboard = () => {
     const totalAwarded = data.filter(
       (e: any) =>
         e.status?.toUpperCase() === "AWARDED" ||
-        e.status?.toUpperCase() === "COMPLETED"
+        e.status?.toUpperCase() === "COMPLETED",
     ).length;
 
     // 3. Total Hours
@@ -79,8 +81,18 @@ const EstimationDashboard = () => {
 
     // Initialize all 12 months for the selected year
     const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
 
     const monthlyData: Record<string, any> = {};
@@ -99,7 +111,7 @@ const EstimationDashboard = () => {
       if (date.getFullYear() !== year) return;
 
       const sortKey = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
+        date.getMonth() + 1,
       ).padStart(2, "0")}`;
 
       if (!monthlyData[sortKey]) return; // Should not happen with Jan-Dec init
@@ -116,7 +128,7 @@ const EstimationDashboard = () => {
 
     // Convert to Array and Sort
     const sortedData = Object.values(monthlyData).sort((a: any, b: any) =>
-      a.sortKey.localeCompare(b.sortKey)
+      a.sortKey.localeCompare(b.sortKey),
     );
 
     setChartData(sortedData);
@@ -125,14 +137,14 @@ const EstimationDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-slate-50 dark:bg-slate-950">
+      <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-white">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-blue-100 dark:border-slate-800 border-t-blue-600 dark:border-t-green-500 rounded-full animate-spin"></div>
+          <div className="w-16 h-16 border-4 border-green-100 border-t-green-600 rounded-full animate-spin"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-8 h-8 bg-white dark:bg-slate-900 rounded-full shadow-inner"></div>
+            <div className="w-8 h-8 bg-white rounded-full shadow-inner"></div>
           </div>
         </div>
-        <p className="mt-6 text-[10px] text-slate-400 dark:text-slate-500  uppercase tracking-[0.3em] animate-pulse">
+        <p className="mt-6 text-[10px] text-slate-400  uppercase tracking-[0.3em] animate-pulse">
           Synchronizing Intelligence...
         </p>
       </div>
@@ -140,18 +152,25 @@ const EstimationDashboard = () => {
   }
 
   return (
-    <div className="h-full p-6 lg:p-8 space-y-8 bg-slate-50 dark:bg-slate-950 overflow-y-auto custom-scrollbar">
+    <div className="h-full p-6 lg:p-8 space-y-8 bg-white overflow-y-auto custom-scrollbar">
       {/* Header Section */}
       <div className="flex flex-col gap-1">
-        <h2 className="text-3xl  text-slate-800 dark:text-white tracking-tight">Estimation Engineering</h2>
-        <p className="text-[10px]  text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Project Quantification & Fabricator Analysis</p>
+        <h2 className="text-3xl  text-slate-800 tracking-tight">
+          Estimation Engineering
+        </h2>
+        <p className="text-[10px]  text-slate-400 uppercase tracking-[0.2em]">
+          Project Quantification & Fabricator Analysis
+        </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <div className="xl:col-span-3">
           <EstimationStats
-            stats={{ ...stats, totalHours: Number(stats.totalHours).toFixed(2) }}
+            stats={{
+              ...stats,
+              totalHours: Number(stats.totalHours).toFixed(2),
+            }}
           />
         </div>
       </div>
@@ -168,15 +187,15 @@ const EstimationDashboard = () => {
 
       {/* List of Estimations */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-          <h3 className="text-xl  text-slate-800 dark:text-white uppercase tracking-tight">
+        <div className="flex items-center justify-between border-b border-green-500/10 pb-4">
+          <h3 className="text-xl  text-slate-800 uppercase tracking-tight">
             Recent Estimations
           </h3>
-          <span className="bg-slate-100 dark:bg-slate-800 text-[10px]  text-slate-500 px-4 py-1.5 rounded-full uppercase tracking-widest">
+          <span className="bg-green-50 text-[10px]  text-slate-500 px-4 py-1.5 rounded-full uppercase tracking-widest">
             {estimations.length} Records
           </span>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-[32px] shadow-soft border border-gray-100 dark:border-slate-800 overflow-hidden">
+        <div className="bg-white rounded-[32px] shadow-soft border border-green-500/10 overflow-hidden">
           <AllEstimation estimations={estimations} onRefresh={fetchData} />
         </div>
       </div>

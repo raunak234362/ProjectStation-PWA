@@ -2,6 +2,11 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import {
+  incrementModalCount,
+  decrementModalCount,
+} from "../../../store/uiSlice";
 import Service from "../../../api/Service";
 import AddTeam from "../team/AddTeam";
 import GetTeamById from "../team/GetTeamById";
@@ -17,6 +22,7 @@ import TeamCalendar from "./components/TeamCalendar";
 import { toast } from "react-toastify";
 
 const TeamDashboard = () => {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [teams, setTeams] = useState<any[]>([]);
   const [filteredTeams, setFilteredTeams] = useState<any[]>([]);
@@ -28,17 +34,37 @@ const TeamDashboard = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
+
+  useEffect(() => {
+    const isAnyModal =
+      isModalOpen || isViewModalOpen || isReportModalOpen || !!selectedEmployee;
+    if (isAnyModal) {
+      dispatch(incrementModalCount());
+      return () => {
+        dispatch(decrementModalCount());
+      };
+    }
+  }, [
+    isModalOpen,
+    isViewModalOpen,
+    isReportModalOpen,
+    selectedEmployee,
+    dispatch,
+  ]);
   const [allMemberStats, setAllMemberStats] = useState<any[]>([]);
   const [allTasks, setAllTasks] = useState<any[]>([]);
-  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
 
   // Analytics State
-  const [selectedComparisonTeams, setSelectedComparisonTeams] = useState<string[]>([]);
+  const [selectedComparisonTeams, setSelectedComparisonTeams] = useState<
+    string[]
+  >([]);
   const [efficiencyData, setEfficiencyData] = useState<any[]>([]);
   const [timeFilter, setTimeFilter] = useState("1M");
   const [analyticsDateRange, setAnalyticsDateRange] = useState({
-    start: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split("T")[0],
-    end: new Date().toISOString().split("T")[0]
+    start: new Date(new Date().setDate(new Date().getDate() - 30))
+      .toISOString()
+      .split("T")[0],
+    end: new Date().toISOString().split("T")[0],
   });
 
   const [dateFilter, setDateFilter] = useState({
@@ -46,21 +72,23 @@ const TeamDashboard = () => {
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
     weekStart: new Date(
-      new Date().setDate(new Date().getDate() - new Date().getDay())
+      new Date().setDate(new Date().getDate() - new Date().getDay()),
     ).getTime(),
     weekEnd: new Date(
-      new Date().setDate(new Date().getDate() - new Date().getDay() + 6)
+      new Date().setDate(new Date().getDate() - new Date().getDay() + 6),
     ).getTime(),
     startMonth: 0,
     endMonth: new Date().getMonth(),
     startDate: new Date(
-      new Date().setDate(new Date().getDate() - 30)
+      new Date().setDate(new Date().getDate() - 30),
     ).toISOString(),
     endDate: new Date().toISOString(),
   });
 
   // Cache for fetched team stats to avoid refetching
-  const [teamStatsCache, setTeamStatsCache] = useState<Map<string, any>>(new Map());
+  const [teamStatsCache, setTeamStatsCache] = useState<Map<string, any>>(
+    new Map(),
+  );
 
   // Fetch all teams
   useEffect(() => {
@@ -104,7 +132,7 @@ const TeamDashboard = () => {
       try {
         const taskResponse = await Service.GetAllTask();
         let taskData = taskResponse?.data || taskResponse || [];
-        if (typeof taskData === 'object' && !Array.isArray(taskData)) {
+        if (typeof taskData === "object" && !Array.isArray(taskData)) {
           taskData = Object.values(taskData);
         }
         if (Array.isArray(taskData)) {
@@ -117,8 +145,6 @@ const TeamDashboard = () => {
     fetchInitialTasks();
   }, []);
 
-
-
   // Sync selectedComparisonTeams with selectedTeam (initial selection)
   useEffect(() => {
     if (selectedTeam && !selectedComparisonTeams.includes(selectedTeam)) {
@@ -126,71 +152,83 @@ const TeamDashboard = () => {
     }
   }, [selectedTeam]);
 
-
   // Fetch team stats (Reusable & Caching)
-  const fetchTeamStats = useCallback(async (teamId: string) => {
-    if (teamStatsCache.has(teamId)) {
-      return teamStatsCache.get(teamId);
-    }
-
-    try {
-      const response = await Service.GetTeamByID(teamId);
-      if (!response?.data) return null;
-
-      const teamData = response.data;
-      const activeMembers = (teamData.members || []).filter(
-        (member: any) => !member.is_disabled && !member.member?.is_disabled
-      );
-
-      // Fetch all tasks if not already available
-      let currentTasks = allTasks;
-      if (currentTasks.length === 0) {
-        const taskResponse = await Service.GetAllTask();
-        // Handle various response formats
-        currentTasks = taskResponse?.data || taskResponse || [];
-        if (typeof currentTasks === 'object' && !Array.isArray(currentTasks)) {
-          currentTasks = Object.values(currentTasks);
-        }
-
-        if (!Array.isArray(currentTasks)) {
-          currentTasks = [];
-        }
-        setAllTasks(currentTasks);
+  const fetchTeamStats = useCallback(
+    async (teamId: string) => {
+      if (teamStatsCache.has(teamId)) {
+        return teamStatsCache.get(teamId);
       }
 
-      const memberStats = activeMembers.map((member: any) => {
-        const userId = member.userId || member.member?.id || member.id;
+      try {
+        const response = await Service.GetTeamByID(teamId);
+        if (!response?.data) return null;
 
-        // Filter tasks for this user from the global task list
-        const userTasks = currentTasks.filter((task: any) => {
-          const taskUserId = task.user_id || task.user?.id || task.userId || task.assignedToId;
-          return String(taskUserId) === String(userId);
+        const teamData = response.data;
+        const activeMembers = (teamData.members || []).filter(
+          (member: any) => !member.is_disabled && !member.member?.is_disabled,
+        );
+
+        // Fetch all tasks if not already available
+        let currentTasks = allTasks;
+        if (currentTasks.length === 0) {
+          const taskResponse = await Service.GetAllTask();
+          // Handle various response formats
+          currentTasks = taskResponse?.data || taskResponse || [];
+          if (
+            typeof currentTasks === "object" &&
+            !Array.isArray(currentTasks)
+          ) {
+            currentTasks = Object.values(currentTasks);
+          }
+
+          if (!Array.isArray(currentTasks)) {
+            currentTasks = [];
+          }
+          setAllTasks(currentTasks);
+        }
+
+        const memberStats = activeMembers.map((member: any) => {
+          const userId = member.userId || member.member?.id || member.id;
+
+          // Filter tasks for this user from the global task list
+          const userTasks = currentTasks.filter((task: any) => {
+            const taskUserId =
+              task.user_id || task.user?.id || task.userId || task.assignedToId;
+            return String(taskUserId) === String(userId);
+          });
+
+          // We assume Service.getUsersStats mostly returned tasks.
+          // If there were other stats, we might need to adjust,
+          // but currently the dashboard calculates everything from the task array.
+          return {
+            ...member,
+            tasks: userTasks,
+            id: userId,
+            // Extract basic user info from the first task if member info is sparse
+            firstName:
+              member.member?.firstName ||
+              userTasks[0]?.user?.firstName ||
+              member.firstName,
+            lastName:
+              member.member?.lastName ||
+              userTasks[0]?.user?.lastName ||
+              member.lastName,
+          };
         });
 
-        // We assume Service.getUsersStats mostly returned tasks. 
-        // If there were other stats, we might need to adjust, 
-        // but currently the dashboard calculates everything from the task array.
-        return {
-          ...member,
-          tasks: userTasks,
-          id: userId,
-          // Extract basic user info from the first task if member info is sparse
-          firstName: member.member?.firstName || userTasks[0]?.user?.firstName || member.firstName,
-          lastName: member.member?.lastName || userTasks[0]?.user?.lastName || member.lastName,
-        };
-      });
+        const data = { members: activeMembers, memberStats };
 
-      const data = { members: activeMembers, memberStats };
+        // Update cache
+        setTeamStatsCache((prev) => new Map(prev).set(teamId, data));
 
-      // Update cache
-      setTeamStatsCache(prev => new Map(prev).set(teamId, data));
-
-      return data;
-    } catch (error) {
-      console.error("Error fetching team stats:", error);
-      return null;
-    }
-  }, [allTasks, teamStatsCache]);
+        return data;
+      } catch (error) {
+        console.error("Error fetching team stats:", error);
+        return null;
+      }
+    },
+    [allTasks, teamStatsCache],
+  );
 
   // Handle main dashboard team selection (Project Stats etc)
   useEffect(() => {
@@ -216,7 +254,7 @@ const TeamDashboard = () => {
     const filteredStats = allMemberStats.map((memberStat) => {
       const filteredTasks = filterTasksByDateRange(
         memberStat.tasks || [],
-        dateFilter
+        dateFilter,
       );
       return {
         ...memberStat,
@@ -226,7 +264,6 @@ const TeamDashboard = () => {
 
     calculateTeamSummary(filteredStats);
   }, [allMemberStats, dateFilter]);
-
 
   // --- New Logic for Efficiency Analytics ---
 
@@ -240,23 +277,32 @@ const TeamDashboard = () => {
       const teamDataMap: any = {};
 
       // 1. Ensure fetched stats for all selected comparison teams
-      await Promise.all(selectedComparisonTeams.map(async (tid) => {
-        const data = await fetchTeamStats(tid);
-        if (data) teamDataMap[tid] = data;
-      }));
+      await Promise.all(
+        selectedComparisonTeams.map(async (tid) => {
+          const data = await fetchTeamStats(tid);
+          if (data) teamDataMap[tid] = data;
+        }),
+      );
 
       // 2. Prepare date points based on timeFilter/DateRange
-      const { start, end, format } = getDateRangeParams(timeFilter, analyticsDateRange);
+      const { start, end, format } = getDateRangeParams(
+        timeFilter,
+        analyticsDateRange,
+      );
       const dataPoints = generateDatePoints(start, end, format);
 
       // 3. Compute efficiency per team per point
-      const chartData = dataPoints.map(point => {
+      const chartData = dataPoints.map((point) => {
         const pointData: any = { date: point.label, fullDate: point.date };
 
-        selectedComparisonTeams.forEach(tid => {
+        selectedComparisonTeams.forEach((tid) => {
           const fetched = teamDataMap[tid];
           if (fetched) {
-            const eff = calculateEfficiencyForPeriod(fetched.memberStats, point.start, point.end);
+            const eff = calculateEfficiencyForPeriod(
+              fetched.memberStats,
+              point.start,
+              point.end,
+            );
             pointData[tid] = eff;
           } else {
             pointData[tid] = 0;
@@ -269,32 +315,34 @@ const TeamDashboard = () => {
     };
 
     generateAnalytics();
-
   }, [selectedComparisonTeams, timeFilter, analyticsDateRange, fetchTeamStats]);
 
-  const getDateRangeParams = (filter: string, range: { start: string, end: string }) => {
+  const getDateRangeParams = (
+    filter: string,
+    range: { start: string; end: string },
+  ) => {
     const now = new Date();
     let start = new Date();
     let end = new Date();
-    let format = 'daily';
+    let format = "daily";
 
-    if (filter === '1D') {
+    if (filter === "1D") {
       start.setDate(now.getDate() - 1);
-    } else if (filter === '1W') {
+    } else if (filter === "1W") {
       start.setDate(now.getDate() - 7);
-    } else if (filter === '1M') {
+    } else if (filter === "1M") {
       start.setDate(now.getDate() - 30);
-    } else if (filter === '1Y') {
+    } else if (filter === "1Y") {
       start.setFullYear(now.getFullYear() - 1);
-      format = 'monthly';
-    } else if (filter === 'ALL') {
-      start = new Date('2023-01-01'); // Arbitrary start for 'ALL'
-      format = 'monthly';
+      format = "monthly";
+    } else if (filter === "ALL") {
+      start = new Date("2023-01-01"); // Arbitrary start for 'ALL'
+      format = "monthly";
     }
     // Use custom range strictly if provided? Or date pickers should just update range state?
     // Component logic: date pickers update `analyticsDateRange`. Time Filter buttons update `analyticsDateRange` and `timeFilter`.
-    // So here rely on passed range IF filter is "Custom" (implied). 
-    // Actually, buttons invoke logic to set range. 
+    // So here rely on passed range IF filter is "Custom" (implied).
+    // Actually, buttons invoke logic to set range.
     // Let's use `analyticsDateRange` as truth. But buttons set presets.
 
     // Override with state (which buttons should update)
@@ -307,7 +355,7 @@ const TeamDashboard = () => {
 
     // Heuristic for format
     const diffDays = (end.getTime() - start.getTime()) / (1000 * 3600 * 24);
-    if (diffDays > 60) format = 'monthly';
+    if (diffDays > 60) format = "monthly";
 
     return { start, end, format };
   };
@@ -321,15 +369,26 @@ const TeamDashboard = () => {
     const current = new Date(start);
 
     while (current <= end) {
-      if (format === 'monthly') {
+      if (format === "monthly") {
         // Logic for monthly buckets
-        const monthStart = new Date(current.getFullYear(), current.getMonth(), 1);
-        const monthEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+        const monthStart = new Date(
+          current.getFullYear(),
+          current.getMonth(),
+          1,
+        );
+        const monthEnd = new Date(
+          current.getFullYear(),
+          current.getMonth() + 1,
+          0,
+        );
         points.push({
-          label: monthStart.toLocaleString('default', { month: 'short', year: '2-digit' }),
+          label: monthStart.toLocaleString("default", {
+            month: "short",
+            year: "2-digit",
+          }),
           date: monthStart.toISOString(), // Sortable/Key
           start: monthStart,
-          end: monthEnd > end ? end : monthEnd
+          end: monthEnd > end ? end : monthEnd,
         });
         // Next month
         current.setMonth(current.getMonth() + 1);
@@ -344,7 +403,7 @@ const TeamDashboard = () => {
           label: dayStart.toLocaleDateString(), // Or format nicely
           date: dayStart.toISOString(),
           start: dayStart,
-          end: dayEnd
+          end: dayEnd,
         });
         // Next day
         current.setDate(current.getDate() + 1);
@@ -353,34 +412,40 @@ const TeamDashboard = () => {
     return points;
   };
 
-  const calculateEfficiencyForPeriod = (memberStats: any[], periodStart: Date, periodEnd: Date) => {
+  const calculateEfficiencyForPeriod = (
+    memberStats: any[],
+    periodStart: Date,
+    periodEnd: Date,
+  ) => {
     let totalAssigned = 0;
     let totalWorked = 0;
 
-    memberStats?.forEach(member => {
+    memberStats?.forEach((member) => {
       const tasks = member.tasks || [];
       tasks.forEach((task: any) => {
         // Using Task Start Date for attribution as noted in Plan
         const taskDate = new Date(task.start_date || task.startDate);
 
         if (taskDate >= periodStart && taskDate <= periodEnd) {
-          if (["COMPLETE", "VALIDATE_COMPLETED"].includes(task.status)) { // Only completed tasks count for efficiency? usually yes
+          if (["COMPLETE", "VALIDATE_COMPLETED"].includes(task.status)) {
+            // Only completed tasks count for efficiency? usually yes
             // --- Support for both old and new data structures ---
             const assigned = task.allocationLog?.allocatedHours
               ? parseFloat(task.allocationLog.allocatedHours)
-              : (task.hours
+              : task.hours
                 ? parseFloat(task.hours)
-                : parseDurationToMinutes(task.duration || "00:00:00") / 60);
+                : parseDurationToMinutes(task.duration || "00:00:00") / 60;
 
             totalAssigned += assigned;
 
             // --- Support for duration_seconds (preferred) or duration (fallback) ---
             const worked = (task.workingHourTask || []).reduce(
               (sum: number, entry: any) => {
-                if (entry.duration_seconds) return sum + (entry.duration_seconds / 3600);
+                if (entry.duration_seconds)
+                  return sum + entry.duration_seconds / 3600;
                 return sum + (entry.duration || 0) / 60;
               },
-              0
+              0,
             );
             totalWorked += worked;
           }
@@ -397,15 +462,15 @@ const TeamDashboard = () => {
     const now = new Date();
     let start = new Date();
 
-    if (tf === '1D') start.setDate(now.getDate() - 1);
-    if (tf === '1W') start.setDate(now.getDate() - 7);
-    if (tf === '1M') start.setDate(now.getDate() - 30);
-    if (tf === '1Y') start.setFullYear(now.getFullYear() - 1);
-    if (tf === 'ALL') start = new Date('2023-01-01');
+    if (tf === "1D") start.setDate(now.getDate() - 1);
+    if (tf === "1W") start.setDate(now.getDate() - 7);
+    if (tf === "1M") start.setDate(now.getDate() - 30);
+    if (tf === "1Y") start.setFullYear(now.getFullYear() - 1);
+    if (tf === "ALL") start = new Date("2023-01-01");
 
     setAnalyticsDateRange({
-      start: start.toISOString().split('T')[0],
-      end: now.toISOString().split('T')[0]
+      start: start.toISOString().split("T")[0],
+      end: now.toISOString().split("T")[0],
     });
   };
 
@@ -430,12 +495,12 @@ const TeamDashboard = () => {
           (sum: number, task: any) => {
             const h = task.allocationLog?.allocatedHours
               ? parseFloat(task.allocationLog.allocatedHours)
-              : (task.hours
+              : task.hours
                 ? parseFloat(task.hours)
-                : parseDurationToMinutes(task.duration || "00:00:00") / 60);
+                : parseDurationToMinutes(task.duration || "00:00:00") / 60;
             return sum + h;
           },
-          0
+          0,
         );
         return total + memberAssignedHours;
       }, 0);
@@ -443,19 +508,17 @@ const TeamDashboard = () => {
       const totalWorkedHours = filteredStats.reduce((total, member) => {
         const memberWorkedHours = (member.tasks || [])
           .flatMap((task: any) => task.workingHourTask || [])
-          .reduce(
-            (sum: number, entry: any) => {
-              if (entry.duration_seconds) return sum + (entry.duration_seconds / 3600);
-              return sum + (entry.duration || 0) / 60;
-            },
-            0
-          );
+          .reduce((sum: number, entry: any) => {
+            if (entry.duration_seconds)
+              return sum + entry.duration_seconds / 3600;
+            return sum + (entry.duration || 0) / 60;
+          }, 0);
         return total + memberWorkedHours;
       }, 0);
 
       const totalTasks = filteredStats.reduce(
         (total, member) => total + (member.tasks?.length || 0),
-        0
+        0,
       );
 
       const projectCount = uniqueProjects.length;
@@ -481,15 +544,27 @@ const TeamDashboard = () => {
           ""
         ).toLowerCase();
 
-        if (typeString.includes("model checking") || typeString.includes("checking model")) {
+        if (
+          typeString.includes("model checking") ||
+          typeString.includes("checking model")
+        ) {
           taskTypeCounts.modelChecking++;
-        } else if (typeString.includes("modelling") || typeString.includes("modeling")) {
+        } else if (
+          typeString.includes("modelling") ||
+          typeString.includes("modeling")
+        ) {
           taskTypeCounts.modelling++;
-        } else if (typeString.includes("detail checking") || typeString.includes("checking detail")) {
+        } else if (
+          typeString.includes("detail checking") ||
+          typeString.includes("checking detail")
+        ) {
           taskTypeCounts.detailChecking++;
         } else if (typeString.includes("detailing")) {
           taskTypeCounts.detailing++;
-        } else if (typeString.includes("erection checking") || typeString.includes("checking erection")) {
+        } else if (
+          typeString.includes("erection checking") ||
+          typeString.includes("checking erection")
+        ) {
           taskTypeCounts.erectionChecking++;
         } else if (typeString.includes("erection")) {
           taskTypeCounts.erection++;
@@ -501,45 +576,43 @@ const TeamDashboard = () => {
           total +
           (member.tasks || []).filter((task: any) => task.status === "COMPLETE")
             .length,
-        0
+        0,
       );
 
       const inProgressTasks = filteredStats.reduce(
         (total, member) =>
           total +
           (member.tasks || []).filter(
-            (task: any) => task.status === "IN_PROGRESS"
+            (task: any) => task.status === "IN_PROGRESS",
           ).length,
-        0
+        0,
       );
 
       const completedTasksList = filteredStats.flatMap((m) =>
-        (m.tasks || []).filter((task: any) => task.status === "COMPLETE")
+        (m.tasks || []).filter((task: any) => task.status === "COMPLETE"),
       );
 
-      const efficiencyAssignedHours = completedTasksList.reduce(
-        (sum, task) => {
-          const h = task.allocationLog?.allocatedHours
-            ? parseFloat(task.allocationLog.allocatedHours)
-            : (task.hours
-              ? parseFloat(task.hours)
-              : parseDurationToMinutes(task.duration || "00:00:00") / 60);
-          return sum + h;
-        },
-        0
-      );
+      const efficiencyAssignedHours = completedTasksList.reduce((sum, task) => {
+        const h = task.allocationLog?.allocatedHours
+          ? parseFloat(task.allocationLog.allocatedHours)
+          : task.hours
+            ? parseFloat(task.hours)
+            : parseDurationToMinutes(task.duration || "00:00:00") / 60;
+        return sum + h;
+      }, 0);
 
       const efficiencyWorkedHours = completedTasksList
         .flatMap((task) => task.workingHourTask || [])
         .reduce((sum, entry) => {
-          if (entry.duration_seconds) return sum + (entry.duration_seconds / 3600);
+          if (entry.duration_seconds)
+            return sum + entry.duration_seconds / 3600;
           return sum + (entry.duration || 0) / 60;
         }, 0);
 
       let efficiency = 0;
       if (efficiencyWorkedHours > 0) {
         efficiency = Math.round(
-          (efficiencyAssignedHours / efficiencyWorkedHours) * 100
+          (efficiencyAssignedHours / efficiencyWorkedHours) * 100,
         );
       }
 
@@ -559,7 +632,6 @@ const TeamDashboard = () => {
         projectCount,
         taskTypeCounts,
       });
-
     } catch (error) {
       console.error("Error calculating team stats:", error);
     }
@@ -572,7 +644,7 @@ const TeamDashboard = () => {
 
     if (searchTerm) {
       filtered = filtered.filter((team) =>
-        team.name.toLowerCase().includes(searchTerm.toLowerCase())
+        team.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -598,73 +670,66 @@ const TeamDashboard = () => {
       .map((member, index) => {
         const user = member.member || {};
         const memberStat = teamStats.memberStats?.find(
-          (stat: any) => stat.id === (member.userId || user.id || member.id)
+          (stat: any) => stat.id === (member.userId || user.id || member.id),
         );
 
         const assignedHours =
-          (memberStat?.tasks || []).reduce(
-            (sum: number, task: any) => {
-              const h = task.allocationLog?.allocatedHours
-                ? parseFloat(task.allocationLog.allocatedHours)
-                : (task.hours
-                  ? parseFloat(task.hours)
-                  : parseDurationToMinutes(task.duration || "00:00:00") / 60);
-              return sum + h;
-            },
-            0
-          ) || 0;
+          (memberStat?.tasks || []).reduce((sum: number, task: any) => {
+            const h = task.allocationLog?.allocatedHours
+              ? parseFloat(task.allocationLog.allocatedHours)
+              : task.hours
+                ? parseFloat(task.hours)
+                : parseDurationToMinutes(task.duration || "00:00:00") / 60;
+            return sum + h;
+          }, 0) || 0;
 
         const workedHours =
           (memberStat?.tasks || [])
             .flatMap((task: any) => task.workingHourTask || [])
-            .reduce(
-              (sum: number, entry: any) => {
-                if (entry.duration_seconds) return sum + (entry.duration_seconds / 3600);
-                return sum + (entry.duration || 0) / 60;
-              },
-              0
-            ) || 0;
+            .reduce((sum: number, entry: any) => {
+              if (entry.duration_seconds)
+                return sum + entry.duration_seconds / 3600;
+              return sum + (entry.duration || 0) / 60;
+            }, 0) || 0;
 
         const totalTasks = memberStat?.tasks?.length || 0;
         const completedTasks =
           (memberStat?.tasks || []).filter((task: any) =>
-            ["COMPLETE", "USER_FAULT", "VALIDATE_COMPLETED", "VALIDATE_COMPLETED"].includes(
-              task.status?.toUpperCase()
-            )
+            [
+              "COMPLETE",
+              "USER_FAULT",
+              "VALIDATE_COMPLETED",
+              "VALIDATE_COMPLETED",
+            ].includes(task.status?.toUpperCase()),
           ).length || 0;
 
         const memberCompletedTasks = (memberStat?.tasks || []).filter(
-          (task: any) => task.status === "COMPLETE"
+          (task: any) => task.status === "COMPLETE",
         );
 
         const efficiencyAssigned =
-          memberCompletedTasks?.reduce(
-            (sum: number, task: any) => {
-              const h = task.allocationLog?.allocatedHours
-                ? parseFloat(task.allocationLog.allocatedHours)
-                : (task.hours
-                  ? parseFloat(task.hours)
-                  : parseDurationToMinutes(task.duration || "00:00:00") / 60);
-              return sum + h;
-            },
-            0
-          ) || 0;
+          memberCompletedTasks?.reduce((sum: number, task: any) => {
+            const h = task.allocationLog?.allocatedHours
+              ? parseFloat(task.allocationLog.allocatedHours)
+              : task.hours
+                ? parseFloat(task.hours)
+                : parseDurationToMinutes(task.duration || "00:00:00") / 60;
+            return sum + h;
+          }, 0) || 0;
 
         const efficiencyWorked =
           memberCompletedTasks
             ?.flatMap((task: any) => task.workingHourTask || [])
-            .reduce(
-              (sum: number, entry: any) => {
-                if (entry.duration_seconds) return sum + (entry.duration_seconds / 3600);
-                return sum + (entry.duration || 0) / 60;
-              },
-              0
-            ) || 0;
+            .reduce((sum: number, entry: any) => {
+              if (entry.duration_seconds)
+                return sum + entry.duration_seconds / 3600;
+              return sum + (entry.duration || 0) / 60;
+            }, 0) || 0;
 
         let efficiency = 0;
         if (efficiencyWorked > 0) {
           efficiency = Math.round(
-            (efficiencyAssigned / efficiencyWorked) * 100
+            (efficiencyAssigned / efficiencyWorked) * 100,
           );
         }
 
@@ -672,8 +737,9 @@ const TeamDashboard = () => {
           sno: index + 1,
           id: member.userId || user.id || member.id,
           name:
-            `${user.firstName || ""} ${user.middleName || ""} ${user.lastName || ""
-              }`.trim() || "Unknown",
+            `${user.firstName || ""} ${user.middleName || ""} ${
+              user.lastName || ""
+            }`.trim() || "Unknown",
           role: member.role || "Member",
           assignedHours: assignedHours.toFixed(2),
           workedHours: workedHours.toFixed(2),
@@ -695,7 +761,7 @@ const TeamDashboard = () => {
 
   const handleGenerateReport = () => {
     toast.info(
-      "PDF generation is currently being set up. Please try again later."
+      "PDF generation is currently being set up. Please try again later.",
     );
   };
 
@@ -729,13 +795,16 @@ const TeamDashboard = () => {
               <div className="w-full bg-gradient-to-r from-green-400 to-green-300/80 rounded-2xl p-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
                   <h1 className="text-3xl font-extrabold text-white tracking-wide drop-shadow-sm">
-                    {teams?.find((t) => t.id === selectedTeam)?.name || "Team Detail"}
+                    {teams?.find((t) => t.id === selectedTeam)?.name ||
+                      "Team Detail"}
                   </h1>
                 </div>
 
                 {/* Mock Tabs for Visual Reference if needed, or keeping Action Button styled to match */}
                 <div className="flex items-center gap-3">
-                  <span className="px-4 py-2 bg-white/20 text-white  rounded-lg cursor-pointer hover:bg-white/30 transition-all">Dashboard</span>
+                  <span className="px-4 py-2 bg-white/20 text-white  rounded-lg cursor-pointer hover:bg-white/30 transition-all">
+                    Dashboard
+                  </span>
                   <button
                     onClick={() => setIsViewModalOpen(true)}
                     className="flex items-center gap-2 px-6 py-3 bg-white text-green-700 rounded-[1.25rem]  hover:bg-green-50 transition-all shadow-[0_8px_20px_-4px_rgba(0,0,0,0.1)] hover:shadow-md"
@@ -785,8 +854,8 @@ const TeamDashboard = () => {
 
       {/* Modals */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
@@ -801,8 +870,8 @@ const TeamDashboard = () => {
       )}
 
       {isViewModalOpen && selectedTeam && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-3xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
             <button
               onClick={() => setIsViewModalOpen(false)}
               className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
@@ -817,8 +886,8 @@ const TeamDashboard = () => {
       )}
 
       {selectedEmployee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-3xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
             <button
               onClick={handleCloseModal}
               className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"

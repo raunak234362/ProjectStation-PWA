@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import Service from "../../api/Service";
+import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import Button from "../fields/Button";
 import AllEstimationTask from "./estimationTask/AllEstimationTask";
 import LineItemGroup from "./estimationLineItem/LineItemGroup";
@@ -56,23 +56,6 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
   useEffect(() => {
     fetchEstimation();
   }, [id]);
-
-  const formatDateTime = (date: string | number | Date | undefined) =>
-    date
-      ? new Date(date).toLocaleString("en-IN", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
-      : "N/A";
-
-  const formatDate = (date: string | number | Date | undefined) =>
-    date
-      ? new Date(date).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-      : "N/A";
 
   const formatHours = (hours: number | string | undefined) => {
     if (hours == null || hours === "") return "N/A";
@@ -137,7 +120,9 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
           <h3 className="text-xl sm:text-2xl  text-green-800 wrap-break-word">
             Estimation #{estimationNumber}
           </h3>
-          <p className="text-gray-700  mt-1 text-sm sm:text-base">Project: {projectName}</p>
+          <p className="text-gray-700  mt-1 text-sm sm:text-base">
+            Project: {projectName}
+          </p>
         </div>
         <span
           className={`px-3 py-1 rounded-full text-[10px] sm:text-xs  uppercase tracking-wider shrink-0 shadow-sm ${statusColor}`}
@@ -254,6 +239,12 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
           Add To Project
         </Button> */}
         <Button
+          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+          onClick={() => setIsInclusionOpen(!isInclusionOpen)}
+        >
+          Inclusion/Exclusion
+        </Button>
+        <Button
           className="py-1 px-2 text-lg"
           onClick={() => setIsEditing(!isEditing)}
         >
@@ -279,9 +270,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {isHoursOpen && (
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg  text-gray-700">
-              Estimated Hours/Weeks
-            </h3>
+            <h3 className="text-lg  text-gray-700">Estimated Hours/Weeks</h3>
             <button
               onClick={() => setIsHoursOpen(false)}
               className="text-gray-700 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
@@ -295,9 +284,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {isInclusionOpen && (
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg  text-gray-700">
-              Inclusion/Exclusion
-            </h3>
+            <h3 className="text-lg  text-gray-700">Inclusion/Exclusion</h3>
             <button
               onClick={() => setIsInclusionOpen(false)}
               className="text-gray-700 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
@@ -346,8 +333,12 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-4 border-b border-green-100/50 sm:border-none pb-1.5 sm:pb-0">
-    <span className=" text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider shrink-0">{label}:</span>
-    <span className="text-gray-800 sm:text-right wrap-break-word  text-xs sm:text-sm">{value}</span>
+    <span className=" text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider shrink-0">
+      {label}:
+    </span>
+    <span className="text-gray-800 sm:text-right wrap-break-word  text-xs sm:text-sm">
+      {value}
+    </span>
   </div>
 );
 

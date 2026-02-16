@@ -5,6 +5,8 @@ import CDNetworkOverview from "./components/CDNetworkOverview";
 import GetConnectionDesignerByID from "./designer/GetConnectionDesignerByID";
 import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 
 const DashboardSkeleton = () => (
   <div className="p-6 space-y-6 animate-pulse">
@@ -31,9 +33,19 @@ const CDdashboard = () => {
   const [selectedDesignerId, setSelectedDesignerId] = useState<string | null>(
     null,
   );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (selectedDesignerId) {
+      dispatch(incrementModalCount());
+      return () => {
+        dispatch(decrementModalCount());
+      };
+    }
+  }, [selectedDesignerId, dispatch]);
 
   // Processed Data States
-  const [stateDistribution, setStateDistribution] = useState<any[]>([]);
+
   const [countriesList, setCountriesList] = useState<string[]>([]);
   const [stats, setStats] = useState({
     totalCDs: 0,
@@ -100,12 +112,6 @@ const CDdashboard = () => {
       if (country) allCountries.add(country);
     });
 
-    const dist = Object.entries(stateCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10); // Top 10 for the chart
-
-    setStateDistribution(dist);
     setCountriesList(Array.from(allCountries).sort());
     setStats({
       totalCDs,
@@ -143,7 +149,7 @@ const CDdashboard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
             onClick={() => setSelectedDesignerId(null)}
           >
             <motion.div
@@ -151,7 +157,7 @@ const CDdashboard = () => {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 30, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-slate-900 rounded-[40px] shadow-3xl w-full max-w-[95vw] max-h-[92vh] overflow-y-auto relative custom-scrollbar border border-gray-100 dark:border-slate-800"
+              className="bg-white dark:bg-slate-900 rounded-[40px] shadow-3xl w-[98%] max-w-[95vw] h-[95vh] overflow-y-auto relative custom-scrollbar border border-gray-100 dark:border-slate-800"
             >
               <button
                 onClick={() => setSelectedDesignerId(null)}

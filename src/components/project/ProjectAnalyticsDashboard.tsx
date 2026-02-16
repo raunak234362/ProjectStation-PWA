@@ -31,6 +31,7 @@ import {
 } from "recharts";
 import Service from "../../api/Service";
 import { formatSeconds } from "../../utils/timeUtils";
+import { formatDate as formatDateUtil } from "../../utils/dateUtils";
 
 interface ProjectAnalyticsDashboardProps {
   projectId: string;
@@ -242,7 +243,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
         : parseFloat(t.hours) || 0,
       (calculateWorkedSeconds(t) / 3600).toFixed(2),
       t.status,
-      t.created_at ? new Date(t.created_at).toLocaleDateString() : "N/A",
+      t.created_at ? formatDateUtil(t.created_at) : "N/A",
     ]);
 
     const csvContent = [
@@ -276,9 +277,9 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-gray-700">
+      <div className="flex flex-col items-center justify-center py-20 text-gray-800">
         <Loader2 className="w-8 h-8 animate-spin text-green-600 mb-4" />
-        <p className="text-lg font-medium">Calculating project statistics...</p>
+        <p className="text-lg">Calculating project statistics...</p>
       </div>
     );
   }
@@ -310,8 +311,8 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
-            <User size={12} className="text-slate-500" />
+          <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
+            <User size={12} className="text-green-600" />
           </div>
           <span className="text-sm text-gray-700 truncate">
             {task.user?.firstName} {task.user?.lastName}
@@ -324,7 +325,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
         </div>
         <div className="flex items-center justify-center">
           <span
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold ${isOverrun ? "bg-red-50 text-red-700" : "bg-slate-100 text-slate-700"}`}
+            className={`px-2.5 py-1 rounded-md text-xs font-semibold ${isOverrun ? "bg-red-50 text-red-700" : "bg-green-50 text-slate-700"}`}
           >
             {formatSeconds(workedSeconds || 0)} Worked
           </span>
@@ -349,7 +350,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
       {/* Header with Filters and Actions */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white p-6 rounded-3xl border border-green-500/10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex flex-col md:flex-row gap-4 items-center flex-1">
           <div className="relative w-full md:max-w-md">
             <Search
@@ -365,7 +366,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
             />
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200">
+            <div className="flex items-center gap-2 bg-green-50/50 px-3 py-2 rounded-xl border border-green-500/10">
               <CalendarIcon size={16} className="text-gray-400" />
               <input
                 type="date"
@@ -381,7 +382,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </div>
-            <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200">
+            <div className="flex items-center gap-2 bg-green-50/50 px-3 py-2 rounded-xl border border-green-500/10">
               <Filter size={16} className="text-gray-400" />
               <select
                 value={statusFilter}
@@ -454,7 +455,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 rounded-3xl border border-green-500/10 shadow-sm">
           <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
             <TrendingUp size={20} className="text-blue-600" />
             Hours by Milestone
@@ -494,7 +495,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 rounded-3xl border border-green-500/10 shadow-sm">
           <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
             <CheckCircle2 size={20} className="text-green-600" />
             Task Status Distribution
@@ -533,25 +534,25 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
       </div>
 
       {/* Group by Milestone */}
-      <section className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="bg-slate-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <section className="bg-white rounded-3xl border border-green-500/10 shadow-sm overflow-hidden">
+        <div className="bg-green-50/50 px-6 py-4 border-b border-green-500/10 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-800">
             <h3 className="text-lg font-bold tracking-tight">
               Tasks by Milestone
             </h3>
           </div>
-          <span className="text-xs font-semibold text-slate-500 bg-white px-2 py-1 rounded-lg shadow-sm border border-slate-200 uppercase tracking-widest text-center">
+          <span className="text-xs font-semibold text-slate-500 bg-white px-2 py-1 rounded-lg shadow-sm border border-green-500/10 uppercase tracking-widest text-center">
             {Object.keys(tasksByMilestone).length} Sections
           </span>
         </div>
 
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-green-500/10">
           {milestones.length > 0 ? (
             milestones.map((ms) => (
               <div key={ms.id}>
                 <button
                   onClick={() => toggleSection(`ms-${ms.id}`)}
-                  className="w-full flex items-center justify-between p-5 hover:bg-gray-50/80 transition-colors group"
+                  className="w-full flex items-center justify-between p-5 hover:bg-green-50/50 transition-colors group"
                 >
                   <div className="flex items-center gap-4 text-left">
                     <div className="p-2 bg-purple-50 rounded-xl group-hover:scale-110 transition-transform">
@@ -568,7 +569,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                       <p className="text-xs text-gray-500 font-medium">
                         Due:{" "}
                         {ms.approvalDate
-                          ? new Date(ms.approvalDate).toLocaleDateString()
+                          ? formatDateUtil(ms.approvalDate)
                           : "TBD"}
                       </p>
                     </div>
@@ -578,13 +579,13 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                       {tasksByMilestone[ms.id]?.slice(0, 3).map((_, i) => (
                         <div
                           key={i}
-                          className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center"
+                          className="w-8 h-8 rounded-full bg-green-50 border-2 border-white flex items-center justify-center"
                         >
-                          <User size={14} className="text-slate-500" />
+                          <User size={14} className="text-green-600" />
                         </div>
                       ))}
                       {tasksByMilestone[ms.id]?.length > 3 && (
-                        <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">
+                        <div className="w-8 h-8 rounded-full bg-green-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">
                           +{tasksByMilestone[ms.id].length - 3}
                         </div>
                       )}
@@ -601,8 +602,8 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                 </button>
 
                 {expandedSections[`ms-${ms.id}`] && (
-                  <div className="bg-gray-50/30 p-2">
-                    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                  <div className="bg-green-50/30 p-2">
+                    <div className="bg-white rounded-2xl border border-green-500/10 overflow-hidden shadow-sm">
                       {tasksByMilestone[ms.id] &&
                       tasksByMilestone[ms.id].length > 0 ? (
                         <div>

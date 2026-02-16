@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import { Button } from "../ui/button";
 import EditTask from "./EditTask";
 import { Edit } from "lucide-react";
+import { formatDateTime } from "../../utils/dateUtils";
 
 interface Task {
   id: string | number;
@@ -95,27 +96,15 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
       2,
-      "0"
+      "0",
     )}`;
   };
 
   const totalDurationSeconds =
     task?.workingHourTask?.reduce(
       (acc, wh) => acc + (Number(wh.duration_seconds) || 0),
-      0
+      0,
     ) || 0;
-
-  const toIST = (dateString?: string) => {
-    if (!dateString) return "—";
-    return new Intl.DateTimeFormat("en-IN", {
-      timeZone: "Asia/Kolkata",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(dateString));
-  };
 
   const handleAction = async (action: "start" | "pause" | "resume" | "end") => {
     if (!task?.id) return;
@@ -329,12 +318,12 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
                   <InfoItem
                     icon={<Calendar />}
                     label="Due Date"
-                    value={toIST(task.due_date)}
+                    value={formatDateTime(task.due_date)}
                   />
                   <InfoItem
                     icon={<Clock />}
                     label="Created At"
-                    value={toIST(task.createdAt)}
+                    value={formatDateTime(task.createdAt)}
                   />
 
                   <div className="flex items-start gap-4">
@@ -342,7 +331,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
                       <div
                         className={`w-6 h-6 rounded-full ${priority.color.replace(
                           "text",
-                          "bg"
+                          "bg",
                         )}`}
                       ></div>
                     </div>

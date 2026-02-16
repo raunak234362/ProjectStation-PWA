@@ -12,6 +12,7 @@ import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { toast } from "react-toastify";
+import { formatDate, formatDateTime } from "../../utils/dateUtils";
 
 interface Props {
   quotation: any;
@@ -125,7 +126,7 @@ const QuotationResponseDetailsModal = ({
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <p className="text-sm text-gray-600 mb-1">Approval Date</p>
               <p className="font-semibold text-gray-800">
-                {new Date(quotation.approvalDate).toLocaleDateString()}
+                {formatDate(quotation.approvalDate)}
               </p>
             </div>
           )}
@@ -139,7 +140,7 @@ const QuotationResponseDetailsModal = ({
                 "Connection Designer"}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              {new Date(quotation.createdAt || Date.now()).toLocaleString()}
+              {formatDateTime(quotation.createdAt || Date.now())}
             </p>
           </div>
 
@@ -184,7 +185,7 @@ const QuotationResponseDetailsModal = ({
                         {reply.userRole || "User"}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {new Date(reply.createdAt).toLocaleString()}
+                        {formatDateTime(reply.createdAt)}
                       </p>
                     </div>
                     <p className="text-sm text-gray-800">{reply.message}</p>

@@ -156,10 +156,10 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           key={team.teamName}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:border-green-200 transition-all group"
+          className="bg-white rounded-2xl shadow-sm border border-green-500/10 overflow-hidden hover:border-green-500/30 transition-all group"
         >
           {/* Team Header */}
-          <div className="bg-primary p-3 sm:p-4 text-center border-b border-gray-200">
+          <div className="bg-green-600 p-3 sm:p-4 text-center border-b border-green-700/10">
             <div className="flex items-center justify-center gap-2">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               <h3 className="text-lg sm:text-xl  text-white uppercase tracking-wider truncate">
@@ -181,7 +181,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                     : [];
                   handleStatClick(teamProjects, "IFA", "TOTAL");
                 }}
-                className="p-2 sm:p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-gray-100 hover:bg-gray-100 hover:border-gray-200 transition-all cursor-pointer group/projects"
+                className="p-2 sm:p-3 bg-gray-50/50 rounded-xl flex flex-col items-center justify-center border border-green-500/5 hover:bg-white hover:border-green-500/20 transition-all cursor-pointer group/projects"
               >
                 <span className="text-[10px] sm:text-xs  text-gray-400 uppercase tracking-widest mb-1 group-hover/projects:text-gray-600">
                   Projects
@@ -208,12 +208,12 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
 
             {/* IFA/IFC/CO# Grid */}
             {/* IFA/IFC/CO# Grid - Responsive Stack */}
-            <div className="border border-gray-100 rounded-xl overflow-hidden bg-white">
-              <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+            <div className="border border-green-500/10 rounded-xl overflow-hidden bg-white">
+              <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-green-500/5">
                 {["IFA", "IFC", "CO#"].map((stage) => (
                   <div key={stage} className="flex-1">
                     {/* Header */}
-                    <div className="bg-gray-50 border-b border-gray-100 py-2 text-center text-xs sm:text-sm  tracking-widest text-gray-800 uppercase">
+                    <div className="bg-green-50/30 border-b border-green-500/5 py-2 text-center text-xs sm:text-sm  tracking-widest text-gray-800 uppercase">
                       {stage}
                     </div>
                     {/* Content */}
@@ -242,7 +242,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                               item.key.toUpperCase() as any,
                             )
                           }
-                          className={`w-full flex items-center justify-between px-1.5 sm:px-2 py-1 rounded-lg hover:bg-${item.color}-50 transition-all group/btn border border-transparent hover:border-${item.color}-100`}
+                          className={`w-full flex items-center justify-between px-1.5 sm:px-2 py-1 rounded-lg hover:bg-${item.color}-50 transition-all group/btn border border-transparent hover:border-${item.color}-500/20`}
                         >
                           <span className="text-[10px] sm:text-xs  text-gray-600 uppercase group-hover/btn:text-gray-900 truncate mr-1">
                             {item.label}
@@ -262,7 +262,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
 
             {/* Monthly Breakdown Section (Only when filtered) */}
             {isFiltered && (
-              <div className="space-y-2 pt-2 border-t border-gray-100">
+              <div className="space-y-2 pt-2 border-t border-green-500/10">
                 <h4 className="text-[10px]  text-gray-400 uppercase tracking-widest px-1">
                   Monthly Breakdown
                 </h4>

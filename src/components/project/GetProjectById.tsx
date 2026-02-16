@@ -15,7 +15,10 @@ import {
   TrendingUp,
   Activity,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { setMilestonesForProject } from "../../store/milestoneSlice";
 import { formatSeconds } from "../../utils/timeUtils";
+import { formatDate } from "../../utils/dateUtils";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import AllMileStone from "./mileStone/AllMileStone";
@@ -34,6 +37,7 @@ import RenderFiles from "../ui/RenderFiles";
 import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
 import CoTable from "../co/CoTable";
+import ProjectMilestoneMetrics from "./ProjectMilestoneMetrics";
 
 const GetProjectById = ({
   id,
@@ -62,6 +66,36 @@ const GetProjectById = ({
   }, [project]);
   console.log("projects-----ByID", project);
 
+  // Redux hooks for milestones
+  const dispatch = useDispatch();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const milestonesByProject = useSelector(
+    (state: any) => state.milestoneInfo?.milestonesByProject || {},
+  );
+
+  // Fetch milestones if not available
+  useEffect(() => {
+    const fetchMileStone = async () => {
+      try {
+        const response = await Service.GetProjectMilestoneById(id);
+        if (response && response.data) {
+          dispatch(
+            setMilestonesForProject({
+              projectId: id,
+              milestones: response.data,
+            }),
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (!milestonesByProject[id]) {
+      fetchMileStone();
+    }
+  }, [id, milestonesByProject, dispatch]);
+
   const changeOrderData = useMemo(() => {
     return project?.changeOrders || [];
   }, [project]);
@@ -79,8 +113,13 @@ const GetProjectById = ({
     }
   };
   // Fetch analytics data
+
+  // Fetch analytics data
   useEffect(() => {
     const fetchAnalytics = async () => {
+      // Don't fetch analytics for clients
+      if (userRole === "client" || userRole === "client_admin") return;
+
       try {
         const data = {
           projectId: id,
@@ -95,8 +134,29 @@ const GetProjectById = ({
       }
     };
     fetchAnalytics();
-  }, []);
+  }, [id, userRole]);
   console.log(analyticsData);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // const getTaskCompletionPercentage = (tasks: any[]) => {
+  //   if (!Array.isArray(tasks) || tasks.length === 0) return 0;
+  //   const completedStatuses = [
+  //     "COMPLETE",
+  //     "VALIDATE_COMPLETE",
+  //     "COMPLETE_OTHER",
+  //     "USER_FAULT",
+  //     "COMPLETED", // Added COMPLETED based on user data
+  //   ];
+
+  //   const completed = tasks.filter((task: any) =>
+  //     completedStatuses.includes(task.status),
+  //   ).length;
+
+  //   return Math.round((completed / tasks.length) * 100);
+  // };
+
+  // Group tasks by milestone (subject + id) and compute completion percentage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
   const handleEditModel = (project: ProjectData) => {
     console.log(project);
@@ -136,19 +196,11 @@ const GetProjectById = ({
     }
   };
 
-  const formatDate = (date: string | number | Date | undefined) =>
-    date
-      ? new Date(date).toLocaleString("en-IN", {
-          dateStyle: "medium",
-          timeStyle: "short",
-        })
-      : "—";
-
   const isClient = userRole === "client" || userRole === "client_admin";
 
   const clientTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
-    { key: "analytics", label: "Analytics", icon: TrendingUp },
+    // { key: "analytics", label: "Analytics", icon: TrendingUp },
     { key: "details", label: "Details", icon: ClipboardList },
     { key: "files", label: "Files", icon: FileText },
     { key: "milestones", label: "Milestones", icon: FileText },
@@ -280,76 +332,55 @@ const GetProjectById = ({
           {/* ✅ Overview */}
           {activeTab === "overview" && (
             <div className="space-y-6 animate-in fade-in duration-500">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <StatCard
-                  icon={<Clock className="text-blue-600" />}
-                  label="Hours Assigned"
-                  value={`${project.estimatedHours || 0}h`}
-                  color="bg-blue-50"
-                  description="Total estimated hours for project"
-                />
-                <StatCard
-                  icon={<CheckCircle2 className="text-green-600" />}
-                  label="Hours Completed"
-                  value={formatSeconds(
-                    project.workedSeconds || project.totalWorkedSeconds || 0,
-                  )}
-                  color="bg-green-50"
-                  description="Total hours logged by team"
-                />
-                <StatCard
-                  icon={
-                    <AlertCircle
-                      className={
-                        project.isOverrun ? "text-red-600" : "text-gray-400"
-                      }
-                    />
-                  }
-                  label="Overrun / Delay"
-                  value={
-                    project.isOverrun
-                      ? formatSeconds(
-                          (project.workedSeconds ||
-                            project.totalWorkedSeconds ||
-                            0) -
-                            (project.estimatedHours || 0) * 3600,
-                        )
-                      : "00:00"
-                  }
-                  color={project.isOverrun ? "bg-red-50" : "bg-gray-50"}
-                  description={
-                    project.isOverrun
-                      ? "Project is exceeding estimates"
-                      : "Project is within estimates"
-                  }
-                  isAlert={project.isOverrun}
-                />
-              </div>
-
-              {/* Analytics Section if data exists */}
-              {analyticsData && analyticsData.length > 0 && (
-                <div className="mt-8">
-                  <h4 className="text-lg  text-gray-800 mb-4 flex items-center gap-2">
-                    <TrendingUp size={20} className="text-green-600" />
-                    Performance Analytics
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {analyticsData.map((item: any, index: number) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-white border rounded-xl shadow-sm"
-                      >
-                        <p className="text-xs  text-gray-500 uppercase tracking-wider">
-                          {item.label || item.name}
-                        </p>
-                        <p className="text-xl  text-gray-800 mt-1">
-                          {item.value || item.score}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+              {!isClient && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <StatCard
+                    icon={<Clock className="text-blue-600" />}
+                    label="Hours Assigned"
+                    value={`${project.estimatedHours || 0}h`}
+                    color="bg-blue-50"
+                    description="Total estimated hours for project"
+                  />
+                  <StatCard
+                    icon={<CheckCircle2 className="text-green-600" />}
+                    label="Hours Completed"
+                    value={formatSeconds(
+                      project.workedSeconds || project.totalWorkedSeconds || 0,
+                    )}
+                    color="bg-green-50"
+                    description="Total hours logged by team"
+                  />
+                  <StatCard
+                    icon={
+                      <AlertCircle
+                        className={
+                          project.isOverrun ? "text-red-600" : "text-gray-400"
+                        }
+                      />
+                    }
+                    label="Overrun / Delay"
+                    value={
+                      project.isOverrun
+                        ? formatSeconds(
+                            (project.workedSeconds ||
+                              project.totalWorkedSeconds ||
+                              0) -
+                              (project.estimatedHours || 0) * 3600,
+                          )
+                        : "00:00"
+                    }
+                    color={project.isOverrun ? "bg-red-50" : "bg-gray-50"}
+                    description={
+                      project.isOverrun
+                        ? "Project is exceeding estimates"
+                        : "Project is within estimates"
+                    }
+                    isAlert={project.isOverrun}
+                  />
                 </div>
               )}
+
+              <ProjectMilestoneMetrics projectId={id} />
 
               {/* Timeline / Progress Section */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
@@ -367,22 +398,22 @@ const GetProjectById = ({
                         {formatDate(project.startDate)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-sm">
+                    {/* <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-500 font-medium">
                         Approval Date
                       </span>
                       <span className="text-slate-800 ">
                         {formatDate(project.approvalDate)}
                       </span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
+                    </div> */}
+                    {/* <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-500 font-medium">
-                        Current Goal
+                        Expected Project Completion Date
                       </span>
                       <span className="text-slate-800 ">
                         {formatDate(project.endDate)}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -424,10 +455,10 @@ const GetProjectById = ({
                 />
               </div>
               <div className="space-y-3">
-                <InfoRow
+                {/* <InfoRow
                   label="Estimated Hours"
                   value={project.estimatedHours || 0}
-                />
+                /> */}
                 <InfoRow
                   label="Department"
                   value={project.department?.name || "—"}
@@ -454,7 +485,7 @@ const GetProjectById = ({
                   label="Start Date"
                   value={formatDate(project.startDate)}
                 />
-                <InfoRow
+                {/* <InfoRow
                   label="Approval Date"
                   value={formatDate(project.approvalDate)}
                 />
@@ -462,7 +493,7 @@ const GetProjectById = ({
                   label="Fabrication Date"
                   value={formatDate(project.fabricationDate)}
                 />
-                <InfoRow label="End Date" value={formatDate(project.endDate)} />
+                <InfoRow label="End Date" value={formatDate(project.endDate)} /> */}
                 {/* <InfoRow label="RFQ ID" value={project.rfqId || "—"} /> */}
               </div>
 
@@ -576,7 +607,7 @@ const GetProjectById = ({
                   >
                     All RFIs
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setRfiView("add")}
                       className={`
@@ -626,7 +657,7 @@ const GetProjectById = ({
                   >
                     All RFIs
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setRfiView("add")}
                       className={`
@@ -676,7 +707,7 @@ const GetProjectById = ({
                   >
                     All Submittals
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setSubmittalView("add")}
                       className={`
@@ -726,7 +757,7 @@ const GetProjectById = ({
                   >
                     All Submittals
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setSubmittalView("add")}
                       className={`
@@ -776,7 +807,7 @@ const GetProjectById = ({
                   >
                     All Change Order
                   </button>
-                  {userRole !== "client" && (
+                  {!isClient && (
                     <button
                       onClick={() => setChangeOrderView("add")}
                       className={`

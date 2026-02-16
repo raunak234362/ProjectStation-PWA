@@ -7,6 +7,7 @@ import Service from "../../../api/Service";
 import DataTable from "../../ui/table";
 import GetMilestoneByID from "./GetMilestoneByID";
 import type { ColumnDef } from "@tanstack/react-table";
+import { formatDate } from "../../../utils/dateUtils";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../../store/milestoneSlice";
@@ -20,10 +21,12 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
   const [addMileStoneModal, setAddMileStoneModal] = useState(false);
   const dispatch = useDispatch();
   const milestonesByProject = useSelector(
-    (state: any) => state.milestoneInfo?.milestonesByProject || {}
+    (state: any) => state.milestoneInfo?.milestonesByProject || {},
   );
   const milestones = milestonesByProject[project.id] || [];
-console.log(milestones);
+  console.log(milestones);
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const isClient = userRole === "client" || userRole === "client_admin";
 
   const fetchMileStone = async () => {
     try {
@@ -33,7 +36,7 @@ console.log(milestones);
           setMilestonesForProject({
             projectId: project.id,
             milestones: response.data,
-          })
+          }),
         );
       }
     } catch (error) {
@@ -57,7 +60,11 @@ console.log(milestones);
 
   const columns: ColumnDef<any>[] = [
     { accessorKey: "subject", header: "Subject" },
-    { accessorKey: "approvalDate", header: "Approval Date" },
+    {
+      accessorKey: "approvalDate",
+      header: "Approval Date",
+      cell: ({ row }) => formatDate(row.original.approvalDate),
+    },
     { accessorKey: "status", header: "Status" },
   ];
   const handleRowClick = (row: any) => {
@@ -67,14 +74,16 @@ console.log(milestones);
 
   return (
     <div className="p-2">
-      <div className="flex justify-between items-center mb-4">
-        <Button
-          onClick={handleOpenAddMileStone}
-          className="text-sm py-1 px-3 bg-green-600 text-white"
-        >
-          + Add Milestone
-        </Button>
-      </div>
+      {!isClient && (
+        <div className="flex justify-between items-center mb-4">
+          <Button
+            onClick={handleOpenAddMileStone}
+            className="text-sm py-1 px-3 bg-green-600 text-white"
+          >
+            + Add Milestone
+          </Button>
+        </div>
+      )}
       {milestones && milestones.length > 0 ? (
         <DataTable
           columns={columns}

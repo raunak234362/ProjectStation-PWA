@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { ClipboardList, AlertCircle, X } from "lucide-react";
-
+import { cn } from "../../../lib/utils";
+import AddInvoice from "../../invoices/AddInvoice";
 import AddSubmittal from "../../submittals/AddSubmittals";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface UpcomingSubmittalsProps {
   pendingSubmittals: any[];
@@ -10,6 +12,7 @@ interface UpcomingSubmittalsProps {
   hideTabs?: boolean;
   hideFabricator?: boolean;
   onSubmittalClick?: (submittal: any) => void;
+  onInvoiceClick?: (invoice: any) => void;
 }
 
 const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
@@ -19,6 +22,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   hideTabs = false,
   hideFabricator = false,
   onSubmittalClick,
+  onInvoiceClick,
 }) => {
   const [activeTab, setActiveTab] = useState<"submittals" | "invoices">(
     initialTab,
@@ -26,6 +30,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+
   const isOverdue = (dateString: string) => {
     if (!dateString) return false;
     const today = new Date();
@@ -53,30 +58,32 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   }, [invoices]);
 
   return (
-    <div className="bg-white  dark:bg-slate-900 p-4 rounded-[6px] shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col h-full transition-colors duration-300">
+    <div className="bg-white p-4 rounded-2xl flex flex-col h-full transition-colors duration-300">
       {!hideTabs && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 shrink-0">
           <div className="flex gap-2 bg-white/50 dark:bg-slate-800/50 p-1 rounded-lg self-start sm:self-auto">
             <button
               onClick={() => setActiveTab("submittals")}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "submittals"
-                ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-green-900/20"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700"
-                }`}
+              className={`px-4 py-2 text-sm font-bold uppercase tracking-widest rounded-xl transition-all ${
+                activeTab === "submittals"
+                  ? "bg-green-500 text-white shadow-lg shadow-green-200"
+                  : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
+              }`}
             >
               Upcoming Submittals
             </button>
             <button
               onClick={() => setActiveTab("invoices")}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "invoices"
-                ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-green-900/20"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700"
-                }`}
+              className={`px-4 py-2 text-sm font-bold uppercase tracking-widest rounded-xl transition-all ${
+                activeTab === "invoices"
+                  ? "bg-green-500 text-white shadow-lg shadow-green-200"
+                  : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
+              }`}
             >
               Invoice Need Raise
             </button>
           </div>
-          <span className="px-3 py-1 bg-white dark:bg-slate-800 text-green-700 dark:text-green-400 text-2xl rounded-full shadow-sm self-start sm:self-auto">
+          <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm border border-green-500/10">
             {activeTab === "submittals"
               ? `${pendingSubmittals.length} Pending`
               : `${invoiceNeedRaise.length} Need Raise`}
@@ -86,11 +93,9 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
       {hideTabs && (
         <div className="flex items-center justify-between mb-4 shrink-0">
           <h3 className="text-lg text-gray-700 dark:text-white">
-            {activeTab === "submittals"
-              ? "Upcoming Submittals"
-              : ""}
+            {activeTab === "submittals" ? "Upcoming Submittals" : ""}
           </h3>
-          <span className="px-3 py-1 bg-white dark:bg-slate-800 text-green-700 dark:text-green-400 text-xs  rounded-full shadow-sm">
+          <span className="px-3 py-1 bg-white text-gray-500 text-[10px] uppercase font-black rounded-full shadow-sm border border-green-500/5">
             {activeTab === "submittals"
               ? `${pendingSubmittals.length} Pending`
               : `${invoiceNeedRaise.length} Need Raise`}
@@ -104,18 +109,18 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             Object.entries(groupedSubmittals).map(([projectName, items]) => (
               <div
                 key={projectName}
-                className="space-y-2 bg-green-500/20 dark:bg-green-950/30 p-2 rounded-[6px] border border-green-200 dark:border-green-800/20"
+                className="space-y-2 bg-green-50/30 p-2 rounded-xl border border-green-500/10"
               >
                 <div className="flex items-center gap-2 py-1">
-                  <div className="w-1 h-3 bg-green-500 rounded-full"></div>
-                  <h3 className="text-2xl text-gray-900 dark:text-white uppercase tracking-tight">
+                  <div className="w-1.5 h-4 bg-green-500 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-gray-800 uppercase tracking-tight">
                     {projectName}
                   </h3>
-                  <span className="text-sm bg-white dark:bg-slate-800 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded-[4px]  shadow-sm border border-green-100 dark:border-slate-700">
+                  <span className="text-xs bg-white text-green-700 font-bold px-2 py-0.5 rounded-full shadow-sm border border-green-500/10">
                     {items.length}
                   </span>
                   {!hideFabricator && (
-                    <span className="text-md md:text-xl  text-green-900 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-[4px] ml-auto uppercase tracking-wider">
+                    <span className="text-xs font-bold text-green-800 bg-green-100 px-2 py-0.5 rounded-full ml-auto uppercase tracking-wider">
                       {items[0]?.fabricator?.fabName ||
                         items[0]?.fabName ||
                         "N/A"}
@@ -136,45 +141,41 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                             setIsModalOpen(true);
                           }
                         }}
-                        className={`w-full text-left p-3 rounded-[6px] border transition-all group ${overdue
-                          ? "bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/40 hover:bg-red-100/50 dark:hover:bg-red-900/30 hover:border-red-200 dark:hover:border-red-800 shadow-sm shadow-red-50 dark:shadow-red-900/20"
-                          : "bg-white dark:bg-slate-800 border-white dark:border-slate-700 hover:border-green-100 dark:hover:border-green-800 hover:shadow-md hover:shadow-green-50/50 dark:hover:shadow-green-900/10"
-                          }`}
+                        className={cn(
+                          "hover-card p-3 w-full text-left flex flex-col gap-1",
+                          overdue ? "border-red-500/40 bg-red-50/30" : "",
+                        )}
                       >
-                        <div className="flex justify-between items-start mb-1">
+                        <div className="flex justify-between items-start">
                           <div className="flex items-center gap-2">
                             {overdue && (
-                              <AlertCircle size={12} className="text-red-500" />
+                              <AlertCircle size={14} className="text-red-500" />
                             )}
                             <h4
-                              className={`text-xl transition-colors ${overdue
-                                ? "text-red-700 dark:text-red-400"
-                                : "text-gray-700 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400"
-                                }`}
+                              className={cn(
+                                "text-lg font-semibold transition-colors",
+                                overdue ? "text-red-700" : "text-gray-800",
+                              )}
                             >
                               {submittal.subject || "No Subject"}
                             </h4>
                           </div>
                           <span
-                            className={`text-md  uppercase tracking-wider ${overdue
-                              ? "text-red-500 dark:text-red-400"
-                              : "text-gray-400 dark:text-green-600/60"
-                              }`}
+                            className={cn(
+                              "text-xs font-bold uppercase tracking-widest",
+                              overdue ? "text-red-500" : "text-gray-400",
+                            )}
                           >
-                            {submittal.approvalDate
-                              ? new Date(
-                                submittal.approvalDate,
-                              ).toLocaleDateString()
-                              : "No Date"}
+                            {formatDate(submittal.approvalDate)}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between mt-1">
-                          {overdue && (
-                            <span className="text-[14px]  text-red-500 animate-pulse">
+                        {overdue && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black text-red-600 animate-pulse">
                               OVERDUE
                             </span>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </button>
                     );
                   })}
@@ -192,32 +193,38 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             {invoiceNeedRaise.map((invoice, index) => (
               <div
                 key={invoice.id || index}
-                className="w-full text-left p-3 rounded-lg border border-white bg-white"
+                onClick={() => {
+                  if (onInvoiceClick) {
+                    onInvoiceClick(invoice);
+                  } else {
+                    setSelectedItem(invoice);
+                    setIsModalOpen(true);
+                  }
+                }}
+                className="hover-card p-3 w-full text-left"
               >
                 <div className="flex justify-between items-start mb-1">
-                  <h4 className=" text-sm text-gray-700 transition-colors">
+                  <h4 className="text-lg font-bold text-gray-800 group-hover:text-green-600 transition-colors">
                     {invoice.invoiceNumber || "No Number"}
                   </h4>
-                  <span className="text-sm  text-gray-400 uppercase tracking-wider">
-                    {invoice.invoiceDate
-                      ? new Date(invoice.invoiceDate).toLocaleDateString()
-                      : "No Date"}
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                    {formatDate(invoice.invoiceDate)}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="flex flex-col">
-                    <span className="text-xs text-gray-400 uppercase font-medium">
+                    <span className="text-[10px] text-gray-400 uppercase font-black">
                       Customer
                     </span>
-                    <span className="text-xs font-semibold text-gray-700 truncate">
+                    <span className="text-xs font-bold text-gray-700 truncate">
                       {invoice.customerName || "N/A"}
                     </span>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-xs text-gray-400 uppercase font-medium">
+                    <span className="text-[10px] text-gray-400 uppercase font-black">
                       Amount
                     </span>
-                    <span className="text-xs  text-green-600">
+                    <span className="text-xs font-black text-green-600">
                       ${invoice.totalInvoiceValue?.toLocaleString() || "0"}
                     </span>
                   </div>

@@ -2,40 +2,39 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Service from "../../../api/Service";
 import {
-  Loader2, AlertCircle, FileText, MapPin, Globe, HardHat,
-  ExternalLink, Calendar, ClipboardList,
-  Search, RefreshCw, Activity, CheckCircle2,
-  Briefcase, LayoutDashboard
+  Loader2,
+  AlertCircle,
+  FileText,
+  MapPin,
+  Globe,
+  HardHat,
+  ExternalLink,
+  Calendar,
+  ClipboardList,
+  Search,
+  RefreshCw,
+  Activity,
+  CheckCircle2,
+  Briefcase,
+  LayoutDashboard,
 } from "lucide-react";
 import Button from "../../fields/Button";
 import type { ConnectionDesigner, ProjectData } from "../../../interface";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
+
 import RenderFiles from "../../ui/RenderFiles";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
 }
 
-const COLORS = [
-  "#10b981", // Emerald
-  "#3b82f6", // Blue
-  "#f59e0b", // Amber
-  "#ef4444", // Red
-  "#8b5cf6", // Purple
-  "#ec4899", // Pink
-  "#14b8a6", // Teal
-  "#f97316", // Orange
-  "#06b6d4", // Cyan
-  "#84cc16", // Lime
-  "#6366f1", // Indigo
-  "#f43f5e", // Rose
-];
-
 const DetailRow = ({ label, value, link, isExternal }: any) => (
   <div className="flex flex-col gap-1">
-    <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">{label}</span>
+    <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">
+      {label}
+    </span>
     {link ? (
       <a
         href={link}
@@ -44,10 +43,17 @@ const DetailRow = ({ label, value, link, isExternal }: any) => (
         className="text-gray-900 dark:text-gray-100 hover:text-green-600 transition-colors truncate font-semibold flex items-center gap-1 group"
       >
         {value || "—"}
-        {isExternal && <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
+        {isExternal && (
+          <ExternalLink
+            size={10}
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+          />
+        )}
       </a>
     ) : (
-      <span className="text-gray-900 dark:text-gray-100 font-semibold truncate">{value || "—"}</span>
+      <span className="text-gray-900 dark:text-gray-100 font-semibold truncate">
+        {value || "—"}
+      </span>
     )}
   </div>
 );
@@ -58,9 +64,13 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<ConnectionDesigner | null>(null);
-  const [engineerModel, setEngineerModel] = useState<ConnectionDesigner | null>(null);
+  const [engineerModel, setEngineerModel] = useState<ConnectionDesigner | null>(
+    null,
+  );
 
-  const [activeTab, setActiveTab] = useState<"insights" | "dashboard">("dashboard");
+  const [activeTab, setActiveTab] = useState<"insights" | "dashboard">(
+    "dashboard",
+  );
 
   const fetchData = async () => {
     if (!id) {
@@ -74,7 +84,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
       const [designerRes, projectsRes] = await Promise.all([
         Service.FetchConnectionDesignerByID(id),
-        Service.GetAllProjects()
+        Service.GetAllProjects(),
       ]);
 
       let designerData = designerRes?.data || null;
@@ -86,8 +96,12 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         }
       }
 
-      const allProjects = Array.isArray(projectsRes) ? projectsRes : (projectsRes?.data || []);
-      const associatedProjects = allProjects.filter((p: any) => p.connectionDesignerID === id);
+      const allProjects = Array.isArray(projectsRes)
+        ? projectsRes
+        : projectsRes?.data || [];
+      const associatedProjects = allProjects.filter(
+        (p: any) => p.connectionDesignerID === id,
+      );
 
       setDesigner(designerData);
       setProjects(associatedProjects);
@@ -132,7 +146,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
     if (Array.isArray(rawState)) {
       pool = rawState;
-    } else if (typeof rawState === 'string') {
+    } else if (typeof rawState === "string") {
       try {
         const parsed = JSON.parse(rawState);
         pool = Array.isArray(parsed) ? parsed : [parsed];
@@ -142,9 +156,9 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
     }
 
     const result: string[] = [];
-    pool.forEach(item => {
-      if (typeof item === 'string') {
-        item.split(/[,\n;]/).forEach(s => {
+    pool.forEach((item) => {
+      if (typeof item === "string") {
+        item.split(/[,\n;]/).forEach((s) => {
           const trimmed = s.trim();
           if (trimmed) result.push(trimmed);
         });
@@ -157,30 +171,78 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   };
 
   const states = getStates();
-  const stateData = states.map((s: string) => ({ name: s, value: 1 }));
+
   const engineerCount = designer.CDEngineers?.length || 0;
 
   // Replaced designerProjects with projects
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const activeProjects = projects.filter((p: any) => p.status === "ACTIVE").length;
+  const activeProjects = projects.filter(
+    (p: any) => p.status === "ACTIVE",
+  ).length;
   // Replaced undefined quotations with empty array for now
   const pendingQuotations = 0; // quotations.filter((q: any) => q.status === "PENDING").length;
 
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleString("en-IN", { dateStyle: "medium" });
-
   const statsCards = [
-    { label: "Total Engineers", value: `${engineerCount} Engineers`, icon: HardHat, sub: "Active engineers", color: "green" },
-    { label: "Active Projects", value: `${activeProjects} Projects`, icon: Activity, sub: "Currently in progress", color: "blue" },
-    { label: "Status", value: designer.isDeleted ? "Inactive" : "Active", icon: CheckCircle2, sub: "Operational cycle", color: "emerald", isStatus: true },
-    { label: "Availability", value: `${states.length} States`, icon: Globe, sub: designer.location || "North America", color: "amber" },
+    {
+      label: "Total Engineers",
+      value: `${engineerCount} Engineers`,
+      icon: HardHat,
+      sub: "Active engineers",
+      color: "green",
+    },
+    {
+      label: "Active Projects",
+      value: `${activeProjects} Projects`,
+      icon: Activity,
+      sub: "Currently in progress",
+      color: "blue",
+    },
+    {
+      label: "Status",
+      value: designer.isDeleted ? "Inactive" : "Active",
+      icon: CheckCircle2,
+      sub: "Operational cycle",
+      color: "emerald",
+      isStatus: true,
+    },
+    {
+      label: "Availability",
+      value: `${states.length} States`,
+      icon: Globe,
+      sub: designer.location || "North America",
+      color: "amber",
+    },
   ];
 
   const pendingActions = [
-    { title: "RFI", count: 0, icon: FileText, color: "bg-amber-50", iconColor: "text-amber-600" },
-    { title: "SUBMITTALS", count: 0, icon: RefreshCw, color: "bg-purple-50", iconColor: "text-purple-600" },
-    { title: "CHANGE ORDERS", count: 0, icon: Activity, color: "bg-rose-50", iconColor: "text-rose-600" },
-    { title: "RFQ", count: pendingQuotations, icon: Search, color: "bg-cyan-50", iconColor: "text-cyan-600" },
+    {
+      title: "RFI",
+      count: 0,
+      icon: FileText,
+      color: "bg-amber-50",
+      iconColor: "text-amber-600",
+    },
+    {
+      title: "SUBMITTALS",
+      count: 0,
+      icon: RefreshCw,
+      color: "bg-purple-50",
+      iconColor: "text-purple-600",
+    },
+    {
+      title: "CHANGE ORDERS",
+      count: 0,
+      icon: Activity,
+      color: "bg-rose-50",
+      iconColor: "text-rose-600",
+    },
+    {
+      title: "RFQ",
+      count: pendingQuotations,
+      icon: Search,
+      color: "bg-cyan-50",
+      iconColor: "text-cyan-600",
+    },
   ];
 
   return (
@@ -197,11 +259,17 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             </h2>
             <div className="flex flex-wrap items-center gap-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5">
-                <Calendar size={13} className="text-green-500 dark:text-green-400" /> Since{" "}
-                {formatDate(designer.createdAt)}
+                <Calendar
+                  size={13}
+                  className="text-green-500 dark:text-green-400"
+                />{" "}
+                Since {formatDate(designer.createdAt)}
               </span>
               <span className="flex items-center gap-1.5">
-                <MapPin size={13} className="text-green-500 dark:text-green-400" />{" "}
+                <MapPin
+                  size={13}
+                  className="text-green-500 dark:text-green-400"
+                />{" "}
                 {designer.location || "Global"}
               </span>
             </div>
@@ -212,20 +280,22 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         <div className="flex bg-gray-100/80 dark:bg-slate-800/80 p-1.5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-inner backdrop-blur-sm overflow-hidden">
           <button
             onClick={() => setActiveTab("dashboard")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs uppercase tracking-widest transition-all ${activeTab === "dashboard"
-              ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
-              : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
-              }`}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs uppercase tracking-widest transition-all ${
+              activeTab === "dashboard"
+                ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
+                : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
+            }`}
           >
             <LayoutDashboard size={14} />
             Dashboard
           </button>
           <button
             onClick={() => setActiveTab("insights")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs uppercase tracking-widest transition-all ${activeTab === "insights"
-              ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
-              : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
-              }`}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs uppercase tracking-widest transition-all ${
+              activeTab === "insights"
+                ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
+                : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
+            }`}
           >
             <Briefcase size={14} />
             Files
@@ -238,17 +308,29 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
           {/* Snapshot Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {statsCards.map((card, i) => (
-              <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-soft hover:shadow-medium transition-all group overflow-hidden relative">
+              <div
+                key={i}
+                className="bg-white p-5 rounded-2xl border border-gray-100 shadow-soft hover:shadow-medium transition-all group overflow-hidden relative"
+              >
                 <div className="relative z-10 flex flex-col justify-between h-full min-h-[80px]">
                   <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{card.label}</span>
-                    <card.icon size={20} className={`text-${card.color}-600 opacity-60 group-hover:opacity-100 transition-opacity`} />
+                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                      {card.label}
+                    </span>
+                    <card.icon
+                      size={20}
+                      className={`text-${card.color}-600 opacity-60 group-hover:opacity-100 transition-opacity`}
+                    />
                   </div>
                   <div>
-                    <h4 className={`text-xl font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-gray-800"}`}>
+                    <h4
+                      className={`text-xl font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-gray-800"}`}
+                    >
                       {card.value}
                     </h4>
-                    <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase truncate">{card.sub}</p>
+                    <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase truncate">
+                      {card.sub}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -261,20 +343,33 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
               {/* Pending Actions */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
                 <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
-                  <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
-                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Pending Actions</h3>
+                  <ClipboardList
+                    className="text-[#6bbd45]"
+                    size={22}
+                    strokeWidth={2.5}
+                  />
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
+                    Pending Actions
+                  </h3>
                 </div>
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                   {pendingActions.map((action, i) => (
-                    <div key={i} className="flex flex-row items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft hover:shadow-medium transition-all group cursor-pointer">
-                      <div className={`p-3 rounded-xl shadow-sm ${action.color} ${action.iconColor}`}>
+                    <div
+                      key={i}
+                      className="flex flex-row items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft hover:shadow-medium transition-all group cursor-pointer"
+                    >
+                      <div
+                        className={`p-3 rounded-xl shadow-sm ${action.color} ${action.iconColor}`}
+                      >
                         <action.icon size={22} strokeWidth={2.5} />
                       </div>
                       <div className="flex flex-row gap-5 items-center min-w-0">
                         <div className="font-bold text-xs text-slate-800 uppercase tracking-tight truncate">
                           {action.title}
                         </div>
-                        <div className={`text-2xl font-black tracking-tight ${action.iconColor}`}>
+                        <div
+                          className={`text-2xl font-black tracking-tight ${action.iconColor}`}
+                        >
                           {action.count}
                         </div>
                       </div>
@@ -287,13 +382,32 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
               <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-soft">
                 <div className="bg-gray-50/70 px-6 py-4 border-b border-gray-100 flex items-center gap-2">
                   <ClipboardList size={16} className="text-green-600" />
-                  <h3 className="text-xs font-black text-gray-600 uppercase tracking-widest">Profile Details</h3>
+                  <h3 className="text-xs font-black text-gray-600 uppercase tracking-widest">
+                    Profile Details
+                  </h3>
                 </div>
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 text-sm font-medium">
-                  <DetailRow label="Principal Email" value={designer.email} link={`mailto:${designer.email}`} />
-                  <DetailRow label="Digital Presence" value={designer.websiteLink} link={designer.websiteLink} isExternal />
-                  <DetailRow label="Secure Contact" value={designer.contactInfo} />
-                  <DetailRow label="Coverage" value={states.length > 0 ? states.join(", ") : "Not specified"} />
+                  <DetailRow
+                    label="Principal Email"
+                    value={designer.email}
+                    link={`mailto:${designer.email}`}
+                  />
+                  <DetailRow
+                    label="Digital Presence"
+                    value={designer.websiteLink}
+                    link={designer.websiteLink}
+                    isExternal
+                  />
+                  <DetailRow
+                    label="Secure Contact"
+                    value={designer.contactInfo}
+                  />
+                  <DetailRow
+                    label="Coverage"
+                    value={
+                      states.length > 0 ? states.join(", ") : "Not specified"
+                    }
+                  />
                 </div>
               </div>
             </div>
@@ -301,13 +415,12 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             {/* Right Section (4 Cols) */}
             <div className="lg:col-span-4 space-y-8">
               <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-soft flex flex-col min-h-[400px]">
-               
-               
-
                 {/* Quick Actions Card */}
                 <div className="bg-slate-900 dark:bg-slate-950 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-green-500/20 transition-all"></div>
-                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-slate-500 mb-8 relative z-10">Administrative Control</h4>
+                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-slate-500 mb-8 relative z-10">
+                    Administrative Control
+                  </h4>
                   <div className="space-y-4 relative z-10">
                     <Button
                       onClick={() => setEditModel(designer)}
@@ -363,14 +476,23 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         </div>
       )}
 
-      {editModel && createPortal(
-        <EditConnectionDesigner onClose={() => setEditModel(null)} designerData={designer} onSuccess={fetchData} />,
-        document.body
-      )}
-      {engineerModel && createPortal(
-        <AllCDEngineer onClose={() => setEngineerModel(null)} designerData={designer} />,
-        document.body
-      )}
+      {editModel &&
+        createPortal(
+          <EditConnectionDesigner
+            onClose={() => setEditModel(null)}
+            designerData={designer}
+            onSuccess={fetchData}
+          />,
+          document.body,
+        )}
+      {engineerModel &&
+        createPortal(
+          <AllCDEngineer
+            onClose={() => setEngineerModel(null)}
+            designerData={designer}
+          />,
+          document.body,
+        )}
     </div>
   );
 };

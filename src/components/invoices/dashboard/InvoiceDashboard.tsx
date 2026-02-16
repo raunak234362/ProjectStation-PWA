@@ -59,7 +59,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-gray-50 transition-colors w-full"
+              className="pl-10 pr-8 py-2 bg-white border border-green-500/20 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-green-50 transition-colors w-full"
             >
               {[
                 "All Months",
@@ -106,8 +106,8 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
                 onClick={() => setDateFilter(filter)}
                 className={`px-5 py-2 rounded-full text-sm font-semibold transition-all shrink-0 ${
                   dateFilter === filter
-                    ? "bg-green-500 text-white shadow-[0_4px_12px_rgba(34,197,94,0.3)]"
-                    : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
+                    ? "bg-[#6bbd45] text-white shadow-[0_4px_12px_rgba(107,189,69,0.3)]"
+                    : "bg-white text-gray-600 hover:bg-green-50 border border-green-500/10"
                 }`}
               >
                 {filter}

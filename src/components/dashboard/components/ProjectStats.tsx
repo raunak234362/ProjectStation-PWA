@@ -1,5 +1,11 @@
 import React from "react";
-import { Files, Activity, CheckCircle2, PauseCircle, Building2 } from "lucide-react";
+import {
+  Files,
+  Activity,
+  CheckCircle2,
+  PauseCircle,
+  Building2,
+} from "lucide-react";
 import { cn } from "../../../lib/utils";
 
 interface ProjectStatsProps {
@@ -71,8 +77,8 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   };
 
   return (
-    <div className="flex flex-col justify-center h-full bg-white dark:bg-slate-900 shadow-soft rounded-[32px] p-6 border border-gray-100 dark:border-slate-800 transition-all duration-300">
-      <h2 className="text-xl md:text-2xl  text-slate-800 dark:text-white mb-6 px-2 flex items-center gap-3 tracking-tight">
+    <div className="flex flex-col justify-center h-full bg-white rounded-2xl p-6 transition-all duration-300">
+      <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6 px-2 flex items-center gap-3 tracking-tight">
         <Building2 size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
         PROJECT STATISTICS
       </h2>
@@ -85,27 +91,29 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
           return (
             <div
               key={card.label}
-              onClick={() => isClickable && card.status && onCardClick(card.status)}
+              onClick={() =>
+                isClickable && card.status && onCardClick(card.status)
+              }
               className={cn(
-                "flex items-center gap-5 p-5 rounded-[24px] bg-slate-50/50 dark:bg-slate-800/30 shadow-sm transition-all duration-300 border border-transparent dark:border-slate-800/50",
-                isClickable ? "cursor-pointer hover:shadow-md hover:scale-[1.02] hover:bg-white dark:hover:bg-slate-800 active:scale-[0.98] group" : ""
+                "hover-card p-5 group flex flex-row gap-5",
+                !isClickable &&
+                  "cursor-default hover:bg-gray-50/80 hover:shadow-sm",
               )}
             >
               <div
                 className={cn(
                   "p-3.5 rounded-xl shadow-sm text-white shrink-0 transition-transform group-hover:scale-110",
                   colors.iconBg,
-                  "dark:bg-slate-700 dark:text-green-400"
                 )}
               >
                 <card.icon size={25} strokeWidth={2.5} />
               </div>
 
               <div className="flex flex-row items-center justify-between w-full min-w-0">
-                <span className="text-sm md:text-xl  text-slate-700 dark:text-slate-500 uppercase tracking-[0.2em] truncate pr-2">
+                <span className="text-sm md:text-lg font-semibold text-gray-600 uppercase tracking-widest truncate pr-2">
                   {card.label}
                 </span>
-                <span className="text-2xl md:text-3xl  text-[#6bbd45] dark:text-green-400 tracking-tighter">
+                <span className="text-2xl md:text-3xl font-bold text-[#6bbd45] tracking-tighter">
                   {card.value}
                 </span>
               </div>
