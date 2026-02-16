@@ -104,15 +104,15 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     const inclusionsHtml =
       inclusions.length > 0
         ? inclusions
-          .map((item: string) => `<li><span>${item}</span></li>`)
-          .join("")
+            .map((item: string) => `<li><span>${item}</span></li>`)
+            .join("")
         : `<li><span>No inclusions specified</span></li>`;
 
     const exclusionsHtml =
       exclusions.length > 0
         ? exclusions
-          .map((item: string) => `<li><span>${item}</span></li>`)
-          .join("")
+            .map((item: string) => `<li><span>${item}</span></li>`)
+            .join("")
         : `<li><span>No exclusions specified</span></li>`;
 
     const selectedItems = items.filter((item) => item.selected);
@@ -121,10 +121,12 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         (item) => `
       <tr style="text-align: center;">
         <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #333;">${item.label.toUpperCase()}</td>
-        <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #0056b3;"><span>${currency}: ${currencySymbol} ${item.price || "—"
-          }/-</span></td>
-        <td style="border: 2px solid #333; padding: 15px; font-weight: bold;"><span>${item.weeks || "—"
-          } weeks</span></td>
+        <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #0056b3;"><span>${currency}: ${currencySymbol} ${
+          item.price || "—"
+        }/-</span></td>
+        <td style="border: 2px solid #333; padding: 15px; font-weight: bold;"><span>${
+          item.weeks || "—"
+        } weeks</span></td>
       </tr>
     `,
       )
@@ -144,32 +146,38 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                 DETAILING <span>${est.projectName || "Project Name"}</span> JOB
               </h1>
               <div style="margin-top: 5px;">
-                <span style="font-weight: bold; font-size: 12px; color: #0056b3;">For ${est.fabricators?.fabName || "Fabricator Name"
-      }</span>
+                <span style="font-weight: bold; font-size: 12px; color: #0056b3;">For ${
+                  est.fabricators?.fabName || "Fabricator Name"
+                }</span>
               </div>
-              ${est.fabricators?.branches?.[0]
-        ? `
+              ${
+                est.fabricators?.branches?.[0]
+                  ? `
                 <div style="display: block; font-size: 11px; margin-top: 8px; color: #555;">
-                  ${est.fabricators.branches[0].address || ""}, ${est.fabricators.branches[0].city || ""
-        }, ${est.fabricators.branches[0].state || ""} ${est.fabricators.branches[0].zipCode || ""
-        }, Tel: ${est.fabricators.branches[0].phone || ""}
+                  ${est.fabricators.branches[0].address || ""}, ${
+                    est.fabricators.branches[0].city || ""
+                  }, ${est.fabricators.branches[0].state || ""} ${
+                    est.fabricators.branches[0].zipCode || ""
+                  }, Tel: ${est.fabricators.branches[0].phone || ""}
                 </div>
               `
-        : ""
-      }
+                  : ""
+              }
             </div>
 
             <!-- Proposal ID & Date -->
             <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-              <div><span>Our Proposal ID: <span>WBT/${est.estimationNumber || "Estimation Number"
-      }/${new Date().getFullYear()}/VER 1.0</span></span></div>
+              <div><span>Our Proposal ID: <span>WBT/${
+                est.estimationNumber || "Estimation Number"
+              }/${new Date().getFullYear()}/VER 1.0</span></span></div>
               <div><span>Date: <span>${new Date().toLocaleDateString()}</span></span></div>
             </div>
 
             <p style="font-size: 12px; margin-bottom: 25px; color: #444;">
               WHITEBOARD TECHNOLOGIES is pleased to submit this proposal for taking some of the detailing activities of 
-              <span style="font-weight: bold; color: #333;">${est.projectName || "SAMPLE PROJECT"
-      }</span> JOB.
+              <span style="font-weight: bold; color: #333;">${
+                est.projectName || "SAMPLE PROJECT"
+              }</span> JOB.
             </p>
 
             <!-- Pricing Table -->
@@ -182,9 +190,10 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                 </tr>
               </thead>
               <tbody>
-                ${tableRows ||
-      `<tr><td colspan="3" style="border: 2px solid #333; padding: 10px; text-align: center;">No items selected</td></tr>`
-      }
+                ${
+                  tableRows ||
+                  `<tr><td colspan="3" style="border: 2px solid #333; padding: 10px; text-align: center;">No items selected</td></tr>`
+                }
               </tbody>
             </table>
 
@@ -293,8 +302,9 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             </div>
 
             <p style="font-size: 14px; margin-bottom: 20px; color: #444;">
-              We look forward to working with <span style="font-weight: bold; color: #333;">${est.fabricatorName || "Cobb Industrial, Inc"
-      }</span> and supporting your efforts on this job. We are confident that we can meet the challenges ahead and stand ready to partner with you in delivering an effective detailing solution.
+              We look forward to working with <span style="font-weight: bold; color: #333;">${
+                est.fabricatorName || "Cobb Industrial, Inc"
+              }</span> and supporting your efforts on this job. We are confident that we can meet the challenges ahead and stand ready to partner with you in delivering an effective detailing solution.
             </p>
             
             <p style="font-size: 14px; margin-bottom: 30px; color: #444;">
@@ -430,192 +440,201 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white shadow-lg rounded-xl p-6 w-[90%] max-w-7xl relative overflow-y-auto max-h-[90vh]">
-        {/* Close Button */}
-        <Button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-700 hover:text-red-500"
-        >
-          <X className="w-5 h-5" />
-        </Button>
+      <div className="bg-white shadow-lg rounded-xl w-full max-w-6xl relative flex flex-col max-h-[90vh]">
+        {/* Fixed Header */}
+        <div className="px-6 py-4 border-b flex justify-between items-center bg-white rounded-t-xl z-10">
+          <h2 className="text-xl text-green-700">Add Response</h2>
+          <Button
+            onClick={onClose}
+            className="text-gray-700 hover:text-red-500 p-1"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
 
-        <h2 className="text-xl  text-green-700 mb-4">Add Response</h2>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <form
+            id="response-form"
+            className="space-y-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            {/* Estimation Selection */}
+            <div className="flex items-end gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Estimation for Proposal
+                </label>
+                <Select
+                  name="estimationId"
+                  options={estimations.map((est) => ({
+                    label: `${est.estimationNumber} - ${est.projectName}`,
+                    value: est.id,
+                  }))}
+                  value={selectedEstimationId}
+                  onChange={(_: any, val: any) =>
+                    handleEstimationChange(val as string)
+                  }
+                  placeholder="Select an estimation..."
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={handlePrint}
+                disabled={!selectedEstimationId}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 h-[42px]"
+              >
+                <Printer className="w-4 h-4" />
+                Print Proposal
+              </Button>
+            </div>
 
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          {/* Estimation Selection */}
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
+            {/* Pricing Items Selection */}
+            {selectedEstimationId && (
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
+                <h3 className="text-sm font-semibold text-gray-700 border-bottom pb-2">
+                  Select Pricing Items
+                </h3>
+                <div className="grid grid-cols-1 gap-3">
+                  {pricingItems.map((item, index) => (
+                    <div key={item.label} className="space-y-2">
+                      <label className="flex items-center gap-3 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={item.selected}
+                          onChange={(e) =>
+                            handlePricingItemChange(
+                              index,
+                              "selected",
+                              e.target.checked,
+                            )
+                          }
+                          className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-green-700 transition-colors">
+                          {item.label}
+                        </span>
+                      </label>
+
+                      {item.selected && (
+                        <div className="ml-7 flex gap-4 items-center animate-in fade-in slide-in-from-left-2 duration-200">
+                          <div className="flex-1">
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs ">
+                                {selectedEstimation?.fabricators
+                                  ?.currencyType || "USD"}
+                              </span>
+                              <input
+                                type="number"
+                                value={item.price}
+                                onChange={(e) =>
+                                  handlePricingItemChange(
+                                    index,
+                                    "price",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="Price"
+                                className="w-full pl-12 pr-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="relative">
+                              <input
+                                type="number"
+                                value={item.weeks}
+                                onChange={(e) =>
+                                  handlePricingItemChange(
+                                    index,
+                                    "weeks",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="Weeks"
+                                className="w-full pl-3 pr-12 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+                                weeks
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Select Estimation for Proposal
+                Message *
               </label>
-              <Select
-                name="estimationId"
-                options={estimations.map((est) => ({
-                  label: `${est.estimationNumber} - ${est.projectName}`,
-                  value: est.id,
-                }))}
-                value={selectedEstimationId}
-                onChange={(_: any, val: any) =>
-                  handleEstimationChange(val as string)
-                }
-                placeholder="Select an estimation..."
+              <Controller
+                name="description"
+                control={control}
+                rules={{ required: "Message is required" }}
+                render={({ field }) => (
+                  <RichTextEditor
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    placeholder="Type your response..."
+                  />
+                )}
               />
             </div>
-            <Button
-              type="button"
-              onClick={handlePrint}
-              disabled={!selectedEstimationId}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 h-[42px]"
-            >
-              <Printer className="w-4 h-4" />
-              Print Proposal
-            </Button>
-          </div>
 
-          {/* Pricing Items Selection */}
-          {selectedEstimationId && (
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
-              <h3 className="text-sm font-semibold text-gray-700 border-bottom pb-2">
-                Select Pricing Items
-              </h3>
-              <div className="grid grid-cols-1 gap-3">
-                {pricingItems.map((item, index) => (
-                  <div key={item.label} className="space-y-2">
-                    <label className="flex items-center gap-3 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={item.selected}
-                        onChange={(e) =>
-                          handlePricingItemChange(
-                            index,
-                            "selected",
-                            e.target.checked,
-                          )
-                        }
-                        className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                      />
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-green-700 transition-colors">
-                        {item.label}
-                      </span>
-                    </label>
-
-                    {item.selected && (
-                      <div className="ml-7 flex gap-4 items-center animate-in fade-in slide-in-from-left-2 duration-200">
-                        <div className="flex-1">
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs ">
-                              {selectedEstimation?.fabricators?.currencyType ||
-                                "USD"}
-                            </span>
-                            <input
-                              type="number"
-                              value={item.price}
-                              onChange={(e) =>
-                                handlePricingItemChange(
-                                  index,
-                                  "price",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Price"
-                              className="w-full pl-12 pr-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={item.weeks}
-                              onChange={(e) =>
-                                handlePricingItemChange(
-                                  index,
-                                  "weeks",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Weeks"
-                              className="w-full pl-3 pr-12 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none"
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
-                              weeks
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+            {/* Optional Link */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Optional Link
+              </label>
+              <input
+                {...register("link")}
+                placeholder="Paste URL if any"
+                className="w-full border rounded-md p-2"
+              />
             </div>
-          )}
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Message *
-            </label>
-            <Controller
-              name="description"
-              control={control}
-              rules={{ required: "Message is required" }}
-              render={({ field }) => (
-                <RichTextEditor
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                  placeholder="Type your response..."
-                />
-              )}
-            />
-          </div>
+            {/* Files */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Attach Files
+              </label>
+              <Controller
+                name="files"
+                control={control}
+                render={() => (
+                  <MultipleFileUpload
+                    onFilesChange={(uploadedFiles) => setFiles(uploadedFiles)}
+                  />
+                )}
+              />
+            </div>
+          </form>
+        </div>
 
-          {/* Optional Link */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Optional Link
-            </label>
-            <input
-              {...register("link")}
-              placeholder="Paste URL if any"
-              className="w-full border rounded-md p-2"
-            />
-          </div>
+        {/* Fixed Footer */}
+        <div className="px-6 py-4 border-t bg-gray-50 rounded-b-xl flex justify-end gap-4">
+          <Button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-200"
+          >
+            Cancel
+          </Button>
 
-          {/* Files */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Attach Files
-            </label>
-            <Controller
-              name="files"
-              control={control}
-              render={() => (
-                <MultipleFileUpload
-                  onFilesChange={(uploadedFiles) => setFiles(uploadedFiles)}
-                />
-              )}
-            />
-          </div>
-
-          {/* Submit */}
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-200"
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-            >
-              {loading ? "Submitting..." : "Submit Response"}
-            </Button>
-          </div>
-        </form>
+          <Button
+            type="submit"
+            form="response-form"
+            disabled={loading}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+          >
+            {loading ? "Submitting..." : "Submit Response"}
+          </Button>
+        </div>
       </div>
     </div>
   );

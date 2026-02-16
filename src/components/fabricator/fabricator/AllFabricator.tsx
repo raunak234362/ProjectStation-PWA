@@ -90,7 +90,7 @@ const AllFabricator = () => {
         columns={columns}
         data={filteredFabricators}
         detailComponent={GetFabricatorByID}
-        pageSizeOptions={[5, 10, 25]}
+        pageSizeOptions={[25]}
       />
     </div>
   );

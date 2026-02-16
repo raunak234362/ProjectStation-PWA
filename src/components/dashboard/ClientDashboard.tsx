@@ -78,7 +78,11 @@ const ClientDashboard = () => {
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
-        setPendingRFQs(received?.data || received || []);
+        const rfqs = received?.data || received || [];
+        const filteredRfqs = rfqs.filter(
+          (rfq: any) => !rfq.responses || rfq.responses.length === 0,
+        );
+        setPendingRFQs(filteredRfqs);
         setPendingRFIs(pendingRFIsData?.data || pendingRFIsData || []);
         setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 

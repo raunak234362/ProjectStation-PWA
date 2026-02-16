@@ -12,6 +12,7 @@ import type {
 } from "../interface";
 import api from "./api";
 class Service {
+
   //Get Logged-In User Detail
   static async GetUserByToken() {
     try {

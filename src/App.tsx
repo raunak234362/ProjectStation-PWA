@@ -101,7 +101,7 @@ const AppContent = () => {
     const fetchInboxRFQ = async () => {
       try {
         let rfqDetail;
-        if (userType === "CLIENT") {
+        if (userType === "CLIENT" || userType === "CLIENT_ADMIN") {
           rfqDetail = await Service.RfqSent();
         } else if (
           userType === "OPERATION_EXECUTIVE" ||
@@ -124,6 +124,8 @@ const AppContent = () => {
         const rfqData = Array.isArray(rfqDetail)
           ? rfqDetail
           : rfqDetail?.data || [];
+          console.log(rfqData);
+          
         dispatch(setRFQData(rfqData));
         console.log("Dispatched RFQ Data:", rfqData);
       } catch (error) {

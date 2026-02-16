@@ -26,6 +26,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   type,
 }) => {
   if (!isOpen) return null;
+  console.log("===============",data);
 
   const getTitle = () => {
     switch (type) {
@@ -198,7 +199,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             <DataTable
               columns={getColumns()}
               data={data}
-              pageSizeOptions={[10, 25, 50]}
+              pageSizeOptions={[25]}
               detailComponent={renderDetail}
             />
           ) : (

@@ -162,7 +162,7 @@ export default function DataTable<T extends object>({
   onRowClick,
   detailComponent: DetailComponent,
 
-  pageSizeOptions = [5, 10, 25, 50],
+  pageSizeOptions = [25, 50],
   showColumnFiltersInHeader = false,
   initialSorting = [],
 }: DataTableProps<T>) {
@@ -351,7 +351,7 @@ export default function DataTable<T extends object>({
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </span>
-          <div className="flex items-center gap-2 min-w-[120px]">
+          {/* <div className="flex items-center gap-2 min-w-[120px]">
             <span className="text-gray-600 dark:text-slate-400">Rows per page:</span>
             <div className="w-20">
               <Select
@@ -365,7 +365,7 @@ export default function DataTable<T extends object>({
                 className="py-1! px-2! text-xs!"
               />
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="flex items-center gap-2">
           <Button

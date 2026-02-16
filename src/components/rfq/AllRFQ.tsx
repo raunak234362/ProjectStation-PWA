@@ -81,7 +81,7 @@ const AllRFQ = ({ rfq }: any) => {
         data={rfq || []}
         onRowClick={() => { }}
         detailComponent={({ row }) => <GetRFQByID id={row.id} />}
-        pageSizeOptions={[5, 10, 25]}
+        pageSizeOptions={[25]}
       />
     </div>
   );

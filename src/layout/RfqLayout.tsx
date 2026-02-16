@@ -8,6 +8,8 @@ import { useSelector } from "react-redux";
 const RfqLayout = () => {
   const [activeTab, setActiveTab] = useState("allRFQ");
   const rfq = useSelector((state: any) => state.RFQInfos.RFQData);
+  console.log(rfq);
+  
   return (
     <div className="w-full">
       <div className="flex flex-col w-full h-full mb-6">
