@@ -371,7 +371,7 @@ const GetProjectById = ({
           {/* ✅ Overview */}
           {activeTab === "overview" && (
             <div className="space-y-6 animate-in fade-in duration-500">
-              {userRole !== "client" && userRole !== "client_admin" && (
+              {!isClient && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <StatCard
                     icon={<Clock className="text-blue-600" />}

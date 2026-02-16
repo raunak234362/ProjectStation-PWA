@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, Settings } from "lucide-react";
 import ResponseModal from "./ResponseModal";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -378,7 +378,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             <div className="space-y-2">
               <h4 className=" text-gray-700 text-sm">Description</h4>
               <div
-                className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm"
+                className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm overflow-x-auto break-words"
                 dangerouslySetInnerHTML={{
                   __html: rfq?.description || "No description provided",
                 }}
@@ -387,25 +387,44 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
             {/* Scopes */}
             <div className="space-y-3">
-              <h4 className=" text-gray-700 text-sm">Scope Summary</h4>
-              <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-4 text-[10px] sm:text-xs">
-                <Scope
-                  label="Main Design"
-                  enabled={rfq?.connectionDesign || false}
-                />
-                <Scope label="Misc Design" enabled={rfq?.miscDesign || false} />
-                <Scope
-                  label="Customer Design"
-                  enabled={rfq?.customerDesign || false}
-                />
-                <Scope
-                  label="Main Steel"
-                  enabled={rfq?.detailingMain || false}
-                />
-                <Scope
-                  label="Misc Steel"
-                  enabled={rfq?.detailingMisc || false}
-                />
+              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
+                <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-1">
+                  <Settings className="w-4 h-4" /> Connection Design Scope
+                </h4>
+                <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                  <Scope
+                    label="Connection Design"
+                    enabled={rfq?.connectionDesign || false}
+                  />
+                  <Scope
+                    label="Misc Design"
+                    enabled={rfq?.miscDesign || false}
+                  />
+                  <Scope
+                    label={
+                      (userRole === "CLIENT" || userRole === "CLIENT_ADMIN") &&
+                      rfq?.sender?.fabricator?.fabName
+                        ? `Connection design by ${rfq.sender.fabricator.fabName}`
+                        : "Customer Design"
+                    }
+                    enabled={rfq?.customerDesign || false}
+                  />
+                </div>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
+                <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-1">
+                  <Settings className="w-4 h-4" /> Detailing Scope
+                </h4>
+                <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                  <Scope
+                    label="Detailing Main"
+                    enabled={rfq?.detailingMain || false}
+                  />
+                  <Scope
+                    label="Detailing Misc"
+                    enabled={rfq?.detailingMisc || false}
+                  />
+                </div>
               </div>
             </div>
 
