@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { toast } from "react-toastify";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { X, Printer } from "lucide-react";
@@ -393,47 +394,37 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     `);
     printWindow.document.close();
   };
-
   // Submit Handler
-  const onSubmit = async (data: RfqResponsePayload) => {
+  const onSubmit = async (data: any) => {
     try {
       setLoading(true);
 
       const userId = sessionStorage.getItem("userId") || ""; // assuming userId stored in session
       const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
-      const payload: RfqResponsePayload = {
-        ...data,
-        rfqId,
-        userId,
-        parentResponseId: data.parentResponseId || "",
-        files,
-      };
-      console.log(payload);
-
-      // Convert to FormData
       const formData = new FormData();
-      formData.append("rfqId", payload.rfqId);
-      formData.append("description", payload.description);
-      formData.append("status", "OPEN");
-      formData.append("wbtStatus", "OPEN");
+      formData.append("rfqId", rfqId);
+      formData.append("description", data.description);
+      formData.append("status", "OPEN"); // response status
+      formData.append("wbtStatus", data.wbtStatus || "OPEN"); // parent rfq status
       formData.append("userRole", userRole ?? "");
       formData.append("userId", userId ?? "");
 
-      if (payload.link) formData.append("link", payload.link);
+      if (data.link) formData.append("link", data.link);
 
       if (files.length > 0) {
         files.forEach((file) => formData.append("files", file));
       }
 
       await Service.addResponse(formData, rfqId);
-
+      toast.success("Response added successfully!");
       reset();
       setFiles([]);
       onSuccess();
       onClose();
     } catch (err) {
       console.error("Response submission failed:", err);
+      toast.error("Failed to add response");
     } finally {
       setLoading(false);
     }
@@ -587,16 +578,34 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
               />
             </div>
 
-            {/* Optional Link */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Optional Link
-              </label>
-              <input
-                {...register("link")}
-                placeholder="Paste URL if any"
-                className="w-full border rounded-md p-2"
-              />
+            {/* Optional Link & Status */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Update RFQ Status
+                </label>
+                <select
+                  {...register("wbtStatus")}
+                  className="w-full border rounded-md p-2 bg-white"
+                  defaultValue="OPEN"
+                >
+                  <option value="OPEN">OPEN</option>
+                  <option value="IN_PROGRESS">IN_PROGRESS</option>
+                  <option value="CLOSED">CLOSED</option>
+                  <option value="AWARDED">AWARDED</option>
+                  <option value="RE_APPROVED">RE_APPROVED</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Optional Link
+                </label>
+                <input
+                  {...register("link")}
+                  placeholder="Paste URL if any"
+                  className="w-full border rounded-md p-2"
+                />
+              </div>
             </div>
 
             {/* Files */}

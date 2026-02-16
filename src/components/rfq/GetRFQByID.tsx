@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, Settings } from "lucide-react";
 import ResponseModal from "./ResponseModal";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -16,7 +16,7 @@ import QuotationResponseDetailsModal from "../connectionDesigner/QuotationRespon
 import { Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { useDispatch } from "react-redux";
-import { deleteRFQ } from "../../store/rfqSlice";
+import { deleteRFQ, updateRFQ } from "../../store/rfqSlice";
 import { toast } from "react-toastify";
 
 interface GetRfqByIDProps {
@@ -50,18 +50,17 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const dispatch = useDispatch();
   const fetchRfq = async () => {
     try {
-      setLoading(true);
-      const [rfqRes, quotasRes] = await Promise.all([
-        Service.GetRFQbyId(id),
-        Service.getQuotationsByRFQ(id),
-      ]);
-      setRfq(rfqRes.data || null);
+      if (!rfq) setLoading(true);
+      const rfqRes = await Service.GetRFQbyId(id);
 
-      // Ensure quotations is always an array
-      const quotaData = quotasRes?.data || quotasRes || [];
-      setQuotations(Array.isArray(quotaData) ? quotaData : []);
-    } catch {
-      setError("Failed to load RFQ");
+      const rfqData = rfqRes?.data || rfqRes;
+      if (rfqData) {
+        setRfq(rfqData);
+        dispatch(updateRFQ(rfqData));
+      }
+    } catch (err) {
+      console.error("Error fetching RFQ:", err);
+      if (!rfq) setError("Failed to load RFQ");
     } finally {
       setLoading(false);
     }
@@ -379,7 +378,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
             <div className="space-y-2">
               <h4 className=" text-gray-700 text-sm">Description</h4>
               <div
-                className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm"
+                className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm overflow-x-auto break-words"
                 dangerouslySetInnerHTML={{
                   __html: rfq?.description || "No description provided",
                 }}
@@ -388,25 +387,44 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
 
             {/* Scopes */}
             <div className="space-y-3">
-              <h4 className=" text-gray-700 text-sm">Scope Summary</h4>
-              <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-4 text-[10px] sm:text-xs">
-                <Scope
-                  label="Main Design"
-                  enabled={rfq?.connectionDesign || false}
-                />
-                <Scope label="Misc Design" enabled={rfq?.miscDesign || false} />
-                <Scope
-                  label="Customer Design"
-                  enabled={rfq?.customerDesign || false}
-                />
-                <Scope
-                  label="Main Steel"
-                  enabled={rfq?.detailingMain || false}
-                />
-                <Scope
-                  label="Misc Steel"
-                  enabled={rfq?.detailingMisc || false}
-                />
+              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
+                <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-1">
+                  <Settings className="w-4 h-4" /> Connection Design Scope
+                </h4>
+                <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                  <Scope
+                    label="Connection Design"
+                    enabled={rfq?.connectionDesign || false}
+                  />
+                  <Scope
+                    label="Misc Design"
+                    enabled={rfq?.miscDesign || false}
+                  />
+                  <Scope
+                    label={
+                      (userRole === "CLIENT" || userRole === "CLIENT_ADMIN") &&
+                      rfq?.sender?.fabricator?.fabName
+                        ? `Connection design by ${rfq.sender.fabricator.fabName}`
+                        : "Customer Design"
+                    }
+                    enabled={rfq?.customerDesign || false}
+                  />
+                </div>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
+                <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-1">
+                  <Settings className="w-4 h-4" /> Detailing Scope
+                </h4>
+                <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                  <Scope
+                    label="Detailing Main"
+                    enabled={rfq?.detailingMain || false}
+                  />
+                  <Scope
+                    label="Detailing Misc"
+                    enabled={rfq?.detailingMisc || false}
+                  />
+                </div>
               </div>
             </div>
 
@@ -417,12 +435,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               parentId={rfq?.id}
               formatDate={formatDate}
             />
-            {userRole !=="CLIENT_ADMIN" && userRole !== "CLIENT" &&
-            userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
-              <div className="flex flex-col gap-2 pt-2">
-                <Button
-                  onClick={() => setShowEstimationModal(true)}
-                  className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
+            {userRole !== "CLIENT_ADMIN" &&
+              userRole !== "CLIENT" &&
+              userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
+                <div className="flex flex-col gap-2 pt-2">
+                  <Button
+                    onClick={() => setShowEstimationModal(true)}
+                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
                   >
                     Raise For Estimation
                   </Button>
@@ -431,7 +450,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                     className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight "
                   >
                     Raise for Connection Designer Quotation
-                  </Button> 
+                  </Button>
                 </div>
               )}
           </div>
@@ -575,7 +594,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               initialRfqId={id}
               onSuccess={() => {
                 setShowEstimationModal(false);
-                // Optionally refresh RFQ or show success message
+                fetchRfq();
               }}
             />
           </div>

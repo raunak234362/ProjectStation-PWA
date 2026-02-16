@@ -66,6 +66,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
       cell: ({ row }) => formatDate(row.original.approvalDate),
     },
     { accessorKey: "status", header: "Status" },
+    { accessorKey: "stage", header: "Stage" },
   ];
   const handleRowClick = (row: any) => {
     const milestonesId = (row as any).id ?? (row as any).fabId ?? "";

@@ -82,13 +82,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-  | string
-  | []
-  | {
-    firstName?: string;
-    lastName?: string;
-    middleName?: string;
-  };
+    | string
+    | []
+    | {
+        firstName?: string;
+        lastName?: string;
+        middleName?: string;
+      };
 }
 
 export interface DepartmentPayload {
@@ -312,6 +312,7 @@ export interface RfqResponsePayload {
   description: string;
   files?: File[] | string[];
   link?: string | null;
+  wbtStatus?: string;
 }
 
 export interface Staff {
@@ -772,5 +773,4 @@ export interface Quotation {
   weeks: string;
   approvalStatus: boolean;
   approvalDate: string;
-
 }
