@@ -191,7 +191,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
         ) : invoiceNeedRaise.length > 0 ? (
           <div className="space-y-2">
             {invoiceNeedRaise.map((invoice, index) => (
-              <button
+              <div
                 key={invoice.id || index}
                 onClick={() => {
                   if (onInvoiceClick) {
@@ -229,7 +229,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                     </span>
                   </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         ) : (
@@ -250,9 +250,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
               <h3 className="text-lg  text-gray-700">
-                {activeTab === "submittals"
-                  ? "Create Submittal"
-                  : "Create Invoice"}
+                Create Submittal
               </h3>
               <button
                 onClick={() => {
@@ -265,28 +263,13 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
-              {activeTab === "submittals" ? (
-                <AddSubmittal
-                  project={selectedItem?.project || selectedItem}
-                  initialData={{
-                    subject: selectedItem?.subject,
-                    description: selectedItem?.description,
-                  }}
-                />
-              ) : (
-                <AddInvoice
-                  initialFabricatorId={
-                    selectedItem?.fabricatorId || selectedItem?.fabricator_id
-                  }
-                  initialProjectId={
-                    selectedItem?.projectId || selectedItem?.project_id
-                  }
-                  onSuccess={() => {
-                    setIsModalOpen(false);
-                    setSelectedItem(null);
-                  }}
-                />
-              )}
+              <AddSubmittal
+                project={selectedItem?.project || selectedItem}
+                initialData={{
+                  subject: selectedItem?.subject,
+                  description: selectedItem?.description,
+                }}
+              />
             </div>
           </div>
         </div>

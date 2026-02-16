@@ -40,6 +40,7 @@ const AllProjects = () => {
         data={projects}
         onRowClick={handleRowClick}
         detailComponent={ProjectDetailComponent}
+        disablePagination={true}
         pageSizeOptions={[5, 10, 25]}
       />
     </div>

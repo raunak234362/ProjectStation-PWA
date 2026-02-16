@@ -96,6 +96,7 @@ interface DataTableProps<T extends object> {
   showColumnFiltersInHeader?: boolean;
   showColumnToggle?: boolean;
   initialSorting?: SortingState;
+  disablePagination?: boolean;
 }
 
 /* -------------------- mobile card view -------------------- */
@@ -165,6 +166,7 @@ export default function DataTable<T extends object>({
   pageSizeOptions = [25, 50],
   showColumnFiltersInHeader = false,
   initialSorting = [],
+  disablePagination = false,
 }: DataTableProps<T>) {
   const { isMobile } = useScreen();
 
@@ -202,7 +204,7 @@ export default function DataTable<T extends object>({
     },
     initialState: {
       pagination: {
-        pageSize: pageSizeOptions[0] || 10,
+        pageSize: disablePagination ? 100000 : (pageSizeOptions[0] || 10),
       },
     },
     onGlobalFilterChange: setGlobalFilter,
@@ -268,13 +270,13 @@ export default function DataTable<T extends object>({
         <div className="w-full border border-gray-100 dark:border-slate-800 rounded-lg overflow-hidden">
           <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
             <table className="min-w-full divide-y dark:divide-slate-800">
-              <thead className="bg-gray-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
+              <thead className="bg-green-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
                 {table.getHeaderGroups().map((hg) => (
                   <tr key={hg.id}>
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-4 py-3 text-left text-md md:text-lg font-medium bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200"
+                        className="px-4 py-3 text-left text-md md:text-lg font-bold bg-green-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         <div className="flex items-center gap-1 cursor-pointer">
@@ -304,7 +306,7 @@ export default function DataTable<T extends object>({
                 {table.getPaginationRowModel().rows.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr
-                      className={`hover:bg-gray-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors ${expandedRowId === row.id ? "bg-gray-50 dark:bg-slate-800/50" : ""
+                      className={`hover:bg-green-50/80 dark:hover:bg-slate-800/50 cursor-pointer transition-colors ${expandedRowId === row.id ? "bg-green-50 dark:bg-slate-800/50" : ""
                         }`}
                       onClick={() => {
                         onRowClick?.(row.original);
@@ -345,6 +347,7 @@ export default function DataTable<T extends object>({
       )}
 
       {/* pagination */}
+
       <div className="flex flex-col sm:flex-row items-center gap-4 text-sm p-4 border-t border-gray-50 dark:border-slate-800">
         <div className="flex items-center gap-4">
           <span className="text-gray-600 dark:text-slate-400">
@@ -352,6 +355,16 @@ export default function DataTable<T extends object>({
             {table.getPageCount()}
           </span>
           {/* <div className="flex items-center gap-2 min-w-[120px]">
+
+      {!disablePagination && (
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm p-4 border-t border-gray-50 dark:border-slate-800">
+          <div className="flex items-center gap-4">
+            <span className="text-gray-600 dark:text-slate-400">
+              Page {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getPageCount()}
+            </span>
+            {/* <div className="flex items-center gap-2 min-w-[120px]">
+
             <span className="text-gray-600 dark:text-slate-400">Rows per page:</span>
             <div className="w-20">
               <Select
@@ -366,24 +379,25 @@ export default function DataTable<T extends object>({
               />
             </div>
           </div> */}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              disabled={!table.getCanPreviousPage()}
+              onClick={() => table.previousPage()}
+              className="px-3 py-1 border border-gray-200 dark:border-slate-700 rounded disabled:opacity-50 text-gray-700 dark:text-slate-300"
+            >
+              {"<"}
+            </Button>
+            <Button
+              disabled={!table.getCanNextPage()}
+              onClick={() => table.nextPage()}
+              className="px-3 py-1 border border-gray-200 dark:border-slate-700 rounded disabled:opacity-50 text-gray-700 dark:text-slate-300"
+            >
+              {">"}
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            disabled={!table.getCanPreviousPage()}
-            onClick={() => table.previousPage()}
-            className="px-3 py-1 border border-gray-200 dark:border-slate-700 rounded disabled:opacity-50 text-gray-700 dark:text-slate-300"
-          >
-            {"<"}
-          </Button>
-          <Button
-            disabled={!table.getCanNextPage()}
-            onClick={() => table.nextPage()}
-            className="px-3 py-1 border border-gray-200 dark:border-slate-700 rounded disabled:opacity-50 text-gray-700 dark:text-slate-300"
-          >
-            {">"}
-          </Button>
-        </div>
-      </div>
+  
     </>
   );
 }
