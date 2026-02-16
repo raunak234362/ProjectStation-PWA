@@ -16,7 +16,7 @@ import QuotationResponseDetailsModal from "../connectionDesigner/QuotationRespon
 import { Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { useDispatch } from "react-redux";
-import { deleteRFQ } from "../../store/rfqSlice";
+import { deleteRFQ, updateRFQ } from "../../store/rfqSlice";
 import { toast } from "react-toastify";
 
 interface GetRfqByIDProps {
@@ -50,18 +50,17 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const dispatch = useDispatch();
   const fetchRfq = async () => {
     try {
-      setLoading(true);
-      const [rfqRes, quotasRes] = await Promise.all([
-        Service.GetRFQbyId(id),
-        Service.getQuotationsByRFQ(id),
-      ]);
-      setRfq(rfqRes.data || null);
+      if (!rfq) setLoading(true);
+      const rfqRes = await Service.GetRFQbyId(id);
 
-      // Ensure quotations is always an array
-      const quotaData = quotasRes?.data || quotasRes || [];
-      setQuotations(Array.isArray(quotaData) ? quotaData : []);
-    } catch {
-      setError("Failed to load RFQ");
+      const rfqData = rfqRes?.data || rfqRes;
+      if (rfqData) {
+        setRfq(rfqData);
+        dispatch(updateRFQ(rfqData));
+      }
+    } catch (err) {
+      console.error("Error fetching RFQ:", err);
+      if (!rfq) setError("Failed to load RFQ");
     } finally {
       setLoading(false);
     }
@@ -417,12 +416,13 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               parentId={rfq?.id}
               formatDate={formatDate}
             />
-            {userRole !=="CLIENT_ADMIN" && userRole !== "CLIENT" &&
-            userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
-              <div className="flex flex-col gap-2 pt-2">
-                <Button
-                  onClick={() => setShowEstimationModal(true)}
-                  className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
+            {userRole !== "CLIENT_ADMIN" &&
+              userRole !== "CLIENT" &&
+              userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
+                <div className="flex flex-col gap-2 pt-2">
+                  <Button
+                    onClick={() => setShowEstimationModal(true)}
+                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
                   >
                     Raise For Estimation
                   </Button>
@@ -431,7 +431,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                     className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight "
                   >
                     Raise for Connection Designer Quotation
-                  </Button> 
+                  </Button>
                 </div>
               )}
           </div>
@@ -575,7 +575,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
               initialRfqId={id}
               onSuccess={() => {
                 setShowEstimationModal(false);
-                // Optionally refresh RFQ or show success message
+                fetchRfq();
               }}
             />
           </div>

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
 import { formatDate } from "../../utils/dateUtils";
 import Service from "../../api/Service";
-import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 
 interface ProjectMilestoneMetricsProps {
   projectId: string;
@@ -16,12 +15,6 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
 }) => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(incrementModalCount());
-    return () => {
-      dispatch(decrementModalCount());
-    };
-  }, [dispatch]);
   const milestonesByProject = useSelector(
     (state: any) => state.milestoneInfo?.milestonesByProject || {},
   );

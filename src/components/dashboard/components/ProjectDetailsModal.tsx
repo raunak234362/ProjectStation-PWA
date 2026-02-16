@@ -39,7 +39,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
   if (!project) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
       <div className="bg-white dark:bg-slate-900 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         <div className="flex-1 overflow-y-auto p-4">
           <Suspense

@@ -345,7 +345,7 @@ export default function DataTable<T extends object>({
       )}
 
       {/* pagination */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm p-4 border-t border-gray-50 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row items-center gap-4 text-sm p-4 border-t border-gray-50 dark:border-slate-800">
         <div className="flex items-center gap-4">
           <span className="text-gray-600 dark:text-slate-400">
             Page {table.getState().pagination.pageIndex + 1} of{" "}

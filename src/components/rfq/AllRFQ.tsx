@@ -78,12 +78,14 @@ const AllRFQ = ({ rfq }: any) => {
       <DataTable
         columns={columns}
         data={rfq || []}
-        onRowClick={() => {}}
-        detailComponent={({ row }) => <GetRFQByID id={row.id} />}
+        detailComponent={RFQDetail}
         pageSizeOptions={[25]}
       />
     </div>
   );
 };
+
+// Stable reference for detail component
+const RFQDetail = ({ row }: { row: RFQItem }) => <GetRFQByID id={row.id} />;
 
 export default AllRFQ;

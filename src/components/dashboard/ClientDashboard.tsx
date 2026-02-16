@@ -291,7 +291,7 @@ const ClientDashboard = () => {
         </div>
 
         {selectedInvoiceId && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-0">
+          <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0">
             <GetInvoiceById
               id={selectedInvoiceId}
               onClose={() => setSelectedInvoiceId(null)}
@@ -301,7 +301,7 @@ const ClientDashboard = () => {
 
         {/* Milestone Metrics Modal */}
         {selectedMilestoneProjectId && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
             <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-green-500/10 animate-in fade-in zoom-in duration-200">
               <div className="p-6 border-b border-green-500/10 flex justify-between items-center bg-green-50/50">
                 <div>
