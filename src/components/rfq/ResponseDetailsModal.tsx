@@ -133,7 +133,7 @@ const ResponseDetailsModal = ({
           {formatDateTime(response.createdAt)}
         </div>
 
-        
+        {replyMode && (
           <div className="mt-4 border-t pt-4 space-y-3">
             <h3 className="text-md font-semibold text-green-700">
               Write a Reply
@@ -193,7 +193,8 @@ const ResponseDetailsModal = ({
               </Button>
             </div>
           </div>
-        
+        )}
+
 
         {/* Replies Section */}
         {response.childResponses?.length > 0 && (

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { ClipboardList, AlertCircle, X } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import AddInvoice from "../../invoices/AddInvoice";
+
 import AddSubmittal from "../../submittals/AddSubmittals";
 import { formatDate } from "../../../utils/dateUtils";
 
@@ -64,21 +64,19 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
           <div className="flex gap-2 bg-white/50 dark:bg-slate-800/50 p-1 rounded-lg self-start sm:self-auto">
             <button
               onClick={() => setActiveTab("submittals")}
-              className={`px-4 py-2 text-sm font-bold uppercase tracking-widest rounded-xl transition-all ${
-                activeTab === "submittals"
+              className={`px-4 py-2 text-sm font-bold uppercase tracking-widest rounded-xl transition-all ${activeTab === "submittals"
                   ? "bg-green-500 text-white shadow-lg shadow-green-200"
                   : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
-              }`}
+                }`}
             >
               Upcoming Submittals
             </button>
             <button
               onClick={() => setActiveTab("invoices")}
-              className={`px-4 py-2 text-sm font-bold uppercase tracking-widest rounded-xl transition-all ${
-                activeTab === "invoices"
+              className={`px-4 py-2 text-sm font-bold uppercase tracking-widest rounded-xl transition-all ${activeTab === "invoices"
                   ? "bg-green-500 text-white shadow-lg shadow-green-200"
                   : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
-              }`}
+                }`}
             >
               Invoice Need Raise
             </button>
