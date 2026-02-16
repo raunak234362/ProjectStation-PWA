@@ -20,6 +20,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
 import { formatSeconds } from "../../utils/timeUtils";
+import { formatDate } from "../../utils/dateUtils";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import AllMileStone from "./mileStone/AllMileStone";
@@ -149,7 +150,7 @@ const GetProjectById = ({
   //     "USER_FAULT",
   //     "COMPLETED", // Added COMPLETED based on user data
   //   ];
-    
+
   //   const completed = tasks.filter((task: any) =>
   //     completedStatuses.includes(task.status),
   //   ).length;
@@ -284,13 +285,6 @@ const GetProjectById = ({
       fetchProject(); // Refresh project to get updated CO list
     }
   };
-
-  const formatDate = (date: string | number | Date | undefined) =>
-    date
-      ? new Date(date).toLocaleString("en-IN", {
-          dateStyle: "medium",
-        })
-      : "—";
 
   const isClient = userRole === "client" || userRole === "client_admin";
 

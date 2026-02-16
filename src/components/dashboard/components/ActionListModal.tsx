@@ -11,6 +11,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import GetRFQByID from "../../rfq/GetRFQByID";
 import GetRFIByID from "../../rfi/GetRFIByID";
 import GetCOByID from "../../co/GetCOByID";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface ActionListModalProps {
   isOpen: boolean;
@@ -94,7 +95,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Due Date",
             cell: ({ row }) =>
               row.original.estimationDate
-                ? new Date(row.original.estimationDate).toLocaleDateString()
+                ? formatDate(row.original.estimationDate)
                 : "—",
           },
         ];

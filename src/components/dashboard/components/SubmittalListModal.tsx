@@ -3,6 +3,7 @@ import { X as CloseIcon, Files } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetSubmittalByID from "../../submittals/GetSubmittalByID";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface SubmittalListModalProps {
   isOpen: boolean;
@@ -49,9 +50,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
       accessorKey: "date",
       header: "Date",
       cell: ({ row }: any) => (
-        <span className="text-gray-700">
-          {new Date(row.original.date).toLocaleDateString()}
-        </span>
+        <span className="text-gray-700">{formatDate(row.original.date)}</span>
       ),
     },
     // {

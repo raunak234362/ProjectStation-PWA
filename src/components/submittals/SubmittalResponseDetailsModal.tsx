@@ -1,4 +1,5 @@
 import { X, CalendarDays } from "lucide-react";
+import { formatDateTime } from "../../utils/dateUtils";
 import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
@@ -84,7 +85,7 @@ const SubmittalResponseDetailsModal = ({
         {/* Timestamp */}
         <div className="flex items-center gap-2 text-xs text-gray-700">
           <CalendarDays size={14} />
-          {new Date(response.createdAt).toLocaleString()}
+          {formatDateTime(response.createdAt)}
         </div>
 
         {/* 🔥 CHILD RESPONSES THREAD */}
@@ -102,7 +103,7 @@ const SubmittalResponseDetailsModal = ({
                     {child.user?.firstName || "User"}{" "}
                     {child.user?.lastName || ""} ({child.user?.role || "N/A"})
                   </span>
-                  <span>{new Date(child.createdAt).toLocaleString()}</span>
+                  <span>{formatDateTime(child.createdAt)}</span>
                 </div>
 
                 <div
@@ -122,7 +123,6 @@ const SubmittalResponseDetailsModal = ({
             ))}
           </div>
         )}
-
 
         {/* Reply Button */}
         {canReply && !replyMode && (

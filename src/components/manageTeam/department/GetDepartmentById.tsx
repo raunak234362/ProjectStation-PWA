@@ -3,6 +3,7 @@ import type { Department } from "../../../interface";
 import Service from "../../../api/Service";
 import { AlertCircle, Loader2 } from "lucide-react";
 import Button from "../../fields/Button";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface GetDepartmentByIdProps {
   id: string;
@@ -58,12 +59,6 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
     );
   }
 
-  //   const formatDate = (dateString: string) =>
-  //     new Date(dateString).toLocaleString("en-IN", {
-  //       dateStyle: "medium",
-  //       timeStyle: "short",
-  //     });
-
   const managers = department.managerIds || [];
 
   return (
@@ -86,8 +81,8 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
         {/* Left Column */}
         <div className="space-y-3">
           <InfoRow label="Department Name" value={department.name} />
-          {/* <InfoRow label="Created" value={formatDate(department?.createdAt)} />
-          <InfoRow label="Updated" value={formatDate(department?.updatedAt)} /> */}
+          <InfoRow label="Created" value={formatDate(department?.createdAt)} />
+          <InfoRow label="Updated" value={formatDate(department?.updatedAt)} />
           {/* <InfoRow label="Created By" value={department.createdById || "—"} /> */}
         </div>
 
@@ -98,18 +93,19 @@ const GetDepartmentById = ({ id }: GetDepartmentByIdProps) => {
             <div className="text-gray-700 text-right">
               {Array.isArray(managers) && managers?.length > 0
                 ? managers
-                  .map(
-                    (m: {
-                      firstName?: string;
-                      middleName?: string;
-                      lastName?: string;
-                    }) =>
-                      `${m.firstName || ""} ${m.middleName || ""} ${m.lastName || ""
+                    .map(
+                      (m: {
+                        firstName?: string;
+                        middleName?: string;
+                        lastName?: string;
+                      }) =>
+                        `${m.firstName || ""} ${m.middleName || ""} ${
+                          m.lastName || ""
                         }`
-                        .replace(/\s+/g, " ")
-                        .trim()
-                  )
-                  .join(", ")
+                          .replace(/\s+/g, " ")
+                          .trim(),
+                    )
+                    .join(", ")
                 : "No Managers Assigned"}
             </div>
           </div>

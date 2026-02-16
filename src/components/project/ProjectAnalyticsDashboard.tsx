@@ -31,6 +31,7 @@ import {
 } from "recharts";
 import Service from "../../api/Service";
 import { formatSeconds } from "../../utils/timeUtils";
+import { formatDate as formatDateUtil } from "../../utils/dateUtils";
 
 interface ProjectAnalyticsDashboardProps {
   projectId: string;
@@ -242,7 +243,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
         : parseFloat(t.hours) || 0,
       (calculateWorkedSeconds(t) / 3600).toFixed(2),
       t.status,
-      t.created_at ? new Date(t.created_at).toLocaleDateString() : "N/A",
+      t.created_at ? formatDateUtil(t.created_at) : "N/A",
     ]);
 
     const csvContent = [
@@ -568,7 +569,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                       <p className="text-xs text-gray-500 font-medium">
                         Due:{" "}
                         {ms.approvalDate
-                          ? new Date(ms.approvalDate).toLocaleDateString()
+                          ? formatDateUtil(ms.approvalDate)
                           : "TBD"}
                       </p>
                     </div>

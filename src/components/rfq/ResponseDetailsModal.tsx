@@ -1,4 +1,5 @@
 import { X, CalendarDays } from "lucide-react";
+import { formatDateTime } from "../../utils/dateUtils";
 import { useState } from "react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
@@ -129,7 +130,7 @@ const ResponseDetailsModal = ({
         {/* Created At */}
         <div className="flex items-center gap-2 text-sm text-gray-700">
           <CalendarDays size={16} />
-          {new Date(response.createdAt).toLocaleString()}
+          {formatDateTime(response.createdAt)}
         </div>
 
         {replyMode && (

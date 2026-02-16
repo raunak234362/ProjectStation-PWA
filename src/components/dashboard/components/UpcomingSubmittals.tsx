@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { ClipboardList, AlertCircle, X } from "lucide-react";
 import AddInvoice from "../../invoices/AddInvoice";
 import AddSubmittal from "../../submittals/AddSubmittals";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface UpcomingSubmittalsProps {
   pendingSubmittals: any[];
@@ -167,11 +168,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                                 : "text-gray-400 dark:text-green-600/60"
                             }`}
                           >
-                            {submittal.approvalDate
-                              ? new Date(
-                                  submittal.approvalDate,
-                                ).toLocaleDateString()
-                              : "No Date"}
+                            {formatDate(submittal.approvalDate)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between mt-1">
@@ -213,9 +210,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                     {invoice.invoiceNumber || "No Number"}
                   </h4>
                   <span className="text-md  text-gray-800 uppercase tracking-wider">
-                    {invoice.invoiceDate
-                      ? new Date(invoice.invoiceDate).toLocaleDateString()
-                      : "No Date"}
+                    {formatDate(invoice.invoiceDate)}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">

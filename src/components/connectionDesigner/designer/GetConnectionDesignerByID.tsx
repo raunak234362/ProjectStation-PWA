@@ -24,6 +24,7 @@ import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
 
 import RenderFiles from "../../ui/RenderFiles";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
@@ -180,9 +181,6 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   ).length;
   // Replaced undefined quotations with empty array for now
   const pendingQuotations = 0; // quotations.filter((q: any) => q.status === "PENDING").length;
-
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleString("en-IN", { dateStyle: "medium" });
 
   const statsCards = [
     {

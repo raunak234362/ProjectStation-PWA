@@ -12,6 +12,7 @@ import {
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import FetchTaskByID from "./FetchTaskByID";
+import { formatDate } from "../../utils/dateUtils";
 
 const TaskDetailWrapper = ({ row, close }: { row: any; close: () => void }) => {
   return <FetchTaskByID id={row.id} onClose={close} />;
@@ -48,15 +49,6 @@ const AllTasks = () => {
     };
     fetchTasks();
   }, [userRole]);
-
-  const formatDate = (date?: string) =>
-    date
-      ? new Date(date).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
-      : "—";
 
   const getStatusColor = (status: string) => {
     switch (status?.toUpperCase()) {
@@ -152,7 +144,7 @@ const AllTasks = () => {
         cell: ({ row }) => (
           <span
             className={`px-3 py-1 rounded-full text-xs  border ${getStatusColor(
-              row.original.status
+              row.original.status,
             )}`}
           >
             {row.original.status}
@@ -171,7 +163,7 @@ const AllTasks = () => {
               <span
                 className={`w-2 h-2 rounded-full ${priority.color.replace(
                   "text",
-                  "bg"
+                  "bg",
                 )}`}
               ></span>
               {priority.label}
@@ -190,7 +182,7 @@ const AllTasks = () => {
         ),
       },
     ],
-    []
+    [],
   );
 
   if (loading) {

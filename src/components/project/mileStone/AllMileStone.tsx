@@ -7,6 +7,7 @@ import Service from "../../../api/Service";
 import DataTable from "../../ui/table";
 import GetMilestoneByID from "./GetMilestoneByID";
 import type { ColumnDef } from "@tanstack/react-table";
+import { formatDate } from "../../../utils/dateUtils";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../../store/milestoneSlice";
@@ -60,16 +61,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
     {
       accessorKey: "approvalDate",
       header: "Approval Date",
-      cell: ({ row }) => {
-        const date = row.original.approvalDate;
-        return date
-          ? new Date(date).toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
-          : "—";
-      },
+      cell: ({ row }) => formatDate(row.original.approvalDate),
     },
     { accessorKey: "status", header: "Status" },
   ];

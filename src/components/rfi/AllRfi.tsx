@@ -5,6 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { RFIItem } from "../../interface";
 import GetRFIByID from "./GetRFIByID";
 import { Loader2, Inbox } from "lucide-react";
+import { formatDate } from "../../utils/dateUtils";
 
 interface AllRFIProps {
   rfiData?: RFIItem[];
@@ -14,14 +15,12 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
   const [loading, setLoading] = useState(true);
   // const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
-console.log(rfiData);
+  console.log(rfiData);
 
   const userRole = sessionStorage.getItem("userRole");
 
-
   useEffect(() => {
     if (rfiData && rfiData.length > 0) {
-    
       const normalized = rfiData.map((item: any) => ({
         ...item,
         createdAt: item.createdAt || item.date || null,
@@ -29,7 +28,6 @@ console.log(rfiData);
       setRFIs(normalized);
       setLoading(false);
     } else {
-   
     }
   }, [rfiData]);
 
@@ -54,8 +52,6 @@ console.log(rfiData);
     },
   ];
 
-  
-
   columns.push(
     {
       accessorKey: "status",
@@ -75,15 +71,8 @@ console.log(rfiData);
     {
       accessorKey: "createdAt",
       header: "Created On",
-      cell: ({ row }) =>
-        row.original.createdAt
-          ? new Date(row.original.createdAt).toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
-          : "—",
-    }
+      cell: ({ row }) => formatDate(row.original.createdAt),
+    },
   );
 
   // ✅ Loading state
@@ -117,11 +106,9 @@ console.log(rfiData);
       <DataTable
         columns={columns}
         data={rfis}
-
         detailComponent={({ row }) => <GetRFIByID id={row.id} />}
         pageSizeOptions={[5, 10, 25]}
       />
-
     </div>
   );
 };
