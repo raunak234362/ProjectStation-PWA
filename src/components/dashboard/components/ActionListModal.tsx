@@ -25,8 +25,14 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   data,
   type,
 }) => {
+  console.log("ActionListModal Rendered:", {
+    isOpen,
+    type,
+    dataLength: data?.length,
+    data,
+  });
   if (!isOpen) return null;
-  console.log("===============",data);
+  console.log("===============", data);
 
   const getTitle = () => {
     switch (type) {
@@ -99,12 +105,15 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             accessorKey: "sender",
             header: "Sender",
             cell: ({ row }) => {
-              const s = row.original.sender;
-              return s
-                ? `${s.firstName ?? ""} ${s.middleName ?? ""} ${s.lastName ?? ""}`.trim() ||
-                    s.username ||
-                    "—"
-                : "—";
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const s = (row.original as any).sender;
+              if (!s) return "—";
+
+              const fullName = [s.firstName, s.middleName, s.lastName]
+                .filter(Boolean)
+                .join(" ");
+
+              return fullName || s.username || s.email || "—";
             },
           },
           {

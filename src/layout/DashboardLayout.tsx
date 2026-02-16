@@ -36,7 +36,7 @@ const Layout = () => {
     <div
       className="
         flex h-screen w-screen overflow-hidden
-        bg-gray-200
+        bg-white
         dark:bg-slate-700
         transition-colors duration-300
       "

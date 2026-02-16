@@ -17,11 +17,13 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: "project.name",
       header: "Project Name",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="font-medium text-gray-700">
           {row.original.project?.name || "N/A"}
         </span>
@@ -30,7 +32,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
     {
       accessorKey: "fabricator.fabName",
       header: "Fabricator Name",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="text-gray-700">
           {row.original.fabricator?.fabName || "N/A"}
         </span>
@@ -39,35 +41,43 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
     {
       accessorKey: "subject",
       header: "Subject",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="text-gray-700">{row.original.subject || "N/A"}</span>
       ),
     },
     {
       accessorKey: "date",
       header: "Date",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="text-gray-700">
           {new Date(row.original.date).toLocaleDateString()}
         </span>
       ),
     },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <span
-          className={`px-3 py-1 rounded-full text-xs  ${
-            row.original.status === "ACTIVE"
-              ? "bg-green-100 text-green-700"
-              : "bg-orange-100 text-orange-700"
-          }`}
-        >
-          {row.original.status}
-        </span>
-      ),
-    },
-  ];
+    // {
+    //   accessorKey: "status",
+    //   header: "Status",
+    //   cell: ({ row }) => (
+    //     <span
+    //       className={`px-3 py-1 rounded-full text-xs  ${
+    //         row.original.status ===true
+    //           ? "bg-green-100 text-green-700"
+    //           : "bg-orange-100 text-orange-700"
+    //       }`}
+    //     >
+    //       {row.original.status}
+    //     </span>
+    //   ),
+    // },
+  ].filter((col) => {
+    if (
+      (userRole === "client" || userRole === "client_admin") &&
+      col.header === "Fabricator Name"
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   const renderDetail = ({ row }: { row: any }) => {
     return <GetSubmittalByID id={row.id} />;

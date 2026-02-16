@@ -23,11 +23,12 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
   // Early return before any hooks to avoid hook call count mismatch
   if (!isOpen) return null;
 
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+
   const [selectedManager, setSelectedManager] = useState<string>("");
   const [selectedFabricator, setSelectedFabricator] = useState<string>("");
   const [selectedStage, setSelectedStage] = useState<string>("");
   const [showOverrunOnly, setShowOverrunOnly] = useState<boolean>(false);
-
 
   // Extract unique values for filters
   const managers = useMemo(() => {
@@ -37,10 +38,11 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
           .filter((p) => p.manager)
           .map((p) => {
             const manager = p.manager;
-            const fullName = `${manager.firstName || ""} ${manager.middleName || ""} ${manager.lastName || ""}`.trim();
+            const fullName =
+              `${manager.firstName || ""} ${manager.middleName || ""} ${manager.lastName || ""}`.trim();
             return fullName || manager.username || "Unknown";
-          })
-      )
+          }),
+      ),
     ).sort();
     return uniqueManagers;
   }, [projects]);
@@ -50,15 +52,15 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       new Set(
         projects
           .filter((p) => p.fabricator?.fabName)
-          .map((p) => p.fabricator.fabName)
-      )
+          .map((p) => p.fabricator.fabName),
+      ),
     ).sort();
     return uniqueFabricators;
   }, [projects]);
 
   const stages = useMemo(() => {
     const uniqueStages = Array.from(
-      new Set(projects.filter((p) => p.stage).map((p) => p.stage))
+      new Set(projects.filter((p) => p.stage).map((p) => p.stage)),
     ).sort();
     return uniqueStages;
   }, [projects]);
@@ -70,7 +72,8 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       if (selectedManager) {
         const manager = project.manager;
         if (!manager) return false;
-        const fullName = `${manager.firstName || ""} ${manager.middleName || ""} ${manager.lastName || ""}`.trim();
+        const fullName =
+          `${manager.firstName || ""} ${manager.middleName || ""} ${manager.lastName || ""}`.trim();
         const managerName = fullName || manager.username || "Unknown";
         if (managerName !== selectedManager) return false;
       }
@@ -92,7 +95,13 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 
       return true;
     });
-  }, [projects, selectedManager, selectedFabricator, selectedStage, showOverrunOnly]);
+  }, [
+    projects,
+    selectedManager,
+    selectedFabricator,
+    selectedStage,
+    showOverrunOnly,
+  ]);
 
   // Clear all filters
   const clearFilters = () => {
@@ -102,20 +111,21 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
     setShowOverrunOnly(false);
   };
 
-  const hasActiveFilters = selectedManager || selectedFabricator || selectedStage || showOverrunOnly;
+  const hasActiveFilters =
+    selectedManager || selectedFabricator || selectedStage || showOverrunOnly;
 
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: "name",
       header: "Project Name",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="font-medium text-gray-700">{row.original.name}</span>
       ),
     },
     {
       accessorKey: "fabricator.name",
       header: "Fabricator Name",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="text-gray-700">
           {row.original.fabricator?.fabName || "N/A"}
         </span>
@@ -124,14 +134,14 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
     {
       accessorKey: "stage",
       header: "Stage",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="text-gray-700">{row.original.stage || "N/A"}</span>
       ),
     },
     {
       accessorKey: "estimatedHours",
       header: "Est. Hours",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="text-gray-700 font-medium">
           {row.original.estimatedHours || 0}h
         </span>
@@ -140,10 +150,11 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
     {
       accessorKey: "workedHours",
       header: "Worked Hours",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span
-          className={` ${row.original.isOverrun ? "text-red-600" : "text-green-600"
-            }`}
+          className={` ${
+            row.original.isOverrun ? "text-red-600" : "text-green-600"
+          }`}
         >
           {formatSeconds(row.original.workedSeconds || 0)}
         </span>
@@ -152,31 +163,33 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
     {
       accessorKey: "isOverrun",
       header: "Overrun",
-      cell: ({ row }) =>
+      cell: ({ row }: any) =>
         row.original.isOverrun ? (
           <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-md  uppercase tracking-tighter animate-pulse">
             OVERRUN
           </span>
         ) : (
-          <span className="text-gray-300 text-md  uppercase">
-            Normal
-          </span>
+          <span className="text-gray-300 text-md  uppercase">Normal</span>
         ),
     },
     {
       accessorKey: "progress",
       header: "Progress",
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         const estimated = row.original.estimatedHours || 0;
         const workedHours = (row.original.workedSeconds || 0) / 3600;
-        const percentage = estimated > 0 ? Math.min((workedHours / estimated) * 100, 100) : 0;
-        const actualPercentage = estimated > 0 ? (workedHours / estimated) * 100 : 0;
+        const percentage =
+          estimated > 0 ? Math.min((workedHours / estimated) * 100, 100) : 0;
+        const actualPercentage =
+          estimated > 0 ? (workedHours / estimated) * 100 : 0;
         const isOverrun = row.original.isOverrun || actualPercentage > 100;
 
         return (
           <div className="flex flex-col w-full min-w-[120px] gap-1.5">
             <div className="flex justify-between items-center px-0.5">
-              <span className={`text-[10px]  uppercase tracking-tighter ${isOverrun ? "text-red-600" : "text-slate-500"}`}>
+              <span
+                className={`text-[10px]  uppercase tracking-tighter ${isOverrun ? "text-red-600" : "text-slate-500"}`}
+              >
                 {actualPercentage.toFixed(0)}% Utilized
               </span>
               {isOverrun && (
@@ -187,8 +200,13 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             </div>
             <div className="h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200/30">
               <div
-                className={`h-full transition-all duration-500 rounded-full ${isOverrun ? "bg-red-500" : percentage > 80 ? "bg-orange-500" : "bg-green-500"
-                  }`}
+                className={`h-full transition-all duration-500 rounded-full ${
+                  isOverrun
+                    ? "bg-red-500"
+                    : percentage > 80
+                      ? "bg-orange-500"
+                      : "bg-green-500"
+                }`}
                 style={{ width: `${percentage}%` }}
               ></div>
             </div>
@@ -199,20 +217,31 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span
-          className={`px-3 py-1 rounded-full text-[10px]  uppercase tracking-widest ${row.original.status === "ACTIVE"
-            ? "bg-green-100 text-green-700 shadow-sm shadow-green-100"
-            : row.original.status === "COMPLETED"
-              ? "bg-blue-100 text-blue-700 shadow-sm shadow-blue-100"
-              : "bg-orange-100 text-orange-700 shadow-sm shadow-orange-100"
-            }`}
+          className={`px-3 py-1 rounded-full text-[10px]  uppercase tracking-widest ${
+            row.original.status === "ACTIVE"
+              ? "bg-green-100 text-green-700 shadow-sm shadow-green-100"
+              : row.original.status === "COMPLETED"
+                ? "bg-blue-100 text-blue-700 shadow-sm shadow-blue-100"
+                : "bg-orange-100 text-orange-700 shadow-sm shadow-orange-100"
+          }`}
         >
           {row.original.status}
         </span>
       ),
     },
-  ];
+  ].filter((col) => {
+    if (
+      (userRole === "client" || userRole === "client_admin") &&
+      ["Est. Hours", "Worked Hours", "Overrun", "Progress"].includes(
+        col.header as string,
+      )
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -222,18 +251,19 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
           <div>
             <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
               <div
-                className={`w-2 h-6 rounded-full ${status.includes("ACTIVE") || status.includes("IFA")
-                  ? "bg-green-500"
-                  : status.includes("COMPLETED") ||
-                    status.includes("IFC") ||
-                    status.includes("Done")
-                    ? "bg-blue-500"
-                    : status.includes("ON_HOLD") ||
-                      status.includes("CO#") ||
-                      status.includes("On-Hold")
-                      ? "bg-orange-500"
-                      : "bg-gray-500"
-                  }`}
+                className={`w-2 h-6 rounded-full ${
+                  status.includes("ACTIVE") || status.includes("IFA")
+                    ? "bg-green-500"
+                    : status.includes("COMPLETED") ||
+                        status.includes("IFC") ||
+                        status.includes("Done")
+                      ? "bg-blue-500"
+                      : status.includes("ON_HOLD") ||
+                          status.includes("CO#") ||
+                          status.includes("On-Hold")
+                        ? "bg-orange-500"
+                        : "bg-gray-500"
+                }`}
               ></div>
               {status.replace("_", " ")} Projects
             </h3>
@@ -363,7 +393,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

@@ -18,9 +18,11 @@ const SubmittalListModal = lazy(
   () => import("./components/SubmittalListModal"),
 );
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
+const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
 
 const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
 
   // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
@@ -41,6 +43,9 @@ const ClientDashboard = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
+    null,
+  );
 
   // Redux Data
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
@@ -65,25 +70,18 @@ const ClientDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sent, received, allInvoices, pendingRFIsData, pendingCOsData] =
-          await Promise.all([
+        const [sent, received, allInvoices, pendingCOsData] = await Promise.all(
+          [
             Service.RfqSent(),
-            Service.RFQRecieved(),
             Service.SubmittalRecieved(),
             Service.InvoiceDashboardData(),
-            Service.pendingRFIs(),
-            Service.PendingCo(),
-          ]);
+            Service.ClientAdminPendingCOs(), // Updated
+          ],
+        );
 
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
-        const rfqs = received?.data || received || [];
-        const filteredRfqs = rfqs.filter(
-          (rfq: any) => !rfq.responses || rfq.responses.length === 0,
-        );
-        setPendingRFQs(filteredRfqs);
-        setPendingRFIs(pendingRFIsData?.data || pendingRFIsData || []);
         setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 
         const sentCount = sent?.length || 0;
@@ -131,7 +129,7 @@ const ClientDashboard = () => {
 
   const fetchUpcomingSubmittals = async () => {
     try {
-      const response = await Service.ClientAdminPendingSubmittals();
+      const response = await Service.ClientAdminPendingMilestoneSubmittals();
       console.log(response);
 
       setUpcomingSubmittals(response?.data || []);
@@ -142,8 +140,8 @@ const ClientDashboard = () => {
 
   const fetchPendingSubmittals = async () => {
     try {
-      const response = await Service.SubmittalRecieved();
-      console.log(response);
+      const response = await Service.ClientAdminPendingSubmittals();
+      console.log("RFI___________________+++", response);
 
       setPendingSubmittals(response?.data || []);
     } catch (error) {
@@ -151,7 +149,31 @@ const ClientDashboard = () => {
     }
   };
 
+  const fetchPendingRFIs = async () => {
+    try {
+      const response = await Service.ClientAdminPendingRFIs();
+      console.log(response);
+
+      setPendingRFIs(response?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch RFIs", error);
+    }
+  };
+
+  const fetchPendingRFQs = async () => {
+    try {
+      const response = await Service.ClientAdminPendingRFQs();
+      console.log(response);
+
+      setPendingRFQs(response?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch RFQs", error);
+    }
+  };
+
   useEffect(() => {
+    fetchPendingRFQs();
+    fetchPendingRFIs();
     fetchDashboardData();
     fetchUpcomingSubmittals();
     fetchPendingSubmittals();
@@ -204,11 +226,6 @@ const ClientDashboard = () => {
         {/* Detailed Info Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
           <div className="w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden min-h-[400px]">
-            <div className="p-4 border-b border-gray-100 dark:border-slate-700">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-                Pending Submittals
-              </h2>
-            </div>
             <div className="p-2">
               <UpcomingSubmittals
                 pendingSubmittals={upcomingSubmittals}
@@ -217,12 +234,53 @@ const ClientDashboard = () => {
                 hideTabs={true}
                 hideFabricator={true}
                 onSubmittalClick={(submittal) => {
-                  const project =
-                    submittal.project ||
-                    (submittal.projectId ? { id: submittal.projectId } : null);
-                  if (project) {
-                    // Add a flag to indicate we want to show analytics
-                    setSelectedProject({ ...project, showAnalytics: true });
+                  console.log("Clicked submittal:", submittal);
+
+                  // Extract Project ID from various possible locations
+                  const projectId =
+                    submittal.projectId ||
+                    submittal.project_id ||
+                    submittal.project?.id ||
+                    submittal.project?._id ||
+                    (typeof submittal.project === "string"
+                      ? submittal.project
+                      : null);
+
+                  if (projectId) {
+                    // Try to find the full project from the projects list (Redux)
+                    const fullProject = projects.find(
+                      (p: any) => p.id === projectId || p._id === projectId,
+                    );
+
+                    if (fullProject) {
+                      setSelectedProject({
+                        ...fullProject,
+                        showAnalytics:
+                          userRole !== "client" && userRole !== "client_admin",
+                      });
+                    } else {
+                      // Fallback: create a minimal project object with ProjectId
+                      // ProjectDetailsModal will use this ID to fetch details via GetProjectById
+                      setSelectedProject({
+                        id: projectId,
+                        showAnalytics:
+                          userRole !== "client" && userRole !== "client_admin",
+                      });
+                    }
+                  } else if (
+                    submittal.project &&
+                    typeof submittal.project === "object"
+                  ) {
+                    // Fallback: if submittal.project is an object, use it directly
+                    setSelectedProject({
+                      ...submittal.project,
+                      showAnalytics: true,
+                    });
+                  } else {
+                    console.warn(
+                      "Could not extract Project ID from submittal:",
+                      submittal,
+                    );
                   }
                 }}
               />
@@ -240,10 +298,26 @@ const ClientDashboard = () => {
                 invoices={invoices}
                 initialTab="invoices"
                 hideTabs={true}
+                onInvoiceClick={(invoice: any) => {
+                  console.log("Clicked invoice:", invoice);
+                  if (invoice?.id) {
+                    setSelectedInvoiceId(invoice.id);
+                  }
+                }}
               />
             </div>
           </div>
         </div>
+
+        {/* Invoice Details Modal */}
+        {selectedInvoiceId && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <GetInvoiceById
+              id={selectedInvoiceId}
+              onClose={() => setSelectedInvoiceId(null)}
+            />
+          </div>
+        )}
 
         {/* Modals */}
         <ProjectListModal

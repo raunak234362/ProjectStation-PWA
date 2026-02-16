@@ -4,7 +4,6 @@ import AllRFI from "../components/rfi/AllRfi";
 
 const RfiLayout = () => {
   const [activeTab, setActiveTab] = useState("addRFI");
-
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
@@ -19,7 +18,6 @@ const RfiLayout = () => {
             >
               ALL RFI
             </button>
-
             <button
               onClick={() => setActiveTab("addRFI")}
               className={`px-1.5 md:px-4 py-2 rounded-lg ${activeTab === "addRFI"

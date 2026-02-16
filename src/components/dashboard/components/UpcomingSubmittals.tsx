@@ -10,6 +10,7 @@ interface UpcomingSubmittalsProps {
   hideTabs?: boolean;
   hideFabricator?: boolean;
   onSubmittalClick?: (submittal: any) => void;
+  onInvoiceClick?: (invoice: any) => void;
 }
 
 const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
@@ -19,13 +20,15 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   hideTabs = false,
   hideFabricator = false,
   onSubmittalClick,
+  onInvoiceClick,
 }) => {
   const [activeTab, setActiveTab] = useState<"submittals" | "invoices">(
     initialTab,
   );
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+
   const isOverdue = (dateString: string) => {
     if (!dateString) return false;
     const today = new Date();
@@ -88,9 +91,7 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
       {hideTabs && (
         <div className="flex items-center justify-between mb-4 shrink-0">
           <h3 className="text-lg text-gray-700 dark:text-white">
-            {activeTab === "submittals"
-              ? "Upcoming Submittals"
-              : ""}
+            {activeTab === "submittals" ? "Upcoming Submittals" : ""}
           </h3>
           <span className="px-3 py-1 bg-white dark:bg-slate-800 text-green-700 dark:text-green-400 text-xs  rounded-full shadow-sm">
             {activeTab === "submittals"
@@ -198,16 +199,20 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
               <button
                 key={invoice.id || index}
                 onClick={() => {
-                  setSelectedItem(invoice);
-                  setIsModalOpen(true);
+                  if (onInvoiceClick) {
+                    onInvoiceClick(invoice);
+                  } else {
+                    setSelectedItem(invoice);
+                    setIsModalOpen(true);
+                  }
                 }}
                 className="w-full text-left p-3 rounded-lg border border-white bg-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50 transition-all group"
               >
                 <div className="flex justify-between items-start mb-1">
-                  <h4 className=" text-sm text-gray-700 group-hover:text-green-700 transition-colors">
+                  <h4 className=" text-lg text-gray-700 group-hover:text-green-700 transition-colors">
                     {invoice.invoiceNumber || "No Number"}
                   </h4>
-                  <span className="text-sm  text-gray-400 uppercase tracking-wider">
+                  <span className="text-md  text-gray-800 uppercase tracking-wider">
                     {invoice.invoiceDate
                       ? new Date(invoice.invoiceDate).toLocaleDateString()
                       : "No Date"}
@@ -215,7 +220,7 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="flex flex-col">
-                    <span className="text-xs text-gray-400 uppercase font-medium">
+                    <span className="text-md text-gray-400 uppercase font-medium">
                       Customer
                     </span>
                     <span className="text-xs font-semibold text-gray-700 truncate">

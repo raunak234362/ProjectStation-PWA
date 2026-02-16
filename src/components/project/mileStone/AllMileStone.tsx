@@ -20,10 +20,10 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
   const [addMileStoneModal, setAddMileStoneModal] = useState(false);
   const dispatch = useDispatch();
   const milestonesByProject = useSelector(
-    (state: any) => state.milestoneInfo?.milestonesByProject || {}
+    (state: any) => state.milestoneInfo?.milestonesByProject || {},
   );
   const milestones = milestonesByProject[project.id] || [];
-console.log(milestones);
+  console.log(milestones);
 
   const fetchMileStone = async () => {
     try {
@@ -33,7 +33,7 @@ console.log(milestones);
           setMilestonesForProject({
             projectId: project.id,
             milestones: response.data,
-          })
+          }),
         );
       }
     } catch (error) {
@@ -57,7 +57,20 @@ console.log(milestones);
 
   const columns: ColumnDef<any>[] = [
     { accessorKey: "subject", header: "Subject" },
-    { accessorKey: "approvalDate", header: "Approval Date" },
+    {
+      accessorKey: "approvalDate",
+      header: "Approval Date",
+      cell: ({ row }) => {
+        const date = row.original.approvalDate;
+        return date
+          ? new Date(date).toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
+          : "—";
+      },
+    },
     { accessorKey: "status", header: "Status" },
   ];
   const handleRowClick = (row: any) => {
