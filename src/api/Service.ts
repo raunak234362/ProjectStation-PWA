@@ -1143,6 +1143,21 @@ class Service {
     }
   }
 
+  // Update the completion percent by milestone id
+  static async UpdateCompletionPercentById(id: string, data: any) {
+    try {
+      const response = await api.put(`mileStone/completion/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   //Get mileston by ID
   static async GetMilestoneById(id: string) {
     try {

@@ -48,17 +48,16 @@ const AddMileStone = ({
     { label: "RIFC", value: "RIFC" },
     { label: "CO", value: "CO" },
   ];
-  const subjectOptions=[
-    {label:"Anchor Bolt",value:"Anchor Bolt"},
-    {label:"Main Steel",value:"Main Steel"},
-    {label:"Main Steel Connection",value:"Main Steel Connection"},
-    {label:"Misc Steel",value:"Misc Steel"},
-    {label:"Misc Steel Connection",value:"Misc Steel Connection"},
-    {label:"Foundation Embeds",value:"Foundation Embeds"},
-    {label:"Panel Embeds",value:"Panel Embeds"},
-    {label:"Others",value:"Others"},
-   
-  ]
+  const subjectOptions = [
+    { label: "Anchor Bolt", value: "Anchor Bolt" },
+    { label: "Main Steel", value: "Main Steel" },
+    { label: "Main Steel Connection", value: "Main Steel Connection" },
+    { label: "Misc Steel", value: "Misc Steel" },
+    { label: "Misc Steel Connection", value: "Misc Steel Connection" },
+    { label: "Foundation Embeds", value: "Foundation Embeds" },
+    { label: "Panel Embeds", value: "Panel Embeds" },
+    { label: "Others", value: "Others" },
+  ];
 
   const onSubmit = async (data: ProjectMilestone) => {
     try {
@@ -102,20 +101,29 @@ const AddMileStone = ({
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Subject *
           </label>
-          <Select
-              options={subjectOptions}
-              defaultValue={subjectOptions[0]}
-              onChange={(opt) => setValue("subject", opt?.value || "PENDING")}
-              className="text-sm"
-              menuPlacement="bottom"
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: "0.5rem",
-                  padding: "2px",
-                }),
-              }}
-            />
+          <Controller
+            name="subject"
+            control={control}
+            rules={{ required: "Subject is required" }}
+            defaultValue={subjectOptions[0].value}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={subjectOptions}
+                value={subjectOptions.find((opt) => opt.value === field.value)}
+                onChange={(opt) => field.onChange(opt?.value || "")}
+                className="text-sm"
+                menuPlacement="bottom"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    borderRadius: "0.5rem",
+                    padding: "2px",
+                  }),
+                }}
+              />
+            )}
+          />
           {errors.subject && (
             <p className="text-red-500 text-xs mt-1">
               {errors.subject.message}

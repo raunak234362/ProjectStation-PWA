@@ -9,19 +9,19 @@ import RichTextEditor from "../../fields/RichTextEditor";
 import Service from "../../../api/Service";
 import type { ProjectMilestone } from "../../../interface";
 
-interface EditMileStoneProps {
+interface UpdateCompletionPerProps {
   milestoneId: string;
   initialData?: any;
   onClose: () => void;
   onSuccess?: () => void;
 }
 
-const EditMileStone = ({
+const UpdateCompletionPer = ({
   milestoneId,
   initialData,
   onClose,
   onSuccess,
-}: EditMileStoneProps) => {
+}: UpdateCompletionPerProps) => {
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -40,20 +40,6 @@ const EditMileStone = ({
       stage: "",
     },
   });
-
-  const statusOptions = [
-    { label: "Pending", value: "PENDING" },
-    { label: "In Progress", value: "IN_PROGRESS" },
-    { label: "Completed", value: "COMPLETED" },
-    { label: "Approved", value: "APPROVED" },
-  ];
-
-  const stageOptions = [
-    { label: "IFA", value: "IFA" },
-    { label: "IFC", value: "IFC" },
-    { label: "OFC", value: "OFC" },
-    { label: "RIF", value: "RIF" },
-  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,14 +81,10 @@ const EditMileStone = ({
   const onSubmit = async (data: any) => {
     try {
       const payload = {
-        ...data,
-        percentage: Number(data.percentage),
-        approvalDate: data.approvalDate
-          ? new Date(data.approvalDate).toISOString()
-          : null,
+        completionPercentage: Number(data.percentage),
       };
 
-      await Service.EditMilestoneById(milestoneId, payload);
+      await Service.UpdateCompletionPercentById(milestoneId, payload);
       toast.success("Milestone updated successfully!");
       if (onSuccess) onSuccess();
       onClose();
@@ -128,7 +110,7 @@ const EditMileStone = ({
       <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50/50">
         <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
           <CheckCircle className="w-6 h-6 text-blue-600" />
-          Edit Milestone
+          Update Completion Percentage
         </h3>
         <button
           onClick={onClose}
@@ -142,100 +124,16 @@ const EditMileStone = ({
       <div className="flex-1 overflow-y-auto p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Input
-            label="Subject *"
-            placeholder="e.g. 50% Submission"
-            {...register("subject", { required: "Subject is required" })}
-            error={errors.subject?.message}
+            label="Completion Percentage (%)"
+            type="number"
+            min={0}
+            max={100}
+            {...register("percentage", {
+              min: { value: 0, message: "Minimum 0%" },
+              max: { value: 100, message: "Maximum 100%" },
+            })}
+            error={errors.percentage?.message}
           />
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Description
-            </label>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <RichTextEditor
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Describe the milestone deliverables..."
-                />
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Controller
-              name="stage"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1">
-                  <label className="text-sm font-semibold text-gray-700">
-                    Stage
-                  </label>
-                  <Select
-                    options={stageOptions}
-                    value={stageOptions.find((o) => o.value === field.value)}
-                    onChange={(val) => field.onChange(val?.value)}
-                    placeholder="Select Stage"
-                    className="text-sm"
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        borderRadius: "0.5rem",
-                        padding: "2px",
-                        borderColor: "#e5e7eb",
-                        boxShadow: "none",
-                        "&:hover": {
-                          borderColor: "#d1d5db",
-                        },
-                      }),
-                    }}
-                  />
-                </div>
-              )}
-            />
-
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label="Approval Date"
-              type="date"
-              {...register("approvalDate")}
-            />
-
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700">
-                Status
-              </label>
-              <Controller
-                name="status"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    options={statusOptions}
-                    value={statusOptions.find((c) => c.value === field.value)}
-                    onChange={(val) => field.onChange(val?.value)}
-                    className="text-sm"
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        borderRadius: "0.5rem",
-                        padding: "2px",
-                        borderColor: "#e5e7eb",
-                        boxShadow: "none",
-                        "&:hover": {
-                          borderColor: "#d1d5db",
-                        },
-                      }),
-                    }}
-                  />
-                )}
-              />
-            </div>
-          </div>
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 pt-6 mt-4 border-t border-gray-100">
@@ -262,4 +160,4 @@ const EditMileStone = ({
   );
 };
 
-export default EditMileStone;
+export default UpdateCompletionPer;

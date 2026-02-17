@@ -16,6 +16,7 @@ import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import { Button } from "../../ui/button";
 import EditMileStone from "./EditMileStone";
+import UpdateCompletionPer from "./UpdateCompletionPer";
 
 interface Milestone {
   id: string | number;
@@ -48,7 +49,10 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
   const [milestone, setMilestone] = useState<Milestone | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isUpdateProgressModalOpen, setIsUpdateProgressModalOpen] =
+    useState(false);
   const id = row?.id;
+  const userRole = sessionStorage.getItem("userRole");
 
   const fetchMilestone = async () => {
     if (!id) return;
@@ -166,6 +170,17 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {(userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN") && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsUpdateProgressModalOpen(true)}
+              className="text-white hover:bg-white/20 flex items-center gap-2 border border-white/30"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              Update Progress
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
@@ -281,7 +296,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-2xl h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <EditMileStone
               milestoneId={id.toString()}
@@ -289,6 +304,22 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
               onSuccess={() => {
                 fetchMilestone();
                 setIsEditModalOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Update Progress Modal */}
+      {isUpdateProgressModalOpen && (
+        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg h-auto bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <UpdateCompletionPer
+              milestoneId={id.toString()}
+              onClose={() => setIsUpdateProgressModalOpen(false)}
+              onSuccess={() => {
+                fetchMilestone();
+                setIsUpdateProgressModalOpen(false);
               }}
             />
           </div>
