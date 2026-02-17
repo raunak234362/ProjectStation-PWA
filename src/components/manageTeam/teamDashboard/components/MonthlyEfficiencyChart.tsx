@@ -82,7 +82,7 @@ const MonthlyEfficiencyChart: React.FC<MonthlyEfficiencyChartProps> = ({
                 border: "none",
                 boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
               }}
-              formatter={(value: number) => [`${value}%`, "Efficiency"]}
+              formatter={(value: any) => [`${value}%`, "Efficiency"]}
             />
             <Area
               type="monotone"

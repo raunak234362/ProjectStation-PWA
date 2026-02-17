@@ -136,8 +136,8 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
                 key={tf}
                 onClick={() => onTimeFilterChange(tf)}
                 className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${timeFilter === tf
-                    ? "bg-white text-gray-800 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-gray-800 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
                   }`}
               >
                 {tf}
@@ -235,7 +235,7 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
                 boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                 padding: "8px 12px",
               }}
-              formatter={(value: number, name: string) => {
+              formatter={(value: any, name: any) => {
                 const teamName = teams.find((t) => t.id === name)?.name || name;
                 return [`${value}%`, teamName];
               }}
