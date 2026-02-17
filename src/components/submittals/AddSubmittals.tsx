@@ -80,8 +80,14 @@ const AddSubmittal: React.FC<{
 
   const onSubmit = async (data: any) => {
     try {
+      // Remove " - IFA" or " - IFC" from subject if present
+      const cleanedSubject = data.subject
+        ? data.subject.replace(/ - IFA/g, "").replace(/ - IFC/g, "")
+        : "";
+
       const payload: any = {
         ...data,
+        subject: cleanedSubject,
         fabricator_id: String(fabricatorId),
         project_id: String(projectId),
 

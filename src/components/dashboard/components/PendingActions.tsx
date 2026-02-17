@@ -12,7 +12,7 @@ import { cn } from "../../../lib/utils";
 interface PendingActionsProps {
   dashboardStats: DashboardStats | null;
   onActionClick?: (actionType: string) => void;
-  filter?: ("RFQ" | "RFI" | "Submittals" | "CO")[];
+  filter?: ("RFQ" | "RFI" | "Submittals" | "COR")[];
 }
 
 const PendingActions: React.FC<PendingActionsProps> = ({
@@ -45,7 +45,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
       color: "purple",
     },
     {
-      title: "CO",
+      title: "COR",
       count: dashboardStats?.pendingChangeOrders || 0,
       subtitle: "New Change Orders",
       subcount: dashboardStats?.newChangeOrders || 0,
@@ -104,7 +104,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                     Submittals: "PENDING_SUBMITTALS",
                     RFQ: "PENDING_RFQ",
                     RFI: "PENDING_RFI",
-                    CO: "PENDING_CO",
+                    COR: "PENDING_COR",
                   };
                   onActionClick(actionMap[action.title] || action.title);
                 }

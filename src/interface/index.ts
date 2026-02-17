@@ -98,12 +98,14 @@ export interface DepartmentPayload {
 export interface FabricatorPayload {
   fabName: string;
   website?: string;
+  wbtFabricatorPointOfContact?:any[]
   drive?: string;
   fabStage?: "RFQ" | "PRODUCTION";
   files?: File | string | "";
   approvalPercentage?: number;
   paymenTDueDate?: number;
   fabricatPercentage?: number;
+  wbtContactId?: string;
 }
 export interface FabricatorEditPayload {
   fabName: string;
@@ -111,6 +113,7 @@ export interface FabricatorEditPayload {
   drive?: string;
   fabStage?: "RFQ" | "PRODUCTION";
   files?: File | [] | "";
+  wbtContactId?: string;
 }
 
 // ↓ New Branch Interface
@@ -144,6 +147,7 @@ export interface Fabricator {
   fabricatPercentage?: number;
   approvalPercentage?: number;
   paymenTDueDate?: number;
+  wbtContactId?: string;
   currencyType?: string;
   files: File[] | [];
   branches: Branch[];
@@ -151,6 +155,7 @@ export interface Fabricator {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
+  wbtFabricatorPointOfContact?:any[]
   pointOfContact?: FabricatorClient[];
 }
 
@@ -291,6 +296,7 @@ export interface RFQpayload {
   salesPersonId: string | null | " ";
   subject: string;
   description: string;
+  location: string;
   status: boolean;
   tools: string;
   wbtStatus: boolean | any;
@@ -644,6 +650,7 @@ export interface CreateProjectNotePayload {
 
 export interface ProjectMilestone {
   id: string;
+  stage: string;
   subject: string;
   name?: string;
   date: string;

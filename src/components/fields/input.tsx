@@ -7,14 +7,15 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: "default" | "outline" | "filled";
   className?: string;
   type?: string;
+  error?: string;
 }
 
-interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: React.ReactNode;
   type?: string;
   variant?: "default" | "outline" | "filled";
   className?: string;
+  error?: string;
 }
 
 const Input = React.forwardRef<
@@ -23,7 +24,7 @@ const Input = React.forwardRef<
 >(
   (
     { label, type = "text", className = "", variant = "default", ...props },
-    ref
+    ref,
   ) => {
     const id = useId();
     const [showPassword, setShowPassword] = useState(false);
@@ -38,33 +39,47 @@ const Input = React.forwardRef<
 
     // Variant styles
     const variantStyles = {
-      default: "border border-gray-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus:ring-blue-500",
+      default:
+        "border border-gray-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus:ring-blue-500",
       outline:
         "border border-gray-300 dark:border-slate-700 rounded-md bg-transparent focus:ring-blue-500",
-      filled: "border-0 rounded-md bg-gray-100 dark:bg-slate-700 focus:ring-blue-500",
+      filled:
+        "border-0 rounded-md bg-gray-100 dark:bg-slate-700 focus:ring-blue-500",
     };
+
+    // Extract error from props (needs to be typed in the component signature or cast)
+    const error = (props as any).error as string | undefined;
+    // Remove error from props passed to DOM
+    const { error: _unusedError, ...domProps } = props as any;
 
     return (
       <div className="w-full flex flex-col gap-1">
         {label && (
-          <label htmlFor={id} className="text-sm font-medium text-black dark:text-white">
+          <label
+            htmlFor={id}
+            className="text-sm font-medium text-black dark:text-white"
+          >
             {label}
           </label>
         )}
         {type === "textarea" ? (
           <textarea
-            className={`${baseStyles} ${variantStyles[variant]} resize-y min-h-[80px] ${className}`}
+            className={`${baseStyles} ${variantStyles[variant]} resize-y min-h-[80px] ${
+              error ? "border-red-500 focus:ring-red-500" : ""
+            } ${className}`}
             ref={ref as React.Ref<HTMLTextAreaElement>}
-            {...(props as TextareaProps)}
+            {...(domProps as TextareaProps)}
             id={id}
           />
         ) : (
           <div className="relative">
             <input
               type={showPassword && type === "password" ? "text" : type}
-              className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+              className={`${baseStyles} ${variantStyles[variant]} ${
+                error ? "border-red-500 focus:ring-red-500" : ""
+              } ${className}`}
               ref={ref as React.Ref<HTMLInputElement>}
-              {...(props as InputProps)}
+              {...(domProps as InputProps)}
               id={id}
             />
             {type === "password" && (
@@ -79,9 +94,10 @@ const Input = React.forwardRef<
             )}
           </div>
         )}
+        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";

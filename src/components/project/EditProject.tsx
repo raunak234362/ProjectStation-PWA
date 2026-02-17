@@ -192,7 +192,7 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-200 flex items-center justify-center bg-black/40">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <div className="text-center">Loading project data...</div>
         </div>
@@ -202,7 +202,7 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-200 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40"
       onClick={onCancel}
     >
       <div

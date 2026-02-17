@@ -235,7 +235,7 @@ const ClientDashboard = () => {
       setIsRfqModalOpen(true);
     } else if (actionType === "PENDING_RFI") {
       setIsRfiModalOpen(true);
-    } else if (actionType === "PENDING_CO") {
+    } else if (actionType === "PENDING_COR") {
       setIsCoModalOpen(true);
     }
   };
@@ -259,7 +259,7 @@ const ClientDashboard = () => {
               <PendingActions
                 dashboardStats={dashboardStats}
                 onActionClick={handleActionClick}
-                filter={["RFQ", "RFI", "CO", "Submittals"]}
+                filter={["RFQ", "RFI", "COR", "Submittals"]}
               />
             </div>
           </div>
@@ -417,7 +417,7 @@ const ClientDashboard = () => {
         <ActionListModal
           isOpen={isCoModalOpen}
           onClose={() => setIsCoModalOpen(false)}
-          type="PENDING_CO"
+          type="PENDING_COR"
           data={pendingCOs}
         />
       </Suspense>

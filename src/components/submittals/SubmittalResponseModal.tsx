@@ -21,7 +21,7 @@ const SubmittalResponseModal = ({
 
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("NOT_APPROVED");
+  const [status, setStatus] = useState("SUBMITTED_TO_EOR");
 
   // ENUMS
 
@@ -98,9 +98,9 @@ const SubmittalResponseModal = ({
             }}
             className="w-full border rounded-md p-2 mt-1"
           >
-            <option value="APPROVED">Approved</option>
-            <option value="PARTIAL">Partially Approved</option>
-            <option value="NOT_APPROVED">Not Approved</option>
+            <option value="">Please Select the Status</option>
+            <option value="SUBMITTED_TO_EOR">Submitted to EOR</option>
+            <option value="REVISED_RESUBMITTAL">Revised & Resubmittal</option>
           </select>
         </div>
 

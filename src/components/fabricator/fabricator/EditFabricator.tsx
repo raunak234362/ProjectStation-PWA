@@ -5,11 +5,12 @@ import { useEffect, useState } from "react";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { Loader2, X, Check, Trash2, Paperclip } from "lucide-react";
 import { motion } from "motion/react";
-import type { Fabricator } from "../../../interface";
+import type { Fabricator, SelectOption } from "../../../interface";
 import Service from "../../../api/Service";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
 import MultipleFileUpload from "../../fields/MultipleFileUpload";
+import MultiSelect from "../../fields/MultiSelect";
 import { toast } from "react-toastify";
 
 // --- File Interfaces (matching your fabricatorData.files structure) ---
@@ -33,6 +34,7 @@ type FabricatorFormData = {
   fabStage?: "RFQ" | "PRODUCTION";
   accountId?: string;
   SAC?: string;
+  wbtFabricatorPointOfContact?: any[];
   fabricatPercentage?: number;
   approvalPercentage?: number;
   paymenTDueDate?: number;
@@ -51,6 +53,9 @@ const EditFabricator = ({
   const [error, setError] = useState<string | null>(null);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [fetchingAccounts, setFetchingAccounts] = useState(false);
+  const [wbtContactOptions, setWbtContactOptions] = useState<SelectOption[]>(
+    [],
+  );
 
   // State to manage existing files that the user decides to KEEP
   const [filesToKeep, setFilesToKeep] = useState<FabricatorFile[]>(
@@ -93,7 +98,45 @@ const EditFabricator = ({
         setFetchingAccounts(false);
       }
     };
+
+    const fetchWBTContacts = async () => {
+      try {
+        const [admins, sales, managers] = await Promise.all([
+          Service.FetchEmployeeByRole("ADMIN"),
+          Service.FetchEmployeeByRole("SALES_PERSON"),
+          Service.FetchEmployeeByRole("SALES_MANAGER"),
+        ]);
+
+        const allContacts = [
+          ...(Array.isArray(admins?.data?.employees)
+            ? admins.data.employees
+            : []),
+          ...(Array.isArray(sales?.data?.employees)
+            ? sales.data.employees
+            : []),
+          ...(Array.isArray(managers?.data?.employees)
+            ? managers.data.employees
+            : []),
+        ];
+
+        // Remove duplicates if any
+        const uniqueContacts = Array.from(
+          new Map(allContacts.map((item: any) => [item.id, item])).values(),
+        );
+
+        const options = uniqueContacts.map((u: any) => ({
+          label: `${u.firstName} ${u.lastName} (${u.role})`,
+          value: u.id,
+        }));
+
+        setWbtContactOptions(options);
+      } catch (error) {
+        console.error("Failed to fetch WBT contacts", error);
+      }
+    };
+
     fetchAccounts();
+    fetchWBTContacts();
   }, []);
 
   // Pre‑fill form with fabricator data and initialize filesToKeep
@@ -109,6 +152,8 @@ const EditFabricator = ({
       approvalPercentage: fabricatorData.approvalPercentage || 0,
       paymenTDueDate: fabricatorData.paymenTDueDate || 0,
       currencyType: fabricatorData.currencyType || "",
+      wbtFabricatorPointOfContact:
+        fabricatorData.wbtFabricatorPointOfContact || [],
       files: null,
     });
     setFilesToKeep((fabricatorData.files as FabricatorFile[]) || []);
@@ -138,6 +183,11 @@ const EditFabricator = ({
       if (data.fabName) formData.append("fabName", data.fabName);
       if (data.website) formData.append("website", data.website);
       if (data.drive) formData.append("drive", data.drive);
+      if (data.wbtFabricatorPointOfContact)
+        formData.append(
+          "wbtFabricatorPointOfContact",
+          JSON.stringify(data.wbtFabricatorPointOfContact),
+        );
       if (data.fabStage) formData.append("fabStage", data.fabStage);
       if (data.accountId) formData.append("accountId", data.accountId);
       if (data.SAC) formData.append("SAC", data.SAC);
@@ -274,6 +324,23 @@ const EditFabricator = ({
                   <option value="PRODUCTION">Full Production</option>
                 </select>
               </div>
+            </div>
+            <div className="space-y-4">
+              <label className="block text-xs text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">
+                WBT Point of Contact
+              </label>
+              <Controller
+                name="wbtFabricatorPointOfContact"
+                control={control}
+                render={({ field }) => (
+                  <MultiSelect
+                    options={wbtContactOptions}
+                    label="Select Point of Contact"
+                    value={field.value || []}
+                    onChange={(_, val) => field.onChange(val)}
+                  />
+                )}
+              />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>

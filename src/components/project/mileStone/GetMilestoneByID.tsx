@@ -10,10 +10,12 @@ import {
   User,
   Tag,
   X,
+  Edit,
 } from "lucide-react";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import { Button } from "../../ui/button";
+import EditMileStone from "./EditMileStone";
 
 interface Milestone {
   id: string | number;
@@ -45,6 +47,7 @@ interface GetMilestoneByIDProps {
 const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
   const [milestone, setMilestone] = useState<Milestone | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const id = row?.id;
 
   const fetchMilestone = async () => {
@@ -162,14 +165,25 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             </p>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={close}
-          className="p-2 hover:bg-white/10 text-white"
-        >
-          <X className="w-6 h-6" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsEditModalOpen(true)}
+            className="text-white hover:bg-white/20 flex items-center gap-2"
+          >
+            <Edit className="w-4 h-4" />
+            Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={close}
+            className="p-2 hover:bg-white/10 text-white"
+          >
+            <X className="w-6 h-6" />
+          </Button>
+        </div>
       </div>
 
       <div className="p-6 space-y-8">
@@ -264,6 +278,22 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
           </div>
         )}
       </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-2xl h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <EditMileStone
+              milestoneId={id.toString()}
+              onClose={() => setIsEditModalOpen(false)}
+              onSuccess={() => {
+                fetchMilestone();
+                setIsEditModalOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

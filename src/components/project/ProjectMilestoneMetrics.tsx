@@ -97,6 +97,9 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
     });
   }, [milestones]);
 
+console.log(milestoneStats);
+
+
   return (
     <div className="space-y-8 p-1">
       {/* Project Status Section */}
@@ -116,13 +119,13 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                   <div key={ms.id}>
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-gray-800 dark:text-slate-200 font-medium text-sm">
-                        {ms.subject}
+                        {ms.subject} - <span className="font-bold text-gray-800 dark:text-slate-200">{ms.stage}</span>
                       </span>
                       <span className="text-xs text-gray-500 dark:text-slate-500">
-                        Completion % : {ms.taskPercentage}%
+                         : {ms.taskPercentage}%
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2 relative overflow-hidden">
+                    <div className="w-full bg-red-500 dark:bg-slate-700 rounded-full h-2 relative overflow-hidden">
                       {/* Time Progress (background shadow layer) */}
                       <div
                         className="absolute top-0 left-0 h-2 bg-gray-400 dark:bg-slate-500 opacity-40 transition-all duration-500"

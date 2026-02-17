@@ -106,7 +106,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
         <div className="p-6 border-b border-green-500/10 flex items-center justify-between bg-green-50/50">
           <div>
             <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
-              Pending Submittals
+              Pending Attention on Submittals
             </h3>
             <p className="text-sm text-gray-700 dark:text-slate-400 mt-1">
               Showing {data.length} pending submittals

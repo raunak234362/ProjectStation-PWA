@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       onMouseLeave={() => !isMobile && setIsHovered(false)}
       className={`
         h-full flex flex-col transition-all duration-500
-        backdrop-blur-xl z-0
+        backdrop-blur-xl
         hover:shadow-[#6bbd45]
         ${
           isMobile

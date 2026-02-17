@@ -41,12 +41,31 @@ const AddMileStone = ({
     { label: "Completed", value: "COMPLETED" },
     { label: "Approved", value: "APPROVED" },
   ];
+  const stageOptions = [
+    { label: "IFA", value: "IFA" },
+    { label: "IFC", value: "IFC" },
+    { label: "RIFA", value: "RIFA" },
+    { label: "RIFC", value: "RIFC" },
+    { label: "CO", value: "CO" },
+  ];
+  const subjectOptions=[
+    {label:"Anchor Bolt",value:"Anchor Bolt"},
+    {label:"Main Steel",value:"Main Steel"},
+    {label:"Main Steel Connection",value:"Main Steel Connection"},
+    {label:"Misc Steel",value:"Misc Steel"},
+    {label:"Misc Steel Connection",value:"Misc Steel Connection"},
+    {label:"Foundation Embeds",value:"Foundation Embeds"},
+    {label:"Panel Embeds",value:"Panel Embeds"},
+    {label:"Others",value:"Others"},
+   
+  ]
 
   const onSubmit = async (data: ProjectMilestone) => {
     try {
       const payload = {
         ...data,
         status: "ACTIVE",
+        stage: data.stage || "IFA",
         date: data.date ? new Date(data.date).toISOString() : undefined,
         approvalDate: data.approvalDate
           ? new Date(data.approvalDate).toISOString()
@@ -80,11 +99,23 @@ const AddMileStone = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-          <Input
-            label="Subject *"
-            placeholder="e.g. 50% Submission"
-            {...register("subject", { required: "Required" })}
-          />
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Subject *
+          </label>
+          <Select
+              options={subjectOptions}
+              defaultValue={subjectOptions[0]}
+              onChange={(opt) => setValue("subject", opt?.value || "PENDING")}
+              className="text-sm"
+              menuPlacement="bottom"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderRadius: "0.5rem",
+                  padding: "2px",
+                }),
+              }}
+            />
           {errors.subject && (
             <p className="text-red-500 text-xs mt-1">
               {errors.subject.message}
@@ -103,7 +134,7 @@ const AddMileStone = ({
                 <RichTextEditor
                   value={field.value || ""}
                   onChange={field.onChange}
-                  placeholder="Describe the milestone deliverables..."
+                  placeholder=""
                 />
               )}
             />
@@ -141,6 +172,27 @@ const AddMileStone = ({
               defaultValue={statusOptions[0]}
               onChange={(opt) => setValue("status", opt?.value || "PENDING")}
               className="text-sm"
+              menuPlacement="top"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderRadius: "0.5rem",
+                  padding: "2px",
+                }),
+              }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Stage
+            </label>
+            <Select
+              options={stageOptions}
+              defaultValue={stageOptions[0]}
+              onChange={(opt) => setValue("stage", opt?.value || "IFA")}
+              className="text-sm"
+              menuPlacement="top"
               styles={{
                 control: (base) => ({
                   ...base,
@@ -153,7 +205,6 @@ const AddMileStone = ({
 
           {/* Footer */}
           <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t mt-2">
-            
             <Button
               type="submit"
               disabled={isSubmitting}

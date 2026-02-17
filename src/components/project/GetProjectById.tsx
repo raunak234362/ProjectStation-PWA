@@ -283,7 +283,7 @@ const GetProjectById = ({
 
   if (loading)
     return (
-      <div className="flex items-center justify-center py-8 text-gray-700">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md text-white">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading project details...
       </div>
@@ -297,9 +297,9 @@ const GetProjectById = ({
       </div>
     );
 
-  return (
-    <>
-      <div className="w-full bg-white h-auto p-3 md:p-6 rounded-lg shadow-sm border relative">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="bg-white dark:bg-slate-900 p-5 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3 mb-3">
           <div>
@@ -367,7 +367,7 @@ const GetProjectById = ({
           </div>
         </div>
         {/* Tab Content */}
-        <div className="p-2">
+        <div className="p-2 flex-1 overflow-y-auto min-h-0 custom-scrollbar">
           {/* ✅ Overview */}
           {activeTab === "overview" && (
             <div className="space-y-6 animate-in fade-in duration-500">
@@ -912,7 +912,8 @@ const GetProjectById = ({
           />,
           document.body,
         )}
-    </>
+    </div>,
+    document.body,
   );
 };
 

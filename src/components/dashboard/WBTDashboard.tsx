@@ -230,7 +230,7 @@ const WBTDashboard = () => {
       setIsRfqModalOpen(true);
     } else if (actionType === "PENDING_RFI") {
       setIsRfiModalOpen(true);
-    } else if (actionType === "PENDING_CO") {
+    } else if (actionType === "PENDING_COR") {
       setIsCoModalOpen(true);
     }
   };
@@ -340,7 +340,7 @@ const WBTDashboard = () => {
         <ActionListModal
           isOpen={isCoModalOpen}
           onClose={() => setIsCoModalOpen(false)}
-          type="PENDING_CO"
+          type="PENDING_COR"
           data={pendingCOs}
         />
       </Suspense>

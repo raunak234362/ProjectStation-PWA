@@ -38,7 +38,7 @@ const FabricatorLayout = () => {
       </div>
 
       <div className="flex-1 min-h-0 bg-white p-4 rounded-md overflow-y-auto custom-scrollbar border border-white/40 backdrop-blur-[2px]">
-        <div className="bg-green-100 rounded-md shadow-soft p-2 min-h-full">
+        <div className="shadow-sm border border-slate-100  p-2 min-h-full">
           {activeTab === "allFabricator" && (
             <div className="space-y-8">
               <FabricatorOverview />

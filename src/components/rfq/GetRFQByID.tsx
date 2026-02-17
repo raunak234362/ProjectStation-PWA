@@ -402,12 +402,11 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                   />
                   <Scope
                     label={
-                      (userRole === "CLIENT" || userRole === "CLIENT_ADMIN") &&
-                      rfq?.sender?.fabricator?.fabName
+                      !rfq?.customerDesign && rfq?.sender?.fabricator?.fabName
                         ? `Connection design by ${rfq.sender.fabricator.fabName}`
-                        : "Customer Design"
+                        : "Connection Design by WBT"
                     }
-                    enabled={rfq?.customerDesign || false}
+                    enabled={true}
                   />
                 </div>
               </div>

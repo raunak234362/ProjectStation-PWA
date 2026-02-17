@@ -1128,6 +1128,21 @@ class Service {
     }
   }
 
+  // edit milestone by ID
+  static async EditMilestoneById(id: string, data: any) {
+    try {
+      const response = await api.put(`mileStone/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   //Get mileston by ID
   static async GetMilestoneById(id: string) {
     try {

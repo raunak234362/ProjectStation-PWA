@@ -23,7 +23,7 @@ interface ActionListModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: any[];
-  type: "PENDING_RFQ" | "PENDING_RFI" | "PENDING_CO";
+  type: "PENDING_RFQ" | "PENDING_RFI" | "PENDING_COR";
 }
 
 const ActionListModal: React.FC<ActionListModalProps> = ({
@@ -54,11 +54,11 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   const getTitle = () => {
     switch (type) {
       case "PENDING_RFQ":
-        return "Pending RFQs";
+        return "Pending Attention on RFQs";
       case "PENDING_RFI":
-        return "Pending RFIs";
-      case "PENDING_CO":
-        return "Pending Change Orders";
+        return "Pending Attention on RFIs";
+      case "PENDING_COR":
+        return "Pending Attention on Change Orders";
       default:
         return "Pending Actions";
     }
@@ -70,7 +70,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         return <Search size={24} />;
       case "PENDING_RFI":
         return <FileText size={24} />;
-      case "PENDING_CO":
+      case "PENDING_COR":
         return <Activity size={24} />;
       default:
         return <Files size={24} />;
@@ -149,7 +149,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             ),
           },
         ];
-      case "PENDING_CO":
+      case "PENDING_COR":
         return [
           {
             accessorKey: "changeOrderNumber",
@@ -191,7 +191,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           return <GetRFQByID id={row.id} />;
         case "PENDING_RFI":
           return <GetRFIByID id={row.id} />;
-        case "PENDING_CO":
+        case "PENDING_COR":
           return <GetCOByID id={row.id} projectId={row.project} />;
         default:
           return null;

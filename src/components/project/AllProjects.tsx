@@ -7,10 +7,14 @@ const GetProjectById = React.lazy(() =>
 );
 
 const ProjectDetailComponent = ({ row }: { row: any }) => {
-  const fabricatorUniqueId = row.id ?? row.fabId ?? "";
+  const [open, setOpen] = React.useState(true);
+  const projectId = row.id ?? row.fabId ?? "";
+
+  if (!open) return null;
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <GetProjectById id={fabricatorUniqueId} />
+      <GetProjectById id={projectId} close={() => setOpen(false)} />
     </Suspense>
   );
 };

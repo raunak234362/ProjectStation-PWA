@@ -120,6 +120,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         subject: data.subject || "",
         description,
         tools: data.tools,
+        location:data.location,
         bidPrice: data.bidPrice,
         estimationDate: data.estimationDate
           ? new Date(data.estimationDate).toISOString()
@@ -213,7 +214,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-4 md:space-y-8"
       >
-        <SectionTitle title="RFQ Information" />
+        {/*<SectionTitle title="RFQ Information" />*/}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* FABRICATOR (HIDDEN FOR CLIENTS) */}
@@ -330,14 +331,19 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </div>
 
           <Input
-            label="RFQ Number"
+            label="Project Number"
             {...register("projectNumber")}
+            placeholder="Optional"
+          />
+          <Input
+            label="Location"
+            {...register("location")}
             placeholder="Optional"
           />
         </div>
 
         {/* DETAILS */}
-        <SectionTitle title="Details" />
+        {/*     <SectionTitle title="Details" />*/}
 
         <Input label="Subject" {...register("subject")} />
 
