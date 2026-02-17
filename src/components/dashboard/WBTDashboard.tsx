@@ -217,6 +217,10 @@ const WBTDashboard = () => {
   }, [projects, allTasks]);
 
   const handleCardClick = (status: string) => {
+    if (status === "TOTAL") {
+      navigate("/dashboard/projects");
+      return;
+    }
     const filtered = projectsWithStats.filter((p: any) => p.status === status);
     setFilteredProjects(filtered);
     setSelectedStatus(status);

@@ -1,11 +1,11 @@
 import { useEffect, useState, Suspense, lazy } from "react";
+import { useNavigate } from "react-router-dom";
 import Service from "../../api/Service";
 import { useSelector, useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
-import { X, Loader2 } from "lucide-react";
-import ProjectMilestoneMetrics from "../project/ProjectMilestoneMetrics";
+import { Loader2 } from "lucide-react";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -22,8 +22,12 @@ const SubmittalListModal = lazy(
 );
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
+const GetMilestoneByID = lazy(
+  () => import("../project/mileStone/GetMilestoneByID"),
+);
 
 const ClientDashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   // Data State
@@ -48,11 +52,7 @@ const ClientDashboard = () => {
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
     null,
   );
-  const [selectedMilestoneProjectId, setSelectedMilestoneProjectId] = useState<
-    string | null
-  >(null);
-  const [selectedMilestoneProjectName, setSelectedMilestoneProjectName] =
-    useState<string | null>(null);
+  const [selectedMilestone, setSelectedMilestone] = useState<any | null>(null);
 
   // Redux Data
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
@@ -75,7 +75,8 @@ const ClientDashboard = () => {
       isCoModalOpen ||
       !!selectedProject ||
       !!selectedInvoiceId ||
-      !!selectedMilestoneProjectId;
+      !!selectedInvoiceId ||
+      !!selectedMilestone;
 
     if (isAnyModalOpen) {
       dispatch(incrementModalCount());
@@ -94,7 +95,8 @@ const ClientDashboard = () => {
     isCoModalOpen,
     selectedProject,
     selectedInvoiceId,
-    selectedMilestoneProjectId,
+    selectedInvoiceId,
+    selectedMilestone,
     dispatch,
   ]);
 
@@ -222,6 +224,10 @@ const ClientDashboard = () => {
   }, []);
 
   const handleCardClick = (status: string) => {
+    if (status === "TOTAL") {
+      navigate("/dashboard/projects");
+      return;
+    }
     const filtered = projects.filter((p: any) => p.status === status);
     setFilteredProjects(filtered);
     setSelectedStatus(status);
@@ -277,27 +283,8 @@ const ClientDashboard = () => {
                 hideFabricator={true}
                 onSubmittalClick={(submittal) => {
                   console.log("Clicked submittal:", submittal);
-
-                  // Extract Project ID from various possible locations
-                  const projectId =
-                    submittal.projectId ||
-                    submittal.project_id ||
-                    submittal.project?.id ||
-                    submittal.project?._id ||
-                    (typeof submittal.project === "string"
-                      ? submittal.project
-                      : null);
-
-                  if (projectId) {
-                    setSelectedMilestoneProjectId(projectId);
-                    setSelectedMilestoneProjectName(
-                      submittal.project?.name || submittal.name || "Project",
-                    );
-                  } else {
-                    console.warn(
-                      "Could not extract Project ID from submittal:",
-                      submittal,
-                    );
+                  if (submittal && (submittal.id || submittal._id)) {
+                    setSelectedMilestone(submittal);
                   }
                 }}
               />
@@ -305,7 +292,7 @@ const ClientDashboard = () => {
           </div>
           <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
             <div className="p-4 border-b border-green-500/10">
-              <h2 className="text-lg text-gray-800">
+              <h2 className="text-lg text-gray-800 font-bold">
                 Invoices Received
               </h2>
             </div>
@@ -335,47 +322,22 @@ const ClientDashboard = () => {
           </div>
         )}
 
-        {/* Milestone Metrics Modal */}
-        {selectedMilestoneProjectId && (
+        {/* Milestone Details Modal */}
+        {selectedMilestone && (
           <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-            <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-green-500/10 animate-in fade-in zoom-in duration-200">
-              <div className="p-6 border-b border-green-500/10 flex justify-between items-center bg-green-50/50">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-800">
-                    {selectedMilestoneProjectName}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Milestone Performance & Status
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSelectedMilestoneProjectId(null)}
-                  className="p-2 hover:bg-green-100 rounded-full transition-colors text-gray-400 hover:text-green-600"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <div className="p-6 overflow-y-auto max-h-[70vh]">
-                <Suspense
-                  fallback={
-                    <div className="flex justify-center p-12">
-                      <Loader2 className="animate-spin text-green-600" />
-                    </div>
-                  }
-                >
-                  <ProjectMilestoneMetrics
-                    projectId={selectedMilestoneProjectId}
-                  />
-                </Suspense>
-              </div>
-              <div className="p-4 border-t border-green-500/10 bg-green-50/50 flex justify-end">
-                <button
-                  onClick={() => setSelectedMilestoneProjectId(null)}
-                  className="px-6 py-2 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-colors shadow-sm shadow-green-200"
-                >
-                  Close
-                </button>
-              </div>
+            <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <Suspense
+                fallback={
+                  <div className="flex justify-center p-12 bg-white rounded-xl">
+                    <Loader2 className="animate-spin text-green-600" />
+                  </div>
+                }
+              >
+                <GetMilestoneByID
+                  row={selectedMilestone}
+                  close={() => setSelectedMilestone(null)}
+                />
+              </Suspense>
             </div>
           </div>
         )}
