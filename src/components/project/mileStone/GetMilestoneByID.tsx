@@ -24,6 +24,7 @@ interface Milestone {
   description: string;
   approvalDate: string;
   status: string;
+  date: string;
   createdAt?: string;
   updatedAt?: string;
   project?: {
@@ -216,7 +217,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
           <InfoCard
             icon={<Clock className="w-5 h-5" />}
             label="Created At"
-            value={formatDate(milestone.createdAt)}
+            value={formatDate(milestone.date)}
             color="text-purple-600"
             bg="bg-purple-50"
           />

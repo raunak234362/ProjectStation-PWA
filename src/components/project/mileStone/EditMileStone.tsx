@@ -123,7 +123,7 @@ const EditMileStone = ({
   }
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-2xl shadow-xl overflow-hidden z-40">
       {/* Header */}
       <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50/50">
         <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">

@@ -62,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
       {/* Right: Greeting & Theme & Notifications */}
       <div className="flex items-center gap-3">
         {/* Theme Toggle Button */}
-        <button
+        {/* <button
           onClick={toggleTheme}
           className="p-2.5 bg-green-50 text-gray-600 hover:bg-green-100 rounded-xl transition-all shadow-sm group"
           title={
@@ -82,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
               className="group-hover:rotate-90 transition-transform"
             />
           )}
-        </button>
+        </button> */}
 
         {/* Notification Bell */}
         <NotificationPopup />
