@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
-  X,
   FileText,
   Calendar,
   DollarSign,
@@ -73,16 +72,18 @@ const QuotationResponseDetailsModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+      <div className="bg-[#fafffb] w-full max-w-3xl rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto border border-green-100/50">
         {/* Header */}
-        <div className="sticky top-0 bg-linear-to-r from-green-600 to-green-700 text-white p-6 rounded-t-xl flex justify-between items-center">
-          <h2 className="text-2xl ">Quotation Details</h2>
+        <div className="flex justify-between items-center mb-6 p-6 border-b border-gray-100">
+          <h2 className="text-xl font-black text-black uppercase tracking-tight">
+            Quotation Details
+          </h2>
           <button
             onClick={onClose}
-            className="text-white hover:bg-white/20 rounded-full p-2 transition"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            <X size={20} />
+            Close
           </button>
         </div>
 
@@ -147,7 +148,7 @@ const QuotationResponseDetailsModal = ({
           {/* Files */}
           {quotation.files && quotation.files.length > 0 && (
             <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h3 className="font-black text-black mb-3 flex items-center gap-2 uppercase tracking-tight">
                 <FileText size={18} />
                 Attachments ({quotation.files.length})
               </h3>
@@ -171,7 +172,7 @@ const QuotationResponseDetailsModal = ({
           {/* Replies Section */}
           {quotation.replies && quotation.replies.length > 0 && (
             <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-700 mb-4">
+              <h3 className="font-black text-black mb-4 uppercase tracking-tight">
                 Replies ({quotation.replies.length})
               </h3>
               <div className="space-y-3">
@@ -256,15 +257,7 @@ const QuotationResponseDetailsModal = ({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="sticky bottom-0 bg-gray-50 border-t p-4 rounded-b-xl flex justify-end">
-          <Button
-            onClick={onClose}
-            className="px-6 py-2 bg-gray-600 text-white hover:bg-gray-700 rounded-lg transition"
-          >
-            Close
-          </Button>
-        </div>
+        {/* Footer removed since we have header close */}
       </div>
     </div>
   );

@@ -98,9 +98,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
   const clientOptions: SelectOption[] =
     selectedFabricator?.pointOfContact?.map((client) => ({
-      label: `${client.firstName} ${client.middleName ?? ""} ${
-        client.lastName
-      }`,
+      label: `${client.firstName} ${client.middleName ?? ""} ${client.lastName
+        }`,
       value: String(client.id),
     })) ?? [];
 
@@ -120,7 +119,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         subject: data.subject || "",
         description,
         tools: data.tools,
-        location:data.location,
+        location: data.location,
         bidPrice: data.bidPrice,
         estimationDate: data.estimationDate
           ? new Date(data.estimationDate).toISOString()
@@ -188,9 +187,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           fabricator: selectedFab || createdRFQ.fabricator,
           sender: selectedSender
             ? {
-                firstName: selectedSender.label.split(" ")[0],
-                lastName: selectedSender.label.split(" ").slice(1).join(" "),
-              }
+              firstName: selectedSender.label.split(" ")[0],
+              lastName: selectedSender.label.split(" ").slice(1).join(" "),
+            }
             : userDetail,
         };
         dispatch(addRFQ(enrichedRFQ));
@@ -209,7 +208,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     fabOptions.find((opt) => opt.value === selectedFabricatorId) || null;
 
   return (
-    <div className="w-full mx-auto bg-white/80 backdrop-blur-lg rounded-xl shadow-lg p-3 md:p-5">
+    <div className="w-full mx-auto bg-[#fafffb] border border-green-100/50 rounded-3xl shadow-lg p-3 md:p-8">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-4 md:space-y-8"
@@ -430,7 +429,11 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         />
 
         <div className="flex justify-center w-full mt-6">
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full px-6 py-3 bg-black text-white rounded-xl font-bold uppercase tracking-widest hover:bg-black/90 transition-all border border-black shadow-lg"
+          >
             {isSubmitting ? "Creating..." : "Create RFQ"}
           </Button>
         </div>

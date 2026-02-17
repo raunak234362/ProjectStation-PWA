@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X as CloseIcon, Files } from "lucide-react";
+import { Files } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetSubmittalByID from "../../submittals/GetSubmittalByID";
@@ -23,6 +23,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
   data,
 }) => {
   const dispatch = useDispatch();
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -93,42 +94,43 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
     return true;
   });
 
-  const renderDetail = ({ row }: { row: any }) => {
-    return <GetSubmittalByID id={row.id} />;
-  };
+
 
   if (!isOpen) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-green-500/20 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-green-500/10 flex items-center justify-between bg-green-50/50">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
           <div>
-            <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
+            <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-tight">
               Pending Attention on Submittals
             </h3>
-            <p className="text-sm text-gray-700 dark:text-slate-400 mt-1">
-              Showing {data.length} pending submittals
-            </p>
+
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-green-100 rounded-full transition-colors text-gray-400 hover:text-green-700"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            <CloseIcon size={24} />
+            Close
           </button>
         </div>
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {data.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={data}
-              pageSizeOptions={[10, 25, 50]}
-              detailComponent={renderDetail}
-            />
+            <>
+              <DataTable
+                columns={columns}
+                data={data}
+                pageSizeOptions={[10, 25, 50]}
+                onRowClick={(row) => setSelectedId(row.id)}
+              />
+              {selectedId && (
+                <GetSubmittalByID id={selectedId} onClose={() => setSelectedId(null)} />
+              )}
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-gray-400 dark:text-slate-500">
               <Files size={48} className="mb-4 opacity-20" />
@@ -137,15 +139,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
           )}
         </div>
 
-        {/* Modal Footer */}
-        <div className="p-4 border-t border-green-500/10 bg-green-50/50 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 bg-gray-800 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors shadow-lg shadow-green-100"
-          >
-            Close
-          </button>
-        </div>
+
       </div>
     </div>,
     document.body,

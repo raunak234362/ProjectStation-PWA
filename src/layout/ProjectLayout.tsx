@@ -60,37 +60,37 @@ const ProjectLayout = () => {
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
-        <div className=" px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 rounded-t-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4">
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-indigo-50 rounded-lg border border-indigo-100">
-              <span className="text-sm md:text-xl animate-in font-medium text-indigo-600 uppercase tracking-wider">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black">
+              <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
                 Total -
               </span>
-              <span className="text-sm md:text-xl animate-in  text-indigo-700">
+              <span className="text-sm md:text-xl animate-in font-black text-black">
                 {stats.total}
               </span>
             </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-green-50 rounded-lg border border-green-100">
-              <span className="text-sm md:text-xl animate-in font-medium text-green-600 uppercase tracking-wider">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black">
+              <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
                 Active -
               </span>
-              <span className="text-sm md:text-xl animate-in  text-green-700">
+              <span className="text-sm md:text-xl animate-in font-black text-black">
                 {stats.active}
               </span>
             </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-blue-50 rounded-lg border border-blue-100">
-              <span className="text-sm md:text-xl animate-in font-medium text-blue-600 uppercase tracking-wider">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black">
+              <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
                 Completed -
               </span>
-              <span className="text-sm md:text-xl animate-in  text-blue-700">
+              <span className="text-sm md:text-xl animate-in font-black text-black">
                 {stats.completed}
               </span>
             </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-orange-50 rounded-lg border border-orange-100">
-              <span className="text-sm md:text-xl animate-in font-medium text-orange-600 uppercase tracking-wider">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black">
+              <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
                 On Hold -
               </span>
-              <span className="text-sm md:text-xl animate-in  text-orange-700">
+              <span className="text-sm md:text-xl animate-in font-black text-black">
                 {stats.onHold}
               </span>
             </div>
@@ -107,9 +107,9 @@ const ProjectLayout = () => {
             ) && (
                 <button
                   onClick={() => setActiveTab("projectDashboard")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-semibold transition-all ${activeTab === "projectDashboard"
-                      ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                      : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "projectDashboard"
+                    ? "bg-green-50 text-black border border-black shadow-sm"
+                    : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                     }`}
                 >
                   Project Home
@@ -121,9 +121,9 @@ const ProjectLayout = () => {
             ) && (
                 <button
                   onClick={() => setActiveTab("allProject")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-semibold transition-all ${activeTab === "allProject"
-                      ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                      : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "allProject"
+                    ? "bg-green-50 text-black border border-black shadow-sm"
+                    : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                     }`}
                 >
                   All Projects
@@ -142,9 +142,9 @@ const ProjectLayout = () => {
             ) && (
                 <button
                   onClick={() => setActiveTab("addProject")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-semibold transition-all ${activeTab === "addProject"
-                      ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                      : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "addProject"
+                    ? "bg-green-50 text-black border border-black shadow-sm"
+                    : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                     }`}
                 >
                   Add New Project

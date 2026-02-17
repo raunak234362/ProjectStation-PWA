@@ -41,40 +41,36 @@ const Sidebar: React.FC<SidebarProps> = ({
       onMouseEnter={() => !isMobile && setIsHovered(true)}
       onMouseLeave={() => !isMobile && setIsHovered(false)}
       className={`
-        h-full flex flex-col transition-all duration-500
-        backdrop-blur-xl
-        hover:shadow-[#6bbd45]
-        ${
-          isMobile
-            ? `fixed inset-y-0 left-0 z-50 w-72 transform shadow-2xl ${
-                isMinimized ? "-translate-x-full" : "translate-x-0"
-              }`
-            : `relative rounded-3xl ${isExpanded ? "w-72" : "w-24"}`
+        h-full flex flex-col bg-white border-r border-gray-100 transition-all duration-300
+        z-50
+        ${isMobile
+          ? `fixed inset-y-0 left-0 w-72 transform shadow-2xl ${isMinimized ? "-translate-x-full" : "translate-x-0"
+          }`
+          : `relative ${isExpanded ? "w-64" : "w-20"}`
         }
       `}
     >
       {/* Header / Logo */}
       <div
-        className={`flex items-center ${
-          isMobile
-            ? "justify-between"
-            : isExpanded
-              ? "justify-start"
-              : "justify-center"
-        }`}
+        className={`flex items-center py-6 ${isMobile
+          ? "justify-between px-6"
+          : isExpanded
+            ? "justify-center"
+            : "justify-center"
+          }`}
       >
-        <div className="flex items-center w-full justify-center group">
+        <div className="flex items-center justify-center transition-all duration-300">
           {isExpanded ? (
             <img
               src={LOGO}
               alt="Logo"
-              className="bg-white w-56 object-contain rounded-3xl  group-hover:scale-105 transition-transform duration-500"
+              className="h-24 w-auto object-contain transition-all duration-300"
             />
           ) : (
             <img
               src={SLOGO}
               alt="Logo"
-              className="bg-white w-20 h-20 object-contain p-2 rounded-2xl  group-hover:rotate-12 transition-all duration-500"
+              className="h-10 w-10 object-contain transition-all duration-300"
             />
           )}
         </div>
@@ -82,20 +78,20 @@ const Sidebar: React.FC<SidebarProps> = ({
         {isMobile && (
           <button
             onClick={toggleSidebar}
-            className="p-2 text-gray-900 dark:text-white hover:bg-white/10 transition-colors rounded-lg"
+            className="p-2 text-black hover:bg-gray-100 transition-colors rounded-lg"
           >
-            <X size={22} />
+            <X size={20} />
           </button>
         )}
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 py-6 flex flex-col overflow-y-auto sidebar-scrollbar">
-        <nav className="flex flex-col gap-4 w-full px-4">
+      <div className="flex-1 py-4 flex flex-col overflow-y-auto sidebar-scrollbar px-3 space-y-2">
+        <nav className="flex flex-col gap-1 w-full">
           {navItems.map(
             ({ label, to, roles, icon }) =>
               canView(roles) && (
-                <div key={label} className="group relative">
+                <div key={label} className="relative group">
                   <NavLink
                     to={
                       label === "Dashboard"
@@ -115,31 +111,33 @@ const Sidebar: React.FC<SidebarProps> = ({
                     }
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
-                      `flex items-center gap-4 py-3.5 transition-all duration-500 text-sm font-black tracking-tight relative overflow-hidden
-                      ${
-                        isActive
-                          ? " text-black bg-gray-300 border-2 border-[#6bbd45] rounded-2xl px-6 scale-105 z-10"
-                          : "text-gray-900 border border-[#6bbd45] dark:text-gray-100 hover:bg-white/10 hover:text-black dark:hover:text-white px-6 rounded-2xl hover:translate-x-1"
-                      } ${isExpanded ? "" : "justify-center w-14 h-14 mx-auto rounded-2xl shadow-md px-0"}`
+                      `flex items-center gap-4 px-4 py-3 text-base font-bold rounded-lg transition-all duration-200 relative
+                      ${isActive
+                        ? "bg-gray-50 text-black border border-black border-l-[6px] border-l-[#6bbd45]"
+                        : "text-black hover:bg-gray-50 hover:text-black hover:border-y hover:border-r hover:border-black hover:border-l-[6px] hover:border-l-[#6bbd45] border border-transparent"
+                      } ${!isExpanded ? "justify-center px-0 w-12 h-12 mx-auto border-none p-0 bg-transparent" : ""}`
                     }
                   >
-                    {/* Rolling Hover Background Effect */}
-                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 -z-10" />
-                    <div
-                      className={`${isExpanded ? "" : "scale-125"} shrink-0 transition-transform duration-500 group-hover:rotate-12`}
-                    >
-                      {icon}
-                    </div>
-                    {isExpanded && (
-                      <span className="truncate uppercase tracking-wider">
-                        {label}
-                      </span>
+                    {({ isActive }) => (
+                      <>
+                        <div
+                          className={`transition-colors duration-200 ${isActive ? "text-black" : "text-black group-hover:text-black"
+                            }`}
+                        >
+                          {icon}
+                        </div>
+                        {isExpanded && (
+                          <span className="truncate tracking-wide">
+                            {label}
+                          </span>
+                        )}
+                      </>
                     )}
                   </NavLink>
 
                   {/* Tooltip for minimized state */}
                   {!isExpanded && (
-                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-4 py-2 bg-[#22c55e] text-white text-[10px] font-black rounded-xl shadow-[5px_5px_15px_rgba(0,0,0,0.2)] opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-x-2 group-hover:translate-x-0 whitespace-nowrap z-50 uppercase tracking-widest">
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 bg-black text-white text-xs font-semibold rounded shadow-sm opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50">
                       {label}
                     </div>
                   )}
@@ -150,27 +148,27 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User & Actions Footer */}
-      <div className="p-6 mt-auto">
+      <div className="p-4 mt-auto border-t border-gray-100">
         {isExpanded && (
-          <div className="flex items-center gap-4 mb-8 bg-black/20 dark:bg-white/10 p-4 rounded-3xl border border-white/5 backdrop-blur-md shadow-lg">
-            <div className="w-12 h-12 rounded-2xl bg-white dark:bg-green-500 flex items-center justify-center text-[#22c55e] dark:text-white font-black text-xl shadow-[0_5px_15px_rgba(0,0,0,0.15)]">
+          <div className="flex items-center gap-3 mb-6 px-2">
+            <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-black font-bold text-sm">
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
-            <div className="overflow-hidden text-gray-900 dark:text-gray-100">
-              <p className="text-sm truncate uppercase tracking-widest">
+            <div className="overflow-hidden">
+              <p className="text-sm font-bold text-black truncate">
                 {sessionStorage.getItem("firstName")}
               </p>
-              <p className="text-[10px] uppercase tracking-widest truncate opacity-80 font-bold">
+              <p className="text-[10px] uppercase tracking-wider text-black font-semibold truncate">
                 {sessionStorage.getItem("userDesignation")}
               </p>
             </div>
           </div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-1">
           <button
-            className={`w-full flex items-center gap-3 py-3 rounded-2xl transition-all text-gray-900 dark:text-gray-100 hover:bg-white/20 hover:text-black dark:hover:text-white text-xs font-black uppercase tracking-widest shadow-sm hover:shadow-md group
-              ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
+            className={`w-full flex items-center gap-3 py-2.5 rounded-lg transition-all text-black hover:bg-gray-50 hover:text-black text-xs font-bold uppercase tracking-wider
+              ${isExpanded ? "justify-start px-4" : "justify-center px-0"}`}
             onClick={handleRefresh}
           >
             <RefreshCw
@@ -181,8 +179,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
 
           <button
-            className={`w-full flex items-center gap-3 py-3 rounded-2xl transition-all text-gray-900 dark:text-gray-100 hover:bg-red-500/30 hover:text-red-900 dark:hover:text-red-100 text-xs font-black uppercase tracking-widest shadow-sm hover:shadow-md
-              ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
+            className={`w-full flex items-center gap-3 py-2.5 rounded-lg transition-all text-black hover:bg-red-50 hover:text-red-700 text-xs font-bold uppercase tracking-wider
+              ${isExpanded ? "justify-start px-4" : "justify-center px-0"}`}
             onClick={fetchLogout}
           >
             <LogOut size={18} />

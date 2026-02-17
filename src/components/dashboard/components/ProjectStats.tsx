@@ -21,72 +21,48 @@ interface ProjectStatsProps {
 const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   const projectCards = [
     {
-      label: "Total",
+      label: "TOTAL PROJECTS",
       value: stats.totalProjects,
       icon: Files,
-      color: "indigo",
+      status: "ALL",
       clickable: false,
     },
     {
-      label: "Active",
+      label: "ACTIVE",
       value: stats.activeProjects,
       icon: Activity,
-      color: "green",
       status: "ACTIVE",
       clickable: true,
+      active: true, // Primary status
     },
     {
-      label: "Completed",
+      label: "COMPLETED",
       value: stats.completedProjects,
       icon: CheckCircle2,
-      color: "blue",
       status: "COMPLETED",
       clickable: true,
     },
     {
-      label: "On Hold",
+      label: "ON HOLD",
       value: stats.onHoldProjects,
       icon: PauseCircle,
-      color: "orange",
       status: "ON_HOLD",
       clickable: true,
     },
   ];
 
-  const colorClasses = {
-    indigo: {
-      hoverBg: "hover:bg-indigo-100",
-      iconBg: "bg-indigo-500",
-      text: "text-indigo-700",
-    },
-    green: {
-      hoverBg: "hover:bg-green-100",
-      iconBg: "bg-green-500",
-      text: "text-green-700",
-    },
-    blue: {
-      hoverBg: "hover:bg-blue-100",
-      iconBg: "bg-blue-500",
-      text: "text-blue-700",
-    },
-    orange: {
-      hoverBg: "hover:bg-orange-100",
-      iconBg: "bg-orange-500",
-      text: "text-orange-700",
-    },
-  };
+
 
   return (
-    <div className="flex flex-col justify-center h-full bg-white rounded-2xl p-6 transition-all duration-300">
-      <h2 className="text-xl md:text-2xl text-gray-800 mb-6 px-2 flex items-center gap-3 tracking-tight">
+    <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
+      <h2 className="text-xl md:text-2xl font-bold text-black mb-6 flex items-center gap-3 tracking-tight ml-1">
         <Building2 size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
         PROJECT STATISTICS
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {projectCards.map((card) => {
-          const isClickable = card.status && onCardClick;
-          const colors = colorClasses[card.color as keyof typeof colorClasses];
+          const isClickable = card.clickable && onCardClick;
 
           return (
             <div
@@ -95,28 +71,34 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
                 isClickable && card.status && onCardClick(card.status)
               }
               className={cn(
-                "hover-card p-5 group flex flex-row gap-5",
-                !isClickable &&
-                  "cursor-default hover:bg-gray-50/80 hover:shadow-sm",
+                "p-5 h-[110px] rounded-xl flex items-center justify-between group transition-all duration-300 bg-white relative overflow-hidden",
+                "border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm", // Solid black + green left border
+                "hover:shadow-md",
+                isClickable && "cursor-pointer"
               )}
             >
-              <div
-                className={cn(
-                  "p-3.5 rounded-xl shadow-sm text-white shrink-0 transition-transform group-hover:scale-110",
-                  colors.iconBg,
-                )}
-              >
-                <card.icon size={25} strokeWidth={2.5} />
+              <div className="flex items-center gap-4 z-10">
+                <div className={cn(
+                  "p-3 rounded-full transition-colors bg-gray-50 group-hover:bg-[#f4f6f8]",
+                  card.status === "ACTIVE" ? "text-black" : "text-black"
+                )}>
+                  <card.icon size={24} strokeWidth={2} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm md:text-base font-bold text-black uppercase tracking-widest">
+                    {card.label}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex flex-row items-center justify-between w-full min-w-0">
-                <span className="text-sm md:text-lg font-semibold text-gray-600 uppercase tracking-widest truncate pr-2">
-                  {card.label}
-                </span>
-                <span className="text-2xl md:text-3xl font-bold text-[#6bbd45] tracking-tighter">
+              <div className="z-10 text-right">
+                <span className="text-4xl font-black text-black tracking-tighter">
                   {card.value}
                 </span>
               </div>
+
+              {/* Subtle background interaction */}
+              {isClickable && <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />}
             </div>
           );
         })}

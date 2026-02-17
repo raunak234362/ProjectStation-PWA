@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X as CloseIcon, Filter, XCircle } from "lucide-react";
+import { Filter, XCircle } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatSeconds } from "../../../utils/timeUtils";
@@ -165,9 +165,8 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Worked Hours",
       cell: ({ row }: any) => (
         <span
-          className={` ${
-            row.original.isOverrun ? "text-red-600" : "text-green-600"
-          }`}
+          className={` ${row.original.isOverrun ? "text-red-600" : "text-green-600"
+            }`}
         >
           {formatSeconds(row.original.workedSeconds || 0)}
         </span>
@@ -213,13 +212,12 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             </div>
             <div className="h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200/30">
               <div
-                className={`h-full transition-all duration-500 rounded-full ${
-                  isOverrun
-                    ? "bg-red-500"
-                    : percentage > 80
-                      ? "bg-orange-500"
-                      : "bg-green-500"
-                }`}
+                className={`h-full transition-all duration-500 rounded-full ${isOverrun
+                  ? "bg-red-500"
+                  : percentage > 80
+                    ? "bg-orange-500"
+                    : "bg-green-500"
+                  }`}
                 style={{ width: `${percentage}%` }}
               ></div>
             </div>
@@ -232,13 +230,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Status",
       cell: ({ row }: any) => (
         <span
-          className={`px-3 py-1 rounded-full text-[10px]  uppercase tracking-widest ${
-            row.original.status === "ACTIVE"
-              ? "bg-green-100 text-green-700 shadow-sm shadow-green-100"
-              : row.original.status === "COMPLETED"
-                ? "bg-blue-100 text-blue-700 shadow-sm shadow-blue-100"
-                : "bg-orange-100 text-orange-700 shadow-sm shadow-orange-100"
-          }`}
+          className="px-3 py-1 text-md md:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
         >
           {row.original.status}
         </span>
@@ -260,51 +252,48 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-green-500/20 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-green-500/10 flex items-center justify-between bg-green-50/50">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
           <div>
             <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
               <div
-                className={`w-2 h-6 rounded-full ${
-                  status.includes("ACTIVE") || status.includes("IFA")
-                    ? "bg-green-500"
-                    : status.includes("COMPLETED") ||
-                        status.includes("IFC") ||
-                        status.includes("Done")
-                      ? "bg-blue-500"
-                      : status.includes("ON_HOLD") ||
-                          status.includes("CO#") ||
-                          status.includes("On-Hold")
-                        ? "bg-orange-500"
-                        : "bg-gray-500"
-                }`}
+                className={`w-2 h-6 rounded-full ${status.includes("ACTIVE") || status.includes("IFA")
+                  ? "bg-green-500"
+                  : status.includes("COMPLETED") ||
+                    status.includes("IFC") ||
+                    status.includes("Done")
+                    ? "bg-blue-500"
+                    : status.includes("ON_HOLD") ||
+                      status.includes("CO#") ||
+                      status.includes("On-Hold")
+                      ? "bg-orange-500"
+                      : "bg-gray-500"
+                  }`}
               ></div>
               {status.replace("_", " ")} Projects
             </h3>
-            <p className="text-sm text-gray-700 dark:text-slate-400 mt-1">
-              Showing {filteredProjects.length} of {projects.length} projects
-            </p>
+
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-green-100 rounded-full transition-colors text-gray-400 hover:text-green-700"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            <CloseIcon size={24} />
+            Close
           </button>
         </div>
 
         {/* Filters Section */}
-        <div className="p-4 border-b border-green-500/10 bg-green-50/30">
+        <div className="p-4 border-b border-gray-100 bg-gray-50/30">
           <div className="flex items-center gap-2 mb-3">
             <Filter size={16} className="text-gray-600 dark:text-slate-400" />
-            <h4 className="text-sm  text-gray-700 dark:text-slate-300 uppercase tracking-wide">
+            <h4 className="text-sm font-bold text-black uppercase tracking-wide">
               Filters
             </h4>
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="ml-auto flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold transition-colors"
+                className="ml-auto flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors border border-red-200"
               >
                 <XCircle size={14} />
                 Clear Filters
@@ -321,7 +310,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
               <select
                 value={selectedManager}
                 onChange={(e) => setSelectedManager(e.target.value)}
-                className="w-full px-3 py-2 border border-green-500/20 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
               >
                 <option value="">All Managers</option>
                 {managers.map((manager) => (
@@ -340,7 +329,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
               <select
                 value={selectedFabricator}
                 onChange={(e) => setSelectedFabricator(e.target.value)}
-                className="w-full px-3 py-2 border border-green-500/20 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
               >
                 <option value="">All Fabricators</option>
                 {fabricators.map((fabricator) => (
@@ -359,7 +348,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
               <select
                 value={selectedStage}
                 onChange={(e) => setSelectedStage(e.target.value)}
-                className="w-full px-3 py-2 border border-green-500/20 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
               >
                 <option value="">All Stages</option>
                 {stages.map((stage) => (
@@ -372,7 +361,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 
             {/* Overrun Filter */}
             <div className="flex items-end">
-              <label className="flex items-center gap-2 px-3 py-2 bg-white border border-green-500/20 rounded-lg cursor-pointer hover:bg-green-50 transition-colors w-full">
+              <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors w-full">
                 <input
                   type="checkbox"
                   checked={showOverrunOnly}
@@ -397,15 +386,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
           />
         </div>
 
-        {/* Modal Footer */}
-        <div className="p-4 border-t border-green-500/10 bg-green-50/50 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 bg-gray-800 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors shadow-lg shadow-green-100"
-          >
-            Close
-          </button>
-        </div>
+
       </div>
     </div>,
     document.body,

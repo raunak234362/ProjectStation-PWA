@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
+import { createPortal } from "react-dom";
 import { Loader2, AlertCircle } from "lucide-react";
 import RenderFiles from "../ui/RenderFiles";
 import Button from "../fields/Button";
@@ -15,7 +16,7 @@ const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   </div>
 );
 
-const GetSubmittalByID = ({ id }: { id: string }) => {
+const GetSubmittalByID = ({ id, onClose }: { id: string, onClose?: () => void }) => {
   const [loading, setLoading] = useState(true);
   const [submittal, setSubmittal] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,21 +40,30 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
     fetchData();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center gap-2 py-8 text-gray-700">
-        <Loader2 className="w-5 h-5 animate-spin" />
-        Loading submittal details...
-      </div>
-    );
-  }
-
-  if (!submittal || error) {
-    return (
-      <div className="flex items-center gap-2 py-8 text-red-600">
-        <AlertCircle className="w-5 h-5" />
-        {error || "Submittal not found"}
-      </div>
+  if (loading || !submittal || error) {
+    return createPortal(
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+        <div className="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
+          {loading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin text-green-600" />
+              <span className="text-gray-700">Loading submittal details...</span>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span className="text-red-600">{error || "Submittal not found"}</span>
+              <button
+                onClick={onClose}
+                className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
+              >
+                Close
+              </button>
+            </>
+          )}
+        </div>
+      </div>,
+      document.body
     );
   }
 
@@ -86,97 +96,115 @@ const GetSubmittalByID = ({ id }: { id: string }) => {
     },
   ];
 
-  return (
-    <>
-      <div className="p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* LEFT PANEL */}
-          <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-            <h1 className="text-2xl  text-green-700">{submittal.subject}</h1>
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
+        {/* Modal Header */}
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
+          <div>
+            <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-tight">
+              Submittal Details
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+          >
+            Close
+          </button>
+        </div>
 
-            <Info label="Project" value={submittal.project?.name || "—"} />
-            <Info
-              label="Submitted By"
-              value={submittal.sender?.firstName || "—"}
-            />
-            <Info
-              label="Created On"
-              value={new Date(submittal.date).toLocaleString()}
-            />
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* LEFT PANEL */}
+            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-5">
+              <h1 className="text-2xl font-black text-black uppercase tracking-tight">{submittal.subject}</h1>
 
-            <div>
-              <h4 className="font-semibold text-gray-700">Description</h4>
-              <div
-                className="p-3 bg-gray-50 border rounded-lg prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    submittal.description ||
-                    submittal.currentVersion?.description ||
-                    "—",
-                }}
+              <Info label="Project" value={submittal.project?.name || "—"} />
+              <Info
+                label="Submitted By"
+                value={submittal.sender?.firstName || "—"}
+              />
+              <Info
+                label="Created On"
+                value={new Date(submittal.date).toLocaleString()}
+              />
+
+              <div>
+                <h4 className="font-semibold text-gray-700">Description</h4>
+                <div
+                  className="p-3 bg-gray-50 border rounded-lg prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      submittal.description ||
+                      submittal.currentVersion?.description ||
+                      "—",
+                  }}
+                />
+              </div>
+
+              <RenderFiles
+                files={submittal.versions || []}
+                table="submittals"
+                parentId={submittal.id}
               />
             </div>
 
-            <RenderFiles
-              files={submittal.versions || []}
-              table="submittals"
-              parentId={submittal.id}
-            />
-          </div>
+            {/* RIGHT PANEL */}
+            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-black text-black uppercase tracking-tight">
+                  Responses
+                </h2>
+                {(userRole === "CLIENT_ADMIN" || userRole === "CLIENT") && (
+                  <Button
+                    className="px-4 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+                    onClick={() => setShowResponseModal(true)}
+                  >
+                    + Add Response
+                  </Button>
+                )}
+              </div>
 
-          {/* RIGHT PANEL */}
-          <div className="bg-white p-6 rounded-xl shadow-md space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-green-700">
-                Responses
-              </h2>
-              {(userRole === "CLIENT_ADMIN" || userRole === "CLIENT") && (
-                <Button
-                  className="bg-green-600 text-white"
-                  onClick={() => setShowResponseModal(true)}
-                >
-                  + Add Response
-                </Button>
+              {submittal.submittalsResponse?.length > 0 ? (
+                <DataTable
+                  columns={responseColumns}
+                  data={submittal.submittalsResponse}
+                  onRowClick={(row) => setSelectedResponse(row)}
+                  pageSizeOptions={[5, 10]}
+                />
+              ) : (
+                <p className="text-gray-700 italic">No responses yet.</p>
               )}
             </div>
-
-            {submittal.submittalsResponse?.length > 0 ? (
-              <DataTable
-                columns={responseColumns}
-                data={submittal.submittalsResponse}
-                onRowClick={(row) => setSelectedResponse(row)}
-                pageSizeOptions={[5, 10]}
-              />
-            ) : (
-              <p className="text-gray-700 italic">No responses yet.</p>
-            )}
           </div>
         </div>
+
+        {/* ADD RESPONSE MODAL */}
+        {showResponseModal && (
+          <SubmittalResponseModal
+            submittal={submittal}
+            onClose={() => setShowResponseModal(false)}
+            onSuccess={() => {
+              setShowResponseModal(false);
+              fetchData();
+            }}
+          />
+        )}
+
+        {/* RESPONSE DETAILS MODAL */}
+        {selectedResponse && (
+          <SubmittalResponseDetailsModal
+            response={selectedResponse}
+            onClose={() => {
+              setSelectedResponse(null);
+              fetchData();
+            }}
+          />
+        )}
       </div>
-
-      {/* ADD RESPONSE MODAL */}
-      {showResponseModal && (
-        <SubmittalResponseModal
-          submittal={submittal}
-          onClose={() => setShowResponseModal(false)}
-          onSuccess={() => {
-            setShowResponseModal(false);
-            fetchData();
-          }}
-        />
-      )}
-
-      {/* RESPONSE DETAILS MODAL */}
-      {selectedResponse && (
-        <SubmittalResponseDetailsModal
-          response={selectedResponse}
-          onClose={() => {
-            setSelectedResponse(null);
-            fetchData();
-          }}
-        />
-      )}
-    </>
+    </div>,
+    document.body
   );
 };
 

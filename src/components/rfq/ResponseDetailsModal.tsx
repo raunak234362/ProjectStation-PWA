@@ -1,4 +1,4 @@
-import { X, CalendarDays } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { formatDateTime } from "../../utils/dateUtils";
 import { useState } from "react";
 import Service from "../../api/Service";
@@ -97,19 +97,20 @@ const ResponseDetailsModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white h-[90vh] overflow-y-auto w-full max-w-5xl p-6 rounded-xl shadow-xl space-y-4 relative">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="bg-[#fafffb] h-[90vh] overflow-y-auto w-full max-w-5xl p-8 rounded-3xl shadow-2xl space-y-4 relative border border-green-100/50">
         {/* Close Button */}
-        <Button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-700 hover:text-gray-700"
-        >
-          <X size={18} />
-        </Button>
-
-        <h2 className="text-xl font-semibold text-green-700">
-          Response Details
-        </h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-black text-black uppercase tracking-tight">
+            Response Details
+          </h2>
+          <button
+            onClick={onClose}
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+          >
+            Close
+          </button>
+        </div>
 
         {/* Message */}
         <div className="space-y-1">
@@ -134,8 +135,8 @@ const ResponseDetailsModal = ({
         </div>
 
         {replyMode && (
-          <div className="mt-4 border-t pt-4 space-y-3">
-            <h3 className="text-md font-semibold text-green-700">
+          <div className="mt-4 border-t border-gray-100 pt-6 space-y-3">
+            <h3 className="text-md font-black text-black uppercase tracking-tight">
               Write a Reply
             </h3>
 
@@ -184,9 +185,9 @@ const ResponseDetailsModal = ({
 
             {/* ACTION BUTTONS */}
             <div className="flex justify-end gap-2">
-              <Button onClick={() => setReplyMode(false)}>Cancel</Button>
+              <Button onClick={() => setReplyMode(false)} className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200">Cancel</Button>
               <Button
-                className="bg-green-600 text-white"
+                className="px-6 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
                 onClick={handleReplySubmit}
               >
                 Send Reply
