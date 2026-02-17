@@ -74,7 +74,7 @@ const Login = () => {
         </div>
 
         {/* Login form */}
-        <div className="flex items-center md:bg-white/30 md:backdrop-blur-xl justify-center p-6 md:p-0">
+        <div className="flex items-center md:backdrop-blur-xl justify-center p-6 md:p-0">
           <div className="bg-white/95 h-fit w-full max-w-lg md:w-3/4 lg:w-2/3 rounded-[6px] border border-green-900/10 p-8 md:p-12 shadow-2xl shadow-green-950/20">
 
             {/* Welcome Message */}
@@ -120,7 +120,7 @@ const Login = () => {
               </div>
 
               <div className="mt-4">
-                <Button type="submit" className="w-full text-2xl  py-4 rounded-[6px]  hover:bg-green-700 transition-all duration-300 shadow-lg shadow-sm">
+                <Button type="submit" className="w-full text-xl text-black border border-black bg-green-50 hover:bg-green-100 transition-all duration-300 ">
                   Login
                 </Button>
               </div>

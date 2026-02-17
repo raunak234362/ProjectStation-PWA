@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import type { SelectOption } from "../../interface";
 
 interface MultiSelectProps {

@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { X, CheckCircle, Save } from "lucide-react";
-import Select from "react-select";
+
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
-import RichTextEditor from "../../fields/RichTextEditor";
+
 import Service from "../../../api/Service";
-import type { ProjectMilestone } from "../../../interface";
 
 interface UpdateCompletionPerProps {
   milestoneId: string;
@@ -26,8 +25,7 @@ const UpdateCompletionPer = ({
   const {
     register,
     handleSubmit,
-    control,
-    setValue,
+
     reset,
     formState: { errors, isSubmitting },
   } = useForm({

@@ -1,11 +1,9 @@
-import React, { useEffect, useMemo } from "react";
-import { Calendar, CalendarCheck } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { CalendarCheck } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
 import { formatDate } from "../../utils/dateUtils";
 import Service from "../../api/Service";
-
-import { useState } from "react";
 import UpdateCompletionPer from "./mileStone/UpdateCompletionPer";
 
 interface ProjectMilestoneMetricsProps {
@@ -17,10 +15,10 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
   projectId,
 }) => {
   const dispatch = useDispatch();
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(
     null,
   );
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   const milestonesByProject = useSelector(
     (state: any) => state.milestoneInfo?.milestonesByProject || {},
@@ -54,7 +52,6 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
       const msTasks = ms.Tasks || ms.tasks || [];
       const totalTasks = msTasks.length;
       let taskProgress = 0;
-      const completionPercentage = ms.completeionPercentage;
       if (totalTasks > 0) {
         const completedStatuses = [
           "COMPLETE",
@@ -104,12 +101,9 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
     });
   }, [milestones]);
 
-  console.log(milestoneStats);
-
   return (
     <div className="space-y-8 p-1">
       {/* Project Status Section */}
-
 
       {/* Milestone Approvals Section */}
       <div>
@@ -122,7 +116,17 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
             {milestoneStats.map((ms: any, index: number) => (
               <div
                 key={ms.id || index}
-                className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm flex flex-col justify-between"
+                onClick={() => {
+                  if (ms.status === "PENDING") {
+                    setSelectedMilestoneId(ms.id);
+                    setIsUpdateModalOpen(true);
+                  }
+                }}
+                className={`p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm flex flex-col justify-between transition-colors ${
+                  ms.status === "PENDING"
+                    ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700/50"
+                    : ""
+                }`}
               >
                 <div>
                   <h5 className="font-semibold text-gray-800 dark:text-slate-200 mb-1 line-clamp-1">
@@ -161,25 +165,49 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                           : " text-green-900 dark:text-green-400"
                       }`}
                     >
-                      {console.log(ms.completionPercentage ||ms.taskPercentage || ms.percentage)}
-                      {ms.completionPercentage ||ms.taskPercentage || ms.percentage}%
+                      {ms.completionPercentage ||
+                        ms.taskPercentage ||
+                        ms.percentage}
+                      %
                     </span>
+                    <button
+                      onClick={() => {
+                        setSelectedMilestoneId(ms.id || ms._id);
+                        setIsUpdateModalOpen(true);
+                      }}
+                      className="ml-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                        <path d="m15 5 4 4" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
-                 <div className="w-full bg-red-500 dark:bg-slate-700 rounded-full h-2 relative overflow-hidden">
-                      {/* Time Progress (background shadow layer) */}
-                      <div
-                        className="absolute top-0 left-0 h-2 bg-gray-400 dark:bg-slate-500 opacity-40 transition-all duration-500"
-                        style={{ width: `${ms.timePercent}%` }}
-                      ></div>
-                      {/* Task Completion (real progress) */}
-                      <div
-                        className="absolute top-0 left-0 h-2 rounded-full bg-teal-500 transition-all duration-500"
-                        style={{
-                          width: `${ms.taskPercentage || ms.percentage}%`,
-                        }}
-                      ></div>
-                    </div>
+                <div className="w-full bg-red-500 dark:bg-slate-700 rounded-full h-2 relative overflow-hidden">
+                  {/* Time Progress (background shadow layer) */}
+                  <div
+                    className="absolute top-0 left-0 h-2 bg-gray-400 dark:bg-slate-500 opacity-40 transition-all duration-500"
+                    style={{ width: `${ms.timePercent}%` }}
+                  ></div>
+                  {/* Task Completion (real progress) */}
+                  <div
+                    className="absolute top-0 left-0 h-2 rounded-full bg-teal-500 transition-all duration-500"
+                    style={{
+                      width: `${ms.taskPercentage || ms.percentage}%`,
+                    }}
+                  ></div>
+                </div>
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-2 mt-2">
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-500 dark:text-slate-500 uppercase text-xs font-semibold">

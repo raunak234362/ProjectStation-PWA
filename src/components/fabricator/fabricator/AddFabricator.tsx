@@ -11,7 +11,6 @@ import { useDispatch } from "react-redux";
 import { addFabricator } from "../../../store/fabricatorSlice";
 import AddBranch from "../branches/AddBranch";
 import {
-  Plus,
   Globe,
   Link,
   Layers,

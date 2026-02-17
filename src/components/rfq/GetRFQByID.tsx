@@ -484,7 +484,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   userRole === "USER") && (
                     <Button
                       onClick={() => setShowResponseModal(true)}
-                      className="px-4 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
                     >
                       + Add Response
                     </Button>

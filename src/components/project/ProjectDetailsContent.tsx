@@ -7,7 +7,7 @@ import {
   FileText,
   Settings,
   FolderOpenDot,
-  Users,
+
   Clock,
   ClipboardList,
   X as CloseIcon,
@@ -57,7 +57,7 @@ const ProjectDetailsContent = ({
   >("list");
   const [selectedCoId, setSelectedCoId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
+
   const [allTasks, setAllTasks] = useState<any[]>([]);
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
@@ -121,30 +121,6 @@ const ProjectDetailsContent = ({
     return { workedSeconds, isOverrun };
   }, [project, allTasks, id]);
 
-  /* Fetch analytics data */
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      // Don't fetch analytics for clients
-      if (userRole === "client" || userRole === "client_admin") return;
-      try {
-        const data = {
-          projectId: id,
-          managerId: sessionStorage.getItem("userId"),
-        };
-        const response = await Service.GetAnalyticsScore(data);
-        const analyticsData = response?.data || response || [];
-        setAnalyticsData(analyticsData);
-      } catch (error) {
-        console.error("Error fetching analytics:", error);
-      }
-    };
-    fetchAnalytics();
-  }, [id, userRole]);
-
-  const submittalData = useMemo(() => {
-    return project?.submittals || [];
-  }, [project]);
-
   const handleCoSuccess = (createdCO: any) => {
     const coId = createdCO?.id || createdCO?._id;
     if (coId) {
@@ -183,22 +159,9 @@ const ProjectDetailsContent = ({
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
   ];
 
-  const defaultMobileTabs = [
-    { key: "details", label: "Details" },
-    { key: "analytics", label: "Analytics" },
-    { key: "files", label: "Files" },
-    { key: "wbs", label: "WBS" },
-    { key: "milestones", label: "Milestones" },
-    { key: "team", label: "Team" },
-    { key: "timeline", label: "Timeline" },
-    { key: "notes", label: "Notes" },
-    { key: "rfi", label: "RFI" },
-    { key: "submittals", label: "Submittals" },
-    { key: "changeOrder", label: "Change Order" },
-  ];
+
 
   const tabsToShow = isClient ? clientTabs : defaultDesktopTabs;
-  const mobileTabsToShow = isClient ? clientTabs : defaultMobileTabs;
 
   if (loading)
     return (
@@ -215,28 +178,7 @@ const ProjectDetailsContent = ({
       </div>
     );
 
-  const tabs = isClient
-    ? [
-        "overview",
-        "details",
-        "files",
-        "milestones",
-        "rfi",
-        "submittals",
-        "changeOrder",
-      ]
-    : [
-        "overview",
-        "analytics",
-        "details",
-        "files",
-        "wbs",
-        "milestones",
-        "notes",
-        "rfi",
-        "submittals",
-        "changeOrder",
-      ];
+
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">

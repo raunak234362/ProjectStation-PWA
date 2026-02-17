@@ -71,7 +71,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
           )}
         </div>
       </div>,
-      document.body
+      document.body,
     );
   }
   const userRole = sessionStorage.getItem("userRole");
@@ -90,9 +90,12 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
       accessorKey: "description",
       header: "Message",
       cell: ({ row }) => (
-        <p className="truncate max-w-[180px]">
-          {row.original.reason || row.original.description}
-        </p>
+        <div
+          className="truncate max-w-[180px]"
+          dangerouslySetInnerHTML={{
+            __html: row.original.reason || row.original.description || "",
+          }}
+        />
       ),
     },
     {
@@ -118,30 +121,24 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
     },
 
     {
-      accessorKey: "reason",
-      header: "Message",
-      cell: ({ row }) => (
-        <div
-          style={{ marginLeft: row.original.parentResponseId ? "20px" : "0px" }}
-        >
-          {row.original.reason}
-        </div>
-      ),
-    },
-
-    {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => (
-        <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${row.original.status === "OPEN"
-            ? "bg-gray-100 text-black border border-gray-200"
-            : "bg-gray-100 text-black border border-gray-200"
+      cell: ({ row }) => {
+        const status = row.original.status;
+        return status ? (
+          <span
+            className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${
+              status === "OPEN"
+                ? "bg-gray-100 text-black border border-gray-200"
+                : "bg-gray-100 text-black border border-gray-200"
             }`}
-        >
-          {row.original.status}
-        </span>
-      ),
+          >
+            {status}
+          </span>
+        ) : (
+          <span className="text-gray-400">—</span>
+        );
+      },
     },
   ];
 
@@ -172,16 +169,17 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
                 <h1 className="text-2xl font-black text-black uppercase tracking-tight">
                   {rfi.subject}
                 </h1>
-                <span
-                  className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gray-100 text-black border border-gray-200"
-                >
+                <span className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gray-100 text-black border border-gray-200">
                   {rfi.isAproovedByAdmin ? "Approved" : "Pending"}
                 </span>
               </div>
 
               {/* Basic Info */}
               <Info label="Project" value={rfi.project?.name || "—"} />
-              <Info label="Fabricator" value={rfi?.fabricator?.fabName || "—"} />
+              <Info
+                label="Fabricator"
+                value={rfi?.fabricator?.fabName || "—"}
+              />
               <Info
                 label="Created At"
                 value={new Date(rfi?.date).toLocaleString()}
@@ -189,7 +187,9 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
 
               {/* Description */}
               <div>
-                <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
+                <h4 className="font-semibold text-gray-700 mb-1">
+                  Description
+                </h4>
                 <div
                   className="text-gray-700 bg-gray-50 p-3 rounded-lg border prose prose-sm max-w-none"
                   dangerouslySetInnerHTML={{
@@ -199,23 +199,21 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
               </div>
 
               {/* Files */}
-              <RenderFiles
-                files={rfi.files}
-                table="rFI"
-                parentId={rfi.id}
-              />
+              <RenderFiles files={rfi.files} table="rFI" parentId={rfi.id} />
             </div>
 
             {/* RIGHT: Responses */}
             <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
               {/* Header + Add Response Button */}
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-black text-black uppercase tracking-tight">Responses</h2>
+                <h2 className="text-xl font-black text-black uppercase tracking-tight">
+                  Responses
+                </h2>
 
                 {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
                   <Button
                     onClick={() => setShowModal(true)}
-                    className="px-4 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
                   >
                     + Add Response
                   </Button>
@@ -255,7 +253,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

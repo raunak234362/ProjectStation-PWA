@@ -504,18 +504,7 @@ const GetProjectById = ({
           {/* ✅ Details */}
           {activeTab === "details" && (
             <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-              <div className="md:col-span-2 mt-6">
-                <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
-                  <FolderOpenDot className="w-4 h-4" />
-                  Project Description
-                </h4>
-                <div
-                  className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: project.description || "No description available.",
-                  }}
-                />
-              </div>
+              
               <div className="space-y-3">
                 {/* <InfoRow
                   label="Estimated Hours"
@@ -573,7 +562,7 @@ const GetProjectById = ({
               </div>
 
               <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-                <h4 className="text-lg font-semibold text-green-700 mb-3 flex items-center gap-1">
+                <h4 className="text-lg font-semibold text-black mb-3 flex items-center gap-1">
                   <Settings className="w-5 h-5" /> Connection Design Scope
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -595,7 +584,7 @@ const GetProjectById = ({
                 </div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-                <h4 className="text-lg font-semibold text-green-700 mb-3 flex items-center gap-1">
+                <h4 className="text-lg font-semibold text-black mb-3 flex items-center gap-1">
                   <Settings className="w-5 h-5" /> Detailing Scope
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -608,6 +597,18 @@ const GetProjectById = ({
                     active={project.detailingMisc}
                   />
                 </div>
+              </div>
+              <div className="md:col-span-2 mt-6">
+                <h4 className="font-semibold text-black mb-2 text-xl flex items-center gap-1">
+                  <FolderOpenDot className="w-4 h-4" />
+                  Project Description / Scope
+                </h4>
+                <div
+                  className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: project.description || "No description available.",
+                  }}
+                />
               </div>
               {/* Footer Buttons */}
               {userRole !== "client" && userRole !== "client_admin" && (

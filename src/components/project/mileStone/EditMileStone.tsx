@@ -7,7 +7,7 @@ import Input from "../../fields/input";
 import Button from "../../fields/Button";
 import RichTextEditor from "../../fields/RichTextEditor";
 import Service from "../../../api/Service";
-import type { ProjectMilestone } from "../../../interface";
+
 
 interface EditMileStoneProps {
   milestoneId: string;
@@ -27,7 +27,7 @@ const EditMileStone = ({
     register,
     handleSubmit,
     control,
-    setValue,
+
     reset,
     formState: { errors, isSubmitting },
   } = useForm({

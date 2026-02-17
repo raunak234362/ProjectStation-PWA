@@ -87,7 +87,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
       {/* Header */}
       {!hideHeader && (
         <div className="flex justify-between items-center mb-2">
-          <h4 className="text-sm font-black text-black uppercase tracking-tight">Project Files</h4>
+          {/* <h4 className="text-sm font-black text-black uppercase tracking-tight">Project Files</h4> */}
           {onAddFilesClick && (
             <Button onClick={onAddFilesClick} className="scale-90 origin-right">
               <Plus size={14} className="mr-1" /> Add Document

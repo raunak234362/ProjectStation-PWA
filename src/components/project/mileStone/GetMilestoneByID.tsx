@@ -156,18 +156,15 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
       {/* Header */}
-      <div className="bg-linear-to-r from-green-600 to-green-500 px-6 py-4 flex justify-between items-center">
+      <div className=" px-6 py-4 border-b flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
             <CheckCircle2 className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-xl  text-white leading-tight">
+            <h2 className="text-xl  text-black leading-tight">
               {milestone.subject}
             </h2>
-            <p className="text-green-50 text-xs font-medium">
-              ID: #{milestone.id}
-            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -177,7 +174,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
               variant="ghost"
               size="sm"
               onClick={() => setIsUpdateProgressModalOpen(true)}
-              className="text-white hover:bg-white/20 flex items-center gap-2 border border-white/30"
+              className="text-black border border-black bg-green-50 hover:bg-white/20 flex items-center gap-2 "
             >
               <CheckCircle2 className="w-4 h-4" />
               Update Progress
@@ -186,7 +183,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             variant="ghost"
             size="sm"
             onClick={() => setIsEditModalOpen(true)}
-            className="text-white hover:bg-white/20 flex items-center gap-2"
+            className="text-black border border-black bg-green-50 hover:bg-white/20 flex items-center gap-2"
           >
             <Edit className="w-4 h-4" />
             Edit
