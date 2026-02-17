@@ -579,7 +579,7 @@ const GetProjectById = ({
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <ScopeTag
                     label="Main Design"
-                    label="Main Design"
+                   
                     active={project.connectionDesign}
                   />
                   <ScopeTag label="Misc Design" active={project.miscDesign} />
