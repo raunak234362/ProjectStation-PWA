@@ -472,7 +472,7 @@ const ProjectDetailsContent = ({
               parentId={id}
               formatDate={formatDate}
             />
-            <AllDocument />
+            <AllDocument projectId={id} />
           </div>
         )}
 
