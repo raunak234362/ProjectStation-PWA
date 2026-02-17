@@ -6,6 +6,7 @@ import type { RFIItem } from "../../interface";
 import GetRFIByID from "./GetRFIByID";
 import { Loader2, Inbox } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
+import { Suspense } from "react";
 
 interface AllRFIProps {
   rfiData?: RFIItem[];
@@ -14,7 +15,7 @@ interface AllRFIProps {
 const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
   const [loading, setLoading] = useState(true);
-  // const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
+  const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
   console.log(rfiData);
 
   const userRole = sessionStorage.getItem("userRole");
@@ -45,8 +46,8 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
         const s = row.original.sender;
         return s
           ? `${s.firstName ?? ""} ${s.middleName ?? ""} ${s.lastName ?? ""}`.trim() ||
-              s.username ||
-              "—"
+          s.username ||
+          "—"
           : "—";
       },
     },
@@ -58,11 +59,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 text-xs rounded-full ${
-            row.original.status === true
-              ? "bg-yellow-100 text-yellow-700"
-              : "bg-green-100 text-green-700"
-          }`}
+          className="px-3 py-1 text-[10px] uppercase font-bold tracking-tight rounded-lg bg-gray-100 text-black border border-gray-200"
         >
           {row.original.status ? "PENDING" : "RESPONDED"}
         </span>
@@ -106,9 +103,14 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
       <DataTable
         columns={columns}
         data={rfis}
-        detailComponent={({ row }) => <GetRFIByID id={row.id} />}
+        onRowClick={(row) => setSelectedRfiID(row.id)}
         pageSizeOptions={[5, 10, 25]}
       />
+      {selectedRfiID && (
+        <Suspense fallback={<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md text-white">Loading...</div>}>
+          <GetRFIByID id={selectedRfiID} onClose={() => setSelectedRfiID(null)} />
+        </Suspense>
+      )}
     </div>
   );
 };

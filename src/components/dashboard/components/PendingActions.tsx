@@ -7,7 +7,7 @@ import {
   Search,
 } from "lucide-react";
 import type { DashboardStats } from "../WBTDashboard";
-import { cn } from "../../../lib/utils";
+
 
 interface PendingActionsProps {
   dashboardStats: DashboardStats | null;
@@ -27,7 +27,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
       subcount: dashboardStats?.newRFQ || 0,
       subtitle: "New RFQ",
       icon: Search,
-      color: "cyan",
+      // No fills, using standard icon color transition
     },
     {
       title: "RFI",
@@ -35,66 +35,36 @@ const PendingActions: React.FC<PendingActionsProps> = ({
       subtitle: "New RFI",
       subcount: dashboardStats?.newRFI || 0,
       icon: FileText,
-      color: "amber",
     },
     {
       title: "Submittals",
       count: dashboardStats?.pendingSubmittals,
       subtitle: "Response Pending",
       icon: RefreshCw,
-      color: "purple",
     },
     {
       title: "COR",
       count: dashboardStats?.pendingChangeOrders || 0,
-      subtitle: "New Change Orders",
+      subtitle: "Change Orders",
       subcount: dashboardStats?.newChangeOrders || 0,
       icon: Activity,
-      color: "rose",
     },
   ];
-
-  console.log(dashboardStats, "============");
 
   const filteredActions = filter
     ? actions.filter((action) => filter.includes(action.title as any))
     : actions;
 
-  const colorClasses = {
-    amber: {
-      bg: "bg-amber-50",
-      hoverBg: "bg-amber-100",
-      text: "text-amber-600",
-    },
-    purple: {
-      bg: "bg-purple-50",
-      hoverBg: "bg-purple-100",
-      text: "text-purple-600",
-    },
-    rose: {
-      bg: "bg-rose-50",
-      hoverBg: "bg-rose-100",
-      text: "text-rose-600",
-    },
-    cyan: {
-      bg: "bg-cyan-50",
-      hoverBg: "bg-cyan-100",
-      text: "text-cyan-600",
-    },
-  };
 
   return (
-    <div className="flex flex-col justify-center h-full bg-white rounded-2xl p-6 transition-all duration-300">
-      <h3 className="text-xl md:text-2xl text-gray-800 mb-6 flex items-center gap-3 px-2 tracking-tight">
-        <ClipboardList className="text-[#6bbd45]" size={24} strokeWidth={2.5} />
+    <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
+      <h3 className="text-xl md:text-2xl font-bold text-black mb-6 flex items-center gap-3 tracking-tight ml-1">
+        <ClipboardList size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
         PENDING ACTIONS
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredActions.map((action) => {
-          const colors =
-            colorClasses[action.color as keyof typeof colorClasses];
-
           return (
             <div
               key={action.title}
@@ -109,26 +79,27 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   onActionClick(actionMap[action.title] || action.title);
                 }
               }}
-              className="flex flex-row gap-5 hover-card p-5 group"
+              className="p-5 h-[110px] rounded-xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
             >
-              <div
-                className={cn(
-                  "p-3.5 rounded-xl shadow-sm transition-all group-hover:scale-110",
-                  colors.bg,
-                  colors.text,
-                )}
-              >
-                <action.icon size={25} strokeWidth={2.5} />
+              <div className="flex items-center gap-4 z-10">
+                <div className="p-3 rounded-full bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
+                  <action.icon size={24} strokeWidth={2} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm md:text-base font-bold text-black uppercase tracking-widest">
+                    {action.title}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex flex-row items-center justify-between w-full min-w-0">
-                <div className="text-sm md:text-lg font-semibold text-gray-600 uppercase tracking-widest truncate pr-2">
-                  {action.title}
-                </div>
-                <div className="text-2xl md:text-3xl font-bold text-[#6bbd45] tracking-tighter">
+              <div className="z-10 text-right">
+                <span className="text-4xl font-black text-black tracking-tighter">
                   {action.count}
-                </div>
+                </span>
               </div>
+
+              {/* Subtle background interaction */}
+              <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
             </div>
           );
         })}

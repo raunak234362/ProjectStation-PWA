@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { ClipboardList, AlertCircle, X } from "lucide-react";
+import { ClipboardList, AlertCircle, X, FileText } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
 import AddSubmittal from "../../submittals/AddSubmittals";
@@ -53,72 +53,86 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   }, [pendingSubmittals]);
 
   const invoiceNeedRaise = useMemo(() => {
-    // Filter invoices that are not paid or need action
     return invoices.filter((inv) => !inv.paymentStatus);
   }, [invoices]);
 
+
   return (
-    <div className="bg-white p-4 rounded-2xl flex flex-col h-full transition-colors duration-300">
+    <div className="flex flex-col h-full p-2 transition-all duration-300">
       {!hideTabs && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 shrink-0">
-          <div className="flex gap-2 bg-white/50 dark:bg-slate-800/50 p-1 rounded-lg self-start sm:self-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 shrink-0">
+          <div className="flex gap-2 p-1 rounded-xl self-start sm:self-auto bg-gray-100/50">
             <button
               onClick={() => setActiveTab("submittals")}
-              className={`px-4 py-2 text-sm font-bold uppercase tracking-widest rounded-xl transition-all ${activeTab === "submittals"
-                  ? "bg-green-500 text-white shadow-lg shadow-green-200"
-                  : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
-                }`}
+              className={cn(
+                "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all",
+                activeTab === "submittals"
+                  ? "bg-white text-black shadow-sm border border-black"
+                  : "text-black hover:bg-gray-200/50"
+              )}
             >
               Upcoming Submittals
             </button>
             <button
               onClick={() => setActiveTab("invoices")}
-              className={`px-4 py-2 text-sm font-bold uppercase tracking-widest rounded-xl transition-all ${activeTab === "invoices"
-                  ? "bg-green-500 text-white shadow-lg shadow-green-200"
-                  : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
-                }`}
+              className={cn(
+                "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all",
+                activeTab === "invoices"
+                  ? "bg-white text-black shadow-sm border border-black"
+                  : "text-black hover:bg-gray-200/50"
+              )}
             >
-              Invoice Need Raise
+              Invoices
             </button>
           </div>
-          <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm border border-green-500/10">
+          <span className="px-3 py-1 bg-green-50 text-green-700 text-[10px] uppercase font-black rounded-full border border-green-100">
             {activeTab === "submittals"
-              ? `${pendingSubmittals.length} Pending`
-              : `${invoiceNeedRaise.length} Need Raise`}
+              ? `${pendingSubmittals.length} PENDING`
+              : `${invoiceNeedRaise.length} ACTION REQ`}
           </span>
         </div>
       )}
       {hideTabs && (
-        <div className="flex items-center justify-between mb-4 shrink-0">
-          <h3 className="text-lg text-gray-700 dark:text-white">
-            {activeTab === "submittals" ? "Upcoming Submittals" : ""}
+        <div className="flex items-center justify-between mb-6 shrink-0 ml-1">
+          <h3 className="text-xl md:text-2xl font-bold text-black flex items-center gap-3 tracking-tight">
+            {activeTab === "submittals" ? (
+              <>
+                <ClipboardList size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
+                UPCOMING SUBMITTALS
+              </>
+            ) : (
+              <>
+                <FileText size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
+                INVOICES RECEIVED
+              </>
+            )}
           </h3>
-          <span className="px-3 py-1 bg-white text-gray-500 text-[10px] uppercase font-black rounded-full shadow-sm border border-green-500/5">
+          <span className="px-3 py-1 bg-gray-50 text-black text-[10px] uppercase font-black rounded-full border border-gray-100">
             {activeTab === "submittals"
-              ? `${pendingSubmittals.length} Pending`
-              : `${invoiceNeedRaise.length} Need Raise`}
+              ? `${pendingSubmittals.length} PENDING`
+              : `${invoiceNeedRaise.length} ACTION REQ`}
           </span>
         </div>
       )}
 
-      <div className="flex-1 space-y-4 min-h-0 max-h-[600px] overflow-y-auto">
+      <div className="flex-1 space-y-4 min-h-0 overflow-y-auto custom-scrollbar pr-2">
         {activeTab === "submittals" ? (
           pendingSubmittals.length > 0 ? (
             Object.entries(groupedSubmittals).map(([projectName, items]) => (
               <div
                 key={projectName}
-                className="space-y-2 bg-green-50/30 p-2 rounded-xl border border-green-500/10"
+                className="space-y-2 bg-gray-50/50 p-3 rounded-xl border border-gray-100"
               >
-                <div className="flex items-center gap-2 py-1">
-                  <div className="w-1.5 h-4 bg-green-500 rounded-full"></div>
-                  <h3 className="text-xl font-bold text-gray-800 uppercase tracking-tight">
+                <div className="flex items-center gap-2 py-1 mb-1">
+                  <div className="w-1 h-3 bg-green-500 rounded-full"></div>
+                  <h3 className="text-sm font-bold text-black uppercase tracking-tight truncate">
                     {projectName}
                   </h3>
-                  <span className="text-xs bg-white text-green-700 font-bold px-2 py-0.5 rounded-full shadow-sm border border-green-500/10">
+                  <span className="text-[10px] bg-white text-black font-bold px-1.5 py-0.5 rounded border border-gray-200 ml-auto">
                     {items.length}
                   </span>
                   {!hideFabricator && (
-                    <span className="text-xs font-bold text-green-800 bg-green-100 px-2 py-0.5 rounded-full ml-auto uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-black bg-white border border-gray-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
                       {items[0]?.fabricator?.fabName ||
                         items[0]?.fabName ||
                         "N/A"}
@@ -140,19 +154,19 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                           }
                         }}
                         className={cn(
-                          "hover-card p-3 w-full text-left flex flex-col gap-1",
-                          overdue ? "border-red-500/40 bg-red-50/30" : "",
+                          "w-full text-left flex flex-col gap-1 p-3 rounded-lg border transition-all bg-white hover:shadow-md group",
+                          overdue ? "border-red-500 border-l-[6px] border-l-red-500" : "border-black border-l-[6px] border-l-[#6bbd45]",
                         )}
                       >
                         <div className="flex justify-between items-start">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
                             {overdue && (
-                              <AlertCircle size={14} className="text-red-500" />
+                              <AlertCircle size={14} className="text-red-500 shrink-0" />
                             )}
                             <h4
                               className={cn(
-                                "text-lg font-semibold transition-colors",
-                                overdue ? "text-red-700" : "text-gray-800",
+                                "text-sm font-semibold truncate transition-colors",
+                                overdue ? "text-red-700" : "text-black group-hover:text-black",
                               )}
                             >
                               {submittal.subject || "No Subject"}
@@ -160,19 +174,15 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                           </div>
                           <span
                             className={cn(
-                              "text-xs font-bold uppercase tracking-widest",
-                              overdue ? "text-red-500" : "text-gray-400",
+                              "text-[10px] font-bold uppercase tracking-widest shrink-0 ml-2",
+                              overdue ? "text-red-500" : "text-black bg-gray-50 px-1.5 py-0.5 rounded",
                             )}
                           >
                             {formatDate(submittal.approvalDate)}
                           </span>
                         </div>
                         {overdue && (
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black text-red-600 animate-pulse">
-                              OVERDUE
-                            </span>
-                          </div>
+                          <p className="text-[10px] font-black text-red-600 tracking-wider">OVERDUE</p>
                         )}
                       </button>
                     );
@@ -181,13 +191,13 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
               </div>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center h-full py-8 text-gray-400">
-              <ClipboardList size={32} className="mb-2 opacity-20" />
-              <p className="text-xs">No upcoming submittals found.</p>
+            <div className="flex flex-col items-center justify-center h-40 text-gray-400 border-2 border-dashed border-gray-100 rounded-xl">
+              <ClipboardList size={24} className="mb-2 opacity-20" />
+              <p className="text-xs font-medium">No upcoming submittals</p>
             </div>
           )
         ) : invoiceNeedRaise.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {invoiceNeedRaise.map((invoice, index) => (
               <div
                 key={invoice.id || index}
@@ -199,30 +209,31 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                     setIsModalOpen(true);
                   }
                 }}
-                className="hover-card p-3 w-full text-left"
+                className="w-full text-left p-4 rounded-xl border border-black border-l-[6px] border-l-[#6bbd45] bg-white hover:shadow-md transition-all cursor-pointer group relative overflow-hidden"
               >
-                <div className="flex justify-between items-start mb-1">
-                  <h4 className="text-lg font-bold text-gray-800 group-hover:text-green-600 transition-colors">
+
+                <div className="flex justify-between items-start mb-2 pl-2">
+                  <h4 className="text-sm font-bold text-black group-hover:text-black transition-colors">
                     {invoice.invoiceNumber || "No Number"}
                   </h4>
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                  <span className="text-[10px] font-bold text-black uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded">
                     {formatDate(invoice.invoiceDate)}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 pl-2">
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-gray-400 uppercase font-black">
+                    <span className="text-[10px] text-black uppercase font-black tracking-wider">
                       Customer
                     </span>
-                    <span className="text-xs font-bold text-gray-700 truncate">
+                    <span className="text-xs font-semibold text-black truncate">
                       {invoice.customerName || "N/A"}
                     </span>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-[10px] text-gray-400 uppercase font-black">
+                    <span className="text-[10px] text-black uppercase font-black tracking-wider">
                       Amount
                     </span>
-                    <span className="text-xs font-black text-green-600">
+                    <span className="text-sm font-black text-black">
                       ${invoice.totalInvoiceValue?.toLocaleString() || "0"}
                     </span>
                   </div>
@@ -231,13 +242,9 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full py-8 text-gray-400">
-            <ClipboardList size={32} className="mb-2 opacity-20" />
-            {userRole === "client" ? (
-              <p className="text-xs">No invoices received.</p>
-            ) : (
-              <p className="text-xs">No invoices need raising.</p>
-            )}
+          <div className="flex flex-col items-center justify-center h-40 text-gray-400 border-2 border-dashed border-gray-100 rounded-xl">
+            <ClipboardList size={24} className="mb-2 opacity-20" />
+            <p className="text-xs font-medium">{userRole === "client" ? "No invoices received" : "No active invoices"}</p>
           </div>
         )}
       </div>
@@ -247,8 +254,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-lg  text-gray-700">
-                Create Submittal
+              <h3 className="text-lg font-bold text-gray-800">
+                {activeTab === "submittals" ? "Submittal Details" : "Invoice Details"}
               </h3>
               <button
                 onClick={() => {

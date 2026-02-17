@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
 import { Loader2, AlertCircle, Settings } from "lucide-react";
@@ -21,9 +22,10 @@ import { toast } from "react-toastify";
 
 interface GetRfqByIDProps {
   id: string;
+  onClose?: () => void;
 }
 
-const GetRFQByID = ({ id }: GetRfqByIDProps) => {
+const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
   console.log("GetRFQByID initialized with ID:", id);
   const [rfq, setRfq] = useState<RFQItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,9 +44,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   // New states for quotation responses
-  const [showQuotationResponseModal, setShowQuotationResponseModal] =
-    useState(false);
-  const [quotations, setQuotations] = useState<any[]>([]);
+  const [showQuotationResponseModal, setShowQuotationResponseModal] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<any | null>(null);
 
   const dispatch = useDispatch();
@@ -139,21 +139,27 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-8 text-gray-700">
-        <Loader2 className="w-5 h-5 animate-spin mr-2" />
-        Loading RFQ details...
-      </div>
-    );
-  }
-
-  if (error || !rfq) {
-    return (
-      <div className="flex items-center justify-center py-8 text-red-600">
-        <AlertCircle className="w-5 h-5 mr-2" />
-        {error || "RFQ not found"}
-      </div>
+  if (loading || error || !rfq) {
+    return createPortal(
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+        <div className="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
+          {loading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin text-green-600" />
+              <span className="text-gray-700">Loading RFQ details...</span>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span className="text-red-600">{error || "RFQ not found"}</span>
+              <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full ml-2">
+                <X size={20} />
+              </button>
+            </>
+          )}
+        </div>
+      </div>,
+      document.body
     );
   }
 
@@ -184,7 +190,7 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       cell: ({ row }) => {
         const count = row.original.files?.length ?? 0;
         return count > 0 ? (
-          <span className="text-green-700 font-medium">{count} file(s)</span>
+          <span className="text-black font-medium">{count} file(s)</span>
         ) : (
           <span className="text-gray-400">—</span>
         );
@@ -204,11 +210,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "OPEN"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
+          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${row.original.status === "OPEN"
+            ? "bg-gray-100 text-black border border-gray-200"
+            : "bg-gray-100 text-black border border-gray-200"
+            }`}
         >
           {row.original.status}
         </span>
@@ -259,11 +264,10 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs  ${
-            row.original.approvalStatus
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
+          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${row.original.approvalStatus
+            ? "bg-gray-100 text-black border border-gray-200"
+            : "bg-gray-100 text-black border border-gray-200"
+            }`}
         >
           {row.original.approvalStatus ? "Approved" : "Pending"}
         </span>
@@ -304,54 +308,66 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
   /* ---------------- TABLE STATE ---------------- */
   // Removed redundant useDataTable hook
 
-  return (
-    <>
-      <div className="p-0 sm:p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
-          <div className="bg-white sm:bg-linear-to-br sm:from-green-50 sm:to-white p-4 sm:p-6 rounded-xl shadow-sm sm:shadow-md space-y-5 sm:space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <h3 className="text-xl sm:text-2xl  text-green-700 wrap-break-word max-w-full">
-                  {rfq?.projectName}
-                </h3>
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
+        {/* Modal Header */}
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
+          <div>
+            <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-tight">
+              RFQ Details
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+          >
+            Close
+          </button>
+        </div>
 
-                {/* Status tag */}
-                <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium shrink-0 ${
-                    rfq?.status === "RECEIVED"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-green-100 text-green-700"
-                  }`}
-                >
-                  {rfq?.status}
-                </span>
-              </div>
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
+            <div className="bg-[#fafffb] border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <h3 className="text-xl sm:text-2xl font-black text-black wrap-break-word max-w-full uppercase tracking-tight">
+                    {rfq?.projectName}
+                  </h3>
 
-              {/* Action buttons */}
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                {/* EDIT RFQ */}
-                {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
-                  <>
-                    <Button
-                      onClick={() => alert("Coming soon: Edit RFQ modal")}
-                      className="flex-1 sm:flex-none px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
-                    >
-                      Edit
-                    </Button>
+                  {/* Status tag */}
+                  <span
+                    className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gray-100 text-black border border-gray-200"
+                  >
+                    {rfq?.status}
+                  </span>
+                </div>
 
-                    <Button
-                      onClick={() => setShowStatusModal(true)}
-                      className="flex-1 sm:flex-none px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
-                    >
-                      Change Status
-                    </Button>
-                  </>
-                )}
+                {/* Action buttons */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  {/* EDIT RFQ */}
+                  {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+                    <>
+                      <Button
+                        onClick={() => alert("Coming soon: Edit RFQ modal")}
+                        className="flex-1 sm:flex-none px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
+                      >
+                        Edit
+                      </Button>
 
-                {/* DELETE RFQ */}
-                {/* <Button
+                      <Button
+                        onClick={() => setShowStatusModal(true)}
+                        className="flex-1 sm:flex-none px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+                      >
+                        Change Status
+                      </Button>
+                    </>
+                  )}
+
+                  {/* DELETE RFQ */}
+                  {/* <Button
                   type="button"
                   variant="destructive"
                   onClick={(e) => {
@@ -362,365 +378,351 @@ const GetRFQByID = ({ id }: GetRfqByIDProps) => {
                 >
                   Delete
                 </Button> */}
+                </div>
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Info label="Subject" value={rfq?.subject || ""} />
+                <Info label="Project Number" value={rfq?.projectNumber || ""} />
+                <Info label="Status" value={rfq?.status || ""} />
+                <Info label="Tools" value={rfq?.tools || "N/A"} />
+                <Info label="Due Date" value={formatDate(rfq?.estimationDate)} />
+                <Info label="Bid Amount (USD)" value={rfq?.bidPrice ?? "—"} />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <h4 className=" text-gray-700 text-sm">Description</h4>
+                <div
+                  className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm overflow-x-auto break-words"
+                  dangerouslySetInnerHTML={{
+                    __html: rfq?.description || "No description provided",
+                  }}
+                />
+              </div>
+
+              {/* Scopes */}
+              <div className="space-y-3">
+                <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
+                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-tight">
+                    <Settings className="w-4 h-4" /> Connection Design Scope
+                  </h4>
+                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                    <Scope
+                      label="Connection Design"
+                      enabled={rfq?.connectionDesign || false}
+                    />
+                    <Scope
+                      label="Misc Design"
+                      enabled={rfq?.miscDesign || false}
+                    />
+                    <Scope
+                      label={
+                        !rfq?.customerDesign && rfq?.sender?.fabricator?.fabName
+                          ? `Connection design by ${rfq.sender.fabricator.fabName}`
+                          : "Connection Design by WBT"
+                      }
+                      enabled={true}
+                    />
+                  </div>
+                </div>
+                <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
+                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-tight">
+                    <Settings className="w-4 h-4" /> Detailing Scope
+                  </h4>
+                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                    <Scope
+                      label="Detailing Main"
+                      enabled={rfq?.detailingMain || false}
+                    />
+                    <Scope
+                      label="Detailing Misc"
+                      enabled={rfq?.detailingMisc || false}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Files */}
+              <RenderFiles
+                files={rfq?.files || []}
+                table="rFQ"
+                parentId={rfq?.id}
+                formatDate={formatDate}
+              />
+              {userRole !== "CLIENT_ADMIN" &&
+                userRole !== "CLIENT" &&
+                userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
+                  <div className="flex flex-col gap-2 pt-2">
+                    <Button
+                      onClick={() => setShowEstimationModal(true)}
+                      className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
+                    >
+                      Raise For Estimation
+                    </Button>
+                    <Button
+                      onClick={() => handleCDQuotationModal()}
+                      className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight "
+                    >
+                      Raise for Connection Designer Quotation
+                    </Button>
+                  </div>
+                )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Info label="Subject" value={rfq?.subject || ""} />
-              <Info label="Project Number" value={rfq?.projectNumber || ""} />
-              <Info label="Status" value={rfq?.status || ""} />
-              <Info label="Tools" value={rfq?.tools || "N/A"} />
-              <Info label="Due Date" value={formatDate(rfq?.estimationDate)} />
-              <Info label="Bid Amount (USD)" value={rfq?.bidPrice ?? "—"} />
-            </div>
+            {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
+            <div className="bg-[#fafffb] border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
+              {/* Header + Add Response Button */}
+              <div className="flex justify-between items-center gap-4">
+                <h1 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                  Responses
+                </h1>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <h4 className=" text-gray-700 text-sm">Description</h4>
-              <div
-                className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm overflow-x-auto break-words"
-                dangerouslySetInnerHTML={{
-                  __html: rfq?.description || "No description provided",
+                {(userRole === "ADMIN" ||
+                  userRole === "DEPUTY_MANAGER" ||
+                  userRole === "OPERATION_EXECUTIVE" ||
+                  userRole === "USER") && (
+                    <Button
+                      onClick={() => setShowResponseModal(true)}
+                      className="px-4 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+                    >
+                      + Add Response
+                    </Button>
+                  )}
+              </div>
+              {showResponseModal && (
+                <ResponseModal
+                  rfqId={id}
+                  onClose={() => setShowResponseModal(false)}
+                  onSuccess={fetchRfq}
+                />
+              )}
+              {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
+              {userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
+                (rfq?.responses?.length ? (
+                  <DataTable
+                    columns={responseColumns}
+                    data={rfq.responses} // Ensure rfq.responses is an array
+                    pageSizeOptions={[5, 10]}
+                    onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
+                  />
+                ) : (
+                  <p className="text-gray-700 italic">No responses yet.</p>
+                ))}
+              <div className="mt-4">
+                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                  <>
+                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                      CD Quotation
+                    </p>
+                  // Show their quotation if submitted
+                    <DataTable
+                      columns={quotationColumns}
+                      data={rfq?.CDQuotas || []}
+                      pageSizeOptions={[5]}
+                      onRowClick={(row: any) => setSelectedQuotation(row)}
+                    />
+                  </>
+                ) : (
+                  // Show Submit Button if not submitted
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                    {userRole === "CONNECTION_DESIGNER_ENGINEER" ? (
+                      <>
+                        <p className="text-gray-500 mb-4 text-center">
+                          You haven't submitted a quotation yet.
+                        </p>
+                        <Button
+                          onClick={() => setShowQuotationResponseModal(true)}
+                          className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                        >
+                          Submit Quotation Response
+                        </Button>
+                      </>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+        {showCDQuotationModal && (
+          <QuotationRaise
+            rfqId={id}
+            onClose={() => handleCDQuotationModalClose()}
+            onSuccess={fetchRfq} // refresh after submit
+          />
+        )}
+
+        {selectedResponse && (
+          <ResponseDetailsModal
+            response={selectedResponse}
+            onClose={() => setSelectedResponse(null)}
+          />
+        )}
+
+        {/* Quotation Submission Modal */}
+        {showQuotationResponseModal && (
+          <QuotationResponseModal
+            rfqId={id}
+            onClose={() => setShowQuotationResponseModal(false)}
+            onSuccess={fetchRfq}
+          />
+        )}
+
+        {/* Quotation Details Modal */}
+        {selectedQuotation && (
+          <QuotationResponseDetailsModal
+            quotation={selectedQuotation}
+            onClose={() => setSelectedQuotation(null)}
+            onSuccess={fetchRfq}
+          />
+        )}
+
+        {/* Estimation Modal */}
+        {showEstimationModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+              <button
+                onClick={() => setShowEstimationModal(false)}
+                className="absolute top-4 right-4 text-gray-700 hover:text-gray-700 z-10"
+              >
+                ✕
+              </button>
+              <AddEstimation
+                initialRfqId={id}
+                onSuccess={() => {
+                  setShowEstimationModal(false);
+                  fetchRfq();
                 }}
               />
             </div>
-
-            {/* Scopes */}
-            <div className="space-y-3">
-              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-                <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-1">
-                  <Settings className="w-4 h-4" /> Connection Design Scope
-                </h4>
-                <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
-                  <Scope
-                    label="Connection Design"
-                    enabled={rfq?.connectionDesign || false}
-                  />
-                  <Scope
-                    label="Misc Design"
-                    enabled={rfq?.miscDesign || false}
-                  />
-                  <Scope
-                    label={
-                      !rfq?.customerDesign && rfq?.sender?.fabricator?.fabName
-                        ? `Connection design by ${rfq.sender.fabricator.fabName}`
-                        : "Connection Design by WBT"
-                    }
-                    enabled={true}
-                  />
-                </div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-                <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-1">
-                  <Settings className="w-4 h-4" /> Detailing Scope
-                </h4>
-                <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
-                  <Scope
-                    label="Detailing Main"
-                    enabled={rfq?.detailingMain || false}
-                  />
-                  <Scope
-                    label="Detailing Misc"
-                    enabled={rfq?.detailingMisc || false}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Files */}
-            <RenderFiles
-              files={rfq?.files || []}
-              table="rFQ"
-              parentId={rfq?.id}
-              formatDate={formatDate}
-            />
-            {userRole !== "CLIENT_ADMIN" &&
-              userRole !== "CLIENT" &&
-              userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
-                <div className="flex flex-col gap-2 pt-2">
-                  <Button
-                    onClick={() => setShowEstimationModal(true)}
-                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
-                  >
-                    Raise For Estimation
-                  </Button>
-                  <Button
-                    onClick={() => handleCDQuotationModal()}
-                    className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight "
-                  >
-                    Raise for Connection Designer Quotation
-                  </Button>
-                </div>
-              )}
           </div>
+        )}
 
-          {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-          <div className="bg-white sm:bg-linear-to-br sm:from-green-50 sm:to-white p-4 sm:p-6 rounded-xl shadow-sm sm:shadow-md space-y-5 sm:space-y-6">
-            {/* Header + Add Response Button */}
-            <div className="flex justify-between items-center gap-4">
-              <h1 className="text-xl sm:text-2xl font-semibold text-green-700">
-                Responses
-              </h1>
-
-              {(userRole === "ADMIN" ||
-                userRole === "DEPUTY_MANAGER" ||
-                userRole === "OPERATION_EXECUTIVE" ||
-                userRole === "USER") && (
-                <Button
-                  onClick={() => setShowResponseModal(true)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition text-sm"
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl  text-red-600 flex items-center gap-2">
+                  <Trash2 size={24} /> Delete RFQ
+                </h3>
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
                 >
-                  + Add Response
-                </Button>
-              )}
-            </div>
-            {showResponseModal && (
-              <ResponseModal
-                rfqId={id}
-                onClose={() => setShowResponseModal(false)}
-                onSuccess={fetchRfq}
+                  <X size={20} />
+                </button>
+              </div>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to delete this RFQ? This action cannot be
+                undone.
+                <br />
+                <span className="font-semibold text-sm mt-2 block">
+                  Please type <span className="text-red-600">DELETE</span> to
+                  confirm:
+                </span>
+              </p>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Type DELETE here"
+                className="w-full px-4 py-2 border rounded-lg mb-6 focus:ring-2 focus:ring-red-500 outline-none transition-all"
               />
-            )}
-            {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
-            {userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
-              (rfq?.responses?.length ? (
-                <DataTable
-                  columns={responseColumns}
-                  data={rfq.responses} // Ensure rfq.responses is an array
-                  pageSizeOptions={[5, 10]}
-                  onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
-                />
-              ) : (
-                <p className="text-gray-700 italic">No responses yet.</p>
-              ))}
-            <div className="mt-4">
-              {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                <>
-                  <p className="text-xl sm:text-2xl font-semibold text-green-700">
-                    CD Quotation
-                  </p>
-                  // Show their quotation if submitted
-                  <DataTable
-                    columns={quotationColumns}
-                    data={rfq?.CDQuotas || []}
-                    pageSizeOptions={[5]}
-                    onRowClick={(row: any) => setSelectedQuotation(row)}
-                  />
-                </>
-              ) : (
-                // Show Submit Button if not submitted
-                <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                  {userRole === "CONNECTION_DESIGNER_ENGINEER" ? (
-                    <>
-                      <p className="text-gray-500 mb-4 text-center">
-                        You haven't submitted a quotation yet.
-                      </p>
-                      <Button
-                        onClick={() => setShowQuotationResponseModal(true)}
-                        className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
-                      >
-                        Submit Quotation Response
-                      </Button>
-                    </>
-                  ) : null}
-                </div>
-              )}
-            </div>
-
-            {/* ---- QUOTATIONS TABLE (ADMIN/STAFF ONLY) ---- */}
-            {userRole !== "CLIENT" &&
-              userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
-              quotations.length > 0 && (
-                <div className="pt-6 border-t border-dashed border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3 ml-1">
-                    Designer Quotations
-                  </h3>
-                  <DataTable
-                    columns={quotationColumns}
-                    data={quotations}
-                    pageSizeOptions={[5]}
-                    onRowClick={(row: any) => setSelectedQuotation(row)}
-                  />
-                </div>
-              )}
-          </div>
-        </div>
-      </div>
-      {showCDQuotationModal && (
-        <QuotationRaise
-          rfqId={id}
-          onClose={() => handleCDQuotationModalClose()}
-          onSuccess={fetchRfq} // refresh after submit
-        />
-      )}
-
-      {selectedResponse && (
-        <ResponseDetailsModal
-          response={selectedResponse}
-          onClose={() => setSelectedResponse(null)}
-        />
-      )}
-
-      {/* Quotation Submission Modal */}
-      {showQuotationResponseModal && (
-        <QuotationResponseModal
-          rfqId={id}
-          onClose={() => setShowQuotationResponseModal(false)}
-          onSuccess={fetchRfq}
-        />
-      )}
-
-      {/* Quotation Details Modal */}
-      {selectedQuotation && (
-        <QuotationResponseDetailsModal
-          quotation={selectedQuotation}
-          onClose={() => setSelectedQuotation(null)}
-          onSuccess={fetchRfq}
-        />
-      )}
-
-      {/* Estimation Modal */}
-      {showEstimationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
-            <button
-              onClick={() => setShowEstimationModal(false)}
-              className="absolute top-4 right-4 text-gray-700 hover:text-gray-700 z-10"
-            >
-              ✕
-            </button>
-            <AddEstimation
-              initialRfqId={id}
-              onSuccess={() => {
-                setShowEstimationModal(false);
-                fetchRfq();
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl  text-red-600 flex items-center gap-2">
-                <Trash2 size={24} /> Delete RFQ
-              </h3>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to delete this RFQ? This action cannot be
-              undone.
-              <br />
-              <span className="font-semibold text-sm mt-2 block">
-                Please type <span className="text-red-600">DELETE</span> to
-                confirm:
-              </span>
-            </p>
-            <input
-              type="text"
-              value={deleteConfirmText}
-              onChange={(e) => setDeleteConfirmText(e.target.value)}
-              placeholder="Type DELETE here"
-              className="w-full px-4 py-2 border rounded-lg mb-6 focus:ring-2 focus:ring-red-500 outline-none transition-all"
-            />
-            <div className="flex gap-3">
-              <Button
-                onClick={() => setShowDeleteModal(false)}
-                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleDelete}
-                disabled={deleteConfirmText !== "DELETE" || isDeleting}
-                className={`flex-1 ${
-                  deleteConfirmText === "DELETE"
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={deleteConfirmText !== "DELETE" || isDeleting}
+                  className={`flex-1 ${deleteConfirmText === "DELETE"
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-red-300 cursor-not-allowed"
-                } text-white`}
-              >
-                {isDeleting ? "Deleting..." : "Confirm Delete"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Status Change Modal */}
-      {showStatusModal && (
-        <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl  text-blue-600 flex items-center gap-2">
-                Change RFQ Status
-              </h3>
-              <button
-                onClick={() => setShowStatusModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  New Status
-                </label>
-                <select
-                  value={newStatus}
-                  onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    } text-white`}
                 >
-                  <option value="">Select Status</option>
-                  <option value="OPEN">OPEN</option>
-                  <option value="IN_PROGRESS">IN_PROGRESS</option>
-                  <option value="CLOSED">CLOSED</option>
-                  <option value="AWARDED">AWARDED</option>
-                  <option value="RE_APPROVED">RE_APPROVED</option>
-                </select>
+                  {isDeleting ? "Deleting..." : "Confirm Delete"}
+                </Button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Reason for Change
-                </label>
-                <textarea
-                  value={statusReason}
-                  onChange={(e) => setStatusReason(e.target.value)}
-                  placeholder="Enter reason..."
-                  rows={3}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
-                />
-              </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <Button
-                onClick={() => setShowStatusModal(false)}
-                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleStatusUpdate}
-                disabled={isUpdatingStatus}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isUpdatingStatus ? "Updating..." : "Update Status"}
-              </Button>
             </div>
           </div>
-        </div>
-      )}
-    </>
+        )}
+
+        {/* Status Change Modal */}
+        {showStatusModal && (
+          <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl  text-blue-600 flex items-center gap-2">
+                  Change RFQ Status
+                </h3>
+                <button
+                  onClick={() => setShowStatusModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    New Status
+                  </label>
+                  <select
+                    value={newStatus}
+                    onChange={(e) => setNewStatus(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  >
+                    <option value="">Select Status</option>
+                    <option value="OPEN">OPEN</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="CLOSED">CLOSED</option>
+                    <option value="AWARDED">AWARDED</option>
+                    <option value="RE_APPROVED">RE_APPROVED</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Reason for Change
+                  </label>
+                  <textarea
+                    value={statusReason}
+                    onChange={(e) => setStatusReason(e.target.value)}
+                    placeholder="Enter reason..."
+                    rows={3}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <Button
+                  onClick={() => setShowStatusModal(false)}
+                  className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleStatusUpdate}
+                  disabled={isUpdatingStatus}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isUpdatingStatus ? "Updating..." : "Update Status"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
   );
 };
 
@@ -735,11 +737,10 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-md border ${
-      enabled
-        ? "bg-green-100 border-green-400 text-green-700"
-        : "bg-gray-100 border-gray-300 text-gray-700"
-    }`}
+    className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${enabled
+      ? "bg-green-100/50 border-green-200 text-black"
+      : "bg-gray-50 border-gray-200 text-gray-500"
+      }`}
   >
     {label}
   </div>

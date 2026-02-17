@@ -75,23 +75,22 @@ const Layout = () => {
 
       {/* Main Content Area */}
       <div
-        className={`flex flex-col flex-1 min-h-0 ${isModalOpen ? "p-0" : "p-2 pl-0"} relative z-10`}
+        className={`flex flex-col flex-1 min-h-0 ${isModalOpen ? "p-0" : "p-4"} relative z-10 bg-white`} // Clean white background
       >
         <div
           className={`
-            flex-1 flex flex-col relative overflow-hidden ${isModalOpen ? "rounded-none" : "rounded-3xl"}
+            flex-1 flex flex-col relative overflow-hidden ${isModalOpen ? "rounded-none" : "rounded-2xl"}
             bg-white
-            ${isModalOpen ? "" : "border border-green-500 shadow-sm"}
             transition-all
           `}
         >
           {/* Header */}
-          <div className="px-8 pt-6 border-b border-green-500/10">
+          <div className="pb-4">
             <Header isMinimized={isMinimized} toggleSidebar={toggleSidebar} />
           </div>
 
           {/* Page Content */}
-          <main className="flex-1 w-full overflow-y-auto custom-scrollbar ">
+          <main className="flex-1 w-full overflow-y-auto custom-scrollbar pr-2">
             <Outlet />
           </main>
         </div>

@@ -9,17 +9,17 @@ const RfqLayout = () => {
   const [activeTab, setActiveTab] = useState("allRFQ");
   const rfq = useSelector((state: any) => state.RFQInfos.RFQData);
   console.log(rfq);
-  
+
   return (
     <div className="w-full">
       <div className="flex flex-col w-full h-full mb-6">
-        <div className="mx-2 px-6 py-4 backdrop-blur-2xl dark:bg-slate-900/60 border border-white/50 dark:border-slate-800/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+        <div className="mx-2 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-row gap-4 items-center w-full md:w-auto">
             <button
               onClick={() => setActiveTab("allRFQ")}
               className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm  uppercase tracking-widest transition-all ${activeTab === "allRFQ"
-                ? "bg-green-500 text-white shadow-lg shadow-green-100 dark:shadow-none hover:bg-green-600 scale-[1.02]"
-                : "bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-green-600 shadow-sm"
+                ? "bg-green-50 text-black border border-black shadow-sm transition-all"
+                : "bg-white border border-black text-black hover:bg-green-50 transition-all font-bold"
                 }`}
             >
               All RFQ
@@ -28,8 +28,8 @@ const RfqLayout = () => {
             <button
               onClick={() => setActiveTab("addRFQ")}
               className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm  uppercase tracking-widest transition-all ${activeTab === "addRFQ"
-                ? "bg-green-500 text-white shadow-lg shadow-green-100 dark:shadow-none hover:bg-green-600 scale-[1.02]"
-                : "bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-green-600 shadow-sm"
+                ? "bg-green-50 text-black border border-black shadow-sm transition-all"
+                : "bg-white border border-black text-black hover:bg-green-50 transition-all font-bold"
                 }`}
             >
               Create RFQ

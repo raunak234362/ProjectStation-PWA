@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { X } from "lucide-react";
 import Service from "../../api/Service";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
@@ -131,19 +129,18 @@ const QuotationRaise = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="w-full max-w-4xl bg-[#fafffb] rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden border border-green-100/50">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b bg-gray-50 rounded-t-2xl">
-          <h2 className="text-xl font-semibold text-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white">
+          <h2 className="text-xl font-black text-black uppercase tracking-tight">
             Raise Connection Designer Quotation
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-700 hover:text-gray-700 transition"
-            aria-label="Close"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            <X className="w-6 h-6" />
+            Close
           </button>
         </div>
 
@@ -290,10 +287,10 @@ const QuotationRaise = ({
           )}
 
           {/* Submit */}
-          <div className="flex justify-end pt-4 border-t border-gray-200">
+          <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
               type="submit"
-              className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-all duration-200"
+              className="px-6 py-3 bg-black text-white rounded-xl font-bold uppercase tracking-widest hover:bg-black/90 transition-all border border-black shadow-lg"
             >
               Raise for Quotation
             </button>

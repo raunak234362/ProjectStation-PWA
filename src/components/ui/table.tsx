@@ -242,17 +242,14 @@ export default function DataTable<T extends object>({
               .map((column) => (
                 <div
                   key={column.id}
-                  className="flex flex-col gap-1.5 min-w-[180px]"
+                  className="min-w-[180px]"
                 >
-                  <label className="text-md  text-gray-500 dark:text-slate-400 uppercase tracking-widest ml-1">
-                    {column.columnDef.header as string}
-                  </label>
                   <ColumnFilter column={column} />
                 </div>
               ))}
             <Button
               onClick={() => table.resetColumnFilters()}
-              className="text-xs text-gray-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors h-9 px-2"
+              className="text-xs text-black border border-black hover:bg-red-50 hover:text-red-600 transition-all h-9 px-4 font-bold rounded-lg"
             >
               <X className="w-3 h-3 mr-1" /> Clear
             </Button>
@@ -267,16 +264,16 @@ export default function DataTable<T extends object>({
           onRowClick={onRowClick}
         />
       ) : (
-        <div className="w-full border border-gray-100 dark:border-slate-800 rounded-lg overflow-hidden">
+        <div className="w-full border border-gray-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm">
           <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
             <table className="min-w-full divide-y dark:divide-slate-800">
-              <thead className="bg-green-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
+              <thead className="bg-[#f8fafc] sticky top-0 z-10 shadow-sm border-b border-gray-200">
                 {table.getHeaderGroups().map((hg) => (
                   <tr key={hg.id}>
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-4 py-3 text-left text-md md:text-lg font-bold bg-green-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200"
+                        className="px-4 py-3 text-left text-md md:text-lg font-black bg-[#f8fafc] text-black border-b border-gray-200"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         <div className="flex items-center gap-1 cursor-pointer">
@@ -302,7 +299,7 @@ export default function DataTable<T extends object>({
                 ))}
               </thead>
 
-              <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-100 dark:divide-slate-800">
+              <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
                 {table.getPaginationRowModel().rows.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr
@@ -318,7 +315,7 @@ export default function DataTable<T extends object>({
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3 text-md md:text-lg text-gray-800 dark:text-slate-300">
+                        <td key={cell.id} className="px-4 py-3 text-md md:text-lg text-black">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
@@ -350,7 +347,7 @@ export default function DataTable<T extends object>({
 
       <div className="flex flex-col sm:flex-row items-center gap-4 text-sm p-4 border-t border-gray-50 dark:border-slate-800">
         <div className="flex items-center gap-4">
-          <span className="text-gray-600 dark:text-slate-400">
+          <span className="text-black">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </span>
@@ -379,25 +376,25 @@ export default function DataTable<T extends object>({
               />
             </div>
           </div> */}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => table.previousPage()}
-              className="px-3 py-1 border border-gray-200 dark:border-slate-700 rounded disabled:opacity-50 text-gray-700 dark:text-slate-300"
-            >
-              {"<"}
-            </Button>
-            <Button
-              disabled={!table.getCanNextPage()}
-              onClick={() => table.nextPage()}
-              className="px-3 py-1 border border-gray-200 dark:border-slate-700 rounded disabled:opacity-50 text-gray-700 dark:text-slate-300"
-            >
-              {">"}
-            </Button>
-          </div>
         </div>
-  
+        <div className="flex items-center gap-2">
+          <Button
+            disabled={!table.getCanPreviousPage()}
+            onClick={() => table.previousPage()}
+            className="px-3 py-1 border border-gray-200 dark:border-slate-700 rounded disabled:opacity-50 text-gray-700 dark:text-slate-300"
+          >
+            {"<"}
+          </Button>
+          <Button
+            disabled={!table.getCanNextPage()}
+            onClick={() => table.nextPage()}
+            className="px-3 py-1 border border-gray-200 dark:border-slate-700 rounded disabled:opacity-50 text-gray-700 dark:text-slate-300"
+          >
+            {">"}
+          </Button>
+        </div>
+      </div>
+
     </>
   );
 }

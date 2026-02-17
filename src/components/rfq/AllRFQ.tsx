@@ -1,3 +1,4 @@
+import { useState } from "react";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
@@ -54,13 +55,7 @@ const AllRFQ = ({ rfq }: any) => {
       ],
       cell: ({ row }) => (
         <span
-          className={`px-3 py-1 text-[10px]  uppercase tracking-widest rounded-lg ${
-            row.original.status === "IN_REVIEW"
-              ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30"
-              : row.original.status === "COMPLETED"
-                ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30"
-                : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700"
-          }`}
+          className="px-3 py-1 text-md md:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
         >
           {row.original.status?.replace("_", " ")}
         </span>
@@ -73,19 +68,21 @@ const AllRFQ = ({ rfq }: any) => {
     },
   );
 
+  const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
+
   return (
-    <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-md p-6 rounded-[32px] shadow-soft border border-white/50 dark:border-slate-800/50">
+    <div className="bg-white p-6 rounded-[32px] shadow-sm border border-black">
       <DataTable
         columns={columns}
         data={rfq || []}
-        detailComponent={RFQDetail}
+        onRowClick={(row: any) => setSelectedRfqId(row.id)}
         pageSizeOptions={[25]}
       />
+      {selectedRfqId && (
+        <GetRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
+      )}
     </div>
   );
 };
-
-// Stable reference for detail component
-const RFQDetail = ({ row }: { row: RFQItem }) => <GetRFQByID id={row.id} />;
 
 export default AllRFQ;

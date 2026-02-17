@@ -240,10 +240,10 @@ const WBTDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col w-full p-1 space-y-3 pb-8 bg-white min-h-full">
+    <div className="flex flex-col w-full space-y-4 pb-8 bg-transparent min-h-full">
       <Suspense fallback={<DashboardSkeleton />}>
         {/* Stats Grid - Top Section */}
-        <div className="grid grid-cols-1 max-md:grid-cols-2 lg:grid-cols-2 gap-3 shrink-0">
+        <div className="grid grid-cols-1 max-md:grid-cols-2 lg:grid-cols-2 gap-4 shrink-0">
           {/* Project Stats */}
           <div className="w-full">
             <ProjectStats stats={stats} onCardClick={handleCardClick} />
@@ -262,7 +262,7 @@ const WBTDashboard = () => {
         {isClient ? (
           <>
             {/* Client View: Split Upcoming sections */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
               <div className="w-full min-h-[400px]">
                 <UpcomingSubmittals
                   pendingSubmittals={pendingSubmittals}

@@ -320,7 +320,7 @@ const GetProjectById = ({
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3 mb-3">
           <div>
-            <h2 className="text-xl md:text-2xl font-semibold text-green-700">
+            <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight">
               {project.name}
             </h2>
             <p className="text-gray-700 text-sm">
@@ -329,11 +329,7 @@ const GetProjectById = ({
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                project.status === "ACTIVE"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-700"
-              }`}
+              className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest"
             >
               {project.status}
             </span>
@@ -371,11 +367,10 @@ const GetProjectById = ({
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 bg-primary text-gray-800 px-4 py-2 text-md rounded-md font-medium transition-colors whitespace-nowrap ${
-                  activeTab === key
-                    ? "bg-green-600 text-white "
-                    : "text-gray-700 hover:text-green-700 font-semibold hover:bg-gray-50"
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${activeTab === key
+                  ? "bg-green-50 text-black border-[#6bbd45]"
+                  : "bg-white text-black border-black hover:bg-green-50"
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -402,9 +397,9 @@ const GetProjectById = ({
                     label="Hours Completed"
                     value={formatSeconds(
                       projectStats?.workedSeconds ||
-                        project.workedSeconds ||
-                        project.totalWorkedSeconds ||
-                        0,
+                      project.workedSeconds ||
+                      project.totalWorkedSeconds ||
+                      0,
                     )}
                     color="bg-green-50"
                     description="Total hours logged by team"
@@ -423,12 +418,12 @@ const GetProjectById = ({
                     value={
                       (projectStats?.isOverrun ?? project.isOverrun)
                         ? formatSeconds(
-                            (projectStats?.workedSeconds ||
-                              project.workedSeconds ||
-                              project.totalWorkedSeconds ||
-                              0) -
-                              (project.estimatedHours || 0) * 3600,
-                          )
+                          (projectStats?.workedSeconds ||
+                            project.workedSeconds ||
+                            project.totalWorkedSeconds ||
+                            0) -
+                          (project.estimatedHours || 0) * 3600,
+                        )
                         : "00:00"
                     }
                     color={
@@ -489,7 +484,7 @@ const GetProjectById = ({
                   </div>
                   <h4 className=" text-slate-800 mb-1">Project Status</h4>
                   <div
-                    className={`mt-2 px-6 py-2 rounded-full  text-sm uppercase tracking-widest ${project.status === "ACTIVE" ? "bg-green-500 text-white" : "bg-slate-200 text-slate-500"}`}
+                    className="mt-2 px-6 py-2 rounded-lg text-md border border-gray-200 bg-gray-100 text-black uppercase tracking-widest"
                   >
                     {project.status}
                   </div>
@@ -530,7 +525,7 @@ const GetProjectById = ({
                   label="Department"
                   value={project.department?.name || "—"}
                 />
-                <InfoRow label="Team" value={project.team?.name || "—"} />
+                <InfoRow label="Team / Tools" value={project.team?.name || "—"} />
                 <InfoRow
                   label="Manager"
                   value={
@@ -539,6 +534,15 @@ const GetProjectById = ({
                       : "—"
                   }
                 />
+                {userRole !== "client" && userRole !== "client_admin" && (
+                  <>
+                    <InfoRow
+                      label="Fabricator"
+                      value={project.fabricator?.fabName || "—"}
+                    />
+                    <InfoRow label="Tools" value={project.tools || "—"} />
+                  </>
+                )}
                 {userRole !== "client" && userRole !== "client_admin" && (
                   <>
                     <InfoRow
@@ -575,13 +579,19 @@ const GetProjectById = ({
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <ScopeTag
                     label="Main Design"
+                   
                     active={project.connectionDesign}
                   />
                   <ScopeTag label="Misc Design" active={project.miscDesign} />
                   <ScopeTag
-                    label="Customer Design"
+                    label={
+                      project.customerDesign
+                      ? "Connection Design by WBT"
+                      : `Connection Design by ${project.fabricator?.fabName ?? ""}`
+                    }
                     active={project.customerDesign}
                   />
+
                 </div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg border text-sm">
@@ -600,15 +610,15 @@ const GetProjectById = ({
                 </div>
               </div>
               {/* Footer Buttons */}
-              {!isClient && (
+              {userRole !== "client" && userRole !== "client_admin" && (
                 <div className="pt-2 flex flex-wrap gap-3">
                   <Button
-                    className="py-1 px-3 text-sm bg-green-600 text-white"
+                    className="py-1 px-3 text-sm bg-white text-black border border-black hover:bg-green-50 font-bold rounded-lg"
                     onClick={() => handleEditModel(project)}
                   >
-                    Edit Project
-                  </Button>
-                </div>
+                  Edit Project
+                </Button>
+              </div>
               )}
             </div>
           )}
@@ -665,10 +675,9 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        rfiView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${rfiView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -679,10 +688,9 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          rfiView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${rfiView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -715,10 +723,9 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        rfiView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${rfiView === "list"
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -729,10 +736,9 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          rfiView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${rfiView === "add"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -765,10 +771,9 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        submittalView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${submittalView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -779,10 +784,9 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          submittalView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${submittalView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -815,10 +819,9 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        submittalView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${submittalView === "list"
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -829,10 +832,9 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          submittalView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${submittalView === "add"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -865,10 +867,9 @@ const GetProjectById = ({
                     onClick={() => setChangeOrderView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        changeOrderView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${changeOrderView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -879,10 +880,9 @@ const GetProjectById = ({
                       onClick={() => setChangeOrderView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          changeOrderView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${changeOrderView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -948,14 +948,12 @@ const InfoRow = ({
   </div>
 );
 
-// ✅ ScopeTag Component
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-medium rounded-full ${
-      active
-        ? "bg-green-100 text-green-800 border border-green-300"
-        : "bg-gray-100 text-gray-700 border border-gray-200"
-    }`}
+    className={`px-3 py-1 text-sm font-bold rounded-lg border ${active
+      ? "bg-green-50 text-black border-[#6bbd45]"
+      : "bg-gray-100 text-black border-gray-200"
+      }`}
   >
     {label}
   </span>
@@ -978,9 +976,8 @@ const StatCard = ({
   isAlert?: boolean;
 }) => (
   <div
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
-      isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-    }`}
+    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+      }`}
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>

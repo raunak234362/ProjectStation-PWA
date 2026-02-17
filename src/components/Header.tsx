@@ -1,8 +1,7 @@
-import { Menu, ChevronLeft, Sun, Moon } from "lucide-react";
+import { Menu, ChevronLeft } from "lucide-react";
 import Button from "./fields/Button";
 import { useLocation } from "react-router-dom";
 import { navItems } from "../constants/navigation";
-import { useTheme } from "../context/ThemeContext";
 import NotificationPopup from "./NotificationPopup";
 
 interface HeaderProps {
@@ -12,7 +11,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
 
   // Find the active tab label
   const activeTab = navItems.find((item) => {
@@ -25,22 +23,22 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
   const headerTitle = activeTab ? activeTab.label : "Dashboard";
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-3 px-6 bg-white rounded-2xl mb-4 border border-green-500/10 shadow-sm transition-colors duration-300">
+    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-3 px-6 bg-white rounded-2xl mb-4 border border-black shadow-md transition-all duration-300">
       {/* Left: Sidebar Toggle & Title */}
       <div className="flex items-center gap-4">
         <Button
           onClick={toggleSidebar}
-          className="w-10 h-10 flex items-center justify-center bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all shadow-[0_4px_10px_-2px_rgba(34,197,94,0.4)]"
+          className="w-10 h-10 flex items-center justify-center bg-gray-50 text-gray-900 border border-gray-200 rounded-xl hover:bg-white hover:border-[#6bbd45] hover:text-[#6bbd45] transition-all shadow-sm group"
         >
           {isMinimized ? (
-            <Menu size={18} strokeWidth={2.5} />
+            <Menu size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
           ) : (
-            <ChevronLeft size={20} strokeWidth={3} />
+            <ChevronLeft size={20} strokeWidth={3} className="group-hover:-translate-x-0.5 transition-transform" />
           )}
         </Button>
         <div className="flex flex-col items-start gap-1">
           <div className="flex flex-col">
-            <h1 className="text-lg md:text-xl font-semibold text-green-600 uppercase tracking-widest leading-none">
+            <h1 className="text-lg md:text-xl font-bold text-gray-900 uppercase tracking-widest leading-none">
               {headerTitle}
             </h1>
           </div>
