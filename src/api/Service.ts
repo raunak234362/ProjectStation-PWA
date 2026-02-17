@@ -1158,6 +1158,21 @@ class Service {
     }
   }
 
+// Get All Documents by Project ID
+static async GetAllDocumentsByProjectId(projectId: string) {
+  try {
+    const response = await api.get(`project/getAllDocuments/${projectId}/`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
   //Get mileston by ID
   static async GetMilestoneById(id: string) {
     try {

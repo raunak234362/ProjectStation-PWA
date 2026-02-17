@@ -33,11 +33,12 @@ import AllSubmittals from "../submittals/AllSubmittals";
 import AllNotes from "./notes/AllNotes";
 import EditProject from "./EditProject";
 import AddSubmittal from "../submittals/AddSubmittals";
-import RenderFiles from "../ui/RenderFiles";
+
 import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
 import CoTable from "../co/CoTable";
 import ProjectMilestoneMetrics from "./ProjectMilestoneMetrics";
+import AllDocumentsByProjectID from "./designDrawings/AllDocumentsByProjectID";
 
 const GetProjectById = ({
   id,
@@ -223,7 +224,23 @@ const GetProjectById = ({
   //   }
   // };
 
+  const fetchAllDocuments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await Service.GetAllDocumentsByProjectId(id);
+      //   setProject(response?.data || null);
+      console.log(response);
+    } catch (err) {
+      setError("Failed to load WBS details");
+      console.error("Error fetching project:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    fetchAllDocuments();
     if (id) fetchProject();
   }, [id]);
 
@@ -522,11 +539,15 @@ const GetProjectById = ({
                       : "—"
                   }
                 />
-                <InfoRow
-                  label="Fabricator"
-                  value={project.fabricator?.fabName || "—"}
-                />
-                <InfoRow label="Tools" value={project.tools || "—"} />
+                {userRole !== "client" && userRole !== "client_admin" && (
+                  <>
+                    <InfoRow
+                      label="Fabricator"
+                      value={project.fabricator?.fabName || "—"}
+                    />
+                    <InfoRow label="Tools" value={project.tools || "—"} />
+                  </>
+                )}
               </div>
 
               <div className="space-y-3">
@@ -553,7 +574,7 @@ const GetProjectById = ({
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <ScopeTag
-                    label="Connection Design"
+                    label="Main Design"
                     active={project.connectionDesign}
                   />
                   <ScopeTag label="Misc Design" active={project.miscDesign} />
@@ -578,29 +599,25 @@ const GetProjectById = ({
                   />
                 </div>
               </div>
-
               {/* Footer Buttons */}
-              <div className="pt-2 flex flex-wrap gap-3">
-                <Button
-                  className="py-1 px-3 text-sm bg-green-600 text-white"
-                  onClick={() => handleEditModel(project)}
-                >
-                  Edit Project
-                </Button>
-              </div>
+              {!isClient && (
+                <div className="pt-2 flex flex-wrap gap-3">
+                  <Button
+                    className="py-1 px-3 text-sm bg-green-600 text-white"
+                    onClick={() => handleEditModel(project)}
+                  >
+                    Edit Project
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 
           {/* ✅ Files */}
           {activeTab === "files" && (
             <div className="space-y-4">
-              <RenderFiles
-                files={project.files || []}
-                table="project"
-                parentId={id}
-                formatDate={formatDate}
-              />
-              <AllDocument />
+              <AllDocumentsByProjectID projectId={id} />
+              <AllDocument projectId={id} />
             </div>
           )}
           {activeTab === "milestones" && (

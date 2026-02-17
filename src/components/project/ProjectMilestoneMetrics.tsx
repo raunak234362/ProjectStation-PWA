@@ -5,6 +5,9 @@ import { setMilestonesForProject } from "../../store/milestoneSlice";
 import { formatDate } from "../../utils/dateUtils";
 import Service from "../../api/Service";
 
+import { useState } from "react";
+import UpdateCompletionPer from "./mileStone/UpdateCompletionPer";
+
 interface ProjectMilestoneMetricsProps {
   projectId: string;
   projectName?: string;
@@ -14,6 +17,10 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
   projectId,
 }) => {
   const dispatch = useDispatch();
+  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(
+    null,
+  );
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   const milestonesByProject = useSelector(
     (state: any) => state.milestoneInfo?.milestonesByProject || {},
@@ -97,8 +104,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
     });
   }, [milestones]);
 
-console.log(milestoneStats);
-
+  console.log(milestoneStats);
 
   return (
     <div className="space-y-8 p-1">
@@ -116,13 +122,28 @@ console.log(milestoneStats);
             {milestoneStats.length > 0 ? (
               <div className="space-y-4">
                 {milestoneStats.map((ms: any) => (
-                  <div key={ms.id}>
+                  <div
+                    key={ms.id}
+                    onClick={() => {
+                      if (ms.status === "PENDING") {
+                        setSelectedMilestoneId(ms.id);
+                        setIsUpdateModalOpen(true);
+                      }
+                    }}
+                    className={`cursor-pointer transition-colors p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700/50 ${
+                      ms.status === "PENDING" ? "cursor-pointer" : ""
+                    }`}
+                  >
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-gray-800 dark:text-slate-200 font-medium text-sm">
-                        {ms.subject} - <span className="font-bold text-gray-800 dark:text-slate-200">{ms.stage}</span>
+                        {ms.subject} -{" "}
+                        <span className="font-bold text-gray-800 dark:text-slate-200">
+                          {ms.stage}
+                        </span>
                       </span>
                       <span className="text-xs text-gray-500 dark:text-slate-500">
-                         : {ms.taskPercentage}%
+                        Completion Percentage :{" "}
+                        {ms.taskPercentage || ms.percentage}%
                       </span>
                     </div>
                     <div className="w-full bg-red-500 dark:bg-slate-700 rounded-full h-2 relative overflow-hidden">
@@ -134,7 +155,9 @@ console.log(milestoneStats);
                       {/* Task Completion (real progress) */}
                       <div
                         className="absolute top-0 left-0 h-2 rounded-full bg-teal-500 transition-all duration-500"
-                        style={{ width: `${ms.taskPercentage}%` }}
+                        style={{
+                          width: `${ms.taskPercentage || ms.percentage}%`,
+                        }}
                       ></div>
                     </div>
                   </div>
@@ -210,6 +233,36 @@ console.log(milestoneStats);
           </div>
         )}
       </div>
+      {isUpdateModalOpen && selectedMilestoneId && (
+        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg h-auto bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <UpdateCompletionPer
+              milestoneId={selectedMilestoneId}
+              onClose={() => setIsUpdateModalOpen(false)}
+              onSuccess={() => {
+                const fetchMileStone = async () => {
+                  try {
+                    const response =
+                      await Service.GetProjectMilestoneById(projectId);
+                    if (response && response.data) {
+                      dispatch(
+                        setMilestonesForProject({
+                          projectId,
+                          milestones: response.data,
+                        }),
+                      );
+                    }
+                  } catch (error) {
+                    console.error("Error fetching milestones:", error);
+                  }
+                };
+                fetchMileStone();
+                setIsUpdateModalOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -171,6 +171,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
         </div>
         <div className="flex items-center gap-2">
           {(userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN") && (
+            <>
             <Button
               variant="ghost"
               size="sm"
@@ -180,7 +181,6 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
               <CheckCircle2 className="w-4 h-4" />
               Update Progress
             </Button>
-          )}
           <Button
             variant="ghost"
             size="sm"
@@ -190,6 +190,8 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             <Edit className="w-4 h-4" />
             Edit
           </Button>
+          </>
+          )}
           <Button
             variant="ghost"
             size="icon"

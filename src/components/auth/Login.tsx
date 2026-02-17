@@ -120,7 +120,7 @@ const Login = () => {
               </div>
 
               <div className="mt-4">
-                <Button type="submit" className="w-full text-2xl  py-4 rounded-[6px] bg-green-600 hover:bg-green-700 transition-all duration-300 shadow-lg shadow-green-600/30">
+                <Button type="submit" className="w-full text-2xl  py-4 rounded-[6px]  hover:bg-green-700 transition-all duration-300 shadow-lg shadow-sm">
                   Login
                 </Button>
               </div>

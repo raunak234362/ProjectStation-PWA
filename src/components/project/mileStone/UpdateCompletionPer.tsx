@@ -81,7 +81,7 @@ const UpdateCompletionPer = ({
   const onSubmit = async (data: any) => {
     try {
       const payload = {
-        completionPercentage: Number(data.percentage),
+        completeionPercentage: parseFloat(data.percentage),
       };
 
       await Service.UpdateCompletionPercentById(milestoneId, payload);
