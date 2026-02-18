@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
-import { LogOut, X, RefreshCw } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 
 interface SidebarProps {
   isMinimized: boolean;
@@ -24,10 +24,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const canView = (roles: string[]): boolean =>
     roles.includes(userRole.toLowerCase());
-
-  const handleRefresh = (): void => {
-    window.location.reload();
-  };
 
   const fetchLogout = (): void => {
     sessionStorage.clear();

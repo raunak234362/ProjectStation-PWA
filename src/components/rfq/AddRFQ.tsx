@@ -26,7 +26,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     (state: any) => state.fabricatorInfo?.fabricatorData,
   ) as Fabricator[];
 
-  const staffData = useSelector((state: any) => state.userInfo.staffData);
+  // const staffData = useSelector((state: any) => state.userInfo.staffData);
 
   // const userType =
   typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
@@ -62,25 +62,25 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   }, []);
 
   // --- WBT RECIPIENT OPTIONS ---
-  const recipientOption: SelectOption[] =
-    staffData
-      ?.filter(
-        (u: { role: string }) =>
-          u.role === "ADMIN" ||
-          u.role === "SALES" ||
-          u.role === "SALES_MANAGER",
-      )
-      .map(
-        (u: {
-          firstName: string;
-          middleName?: string;
-          lastName: string;
-          id: number;
-        }) => ({
-          label: `${u.firstName} ${u.middleName ?? ""} ${u.lastName}`,
-          value: String(u.id),
-        }),
-      ) ?? [];
+  // const recipientOption: SelectOption[] =
+  //   staffData
+  //     ?.filter(
+  //       (u: { role: string }) =>
+  //         u.role === "ADMIN" ||
+  //         u.role === "SALES" ||
+  //         u.role === "SALES_MANAGER",
+  //     )
+  //     .map(
+  //       (u: {
+  //         firstName: string;
+  //         middleName?: string;
+  //         lastName: string;
+  //         id: number;
+  //       }) => ({
+  //         label: `${u.firstName} ${u.middleName ?? ""} ${u.lastName}`,
+  //         value: String(u.id),
+  //       }),
+  //     ) ?? [];
   // useEffect(() => {
   //   if (tools !== "OTHER") setValue("otherTool", "");
   // }, [tools, setValue]);
@@ -292,7 +292,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           )}
 
           {/* CONTACT */}
-          <div className="md:col-span-2">
+          {/* <div className="md:col-span-2">
             <label className="font-semibold text-gray-700 mb-1 block">
               WBT Point of Contact *
             </label>
@@ -316,7 +316,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 {errors.recipientId.message}
               </p>
             )}
-          </div>
+          </div> */}
 
           {/* PROJECT NAME */}
           <div className="md:col-span-2">

@@ -9,7 +9,6 @@ import {
   ClipboardList,
   User,
   Tag,
-  X,
   Edit,
 } from "lucide-react";
 import Service from "../../../api/Service";
