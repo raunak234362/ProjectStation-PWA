@@ -10,7 +10,6 @@ import {
   Users,
   Clock,
   ClipboardList,
-  X as CloseIcon,
   CheckCircle2,
   TrendingUp,
   Activity,
@@ -336,9 +335,9 @@ const GetProjectById = ({
             {close && (
               <button
                 onClick={close}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-700"
+                className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
               >
-                <CloseIcon size={24} />
+                Close
               </button>
             )}
           </div>
@@ -504,7 +503,7 @@ const GetProjectById = ({
           {/* ✅ Details */}
           {activeTab === "details" && (
             <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-              
+
               <div className="space-y-3">
                 {/* <InfoRow
                   label="Estimated Hours"
@@ -568,15 +567,15 @@ const GetProjectById = ({
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <ScopeTag
                     label="Main Design"
-                   
+
                     active={project.connectionDesign}
                   />
                   <ScopeTag label="Misc Design" active={project.miscDesign} />
                   <ScopeTag
                     label={
                       project.customerDesign
-                      ? "Connection Design by WBT"
-                      : `Connection Design by ${project.fabricator?.fabName ?? ""}`
+                        ? "Connection Design by WBT"
+                        : `Connection Design by ${project.fabricator?.fabName ?? ""}`
                     }
                     active={project.customerDesign}
                   />
@@ -617,9 +616,9 @@ const GetProjectById = ({
                     className="py-1 px-3 text-sm bg-white text-black border border-black hover:bg-green-50 font-bold rounded-lg"
                     onClick={() => handleEditModel(project)}
                   >
-                  Edit Project
-                </Button>
-              </div>
+                    Edit Project
+                  </Button>
+                </div>
               )}
             </div>
           )}

@@ -312,7 +312,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
       <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-end bg-white">
   
           <button
             onClick={onClose}
@@ -724,7 +724,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
 const Info = ({ label, value }: { label: string; value: string | number }) => (
   <div className="space-y-0.5 sm:space-y-1">
-    <p className="text-gray-500 text-[10px] sm:text-xs uppercase font-medium tracking-wider">
+    <p className="text-gray-500 text-md sm:text-md uppercase font-medium tracking-wider">
       {label}
     </p>
     <p className=" text-gray-800 text-sm sm:text-base">{value}</p>

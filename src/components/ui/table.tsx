@@ -269,7 +269,7 @@ export default function DataTable<T extends object>({
         <div className={`w-full ${noBorder ? "" : "border border-black/10 dark:border-slate-800"} rounded-2xl overflow-hidden shadow-sm`}>
           <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
             <table className="min-w-full divide-y dark:divide-slate-800">
-              <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm border-b border-gray-200">
+              <thead className="bg-gray-200 sticky top-0 z-10 shadow-sm border-b border-gray-200">
                 {table.getHeaderGroups().map((hg) => (
                   <tr key={hg.id}>
                     {hg.headers.map((header) => (

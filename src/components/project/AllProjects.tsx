@@ -34,7 +34,7 @@ const AllProjects = () => {
   ];
 
   return (
-    <div className=" bg-white p-4 rounded-2xl border border-black shadow-sm">
+    <div className=" bg-white p-4 rounded-2xl shadow-sm">
       <DataTable
         columns={columns}
         data={projects}
