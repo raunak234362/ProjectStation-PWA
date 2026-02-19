@@ -9,12 +9,12 @@ const RfqLayout = () => {
   const [activeTab, setActiveTab] = useState("allRFQ");
   const rfq = useSelector((state: any) => state.RFQInfos.RFQData) || [];
 
-  const stats = {
-    total: rfq.length,
-    inReview: rfq.filter((r: any) => r.status === "IN_REVIEW").length,
-    completed: rfq.filter((r: any) => r.status === "COMPLETED").length,
-    pending: rfq.filter((r: any) => r.status === "PENDING" || r.status === "SENT").length,
-  };
+  // const stats = {
+  //   total: rfq.length,
+  //   inReview: rfq.filter((r: any) => r.status === "IN_REVIEW").length,
+  //   completed: rfq.filter((r: any) => r.status === "COMPLETED").length,
+  //   pending: rfq.filter((r: any) => r.status === "PENDING" || r.status === "SENT").length,
+  // };
 
   return (
     <div className="w-full">

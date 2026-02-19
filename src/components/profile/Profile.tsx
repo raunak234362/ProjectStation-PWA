@@ -7,7 +7,6 @@ import {
   MapPin,
   UserCog,
   User,
-  Shield,
   Edit2,
 } from "lucide-react";
 import { FiPhoneCall } from "react-icons/fi";
