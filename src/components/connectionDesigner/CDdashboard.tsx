@@ -4,7 +4,6 @@ import CDSnapshotCards from "./components/CDSnapshotCards";
 import CDNetworkOverview from "./components/CDNetworkOverview";
 import GetConnectionDesignerByID from "./designer/GetConnectionDesignerByID";
 import { motion, AnimatePresence } from "motion/react";
-import { X } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 
@@ -159,14 +158,11 @@ const CDdashboard = () => {
               onClick={(e) => e.stopPropagation()}
               className="bg-white dark:bg-slate-900 rounded-[40px] shadow-3xl w-[98%] max-w-[95vw] h-[95vh] overflow-y-auto relative custom-scrollbar border border-gray-100 dark:border-slate-800"
             >
-              <button
-                onClick={() => setSelectedDesignerId(null)}
-                className="absolute top-6 right-6 p-2.5 bg-gray-50 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-gray-400 dark:text-slate-500 hover:text-rose-500 dark:hover:text-rose-400 rounded-2xl transition-all z-50 border border-gray-100 dark:border-slate-700 hover:border-rose-100 dark:hover:border-rose-900/30 shadow-sm"
-              >
-                <X size={22} strokeWidth={2.5} />
-              </button>
-              <div className="p-6 md:p-10">
-                <GetConnectionDesignerByID id={selectedDesignerId} />
+              <div className="p-6 md:px-10 md:py-6">
+                <GetConnectionDesignerByID
+                  id={selectedDesignerId}
+                  close={() => setSelectedDesignerId(null)}
+                />
               </div>
             </motion.div>
           </motion.div>

@@ -11,7 +11,6 @@ import {
   Calendar,
   Clock,
   Paperclip,
-  X,
 } from "lucide-react";
 import Button from "../../fields/Button";
 import type { Fabricator } from "../../../interface";
@@ -22,6 +21,8 @@ import AllBranches from "../branches/AllBranches";
 import AllClients from "../clients/AllClients";
 import FabricatorDashboard from "./FabricatorDashboard";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
 
 interface GetFabricatorIDProps {
   id?: string;
@@ -76,6 +77,15 @@ const GetFabricatorByID = ({
       setLoading(false);
     }
   };
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(incrementModalCount());
+    return () => {
+      dispatch(decrementModalCount());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     fetchFab();
@@ -139,70 +149,66 @@ const GetFabricatorByID = ({
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-soft text-sm border border-gray-100 dark:border-slate-800">
+    <div className="bg-white p-6 md:p-8 rounded-3xl border border-black text-sm">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-10 border-b border-black pb-6">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-green-500 flex items-center justify-center text-white text-xl  shadow-lg shadow-green-100 dark:shadow-green-950/20">
+          <div className="w-14 h-14 rounded-2xl bg-green-200 border border-black flex items-center justify-center text-black text-2xl font-black shadow-sm">
             {fabricator.fabName.charAt(0)}
           </div>
           <div>
-            <h3 className="text-2xl  text-gray-900 dark:text-white tracking-tight">
+            <h3 className="text-2xl font-black text-black tracking-tight uppercase">
               {fabricator.fabName}
             </h3>
-            <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest">
+            <p className="text-[10px] font-bold text-black/50 uppercase tracking-widest">
               Global Operations Partner
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <span
-            className={`px-4 py-1.5 rounded-xl text-xs  uppercase tracking-widest ${
-              fabricator.isDeleted
-                ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30"
-                : "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900/30"
-            }`}
+            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-black shadow-sm ${fabricator.isDeleted
+              ? "bg-rose-100 text-rose-900 border-rose-300"
+              : "bg-green-100 text-green-900 border-green-300"
+              }`}
           >
             {fabricator.isDeleted ? "Archived" : "Active Pool"}
           </span>
           {close && (
             <button
               onClick={close}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-gray-400 hover:text-gray-600 dark:hover:text-white"
-              title="Close Details"
+              className="px-6 py-2 bg-rose-100 text-black border border-black rounded-xl text-[10px] uppercase font-black tracking-widest hover:bg-rose-200 transition-all shadow-sm"
             >
-              <X className="w-5 h-5" />
+              Close
             </button>
           )}
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-x-8 gap-y-2 mb-8 border-b border-gray-100 dark:border-slate-800">
+      <div className="flex flex-wrap gap-x-8 gap-y-2 mb-8 border-b border-black/10">
         <button
           onClick={() => setActiveTab("dashboard")}
-          className={`pb-4 px-1 text-xs  uppercase tracking-widest transition-all relative ${
-            activeTab === "dashboard"
-              ? "text-green-600 dark:text-green-400"
-              : "text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
-          }`}
+          className={`pb-4 px-1 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === "dashboard"
+            ? "text-black"
+            : "text-black/40 hover:text-black"
+            }`}
         >
           Executive Dashboard
           {activeTab === "dashboard" && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-green-500 rounded-t-full" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-black rounded-t-full" />
           )}
         </button>
         <button
           onClick={() => setActiveTab("details")}
-          className={`pb-4 px-1 text-xs  uppercase tracking-widest transition-all relative ${
-            activeTab === "details"
-              ? "text-green-600 dark:text-green-400"
-              : "text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
-          }`}
+          className={`pb-4 px-1 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === "details"
+            ? "text-black"
+            : "text-black/40 hover:text-black"
+            }`}
         >
           Basic Intelligence
           {activeTab === "details" && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-green-500 rounded-t-full" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-black rounded-t-full" />
           )}
         </button>
       </div>
@@ -303,29 +309,29 @@ const GetFabricatorByID = ({
         )}
       </div>
 
-      {/* Buttons — MATCHING IMAGE STYLE BUT REFINED */}
-      <div className="mt-10 pt-8 border-t border-gray-100 dark:border-slate-800 flex flex-wrap gap-3">
+      {/* Buttons */}
+      <div className="mt-10 pt-8 border-t border-black/10 flex flex-wrap gap-4">
         <Button
           onClick={() => handleBranch(fabricator)}
-          className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs  uppercase tracking-widest rounded-xl shadow-lg shadow-green-100 dark:shadow-none transition-all active:scale-95"
+          className="px-6 py-3 bg-green-200 text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-green-300 transition-all shadow-sm active:scale-95"
         >
           View Branches
         </Button>
         <Button
           onClick={() => handlePoc(fabricator)}
-          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs  uppercase tracking-widest rounded-xl shadow-lg shadow-blue-100 dark:shadow-none transition-all active:scale-95"
+          className="px-6 py-3 bg-white text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95"
         >
           View POC
         </Button>
         <Button
           onClick={() => handleModel(fabricator)}
-          className="px-6 py-2.5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs  uppercase tracking-widest rounded-xl transition-all active:scale-95"
+          className="px-6 py-3 bg-white text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95"
         >
-          Edit Fabricator
+          Edit Partner
         </Button>
         <Button
           onClick={handleArchive}
-          className="px-6 py-2.5 bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/20 text-xs  uppercase tracking-widest rounded-xl transition-all active:scale-95"
+          className="px-6 py-3 bg-rose-200 text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-rose-300 transition-all shadow-sm active:scale-95 ml-auto"
         >
           Archive Partner
         </Button>
@@ -368,15 +374,15 @@ const InfoRow = ({
   value: React.ReactNode;
   icon?: React.ReactNode;
 }) => (
-  <div className="flex flex-col gap-1 group">
-    <span className="text-[10px]  text-gray-300 dark:text-slate-500 uppercase tracking-widest group-hover:text-green-500 transition-colors">
-      {label}
-    </span>
-    <div className="flex items-center gap-2">
+  <div className="flex flex-row items-start gap-4 border-b border-black/5 pb-3 group">
+    <div className="flex items-center gap-2 w-32 shrink-0">
       {icon}
-      <div className="text-[13px]  text-gray-700 dark:text-white leading-tight">
-        {value}
-      </div>
+      <span className="text-[10px] text-black/40 font-black uppercase tracking-widest transition-colors group-hover:text-black">
+        {label}
+      </span>
+    </div>
+    <div className="text-xs font-black text-black leading-tight flex-1 break-words">
+      {value}
     </div>
   </div>
 );

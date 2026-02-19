@@ -14,6 +14,9 @@ import AddBranch from "./AddBranch";
 import { useState } from "react";
 import Button from "../../fields/Button";
 import { motion, AnimatePresence } from "motion/react";
+import { useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
+import { useEffect } from "react";
 
 interface AllBranchProps {
   fabricator: Fabricator;
@@ -26,6 +29,15 @@ const AllBranches = ({
   onClose,
   onSubmitSuccess,
 }: AllBranchProps) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(incrementModalCount());
+    return () => {
+      dispatch(decrementModalCount());
+    };
+  }, [dispatch]);
+
   const [addBranchModal, setAddBranchModal] = useState(false);
 
   const handleOpenAddBranch = () => setAddBranchModal(true);

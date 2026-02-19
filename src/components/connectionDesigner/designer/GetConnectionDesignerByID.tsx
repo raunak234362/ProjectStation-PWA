@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Button from "../../fields/Button";
 import type { ConnectionDesigner, ProjectData } from "../../../interface";
+import { cn } from "../../../lib/utils";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
 
@@ -28,6 +29,7 @@ import { formatDate } from "../../../utils/dateUtils";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
+  close?: () => void;
 }
 
 const DetailRow = ({ label, value, link, isExternal }: any) => (
@@ -58,7 +60,10 @@ const DetailRow = ({ label, value, link, isExternal }: any) => (
   </div>
 );
 
-const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
+const GetConnectionDesignerByID = ({
+  id,
+  close,
+}: GetConnectionDesignerByIDProps) => {
   const [designer, setDesigner] = useState<ConnectionDesigner | null>(null);
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -187,21 +192,21 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       label: "Total Engineers",
       value: `${engineerCount} Engineers`,
       icon: HardHat,
-      sub: "Active engineers",
+
       color: "green",
     },
     {
       label: "Active Projects",
       value: `${activeProjects} Projects`,
       icon: Activity,
-      sub: "Currently in progress",
+
       color: "blue",
     },
     {
       label: "Status",
       value: designer.isDeleted ? "Inactive" : "Active",
       icon: CheckCircle2,
-      sub: "Operational cycle",
+
       color: "emerald",
       isStatus: true,
     },
@@ -210,7 +215,7 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       value: `${states.length} States`,
       icon: Globe,
       sub: designer.location || "North America",
-      color: "amber",
+      color: "green",
     },
   ];
 
@@ -219,8 +224,8 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
       title: "RFI",
       count: 0,
       icon: FileText,
-      color: "bg-amber-50",
-      iconColor: "text-amber-600",
+      color: "bg-green-50",
+      iconColor: "text-green-600",
     },
     {
       title: "SUBMITTALS",
@@ -248,9 +253,9 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   return (
     <div className="space-y-8 pb-10">
       {/* Header with Edit Buttons */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-gray-100 dark:border-slate-800 pb-8">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-black pb-8 pt-4">
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-green-600 to-emerald-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-green-100 dark:shadow-none shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-16 h-16 rounded-2xl bg-green-200 border border-black flex items-center justify-center text-black text-2xl font-black shadow-sm shrink-0 group-hover:scale-105 transition-transform">
             {designer.name.charAt(0)}
           </div>
           <div>
@@ -276,30 +281,39 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
           </div>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex bg-gray-100/80 dark:bg-slate-800/80 p-1.5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-inner backdrop-blur-sm overflow-hidden">
-          <button
-            onClick={() => setActiveTab("dashboard")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs uppercase tracking-widest transition-all ${
-              activeTab === "dashboard"
-                ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
-                : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
-            }`}
-          >
-            <LayoutDashboard size={14} />
-            Dashboard
-          </button>
-          <button
-            onClick={() => setActiveTab("insights")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs uppercase tracking-widest transition-all ${
-              activeTab === "insights"
-                ? "bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-md"
-                : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
-            }`}
-          >
-            <Briefcase size={14} />
-            Files
-          </button>
+        <div className="flex items-center gap-4">
+          {/* Tab Switcher */}
+          <div className="flex bg-white p-1 rounded-2xl border border-black shadow-sm overflow-hidden h-fit">
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] uppercase font-black tracking-widest transition-all ${activeTab === "dashboard"
+                ? "bg-green-100 text-black border border-black/20 shadow-sm"
+                : "text-black/40 hover:text-black hover:bg-gray-50"
+                }`}
+            >
+              <LayoutDashboard size={14} />
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab("insights")}
+              className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] uppercase font-black tracking-widest transition-all ${activeTab === "insights"
+                ? "bg-green-100 text-black border border-black/20 shadow-sm"
+                : "text-black/40 hover:text-black hover:bg-gray-50"
+                }`}
+            >
+              <Briefcase size={14} />
+              Files
+            </button>
+          </div>
+
+          {close && (
+            <button
+              onClick={close}
+              className="px-6 py-2 bg-rose-100 text-black border border-black rounded-xl text-[10px] uppercase font-black tracking-widest hover:bg-rose-200 transition-all shadow-sm h-fit self-center"
+            >
+              Close
+            </button>
+          )}
         </div>
       </div>
 
@@ -310,28 +324,27 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             {statsCards.map((card, i) => (
               <div
                 key={i}
-                className="bg-white p-5 rounded-2xl border border-gray-100 shadow-soft hover:shadow-medium transition-all group overflow-hidden relative"
+                className="bg-white p-4 rounded-xl border border-black transition-all group relative flex items-center justify-between"
               >
-                <div className="relative z-10 flex flex-col justify-between h-full min-h-[80px]">
-                  <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                      {card.label}
-                    </span>
-                    <card.icon
-                      size={20}
-                      className={`text-${card.color}-600 opacity-60 group-hover:opacity-100 transition-opacity`}
-                    />
+                <div className="flex items-center gap-4">
+                  <div className={cn("p-2.5 rounded-lg border border-black/5 bg-green-50 text-green-600 group-hover:scale-110 transition-transform")}>
+                    <card.icon size={20} />
                   </div>
                   <div>
-                    <h4
-                      className={`text-xl font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-gray-800"}`}
-                    >
-                      {card.value}
-                    </h4>
-                    <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase truncate">
+                    <span className="text-xs font-black text-black uppercase tracking-widest block">
+                      {card.label}
+                    </span>
+                    <p className="text-[10px] font-bold text-black/40 uppercase truncate">
                       {card.sub}
                     </p>
                   </div>
+                </div>
+                <div className="text-right">
+                  <h4
+                    className={`text-lg font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-black"}`}
+                  >
+                    {card.value}
+                  </h4>
                 </div>
               </div>
             ))}
@@ -416,27 +429,26 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             <div className="lg:col-span-4 space-y-8">
               <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-soft flex flex-col min-h-[400px]">
                 {/* Quick Actions Card */}
-                <div className="bg-slate-900 dark:bg-slate-950 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-green-500/20 transition-all"></div>
-                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-slate-500 mb-8 relative z-10">
+                <div className="bg-gray-50 p-8 rounded-[40px] border border-black relative overflow-hidden group">
+                  <h4 className="text-[10px] uppercase font-black tracking-[0.2em] text-black mb-8 relative z-10">
                     Administrative Control
                   </h4>
                   <div className="space-y-4 relative z-10">
                     <Button
                       onClick={() => setEditModel(designer)}
-                      className="w-full justify-start gap-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl py-5 text-[10px] uppercase tracking-widest transition-all"
+                      className="w-full justify-start gap-4 bg-gray-200/50 hover:bg-gray-200 text-black border border-black rounded-2xl py-5 text-[10px] uppercase font-black tracking-widest transition-all"
                     >
-                      <Briefcase size={18} className="text-slate-500" />
+                      <Briefcase size={18} className="text-black/40" />
                       Edit Designer Info
                     </Button>
                     <Button
                       onClick={() => setEngineerModel(designer)}
-                      className="w-full justify-start gap-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl py-5 shadow-xl shadow-green-500/20 text-[10px] uppercase tracking-widest transition-all"
+                      className="w-full justify-start gap-4 bg-gray-200/50 hover:bg-gray-200 text-black border border-black rounded-2xl py-5 text-[10px] uppercase font-black tracking-widest transition-all"
                     >
-                      <LayoutDashboard size={18} />
+                      <LayoutDashboard size={18} className="text-black/40" />
                       Manage Workforce
                     </Button>
-                    <Button className="w-full justify-start gap-4 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/10 rounded-2xl py-5 text-[10px] uppercase tracking-widest transition-all">
+                    <Button className="w-full justify-start gap-4 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-500/20 rounded-2xl py-5 text-[10px] uppercase font-black tracking-widest transition-all">
                       <AlertCircle size={18} />
                       Archive Profile
                     </Button>
@@ -456,19 +468,21 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
             parentId={id}
           />
 
-          <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="py-6 flex flex-wrap items-center gap-3">
             <Button
               onClick={() => setEditModel(designer)}
-              className="py-1 px-3 text-sm sm:text-base font-semibold"
+              className="px-6 py-2 bg-white text-black border border-black rounded-xl text-[10px] uppercase font-black tracking-widest hover:bg-gray-50 transition-all shadow-sm"
             >
               Edit
             </Button>
-            <Button className="py-1 px-3 text-sm sm:text-base font-semibold bg-red-200 text-red-700 hover:bg-red-300">
+            <Button
+              className="px-6 py-2 bg-rose-100 text-black border border-black rounded-xl text-[10px] uppercase font-black tracking-widest hover:bg-rose-200 transition-all shadow-sm"
+            >
               Archive
             </Button>
             <Button
               onClick={() => setEngineerModel(designer)}
-              className="py-1 px-3 text-sm sm:text-base font-semibold"
+              className="px-6 py-2 bg-green-50 text-black border border-black rounded-xl text-[10px] uppercase font-black tracking-widest hover:bg-green-100 transition-all shadow-sm"
             >
               Connection Designer Engineer
             </Button>

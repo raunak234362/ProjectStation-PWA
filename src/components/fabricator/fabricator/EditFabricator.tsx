@@ -12,6 +12,8 @@ import Button from "../../fields/Button";
 import MultipleFileUpload from "../../fields/MultipleFileUpload";
 import MultiSelect from "../../fields/MultiSelect";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
 
 // --- File Interfaces (matching your fabricatorData.files structure) ---
 interface FabricatorFile {
@@ -56,6 +58,15 @@ const EditFabricator = ({
   const [wbtContactOptions, setWbtContactOptions] = useState<SelectOption[]>(
     [],
   );
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(incrementModalCount());
+    return () => {
+      dispatch(decrementModalCount());
+    };
+  }, [dispatch]);
 
   // State to manage existing files that the user decides to KEEP
   const [filesToKeep, setFilesToKeep] = useState<FabricatorFile[]>(

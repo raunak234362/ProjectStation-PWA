@@ -85,14 +85,14 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
                   <card.icon size={24} strokeWidth={2} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm md:text-base font-bold text-black uppercase tracking-widest">
+                  <span className="text-base font-bold text-black uppercase tracking-widest leading-tight">
                     {card.label}
                   </span>
                 </div>
               </div>
 
               <div className="z-10 text-right">
-                <span className="text-4xl font-black text-black tracking-tighter">
+                <span className="text-3xl font-black text-black tracking-tighter">
                   {card.value}
                 </span>
               </div>

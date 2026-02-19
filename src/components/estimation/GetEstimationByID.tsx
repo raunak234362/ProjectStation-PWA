@@ -12,8 +12,7 @@ import type { EstimationTask } from "../../interface";
 import InclusionExclusion from "./InclusionExclusion";
 import EditInclusionExclusion from "./EditInclusionExclusion";
 
-// Utility to remove HTML tags for simple display if needed
-const stripHtml = (text: string) => text.replace(/<[^>]*>?/gm, '');
+
 
 interface GetEstimationByIDProps {
   id: string;

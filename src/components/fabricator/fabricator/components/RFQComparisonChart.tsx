@@ -35,31 +35,31 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({
   const isDark = theme === "dark";
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-soft flex flex-col h-full border border-white/50 dark:border-slate-800/50 backdrop-blur-md">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-6 shrink-0">
+    <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-soft flex flex-col h-full border border-black">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-6 shrink-0">
         <div>
-          <h2 className="text-2xl  text-slate-800 dark:text-white flex items-center gap-2 tracking-tight">
+          <h2 className="text-2xl font-black text-black flex items-center gap-2 tracking-tight uppercase">
             RFQ vs Production Analysis
           </h2>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500  uppercase tracking-[0.2em] mt-2">
+          {/* <p className="text-[10px] text-black font-bold uppercase tracking-[0.2em] mt-2">
             Real-time status overview across{" "}
-            <span className="text-[#6bbd45] dark:text-green-400">
+            <span className="text-green-600">
               {timeRange}
             </span>{" "}
             periods
-          </p>
+          </p> */}
         </div>
 
-        <div className="flex bg-slate-100/50 dark:bg-slate-800/50 p-1.5 rounded-2xl shadow-inner backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+        <div className="flex items-center gap-2">
           {(["weekly", "monthly", "yearly"] as const).map((range) => (
             <button
               key={range}
               onClick={() => setTimeRange(range)}
               className={cn(
-                "px-6 py-2 text-[10px]  uppercase tracking-widest transition-all",
+                "px-5 py-2 text-[10px] font-black uppercase tracking-[0.15em] transition-all border rounded-xl",
                 timeRange === range
-                  ? "bg-white dark:bg-slate-700 text-[#6bbd45] dark:text-green-400 shadow-md rounded-xl"
-                  : "text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300",
+                  ? "bg-green-200 text-black border-black shadow-sm"
+                  : "bg-white border-black/20 text-black/50 hover:bg-gray-50 hover:border-black/40 hover:text-black"
               )}
             >
               {range}
@@ -84,10 +84,11 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({
               axisLine={false}
               tickLine={false}
               tick={{
-                fill: isDark ? "#64748b" : "#94a3b8",
+                fill: "#000",
                 fontSize: 10,
                 fontWeight: 900,
                 textAnchor: "middle",
+                opacity: 0.4
               }}
               dy={15}
             />
@@ -95,9 +96,10 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({
               axisLine={false}
               tickLine={false}
               tick={{
-                fill: isDark ? "#64748b" : "#94a3b8",
+                fill: "#000",
                 fontSize: 10,
                 fontWeight: 900,
+                opacity: 0.4
               }}
             />
             <Tooltip

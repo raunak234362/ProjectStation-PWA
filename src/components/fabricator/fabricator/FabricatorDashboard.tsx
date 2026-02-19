@@ -19,6 +19,10 @@ import {
 } from "../../../interface";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
+import { cn } from "../../../lib/utils";
+import React, { Suspense, lazy } from "react";
+
+const ProjectDetailsModal = lazy(() => import("../../dashboard/components/ProjectDetailsModal"));
 
 interface FabricatorDashboardProps {
   fabricator: Fabricator;
@@ -36,25 +40,34 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
     pendingCOs: 0,
     totalRFQs: 0,
   });
+  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
 
-        // Fetch projects for this fabricator
-        const allProjectsResponse = await Service.GetAllProjects();
-        const fabProjects = (allProjectsResponse || []).filter(
-          (p: ProjectData) => p.fabricatorID === fabricator.id,
+        const projectSummaries = fabricator.project || [];
+
+        // Fetch full project details for accurate stats (RFIs, Submittals, etc.)
+        const detailedProjectsResponse = await Promise.all(
+          projectSummaries.map((p: any) => Service.GetProjectById(p.id))
         );
+        const fabProjects = detailedProjectsResponse
+          .map((res: any) => res?.data || res)
+          .filter(Boolean);
+
         setProjects(fabProjects);
 
-        // Fetch RFQs for this fabricator
-        const rfqReceived = await Service.RFQRecieved();
-        const fabRfqs = (rfqReceived || []).filter(
-          (r: RFQItem) =>
-            r.recipientId === fabricator.id || r.senderId === fabricator.id,
+        // Fetch RFQs using the rfqIds present in the projects as requested
+        const rfqIds = Array.from(new Set(fabProjects.map((p: any) => p.rfqId).filter(Boolean)));
+        const detailedRfqsResponse = await Promise.all(
+          rfqIds.map((id: any) => Service.FetchRFQByID(id))
         );
+        const fabRfqs = detailedRfqsResponse
+          .map((res: any) => res?.data || res)
+          .filter(Boolean);
+
         setRfqs(fabRfqs);
 
         // Calculate Stats
@@ -92,7 +105,7 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
     };
 
     fetchDashboardData();
-  }, [fabricator.id]);
+  }, [fabricator]);
 
   const columns: ColumnDef<ProjectData>[] = [
     { accessorKey: "projectNumber", header: "Project #" },
@@ -114,11 +127,10 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            row.original.status === "ACTIVE"
-              ? "bg-green-100 text-green-700"
-              : "bg-gray-100 text-gray-700"
-          }`}
+          className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "ACTIVE"
+            ? "bg-green-100 text-green-700"
+            : "bg-gray-100 text-gray-700"
+            }`}
         >
           {row.original.status}
         </span>
@@ -128,12 +140,12 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
       id: "actions",
       header: "Stats",
       cell: ({ row }) => (
-        <div className="flex gap-3 text-xs text-gray-500 dark:text-slate-400">
-          <span title="RFIs" className="flex items-center gap-1">
-            <MessageSquare size={12} /> {row.original.rfi?.length || 0}
+        <div className="flex gap-4 text-[10px] font-black uppercase text-black">
+          <span title="RFIs" className="flex items-center gap-1.5 border border-black/5 px-2 py-1 rounded bg-orange-50">
+            <MessageSquare size={12} className="text-orange-600" /> {row.original.rfi?.length || 0}
           </span>
-          <span title="Submittals" className="flex items-center gap-1">
-            <FileCheck size={12} /> {row.original.submittals?.length || 0}
+          <span title="Submittals" className="flex items-center gap-1.5 border border-black/5 px-2 py-1 rounded bg-purple-50">
+            <FileCheck size={12} className="text-purple-600" /> {row.original.submittals?.length || 0}
           </span>
         </div>
       ),
@@ -151,103 +163,117 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
-          icon={<Briefcase className="text-blue-600" />}
+          icon={<Briefcase className="text-blue-600" size={20} />}
           label="Total Projects"
           value={stats.totalProjects}
-          color="bg-blue-50"
+          bgColor="bg-blue-50"
         />
         <StatCard
-          icon={<TrendingUp className="text-green-600" />}
+          icon={<TrendingUp className="text-green-600" size={20} />}
           label="Active Projects"
           value={stats.activeProjects}
-          color="bg-green-50"
+          bgColor="bg-green-50"
         />
         <StatCard
-          icon={<MessageSquare className="text-orange-600" />}
+          icon={<MessageSquare className="text-orange-600" size={20} />}
           label="Pending RFIs"
           value={stats.pendingRFIs}
-          color="bg-orange-50"
+          bgColor="bg-orange-50"
         />
         <StatCard
-          icon={<FileCheck className="text-purple-600" />}
+          icon={<FileCheck className="text-purple-600" size={20} />}
           label="Submittals"
           value={stats.pendingSubmittals}
-          color="bg-purple-50"
+          bgColor="bg-purple-50"
         />
         <StatCard
-          icon={<AlertCircle className="text-red-600" />}
+          icon={<AlertCircle className="text-red-600" size={20} />}
           label="Change Orders"
           value={stats.pendingCOs}
-          color="bg-red-50"
+          bgColor="bg-red-50"
         />
         <StatCard
-          icon={<FileText className="text-cyan-600" />}
+          icon={<FileText className="text-cyan-600" size={20} />}
           label="Total RFQs"
           value={stats.totalRFQs}
-          color="bg-cyan-50"
+          bgColor="bg-cyan-50"
         />
       </div>
 
       {/* Projects Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-green-500/10 w-full overflow-hidden">
-        <div className="p-4 border-b border-green-50/50 flex flex-wrap items-center justify-between gap-2 bg-green-50/50">
-          <h3 className=" text-gray-800 flex items-center gap-2">
-            <LayoutDashboard size={18} className="text-green-600" />
+      <div className="bg-white rounded-2xl border border-black overflow-hidden">
+        <div className="p-4 border-b border-black flex items-center justify-between bg-green-50/30">
+          <h3 className="text-base font-black text-black flex items-center gap-3 uppercase tracking-tight">
+            <LayoutDashboard size={18} />
             Project Overview
           </h3>
         </div>
-        <div>
-          <DataTable columns={columns} data={projects} />
+        <div className="p-4">
+          <DataTable
+            columns={columns}
+            data={projects}
+            noBorder={true}
+            onRowClick={(row) => setSelectedProject(row)}
+          />
         </div>
       </div>
 
+      {selectedProject && (
+        <Suspense fallback={null}>
+          <ProjectDetailsModal
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+          />
+        </Suspense>
+      )}
+
       {/* RFQs Section (Simplified) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-green-500/10 p-4">
-          <h3 className=" text-gray-800 mb-4 flex items-center gap-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-6">
+        <div className="bg-white rounded-2xl border border-black p-5">
+          <h3 className="text-base font-black text-black mb-6 flex items-center gap-3 uppercase tracking-tight">
             <FileText size={18} className="text-cyan-600" />
             Recent RFQs
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {rfqs.slice(0, 5).map((rfq) => (
               <div
                 key={rfq.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
+                className="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-black/5 hover:border-black/20 hover:bg-white transition-all group"
               >
                 <div>
-                  <p className="font-medium text-gray-800">{rfq.projectName}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm font-black text-black uppercase">{rfq.projectName}</p>
+                  <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-wider">
                     {new Date(rfq.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <span className="text-xs font-semibold text-cyan-700 bg-cyan-50 px-2 py-1 rounded">
+                <span className="text-[10px] font-black text-cyan-800 bg-cyan-100 px-3 py-1 rounded-full border border-cyan-200">
                   {rfq.status || "PENDING"}
                 </span>
               </div>
             ))}
             {rfqs.length === 0 && (
-              <p className="text-gray-500 text-center py-4 text-sm">
+              <p className="text-black/40 text-center py-6 text-xs font-bold uppercase tracking-widest">
                 No RFQs found
               </p>
             )}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-4">
-          <h3 className=" text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-            <Clock size={18} className="text-orange-600 dark:text-orange-400" />
+        <div className="bg-white rounded-2xl border border-black p-5">
+          <h3 className="text-base font-black text-black mb-6 flex items-center gap-3 uppercase tracking-tight">
+            <Clock size={18} className="text-orange-600" />
             Timeline Summary
           </h3>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <TimelineItem
               label="Latest Project"
               value={projects[0]?.name || "N/A"}
               date={projects[0]?.startDate}
               icon={
                 <CheckCircle2
-                  className="text-green-500 dark:text-green-400"
+                  className="text-green-600"
                   size={16}
                 />
               }
@@ -258,7 +284,7 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
               date={projects.find((p) => p.status === "ACTIVE")?.endDate}
               icon={
                 <Clock
-                  className="text-orange-500 dark:text-orange-400"
+                  className="text-orange-600"
                   size={16}
                 />
               }
@@ -274,24 +300,26 @@ const StatCard = ({
   icon,
   label,
   value,
-  color,
+  bgColor,
 }: {
   icon: React.ReactNode;
   label: string;
   value: number;
-  color: string;
+  bgColor: string;
 }) => (
   <div
-    className={`${color} p-3 sm:p-4 rounded-xl border border-white/50 dark:border-slate-800/50 shadow-sm flex flex-col items-center justify-center text-center transition-transform hover:scale-105`}
+    className={`flex items-center justify-between p-4 rounded-xl border border-black/10 transition-all hover:bg-gray-50 group`}
   >
-    <div className="mb-2 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm">
-      {icon}
+    <div className="flex items-center gap-4">
+      <div className={cn("p-2.5 rounded-lg border border-black/5 shadow-sm transition-transform duration-300 group-hover:scale-110", bgColor)}>
+        {icon}
+      </div>
+      <p className="text-[13px] font-black text-black uppercase tracking-widest leading-tight">
+        {label}
+      </p>
     </div>
-    <p className="text-xl sm:text-2xl  text-gray-800 dark:text-white">
+    <p className="text-lg font-black text-black tracking-tighter">
       {value}
-    </p>
-    <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500 dark:text-slate-400">
-      {label}
     </p>
   </div>
 );
@@ -307,17 +335,19 @@ const TimelineItem = ({
   date?: string;
   icon: React.ReactNode;
 }) => (
-  <div className="flex gap-3">
-    <div className="mt-1">{icon}</div>
-    <div>
-      <p className="text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase">
+  <div className="flex gap-4 items-start border-b border-black/5 pb-4 last:border-0 last:pb-0 group">
+    <div className="p-2 rounded-lg bg-gray-50 border border-black/5 shrink-0 group-hover:scale-110 transition-transform">
+      {icon}
+    </div>
+    <div className="flex-1">
+      <p className="text-[11px] font-black text-black/40 uppercase tracking-widest mb-1">
         {label}
       </p>
-      <p className="text-sm font-medium text-gray-800 dark:text-white">
+      <p className="text-sm font-black text-black uppercase line-clamp-1">
         {value}
       </p>
       {date && (
-        <p className="text-[10px] text-gray-400 dark:text-slate-500">
+        <p className="text-[10px] font-bold text-black/30 mt-1 uppercase tracking-tighter">
           {new Date(date).toLocaleDateString()}
         </p>
       )}

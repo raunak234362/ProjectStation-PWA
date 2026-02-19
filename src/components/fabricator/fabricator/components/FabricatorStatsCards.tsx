@@ -55,48 +55,37 @@ const FabricatorStatsCards: React.FC<FabricatorStatsCardsProps> = ({ stats }) =>
     };
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             {cards.map((card, index) => (
                 <div
                     key={index}
-                    className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 group relative overflow-hidden flex flex-col gap-3 border border-slate-50 dark:border-slate-800"
+                    className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-800/30 border border-black/10 dark:border-slate-700/50 group transition-all duration-300 hover:shadow-md hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
-                    <div className="flex items-start justify-between">
-                        <div className={cn("p-3 rounded-xl shadow-sm transition-colors",
-                            card.label === "Total RFQs Raised" ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" :
-                                card.label === "In Production" ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400" :
-                                    card.label === "RFQs Completed" ? "bg-green-50 dark:bg-green-900/20 text-[#6bbd45] dark:text-green-400" :
-                                        "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400"
+                    <div className="flex items-center gap-4">
+                        <div className={cn("p-3 rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-110 border border-black/5",
+                            card.label === "Total RFQs Raised" ? "bg-blue-50 text-blue-600" :
+                                card.label === "In Production" ? "bg-amber-50 text-amber-600" :
+                                    card.label === "RFQs Completed" ? "bg-green-50 text-[#6bbd45]" :
+                                        "bg-rose-50 text-rose-600"
                         )}>
-                            <card.icon size={22} strokeWidth={2.5} />
+                            <card.icon size={20} strokeWidth={2.5} />
                         </div>
-                        <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-full shadow-sm text-[10px] ">
-                            {getTrendIcon(card.trend)}
-                            <span className="text-slate-500 dark:text-slate-400">vs last week</span>
+                        <div className="flex flex-col">
+                            <span className="text-[13px] font-black text-black dark:text-slate-400 uppercase tracking-widest leading-tight">
+                                {card.label}
+                            </span>
+                            <div className="flex items-center gap-1 mt-0.5">
+                                {getTrendIcon(card.trend)}
+                                <span className="text-[9px] font-bold text-black/50 uppercase tracking-tighter">vs last week</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col min-w-0 mt-1">
-                        <span className={cn("text-3xl font-extrabold tracking-tight",
-                            card.label === "Total RFQs Raised" ? "text-blue-600 dark:text-blue-400" :
-                                card.label === "In Production" ? "text-amber-600 dark:text-amber-400" :
-                                    card.label === "RFQs Completed" ? "text-[#6bbd45] dark:text-green-400" :
-                                        "text-rose-600 dark:text-rose-400"
-                        )}>
+                    <div className="flex items-center">
+                        <span className="text-xl font-black text-black dark:text-white tracking-tighter">
                             {card.value}
                         </span>
-                        <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest truncate mt-1">
-                            {card.label}
-                        </span>
                     </div>
-
-                    {/* Subtle Decorative Background Blob */}
-                    <div className={cn("absolute -right-4 -bottom-4 w-16 h-16 rounded-full opacity-10 blur-xl",
-                        card.label === "Total RFQs Raised" ? "bg-blue-600" :
-                            card.label === "In Production" ? "bg-amber-600" :
-                                card.label === "RFQs Completed" ? "bg-green-600" :
-                                    "bg-rose-600"
-                    )} />
                 </div>
             ))}
         </div>

@@ -154,9 +154,9 @@ const FabricatorOverview = () => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6 lg:p-2"
         >
-            <div className="flex flex-col gap-1">
-                <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Fabricator Insights</h2>
-                <p className="text-sm  text-slate-400 dark:text-slate-500 uppercase tracking-widest">Global RFQ & Production Operations</p>
+            <div className="flex flex-col gap-1 pb-4">
+                <h2 className="text-2xl font-black text-black tracking-tight uppercase">Fabricator Insights</h2>
+               
             </div>
 
             <FabricatorStatsCards stats={aggregateStats} />

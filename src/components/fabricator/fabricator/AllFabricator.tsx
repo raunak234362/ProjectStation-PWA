@@ -5,6 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import GetFabricatorByID from "./GetFabricatorByID";
 import type { Fabricator } from "../../../interface";
 import { useSelector } from "react-redux";
+import { createPortal } from "react-dom";
 
 const AllFabricator = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -31,7 +32,7 @@ const AllFabricator = () => {
       accessorKey: "fabName",
       header: "Fabricator Name",
       cell: ({ row }) => (
-        <div className=" text-slate-800 dark:text-white tracking-tight">
+        <div className="text-black font-black tracking-tight uppercase text-sm">
           {row.original.fabName}
         </div>
       ),
@@ -41,9 +42,9 @@ const AllFabricator = () => {
       header: "Stage",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-lg text-xs  uppercase tracking-widest ${row.original.fabStage === "PRODUCTION"
-            ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-            : "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"
+          className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-black/10 shadow-sm ${row.original.fabStage === "PRODUCTION"
+            ? "bg-blue-50 text-blue-800"
+            : "bg-orange-50 text-orange-800"
             }`}
         >
           {row.original.fabStage || "N/A"}
@@ -62,7 +63,7 @@ const AllFabricator = () => {
             .padStart(2, "0")}/${date.getFullYear()}`
           : "N/A";
         return (
-          <div className=" text-slate-800 dark:text-white tracking-tight">
+          <div className="text-black font-black tracking-tight text-xs uppercase">
             {formattedDate}
           </div>
         );
@@ -70,18 +71,24 @@ const AllFabricator = () => {
     },
   ];
 
+  const [selectedFabId, setSelectedFabId] = useState<string | null>(null);
+
+  const handleRowClick = (row: any) => {
+    setSelectedFabId(row.id);
+  };
+
   return (
-    <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-md p-4 sm:p-6 rounded-[32px] shadow-soft border border-white/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="bg-white p-6 rounded-3xl border border-black animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Search Bar */}
-      <div className="mb-6">
+      <div className="mb-8">
         <div className="relative w-full md:w-96 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-green-500 transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black group-focus-within:text-green-600 transition-colors" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Filter engineering partners..."
-            className="pl-11 pr-4 py-3 w-full border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+            className="pl-11 pr-4 py-3.5 w-full border border-black rounded-2xl text-sm font-black focus:outline-none focus:ring-4 focus:ring-green-500/5 focus:border-green-500 transition-all bg-white text-black placeholder:text-black/30 shadow-sm"
           />
         </div>
       </div>
@@ -89,9 +96,26 @@ const AllFabricator = () => {
       <DataTable
         columns={columns}
         data={filteredFabricators}
-        detailComponent={GetFabricatorByID}
+        onRowClick={handleRowClick}
         pageSizeOptions={[25]}
       />
+
+      {selectedFabId &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-xs"
+              onClick={() => setSelectedFabId(null)}
+            />
+            <div className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto custom-scrollbar animate-in zoom-in-95 duration-200">
+              <GetFabricatorByID
+                id={selectedFabId}
+                close={() => setSelectedFabId(null)}
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

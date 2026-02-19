@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import type { Fabricator, UserData } from "../../../interface";
 import Button from "../../fields/Button";
 import { X, UserCheck, Plus, MoreVertical } from "lucide-react";
@@ -10,6 +10,9 @@ import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetEmployeeByID from "../../manageTeam/employee/GetEmployeeByID";
 import { motion, AnimatePresence } from "motion/react";
+import { useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
+import { useEffect } from "react";
 
 interface AllClientProps {
   fabricator: Fabricator;
@@ -17,6 +20,15 @@ interface AllClientProps {
 }
 
 const AllClients = ({ fabricator, onClose }: AllClientProps) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(incrementModalCount());
+    return () => {
+      dispatch(decrementModalCount());
+    };
+  }, [dispatch]);
+
   const [addClientModal, setAddClientModal] = useState(false);
   const [clients, setClients] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);

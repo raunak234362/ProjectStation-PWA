@@ -150,24 +150,24 @@ const AddFabricator = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden border border-slate-100"
+        className="overflow-hidden border border-black rounded-[2.5rem]"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="p-10 space-y-12">
           {/* Identity & Presence */}
           <section className="space-y-8">
-            <h3 className="text-[10px]  text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
               Brand Identity & Digital Presence
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-4">
-                <label className="block text-xs  text-slate-700 uppercase tracking-widest">
+                <label className="block text-xs text-black font-black uppercase tracking-widest">
                   Fabricator Name <span className="text-rose-500">*</span>
                 </label>
                 <Input
                   label=""
                   {...register("fabName", { required: "Name is mandatory" })}
                   placeholder="e.g. GLOBAL STEELWORKS INC"
-                  className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white h-14 text-lg "
+                  className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black placeholder:text-black/30 placeholder:font-bold"
                 />
                 {errors.fabName && (
                   <p className="text-[10px]  text-rose-600 uppercase tracking-widest">
@@ -176,12 +176,12 @@ const AddFabricator = () => {
                 )}
               </div>
               <div className="space-y-4">
-                <label className="block text-xs  text-slate-700 uppercase tracking-widest">
+                <label className="block text-xs text-black font-black uppercase tracking-widest">
                   Operational Stage <span className="text-rose-500">*</span>
                 </label>
                 <select
                   {...register("fabStage", { required: "Stage is mandatory" })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 h-14 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none transition-all  text-slate-600"
+                  className="w-full bg-white border border-black rounded-2xl px-6 h-14 focus:bg-white focus:ring-4 focus:ring-green-500/5 outline-none transition-all text-sm font-black uppercase tracking-widest"
                 >
                   <option value="RFQ">RFQ (Initial Engagement)</option>
                   <option value="PRODUCTION">
@@ -190,7 +190,7 @@ const AddFabricator = () => {
                 </select>
               </div>
               <div className="space-y-4">
-                <label className="block text-xs text-slate-700 uppercase tracking-widest">
+                <label className="block text-xs text-black font-black uppercase tracking-widest">
                   WBT Point of Contact
                 </label>
                 <Controller
@@ -202,6 +202,7 @@ const AddFabricator = () => {
                       label="Select Point of Contact"
                       value={field.value || []}
                       onChange={(_, val) => field.onChange(val)}
+                      className="border-black rounded-2xl h-14"
                     />
                   )}
                 />
@@ -210,8 +211,8 @@ const AddFabricator = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-4">
-                <label className="block text-xs  text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                  <Globe size={14} className="text-slate-400" />
+                <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                  <Globe size={14} className="text-black/40" />
                   Official Website
                 </label>
                 <Input
@@ -219,12 +220,12 @@ const AddFabricator = () => {
                   type="url"
                   {...register("website")}
                   placeholder="https://partner-portal.com"
-                  className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white h-12"
+                  className="w-full bg-white border-black rounded-2xl focus:bg-white h-12 text-sm font-black placeholder:text-black/30 placeholder:font-bold"
                 />
               </div>
               <div className="space-y-4">
-                <label className="block text-xs  text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                  <Link size={14} className="text-slate-400" />
+                <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                  <Link size={14} className="text-black/40" />
                   Documentation Repository (Drive)
                 </label>
                 <Input
@@ -232,7 +233,7 @@ const AddFabricator = () => {
                   type="url"
                   {...register("drive")}
                   placeholder="Cloud storage link..."
-                  className="w-full bg-slate-50 border-slate-200 rounded-2xl focus:bg-white h-12"
+                  className="w-full bg-white border-black rounded-2xl focus:bg-white h-12 text-sm font-black placeholder:text-black/30 placeholder:font-bold"
                 />
               </div>
             </div>
@@ -240,14 +241,14 @@ const AddFabricator = () => {
 
           {/* Operational Metrics */}
           {(userRole === "ADMIN" || userRole === "PROJECT_MANAGER_OFFICER") && (
-            <section className="space-y-8 pt-10 border-t border-slate-50">
-              <h3 className="text-[10px]  text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            <section className="space-y-8 pt-10 border-t border-black/10">
+              <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                 Commercial & Operational Governance
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-4">
-                  <label className="block text-xs  text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                    <Percent size={14} className="text-slate-400" />
+                  <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                    <Percent size={14} className="text-black/40" />
                     Approval Percentage
                   </label>
                   <Input
@@ -255,12 +256,12 @@ const AddFabricator = () => {
                     type="number"
                     {...register("approvalPercentage", { valueAsNumber: true })}
                     placeholder="0"
-                    className="bg-slate-50 border-slate-200 rounded-2xl h-12"
+                    className="bg-white border-black rounded-2xl h-12 text-sm font-black placeholder:text-black/30 placeholder:font-bold"
                   />
                 </div>
                 <div className="space-y-4">
-                  <label className="block text-xs  text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                    <Layers size={14} className="text-slate-400" />
+                  <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                    <Layers size={14} className="text-black/40" />
                     Fabrication Percentage
                   </label>
                   <Input
@@ -268,12 +269,12 @@ const AddFabricator = () => {
                     type="number"
                     {...register("fabricatPercentage", { valueAsNumber: true })}
                     placeholder="0"
-                    className="bg-slate-50 border-slate-200 rounded-2xl h-12"
+                    className="bg-white border-black rounded-2xl h-12 text-sm font-black placeholder:text-black/30 placeholder:font-bold"
                   />
                 </div>
                 <div className="space-y-4">
-                  <label className="block text-xs  text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                    <Calendar size={14} className="text-slate-400" />
+                  <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                    <Calendar size={14} className="text-black/40" />
                     Payment Cycle (Days)
                   </label>
                   <Input
@@ -281,7 +282,7 @@ const AddFabricator = () => {
                     type="number"
                     {...register("paymenTDueDate", { valueAsNumber: true })}
                     placeholder="30"
-                    className="bg-slate-50 border-slate-200 rounded-2xl h-12"
+                    className="bg-white border-black rounded-2xl h-12 text-sm font-black placeholder:text-black/30 placeholder:font-bold"
                   />
                 </div>
               </div>
@@ -289,11 +290,11 @@ const AddFabricator = () => {
           )}
 
           {/* Assets */}
-          <section className="space-y-8 pt-10 border-t border-slate-50">
-            <h3 className="text-[10px]  text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+          <section className="space-y-8 pt-10 border-t border-black/10">
+            <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
               Digital Assets & Compliance Media
             </h3>
-            <div className="bg-slate-50/50 p-8 rounded-[32px] border border-slate-100">
+            <div className="bg-white p-8 rounded-3xl border border-black shadow-sm">
               <Controller
                 name="files"
                 control={control}
@@ -313,7 +314,7 @@ const AddFabricator = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-12 py-4 border border-primary text-primary font-bold rounded-[24px] shadow-sm transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-3 border-none text-xs  uppercase tracking-widest"
+              className="px-12 py-4 bg-green-200 text-black border border-black font-black rounded-2xl shadow-sm transition-all hover:bg-green-300 active:scale-95 flex items-center gap-4 text-[10px] uppercase tracking-[0.15em]"
             >
               {isSubmitting ? (
                 <>
@@ -322,7 +323,7 @@ const AddFabricator = () => {
                 </>
               ) : (
                 <>
-                  <Check className="w-6 h-6" />
+                  <Check className="w-5 h-5" strokeWidth={3} />
                   Deploy Fabricator Profile
                 </>
               )}
