@@ -20,40 +20,6 @@ const RfqLayout = () => {
     <div className="w-full">
       <div className="flex flex-col w-full h-full mb-6">
         <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4">
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
-              <span className="text-sm md:text-xl font-black text-black uppercase tracking-wider">
-                Total -
-              </span>
-              <span className="text-sm md:text-xl font-black text-black">
-                {stats.total}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
-              <span className="text-sm md:text-xl font-black text-black uppercase tracking-wider">
-                In Review -
-              </span>
-              <span className="text-sm md:text-xl font-black text-black">
-                {stats.inReview}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
-              <span className="text-sm md:text-xl font-black text-black uppercase tracking-wider">
-                Completed -
-              </span>
-              <span className="text-sm md:text-xl font-black text-black">
-                {stats.completed}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
-              <span className="text-sm md:text-xl font-black text-black uppercase tracking-wider">
-                Pending -
-              </span>
-              <span className="text-sm md:text-xl font-black text-black">
-                {stats.pending}
-              </span>
-            </div>
-          </div>
 
           <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
             <button

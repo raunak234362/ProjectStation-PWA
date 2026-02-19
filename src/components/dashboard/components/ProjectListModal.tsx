@@ -177,11 +177,11 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Overrun",
       cell: ({ row }: any) =>
         row.original.isOverrun ? (
-          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-md  uppercase tracking-tighter animate-pulse">
+          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-tighter animate-pulse">
             OVERRUN
           </span>
         ) : (
-          <span className="text-gray-300 text-md  uppercase">Normal</span>
+          <span className="text-gray-300 text-xs md:text-sm lg:text-base xl:text-lg uppercase">Normal</span>
         ),
     },
     {
@@ -230,7 +230,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Status",
       cell: ({ row }: any) => (
         <span
-          className="px-3 py-1 text-md md:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+          className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
         >
           {row.original.status}
         </span>

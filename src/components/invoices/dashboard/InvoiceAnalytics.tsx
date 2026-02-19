@@ -90,7 +90,7 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
                     <div className="p-3 bg-blue-50 rounded-xl mb-3">
                         <Banknote className="w-8 h-8 text-blue-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Invoiced</span>
+                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Invoiced</span>
                     <span className="text-3xl  text-gray-800 mt-1">${totalInvoiced.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
 
@@ -98,7 +98,7 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
                     <div className="p-3 bg-green-50 rounded-xl mb-3">
                         <CheckCircle2 className="w-8 h-8 text-green-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Paid</span>
+                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Paid</span>
                     <span className="text-3xl  text-green-600 mt-1">${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
 
@@ -106,7 +106,7 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
                     <div className="p-3 bg-red-50 rounded-xl mb-3">
                         <AlertCircle className="w-8 h-8 text-red-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Balance Due</span>
+                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Balance Due</span>
                     <span className="text-3xl  text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
             </div>

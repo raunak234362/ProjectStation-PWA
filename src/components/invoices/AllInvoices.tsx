@@ -60,7 +60,7 @@ const AllInvoices = () => {
         const status = row.getValue("paymentStatus");
         return (
           <span
-            className="px-2 py-1 rounded-full text-md md:text-lg bg-gray-100 text-black border border-gray-200"
+            className="px-2 py-1 rounded-full text-xs md:text-sm lg:text-base xl:text-lg bg-gray-100 text-black border border-gray-200"
           >
             {status ? "Paid" : "Pending"}
           </span>

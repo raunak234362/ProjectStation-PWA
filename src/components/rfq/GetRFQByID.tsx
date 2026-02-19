@@ -313,11 +313,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
-          <div>
-            <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-tight">
-              RFQ Details
-            </h3>
-          </div>
+  
           <button
             onClick={onClose}
             className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
@@ -333,7 +329,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               {/* Header */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <h3 className="text-xl sm:text-2xl font-black text-black wrap-break-word max-w-full uppercase tracking-tight">
+                  <h3 className="text-xl sm:text-2xl text-black wrap-break-word max-w-full uppercase tracking-tight">
                     {rfq?.projectName}
                   </h3>
 
@@ -474,7 +470,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
             <div className="bg-[#fafffb] border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
               {/* Header + Add Response Button */}
               <div className="flex justify-between items-center gap-4">
-                <h1 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                <h1 className="text-xl sm:text-2xl text-black uppercase tracking-tight">
                   Responses
                 </h1>
 

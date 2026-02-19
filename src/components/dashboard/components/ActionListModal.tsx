@@ -94,7 +94,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Status",
             cell: ({ row }) => (
               <span
-                className="px-3 py-1 text-md md:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+                className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
               >
                 {row.original.status?.replace("_", " ")}
               </span>
@@ -132,7 +132,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Status",
             cell: ({ row }) => (
               <span
-                className="px-3 py-1 text-md md:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+                className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
               >
                 {row.original.status ? "PENDING" : "RESPONDED"}
               </span>
@@ -154,7 +154,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Status",
             cell: ({ row }) => (
               <span
-                className="px-3 py-1 text-md md:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+                className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
               >
                 {row.original.status ?? "—"}
               </span>

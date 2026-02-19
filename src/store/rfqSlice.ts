@@ -56,13 +56,16 @@ const RFQSlice = createSlice({
   },
 });
 
-export const {
-  addRFQ,
-  addEstimation,
-  updateRFQ,
-  updateEstimation,
-  setRFQData,
-  setEstimationData,
-  deleteRFQ,
-} = RFQSlice.actions;
+// Explicit exports to avoid any potential destructuring issues in TS
+export const addRFQ = RFQSlice.actions.addRFQ;
+export const addEstimation = RFQSlice.actions.addEstimation;
+export const deleteRFQ = RFQSlice.actions.deleteRFQ;
+export const deleteEstimation = RFQSlice.actions.deleteEstimation;
+export const updateRFQ = RFQSlice.actions.updateRFQ;
+export const updateEstimation = RFQSlice.actions.updateEstimation;
+export const setRFQData = RFQSlice.actions.setRFQData;
+export const setEstimationData = RFQSlice.actions.setEstimationData;
+export const showRFQData = RFQSlice.actions.showRFQData;
+export const showEstimationData = RFQSlice.actions.showEstimationData;
+
 export default RFQSlice.reducer;

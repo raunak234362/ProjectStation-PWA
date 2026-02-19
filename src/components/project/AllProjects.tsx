@@ -26,7 +26,7 @@ const AllProjects = () => {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <span className="px-3 py-1 text-md md:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
+        <span className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
           {row.getValue("status")}
         </span>
       )
@@ -34,13 +34,13 @@ const AllProjects = () => {
   ];
 
   return (
-    <div className=" bg-white p-4 rounded-2xl border border-black shadow-sm laptop-fit">
+    <div className=" bg-white p-4 rounded-2xl border border-black shadow-sm">
       <DataTable
         columns={columns}
         data={projects}
         onRowClick={handleRowClick}
         disablePagination={true}
-        pageSizeOptions={[5, 10, 25]}
+        pageSizeOptions={[25]}
       />
       {selectedProjectId && (
         <Suspense fallback={<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md text-white">Loading...</div>}>

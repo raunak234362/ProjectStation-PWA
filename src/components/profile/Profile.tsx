@@ -72,12 +72,12 @@ const Profile = () => {
         {/* Basic Info */}
         <div className="grid sm:grid-cols-2 gap-6 mb-8">
           <div>
-            <p className="text-gray-700 text-sm">Username</p>
+            <p className="text-gray-700 text-md">Username</p>
             <p className="font-semibold text-gray-700">{user.username}</p>
           </div>
 
           <div>
-            <p className="text-gray-700 text-sm">Email</p>
+            <p className="text-gray-700 text-md">Email</p>
             <p className="flex items-center gap-2 text-gray-700 font-medium">
               <Mail className="w-4 h-4 text-green-500" />
               {user.email}
@@ -85,7 +85,7 @@ const Profile = () => {
           </div>
 
           <div>
-            <p className="text-gray-700 text-sm">Phone</p>
+            <p className="text-gray-700 text-md">Phone</p>
             <p className="flex items-center gap-2 text-gray-700 font-medium">
               <Phone className="w-4 h-4 text-green-500" />
               {user.phone || "N/A"}
@@ -97,20 +97,20 @@ const Profile = () => {
             </p>
           </div>
           <div>
-            <p className="text-gray-700 text-sm">Landline</p>
+            <p className="text-gray-700 text-md">Landline</p>
             <p className="flex items-center gap-2 text-gray-700 font-medium">
               <FiPhoneCall className="w-4 h-4 text-green-500" />
               {user.phone || "N/A"}
             </p>
           </div>
 
-          <div>
+          {/* <div>
             <p className="text-gray-700 text-sm">Role</p>
             <p className="flex items-center gap-2 text-gray-700 font-medium">
               <Shield className="w-4 h-4 text-green-500" />
               {user.role}
             </p>
-          </div>
+          </div> */}
         </div>
 
         {/* Address Section */}

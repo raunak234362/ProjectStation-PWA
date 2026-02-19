@@ -85,7 +85,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
           </div>
 
           {/* Desktop Date Filter Buttons */}
-          <div className="hidden md:flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+          <div className="hidden md:flex  items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
             {[
               "All Months",
               "Jan",
@@ -104,7 +104,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
               <button
                 key={filter}
                 onClick={() => setDateFilter(filter)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all shrink-0 ${
+                className={`px-5 py-2 rounded-full text-md font-semibold transition-all shrink-0 ${
                   dateFilter === filter
                     ? "bg-[#6bbd45] text-white shadow-[0_4px_12px_rgba(107,189,69,0.3)]"
                     : "bg-white text-gray-600 hover:bg-green-50 border border-green-500/10"

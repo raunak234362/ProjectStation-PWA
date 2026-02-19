@@ -70,10 +70,6 @@
     color: #1a1a1b;
     background-color: #ffffff;
   }
-
-  a:hover {
-    color: #6bbd45;
-  }
 }
 
 @theme inline {

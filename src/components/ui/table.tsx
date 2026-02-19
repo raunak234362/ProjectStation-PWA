@@ -275,7 +275,7 @@ export default function DataTable<T extends object>({
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-6 py-3 text-left text-sm font-bold text-gray-900 border-b border-gray-200 tracking-wide"
+                        className="px-6 py-3 text-left text-xs md:text-sm lg:text-base xl:text-lg font-bold text-gray-900 border-b border-gray-200 tracking-wide"
                         onClick={header.column.getToggleSortingHandler()}
                         style={{ width: header.column.getSize() }}
                       >
@@ -318,7 +318,7 @@ export default function DataTable<T extends object>({
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-6 py-3 text-sm text-gray-700 font-normal leading-relaxed">
+                        <td key={cell.id} className="px-6 py-3 text-xs md:text-sm lg:text-base xl:text-lg text-gray-700 font-normal leading-relaxed">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
