@@ -1039,6 +1039,7 @@ class Service {
       return response.data;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 
@@ -1173,20 +1174,20 @@ class Service {
     }
   }
 
-// Get All Documents by Project ID
-static async GetAllDocumentsByProjectId(projectId: string) {
-  try {
-    const response = await api.get(`project/getAllDocuments/${projectId}/`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  // Get All Documents by Project ID
+  static async GetAllDocumentsByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`project/getAllDocuments/${projectId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
   //Get mileston by ID
   static async GetMilestoneById(id: string) {
@@ -1200,6 +1201,83 @@ static async GetAllDocumentsByProjectId(projectId: string) {
       return response.data;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  // Delete milestone by ID
+  static async DeleteMilestoneById(milestoneId: string) {
+    try {
+      const response = await api.delete(`mileStone/${milestoneId}`);
+      console.log("Milestone deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting milestone:", error);
+      throw error;
+    }
+  }
+
+  // Create milestone response
+  static async CreateMilestoneResponse(formData: FormData) {
+    try {
+      const response = await api.post(`mileStone/responses`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Milestone response created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating milestone response:", error);
+      throw error;
+    }
+  }
+
+  // Update milestone response status
+  static async UpdateMilestoneResponseStatus(
+    parentResponseId: string,
+    data: any,
+  ) {
+    try {
+      const response = await api.patch(
+        `mileStone/responses/${parentResponseId}/status`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      console.log("Milestone response status updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating milestone response status:", error);
+      throw error;
+    }
+  }
+
+  // Get milestone response by ID
+  static async GetMilestoneResponseById(id: string) {
+    try {
+      const response = await api.get(`mileStone/responses/${id}`);
+      console.log("Milestone response fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching milestone response:", error);
+      throw error;
+    }
+  }
+
+  // View milestone response file
+  static async ViewMilestoneResponseFile(responseId: string, fileId: string) {
+    try {
+      const response = await api.get(
+        `mileStone/response/${responseId}/viewFile/${fileId}`,
+      );
+      console.log("Milestone response file:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error viewing milestone response file:", error);
+      throw error;
     }
   }
 
@@ -1556,7 +1634,7 @@ static async GetAllDocumentsByProjectId(projectId: string) {
     }
   }
 
-  static async ClientAdminPendingSubmittals(){
+  static async ClientAdminPendingSubmittals() {
     try {
       const response = await api.get(`submittal/pending/clientAdmin`, {
         headers: {

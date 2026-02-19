@@ -10,12 +10,19 @@ import {
   User,
   Tag,
   Edit,
+  Trash2,
+  Plus,
 } from "lucide-react";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import { Button } from "../../ui/button";
 import EditMileStone from "./EditMileStone";
 import UpdateCompletionPer from "./UpdateCompletionPer";
+import DataTable from "../../ui/table";
+import RenderFiles from "../../ui/RenderFiles";
+import MilestoneResponseModal from "./MilestoneResponseModal";
+import MilestoneResponseDetailsModal from "./MilestoneResponseDetailsModal";
+import { formatDateTime } from "../../../utils/dateUtils";
 
 interface Milestone {
   id: string | number;
@@ -51,6 +58,8 @@ interface Milestone {
   completionPercentage?: string | number;
   completeionPercentage?: string | number;
   reason?: string;
+  responses?: any[];
+  currentVersionId?: string | number;
 }
 
 interface GetMilestoneByIDProps {
@@ -64,6 +73,11 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdateProgressModalOpen, setIsUpdateProgressModalOpen] =
     useState(false);
+  const [showResponseModal, setShowResponseModal] = useState(false);
+  const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const id = row?.id;
   const userRole = sessionStorage.getItem("userRole");
 
@@ -84,6 +98,21 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
   useEffect(() => {
     fetchMilestone();
   }, [id]);
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await Service.DeleteMilestoneById(id.toString());
+      toast.success("Milestone deleted successfully");
+      close();
+    } catch (error) {
+      console.error("Delete failed:", error);
+      toast.error("Failed to delete milestone");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "—";
@@ -128,6 +157,51 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
     );
   };
 
+  const responseColumns = [
+    {
+      accessorKey: "description",
+      header: "Message",
+      cell: ({ row }: any) => {
+        const plainText =
+          row.original.description?.replace(/<[^>]*>?/gm, "") || "";
+        return <p className="truncate max-w-[300px] text-xs sm:text-sm">{plainText}</p>;
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }: any) => (
+        <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-tight border ${row.original.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+          row.original.status === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-200' :
+            'bg-gray-50 text-gray-700 border-gray-200'
+          }`}>
+          {row.original.status}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "files",
+      header: "Files",
+      cell: ({ row }: any) => {
+        const count = row.original.files?.length ?? 0;
+        return count > 0 ? (
+          <span className="text-black font-medium text-xs">{count} file(s)</span>
+        ) : (
+          <span className="text-gray-300">—</span>
+        );
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }: any) => (
+        <span className="text-gray-500 text-[10px] sm:text-xs">
+          {formatDateTime(row.original.createdAt)}
+        </span>
+      ),
+    },
+  ];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -168,13 +242,13 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
       {/* Header */}
-      <div className=" px-6 py-4 border-b flex justify-between items-center">
+      <div className=" px-6 py-4 border-b flex justify-between items-center bg-gray-50/30">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-            <CheckCircle2 className="w-6 h-6 text-white" />
+          <div className="p-2 bg-green-100 rounded-lg">
+            <CheckCircle2 className="w-6 h-6 text-green-700" />
           </div>
           <div>
-            <h2 className="text-xl  text-black leading-tight">
+            <h2 className="text-xl font-bold text-black leading-tight">
               {milestone.subject}
             </h2>
           </div>
@@ -186,7 +260,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsUpdateProgressModalOpen(true)}
-                className="text-black border border-black bg-green-50 hover:bg-white/20 flex items-center gap-2 "
+                className="text-black border border-black bg-white hover:bg-green-50 flex items-center gap-2 h-9"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 Update Progress
@@ -195,11 +269,20 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditModalOpen(true)}
-                className="text-black border border-black bg-green-50 hover:bg-white/20 flex items-center gap-2"
+                className="text-black border border-black bg-white hover:bg-green-50 flex items-center gap-2 h-9"
               >
                 <Edit className="w-4 h-4" />
                 Edit
               </Button>
+              {/* <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setShowDeleteModal(true)}
+                className="flex items-center gap-2 h-9"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </Button> */}
             </>
           )}
           <button
@@ -233,7 +316,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
               Status
             </span>
             <div
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs  border-2 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} w-fit mt-1`}
+              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} w-fit mt-1`}
             >
               {statusConfig.label}
             </div>
@@ -273,14 +356,14 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
 
                 const finalProgress =
                   milestone.percentage !== undefined &&
-                  milestone.percentage !== null &&
-                  milestone.percentage !== ""
+                    milestone.percentage !== null &&
+                    milestone.percentage !== ""
                     ? Number(milestone.percentage)
                     : milestone.completionPercentage !== undefined &&
-                        milestone.completionPercentage !== null
+                      milestone.completionPercentage !== null
                       ? Number(milestone.completionPercentage)
                       : milestone.completeionPercentage !== undefined &&
-                          milestone.completeionPercentage !== null
+                        milestone.completeionPercentage !== null
                         ? Number(milestone.completeionPercentage)
                         : taskProgress;
 
@@ -304,75 +387,115 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
           </div>
         </div>
 
-        {/* Description */}
-        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
-          <h3 className="text-sm  text-gray-700 mb-3 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-green-600" />
-            Description
-          </h3>
-          <div
-            className="text-gray-700 text-sm leading-relaxed prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{
-              __html:
-                milestone.description ||
-                "No description provided for this milestone.",
-            }}
-          />
-        </div>
-        {milestone.reason && (
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">Reason of Delay: <span className="text-sm font-normal text-red-700">{milestone.reason}</span></h3>
-            
-          </div>
-        )}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left side: Description and tasks */}
+          <div className="space-y-8">
+            {/* Description */}
+            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm">
+              <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2 uppercase tracking-widest">
+                <FileText className="w-4 h-4 text-green-600" />
+                Description
+              </h3>
+              <div
+                className="text-gray-700 text-sm leading-relaxed prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    milestone.description ||
+                    "No description provided for this milestone.",
+                }}
+              />
+            </div>
 
-        {/* Tasks Section (Optional - if the API returns tasks) */}
-        {milestone.tasks && milestone.tasks.length > 0 && (
-          <div>
-            <h3 className="text-sm  text-gray-700 mb-4 flex items-center gap-2">
-              <ClipboardList className="w-4 h-4 text-green-600" />
-              Associated Tasks ({milestone.tasks.length})
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {milestone.tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:border-green-200 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
-                      <ClipboardList className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700">
-                        {task.name}
-                      </p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <User className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs text-gray-700">
-                          {task.user
-                            ? `${task.user.firstName} ${task.user.lastName}`
-                            : "Unassigned"}
-                        </span>
+            {milestone.reason && (
+              <div className="bg-red-50/50 rounded-2xl p-6 border border-red-100 shadow-sm">
+                <h3 className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 uppercase tracking-widest">
+                  Reason of Delay
+                </h3>
+                <p className="text-sm text-red-700 font-medium">{milestone.reason}</p>
+              </div>
+            )}
+
+            {/* Tasks Section */}
+            {milestone.tasks && milestone.tasks.length > 0 && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2 uppercase tracking-widest">
+                  <ClipboardList className="w-4 h-4 text-green-600" />
+                  Associated Tasks ({milestone.tasks.length})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {milestone.tasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl hover:border-green-200 transition-all shadow-sm group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                          <ClipboardList className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-gray-700">
+                            {task.name}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <User className="w-3 h-3 text-gray-400" />
+                            <span className="text-[10px] text-gray-500 font-medium">
+                              {task.user
+                                ? `${task.user.firstName} ${task.user.lastName}`
+                                : "Unassigned"}
+                            </span>
+                          </div>
+                        </div>
                       </div>
+                      <span className="text-[9px] font-black  px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 uppercase tracking-tighter">
+                        {task.status}
+                      </span>
                     </div>
-                  </div>
-                  <span className="text-[10px]  px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase">
-                    {task.status}
-                  </span>
+                  ))}
                 </div>
-              ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right side: Responses */}
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-widest">
+                Responses
+              </h3>
+              <Button
+                onClick={() => setShowResponseModal(true)}
+                size="sm"
+                className="bg-green-600 text-white rounded-xl flex items-center gap-2 h-9 text-xs font-bold px-4"
+              >
+                <Plus className="w-4 h-4" />
+                Add Response
+              </Button>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              {milestone.responses && milestone.responses.length > 0 ? (
+                <DataTable
+                  columns={responseColumns}
+                  data={milestone.responses}
+                  onRowClick={(row: any) => setSelectedResponse(row)}
+                />
+              ) : (
+                <div className="p-8 text-center text-gray-400 text-sm italic">
+                  No responses yet.
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-2xl h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <EditMileStone
               milestoneId={id.toString()}
+              mileStoneVersionId={milestone.currentVersionId}
               onClose={() => setIsEditModalOpen(false)}
               onSuccess={() => {
                 fetchMilestone();
@@ -385,7 +508,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
 
       {/* Update Progress Modal */}
       {isUpdateProgressModalOpen && (
-        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg h-auto bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <UpdateCompletionPer
               milestoneId={id.toString()}
@@ -395,6 +518,53 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
                 setIsUpdateProgressModalOpen(false);
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Response Modal */}
+      {showResponseModal && (
+        <MilestoneResponseModal
+          milestoneId={id.toString()}
+          onClose={() => setShowResponseModal(false)}
+          onSuccess={fetchMilestone}
+        />
+      )}
+
+      {/* Response Details Modal */}
+      {selectedResponse && (
+        <MilestoneResponseDetailsModal
+          response={selectedResponse}
+          onClose={() => setSelectedResponse(null)}
+          onSuccess={fetchMilestone}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 animate-in fade-in zoom-in duration-200 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+            </div>
+            <h3 className="text-xl font-black text-black uppercase tracking-tight mb-2">Delete Milestone</h3>
+            <p className="text-sm text-gray-500 mb-8">Are you sure you want to delete this milestone? This action cannot be undone.</p>
+            <div className="flex gap-4">
+              <Button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 bg-gray-100 text-gray-700 rounded-xl font-bold uppercase tracking-tight h-12"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                variant="destructive"
+                className="flex-1 rounded-xl font-bold uppercase tracking-tight h-12 shadow-md"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -416,12 +586,12 @@ const InfoCard = ({
   bg: string;
 }) => (
   <div className="flex flex-col gap-1">
-    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
       {label}
     </span>
     <div className="flex items-center gap-2 mt-1">
-      <div className={`p-1.5 ${bg} ${color} rounded-lg`}>{icon}</div>
-      <span className="text-sm  text-gray-700">{value}</span>
+      <div className={`p-2 ${bg} ${color} rounded-xl shadow-sm`}>{icon}</div>
+      <span className="text-sm font-bold text-gray-800">{value}</span>
     </div>
   </div>
 );

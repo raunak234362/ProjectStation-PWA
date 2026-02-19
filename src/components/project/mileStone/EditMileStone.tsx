@@ -8,8 +8,9 @@ import Button from "../../fields/Button";
 import RichTextEditor from "../../fields/RichTextEditor";
 import Service from "../../../api/Service";
 
-interface EditMileStoneProps {
+export interface EditMileStoneProps {
   milestoneId: string;
+  mileStoneVersionId?: string | number;
   initialData?: any;
   onClose: () => void;
   onSuccess?: () => void;
@@ -17,6 +18,7 @@ interface EditMileStoneProps {
 
 const EditMileStone = ({
   milestoneId,
+  mileStoneVersionId,
   initialData,
   onClose,
   onSuccess,

@@ -82,13 +82,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-    | string
-    | []
-    | {
-        firstName?: string;
-        lastName?: string;
-        middleName?: string;
-      };
+  | string
+  | []
+  | {
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+  };
 }
 
 export interface DepartmentPayload {
@@ -98,7 +98,7 @@ export interface DepartmentPayload {
 export interface FabricatorPayload {
   fabName: string;
   website?: string;
-  wbtFabricatorPointOfContact?:any[]
+  wbtFabricatorPointOfContact?: any[]
   drive?: string;
   fabStage?: "RFQ" | "PRODUCTION";
   files?: File | string | "";
@@ -155,7 +155,7 @@ export interface Fabricator {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
-  wbtFabricatorPointOfContact?:any[]
+  wbtFabricatorPointOfContact?: any[]
   pointOfContact?: FabricatorClient[];
 }
 
@@ -660,6 +660,30 @@ export interface ProjectMilestone {
   project_id?: string;
   fabricator_id?: string;
   description?: string;
+  responses?: MilestoneResponse[];
+}
+
+export interface MilestoneResponse {
+  id: string;
+  milestoneId: string;
+  userId: string;
+  parentResponseId: string | null;
+  description: string;
+  files?: { id: string; originalName: string; url?: string }[];
+  link?: string | null;
+  createdAt: string;
+  status: string;
+  childResponses?: MilestoneResponse[];
+}
+
+export interface MilestoneResponsePayload {
+  milestoneId: string;
+  userId: string;
+  parentResponseId: string | null;
+  description: string;
+  files?: File[] | string[];
+  link?: string | null;
+  status?: string;
 }
 
 export interface SubmittalPayload {
