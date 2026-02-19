@@ -33,17 +33,17 @@ const CountriesPopover = ({
         top: targetRect.bottom + 12,
         transform: "translateX(-50%)",
       }}
-      className="z-100 bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-700 w-72 pointer-events-none"
+      className="z-100 bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-2xl border border-black/10 dark:border-slate-700 w-72 pointer-events-none"
     >
-      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-slate-700/50">
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-black/10 dark:border-slate-700/50">
         <div className="w-8 h-8 rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
           <Globe size={16} className="text-white" />
         </div>
         <div>
-          <span className="text-xs font-bold text-gray-800 dark:text-slate-100 block">
+          <span className="text-xs font-bold text-black dark:text-slate-100 block">
             Countries Covered
           </span>
-          <span className="text-[10px] text-gray-400 dark:text-slate-500 font-medium">
+          <span className="text-[10px] text-black font-medium">
             {countries.length}{" "}
             {countries.length === 1 ? "Country" : "Countries"}
           </span>
@@ -56,7 +56,7 @@ const CountriesPopover = ({
             countries.map((country, i) => (
               <button
                 key={i}
-                className="group relative px-3 py-2 bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 text-blue-700 dark:text-blue-400 rounded-xl border border-blue-200/50 dark:border-blue-800/50 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 shadow-sm hover:shadow-md text-[11px] font-semibold tracking-wide"
+                className="group relative px-3 py-2 bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 text-black dark:text-blue-400 rounded-xl border border-black/10 dark:border-blue-800/50 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 shadow-sm hover:shadow-md text-[11px] font-bold tracking-wide"
               >
                 <span className="relative z-10">{country}</span>
                 <div className="absolute inset-0 bg-linear-to-br from-blue-400/0 to-indigo-400/0 group-hover:from-blue-400/10 group-hover:to-indigo-400/10 rounded-xl transition-all duration-200"></div>
@@ -66,9 +66,9 @@ const CountriesPopover = ({
             <div className="w-full text-center py-6">
               <Globe
                 size={32}
-                className="mx-auto text-gray-300 dark:text-slate-600 mb-2"
+                className="mx-auto text-black dark:text-slate-600 mb-2"
               />
-              <span className="text-xs text-gray-400 dark:text-slate-500 italic font-medium">
+              <span className="text-xs text-black italic font-medium">
                 No countries listed
               </span>
             </div>
@@ -77,7 +77,7 @@ const CountriesPopover = ({
       </div>
 
       {/* Arrow */}
-      <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-3 h-3 bg-white dark:bg-slate-800 border-l border-t border-gray-100 dark:border-slate-700 rotate-45 transform"></div>
+      <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-3 h-3 bg-white dark:bg-slate-800 border-l border-t border-black/10 dark:border-slate-700 rotate-45 transform"></div>
     </motion.div>,
     document.body,
   );
@@ -174,7 +174,7 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({
             setHoveredCard(null);
             setHoverRect(null);
           }}
-          className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-gray-100 dark:border-slate-800 shadow-soft hover:shadow-medium transition-all group relative overflow-hidden"
+          className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-black/10 dark:border-slate-800 shadow-soft hover:shadow-medium transition-all group relative overflow-hidden"
         >
           <div className="flex flex-col h-full relative z-10">
             <div className="flex justify-between items-start mb-6">
@@ -184,10 +184,10 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({
                 <card.icon size={22} strokeWidth={2.5} />
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-[10px]  text-gray-300 dark:text-slate-600 uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-black dark:text-slate-600 uppercase tracking-widest">
                   {card.label}
                 </span>
-                <div className="flex items-center gap-1 text-[9px]  text-green-500 dark:text-green-400 mt-1">
+                <div className="flex items-center gap-1 text-[9px] font-bold text-green-600 dark:text-green-400 mt-1">
                   <ArrowUpRight size={10} strokeWidth={3} />
                   <span>{card.trend}</span>
                 </div>
@@ -195,10 +195,10 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({
             </div>
 
             <div className="mt-auto">
-              <h3 className="text-3xl  text-gray-800 dark:text-white tracking-tighter mb-1 leading-none">
+              <h3 className="text-3xl font-bold text-black dark:text-white tracking-tighter mb-1 leading-none">
                 {card.value}
               </h3>
-              <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-tight">
+              <p className="text-[10px] font-bold text-black dark:text-slate-500 uppercase tracking-tight">
                 {card.subText}
               </p>
             </div>

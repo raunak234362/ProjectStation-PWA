@@ -326,9 +326,6 @@ const AddInvoice = ({
           <h1 className="text-2xl  text-green-700">
             Create New Invoice
           </h1>
-          <p className="text-gray-700">
-            Enter details to generate a new invoice.
-          </p>
         </div>
         <div className="flex flex-wrap gap-4 w-full md:w-auto">
           <div className="w-full md:w-64">
@@ -398,10 +395,11 @@ const AddInvoice = ({
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Customer Details */}
-        <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-green-600 px-2">
+          <p className="text-lg font-semibold text-black-600 ">
             Customer Details
-          </legend>
+          </p>
+        <fieldset className="border p-4 rounded-lg shadow-green-200 ">
+        
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <Input
@@ -449,10 +447,11 @@ const AddInvoice = ({
         </fieldset>
 
         {/* Invoice Details */}
-        <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-green-600 px-2">
+          <p className="text-lg font-semibold text-black-600  ">
             Invoice Details
-          </legend>
+          </p>
+        <fieldset className="border p-4 rounded-lg shadow-inner  ">
+        
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <Input
@@ -510,10 +509,11 @@ const AddInvoice = ({
         </fieldset>
 
         {/* Invoice Items */}
-        <fieldset className="border p-4 rounded-lg shadow-inner">
-          <legend className="text-lg font-semibold text-green-600 px-2">
+         <p className="text-lg font-semibold text-black-600 ">
             Invoice Items
-          </legend>
+          </p>
+        <fieldset className="border p-4 rounded-lg shadow-inner">
+         
           <div className="space-y-4">
             {fields.map((field, index) => (
               <div
@@ -630,7 +630,7 @@ const AddInvoice = ({
                   remarks: "",
                 });
               }}
-              className="flex items-center gap-2 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
+              className="flex items-center gap-2 bg-green-50 text-black-700 hover:bg-green-100 border border-black"
             >
               <Plus size={18} /> Add Item
             </Button>
@@ -640,7 +640,7 @@ const AddInvoice = ({
         {/* Totals and Bank Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <fieldset className="border p-4 rounded-lg shadow-inner">
-            <legend className="text-lg font-semibold text-green-600 px-2">
+            <legend className="text-lg font-semibold text-black-600 px-2">
               Summary
             </legend>
             <div className="space-y-4">
@@ -654,7 +654,7 @@ const AddInvoice = ({
               <Button
                 type="button"
                 onClick={handleCalculateTotal}
-                className="w-full bg-green-100 text-green-700 hover:bg-green-200 border border-green-300 py-2 text-sm font-semibold"
+                className="w-full bg-green-100 text-black-700 hover:bg-green-200 border border-black py-2 text-sm font-semibold"
               >
                 Calculate Total & Words
               </Button>
@@ -668,7 +668,7 @@ const AddInvoice = ({
           </fieldset>
 
           <fieldset className="border p-4 rounded-lg shadow-inner">
-            <legend className="text-lg font-semibold text-green-600 px-2">
+            <legend className="text-lg font-semibold text-black-600 px-2">
               Payment Info
             </legend>
             <div className="space-y-4">

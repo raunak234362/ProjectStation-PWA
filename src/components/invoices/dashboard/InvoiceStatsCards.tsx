@@ -71,26 +71,20 @@ const InvoiceStatsCards: React.FC<StatsProps> = ({ invoices }) => {
             {stats.map((stat, index) => (
                 <div
                     key={index}
-                    className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                    className="bg-white p-5 h-[100px] rounded-xl flex items-center justify-between border border-black border-l-[6px] border-l-[#6bbd45] shadow-md hover:shadow-lg transition-all"
                 >
-                    <div className="flex items-start justify-between mb-4">
-                        <div className={`p-3 rounded-xl ${stat.color}`}>
-                            <stat.icon size={22} />
+                    <div className="flex items-center gap-3">
+                        <div className={`p-3 rounded-full ${stat.color} bg-opacity-20`}>
+                            <stat.icon size={24} />
                         </div>
-                        {/* Trend Label (Mocked for UI) */}
-                        <span
-                            className={`text-xs font-medium px-2 py-1 rounded-full ${stat.title === "Overdue Invoices"
-                                ? "bg-red-100 text-red-600"
-                                : "bg-green-100 text-green-600"
-                                }`}
-                        >
-                            {stat.trend}
+                        <span className="text-sm font-bold text-gray-700 uppercase tracking-wide leading-tight max-w-[120px]">
+                            {stat.title}
                         </span>
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">{stat.title}</p>
-                        <h3 className="text-2xl  text-gray-800 mb-1">{stat.value}</h3>
-                        <p className="text-xs text-gray-400">{stat.subValue}</p>
+                        <span className="text-2xl font-black text-gray-900 tracking-tight">
+                            {stat.value}
+                        </span>
                     </div>
                 </div>
             ))}

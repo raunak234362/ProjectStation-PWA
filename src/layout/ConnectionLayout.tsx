@@ -12,9 +12,9 @@ const ConnectionLayout = () => {
 
           <button
             onClick={() => setActiveTab("dashboard")}
-            className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-md sm:rounded-sm text-sm sm:font-semibold transition-all ${activeTab === "dashboard"
-              ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-              : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-md sm:rounded-sm text-sm sm:font-semibold transition-all border border-black ${activeTab === "dashboard"
+                ? "bg-green-200 text-black shadow-md hover:bg-[#5aa33a]"
+                : "bg-green-50 text-black hover:bg-green-100 shadow-sm"
               }`}
           >
             Connection Designer Home
@@ -23,9 +23,9 @@ const ConnectionLayout = () => {
           {(userRole === "ADMIN" || userRole === "DEPUTY_MANAGER" || userRole === "OPERATION_EXECUTIVE") && (
             <button
               onClick={() => setActiveTab("AddConnectionDesigner")}
-              className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-md sm:rounded-sm text-sm sm:font-semibold transition-all ${activeTab === "AddConnectionDesigner"
-                ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+              className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-md sm:rounded-sm text-sm sm:font-semibold transition-all border border-black ${activeTab === "AddConnectionDesigner"
+                  ? "bg-[#6bbd45] text-black shadow-md hover:bg-[#5aa33a]"
+                  : "bg-green-50 text-black hover:bg-green-100 shadow-sm"
                 }`}
             >
               Add Connection Designer

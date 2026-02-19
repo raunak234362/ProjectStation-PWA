@@ -116,7 +116,7 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
   ];
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+    <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] mb-8">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg  text-gray-800">Pending Invoices</h3>
         <button className="text-sm font-semibold text-green-600 hover:text-green-700">

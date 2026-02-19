@@ -18,25 +18,25 @@ const CDCapacityTable: React.FC<CDCapacityTableProps> = ({
   return (
     <div className="mb-8">
       {/* Recently Active Designers */}
-      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h3 className="text-lg  text-gray-800 mb-4">
+      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-black/10">
+        <h3 className="text-lg font-bold text-black mb-4">
           Recently Active Designers
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {recentActivity.slice(0, 8).map((designer) => (
             <div
               key={designer.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors border border-gray-100"
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors border border-black/10"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-white rounded-lg shadow-sm">
+                <div className="p-2 bg-white rounded-lg shadow-sm border border-black/10">
                   <Clock size={16} className="text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 truncate max-w-[120px]">
+                  <p className="text-sm font-bold text-black truncate max-w-[120px]">
                     {designer.name}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-black font-medium">
                     Updated {formatDate(designer.updatedAt)}
                   </p>
                 </div>

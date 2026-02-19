@@ -456,7 +456,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   <div className="flex flex-col gap-2 pt-2">
                     <Button
                       onClick={() => setShowEstimationModal(true)}
-                      className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-500 text-white shadow-xs"
+                      className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-200 text-black border border-black shadow-xs"
                     >
                       Raise For Estimation
                     </Button>

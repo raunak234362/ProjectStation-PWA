@@ -42,7 +42,7 @@ function TextFilter({ column }: any) {
     <input
       value={column.getFilterValue() ?? ""}
       onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-      className="w-full mt-1 border border-gray-200 dark:border-slate-700 px-2 py-1 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-200"
+      className="w-full mt-1 border border-black/10 dark:border-slate-700 px-2 py-1 rounded text-xs font-bold focus:ring-1 focus:ring-green-500 outline-none bg-white dark:bg-slate-800 text-black dark:text-slate-200"
       placeholder="Filter..."
     />
   );
@@ -66,12 +66,12 @@ function ColumnFilter({ column }: { column: any }) {
   }
 
   return (
-    <div className="relative">
-      <Search className="absolute left-2 top-1.5 w-3.5 h-3.5 text-gray-400" />
+    <div className="relative group">
+      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black/40 group-focus-within:text-green-600 transition-colors" />
       <input
         value={column.getFilterValue() ?? ""}
         onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-        className="pl-8 pr-2 py-1.5 w-full border border-gray-200 dark:border-slate-700 rounded-md text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-200"
+        className="pl-9 pr-3 py-2 w-full border border-black/10 dark:border-slate-700 rounded-xl text-xs font-bold focus:ring-1 focus:ring-green-500 outline-none transition-all bg-white dark:bg-slate-800 text-black dark:text-slate-200 placeholder:text-black/30 shadow-xs"
         placeholder={`Search ${header as string}...`}
       />
     </div>
@@ -97,6 +97,7 @@ interface DataTableProps<T extends object> {
   showColumnToggle?: boolean;
   initialSorting?: SortingState;
   disablePagination?: boolean;
+  noBorder?: boolean;
 }
 
 /* -------------------- mobile card view -------------------- */
@@ -167,6 +168,7 @@ export default function DataTable<T extends object>({
   showColumnFiltersInHeader = false,
   initialSorting = [],
   disablePagination = false,
+  noBorder = false,
 }: DataTableProps<T>) {
   const { isMobile } = useScreen();
 
@@ -235,23 +237,23 @@ export default function DataTable<T extends object>({
       {table
         .getAllColumns()
         .some((c) => (c.columnDef as any).enableColumnFilter) && (
-          <div className="flex flex-wrap items-end gap-4 mb-6 p-4 bg-gray-50/50 dark:bg-slate-800/20 rounded-xl border border-gray-100 dark:border-slate-800">
+          <div className="flex flex-wrap items-center gap-4 mb-6 p-4 bg-gray-50 rounded-2xl border border-black/10 shadow-sm">
             {table
               .getAllColumns()
               .filter((c) => (c.columnDef as any).enableColumnFilter)
               .map((column) => (
                 <div
                   key={column.id}
-                  className="min-w-[180px]"
+                  className="min-w-[200px]"
                 >
                   <ColumnFilter column={column} />
                 </div>
               ))}
             <Button
               onClick={() => table.resetColumnFilters()}
-              className="text-xs text-black border border-black hover:bg-red-50 hover:text-red-600 transition-all h-9 px-4 font-bold rounded-lg"
+              className="text-xs text-black border border-black/20 hover:bg-green-100 transition-all h-9 px-4 font-bold rounded-xl flex items-center gap-2 bg-white shadow-sm"
             >
-              <X className="w-3 h-3 mr-1" /> Clear
+              <X className="w-3.5 h-3.5" /> Clear Filters
             </Button>
           </div>
         )}
@@ -264,28 +266,29 @@ export default function DataTable<T extends object>({
           onRowClick={onRowClick}
         />
       ) : (
-        <div className="w-full border border-gray-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm">
+        <div className={`w-full ${noBorder ? "" : "border border-black/10 dark:border-slate-800"} rounded-2xl overflow-hidden shadow-sm`}>
           <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
             <table className="min-w-full divide-y dark:divide-slate-800">
-              <thead className="bg-[#f8fafc] sticky top-0 z-10 shadow-sm border-b border-gray-200">
+              <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm border-b border-gray-200">
                 {table.getHeaderGroups().map((hg) => (
                   <tr key={hg.id}>
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-4 py-3 text-left text-md md:text-lg font-black bg-[#f8fafc] text-black border-b border-gray-200"
+                        className="px-6 py-3 text-left text-sm font-bold text-gray-900 border-b border-gray-200 tracking-wide"
                         onClick={header.column.getToggleSortingHandler()}
+                        style={{ width: header.column.getSize() }}
                       >
-                        <div className="flex items-center gap-1 cursor-pointer">
+                        <div className="flex items-center gap-1 cursor-pointer select-none">
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
                           )}
                           {header.column.getIsSorted() === "asc" && (
-                            <ChevronUp className="w-4 h-4" />
+                            <ChevronUp className="w-4 h-4 text-gray-500" />
                           )}
                           {header.column.getIsSorted() === "desc" && (
-                            <ChevronDown className="w-4 h-4" />
+                            <ChevronDown className="w-4 h-4 text-gray-500" />
                           )}
                         </div>
 
@@ -303,7 +306,7 @@ export default function DataTable<T extends object>({
                 {table.getPaginationRowModel().rows.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr
-                      className={`hover:bg-green-50/80 dark:hover:bg-slate-800/50 cursor-pointer transition-colors ${expandedRowId === row.id ? "bg-green-50 dark:bg-slate-800/50" : ""
+                      className={`hover:bg-green-50/60 dark:hover:bg-slate-800/50 cursor-pointer transition-colors ${expandedRowId === row.id ? "bg-green-50 dark:bg-slate-800/50" : ""
                         }`}
                       onClick={() => {
                         onRowClick?.(row.original);
@@ -315,7 +318,7 @@ export default function DataTable<T extends object>({
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3 text-md md:text-lg text-black">
+                        <td key={cell.id} className="px-6 py-3 text-sm text-gray-700 font-normal leading-relaxed">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

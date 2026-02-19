@@ -4,6 +4,9 @@ import { format } from "date-fns";
 import { X as CloseIcon } from "lucide-react";
 import EstimationTaskByID from "./EstimationTaskByID";
 import AddEstimationTask from "./AddEstimationTask";
+import { useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
+import { useEffect } from "react";
 
 interface EstimationTask {
   id: string;
@@ -42,6 +45,22 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
   onRefresh,
 }) => {
   const [isAddingTask, setIsAddingTask] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isAddingTask) {
+      dispatch(incrementModalCount());
+    } else {
+      dispatch(decrementModalCount());
+    }
+    // Cleanup on unmount if modal was open
+    return () => {
+      if (isAddingTask) {
+        dispatch(decrementModalCount());
+      }
+    };
+  }, [isAddingTask, dispatch]);
+
   console.log(estimations);
 
   // ─────────────── Columns ───────────────
@@ -107,8 +126,8 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
   return (
     <>
       {/* Header with Close button (used when opened from Estimation details) */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold text-gray-700">
+      <div className="flex items-center justify-between mb-3 border-b border-black/10 pb-2">
+        <h2 className="text-lg font-black text-black uppercase tracking-tight">
           Estimation Tasks
         </h2>
         <div className="flex gap-2">
@@ -116,7 +135,7 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
             <button
               type="button"
               onClick={() => setIsAddingTask(true)}
-              className="px-3 py-1 text-sm rounded-md bg-green-600 hover:bg-green-700 text-white font-medium transition-colors shadow-sm"
+              className="px-4 py-2 text-xs rounded-xl bg-green-200 border border-black/10 hover:bg-green-300 text-black font-bold transition-all shadow-sm"
             >
               Add Task
             </button>
@@ -125,7 +144,7 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
+              className="px-4 py-2 text-xs rounded-xl bg-white border border-black/10 hover:bg-gray-50 text-black font-bold transition-all shadow-sm"
             >
               Close
             </button>
