@@ -8,7 +8,6 @@ import Button from "../../fields/Button";
 import RichTextEditor from "../../fields/RichTextEditor";
 import Service from "../../../api/Service";
 
-
 interface EditMileStoneProps {
   milestoneId: string;
   initialData?: any;
@@ -38,6 +37,7 @@ const EditMileStone = ({
       percentage: 0,
       approvalDate: "",
       stage: "",
+      reason: "",
     },
   });
 
@@ -85,6 +85,7 @@ const EditMileStone = ({
             ? new Date(data.approvalDate).toISOString().split("T")[0]
             : "",
           stage: data.stage || "",
+          reason: data.reason || "",
         });
       }
     };
@@ -102,7 +103,7 @@ const EditMileStone = ({
           : null,
       };
 
-      await Service.EditMilestoneById(milestoneId, payload);
+      await Service.EditExistingMilestoneByID(milestoneId, payload);
       toast.success("Milestone updated successfully!");
       if (onSuccess) onSuccess();
       onClose();
@@ -164,6 +165,7 @@ const EditMileStone = ({
               )}
             />
           </div>
+          <Input label="Reason" {...register("reason")} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Controller
@@ -196,7 +198,6 @@ const EditMileStone = ({
                 </div>
               )}
             />
-
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

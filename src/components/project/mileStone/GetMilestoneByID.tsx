@@ -50,6 +50,7 @@ interface Milestone {
   percentage?: string | number;
   completionPercentage?: string | number;
   completeionPercentage?: string | number;
+  reason?: string;
 }
 
 interface GetMilestoneByIDProps {
@@ -318,6 +319,12 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             }}
           />
         </div>
+        {milestone.reason && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">Reason of Delay: <span className="text-sm font-normal text-red-700">{milestone.reason}</span></h3>
+            
+          </div>
+        )}
 
         {/* Tasks Section (Optional - if the API returns tasks) */}
         {milestone.tasks && milestone.tasks.length > 0 && (

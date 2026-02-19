@@ -1128,6 +1128,21 @@ class Service {
     }
   }
 
+  // update exsting milestone y Id
+  static async EditExistingMilestoneByID(id: string, data: any) {
+    try {
+      const response = await api.put(`mileStone/existing/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // edit milestone by ID
   static async EditMilestoneById(id: string, data: any) {
     try {
