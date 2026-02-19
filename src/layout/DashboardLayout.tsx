@@ -45,7 +45,7 @@ const Layout = () => {
     >
       {/* Desktop Sidebar */}
       {!isModalOpen && (
-        <div className="hidden md:flex relative z-20 py-2 pl-2">
+        <div className="hidden md:flex relative z-20 py-0 pl-0">
           <Sidebar
             isMinimized={isMinimized}
             toggleSidebar={toggleSidebar}

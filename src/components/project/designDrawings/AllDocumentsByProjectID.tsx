@@ -107,7 +107,7 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* 1. Project Files */}
       {projectFiles.length > 0 && (
-        <Section title="Project Attachments">
+        <Section title="Project Documents">
           <RenderFiles
             files={projectFiles}
             table="project"

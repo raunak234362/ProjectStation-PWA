@@ -11,6 +11,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: false,
+      strategies: "generateSW",
 
       pwaAssets: {
         disabled: false,
@@ -53,7 +54,7 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // Allow larger bundles
+        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
       },
 
       devOptions: {

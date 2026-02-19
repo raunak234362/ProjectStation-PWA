@@ -9,7 +9,6 @@ import {
   ClipboardList,
   User,
   Tag,
-  X,
   Edit,
 } from "lucide-react";
 import Service from "../../../api/Service";
@@ -30,6 +29,15 @@ interface Milestone {
   project?: {
     name: string;
   };
+  Tasks?: Array<{
+    id: string | number;
+    name: string;
+    status: string;
+    user?: {
+      firstName: string;
+      lastName: string;
+    };
+  }>;
   tasks?: Array<{
     id: string | number;
     name: string;
@@ -39,6 +47,9 @@ interface Milestone {
       lastName: string;
     };
   }>;
+  percentage?: string | number;
+  completionPercentage?: string | number;
+  completeionPercentage?: string | number;
 }
 
 interface GetMilestoneByIDProps {
@@ -168,36 +179,34 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {(userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN") && (
+          {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
             <>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsUpdateProgressModalOpen(true)}
-              className="text-black border border-black bg-green-50 hover:bg-white/20 flex items-center gap-2 "
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              Update Progress
-            </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsEditModalOpen(true)}
-            className="text-black border border-black bg-green-50 hover:bg-white/20 flex items-center gap-2"
-          >
-            <Edit className="w-4 h-4" />
-            Edit
-          </Button>
-          </>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsUpdateProgressModalOpen(true)}
+                className="text-black border border-black bg-green-50 hover:bg-white/20 flex items-center gap-2 "
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                Update Progress
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditModalOpen(true)}
+                className="text-black border border-black bg-green-50 hover:bg-white/20 flex items-center gap-2"
+              >
+                <Edit className="w-4 h-4" />
+                Edit
+              </Button>
+            </>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={close}
-            className="p-2 hover:bg-white/10 text-white"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            <X className="w-6 h-6" />
-          </Button>
+            Close
+          </button>
         </div>
       </div>
 
@@ -235,6 +244,63 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             color="text-green-600"
             bg="bg-green-50"
           />
+          <div className="flex flex-col gap-1 w-full col-span-1 md:col-span-2 lg:col-span-1">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              Progress
+            </span>
+            <div className="mt-2 w-full">
+              {(() => {
+                const msTasks = milestone.Tasks || milestone.tasks || [];
+                const totalTasks = msTasks.length;
+                let taskProgress = 0;
+
+                if (totalTasks > 0) {
+                  const completedStatuses = [
+                    "COMPLETE",
+                    "VALIDATE_COMPLETE",
+                    "COMPLETE_OTHER",
+                    "USER_FAULT",
+                    "COMPLETED",
+                  ];
+                  const completedCount = msTasks.filter((t: any) =>
+                    completedStatuses.includes(t.status),
+                  ).length;
+                  taskProgress = Math.round(
+                    (completedCount / totalTasks) * 100,
+                  );
+                }
+
+                const finalProgress =
+                  milestone.percentage !== undefined &&
+                  milestone.percentage !== null &&
+                  milestone.percentage !== ""
+                    ? Number(milestone.percentage)
+                    : milestone.completionPercentage !== undefined &&
+                        milestone.completionPercentage !== null
+                      ? Number(milestone.completionPercentage)
+                      : milestone.completeionPercentage !== undefined &&
+                          milestone.completeionPercentage !== null
+                        ? Number(milestone.completeionPercentage)
+                        : taskProgress;
+
+                return (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex justify-between text-xs font-bold text-gray-700">
+                      <span>{finalProgress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                      <div
+                        className="bg-green-600 h-2.5 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${Math.min(100, Math.max(0, finalProgress))}%`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
         </div>
 
         {/* Description */}

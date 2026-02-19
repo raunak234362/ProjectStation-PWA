@@ -103,7 +103,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             ) : (
               <>
                 <FileText size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
-                INVOICES RECEIVED
+                
               </>
             )}
           </h3>

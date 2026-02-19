@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
-import { LogOut, X, RefreshCw } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 
 interface SidebarProps {
   isMinimized: boolean;
@@ -24,10 +24,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const canView = (roles: string[]): boolean =>
     roles.includes(userRole.toLowerCase());
-
-  const handleRefresh = (): void => {
-    window.location.reload();
-  };
 
   const fetchLogout = (): void => {
     sessionStorage.clear();
@@ -52,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       {/* Header / Logo */}
       <div
-        className={`flex items-center py-6 ${isMobile
+        className={`flex items-center ${isMobile
           ? "justify-between px-6"
           : isExpanded
             ? "justify-center"
@@ -64,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <img
               src={LOGO}
               alt="Logo"
-              className="h-24 w-auto object-contain transition-all duration-300"
+              className="h-32 w-auto object-contain transition-all duration-300"
             />
           ) : (
             <img
@@ -155,10 +151,10 @@ const Sidebar: React.FC<SidebarProps> = ({
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-black truncate">
+              <p className="text-lg font-bold text-black truncate">
                 {sessionStorage.getItem("firstName")}
               </p>
-              <p className="text-[10px] uppercase tracking-wider text-black font-semibold truncate">
+              <p className="text-xs uppercase tracking-wider text-black font-semibold truncate">
                 {sessionStorage.getItem("userDesignation")}
               </p>
             </div>
@@ -166,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <div className="space-y-1">
-          <button
+          {/* <button
             className={`w-full flex items-center gap-3 py-2.5 rounded-lg transition-all text-black hover:bg-gray-50 hover:text-black text-xs font-bold uppercase tracking-wider
               ${isExpanded ? "justify-start px-4" : "justify-center px-0"}`}
             onClick={handleRefresh}
@@ -176,7 +172,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               className="group-hover:rotate-180 transition-transform duration-700"
             />
             {isExpanded && <span>Refresh</span>}
-          </button>
+          </button> */}
 
           <button
             className={`w-full flex items-center gap-3 py-2.5 rounded-lg transition-all text-black hover:bg-red-50 hover:text-red-700 text-xs font-bold uppercase tracking-wider
