@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
-import { Loader2, AlertCircle, Settings } from "lucide-react";
+import { Loader2, AlertCircle, Settings, Settings2 } from "lucide-react";
 import ResponseModal from "./ResponseModal";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -428,7 +428,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 </div>
                 <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
                   <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-tight">
-                    <Settings className="w-4 h-4" /> Detailing Scope
+                    <Settings2 className="w-4 h-4" /> Detailing Scope
                   </h4>
                   <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
                     <Scope
