@@ -51,12 +51,23 @@ export default defineConfig({
       },
 
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        skipWaiting: true,
-        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+  globPatterns: ["**/*.{js,css,svg,png,ico}"],
+  cleanupOutdatedCaches: true,
+  clientsClaim: true,
+  skipWaiting: true,
+  maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+
+  runtimeCaching: [
+    {
+      urlPattern: ({ request }) => request.mode === 'navigate',
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'html-cache',
       },
+    },
+  ],
+},
+
 
       devOptions: {
         enabled: false,
