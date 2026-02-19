@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: false,
+      injectRegister: "auto",
       strategies: "generateSW",
 
       pwaAssets: {
@@ -54,6 +54,7 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
+        skipWaiting: true,
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
       },
 
