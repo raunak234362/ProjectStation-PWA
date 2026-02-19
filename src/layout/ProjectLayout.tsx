@@ -62,7 +62,7 @@ const ProjectLayout = () => {
       <div className="flex flex-col w-full h-full">
         <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4">
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
               <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
                 Total -
               </span>
@@ -70,7 +70,7 @@ const ProjectLayout = () => {
                 {stats.total}
               </span>
             </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
               <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
                 Active -
               </span>
@@ -78,7 +78,7 @@ const ProjectLayout = () => {
                 {stats.active}
               </span>
             </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
               <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
                 Completed -
               </span>
@@ -86,7 +86,7 @@ const ProjectLayout = () => {
                 {stats.completed}
               </span>
             </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
               <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
                 On Hold -
               </span>
@@ -108,7 +108,7 @@ const ProjectLayout = () => {
                 <button
                   onClick={() => setActiveTab("projectDashboard")}
                   className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "projectDashboard"
-                    ? "bg-green-50 text-black border border-black shadow-sm"
+                    ? "bg-green-200 text-black border border-black shadow-sm"
                     : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                     }`}
                 >
@@ -122,7 +122,7 @@ const ProjectLayout = () => {
                 <button
                   onClick={() => setActiveTab("allProject")}
                   className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "allProject"
-                    ? "bg-green-50 text-black border border-black shadow-sm"
+                    ? "bg-green-200 text-black border border-black shadow-sm"
                     : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                     }`}
                 >
@@ -143,7 +143,7 @@ const ProjectLayout = () => {
                 <button
                   onClick={() => setActiveTab("addProject")}
                   className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "addProject"
-                    ? "bg-green-50 text-black border border-black shadow-sm"
+                    ? "bg-green-200 text-black border border-black shadow-sm"
                     : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                     }`}
                 >

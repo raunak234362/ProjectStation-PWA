@@ -57,7 +57,7 @@ const RecentInvoiceActivity: React.FC<RecentActivityProps> = ({ invoices }) => {
     }, [invoices]);
 
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
+        <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] h-full">
             <h3 className="text-lg  text-gray-800 mb-6">Recent Activity</h3>
             <div className="space-y-6">
                 {activities.length === 0 ? (

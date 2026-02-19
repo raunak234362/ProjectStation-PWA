@@ -26,15 +26,15 @@ const HoverPopover = ({ states, targetRect }: { states: string[], targetRect: DO
       transition={{ duration: 0.15 }}
       style={{
         position: 'fixed',
-        left: targetRect.left - 270,
+        left: targetRect.left + targetRect.width / 2,
         top: targetRect.top + targetRect.height / 2,
-        transform: 'translateY(-50%)',
+        transform: 'translate(-50%, -50%)',
       }}
-      className="z-[100] bg-white p-4 rounded-xl shadow-2xl border border-gray-100 w-64 pointer-events-none hidden sm:block"
+      className="z-[100] bg-white p-4 rounded-xl shadow-2xl border border-black/10 w-64 pointer-events-none hidden sm:block"
     >
-      <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-50">
+      <div className="flex items-center gap-2 mb-2 pb-2 border-b border-black/10">
         <MapPin size={14} className="text-green-500" />
-        <span className="text-xs  text-gray-700">
+        <span className="text-xs font-bold text-black">
           Coverage Area
         </span>
       </div>
@@ -43,13 +43,13 @@ const HoverPopover = ({ states, targetRect }: { states: string[], targetRect: DO
           states.slice(0, 12).map((s, i) => (
             <span
               key={i}
-              className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-md border border-green-100"
+              className="text-[10px] bg-green-50 text-black px-2 py-0.5 rounded-md border border-black/10 font-medium"
             >
               {s}
             </span>
           ))
         ) : (
-          <span className="text-xs text-gray-400 italic">
+          <span className="text-xs text-black italic font-medium">
             No specific states listed
           </span>
         )}
@@ -59,7 +59,7 @@ const HoverPopover = ({ states, targetRect }: { states: string[], targetRect: DO
           </span>
         )}
       </div>
-      <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-t border-r border-gray-100 rotate-45 transform"></div>
+      {/* Centered popover - removing arrow for cleaner look */}
     </motion.div>,
     document.body
   );
@@ -90,14 +90,14 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden min-h-[400px]"
+        className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-black/10 flex flex-col overflow-hidden min-h-[400px]"
       >
-        <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-6 border-b border-black/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-base sm:text-lg  text-gray-800">
+            <h3 className="text-base sm:text-lg font-bold text-black">
               Connection Designer List
             </h3>
-            <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">
+            <p className="text-[10px] sm:text-xs text-black font-medium mt-0.5 sm:mt-1">
               Click to view details • Hover to see states
             </p>
           </div>
@@ -111,7 +111,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
               placeholder="Search designers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-green-500 outline-none w-full sm:w-48"
+              className="pl-9 pr-4 py-2 bg-white border border-black/10 rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-green-500 outline-none w-full sm:w-48 text-black"
             />
           </div>
         </div>
@@ -145,7 +145,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                     setHoverRect(null);
                   }}
                   onClick={() => onSelect(designer.id || designer._id)}
-                  className={`group flex items-center justify-between p-3 sm:p-4 rounded-xl hover:bg-green-50/50 transition-colors border border-transparent hover:border-green-100 cursor-pointer ${isHovered ? "bg-green-50/30" : ""
+                  className={`group flex items-center justify-between p-3 sm:p-4 rounded-xl hover:bg-green-50/50 transition-colors border border-black/10 cursor-pointer ${isHovered ? "bg-green-50/30 shadow-sm" : "bg-white"
                     }`}
                 >
                   <div className="flex items-center gap-3 sm:gap-4 min-w-0">
@@ -153,18 +153,18 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                       {designer.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-sm font-semibold text-gray-800 truncate">
+                      <h4 className="text-sm font-bold text-black truncate">
                         {designer.name}
                       </h4>
                       <div className="flex flex-wrap items-center gap-3 mt-0.5">
                         {designer.email && (
-                          <span className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-400 truncate max-w-[150px]">
-                            <Mail size={10} /> {designer.email}
+                          <span className="flex items-center gap-1 text-[10px] sm:text-xs text-black font-medium truncate max-w-[150px]">
+                            <Mail size={10} className="text-black" /> {designer.email}
                           </span>
                         )}
                         {designer.contactInfo && (
-                          <span className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-400">
-                            <Phone size={10} /> {designer.contactInfo}
+                          <span className="flex items-center gap-1 text-[10px] sm:text-xs text-black font-medium">
+                            <Phone size={10} className="text-black" /> {designer.contactInfo}
                           </span>
                         )}
                       </div>
@@ -172,10 +172,10 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <span className="text-[10px] sm:text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] sm:text-xs font-bold text-black bg-white border border-black/10 px-2 py-0.5 rounded-full">
                       {states.length} <span className="hidden xs:inline">States</span>
                     </span>
-                    <ChevronRight size={14} className="text-gray-300 group-hover:text-green-500" />
+                    <ChevronRight size={14} className="text-black group-hover:text-green-600" />
                   </div>
                 </motion.div>
 
@@ -194,9 +194,9 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="lg:col-span-1 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]"
+        className="lg:col-span-1 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-black/10 flex flex-col min-h-[400px]"
       >
-        <h3 className="text-base sm:text-lg  text-gray-800 mb-6">
+        <h3 className="text-base sm:text-lg font-bold text-black mb-6">
           State Distribution
         </h3>
         <div className="flex-1 min-h-[300px] relative">

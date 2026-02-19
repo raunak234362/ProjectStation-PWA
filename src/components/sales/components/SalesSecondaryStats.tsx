@@ -30,10 +30,10 @@ const SalesSecondaryStats: React.FC<SalesSecondaryStatsProps> = ({ stats }) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 + index * 0.05 }}
-                    className="bg-white dark:bg-slate-900 py-5 px-4 rounded-[1.5rem] border border-green-50 dark:border-slate-800 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col items-center justify-center text-center hover:bg-green-50/50 dark:hover:bg-slate-800 transition-all duration-300 group"
+                    className="bg-white dark:bg-slate-900 py-5 px-4 rounded-[1.5rem] border border-black/10 dark:border-slate-800 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col items-center justify-center text-center hover:bg-green-50/50 dark:hover:bg-slate-800 transition-all duration-300 group"
                 >
-                    <span className="text-3xl font-extrabold text-green-700/90 dark:text-green-400 mb-2 group-hover:scale-110 transition-transform">{item.value}</span>
-                    <span className="text-gray-400 dark:text-slate-500 text-xs font-semibold tracking-wide uppercase">{item.label}</span>
+                    <span className="text-3xl font-extrabold text-black dark:text-green-400 mb-2 group-hover:scale-110 transition-transform">{item.value}</span>
+                    <span className="text-black dark:text-slate-500 text-[10px] font-bold tracking-widest uppercase">{item.label}</span>
                 </motion.div>
             ))}
         </div>

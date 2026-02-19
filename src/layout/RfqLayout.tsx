@@ -7,19 +7,60 @@ import { useSelector } from "react-redux";
 
 const RfqLayout = () => {
   const [activeTab, setActiveTab] = useState("allRFQ");
-  const rfq = useSelector((state: any) => state.RFQInfos.RFQData);
-  console.log(rfq);
+  const rfq = useSelector((state: any) => state.RFQInfos.RFQData) || [];
+
+  const stats = {
+    total: rfq.length,
+    inReview: rfq.filter((r: any) => r.status === "IN_REVIEW").length,
+    completed: rfq.filter((r: any) => r.status === "COMPLETED").length,
+    pending: rfq.filter((r: any) => r.status === "PENDING" || r.status === "SENT").length,
+  };
 
   return (
     <div className="w-full">
       <div className="flex flex-col w-full h-full mb-6">
-        <div className="mx-2 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-row gap-4 items-center w-full md:w-auto">
+        <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
+              <span className="text-sm md:text-xl font-black text-black uppercase tracking-wider">
+                Total -
+              </span>
+              <span className="text-sm md:text-xl font-black text-black">
+                {stats.total}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
+              <span className="text-sm md:text-xl font-black text-black uppercase tracking-wider">
+                In Review -
+              </span>
+              <span className="text-sm md:text-xl font-black text-black">
+                {stats.inReview}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
+              <span className="text-sm md:text-xl font-black text-black uppercase tracking-wider">
+                Completed -
+              </span>
+              <span className="text-sm md:text-xl font-black text-black">
+                {stats.completed}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
+              <span className="text-sm md:text-xl font-black text-black uppercase tracking-wider">
+                Pending -
+              </span>
+              <span className="text-sm md:text-xl font-black text-black">
+                {stats.pending}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
             <button
               onClick={() => setActiveTab("allRFQ")}
-              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm  uppercase tracking-widest transition-all ${activeTab === "allRFQ"
-                ? "bg-green-50 text-black border border-black shadow-sm transition-all"
-                : "bg-white border border-black text-black hover:bg-green-50 transition-all font-bold"
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "allRFQ"
+                ? "bg-green-200 text-black border border-black shadow-sm"
+                : "bg-white border border-black/10 text-black hover:bg-green-50 shadow-sm"
                 }`}
             >
               All RFQ
@@ -27,9 +68,9 @@ const RfqLayout = () => {
 
             <button
               onClick={() => setActiveTab("addRFQ")}
-              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm  uppercase tracking-widest transition-all ${activeTab === "addRFQ"
-                ? "bg-green-50 text-black border border-black shadow-sm transition-all"
-                : "bg-white border border-black text-black hover:bg-green-50 transition-all font-bold"
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "addRFQ"
+                ? "bg-green-200 text-black border border-black shadow-sm"
+                : "bg-white border border-black/10 text-black hover:bg-green-50 shadow-sm"
                 }`}
             >
               Create RFQ

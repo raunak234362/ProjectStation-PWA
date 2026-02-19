@@ -156,13 +156,13 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           key={team.teamName}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border border-green-500/10 overflow-hidden hover:border-green-500/30 transition-all group"
+          className="bg-white rounded-2xl shadow-sm border border-black overflow-hidden hover:border-black transition-all group"
         >
           {/* Team Header */}
-          <div className="bg-green-600 p-3 sm:p-4 text-center border-b border-green-700/10">
+          <div className="bg-green-200 p-3 sm:p-4 text-center border-b border-black/10">
             <div className="flex items-center justify-center gap-2">
-              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              <h3 className="text-lg sm:text-xl  text-white uppercase tracking-wider truncate">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
+              <h3 className="text-lg sm:text-xl font-bold text-black uppercase tracking-wider truncate">
                 {team.teamName}
               </h3>
             </div>
@@ -181,7 +181,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                     : [];
                   handleStatClick(teamProjects, "IFA", "TOTAL");
                 }}
-                className="p-2 sm:p-3 bg-gray-50/50 rounded-xl flex flex-col items-center justify-center border border-green-500/5 hover:bg-white hover:border-green-500/20 transition-all cursor-pointer group/projects"
+                className="p-2 sm:p-3 bg-gray-50/50 rounded-xl flex flex-col items-center justify-center border border-gray-300 hover:bg-white hover:border-gray-400 transition-all cursor-pointer group/projects"
               >
                 <span className="text-[10px] sm:text-xs  text-gray-400 uppercase tracking-widest mb-1 group-hover/projects:text-gray-600">
                   Projects
@@ -193,12 +193,12 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                   <Briefcase className="w-4 h-4 text-gray-400 group-hover/projects:text-gray-600" />
                 </div>
               </button>
-              <div className="p-2 sm:p-3 bg-green-50 rounded-xl flex flex-col items-center justify-center border border-green-100">
-                <span className="text-[10px] sm:text-xs  text-green-600 uppercase tracking-widest mb-1">
+              <div className="p-2 sm:p-3 bg-green-50 rounded-xl flex flex-col items-center justify-center border border-gray-300">
+                <span className="text-[10px] sm:text-xs  text-black uppercase tracking-widest mb-1">
                   Work Done
                 </span>
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <span className="text-lg sm:text-xl  text-green-600">
+                  <span className="text-lg sm:text-xl  text-black">
                     {formatSeconds(team.totalSeconds)}
                   </span>
                   <Clock className="w-4 h-4 text-green-400" />
@@ -208,12 +208,12 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
 
             {/* IFA/IFC/CO# Grid */}
             {/* IFA/IFC/CO# Grid - Responsive Stack */}
-            <div className="border border-green-500/10 rounded-xl overflow-hidden bg-white">
-              <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-green-500/5">
+            <div className="border border-gray-300 rounded-xl overflow-hidden bg-white">
+              <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-300">
                 {["IFA", "IFC", "CO#"].map((stage) => (
                   <div key={stage} className="flex-1">
                     {/* Header */}
-                    <div className="bg-green-50/30 border-b border-green-500/5 py-2 text-center text-xs sm:text-sm  tracking-widest text-gray-800 uppercase">
+                    <div className="bg-green-50/30 border-b border-gray-300 py-2 text-center text-xs sm:text-sm  tracking-widest text-gray-800 uppercase">
                       {stage}
                     </div>
                     {/* Content */}

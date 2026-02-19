@@ -46,11 +46,12 @@ const AllEstimation: React.FC<AllEstimationProps> = ({
   ];
 
   return (
-    <div className="bg-white p-2 rounded-2xl">
+    <div className="rounded-2xl">
       <DataTable
         columns={columns}
         data={estimations || []}
         onRowClick={handleRowClick}
+        noBorder={true}
         detailComponent={({
           row,
           close,

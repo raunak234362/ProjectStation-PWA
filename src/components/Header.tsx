@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
           <div className="flex-col items-end hidden sm:flex">
             <span className="text-md md:text-lg font-medium text-gray-800 tracking-widest">
               Welcome Back,
-              <span className="ml-1 text-md md:text-lg  text-green-500 tracking-widest uppercase">
+              <span className="ml-1 text-md md:text-lg text-black font-bold tracking-widest uppercase">
                 {sessionStorage.getItem("firstName") || ""}{" "}
                 {sessionStorage.getItem("lastName") || ""}
                 {!sessionStorage.getItem("firstName") &&

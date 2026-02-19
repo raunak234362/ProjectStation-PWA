@@ -71,7 +71,7 @@ const AllRFQ = ({ rfq }: any) => {
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
 
   return (
-    <div className="bg-white p-6 rounded-[32px] shadow-sm border border-black">
+    <div className="bg-white p-4 rounded-2xl shadow-sm">
       <DataTable
         columns={columns}
         data={rfq || []}

@@ -38,27 +38,27 @@ const FabricatorProjectChart: React.FC<FabricatorProjectChartProps> = ({
     const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-soft flex flex-col h-full border border-white/50 dark:border-slate-800/50 backdrop-blur-md">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-soft flex flex-col h-full border border-black/10 dark:border-slate-800/50">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-6 shrink-0">
                 <div>
-                    <h2 className="text-2xl  text-slate-800 dark:text-white flex items-center gap-2 tracking-tight">
+                    <h2 className="text-2xl font-black text-black dark:text-white flex items-center gap-2 tracking-tight uppercase">
                         Fabricator Projects Overview
                     </h2>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500  uppercase tracking-[0.2em] mt-2">
+                    <p className="text-[10px] font-bold text-black/40 dark:text-slate-500 uppercase tracking-[0.2em] mt-2">
                         Project distribution across <span className="text-[#6bbd45] dark:text-green-400">{selectedYear}</span> months
                     </p>
                 </div>
 
-                <div className="flex bg-slate-100/50 dark:bg-slate-800/50 p-1.5 rounded-2xl shadow-inner backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+                <div className="flex bg-gray-50 dark:bg-slate-800/50 p-1.5 rounded-2xl shadow-inner border border-black/10 dark:border-slate-700/50 overflow-hidden">
                     {years.map((year) => (
                         <button
                             key={year}
                             onClick={() => setSelectedYear(year)}
                             className={cn(
-                                "px-6 py-2 text-[10px]  uppercase tracking-widest transition-all",
+                                "px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all",
                                 selectedYear === year
-                                    ? "bg-white dark:bg-slate-700 text-[#6bbd45] dark:text-green-400 shadow-md rounded-xl"
-                                    : "text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+                                    ? "bg-white dark:bg-slate-700 text-black dark:text-green-400 shadow-md rounded-xl border border-black/5"
+                                    : "text-black/40 dark:text-slate-500 hover:text-black/60 dark:hover:text-slate-300"
                             )}
                         >
                             {year}
@@ -88,8 +88,8 @@ const FabricatorProjectChart: React.FC<FabricatorProjectChartProps> = ({
                             content={({ active, payload, label }) => {
                                 if (active && payload && payload.length) {
                                     return (
-                                        <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-white/20 dark:border-slate-700/50 text-[10px]">
-                                            <p className=" text-slate-800 dark:text-white mb-3 uppercase tracking-widest border-b border-slate-100 dark:border-slate-700/50 pb-2">
+                                        <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-black/10 dark:border-slate-700/50 text-[10px]">
+                                            <p className="font-bold text-black dark:text-white mb-3 uppercase tracking-widest border-b border-black/5 dark:border-slate-700/50 pb-2">
                                                 {label} {selectedYear}
                                             </p>
                                             <div className="space-y-2">
@@ -97,9 +97,9 @@ const FabricatorProjectChart: React.FC<FabricatorProjectChartProps> = ({
                                                     <div key={index} className="flex items-center justify-between gap-6">
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: entry.color }} />
-                                                            <span className="text-slate-500 dark:text-slate-400  uppercase tracking-wider">{entry.name}</span>
+                                                            <span className="text-black/60 dark:text-slate-400 font-bold uppercase tracking-wider">{entry.name}</span>
                                                         </div>
-                                                        <span className=" text-slate-800 dark:text-white">{entry.value} Projects</span>
+                                                        <span className="font-bold text-black dark:text-white">{entry.value} Projects</span>
                                                     </div>
                                                 ))}
                                             </div>

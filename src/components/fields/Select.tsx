@@ -146,7 +146,7 @@ const Select = ({
             }, 100);
           }
         }}
-        className={`flex items-center justify-between p-2 text-sm border rounded-md bg-white dark:bg-slate-800 cursor-pointer transition-all ${isOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-300 dark:border-slate-700"
+        className={`flex items-center justify-between p-2 text-sm border font-bold rounded-xl bg-white dark:bg-slate-800 cursor-pointer transition-all ${isOpen ? "border-green-500 ring-2 ring-green-100" : "border-black/10 dark:border-slate-700"
           } ${className}`}
       >
         <div className="flex-1">
@@ -165,7 +165,7 @@ const Select = ({
             </div>
           ) : (
             <span
-              className={selectedOption ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-slate-400"}
+              className={selectedOption ? "text-black dark:text-white" : "text-black/40 dark:text-slate-400"}
             >
               {selectedOption
                 ? selectedOption.label
@@ -194,13 +194,13 @@ const Select = ({
           <div
             ref={menuRef}
             style={menuStyles}
-            className="text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-md shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
+            className="text-sm bg-white dark:bg-slate-800 border border-black/10 dark:border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
           >
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <div
                   key={option.value}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-gray-900 dark:text-white"
+                  className="px-4 py-2 cursor-pointer hover:bg-green-50 dark:hover:bg-slate-700 transition-colors text-black font-bold dark:text-white"
                   onClick={() => handleSelect(option)}
                 >
                   {highlightMatch(option.label, searchTerm)}

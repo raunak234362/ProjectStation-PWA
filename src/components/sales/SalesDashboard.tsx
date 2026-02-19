@@ -227,22 +227,22 @@ const SalesDashboard = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+          {/* <h1 className="text-3xl font-extrabold tracking-tight text-black">
             Sales Funnel
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-black font-bold text-sm mt-1">
             Monitor your sales performance and conversion rates.
-          </p>
+          </p> */}
         </div>
 
         <div className="flex gap-3 relative">
           <div className="relative">
             <button
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-600  rounded-2xl hover:bg-green-50 transition-all shadow-soft border border-green-500/10 min-w-[140px] justify-between"
+              className="flex items-center gap-2 px-5 py-2.5 bg-green-50 text-black font-bold rounded-2xl hover:bg-green-100 transition-all shadow-soft border border-black/10 min-w-[140px] justify-between"
             >
               <div className="flex items-center gap-2">
-                <Filter size={18} className="text-slate-400" />
+                <Filter size={18} className="text-black" />
                 {timeFilter}
               </div>
               <ChevronDown
@@ -297,7 +297,7 @@ const SalesDashboard = () => {
 
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#6bbd45] text-white rounded-2xl  hover:shadow-highlight transition-all shadow-medium"
+            className="flex items-center gap-2 px-5 py-2.5 bg-green-200 text-black font-bold border border-black/10 rounded-2xl hover:bg-green-300 transition-all shadow-medium"
           >
             <Download size={18} />
             Export Report
@@ -306,17 +306,17 @@ const SalesDashboard = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-8 pb-1 border-b border-green-500/10">
-        {["Overview", "Performance", "Leads"].map((tab, i) => (
+      <div className="flex gap-8 pb-1 border-b border-black/10">
+        {["Overview"].map((tab, i) => (
           <button
             key={tab}
-            className={`pb-3 text-base  transition-all relative px-1 ${i === 0 ? "text-[#6bbd45]" : "text-slate-400 hover:text-slate-600"}`}
+            className={`pb-3 text-base transition-all relative px-1 font-bold ${i === 0 ? "text-black" : "text-black/60 hover:text-black"}`}
           >
             {tab}
             {i === 0 && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-1 bg-[#6bbd45] rounded-full"
+                className="absolute bottom-0 left-0 right-0 h-1 bg-black rounded-full"
               />
             )}
           </button>

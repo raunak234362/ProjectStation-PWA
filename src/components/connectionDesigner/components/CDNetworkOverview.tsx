@@ -17,27 +17,27 @@ const HoverPopover = ({
 }) => {
   return createPortal(
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, x: -10, scale: 0.95 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.15 }}
       style={{
         position: "fixed",
-        left: targetRect.left - 290,
+        left: targetRect.left + targetRect.width / 2,
         top: targetRect.top + targetRect.height / 2,
-        transform: "translateY(-50%)",
+        transform: "translate(-50%, -50%)",
       }}
-      className="z-100 bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-700 w-72 pointer-events-none hidden sm:block"
+      className="z-100 bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-2xl border border-black/10 dark:border-slate-700 w-72 pointer-events-none hidden sm:block"
     >
-      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-slate-700/50">
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-black/10 dark:border-slate-700/50">
         <div className="w-8 h-8 rounded-xl bg-linear-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
           <MapPin size={16} className="text-white" />
         </div>
         <div>
-          <span className="text-xs font-bold text-gray-800 dark:text-slate-100 block">
+          <span className="text-xs font-bold text-black dark:text-slate-100 block">
             Coverage Area
           </span>
-          <span className="text-[10px] text-gray-400 dark:text-slate-500 font-medium">
+          <span className="text-[10px] text-black font-medium">
             {states.length} {states.length === 1 ? "State" : "States"}
           </span>
         </div>
@@ -49,19 +49,18 @@ const HoverPopover = ({
             states.map((s, i) => (
               <button
                 key={i}
-                className="group relative px-3 py-2 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 text-green-700 dark:text-green-400 rounded-xl border border-green-200/50 dark:border-green-800/50 hover:border-green-300 dark:hover:border-green-700 transition-all duration-200 shadow-sm hover:shadow-md text-[11px] font-semibold tracking-wide"
+                className="group relative px-3 py-2 bg-green-50 dark:bg-green-900/20 text-black dark:text-green-400 rounded-xl border border-black/10 dark:border-green-800/50 text-[11px] font-bold tracking-wide"
               >
                 <span className="relative z-10">{s}</span>
-                <div className="absolute inset-0 bg-linear-to-br from-green-400/0 to-emerald-400/0 group-hover:from-green-400/10 group-hover:to-emerald-400/10 rounded-xl transition-all duration-200"></div>
               </button>
             ))
           ) : (
             <div className="w-full text-center py-6">
               <MapPin
                 size={32}
-                className="mx-auto text-gray-300 dark:text-slate-600 mb-2"
+                className="mx-auto text-black dark:text-slate-600 mb-2"
               />
-              <span className="text-xs text-gray-400 dark:text-slate-500 italic font-medium">
+              <span className="text-xs text-black dark:text-slate-500 italic font-medium">
                 No specific states listed
               </span>
             </div>
@@ -69,8 +68,7 @@ const HoverPopover = ({
         </div>
       </div>
 
-      {/* Arrow */}
-      <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-3 h-3 bg-white dark:bg-slate-800 border-t border-r border-gray-100 dark:border-slate-700 rotate-45 transform"></div>
+      {/* No arrow for centered popover for better visibility */}
     </motion.div>,
     document.body,
   );
@@ -117,14 +115,14 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[32px] shadow-soft border border-gray-100 dark:border-slate-800 flex flex-col overflow-hidden min-h-[400px]"
+        className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[32px] shadow-soft border border-black/10 dark:border-slate-800 flex flex-col overflow-hidden min-h-[400px]"
       >
-        <div className="p-6 border-b border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-6 border-b border-black/10 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg  text-gray-800 dark:text-white tracking-tight">
+            <h3 className="text-lg font-bold text-black dark:text-white tracking-tight">
               Connection Designer Directory
             </h3>
-            <p className="text-[10px] text-gray-400 dark:text-slate-500  uppercase tracking-widest mt-1">
+            <p className="text-[10px] text-black dark:text-slate-500 font-medium uppercase tracking-widest mt-1">
               Click to view details • Hover to see states
             </p>
           </div>
@@ -138,7 +136,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
               placeholder="Search by name, email, or state..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-1 focus:ring-green-500 outline-none w-full sm:w-56 text-gray-900 dark:text-white transition-all"
+              className="pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-black/10 rounded-xl text-sm focus:ring-1 focus:ring-green-500 outline-none w-full sm:w-56 text-black dark:text-white transition-all placeholder:text-gray-500"
             />
           </div>
         </div>
@@ -172,26 +170,25 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                     setHoverRect(null);
                   }}
                   onClick={() => onSelect(designer.id || designer._id)}
-                  className={`group flex items-center justify-between p-4 rounded-2xl transition-all border border-transparent cursor-pointer ${
-                    isHovered
-                      ? "bg-green-50/50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30 shadow-sm"
-                      : "hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-100 dark:hover:border-slate-700"
-                  }`}
+                  className={`group flex items-center justify-between p-4 rounded-2xl transition-all border border-black/10 cursor-pointer ${isHovered
+                    ? "bg-green-50/50 dark:bg-green-900/10 shadow-sm"
+                    : "bg-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                    }`}
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <div className="w-10 h-10 shrink-0 rounded-2xl bg-linear-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-gray-600 dark:text-slate-300  text-sm shadow-sm transition-transform group-hover:scale-110">
                       {designer.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-sm  text-gray-800 dark:text-white tracking-tight truncate">
+                      <h4 className="text-sm font-bold text-black dark:text-white tracking-tight truncate">
                         {designer.name}
                       </h4>
                       <div className="flex flex-wrap items-center gap-3 mt-1">
                         {designer.email && (
-                          <span className="flex items-center gap-1.5 text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-wider truncate max-w-[150px]">
+                          <span className="flex items-center gap-1.5 text-[10px] font-medium text-black dark:text-slate-500 uppercase tracking-wider truncate max-w-[150px]">
                             <Mail
                               size={10}
-                              className="text-gray-300 dark:text-slate-600"
+                              className="text-black dark:text-slate-600"
                             />{" "}
                             {designer.email}
                           </span>
@@ -201,13 +198,13 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-4 shrink-0 ml-2">
-                    <span className="text-[10px]  text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-800 px-3 py-1 rounded-lg uppercase tracking-widest border border-slate-200/50 dark:border-slate-700/50">
+                    <span className="text-[10px] font-bold text-black dark:text-slate-400 bg-white dark:bg-slate-800 px-3 py-1 rounded-lg uppercase tracking-widest border border-black/10 dark:border-slate-700/50">
                       {states.length}{" "}
                       <span className="hidden xs:inline">States</span>
                     </span>
                     <ChevronRight
                       size={16}
-                      className="text-gray-300 dark:text-slate-700 group-hover:text-green-500 dark:group-hover:text-green-400 transition-colors"
+                      className="text-black group-hover:text-green-600 transition-colors"
                     />
                   </div>
                 </motion.div>

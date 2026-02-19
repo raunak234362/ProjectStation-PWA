@@ -12,8 +12,10 @@ import type { EstimationTask } from "../../interface";
 import InclusionExclusion from "./InclusionExclusion";
 import EditInclusionExclusion from "./EditInclusionExclusion";
 
-const truncateText = (text: string, max = 40) =>
-  text.length > max ? text.substring(0, max) + "..." : text;
+const truncateText = (text: string, max = 100) => {
+  const stripped = text.replace(/<[^>]*>?/gm, '');
+  return stripped.length > max ? stripped.substring(0, max) + "..." : stripped;
+};
 
 interface GetEstimationByIDProps {
   id: string;
@@ -113,19 +115,19 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
         : "bg-blue-100 text-blue-800";
 
   return (
-    <div className="bg-linear-to-br from-green-50 to-cyan-50 rounded-2xl p-4 sm:p-6 border border-green-200 shadow-sm">
+    <div className="bg-white rounded-3xl p-4 sm:p-6 border border-black shadow-medium transition-all">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5 border-b border-black pb-4">
         <div>
-          <h3 className="text-xl sm:text-2xl  text-green-800 wrap-break-word">
+          <h3 className="text-xl sm:text-2xl font-black text-black wrap-break-word uppercase tracking-tight">
             Estimation #{estimationNumber}
           </h3>
-          <p className="text-gray-700  mt-1 text-sm sm:text-base">
-            Project: {projectName}
+          <p className="text-black font-black mt-1 text-sm sm:text-base">
+            Project: <span className="uppercase">{projectName}</span>
           </p>
         </div>
         <span
-          className={`px-3 py-1 rounded-full text-[10px] sm:text-xs  uppercase tracking-wider shrink-0 shadow-sm ${statusColor}`}
+          className={`px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest shrink-0 shadow-sm border border-black ${statusColor}`}
         >
           {status}
         </span>
@@ -149,10 +151,10 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
               label="RFQ"
               value={
                 <div className="flex flex-col text-right">
-                  <span className="font-semibold">
+                  <span className="font-bold text-black uppercase">
                     {rfq?.projectName || "RFQ Linked"}
                   </span>
-                  <span className="text-xs text-gray-700">
+                  <span className="text-xs text-black/60 font-medium">
                     Project No: {rfq?.projectNumber || "N/A"} · Bid:{" "}
                     {rfq?.bidPrice || "-"}
                   </span>
@@ -168,7 +170,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
           {description && (
             <InfoRow
               label="Description"
-              value={<span>{truncateText(description, 60)}</span>}
+              value={<span>{truncateText(description)}</span>}
             />
           )}
 
@@ -222,30 +224,27 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       />
 
       {/* Action Buttons */}
-      <div className="py-4 flex flex-wrap items-center gap-2 sm:gap-3 border-t border-green-100 mt-6">
+      <div className="py-6 flex flex-wrap items-center gap-3 border-t border-black mt-8">
         <Button
-          className="py-1 px-2 text-lg bg-red-200 text-red-700"
+          className="py-2.5 px-5 text-sm font-black bg-green-200 text-black border border-black rounded-xl hover:bg-green-300 transition-all shadow-sm"
           onClick={() => setIsEstimationTaskOpen(!isEstimationTaskOpen)}
         >
           Estimation Task
         </Button>
         <Button
-          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+          className="py-2.5 px-5 text-sm font-black bg-green-50 text-black border border-black rounded-xl hover:bg-green-100 transition-all shadow-sm"
           onClick={() => setIsHoursOpen(!isHoursOpen)}
         >
           Estimated Hours/Weeks
         </Button>
-        {/* <Button className="py-1 px-2 text-lg bg-blue-100 text-blue-700">
-          Add To Project
-        </Button> */}
         <Button
-          className="py-1 px-2 text-lg bg-blue-100 text-blue-700"
+          className="py-2.5 px-5 text-sm font-black bg-green-50 text-black border border-black rounded-xl hover:bg-green-100 transition-all shadow-sm"
           onClick={() => setIsInclusionOpen(!isInclusionOpen)}
         >
           Inclusion/Exclusion
         </Button>
         <Button
-          className="py-1 px-2 text-lg"
+          className="py-2.5 px-5 text-sm font-black bg-white text-black border border-black rounded-xl hover:bg-gray-50 transition-all shadow-sm"
           onClick={() => setIsEditing(!isEditing)}
         >
           Edit Estimation
@@ -284,10 +283,10 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
       {isInclusionOpen && (
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg  text-gray-700">Inclusion/Exclusion</h3>
+            <h3 className="text-lg font-black text-black uppercase">Inclusion/Exclusion</h3>
             <button
               onClick={() => setIsInclusionOpen(false)}
-              className="text-gray-700 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-sm transition-colors"
+              className="px-4 py-2 text-xs rounded-xl bg-white border border-black/20 hover:bg-gray-50 text-black font-bold transition-all shadow-sm"
             >
               Close
             </button>
@@ -332,11 +331,11 @@ const InfoRow = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-4 border-b border-green-100/50 sm:border-none pb-1.5 sm:pb-0">
-    <span className=" text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider shrink-0">
+  <div className="flex flex-row items-start gap-4 border-b border-black/5 pb-2">
+    <span className="text-black/40 text-[10px] sm:text-xs uppercase font-black tracking-widest shrink-0 w-24 sm:w-32">
       {label}:
     </span>
-    <span className="text-gray-800 sm:text-right wrap-break-word  text-xs sm:text-sm">
+    <span className="text-black font-black text-left flex-1 break-words text-xs sm:text-sm">
       {value}
     </span>
   </div>

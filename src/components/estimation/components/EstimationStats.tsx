@@ -50,10 +50,8 @@ const EstimationStats: React.FC<EstimationStatsProps> = ({ stats }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-soft border border-gray-100 dark:border-slate-800 h-full">
-            <h2 className="text-lg  text-slate-800 dark:text-white mb-8 uppercase tracking-tight">
-                Quantification Intelligence
-            </h2>
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-soft  h-full">
+
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {cards.map((card, index) => {
@@ -62,22 +60,21 @@ const EstimationStats: React.FC<EstimationStatsProps> = ({ stats }) => {
                     return (
                         <div
                             key={index}
-                            className="flex flex-col gap-6 p-6 rounded-[24px] bg-slate-50/50 dark:bg-slate-800/30 border border-gray-100 dark:border-slate-700/50 group transition-all duration-300 hover:shadow-md hover:bg-white dark:hover:bg-slate-800"
+                            className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-800/30 border border-black/10 dark:border-slate-700/50 group transition-all duration-300 hover:shadow-md hover:bg-slate-50 dark:hover:bg-slate-800"
                         >
-                            <div className="flex items-center justify-between">
-                                <div className={`p-3.5 rounded-2xl ${colors.bg} group-hover:scale-110 transition-transform duration-300`}>
-                                    <card.icon size={22} strokeWidth={2.5} className={colors.icon} />
+                            <div className="flex items-center gap-4">
+                                <div className={`p-3 rounded-xl ${colors.bg} group-hover:scale-110 transition-transform duration-300 shadow-sm border border-black/5`}>
+                                    <card.icon size={20} strokeWidth={2.5} className={colors.icon} />
                                 </div>
-                                <span className={`text-[10px]  uppercase tracking-widest ${colors.icon}`}>
-                                    Metric {index + 1}
-                                </span>
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-black text-black dark:text-slate-400 uppercase tracking-widest leading-tight">
+                                        {card.label}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="flex flex-col">
-                                <span className="text-[10px]  text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-2">
-                                    {card.label}
-                                </span>
-                                <span className="text-3xl  text-slate-800 dark:text-white tracking-tighter">
+                            <div className="flex items-center">
+                                <span className="text-3xl font-black text-black dark:text-white tracking-tighter">
                                     {card.value}
                                 </span>
                             </div>

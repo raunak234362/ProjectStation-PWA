@@ -144,7 +144,7 @@ const EstimationDashboard = () => {
             <div className="w-8 h-8 bg-white rounded-full shadow-inner"></div>
           </div>
         </div>
-        <p className="mt-6 text-[10px] text-slate-400  uppercase tracking-[0.3em] animate-pulse">
+        <p className="mt-6 text-[10px] font-bold text-black uppercase tracking-[0.3em] animate-pulse">
           Synchronizing Intelligence...
         </p>
       </div>
@@ -155,12 +155,12 @@ const EstimationDashboard = () => {
     <div className="h-full p-6 lg:p-8 space-y-8 bg-white overflow-y-auto custom-scrollbar">
       {/* Header Section */}
       <div className="flex flex-col gap-1">
-        <h2 className="text-3xl  text-slate-800 tracking-tight">
+        {/* <h2 className="text-3xl font-black text-black tracking-tight uppercase">
           Estimation Engineering
         </h2>
-        <p className="text-[10px]  text-slate-400 uppercase tracking-[0.2em]">
+        <p className="text-[10px] font-bold text-black uppercase tracking-[0.2em]">
           Project Quantification & Fabricator Analysis
-        </p>
+        </p> */}
       </div>
 
       {/* Stats Grid */}
@@ -187,15 +187,7 @@ const EstimationDashboard = () => {
 
       {/* List of Estimations */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-green-500/10 pb-4">
-          <h3 className="text-xl  text-slate-800 uppercase tracking-tight">
-            Recent Estimations
-          </h3>
-          <span className="bg-green-50 text-[10px]  text-slate-500 px-4 py-1.5 rounded-full uppercase tracking-widest">
-            {estimations.length} Records
-          </span>
-        </div>
-        <div className="bg-white rounded-[32px] shadow-soft border border-green-500/10 overflow-hidden">
+        <div className="bg-white overflow-hidden">
           <AllEstimation estimations={estimations} onRefresh={fetchData} />
         </div>
       </div>

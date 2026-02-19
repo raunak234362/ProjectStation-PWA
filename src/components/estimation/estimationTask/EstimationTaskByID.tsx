@@ -23,6 +23,8 @@ import {
 import CreateLineItemGroup from "../estimationLineItem/CreateLineItemGroup";
 import LineItemGroup from "../estimationLineItem/LineItemGroup";
 import type { EstimationTaskPayload } from "../../../interface";
+import { useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
 
 interface EstimationTaskByIDProps {
   id: string;
@@ -59,6 +61,7 @@ export default function EstimationTaskByID({
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [showWorkSummary, setShowWorkSummary] = useState(true);
   const [refreshGroups, setRefreshGroups] = useState(0);
+  const dispatch = useDispatch();
   const fetchTask = async () => {
     if (!id) return;
     try {
@@ -78,8 +81,12 @@ export default function EstimationTaskByID({
   };
 
   useEffect(() => {
+    dispatch(incrementModalCount());
     fetchTask();
-  }, [id]);
+    return () => {
+      dispatch(decrementModalCount());
+    };
+  }, [id, dispatch]);
 
   const getActiveWorkID = () => {
     return task?.workinghours?.find((wh) => wh.ended_at === null)?.id || null;
@@ -180,8 +187,8 @@ export default function EstimationTaskByID({
       configs[status || ""] || {
         label: status || "Unknown",
         bg: "bg-gray-100",
-        text: "text-gray-700",
-        border: "border-gray-300",
+        text: "text-black",
+        border: "border-black/10",
       }
     );
   };
@@ -227,21 +234,21 @@ export default function EstimationTaskByID({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full h-[95vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center">
+        <div className="sticky top-0 z-10 bg-white border-b border-black/10 px-8 py-5 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-100 rounded-xl">
-              <FileText className="w-7 h-7 text-green-700" />
+            <div className="p-3 bg-green-100 rounded-xl border border-black/5">
+              <FileText className="w-7 h-7 text-black" />
             </div>
             <div>
-              <h2 className="text-2xl  text-gray-700">
+              <h2 className="text-2xl font-black text-black uppercase tracking-tight">
                 Estimation Task Details
               </h2>
-              <p className="text-sm text-gray-700">ID: #{task.id}</p>
+              <p className="text-sm text-black/60 font-bold">ID: #{task.id}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-xl transition"
+            className="px-6 py-3 bg-white border border-black/20 hover:bg-gray-50 text-black font-bold rounded-xl transition shadow-sm"
           >
             Close
           </button>
@@ -250,9 +257,9 @@ export default function EstimationTaskByID({
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
           {/* Task Info Card */}
-          <div className="bg-green-50 rounded-2xl p-8 border border-green-200">
-            <h3 className="text-2xl  text-green-900 mb-6 flex items-center gap-3">
-              <FileText className="w-7 h-7" />
+          <div className="bg-green-50/30 rounded-3xl p-8 border border-black/10">
+            <h3 className="text-2xl font-black text-black mb-6 flex items-center gap-3 uppercase tracking-tight">
+              <FileText className="w-7 h-7 text-black" />
               Task Information
             </h3>
 
@@ -289,9 +296,9 @@ export default function EstimationTaskByID({
                   <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Status</p>
+                  <p className="text-sm font-bold text-black uppercase tracking-widest text-black/40 mb-1">Status</p>
                   <span
-                    className={`inline-block mt-1 px-4 py-2 rounded-full font-semibold text-sm border-2 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}
+                    className={`inline-block px-4 py-2 rounded-full font-black text-xs uppercase tracking-widest border border-black/10 shadow-sm ${statusConfig.bg} ${statusConfig.text}`}
                   >
                     {statusConfig.label}
                   </span>
@@ -314,8 +321,8 @@ export default function EstimationTaskByID({
             )}
 
             {/* Actions */}
-            <div className="mt-8 pt-6 border-t border-green-200">
-              <h4 className="text-lg font-semibold text-gray-700 mb-4">
+            <div className="mt-8 pt-6 border-t border-black/10">
+              <h4 className="text-lg font-black text-black uppercase tracking-widest mb-4">
                 Task Controls
               </h4>
               <div className="flex flex-wrap items-center gap-4">
@@ -360,7 +367,7 @@ export default function EstimationTaskByID({
                   </ActionButton>
                 )}
                 {processing && (
-                  <div className="flex items-center gap-2 text-gray-700">
+                  <div className="flex items-center gap-2 text-black font-bold">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <span>Processing...</span>
                   </div>
@@ -371,15 +378,15 @@ export default function EstimationTaskByID({
 
           {/* Work Summary */}
           {summary && (
-            <div className="bg-green-50 rounded-2xl p-6 border border-green-200">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl  text-indigo-900 flex items-center gap-3">
+            <div className="bg-white rounded-3xl p-6 border border-black/10 shadow-sm">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-black uppercase tracking-tight flex items-center gap-3">
                   <Timer className="w-6 h-6" />
                   Work Summary
                 </h3>
                 <button
                   onClick={() => setShowWorkSummary(!showWorkSummary)}
-                  className="text-indigo-600 hover:text-indigo-800"
+                  className="text-black hover:text-green-600 transition-colors"
                 >
                   {showWorkSummary ? (
                     <ChevronUp size={24} />
@@ -404,7 +411,7 @@ export default function EstimationTaskByID({
                     icon={<Timer />}
                     label="Status"
                     value={statusConfig.label}
-                    color={statusConfig.text}
+                    color="text-black"
                   />
                 </div>
               )}
@@ -447,12 +454,12 @@ const InfoItem = ({
   value: string;
 }) => (
   <div className="flex items-start gap-4">
-    <div className="p-3 bg-white rounded-xl shadow-sm shrink-0">
-      {icon && <div className="w-6 h-6 text-green-600">{icon}</div>}
+    <div className="p-3 bg-white rounded-2xl shadow-sm shrink-0 border border-black/5">
+      {icon && <div className="w-6 h-6 text-black/60">{icon}</div>}
     </div>
     <div>
-      <p className="text-sm font-medium text-gray-700">{label}</p>
-      <p className="font-semibold text-gray-700 mt-1">{value}</p>
+      <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">{label}</p>
+      <p className="font-bold text-black mt-1">{value}</p>
     </div>
   </div>
 );
@@ -480,7 +487,7 @@ const ActionButton = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center gap-2 px-6 py-3 ${colors[color]} text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed`}
+      className={`flex items-center gap-2 px-6 py-3 ${colors[color]} text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed border border-black/10`}
     >
       {icon}
       {children}
@@ -492,20 +499,20 @@ const SummaryCard = ({
   icon,
   label,
   value,
-  color = "text-indigo-700",
+  color = "text-black",
 }: {
   icon: React.ReactNode;
   label: string;
   value: string | number;
   color?: string;
 }) => (
-  <div className="bg-white/80 backdrop-blur flex flex-row gap-5 items-center justify-center p-2 rounded-xl border border-indigo-100 text-center">
-    <div className="w-12 h-12 mx-auto mb-3 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+  <div className="bg-gray-50 flex flex-row gap-5 items-center justify-center p-4 rounded-2xl border border-black/10 text-center">
+    <div className="w-12 h-12 mx-auto bg-white border border-black/5 rounded-full flex items-center justify-center text-black/60 shadow-sm">
       {icon}
     </div>
-    <div>
-      <p className="text-sm text-gray-700">{label}</p>
-      <p className={`text-xl  mt-2 ${color}`}>{value}</p>
+    <div className="text-left">
+      <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">{label}</p>
+      <p className={`text-xl font-black mt-1 ${color}`}>{value}</p>
     </div>
   </div>
 );
