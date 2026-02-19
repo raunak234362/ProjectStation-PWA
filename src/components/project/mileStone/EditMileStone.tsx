@@ -103,7 +103,7 @@ const EditMileStone = ({
           : null,
       };
 
-      await Service.EditMilestoneById(milestoneId, payload);
+      await Service.EditExistingMilestoneByID(milestoneId, payload);
       toast.success("Milestone updated successfully!");
       if (onSuccess) onSuccess();
       onClose();
