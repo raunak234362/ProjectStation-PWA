@@ -12,10 +12,8 @@ import type { EstimationTask } from "../../interface";
 import InclusionExclusion from "./InclusionExclusion";
 import EditInclusionExclusion from "./EditInclusionExclusion";
 
-const truncateText = (text: string, max = 100) => {
-  const stripped = text.replace(/<[^>]*>?/gm, '');
-  return stripped.length > max ? stripped.substring(0, max) + "..." : stripped;
-};
+// Utility to remove HTML tags for simple display if needed
+const stripHtml = (text: string) => text.replace(/<[^>]*>?/gm, '');
 
 interface GetEstimationByIDProps {
   id: string;
@@ -34,6 +32,7 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
   const [isInclusionOpen, setIsInclusionOpen] = useState(false);
   const [isEditingInclusion, setIsEditingInclusion] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   const fetchEstimation = async () => {
     if (!id) {
@@ -168,10 +167,31 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
 
           {/* Description */}
           {description && (
-            <InfoRow
-              label="Description"
-              value={<span>{truncateText(description)}</span>}
-            />
+            <div className="flex flex-col gap-2 border-b border-black/5 pb-3">
+              <span className="text-black/40 text-[10px] sm:text-xs uppercase font-black tracking-widest">
+                Description:
+              </span>
+              <div
+                className={`text-black font-medium text-xs sm:text-sm overflow-hidden transition-all duration-300 ${!isDescExpanded ? "max-h-24 relative" : "max-h-none"
+                  }`}
+              >
+                <div
+                  className="description-html prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+                {!isDescExpanded && description.length > 200 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-white to-transparent" />
+                )}
+              </div>
+              {description.length > 200 && (
+                <button
+                  onClick={() => setIsDescExpanded(!isDescExpanded)}
+                  className="text-[10px] font-black uppercase text-green-600 hover:text-green-700 tracking-wider text-left mt-1"
+                >
+                  {isDescExpanded ? "Read Less" : "Read Full Description"}
+                </button>
+              )}
+            </div>
           )}
 
           {/* Created By */}
