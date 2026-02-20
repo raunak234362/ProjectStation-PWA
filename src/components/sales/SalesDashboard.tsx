@@ -6,8 +6,9 @@ import SalesStatsCards from "./components/SalesStatsCards";
 import SalesSecondaryStats from "./components/SalesSecondaryStats";
 import SalesPerformanceChart from "./components/SalesPerformanceChart";
 import { Download, Filter, ChevronDown, Check } from "lucide-react";
-import { subDays, isAfter, startOfDay } from "date-fns";
 import { cn } from "../../lib/utils";
+
+import SalesDetailModal from "./components/SalesDetailModal";
 
 const SalesDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -15,31 +16,24 @@ const SalesDashboard = () => {
     "All Time" | "Last 7 Days" | "Last 30 Days" | "Last 12 Months"
   >("All Time");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [allData, setAllData] = useState<{
-    projects: any[];
-    rfqs: any[];
-    clients: any[];
-  }>({
-    projects: [],
-    rfqs: [],
-    clients: [],
-  });
+  const [allData, setAllData] = useState<any>({});
+
+  // Modal states
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"PROJECTS" | "RFQS" | "INVOICES" | "CLIENTS">("PROJECTS");
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalData, setModalData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [projectsRes, rfqRes, clientsRes] = await Promise.all([
-          Service.GetAllProjects(),
-          Service.RFQRecieved(),
-          Service.GetAllFabricators(),
-        ]);
+        const salesData = await Service.SalesDashboard();
+        console.log("Fetched Sales Dashboard Data from dashBoardData/sales:", salesData);
 
-        setAllData({
-          projects: projectsRes?.data || [],
-          rfqs: rfqRes?.data || [],
-          clients: clientsRes?.data || clientsRes || [],
-        });
+        // Map the backend structure correctly
+        // salesData might be { data: { ... }, activeProjectsFromSales: ... }
+        setAllData(salesData);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching sales data", error);
@@ -50,136 +44,59 @@ const SalesDashboard = () => {
     fetchData();
   }, []);
 
+  const openDetailModal = (type: any, title: string, data: any[]) => {
+    setModalType(type);
+    setModalTitle(title);
+    setModalData(data || []);
+    setModalOpen(true);
+  };
+
   const computedData = useMemo(() => {
-    const { projects, rfqs, clients } = allData;
-    const now = new Date();
-    const today = startOfDay(now);
+    const rawData = allData?.data || allData || {};
+    const {
+      projects = [],
+      rfqs = [],
+      clients = [],
+      invoices = []
+    } = allData;
 
-    let filteredRfqs = rfqs;
-    let filteredProjects = projects;
-
-    if (timeFilter !== "All Time") {
-      let days = 0;
-      if (timeFilter === "Last 7 Days") days = 7;
-      else if (timeFilter === "Last 30 Days") days = 30;
-      else if (timeFilter === "Last 12 Months") days = 365;
-
-      const cutoff = subDays(today, days);
-      filteredRfqs = rfqs.filter((r: any) =>
-        isAfter(new Date(r.createdAt), cutoff),
-      );
-      filteredProjects = projects.filter((p: any) =>
-        isAfter(new Date(p.startDate), cutoff),
-      );
-    }
-
-    // 1. Basic Counts
-    const totalRfqs = filteredRfqs.length;
-    const awardedProjects = filteredProjects.filter((p: any) =>
-      ["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status),
-    ).length;
-    const activeProjects = filteredProjects.filter((p: any) =>
-      ["ACTIVE", "AWARDED"].includes(p.status),
-    ).length;
-    const completed = filteredProjects.filter(
-      (p: any) => p.status === "COMPLETED",
-    ).length;
-    const onHold = filteredProjects.filter(
-      (p: any) => p.status === "ON_HOLD",
-    ).length;
-
-    // 2. Delayed Projects
-    const delayed = filteredProjects.filter((p: any) => {
-      if (p.status === "COMPLETED") return false;
-      if (!p.endDate) return false;
-      return new Date(p.endDate) < today;
-    }).length;
-
-    // 3. Win Rate
-    const winRate =
-      totalRfqs > 0 ? Math.round((awardedProjects / totalRfqs) * 100) : 0;
-    const conversionRate =
-      totalRfqs > 0 ? Math.round((awardedProjects / totalRfqs) * 100) : 0;
-
-    // 4. Total Sales Value
-    const totalSalesValue = filteredRfqs.reduce((acc: number, rfq: any) => {
-      const isAwarded = projects.some(
-        (p: any) =>
-          p.rfqId === rfq.id &&
-          ["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status),
-      );
-      if (isAwarded && rfq.bidPrice) {
-        const numericPrice =
-          parseFloat(String(rfq.bidPrice).replace(/[^0-9.]/g, "")) || 0;
-        return acc + numericPrice;
-      }
-      return acc;
-    }, 0);
-
-    // 5. Monthly Performance Data
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const performance = [];
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date();
-      d.setMonth(now.getMonth() - i);
-      const m = d.getMonth();
-      const y = d.getFullYear();
-
-      const rfqsInMonth = rfqs.filter((r: any) => {
-        const rd = new Date(r.createdAt);
-        return rd.getMonth() === m && rd.getFullYear() === y;
-      }).length;
-
-      const awardedInMonth = projects.filter((p: any) => {
-        if (!["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status))
-          return false;
-        const pd = new Date(p.startDate);
-        return pd.getMonth() === m && pd.getFullYear() === y;
-      }).length;
-
-      const completedInMonth = projects.filter((p: any) => {
-        if (p.status !== "COMPLETED" || !p.endDate) return false;
-        const pd = new Date(p.endDate);
-        return pd.getMonth() === m && pd.getFullYear() === y;
-      }).length;
-
-      performance.push({
-        name: months[m],
-        RFQs: rfqsInMonth,
-        Awarded: awardedInMonth,
-        Completed: completedInMonth,
-      });
-    }
-
+    // Use backend provided stats if available, fallback to local calculation
     return {
       stats: {
-        totalRfqs,
-        projectsAwarded: awardedProjects,
-        winRate,
-        totalSalesValue,
-        activeProjects,
-        completed,
-        onHold,
-        delayed,
-        conversionRate,
-        totalClients: clients.length,
+        totalRfqs: allData?.totalRFQs ?? rawData?.totalRFQs ?? rfqs.length,
+        totalProjects: allData?.totalProjectsFromSales ?? rawData?.totalProjectsFromSales ?? projects.length,
+        projectsAwarded: allData?.awardedRFQs ?? rawData?.awardedRFQs ?? 0,
+        winRate: allData?.winRate ?? rawData?.winRate ?? 0,
+        totalSalesValue: allData?.totalBidPrice ?? rawData?.totalBidPrice ?? 0,
+        activeProjects: allData?.activeProjectsFromSales ?? rawData?.activeProjectsFromSales ?? 0,
+        completed: allData?.completedProjectsFromSales ?? rawData?.completedProjectsFromSales ?? 0,
+        onHold: projects.filter((p: any) => p.status === "ON_HOLD").length,
+        delayed: projects.filter((p: any) => {
+          if (p.status === "COMPLETED") return false;
+          if (!p.endDate) return false;
+          return new Date(p.endDate) < new Date();
+        }).length,
+        conversionRate: allData?.projectConversionRate ?? rawData?.projectConversionRate ?? 0,
+        totalClients: allData?.totalClients ?? rawData?.totalClients ?? clients.length,
+
+        // New Backend Fields
+        inPipelineRFQs: allData?.inPipelineRFQs ?? rawData?.inPipelineRFQs ?? 0,
+        quotedRFQs: allData?.quotedRFQs ?? rawData?.quotedRFQs ?? 0,
+        respondedRFQs: allData?.respondedRFQs ?? rawData?.respondedRFQs ?? 0,
+        rejectedRFQs: allData?.rejectedRFQs ?? rawData?.rejectedRFQs ?? 0,
+
+        // Invoice Analytics
+        invoiceAnalytics: allData?.invoiceAnalytics || rawData?.invoiceAnalytics || {},
+
+        // Raw Arrays for Modals
+        rawProjects: projects,
+        rawRfqs: rfqs,
+        rawClients: clients,
+        rawInvoices: invoices || allData?.invoices || [],
       },
-      performance,
+      performance: allData?.performance || [],
     };
-  }, [allData, timeFilter]);
+  }, [allData]);
 
   const { stats, performance: performanceData } = computedData;
 
@@ -188,13 +105,12 @@ const SalesDashboard = () => {
     const rows = [
       ["Report Period", timeFilter],
       ["Total RFQs Received", stats.totalRfqs],
+      ["Total Projects", stats.totalProjects],
       ["Projects Awarded", stats.projectsAwarded],
       ["Win Rate", `${stats.winRate}%`],
       ["Total Sales Value", `$${stats.totalSalesValue}`],
       ["Active Projects", stats.activeProjects],
       ["Completed Projects", stats.completed],
-      ["On Hold", stats.onHold],
-      ["Delayed Projects", stats.delayed],
       ["Conversion Rate", `${stats.conversionRate}%`],
       ["Total Clients", stats.totalClients],
     ];
@@ -206,7 +122,7 @@ const SalesDashboard = () => {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `Sales_Report_${timeFilter.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.csv`,
+      `Sales_Report_${new Date().toISOString().split("T")[0]}.csv`,
     );
     link.style.visibility = "hidden";
     document.body.appendChild(link);
@@ -324,17 +240,32 @@ const SalesDashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <SalesStatsCards stats={stats} />
+      <SalesStatsCards
+        stats={stats}
+        onCardClick={(type, title, data) => openDetailModal(type, title, data)}
+      />
 
       {/* Secondary Stats */}
       <div className="pt-2">
-        <SalesSecondaryStats stats={stats} />
+        <SalesSecondaryStats
+          stats={stats}
+          onCardClick={(type, title, data) => openDetailModal(type, title, data)}
+        />
       </div>
 
       {/* Charts & Details Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 pt-4">
         <SalesPerformanceChart data={performanceData} />
       </div>
+
+      {/* Detail Modal */}
+      <SalesDetailModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        type={modalType}
+        title={modalTitle}
+        data={modalData}
+      />
     </div>
   );
 };

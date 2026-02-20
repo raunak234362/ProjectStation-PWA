@@ -85,26 +85,27 @@ const AddEmployee: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-200">
-      <h2 className="text-xl font-semibold text-gray-700 mb-6">
-        Add New Employee
-      </h2>
+    <div className="w-full max-w-4xl mx-auto bg-white rounded-[2.5rem] shadow-soft p-12 mt-10 border border-black/5">
+      <div className="mb-10 text-center">
+        <h2 className="text-3xl font-black text-black uppercase tracking-tight">Add New Employee</h2>
+        <p className="text-black/60 text-sm font-bold tracking-wide mt-2">Scale your team with new talent</p>
+      </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        className="grid grid-cols-1 md:grid-cols-2 gap-8"
       >
         {/* Username */}
-        <div>
+        <div className="space-y-2">
           <Input
             label="Username"
             type="text"
             {...register("username", { required: "Username is required" })}
             placeholder="Enter username"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
+            className="w-full"
           />
           {errors.username && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-red-500 text-[10px] font-black uppercase ml-1">
               {errors.username.message}
             </p>
           )}
@@ -243,30 +244,19 @@ const AddEmployee: React.FC = () => {
         </div>
 
         {/* Submit */}
-        <div className="md:col-span-2 flex justify-center mt-6">
+        <div className="md:col-span-2 pt-10">
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+            className={`w-full px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-medium flex items-center justify-center gap-3 ${isSubmitting
+              ? "bg-gray-100 text-black/20 cursor-not-allowed"
+              : "bg-black text-white hover:bg-black/90 active:scale-95"
+              }`}
           >
             {isSubmitting ? (
               <>
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    className="opacity-25"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    className="opacity-75"
-                  />
-                </svg>
-                Creating...
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-black/20 border-t-black"></div>
+                Processing...
               </>
             ) : (
               "Create Employee"

@@ -20,26 +20,25 @@ const TaskDistribution: React.FC<TaskDistributionProps> = ({ teamStats }) => {
   }, [teamStats.taskTypeCounts]);
 
   return (
-    <div className="bg-white p-6 rounded-[2rem] border border-green-50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] mb-8 h-full">
-      <h3 className="text-xl  text-gray-800 mb-6 flex items-center gap-2">
-        <Layers className="text-green-600" size={24} />
+    <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-soft mb-12 h-full">
+      <h3 className="text-xl font-black text-black mb-8 flex items-center gap-3 uppercase tracking-tight">
+        <Layers className="text-[#6bbd45]" size={24} strokeWidth={2.5} />
         Task Distribution
-        Task Distribution
-        <span className="text-xs  text-green-700 ml-auto bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">Task Counts</span>
+        <span className="text-[10px] font-black text-[#4b8a2e] ml-auto bg-green-50 px-3 py-1.5 rounded-full border border-[#6bbd45]/20 uppercase tracking-widest">Task Counts</span>
       </h3>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {distributionData.map((item, index) => {
           const Icon = item.icon;
           return (
-            <div key={index} className="flex items-center justify-between p-3.5 hover:bg-green-50/30 rounded-2xl transition-colors group">
+            <div key={index} className="flex items-center justify-between p-4 hover:bg-gray-50/50 rounded-2xl border border-transparent hover:border-black/5 transition-all group">
               <div className="flex items-center gap-4">
-                <div className={`p-2.5 rounded-xl ${item.bg} ${item.color}`}>
-                  <Icon size={20} />
+                <div className={`p-3 rounded-xl ${item.bg} ${item.color} shadow-sm`}>
+                  <Icon size={20} strokeWidth={2.5} />
                 </div>
-                <span className="text-gray-600  text-sm group-hover:text-gray-900">{item.label}</span>
+                <span className="text-black/60 font-bold text-sm tracking-tight group-hover:text-black">{item.label}</span>
               </div>
-              <span className="text-gray-800 font-extrabold bg-gray-50 border border-gray-100 px-4 py-1.5 rounded-xl text-sm shadow-sm">
+              <span className="text-black font-black bg-white border border-black/10 px-5 py-2 rounded-xl text-sm shadow-sm group-hover:border-black/20 transition-all">
                 {item.value || 0}
               </span>
             </div>

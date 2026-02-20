@@ -339,11 +339,7 @@ const TeamDashboard = () => {
       start = new Date("2023-01-01"); // Arbitrary start for 'ALL'
       format = "monthly";
     }
-    // Use custom range strictly if provided? Or date pickers should just update range state?
-    // Component logic: date pickers update `analyticsDateRange`. Time Filter buttons update `analyticsDateRange` and `timeFilter`.
-    // So here rely on passed range IF filter is "Custom" (implied).
-    // Actually, buttons invoke logic to set range.
-    // Let's use `analyticsDateRange` as truth. But buttons set presets.
+
 
     // Override with state (which buttons should update)
     start = new Date(range.start);
@@ -656,10 +652,10 @@ const TeamDashboard = () => {
   const handleCloseModal = () => setSelectedEmployee(null);
 
   const getEfficiencyColorClass = (efficiency: number) => {
-    if (efficiency >= 90) return "bg-green-100 text-green-800";
-    if (efficiency >= 70) return "bg-blue-100 text-blue-800";
-    if (efficiency >= 50) return "bg-yellow-100 text-yellow-800";
-    return "bg-red-100 text-red-800";
+    if (efficiency >= 90) return "bg-green-100 text-black border-green-200";
+    if (efficiency >= 70) return "bg-blue-100 text-black border-blue-200";
+    if (efficiency >= 50) return "bg-yellow-100 text-black border-yellow-200";
+    return "bg-red-100 text-black border-red-200";
   };
 
   const tableData = useMemo(() => {
@@ -737,9 +733,8 @@ const TeamDashboard = () => {
           sno: index + 1,
           id: member.userId || user.id || member.id,
           name:
-            `${user.firstName || ""} ${user.middleName || ""} ${
-              user.lastName || ""
-            }`.trim() || "Unknown",
+            `${user.firstName || ""} ${user.middleName || ""} ${user.lastName || ""
+              }`.trim() || "Unknown",
           role: member.role || "Member",
           assignedHours: assignedHours.toFixed(2),
           workedHours: workedHours.toFixed(2),
@@ -766,7 +761,7 @@ const TeamDashboard = () => {
   };
 
   return (
-    <div className="h-full p-6 overflow-y-auto custom-scrollbar">
+    <div className="h-full p-10 overflow-y-auto custom-scrollbar bg-gray-50/20">
       <DashboardHeader
         onAddTeam={() => setIsModalOpen(true)}
         searchTerm={searchTerm}
@@ -791,23 +786,26 @@ const TeamDashboard = () => {
 
           {selectedTeam && (
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* Gradient Header Bar - Matching Uploaded Reference */}
-              <div className="w-full bg-gradient-to-r from-green-400 to-green-300/80 rounded-2xl p-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-3xl font-extrabold text-white tracking-wide drop-shadow-sm">
+              {/* Premium Header Bar */}
+              <div className="w-full bg-green-200 rounded-[2.5rem] p-10 border border-black/5 shadow-medium flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                {/* Decorative Pattern / Glow */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -mr-20 -mt-20" />
+
+                <div className="relative z-10">
+                  <span className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2 block">Team View</span>
+                  <h1 className="text-4xl font-black text-black tracking-tight uppercase">
                     {teams?.find((t) => t.id === selectedTeam)?.name ||
                       "Team Detail"}
                   </h1>
                 </div>
 
-                {/* Mock Tabs for Visual Reference if needed, or keeping Action Button styled to match */}
-                <div className="flex items-center gap-3">
-                  <span className="px-4 py-2 bg-white/20 text-white  rounded-lg cursor-pointer hover:bg-white/30 transition-all">
-                    Dashboard
+                <div className="flex items-center gap-4 relative z-10">
+                  <span className="px-6 py-2.5 bg-black/5 text-black font-black text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black/5">
+                    Overview
                   </span>
                   <button
                     onClick={() => setIsViewModalOpen(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-white text-green-700 rounded-[1.25rem]  hover:bg-green-50 transition-all shadow-[0_8px_20px_-4px_rgba(0,0,0,0.1)] hover:shadow-md"
+                    className="flex items-center gap-2 px-8 py-3.5 bg-white text-black font-black text-sm uppercase tracking-wider rounded-2xl hover:bg-gray-50 transition-all shadow-medium active:scale-95 border border-black/5"
                   >
                     View Details
                   </button>

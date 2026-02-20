@@ -50,42 +50,42 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
   const padding = Array.from({ length: firstDayOfMonth }, () => null);
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-green-50 text-green-600 rounded-lg">
-            <CalendarIcon size={20} />
+    <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-soft mb-12">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-green-200 text-black border border-black/5 rounded-2xl shadow-sm">
+            <CalendarIcon size={24} strokeWidth={2.5} />
           </div>
           <div>
-            <h3 className="text-lg  text-gray-700">
+            <h3 className="text-xl font-black text-black uppercase tracking-tight">
               Team Calendar - {selectedTeamName}
             </h3>
-            <p className="text-xs text-gray-700">
-              Schedule and task distribution
+            <p className="text-black/60 text-sm font-bold tracking-wide">
+              Schedule and task distribution for the current month
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex bg-gray-100 p-1 rounded-xl">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex bg-gray-100/50 p-1.5 rounded-2xl border border-black/5">
             <button
               onClick={() => setViewMode("user")}
-              className={`px-3 py-1.5 rounded-lg text-xs  flex items-center gap-2 transition-all ${viewMode === "user"
-                  ? "bg-white text-green-600 shadow-sm"
-                  : "text-gray-700 hover:text-gray-700"
+              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all ${viewMode === "user"
+                ? "bg-white text-black shadow-medium border border-black/5"
+                : "text-black/40 hover:text-black"
                 }`}
             >
-              <User size={14} />
+              <User size={14} strokeWidth={2.5} />
               User View
             </button>
             <button
               onClick={() => setViewMode("project")}
-              className={`px-3 py-1.5 rounded-lg text-xs  flex items-center gap-2 transition-all ${viewMode === "project"
-                  ? "bg-white text-green-600 shadow-sm"
-                  : "text-gray-700 hover:text-gray-700"
+              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all ${viewMode === "project"
+                ? "bg-white text-black shadow-medium border border-black/5"
+                : "text-black/40 hover:text-black"
                 }`}
             >
-              <Layout size={14} />
+              <Layout size={14} strokeWidth={2.5} />
               Project View
             </button>
           </div>
@@ -93,11 +93,9 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
           <select
             value={selectedMember}
             onChange={(e) => setSelectedMember(e.target.value)}
-            className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/20"
+            className="px-5 py-3 bg-white border border-black/10 rounded-2xl text-xs font-black text-black uppercase tracking-wider focus:outline-none focus:ring-4 focus:ring-green-500/10 transition-all cursor-pointer shadow-sm"
           >
-            <option value="all" className="text-gray-700">
-              Select Team Member
-            </option>
+            <option value="all">Select Team Member</option>
             {members.map((m) => {
               const user = m.member || {};
               const name =
@@ -105,38 +103,38 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
                 m.f_name ||
                 "Unknown";
               return (
-                <option key={m.id} value={m.id} className="text-gray-700">
+                <option key={m.id} value={m.id}>
                   {name}
                 </option>
               );
             })}
           </select>
 
-          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-2 py-1">
+          <div className="flex items-center gap-3 bg-white border border-black/10 rounded-2xl px-4 py-1.5 shadow-sm">
             <button
               onClick={handlePrevMonth}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors text-black"
             >
-              <ChevronLeft size={18} className="text-gray-700" />
+              <ChevronLeft size={20} strokeWidth={2.5} />
             </button>
-            <span className="text-xs  text-gray-700 min-w-[100px] text-center">
+            <span className="text-sm font-black text-black uppercase tracking-widest min-w-[140px] text-center">
               {monthName} {year}
             </span>
             <button
               onClick={handleNextMonth}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors text-black"
             >
-              <ChevronRight size={18} className="text-gray-700" />
+              <ChevronRight size={20} strokeWidth={2.5} />
             </button>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-100 border border-gray-100 rounded-xl overflow-hidden">
+      <div className="grid grid-cols-7 gap-px bg-black/20 border-2 border-black/20 rounded-[2rem] overflow-hidden shadow-inner">
         {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
           <div
             key={day}
-            className="bg-gray-50 py-2 text-center text-[10px]  text-gray-400"
+            className="bg-gray-100 py-3 text-center text-[10px] font-black text-black uppercase tracking-[0.2em]"
           >
             {day}
           </div>
@@ -161,43 +159,43 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
           return (
             <div
               key={idx}
-              className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${day === null ? "bg-gray-50/30" : ""
+              className={`bg-white min-h-[120px] p-4 transition-all duration-300 hover:bg-gray-50 group ${day === null ? "bg-gray-50/50" : ""
                 }`}
             >
               {day && (
-                <>
-                  <span className="text-xs  text-gray-400">{day}</span>
-                  <div className="mt-2 flex flex-col gap-1">
+                <div className="h-full flex flex-col">
+                  <span className="text-sm font-black text-black/40 group-hover:text-black transition-colors">{day}</span>
+                  <div className="mt-auto flex flex-col gap-2">
                     {peopleWorkingCount > 0 ? (
-                      <div className="px-2 py-1 bg-green-50 text-green-700 text-[10px]  rounded-lg border border-green-100 flex items-center justify-center gap-1">
-                        <User size={10} />
+                      <div className="px-3 py-2 bg-green-100 text-black text-[10px] font-black uppercase tracking-tight rounded-xl border border-black/5 flex items-center justify-center gap-1.5 shadow-sm transform group-hover:scale-105 transition-transform">
+                        <User size={12} strokeWidth={2.5} className="text-black" />
                         <span>{peopleWorkingCount} Working</span>
                       </div>
                     ) : (
-                      <div className="px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-medium rounded-lg border border-gray-100 text-center">
+                      <div className="px-3 py-2 bg-gray-50 text-black/30 text-[10px] font-black uppercase tracking-widest rounded-xl border border-black/5 text-center">
                         No Active Tasks
                       </div>
                     )}
                   </div>
-                </>
+                </div>
               )}
             </div>
           );
         })}
       </div>
 
-      <div className="mt-4 flex items-center gap-4 text-[10px]  text-gray-400">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-          <span>Tasks</span>
+      <div className="mt-8 flex flex-wrap items-center gap-6">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-blue-400 shadow-sm"></div>
+          <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">Tasks</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-green-400"></div>
-          <span>Projects</span>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-[#6bbd45] shadow-sm"></div>
+          <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">Projects</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-rose-400"></div>
-          <span>On Leave (Weekdays)</span>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-rose-400 shadow-sm"></div>
+          <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">On Leave (Weekdays)</span>
         </div>
       </div>
     </div>

@@ -20,42 +20,45 @@ const TeamsList: React.FC<TeamsListProps> = ({
   onTeamSelect,
 }) => {
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-        <Users size={20} className="text-green-600" />
+    <div className="space-y-6">
+      <h3 className="text-xl font-black text-black flex items-center gap-3 uppercase tracking-tight">
+        <Users size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
         Teams
       </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredTeams.map((team) => (
           <div
             key={team.id}
             onClick={() => onTeamSelect(team.id)}
-            className={`p-4 rounded-2xl border transition-all cursor-pointer group ${selectedTeam === team.id
-                ? "bg-green-50 border-green-200 shadow-sm shadow-green-100"
-                : "bg-white border-gray-100 hover:border-green-200 hover:shadow-md hover:shadow-gray-100"
+            className={`p-8 rounded-[2.5rem] border-2 transition-all cursor-pointer group flex flex-col justify-between h-48 ${selectedTeam === team.id
+              ? "bg-[#6bbd45]/10 border-black shadow-medium scale-[1.02]"
+              : "bg-green-50/50 border-black/10 hover:border-black/40 hover:shadow-soft"
               }`}
           >
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-start justify-between">
               <h4
-                className={` transition-colors ${selectedTeam === team.id
-                    ? "text-green-700"
-                    : "text-gray-700 group-hover:text-green-600"
+                className={`text-2xl font-black tracking-tight transition-colors break-words max-w-[70%] text-black ${selectedTeam === team.id
+                  ? "opacity-100"
+                  : "opacity-80 group-hover:opacity-100"
                   }`}
               >
                 {team.name}
               </h4>
               <div
-                className={`p-2 rounded-lg transition-colors ${selectedTeam === team.id
-                    ? "bg-green-100 text-green-600"
-                    : "bg-gray-50 text-gray-400 group-hover:bg-green-50 group-hover:text-green-500"
+                className={`p-4 rounded-[1.25rem] transition-all ${selectedTeam === team.id
+                  ? "bg-black text-white shadow-lg shadow-black/20"
+                  : "bg-white border border-black/5 text-black/40 group-hover:bg-black group-hover:text-white group-hover:border-black"
                   }`}
               >
-                <Users size={16} />
+                <Users size={22} strokeWidth={2.5} />
               </div>
             </div>
-            <p className="text-xs text-gray-700">
-              {team.members?.length || 0} members
-            </p>
+            <div className="flex items-center gap-2">
+              <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-black/5 ${selectedTeam === team.id ? 'bg-black text-white' : 'bg-white text-black/60 group-hover:text-black'
+                }`}>
+                {team.members?.length || 0} members
+              </span>
+            </div>
           </div>
         ))}
       </div>
