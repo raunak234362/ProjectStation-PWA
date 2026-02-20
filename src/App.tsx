@@ -11,6 +11,7 @@ import { setRFQData } from "./store/rfqSlice";
 import { setProjectData } from "./store/projectSlice";
 import { setNotifications } from "./store/notificationSlice";
 import useNotifications from "./hooks/useNotifications";
+import NotificationReceiver from "./util/NotificationReceiver";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -152,6 +153,7 @@ const AppContent = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={1000} />
+      <NotificationReceiver />
 
       <Layout />
     </>

@@ -69,7 +69,7 @@ const ChatMain: React.FC<Props> = ({
     };
     console.log("[ChatMain] Emitting groupMessages:", payload);
     socket.emit("groupMessages", payload);
-
+   
     // Optimistic update
     const tempMsg: DisplayMessage = {
       id: Date.now().toString(), // Temporary ID
@@ -178,9 +178,12 @@ const ChatMain: React.FC<Props> = ({
     };
     console.log("[ChatMain] Setting up 'receiveGroupMessage' listener");
     socket.on("receiveGroupMessage", handler);
+    console.log("[ChatMain] Setting up 'customNotification' listener");
+    socket.on("customNotification", handler);
     return () => {
       console.log("[ChatMain] Removing 'receiveGroupMessage' listener");
       socket.off("receiveGroupMessage", handler);
+      socket.off("customNotification", handler);
     };
   }, [groupId, userInfo?.id, staffData]);
 
