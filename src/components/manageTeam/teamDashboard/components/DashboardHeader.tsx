@@ -22,20 +22,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onDailyReport,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-      <div>
-        <h1 className="text-2xl  text-gray-700">
-          Team Performance Dashboard
-        </h1>
-        <p className="text-gray-700 text-sm">
-          Monitor and analyze team efficiency and task distribution
-        </p>
-      </div>
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+  
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative">
+      <div className="flex flex-wrap items-center gap-4">
+        {/* Search */}
+        <div className="relative group">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 group-focus-within:text-black transition-colors"
             size={18}
           />
           <input
@@ -43,18 +37,19 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             placeholder="Search teams..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all w-full md:w-64"
+            className="pl-12 pr-6 py-3 bg-white border border-black/10 rounded-2xl text-sm font-bold text-black focus:outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500/50 transition-all w-full md:w-72 placeholder:text-black/30 placeholder:font-normal"
           />
         </div>
 
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2">
-          <Filter size={16} className="text-gray-400" />
+        {/* Date Filter */}
+        <div className="flex items-center gap-3 bg-white border border-black/10 rounded-2xl px-5 py-3 shadow-soft group hover:border-black/20 transition-all">
+          <Filter size={18} className="text-black/40 group-hover:text-black transition-colors" />
           <select
             value={dateFilter.type}
             onChange={(e) =>
               onDateFilterChange({ ...dateFilter, type: e.target.value })
             }
-            className="text-sm text-gray-700 bg-transparent focus:outline-none cursor-pointer"
+            className="text-sm font-bold text-black bg-transparent focus:outline-none cursor-pointer pr-2"
           >
             <option value="all">All Time</option>
             <option value="week">This Week</option>
@@ -63,28 +58,29 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </select>
         </div>
 
+        {/* Action Buttons */}
         <Button
           onClick={onAddTeam}
-          className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-[1.25rem] font-semibold hover:bg-green-600 transition-all shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
+          className="flex items-center gap-2 px-6 py-3 bg-green-200 text-black border border-black/10 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-green-300 transition-all shadow-medium active:scale-95"
         >
-          <Plus size={20} />
+          <Plus size={20} strokeWidth={3} />
           <span>Add Team</span>
         </Button>
 
         <Button
-          onClick={onGenerateReport}
-          className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-gray-600 font-semibold hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all shadow-sm"
-        >
-          <FileText size={20} />
-          <span>Report</span>
-        </Button>
-
-        <Button
           onClick={onDailyReport}
-          className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-gray-600 font-semibold hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all shadow-sm"
+          className="flex items-center gap-2 px-6 py-3 bg-white border border-black/10 rounded-2xl text-black font-black text-sm uppercase tracking-wider hover:bg-gray-50 transition-all shadow-medium active:scale-95"
         >
           <Calendar size={20} />
           <span>Daily Report</span>
+        </Button>
+
+        <Button
+          onClick={onGenerateReport}
+          className="flex items-center gap-2 px-6 py-3 bg-white border border-black/10 rounded-2xl text-black font-black text-sm uppercase tracking-wider hover:bg-gray-50 transition-all shadow-medium active:scale-95"
+        >
+          <FileText size={20} />
+          <span>Report</span>
         </Button>
       </div>
     </div>

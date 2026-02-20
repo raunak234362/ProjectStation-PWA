@@ -8,10 +8,14 @@ interface SalesStatsCardsProps {
         projectsAwarded: number;
         winRate: number;
         totalSalesValue: number;
-    }
+        rawRfqs?: any[];
+        rawProjects?: any[];
+        [key: string]: any;
+    };
+    onCardClick?: (type: "PROJECTS" | "RFQS" | "INVOICES" | "CLIENTS", title: string, data: any[]) => void;
 }
 
-const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats }) => {
+const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats, onCardClick }) => {
     // Unified Green Theme Palette
     // Primary: green-600 (#16a34a)
     // Light: green-50 (#f0fdf4)
@@ -23,25 +27,32 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats }) => {
             value: stats.totalRfqs,
             change: "+12% from last period",
             icon: FileText,
-            // Keeping distinct icons but unifying color feel
+            type: "RFQS" as const,
+            data: stats.rawRfqs || [],
         },
         {
             title: "Projects Awarded",
             value: stats.projectsAwarded,
             change: "+8% from last period",
             icon: Trophy,
+            type: "PROJECTS" as const,
+            data: stats.rawProjects?.filter((p: any) => ["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status)) || [],
         },
         {
             title: "Win Rate",
             value: `${stats.winRate}%`,
             change: "+2.3% from last period",
             icon: Target,
+            type: "RFQS" as const,
+            data: stats.rawRfqs || [],
         },
         {
             title: "Total Sales Value",
             value: `$${stats.totalSalesValue.toLocaleString()}`,
             change: "+15% from last period",
             icon: DollarSign,
+            type: "RFQS" as const,
+            data: stats.rawRfqs || [],
         },
     ];
 
@@ -57,7 +68,8 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats }) => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-[#f9fdf7] dark:bg-slate-900 p-6 rounded-3xl shadow-soft hover:shadow-medium transition-all duration-300 relative overflow-hidden group border border-black/10 dark:border-slate-800"
+                        onClick={() => onCardClick?.(card.type, card.title, card.data)}
+                        className="cursor-pointer bg-[#f9fdf7] dark:bg-slate-900 p-6 rounded-3xl shadow-soft hover:shadow-medium transition-all duration-300 relative overflow-hidden group border border-black/10 dark:border-slate-800"
                     >
                         {/* Decorative Background Blob */}
                         <div className="absolute -right-6 -top-6 w-24 h-24 bg-green-50 dark:bg-green-950 rounded-full opacity-50 dark:opacity-20 group-hover:scale-110 transition-transform duration-500" />

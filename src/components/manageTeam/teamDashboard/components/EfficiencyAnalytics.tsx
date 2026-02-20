@@ -65,8 +65,9 @@ const customStyles = {
       : state.isFocused
         ? "#f9fafb"
         : "white",
-    color: state.isSelected ? "#15803d" : "#374151",
+    color: state.isSelected ? "#000000" : "#374151",
     fontSize: "0.875rem",
+    fontWeight: state.isSelected ? 900 : 500,
     cursor: "pointer",
     ":active": {
       backgroundColor: "#f0fdf4",
@@ -106,12 +107,15 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
   ];
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+    <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-soft mb-12">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
         <div>
-          <h3 className="text-lg  text-gray-800">
+          <h3 className="text-xl font-black text-black uppercase tracking-tight">
             Efficiency Analytics
           </h3>
+          <p className="text-black/60 text-sm font-bold tracking-wide">
+            Comparative performance trends across selected teams
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -130,14 +134,14 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
               }}
             />
           </div>
-          <div className="flex bg-gray-100 p-1 rounded-lg">
+          <div className="flex bg-gray-100/50 p-1.5 rounded-2xl border border-black/5">
             {["1D", "1W", "1M", "1Y", "ALL"].map((tf) => (
               <button
                 key={tf}
                 onClick={() => onTimeFilterChange(tf)}
-                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${timeFilter === tf
-                  ? "bg-white text-gray-800 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                className={`px-4 py-1.5 text-xs font-black rounded-xl transition-all ${timeFilter === tf
+                  ? "bg-white text-black shadow-medium border border-black/5"
+                  : "text-black/40 hover:text-black"
                   }`}
               >
                 {tf}
@@ -145,7 +149,7 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 bg-white border border-black/5 rounded-2xl px-4 py-2 shadow-sm">
             <div className="relative group">
               <input
                 type="date"
@@ -153,10 +157,10 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
                 onChange={(e) =>
                   onDateRangeChange({ ...dateRange, start: e.target.value })
                 }
-                className="pl-2 pr-1 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 focus:ring-1 focus:ring-green-500 outline-none hover:border-gray-300 transition-colors bg-white w-[110px]"
+                className="pl-2 pr-1 py-1 text-xs font-bold border-none bg-transparent text-black focus:ring-0 outline-none w-[110px]"
               />
             </div>
-            <span className="text-gray-400">-</span>
+            <span className="text-black/20 font-black">-</span>
             <div className="relative group">
               <input
                 type="date"
@@ -164,7 +168,7 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
                 onChange={(e) =>
                   onDateRangeChange({ ...dateRange, end: e.target.value })
                 }
-                className="pl-2 pr-1 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 focus:ring-1 focus:ring-green-500 outline-none hover:border-gray-300 transition-colors bg-white w-[110px]"
+                className="pl-2 pr-1 py-1 text-xs font-bold border-none bg-transparent text-black focus:ring-0 outline-none w-[110px]"
               />
             </div>
           </div>

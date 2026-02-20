@@ -1173,20 +1173,20 @@ class Service {
     }
   }
 
-// Get All Documents by Project ID
-static async GetAllDocumentsByProjectId(projectId: string) {
-  try {
-    const response = await api.get(`project/getAllDocuments/${projectId}/`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+  // Get All Documents by Project ID
+  static async GetAllDocumentsByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`project/getAllDocuments/${projectId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
   //Get mileston by ID
   static async GetMilestoneById(id: string) {
@@ -1556,7 +1556,7 @@ static async GetAllDocumentsByProjectId(projectId: string) {
     }
   }
 
-  static async ClientAdminPendingSubmittals(){
+  static async ClientAdminPendingSubmittals() {
     try {
       const response = await api.get(`submittal/pending/clientAdmin`, {
         headers: {
@@ -2538,6 +2538,16 @@ static async GetAllDocumentsByProjectId(projectId: string) {
       return response.data;
     } catch (error) {
       console.error("Error updating RSVP:", error);
+      throw error;
+    }
+  }
+  //sales dashboard
+  static async SalesDashboard() {
+    try {
+      const response = await api.get(`dashBoardData/sales`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching sales dashboard:", error);
       throw error;
     }
   }
