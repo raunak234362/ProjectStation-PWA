@@ -213,47 +213,43 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
               dataKey="date"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#6b7280", fontSize: 11 }}
+              tick={{ fill: "#000000", fontSize: 10, fontWeight: 700 }}
               dy={10}
               minTickGap={30}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#6b7280", fontSize: 11 }}
+              tick={{ fill: "#000000", fontSize: 10, fontWeight: 700 }}
               domain={[0, 140]}
               ticks={[0, 35, 70, 105, 140]}
               tickFormatter={(value) => `${value}`}
-              label={{
-                value: "Efficiency %",
-                angle: -90,
-                position: "insideLeft",
-                style: { fill: "#9ca3af", fontSize: 12 },
-              }}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: "#fff",
-                borderRadius: "8px",
-                border: "1px solid #e5e7eb",
-                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                padding: "8px 12px",
+                borderRadius: "1rem",
+                border: "1px solid rgba(0,0,0,0.05)",
+                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+                padding: "12px 16px",
               }}
               formatter={(value: any, name: any) => {
                 const teamName = teams.find((t) => t.id === name)?.name || name;
                 return [`${value}%`, teamName];
               }}
               labelStyle={{
-                color: "#374151",
-                marginBottom: "4px",
-                fontWeight: 600,
-                fontSize: "12px",
+                color: "#000",
+                marginBottom: "6px",
+                fontWeight: 900,
+                fontSize: "10px",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em"
               }}
-              itemStyle={{ fontSize: "12px", padding: 0 }}
+              itemStyle={{ fontSize: "11px", fontWeight: 700, padding: 0, color: "#000" }}
             />
             <Legend
               iconType="circle"
-              wrapperStyle={{ paddingTop: "20px", fontSize: "12px" }}
+              wrapperStyle={{ paddingTop: "30px", fontSize: "10px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}
               formatter={(value) =>
                 teams.find((t) => t.id === value)?.name || value
               }
@@ -269,10 +265,10 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
                   dataKey={teamId}
                   name={teamId} // Use ID as name for mapping in Legend/Tooltip
                   stroke={color}
-                  strokeWidth={2}
+                  strokeWidth={3}
                   fillOpacity={1}
                   fill={`url(#colorEff-${teamId})`}
-                  activeDot={{ r: 5, strokeWidth: 0 }}
+                  activeDot={{ r: 6, strokeWidth: 0, fill: color }}
                 />
               );
             })}
@@ -282,8 +278,8 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
 
       {/* Check if no data */}
       {(!data || data.length === 0) && (
-        <div className="flex flex-col items-center justify-center p-8 text-gray-400 bg-gray-50 rounded-xl mt-4">
-          <p>No efficiency data available.</p>
+        <div className="flex flex-col items-center justify-center p-12 text-black/40 bg-gray-50/50 rounded-3xl mt-6 border border-dashed border-black/10">
+          <p className="text-xs font-black uppercase tracking-widest">No efficiency data available.</p>
         </div>
       )}
     </div>

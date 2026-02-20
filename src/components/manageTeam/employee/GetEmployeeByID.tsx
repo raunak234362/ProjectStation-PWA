@@ -69,27 +69,26 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
   }
 
   return (
-    <div className="bg-linear-to-br from-green-50 to-blue-50 p-6 rounded-xl shadow-inner">
+    <div className="bg-gray-50/50 p-10 rounded-3xl border border-black/5 shadow-inner">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl  text-green-800">
+      <div className="flex items-center justify-between mb-8 border-b border-black/5 pb-4">
+        <h3 className="text-2xl font-black text-black uppercase tracking-tight">
           {employee.firstName} {employee.middleName} {employee.lastName}
         </h3>
         <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${
-            employee.isActive
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
+          className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-black/5 shadow-sm ${employee.isActive
+              ? "bg-green-100 text-black shadow-green-100/50"
+              : "bg-red-100 text-black shadow-red-100/50"
+            }`}
         >
           {employee.isActive ? "Active" : "Inactive"}
         </span>
       </div>
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-sm">
         {/* Left Column */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <InfoRow label="Employee ID" value={employee.id} />
           <InfoRow label="Username" value={employee.username} />
           <InfoRow
@@ -103,7 +102,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
               <span>
                 {employee.phone}
                 {employee.extension && (
-                  <span className="text-gray-700 text-xs ml-1">
+                  <span className="text-black/40 text-xs ml-1 font-bold">
                     (Ext: {employee.extension})
                   </span>
                 )}
@@ -117,12 +116,12 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         </div>
 
         {/* Right Column */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <InfoRow label="Designation" value={employee.designation} />
           <InfoRow
             label="Role"
             value={
-              <span className="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+              <span className="px-4 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
                 {employee.role}
               </span>
             }
@@ -146,27 +145,27 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         employee.state ||
         employee.country ||
         employee.zipCode) && (
-        <div className="mt-6 pt-5 border-t border-green-200">
-          <h4 className="font-semibold text-green-700 mb-2">Address</h4>
-          <div className="text-sm space-y-1 text-gray-700">
-            {employee.address && <p>{employee.address}</p>}
-            <p>
-              {[employee.city, employee.state, employee.zipCode]
-                .filter(Boolean)
-                .join(", ") || "—"}
-            </p>
-            {employee.country && <p>{employee.country}</p>}
+          <div className="mt-10 pt-8 border-t border-black/5">
+            <h4 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-4">Address Information</h4>
+            <div className="text-sm space-y-2 text-black font-bold tracking-tight">
+              {employee.address && <p>{employee.address}</p>}
+              <p>
+                {[employee.city, employee.state, employee.zipCode]
+                  .filter(Boolean)
+                  .join(", ") || "—"}
+              </p>
+              {employee.country && <p>{employee.country}</p>}
+            </div>
           </div>
-        </div>
-      )}
-      <div className="py-2 flex gap-2">
+        )}
+      <div className="flex flex-wrap gap-4 mt-10 pt-8 border-t border-black/5">
         {employee?.role !== "CLIENT" &&
           employee?.role !== "CLIENT_ADMIN" &&
           employee?.role !== "CLIENT_PROJECT_COORDINATOR" &&
           employee?.role !== "CLIENT_GENERAL_CONSTRUCTOR" && (
             <Button
               onClick={() => handleModel(employee)}
-              className="py-1 px-2 text-lg"
+              className="flex items-center gap-2 px-8 py-3 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black/90 transition-all shadow-medium"
             >
               Update Employee Data
             </Button>
@@ -175,11 +174,13 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           <>
             <Button
               onClick={() => handleModel(employee)}
-              className="py-1 px-2 text-lg"
+              className="flex items-center gap-2 px-8 py-3 bg-white border border-black/10 rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm"
             >
               Edit Profile
             </Button>
-            <Button className="py-1 px-2 text-lg">Archive Profile</Button>
+            <Button className="flex items-center gap-2 px-8 py-3 bg-red-50 border border-red-100 rounded-2xl text-red-600 font-black text-xs uppercase tracking-widest hover:bg-red-100 transition-all shadow-sm">
+              Archive Profile
+            </Button>
           </>
         )}
       </div>
@@ -204,17 +205,17 @@ const InfoRow = ({
   value: React.ReactNode;
   href?: string;
 }) => (
-  <div className="flex md:justify-between gap-5">
-    <span className=" text-gray-700">{label}:</span>
+  <div className="flex justify-between items-center py-1">
+    <span className="text-black/40 font-black uppercase tracking-[0.15em] text-[10px]">{label}</span>
     {href ? (
       <a
         href={href}
-        className="text-green-600 hover:underline hover:text-green-800 transition-colors"
+        className="text-black font-black text-sm tracking-tight hover:underline transition-colors"
       >
         {value}
       </a>
     ) : (
-      <span className="text-gray-700">{value}</span>
+      <span className="text-black font-black text-sm tracking-tight">{value}</span>
     )}
   </div>
 );
