@@ -51,9 +51,9 @@ const AddMileStone = ({
   const subjectOptions = [
     { label: "Anchor Bolt", value: "Anchor Bolt" },
     { label: "Main Steel", value: "Main Steel" },
-    { label: "Main Steel Connection", value: "Main Steel Connection" },
+    { label: "Main Steel Connection Design", value: "Main Steel Connection" },
     { label: "Misc Steel", value: "Misc Steel" },
-    { label: "Misc Steel Connection", value: "Misc Steel Connection" },
+    { label: "Misc Steel Connection Design", value: "Misc Steel Connection" },
     { label: "Foundation Embeds", value: "Foundation Embeds" },
     { label: "Panel Embeds", value: "Panel Embeds" },
     { label: "Others", value: "Others" },
