@@ -63,7 +63,7 @@ const AllFabricator = () => {
             .padStart(2, "0")}/${date.getFullYear()}`
           : "N/A";
         return (
-          <div className="text-black font-black tracking-tight text-xs uppercase">
+          <div className="text-black text-xs uppercase">
             {formattedDate}
           </div>
         );
