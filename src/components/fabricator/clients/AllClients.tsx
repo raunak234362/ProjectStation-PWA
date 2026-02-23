@@ -11,7 +11,10 @@ import type { ColumnDef } from "@tanstack/react-table";
 import GetEmployeeByID from "../../manageTeam/employee/GetEmployeeByID";
 import { motion, AnimatePresence } from "motion/react";
 import { useDispatch } from "react-redux";
-import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
+import {
+  incrementModalCount,
+  decrementModalCount,
+} from "../../../store/uiSlice";
 import { useEffect } from "react";
 
 interface AllClientProps {
@@ -38,7 +41,9 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
     setIsLoading(true);
     try {
       const response = await Service.FetchAllClientsByFabricatorID(fabId);
-      const rawClients: any[] = Array.isArray(response.data) ? response.data : [];
+      const rawClients: any[] = Array.isArray(response.data)
+        ? response.data
+        : [];
       const mappedClients: UserData[] = rawClients.map((c) => ({
         id: c.id ?? "",
         username: c.username ?? "",
@@ -94,11 +99,14 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px]  text-slate-500 dark:text-slate-400 uppercase">
-              {row.original.firstName.charAt(0)}{row.original.lastName.charAt(0)}
+              {row.original.firstName.charAt(0)}
+              {row.original.lastName.charAt(0)}
             </div>
-            <span className=" text-slate-700 dark:text-white">{row.getValue("fullName")}</span>
+            <span className=" text-slate-700 dark:text-white">
+              {row.getValue("fullName")}
+            </span>
           </div>
-        )
+        ),
       },
       { accessorKey: "email", header: "Email" },
       {
@@ -108,7 +116,9 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
           <div className="flex items-center gap-2  text-slate-500 dark:text-slate-400">
             <span>{row.original.phone}</span>
             {row.original.extension && (
-              <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 dark:text-slate-500 capitalize">Ext: {row.original.extension}</span>
+              <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 dark:text-slate-500 capitalize">
+                Ext: {row.original.extension}
+              </span>
             )}
           </div>
         ),
@@ -120,19 +130,27 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
           <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-[10px]  uppercase tracking-widest border border-blue-100/50 dark:border-blue-900/30">
             {row.original.designation}
           </span>
-        )
+        ),
       },
       {
         id: "actions",
         header: "",
-        cell: () => <MoreVertical size={16} className="text-slate-300 dark:text-slate-600" />
-      }
+        cell: () => (
+          <MoreVertical
+            size={16}
+            className="text-slate-300 dark:text-slate-600"
+          />
+        ),
+      },
     ],
-    []
+    [],
   );
 
   return (
-    <div className="fixed inset-0 z-150 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-hidden" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-hidden"
+      onClick={onClose}
+    >
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -149,7 +167,9 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
               </div>
               Points of Contact
             </h2>
-            <p className="text-xs  text-slate-400 dark:text-slate-500 uppercase tracking-widest">POC management for {fabricator.fabName}</p>
+            <p className="text-xs  text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+              POC management for {fabricator.fabName}
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <Button
@@ -173,14 +193,16 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-slate-500">
               <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-100 dark:border-slate-800 border-t-blue-600 mb-4"></div>
-              <p className="text-sm  uppercase tracking-widest">Synchronizing POC Data...</p>
+              <p className="text-sm  uppercase tracking-widest">
+                Synchronizing POC Data...
+              </p>
             </div>
           ) : (
             <div className="bg-white dark:bg-slate-900 rounded-[32px] overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm">
               <DataTable
                 columns={columns}
                 data={clients}
-                onRowClick={() => { }}
+                onRowClick={() => {}}
                 detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
                 pageSizeOptions={[5, 10, 25]}
               />
@@ -191,7 +213,7 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
         {/* Add Client Modal */}
         <AnimatePresence>
           {addClientModal && (
-            <div className="fixed inset-0 z-200 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[10002] flex items-center justify-center p-4">
               <AddClients fabricator={fabricator} onClose={closeAddClient} />
             </div>
           )}

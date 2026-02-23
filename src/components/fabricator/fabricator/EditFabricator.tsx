@@ -13,7 +13,10 @@ import MultipleFileUpload from "../../fields/MultipleFileUpload";
 import MultiSelect from "../../fields/MultiSelect";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
+import {
+  incrementModalCount,
+  decrementModalCount,
+} from "../../../store/uiSlice";
 
 // --- File Interfaces (matching your fabricatorData.files structure) ---
 interface FabricatorFile {
@@ -58,6 +61,7 @@ const EditFabricator = ({
   const [wbtContactOptions, setWbtContactOptions] = useState<SelectOption[]>(
     [],
   );
+  console.log(wbtContactOptions);
 
   const dispatch = useDispatch();
 
@@ -112,23 +116,20 @@ const EditFabricator = ({
 
     const fetchWBTContacts = async () => {
       try {
-        const [admins, sales, managers] = await Promise.all([
-          Service.FetchEmployeeByRole("ADMIN"),
-          Service.FetchEmployeeByRole("SALES_PERSON"),
-          Service.FetchEmployeeByRole("SALES_MANAGER"),
-        ]);
+        const roles = ["ADMIN", "SALES_PERSON", "SALES_MANAGER"];
+        const results = await Promise.all(
+          roles.map((role) =>
+            Service.FetchEmployeeByRole(role).catch(() => ({ employees: [] })),
+          ),
+        );
 
-        const allContacts = [
-          ...(Array.isArray(admins?.data?.employees)
-            ? admins.data.employees
-            : []),
-          ...(Array.isArray(sales?.data?.employees)
-            ? sales.data.employees
-            : []),
-          ...(Array.isArray(managers?.data?.employees)
-            ? managers.data.employees
-            : []),
-        ];
+        const allContacts = results.flatMap((res: any) => {
+          if (Array.isArray(res)) return res;
+          const employees =
+            res?.data?.employees || res?.employees || res?.data || [];
+          return Array.isArray(employees) ? employees : [];
+        });
+        console.log(allContacts);
 
         // Remove duplicates if any
         const uniqueContacts = Array.from(
@@ -163,8 +164,9 @@ const EditFabricator = ({
       approvalPercentage: fabricatorData.approvalPercentage || 0,
       paymenTDueDate: fabricatorData.paymenTDueDate || 0,
       currencyType: fabricatorData.currencyType || "",
-      wbtFabricatorPointOfContact:
-        fabricatorData.wbtFabricatorPointOfContact || [],
+      wbtFabricatorPointOfContact: (
+        fabricatorData.wbtFabricatorPointOfContact || []
+      ).map((c: any) => (typeof c === "object" ? c.id || c._id : c)),
       files: null,
     });
     setFilesToKeep((fabricatorData.files as FabricatorFile[]) || []);
@@ -255,7 +257,7 @@ const EditFabricator = ({
 
   return (
     <div
-      className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
