@@ -158,7 +158,7 @@ const ProjectDashboard = () => {
 
   // Group projects by Team
   const projectsByTeam = useMemo(() => {
-    const stages = ["IFA", "IFC", "CO#"] as const;
+    const stages = ["IFA", "IFC", "COR"] as const;
     const grouped: Record<
       string,
       {
@@ -184,7 +184,7 @@ const ProjectDashboard = () => {
           stats: {
             IFA: { active: 0, onHold: 0, completed: 0, total: 0 },
             IFC: { active: 0, onHold: 0, completed: 0, total: 0 },
-            "CO#": { active: 0, onHold: 0, completed: 0, total: 0 },
+            COR: { active: 0, onHold: 0, completed: 0, total: 0 },
           },
         };
       }
@@ -209,7 +209,7 @@ const ProjectDashboard = () => {
 
   const handleStatClick = (
     projects: ProjectData[],
-    stage: "IFA" | "IFC" | "CO#",
+    stage: "IFA" | "IFC" | "COR",
     status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
   ) => {
     let filtered = projects.filter((p) => p.stage === stage);

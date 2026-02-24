@@ -5,7 +5,6 @@ import {
   PieChart,
   Activity,
   Play,
-  Clock,
   TrendingUp,
   AlertTriangle,
   ListTodo,
@@ -85,28 +84,6 @@ const TeamsAnalytics = ({
       }
     } catch (err) {
       toast.error("Failed to run Meas manually");
-    } finally {
-      setMeasLoading(false);
-    }
-  };
-
-  const runMeasMonthly = async () => {
-    try {
-      setMeasLoading(true);
-      toast.info("Running Meas Monthly...");
-      const res = await Service.RunMeasMonthly({ managerId, projectId });
-
-      if (res?.data) {
-        setMeasResult({
-          type: "monthly",
-          message: res.message || "Monthly MEAS calculation completed.",
-          processed: res.data.processed,
-          validProjects: res.data.validProjects,
-        });
-        toast.success("Meas monthly run initiated successfully");
-      }
-    } catch (err) {
-      toast.error("Failed to run Meas monthly");
     } finally {
       setMeasLoading(false);
     }

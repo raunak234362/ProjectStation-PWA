@@ -56,7 +56,6 @@ const GetProjectById = ({
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
   const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
   const [editModel, setEditModel] = useState<ProjectData | null>(null);
-  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [changeOrderView, setChangeOrderView] = useState<
     "list" | "add" | "table"
   >("list");
@@ -501,7 +500,9 @@ const GetProjectById = ({
           )}
 
           {/* ✅ Teams Analytics */}
-          {activeTab === "teamsAnalytics" && <TeamsAnalytics projectId={id} managerId={project.managerID} />}
+          {activeTab === "teamsAnalytics" && (
+            <TeamsAnalytics projectId={id} managerId={project.managerID} />
+          )}
 
           {/* ✅ Details */}
           {activeTab === "details" && (

@@ -24,7 +24,7 @@ interface MonthlyProjectStatsProps {
   >;
   handleStatClick: (
     projects: ProjectData[],
-    stage: "IFA" | "IFC" | "CO#",
+    stage: "IFA" | "IFC" | "COR",
     status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
   ) => void;
 }
@@ -80,7 +80,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
         stats: {
           IFA: { active: 0, onHold: 0, completed: 0, total: 0 },
           IFC: { active: 0, onHold: 0, completed: 0, total: 0 },
-          "CO#": { active: 0, onHold: 0, completed: 0, total: 0 },
+          COR: { active: 0, onHold: 0, completed: 0, total: 0 },
         },
       };
     });
@@ -224,7 +224,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
             {/* IFA/IFC/CO# Grid - Responsive Stack */}
             <div className="border border-gray-300 rounded-xl overflow-hidden bg-white">
               <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-300">
-                {["IFA", "IFC", "CO#"].map((stage) => (
+                {["IFA", "IFC", "COR"].map((stage) => (
                   <div key={stage} className="flex-1">
                     {/* Header */}
                     <div className="bg-green-50/30 border-b border-gray-300 py-2 text-center text-xs sm:text-sm  tracking-widest text-gray-800 uppercase">
