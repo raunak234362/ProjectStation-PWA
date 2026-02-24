@@ -64,7 +64,7 @@ const Layout = () => {
 
       {/* Mobile Sidebar */}
       {!isModalOpen && (
-        <div className="md:hidden z-50">
+        <div className="md:hidden z-0">
           <Sidebar
             isMinimized={!isMobileOpen}
             toggleSidebar={() => setIsMobileOpen(false)}
@@ -75,7 +75,7 @@ const Layout = () => {
 
       {/* Main Content Area */}
       <div
-        className={`flex flex-col flex-1 min-h-0 ${isModalOpen ? "p-0" : "p-4"} relative z-10 bg-white`} // Clean white background
+        className={`flex flex-col flex-1 min-h-0 ${isModalOpen ? "p-0" : "p-4"} relative z-50 bg-white`} // Clean white background
       >
         <div
           className={`

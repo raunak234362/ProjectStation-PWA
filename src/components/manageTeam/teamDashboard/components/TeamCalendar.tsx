@@ -8,6 +8,7 @@ import {
   X,
   FileText,
 } from "lucide-react";
+import FetchTaskByID from "../../../task/FetchTaskByID";
 
 interface TeamCalendarProps {
   members: any[];
@@ -26,6 +27,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
     date: Date;
     tasks: any[];
   } | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   const getTaskHours = (task: any) => {
     const parseDurationToMinutes = (durationStr: string) => {
@@ -182,9 +184,6 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
               <h3 className="text-xl font-black text-black uppercase tracking-tight">
                 Team Calendar - {selectedTeamName}
               </h3>
-              <p className="text-black/60 text-sm font-bold tracking-wide">
-                Schedule and task distribution for the current month
-              </p>
             </div>
           </div>
 
@@ -270,7 +269,32 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
             </div>
           </div>
         </div>
-
+        <div className="mb-8 flex flex-wrap items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
+            <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">
+              Normal Hours
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></div>
+            <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">
+              Stretching
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
+            <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">
+              Absent
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm"></div>
+            <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">
+              Not Assigned
+            </span>
+          </div>
+        </div>
         <div className="grid grid-cols-7 gap-px bg-black/20 border-2 border-black/20 rounded-4xl overflow-hidden shadow-inner">
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
             <div
@@ -343,7 +367,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
                           title={t.name || t.title}
                         >
                           <span
-                            className={`text-[9px] font-black truncate tracking-tight ${
+                            className={`text-[10px] font-semibold truncate tracking-tight ${
                               userTotalHoursMapDay[t.userName || "Unknown"] >
                               8.5
                                 ? "text-blue-900"
@@ -365,7 +389,7 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
                             {t.name || t.title || "Task"}
                           </span>
                           <span
-                            className={`text-[8px] font-bold truncate tracking-wider uppercase ${
+                            className={`text-[9px] font-bold truncate tracking-wider uppercase ${
                               userTotalHoursMapDay[t.userName || "Unknown"] >
                               8.5
                                 ? "text-blue-700/80"
@@ -399,33 +423,6 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
               </div>
             );
           })}
-        </div>
-
-        <div className="mt-8 flex flex-wrap items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
-            <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">
-              Normal Hours
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></div>
-            <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">
-              Stretching
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
-            <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">
-              Absent
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm"></div>
-            <span className="text-[10px] font-black text-black/60 uppercase tracking-widest">
-              Not Assigned
-            </span>
-          </div>
         </div>
       </div>
 
@@ -462,7 +459,8 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
                 {selectedDateModal.tasks.map((task, idx) => (
                   <div
                     key={idx}
-                    className="bg-white p-6 rounded-[1.5rem] border border-black/5 shadow-sm hover:border-black/10 transition-colors"
+                    onClick={() => setSelectedTaskId(task.id || task._id)}
+                    className="bg-white p-6 rounded-[1.5rem] border border-black/5 shadow-sm hover:border-black/10 transition-colors cursor-pointer"
                   >
                     <div className="flex justify-between items-start gap-4 mb-4">
                       <div className="flex items-start gap-4">
@@ -624,6 +622,13 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {selectedTaskId && (
+        <FetchTaskByID
+          id={selectedTaskId}
+          onClose={() => setSelectedTaskId(null)}
+        />
       )}
     </>
   );

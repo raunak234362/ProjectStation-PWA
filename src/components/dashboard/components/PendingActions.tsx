@@ -79,7 +79,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   onActionClick(actionMap[action.title] || action.title);
                 }
               }}
-              className="p-5 h-[110px] rounded-xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
+              className="p-5 rounded-xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
             >
               <div className="flex items-center gap-4 z-10">
                 <div className="p-3 rounded-full bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">

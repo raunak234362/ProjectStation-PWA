@@ -213,7 +213,7 @@ const AddTask: React.FC = () => {
         const typeMatch =
           !selectedWbsType ||
           String(t.wbsType).toLowerCase() ===
-          String(selectedWbsType).toLowerCase();
+            String(selectedWbsType).toLowerCase();
         return String(taskId) === String(selectedWbsId) && typeMatch;
       });
       const total = filtered.reduce(
@@ -273,7 +273,7 @@ const AddTask: React.FC = () => {
         const isDuplicateUser = allTasks.some(
           (t: any) =>
             String(t.project_bundle_id || t.wbs_id) ===
-            String(data.project_bundle_id) &&
+              String(data.project_bundle_id) &&
             String(t.user_id) === String(assignment.employeeId),
         );
 
@@ -340,7 +340,7 @@ const AddTask: React.FC = () => {
       const typeMatch =
         !selectedWbsType ||
         String(t.wbsType).toLowerCase() ===
-        String(selectedWbsType).toLowerCase();
+          String(selectedWbsType).toLowerCase();
       return (
         String(taskId) === String(w.id || w._id || (w.wbs && w.wbs[0]?.id)) &&
         typeMatch
@@ -353,8 +353,9 @@ const AddTask: React.FC = () => {
     const remaining = Math.max(0, total - existing);
 
     return {
-      label: `${w.name || w.bundle?.name || "Unnamed Bundle"
-        } (${remaining}h remaining)`,
+      label: `${
+        w.name || w.bundle?.name || "Unnamed Bundle"
+      } (${remaining}h remaining)`,
       value: w.id || w._id || (w.wbs && w.wbs[0]?.id),
     };
   });
@@ -614,6 +615,7 @@ const AddTask: React.FC = () => {
                       <Input
                         label="Start Date *"
                         type="date"
+                        min={new Date().toISOString().split("T")[0]}
                         {...register("start_date", {
                           required: "Start date is required",
                         })}
@@ -628,6 +630,10 @@ const AddTask: React.FC = () => {
                       <Input
                         label="Due Date *"
                         type="date"
+                        min={
+                          watch("start_date") ||
+                          new Date().toISOString().split("T")[0]
+                        }
                         {...register("due_date", {
                           required: "Due date is required",
                         })}
@@ -678,10 +684,11 @@ const AddTask: React.FC = () => {
                         Assigned:
                       </span>
                       <span
-                        className={`text-sm  ${totalAssignedHours > remainingHours
-                          ? "text-red-600"
-                          : "text-indigo-600"
-                          }`}
+                        className={`text-sm  ${
+                          totalAssignedHours > remainingHours
+                            ? "text-red-600"
+                            : "text-indigo-600"
+                        }`}
                       >
                         {totalAssignedHours}h / {availableHours}h
                       </span>

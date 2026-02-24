@@ -813,24 +813,23 @@ const TeamDashboard = () => {
             {selectedTeam && (
               <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Premium Header Bar */}
-                <div className="w-full bg-green-100 rounded-lg p-5 border border-[#6bbd45]/20 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                <div className="w-full bg-green-50/70 rounded-lg p-5 border border-[#6bbd45]/20 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
                 
 
                 <div className="relative z-10">
-                  <span className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2 block">Team View</span>
-                  <h1 className="text-4xl font-black text-black tracking-tight uppercase">
+                  <h1 className="text-2xl font-semibold text-black tracking-tight uppercase">
                     {teams?.find((t) => t.id === selectedTeam)?.name ||
                       "Team Detail"}
                   </h1>
                 </div>
 
                   <div className="flex items-center gap-4 relative z-10">
-                    <span className="px-6 py-2.5 bg-white  text-black font-black text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
+                    <span className="px-6 py-2 bg-green-100 text-black font-semibold text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
                       Overview
                     </span>
                     <button
                       onClick={() => setIsViewModalOpen(true)}
-                      className="px-6 py-2.5 bg-white text-black font-black text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
+                      className="px-6 py-2 bg-white text-black font-semibold text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
                       View Details
                     </button>
                   </div>
