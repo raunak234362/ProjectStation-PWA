@@ -114,17 +114,17 @@ const TeamDashboard = () => {
     fetchTeams();
   }, []);
 
-  useCallback(() => {
-    const fetchAnalyticsScore = async () => {
-      try {
-        const response = await Service.GetAnalyticsScore();
-        console.log("Analytics Score:", response.data);
-      } catch (error) {
-        console.error("Error fetching analytics score:", error);
-      }
-    };
-    fetchAnalyticsScore();
-  }, []);
+  // useCallback(() => {
+  //   const fetchAnalyticsScore = async () => {
+  //     try {
+  //       const response = await Service.GetAnalyticsScore();
+  //       console.log("Analytics Score:", response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching analytics score:", error);
+  //     }
+  //   };
+  //   fetchAnalyticsScore();
+  // }, []);
 
   // Fetch all tasks once on mount to populate the dashboard faster
   useEffect(() => {
@@ -340,7 +340,6 @@ const TeamDashboard = () => {
       format = "monthly";
     }
 
-
     // Override with state (which buttons should update)
     start = new Date(range.start);
     endDateToEndOfDay(start); // Start of day actually
@@ -474,7 +473,12 @@ const TeamDashboard = () => {
 
   const calculateTeamSummary = (filteredStats: any[]) => {
     try {
-      const allFilteredTasks = filteredStats.flatMap((m) => m.tasks || []);
+      const allFilteredTasks = filteredStats.flatMap((m) => {
+        const userName =
+          `${m.firstName || m.member?.firstName || ""} ${m.lastName || m.member?.lastName || ""}`.trim() ||
+          "Unknown";
+        return (m.tasks || []).map((t: any) => ({ ...t, userName }));
+      });
 
       const uniqueProjects: any[] = [];
       const projectIds = new Set();
@@ -522,11 +526,20 @@ const TeamDashboard = () => {
       // ── Task Type Counts ──
       const taskTypeCounts = {
         modelling: 0,
-        modelChecking: 0,
+        modeling_checking: 0,
         detailing: 0,
-        detailChecking: 0,
+        detail_checking: 0,
         erection: 0,
-        erectionChecking: 0,
+        erection_checking: 0,
+      };
+
+      const taskTypeDetails: Record<string, any[]> = {
+        modelling: [],
+        modeling_checking: [],
+        detailing: [],
+        detail_checking: [],
+        erection: [],
+        erection_checking: [],
       };
 
       allFilteredTasks.forEach((task: any) => {
@@ -542,28 +555,38 @@ const TeamDashboard = () => {
 
         if (
           typeString.includes("model checking") ||
-          typeString.includes("checking model")
+          typeString.includes("checking model") ||
+          typeString.includes("modeling_checking") ||
+          typeString.includes("model_checking")
         ) {
-          taskTypeCounts.modelChecking++;
+          taskTypeCounts.modeling_checking++;
+          taskTypeDetails.modeling_checking.push(task);
         } else if (
           typeString.includes("modelling") ||
           typeString.includes("modeling")
         ) {
           taskTypeCounts.modelling++;
+          taskTypeDetails.modelling.push(task);
         } else if (
+          typeString.includes("detailing_checking") ||
           typeString.includes("detail checking") ||
-          typeString.includes("checking detail")
+          typeString.includes("checking detailing") 
         ) {
-          taskTypeCounts.detailChecking++;
+          taskTypeCounts.detail_checking++;
+          taskTypeDetails.detail_checking.push(task);
         } else if (typeString.includes("detailing")) {
           taskTypeCounts.detailing++;
+          taskTypeDetails.detailing.push(task);
         } else if (
+          typeString.includes("erection_checking") ||
           typeString.includes("erection checking") ||
-          typeString.includes("checking erection")
+          typeString.includes("checking erection") 
         ) {
-          taskTypeCounts.erectionChecking++;
+          taskTypeCounts.erection_checking++;
+          taskTypeDetails.erection_checking.push(task);
         } else if (typeString.includes("erection")) {
           taskTypeCounts.erection++;
+          taskTypeDetails.erection.push(task);
         }
       });
 
@@ -627,6 +650,7 @@ const TeamDashboard = () => {
         projects: uniqueProjects,
         projectCount,
         taskTypeCounts,
+        taskTypeDetails,
       });
     } catch (error) {
       console.error("Error calculating team stats:", error);
@@ -733,8 +757,9 @@ const TeamDashboard = () => {
           sno: index + 1,
           id: member.userId || user.id || member.id,
           name:
-            `${user.firstName || ""} ${user.middleName || ""} ${user.lastName || ""
-              }`.trim() || "Unknown",
+            `${user.firstName || ""} ${user.middleName || ""} ${
+              user.lastName || ""
+            }`.trim() || "Unknown",
           role: member.role || "Member",
           assignedHours: assignedHours.toFixed(2),
           workedHours: workedHours.toFixed(2),
@@ -792,7 +817,9 @@ const TeamDashboard = () => {
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -mr-20 -mt-20" />
 
                 <div className="relative z-10">
-                  <span className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2 block">Team View</span>
+                  <span className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2 block">
+                    Team View
+                  </span>
                   <h1 className="text-4xl font-black text-black tracking-tight uppercase">
                     {teams?.find((t) => t.id === selectedTeam)?.name ||
                       "Team Detail"}

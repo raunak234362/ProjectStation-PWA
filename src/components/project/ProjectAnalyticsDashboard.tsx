@@ -10,10 +10,8 @@ import {
   User,
   Briefcase,
   TrendingUp,
-  Search,
-  Calendar as CalendarIcon,
-  ArrowUpDown,
   Download,
+  Calendar,
   Filter,
 } from "lucide-react";
 import {
@@ -31,22 +29,15 @@ import {
 } from "recharts";
 import Service from "../../api/Service";
 import { formatSeconds } from "../../utils/timeUtils";
-import { formatDate as formatDateUtil } from "../../utils/dateUtils";
 
-interface ProjectAnalyticsDashboardProps {
-  projectId: string;
-}
-
-const parseTimeToDecimal = (timeStr: string): number => {
+const parseTimeToDecimal = (timeStr: any) => {
   if (!timeStr || typeof timeStr !== "string") return 0;
   const [hours, minutes] = timeStr.split(":").map(Number);
   if (isNaN(hours) || isNaN(minutes)) return 0;
   return hours + minutes / 60;
 };
 
-const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
-  projectId,
-}) => {
+const ProjectAnalyticsDashboard = ({ projectId }: { projectId: string }) => {
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<any[]>([]);
   const [milestones, setMilestones] = useState<any[]>([]);
@@ -54,14 +45,11 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({});
-  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filtering State
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [sortConfig, setSortConfig] = useState<{
-    key: string;
-    direction: "asc" | "desc" | null;
-  }>({ key: "name", direction: "asc" });
 
   const fetchData = async () => {
     try {
@@ -95,92 +83,33 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
   };
 
   const calculateWorkedSeconds = (task: any) => {
-    let entries = task.workingHourTask || [];
-
-    if (startDate || endDate) {
-      entries = entries.filter((entry: any) => {
-        if (!entry.ended_at) return false;
-        const entryDate = new Date(entry.ended_at);
-        const start = startDate ? new Date(startDate) : null;
-        const end = endDate ? new Date(endDate) : null;
-
-        if (start) start.setHours(0, 0, 0, 0);
-        if (end) end.setHours(23, 59, 59, 999);
-
-        return (!start || entryDate >= start) && (!end || entryDate <= end);
-      });
-    }
-
-    return entries.reduce(
+    return (task.workingHourTask || []).reduce(
       (sum: number, entry: any) => sum + (entry.duration_seconds || 0),
       0,
     );
   };
 
+  // Filtered Tasks
   const filteredTasks = useMemo(() => {
-    let result = [...tasks];
+    return tasks.filter((task: any) => {
+      const taskDate = task.created_at ? new Date(task.created_at) : null;
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
 
-    // Filter by Search Query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (task) =>
-          task.name?.toLowerCase().includes(query) ||
-          task.user?.firstName?.toLowerCase().includes(query) ||
-          task.user?.lastName?.toLowerCase().includes(query) ||
-          task.status?.toLowerCase().includes(query),
-      );
-    }
+      const dateMatch =
+        (!start || (taskDate && taskDate >= start)) &&
+        (!end || (taskDate && taskDate <= end));
+      const statusMatch =
+        statusFilter === "ALL" || task.status === statusFilter;
 
-    if (statusFilter !== "ALL") {
-      result = result.filter((task) => task.status === statusFilter);
-    }
+      return dateMatch && statusMatch;
+    });
+  }, [tasks, startDate, endDate, statusFilter]);
 
-    // Sort
-    if (sortConfig.key && sortConfig.direction) {
-      result.sort((a, b) => {
-        let valA, valB;
-        if (sortConfig.key === "name") {
-          valA = a.name;
-          valB = b.name;
-        } else if (sortConfig.key === "user") {
-          valA = `${a.user?.firstName} ${a.user?.lastName}`;
-          valB = `${b.user?.firstName} ${b.user?.lastName}`;
-        } else if (sortConfig.key === "assigned") {
-          valA = a.allocationLog?.allocatedHours
-            ? parseTimeToDecimal(a.allocationLog.allocatedHours)
-            : parseFloat(a.hours) || 0;
-          valB = b.allocationLog?.allocatedHours
-            ? parseTimeToDecimal(b.allocationLog.allocatedHours)
-            : parseFloat(b.hours) || 0;
-        } else if (sortConfig.key === "worked") {
-          valA = calculateWorkedSeconds(a);
-          valB = calculateWorkedSeconds(b);
-        } else if (sortConfig.key === "status") {
-          valA = a.status;
-          valB = b.status;
-        }
-
-        if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-        if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
-        return 0;
-      });
-    }
-
-    return result;
-  }, [tasks, searchQuery, sortConfig, startDate, endDate, statusFilter]);
-
-  const handleSort = (key: string) => {
-    setSortConfig((prev) => ({
-      key,
-      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
-    }));
-  };
-
-  // Group tasks by Milestone
+  // Group filtered tasks by Milestone
   const tasksByMilestone = useMemo(() => {
     const grouped: Record<string, any[]> = {};
-    filteredTasks.forEach((task) => {
+    filteredTasks.forEach((task: any) => {
       const msId = task.mileStone_id || "unassigned";
       if (!grouped[msId]) grouped[msId] = [];
       grouped[msId].push(task);
@@ -188,18 +117,29 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
     return grouped;
   }, [filteredTasks]);
 
+  // Group filtered tasks by WBS Bundle
+  const tasksByBundle = useMemo(() => {
+    const grouped: Record<string, any[]> = {};
+    filteredTasks.forEach((task: any) => {
+      const bundleId = task.project_bundle_id || task.wbs_id || "unassigned";
+      if (!grouped[bundleId]) grouped[bundleId] = [];
+      grouped[bundleId].push(task);
+    });
+    return grouped;
+  }, [filteredTasks]);
+
   // Analytics for Charts
   const chartData = useMemo(() => {
-    return milestones.map((ms) => {
+    return milestones.map((ms: any) => {
       const msTasks = tasksByMilestone[ms.id] || [];
-      const assigned = msTasks.reduce((sum, t) => {
+      const assigned = msTasks.reduce((sum: number, t: any) => {
         const hours = t.allocationLog?.allocatedHours
           ? parseTimeToDecimal(t.allocationLog.allocatedHours)
           : parseFloat(t.hours) || 0;
         return sum + hours;
       }, 0);
       const worked = msTasks.reduce(
-        (sum: number, t) => sum + calculateWorkedSeconds(t) / 3600,
+        (sum: number, t: any) => sum + calculateWorkedSeconds(t) / 3600,
         0,
       );
 
@@ -212,7 +152,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
   }, [milestones, tasksByMilestone]);
 
   const statusData = useMemo(() => {
-    const statusCounts = filteredTasks.reduce((acc: any, t) => {
+    const statusCounts = filteredTasks.reduce((acc: any, t: any) => {
       acc[t.status] = (acc[t.status] || 0) + 1;
       return acc;
     }, {});
@@ -222,7 +162,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
     }));
   }, [filteredTasks]);
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+  const COLORS = ["#6bbd45", "#374151", "#FFBB28", "#FF8042", "#8884d8"];
 
   const handleDownload = () => {
     const headers = [
@@ -234,7 +174,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
       "Status",
       "Created At",
     ];
-    const rows = filteredTasks.map((t) => [
+    const rows = filteredTasks.map((t: any) => [
       t.name,
       t.wbsType || "Task",
       `${t.user?.firstName || ""} ${t.user?.lastName || ""}`,
@@ -243,12 +183,12 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
         : parseFloat(t.hours) || 0,
       (calculateWorkedSeconds(t) / 3600).toFixed(2),
       t.status,
-      t.created_at ? formatDateUtil(t.created_at) : "N/A",
+      t.created_at ? new Date(t.created_at).toLocaleDateString() : "N/A",
     ]);
 
     const csvContent = [
       headers.join(","),
-      ...rows.map((r) => r.map((cell) => `"${cell}"`).join(",")),
+      ...rows.map((r: any[]) => r.map((cell: any) => `"${cell}"`).join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -264,22 +204,11 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
     document.body.removeChild(link);
   };
 
-  // Group tasks by WBS Bundle
-  const tasksByBundle = useMemo(() => {
-    const grouped: Record<string, any[]> = {};
-    filteredTasks.forEach((task) => {
-      const bundleId = task.project_bundle_id || task.wbs_id || "unassigned";
-      if (!grouped[bundleId]) grouped[bundleId] = [];
-      grouped[bundleId].push(task);
-    });
-    return grouped;
-  }, [filteredTasks]);
-
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-gray-800">
-        <Loader2 className="w-8 h-8 animate-spin text-green-600 mb-4" />
-        <p className="text-lg">Calculating project statistics...</p>
+      <div className="flex flex-col items-center justify-center py-20 text-gray-700">
+        <Loader2 className="w-8 h-8 animate-spin text-[#6bbd45] mb-4" />
+        <p className="text-lg font-medium">Calculating project statistics...</p>
       </div>
     );
   }
@@ -289,7 +218,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
     const assignedHours = task.allocationLog?.allocatedHours
       ? parseTimeToDecimal(task.allocationLog.allocatedHours)
       : parseFloat(task.hours) || 0;
-    const workedHours = workedSeconds / 3600;
+    const workedHours = workedSeconds / 60;
     const isOverrun = workedHours > assignedHours && assignedHours > 0;
 
     return (
@@ -299,7 +228,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
       >
         <div className="col-span-2 flex items-center gap-3">
           <div
-            className={`p-1.5 rounded-lg ${isOverrun ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"}`}
+            className={`p-1.5 rounded-lg ${isOverrun ? "bg-red-50 text-red-600" : "bg-[#6bbd45]/15 text-[#6bbd45]"}`}
           >
             <CheckCircle2 size={16} />
           </div>
@@ -311,8 +240,8 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
-            <User size={12} className="text-green-600" />
+          <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+            <User size={12} className="text-slate-500" />
           </div>
           <span className="text-sm text-gray-700 truncate">
             {task.user?.firstName} {task.user?.lastName}
@@ -320,12 +249,12 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
         </div>
         <div className="flex items-center justify-center">
           <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-semibold">
-            {assignedHours}h Assigned
+            {assignedHours.toFixed(2)}h Assigned
           </span>
         </div>
         <div className="flex items-center justify-center">
           <span
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold ${isOverrun ? "bg-red-50 text-red-700" : "bg-green-50 text-slate-700"}`}
+            className={`px-2.5 py-1 rounded-md text-xs font-semibold ${isOverrun ? "bg-red-50 text-red-700" : "bg-slate-100 text-slate-700"}`}
           >
             {formatSeconds(workedSeconds || 0)} Worked
           </span>
@@ -334,7 +263,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
           <span
             className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${
               task.status === "COMPLETED"
-                ? "bg-green-100 text-green-700"
+                ? "bg-[#6bbd45]/15 text-[#6bbd45]"
                 : task.status === "ASSIGNED"
                   ? "bg-blue-100 text-blue-700"
                   : "bg-amber-100 text-amber-700"
@@ -350,72 +279,43 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
       {/* Header with Filters and Actions */}
-      <div className="bg-white p-6 rounded-3xl border border-green-500/10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex flex-col md:flex-row gap-4 items-center flex-1">
-          <div className="relative w-full md:max-w-md">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              size={18}
-            />
+      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Calendar size={18} className="text-gray-400" />
             <input
-              type="text"
-              placeholder="Search tasks, users, or status..."
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all text-sm"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="text-sm border-gray-200 rounded-lg focus:ring-[#6bbd45] focus:border-[#6bbd45]"
+              placeholder="Start Date"
+            />
+            <span className="text-gray-400">to</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="text-sm border-gray-200 rounded-lg focus:ring-[#6bbd45] focus:border-[#6bbd45]"
+              placeholder="End Date"
             />
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-green-50/50 px-3 py-2 rounded-xl border border-green-500/10">
-              <CalendarIcon size={16} className="text-gray-400" />
-              <input
-                type="date"
-                className="bg-transparent text-sm outline-none cursor-pointer"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-              <span className="text-gray-400 text-xs">to</span>
-              <input
-                type="date"
-                className="bg-transparent text-sm outline-none cursor-pointer"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center gap-2 bg-green-50/50 px-3 py-2 rounded-xl border border-green-500/10">
-              <Filter size={16} className="text-gray-400" />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-transparent text-sm outline-none cursor-pointer"
-              >
-                <option value="ALL">All Status</option>
-                <option value="ASSIGNED">Assigned</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="REWORK">Rework</option>
-              </select>
-            </div>
-            {(searchQuery ||
-              startDate ||
-              endDate ||
-              statusFilter !== "ALL") && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setStartDate("");
-                  setEndDate("");
-                  setStatusFilter("ALL");
-                }}
-                className="text-xs font-bold text-red-600 hover:text-red-700 uppercase tracking-widest bg-red-50 px-3 py-2 rounded-xl border border-red-100 transition-colors"
-              >
-                Clear Filters
-              </button>
-            )}
+          <div className="flex items-center gap-2">
+            <Filter size={18} className="text-gray-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="text-sm border-gray-200 rounded-lg focus:ring-[#6bbd45] focus:border-[#6bbd45]"
+            >
+              <option value="ALL">All Status</option>
+              <option value="ASSIGNED">Assigned</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="REWORK">Rework</option>
+            </select>
           </div>
         </div>
         <button
           onClick={handleDownload}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-200 active:scale-95 whitespace-nowrap"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#6bbd45] hover:bg-[#6bbd45]/90 text-white rounded-xl font-bold transition-all shadow-lg shadow-[#6bbd45]/20 active:scale-95"
         >
           <Download size={18} />
           Download Report
@@ -442,11 +342,11 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
         <SummaryCard
           icon={<Layers className="text-amber-600" size={20} />}
           label="Worked Hours"
-          value={`${Math.round(filteredTasks.reduce((sum, t) => sum + calculateWorkedSeconds(t) / 3600, 0))}h`}
+          value={`${Math.round(filteredTasks.reduce((sum: number, t: any) => sum + calculateWorkedSeconds(t) / 3600, 0))}h`}
           color="amber"
         />
         <SummaryCard
-          icon={<TrendingUp className="text-green-600" size={20} />}
+          icon={<TrendingUp className="text-[#6bbd45]" size={20} />}
           label="Success Rate"
           value={`${Math.round((filteredTasks.filter((t: any) => t.status === "COMPLETED").length / (filteredTasks.length || 1)) * 100)}%`}
           color="green"
@@ -455,7 +355,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-3xl border border-green-500/10 shadow-sm">
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
           <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
             <TrendingUp size={20} className="text-blue-600" />
             Hours by Milestone
@@ -481,13 +381,13 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                 <Bar
                   dataKey="assigned"
                   name="Assigned Hours"
-                  fill="#3b82f6"
+                  fill="#374151"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="worked"
                   name="Worked Hours"
-                  fill="#10b981"
+                  fill="#6bbd45"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -495,9 +395,9 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-green-500/10 shadow-sm">
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
           <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <CheckCircle2 size={20} className="text-green-600" />
+            <CheckCircle2 size={20} className="text-[#6bbd45]" />
             Task Status Distribution
           </h3>
           <div className="h-80 w-full">
@@ -508,14 +408,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({
-                    name,
-                    percent,
-                  }: {
-                    name?: string;
-                    percent?: number;
-                  }) => `${name || ""} ${((percent || 0) * 100).toFixed(0)}%`}
-                  outerRadius={80}
+                  outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -527,6 +420,7 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                   ))}
                 </Pie>
                 <Tooltip />
+                <Legend verticalAlign="bottom" height={36} iconType="circle" />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -534,25 +428,26 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
       </div>
 
       {/* Group by Milestone */}
-      <section className="bg-white rounded-3xl border border-green-500/10 shadow-sm overflow-hidden">
-        <div className="bg-green-50/50 px-6 py-4 border-b border-green-500/10 flex items-center justify-between">
+      <section className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-slate-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-800">
+            <Flag size={18} className="text-purple-600" />
             <h3 className="text-lg font-bold tracking-tight">
               Tasks by Milestone
             </h3>
           </div>
-          <span className="text-xs font-semibold text-slate-500 bg-white px-2 py-1 rounded-lg shadow-sm border border-green-500/10 uppercase tracking-widest text-center">
+          <span className="text-xs font-semibold text-slate-500 bg-white px-2 py-1 rounded-lg shadow-sm border border-slate-200 uppercase tracking-widest text-center">
             {Object.keys(tasksByMilestone).length} Sections
           </span>
         </div>
 
-        <div className="divide-y divide-green-500/10">
+        <div className="divide-y divide-gray-100">
           {milestones.length > 0 ? (
-            milestones.map((ms) => (
+            milestones.map((ms: any) => (
               <div key={ms.id}>
                 <button
                   onClick={() => toggleSection(`ms-${ms.id}`)}
-                  className="w-full flex items-center justify-between p-5 hover:bg-green-50/50 transition-colors group"
+                  className="w-full flex items-center justify-between p-5 hover:bg-gray-50/80 transition-colors group"
                 >
                   <div className="flex items-center gap-4 text-left">
                     <div className="p-2 bg-purple-50 rounded-xl group-hover:scale-110 transition-transform">
@@ -569,23 +464,23 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                       <p className="text-xs text-gray-500 font-medium">
                         Due:{" "}
                         {ms.approvalDate
-                          ? formatDateUtil(ms.approvalDate)
+                          ? new Date(ms.approvalDate).toLocaleDateString()
                           : "TBD"}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="flex -space-x-2">
-                      {tasksByMilestone[ms.id]?.slice(0, 3).map((_, i) => (
+                      {tasksByMilestone[ms.id]?.slice(0, 3).map((_: any, i: number) => (
                         <div
                           key={i}
-                          className="w-8 h-8 rounded-full bg-green-50 border-2 border-white flex items-center justify-center"
+                          className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center"
                         >
-                          <User size={14} className="text-green-600" />
+                          <User size={14} className="text-slate-500" />
                         </div>
                       ))}
                       {tasksByMilestone[ms.id]?.length > 3 && (
-                        <div className="w-8 h-8 rounded-full bg-green-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">
                           +{tasksByMilestone[ms.id].length - 3}
                         </div>
                       )}
@@ -602,89 +497,34 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                 </button>
 
                 {expandedSections[`ms-${ms.id}`] && (
-                  <div className="bg-green-50/30 p-2">
-                    <div className="bg-white rounded-2xl border border-green-500/10 overflow-hidden shadow-sm">
+                  <div className="bg-gray-50/30 p-2">
+                    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
                       {tasksByMilestone[ms.id] &&
                       tasksByMilestone[ms.id].length > 0 ? (
                         <div>
                           {/* Table Header */}
                           <div className="grid grid-cols-6 gap-4 p-4 bg-slate-50/50 border-b border-gray-100">
-                            <button
-                              onClick={() => handleSort("name")}
-                              className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 hover:text-slate-600 transition-colors"
-                            >
+                            <p className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                               Task Details
-                              <ArrowUpDown
-                                size={10}
-                                className={
-                                  sortConfig.key === "name"
-                                    ? "text-green-600"
-                                    : ""
-                                }
-                              />
-                            </button>
-                            <button
-                              onClick={() => handleSort("user")}
-                              className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 hover:text-slate-600 transition-colors"
-                            >
+                            </p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                               Assigned To
-                              <ArrowUpDown
-                                size={10}
-                                className={
-                                  sortConfig.key === "user"
-                                    ? "text-green-600"
-                                    : ""
-                                }
-                              />
-                            </button>
-                            <button
-                              onClick={() => handleSort("assigned")}
-                              className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center items-center gap-1 hover:text-slate-600 transition-colors"
-                            >
+                            </p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center">
                               Estimated
-                              <ArrowUpDown
-                                size={10}
-                                className={
-                                  sortConfig.key === "assigned"
-                                    ? "text-green-600"
-                                    : ""
-                                }
-                              />
-                            </button>
-                            <button
-                              onClick={() => handleSort("worked")}
-                              className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center items-center gap-1 hover:text-slate-600 transition-colors"
-                            >
+                            </p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center">
                               Worked
-                              <ArrowUpDown
-                                size={10}
-                                className={
-                                  sortConfig.key === "worked"
-                                    ? "text-green-600"
-                                    : ""
-                                }
-                              />
-                            </button>
-                            <button
-                              onClick={() => handleSort("status")}
-                              className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-end items-center gap-1 hover:text-slate-600 transition-colors"
-                            >
+                            </p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-end">
                               Status
-                              <ArrowUpDown
-                                size={10}
-                                className={
-                                  sortConfig.key === "status"
-                                    ? "text-green-600"
-                                    : ""
-                                }
-                              />
-                            </button>
+                            </p>
                           </div>
                           {tasksByMilestone[ms.id].map(renderTaskRow)}
                         </div>
                       ) : (
-                        <div className="p-8 text-center text-gray-500 italic text-sm">
-                          No tasks assigned to this milestone.
+                        <div className="p-8 text-center text-gray-500 text-sm">
+                          No tasks match the filters for this milestone.
                         </div>
                       )}
                     </div>
@@ -693,107 +533,8 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
               </div>
             ))
           ) : (
-            <div className="p-8 text-center text-gray-400 italic text-sm">
+            <div className="p-8 text-center text-gray-400 text-sm">
               No milestones found for this project.
-            </div>
-          )}
-
-          {/* Unassigned tasks for milestones */}
-          {tasksByMilestone["unassigned"] && (
-            <div>
-              <button
-                onClick={() => toggleSection("ms-unassigned")}
-                className="w-full flex items-center justify-between p-5 hover:bg-gray-50/80 transition-colors group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-slate-100 rounded-xl">
-                    {expandedSections["ms-unassigned"] ? (
-                      <ChevronDown size={18} />
-                    ) : (
-                      <ChevronRight size={18} />
-                    )}
-                  </div>
-                  <h4 className="font-bold text-gray-500 text-lg italic">
-                    Unassigned Milestone
-                  </h4>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-slate-400">
-                    {tasksByMilestone["unassigned"].length} Tasks
-                  </p>
-                </div>
-              </button>
-              {expandedSections["ms-unassigned"] && (
-                <div className="bg-gray-50/30 p-2">
-                  <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm h-auto">
-                    <div className="grid grid-cols-6 gap-4 p-4 bg-slate-50/50 border-b border-gray-100">
-                      <button
-                        onClick={() => handleSort("name")}
-                        className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Task Details
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "name" ? "text-green-600" : ""
-                          }
-                        />
-                      </button>
-                      <button
-                        onClick={() => handleSort("user")}
-                        className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Assigned To
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "user" ? "text-green-600" : ""
-                          }
-                        />
-                      </button>
-                      <button
-                        onClick={() => handleSort("assigned")}
-                        className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Estimated
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "assigned"
-                              ? "text-green-600"
-                              : ""
-                          }
-                        />
-                      </button>
-                      <button
-                        onClick={() => handleSort("worked")}
-                        className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Worked
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "worked" ? "text-green-600" : ""
-                          }
-                        />
-                      </button>
-                      <button
-                        onClick={() => handleSort("status")}
-                        className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-end items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Status
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "status" ? "text-green-600" : ""
-                          }
-                        />
-                      </button>
-                    </div>
-                    {tasksByMilestone["unassigned"].map(renderTaskRow)}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -815,21 +556,9 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
 
         <div className="divide-y divide-gray-100">
           {bundles.length > 0 ? (
-            bundles.map((bundle) => {
+            bundles.map((bundle: any) => {
               const bundleId =
                 bundle.id || bundle._id || (bundle.wbs && bundle.wbs[0]?.id);
-
-              const bundleTasks = tasksByBundle[bundleId] || [];
-              const totalWorkedSeconds = bundleTasks.reduce(
-                (sum, task) => sum + calculateWorkedSeconds(task),
-                0,
-              );
-              const totalWorkedHours = totalWorkedSeconds / 3600;
-              const totalBudget =
-                (parseFloat(bundle.totalExecHr) || 0) +
-                (parseFloat(bundle.totalCheckHr) || 0);
-              const remainingHours = totalBudget - totalWorkedHours;
-
               return (
                 <div key={bundleId}>
                   <button
@@ -854,41 +583,70 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                       </div>
                     </div>
                     <div className="text-right flex items-center gap-6">
-                      <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-                        <div>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            Exec
-                          </p>
-                          <p className="text-sm font-bold text-slate-700">
-                            {bundle.totalExecHr || 0}h
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            Check
-                          </p>
-                          <p className="text-sm font-bold text-slate-700">
-                            {bundle.totalCheckHr || 0}h
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            Remaining
-                          </p>
-                          <p
-                            className={`text-sm font-bold ${remainingHours < 0 ? "text-red-600" : "text-green-600"}`}
-                          >
-                            {remainingHours.toFixed(2)}h
-                          </p>
-                        </div>
-                      </div>
-                      <div>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          Exec
+                        </p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          Check
+                        </p>
                         <p className="text-sm font-bold text-slate-700">
-                          {bundleTasks.length} Tasks
+                          {(bundle.totalExecHr / 60 || 0).toFixed(2)}h
                         </p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center">
-                          Assigned
+                        <p className="text-sm font-bold text-slate-700">
+                          {(bundle.totalCheckHr / 60 || 0).toFixed(2)}h
                         </p>
+                      </div>
+                      <div className="flex flex-col items-end justify-center min-w-[100px]">
+                        {(() => {
+                          const bundleTasks = tasksByBundle[bundleId] || [];
+                          const totalWorkedSeconds = bundleTasks.reduce(
+                            (sum: number, t: any) => sum + calculateWorkedSeconds(t),
+                            0,
+                          );
+                          const totalWorkedHours = totalWorkedSeconds / 3600;
+                          const totalAllocatedHours =
+                            (Number(bundle.totalExecHr / 60) || 0) +
+                            (Number(bundle.totalCheckHr / 60) || 0);
+                          const percentage =
+                            totalAllocatedHours > 0
+                              ? Math.min(
+                                  100,
+                                  (totalWorkedHours / totalAllocatedHours) *
+                                    100,
+                                )
+                              : 0;
+
+                          return (
+                            <>
+                              <div className="flex items-center gap-2 mb-1 justify-end">
+                                <span className="text-xs font-bold text-gray-700">
+                                  {percentage.toFixed(0)}%
+                                </span>
+                                <span className="text-[10px] text-gray-400 font-medium">
+                                  Completed
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 mb-1 justify-end">
+                                <span className="text-xs font-bold text-gray-700">
+                                  {(
+                                    totalAllocatedHours - totalWorkedHours
+                                  ).toFixed(1)}
+                                  h
+                                </span>
+                                <span className="text-[10px] text-gray-400 font-medium">
+                                  Remaining
+                                </span>
+                              </div>
+                              <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full ${percentage >= 100 ? "bg-[#6bbd45]" : "bg-blue-500"}`}
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </button>
@@ -899,82 +657,27 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
                         tasksByBundle[bundleId].length > 0 ? (
                           <div>
                             <div className="grid grid-cols-6 gap-4 p-4 bg-slate-50/50 border-b border-gray-100">
-                              <button
-                                onClick={() => handleSort("name")}
-                                className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 hover:text-slate-600 transition-colors"
-                              >
+                              <p className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                 Task Details
-                                <ArrowUpDown
-                                  size={10}
-                                  className={
-                                    sortConfig.key === "name"
-                                      ? "text-green-600"
-                                      : ""
-                                  }
-                                />
-                              </button>
-                              <button
-                                onClick={() => handleSort("user")}
-                                className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 hover:text-slate-600 transition-colors"
-                              >
+                              </p>
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                 Assigned To
-                                <ArrowUpDown
-                                  size={10}
-                                  className={
-                                    sortConfig.key === "user"
-                                      ? "text-green-600"
-                                      : ""
-                                  }
-                                />
-                              </button>
-                              <button
-                                onClick={() => handleSort("assigned")}
-                                className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center items-center gap-1 hover:text-slate-600 transition-colors"
-                              >
+                              </p>
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center">
                                 Estimated
-                                <ArrowUpDown
-                                  size={10}
-                                  className={
-                                    sortConfig.key === "assigned"
-                                      ? "text-green-600"
-                                      : ""
-                                  }
-                                />
-                              </button>
-                              <button
-                                onClick={() => handleSort("worked")}
-                                className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center items-center gap-1 hover:text-slate-600 transition-colors"
-                              >
+                              </p>
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center">
                                 Worked
-                                <ArrowUpDown
-                                  size={10}
-                                  className={
-                                    sortConfig.key === "worked"
-                                      ? "text-green-600"
-                                      : ""
-                                  }
-                                />
-                              </button>
-                              <button
-                                onClick={() => handleSort("status")}
-                                className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-end items-center gap-1 hover:text-slate-600 transition-colors"
-                              >
+                              </p>
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-end">
                                 Status
-                                <ArrowUpDown
-                                  size={10}
-                                  className={
-                                    sortConfig.key === "status"
-                                      ? "text-green-600"
-                                      : ""
-                                  }
-                                />
-                              </button>
+                              </p>
                             </div>
                             {tasksByBundle[bundleId].map(renderTaskRow)}
                           </div>
                         ) : (
-                          <div className="p-8 text-center text-gray-500 italic text-sm">
-                            No tasks assigned to this bundle yet.
+                          <div className="p-8 text-center text-gray-500 text-sm">
+                            No tasks found matching these filters.
                           </div>
                         )}
                       </div>
@@ -984,106 +687,8 @@ const ProjectAnalyticsDashboard: React.FC<ProjectAnalyticsDashboardProps> = ({
               );
             })
           ) : (
-            <div className="p-8 text-center text-gray-400 italic text-sm">
+            <div className="p-8 text-center text-gray-400 text-sm">
               No WBS bundles found for this project.
-            </div>
-          )}
-
-          {tasksByBundle["unassigned"] && (
-            <div>
-              <button
-                onClick={() => toggleSection("bundle-unassigned")}
-                className="w-full flex items-center justify-between p-5 hover:bg-gray-50/80 transition-colors group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-slate-100 rounded-xl">
-                    {expandedSections["bundle-unassigned"] ? (
-                      <ChevronDown size={18} />
-                    ) : (
-                      <ChevronRight size={18} />
-                    )}
-                  </div>
-                  <h4 className="font-bold text-gray-500 text-lg italic tracking-tight">
-                    Loose Tasks (No Bundle)
-                  </h4>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-slate-400">
-                    {tasksByBundle["unassigned"].length} Tasks
-                  </p>
-                </div>
-              </button>
-              {expandedSections["bundle-unassigned"] && (
-                <div className="bg-gray-50/30 p-2">
-                  <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm h-auto">
-                    <div className="grid grid-cols-6 gap-4 p-4 bg-slate-50/50 border-b border-gray-100">
-                      <button
-                        onClick={() => handleSort("name")}
-                        className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Task Details
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "name" ? "text-green-600" : ""
-                          }
-                        />
-                      </button>
-                      <button
-                        onClick={() => handleSort("user")}
-                        className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Assigned To
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "user" ? "text-green-600" : ""
-                          }
-                        />
-                      </button>
-                      <button
-                        onClick={() => handleSort("assigned")}
-                        className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Estimated
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "assigned"
-                              ? "text-green-600"
-                              : ""
-                          }
-                        />
-                      </button>
-                      <button
-                        onClick={() => handleSort("worked")}
-                        className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-center items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Worked
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "worked" ? "text-green-600" : ""
-                          }
-                        />
-                      </button>
-                      <button
-                        onClick={() => handleSort("status")}
-                        className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-end items-center gap-1 hover:text-slate-600 transition-colors"
-                      >
-                        Status
-                        <ArrowUpDown
-                          size={10}
-                          className={
-                            sortConfig.key === "status" ? "text-green-600" : ""
-                          }
-                        />
-                      </button>
-                    </div>
-                    {tasksByBundle["unassigned"].map(renderTaskRow)}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -1101,27 +706,29 @@ const SummaryCard = ({
   icon: React.ReactNode;
   label: string;
   value: string | number;
-  color: string;
+  color: "blue" | "purple" | "amber" | "green";
 }) => {
   const colorMap: Record<string, string> = {
     blue: "bg-blue-50 text-blue-600",
     purple: "bg-purple-50 text-purple-600",
     amber: "bg-amber-50 text-amber-600",
-    green: "bg-green-50 text-green-600",
+    green: "bg-[#6bbd45]/15 text-[#6bbd45]",
   };
 
   return (
-    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4 group hover:shadow-md transition-shadow">
-      <div
-        className={`p-3 rounded-2xl ${colorMap[color]} group-hover:scale-110 transition-transform`}
-      >
-        {icon}
-      </div>
-      <div>
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-row justify-between items-center gap-4 group hover:shadow-md transition-shadow">
+      <div className="flex flex-col gap-1 items-start">
+        <p className="text-md font-bold text-gray-400 uppercase tracking-widest">
           {label}
         </p>
-        <p className="text-2xl font-black text-gray-800 tracking-tight">
+        <div
+          className={`p-3 rounded-2xl ${colorMap[color]} group-hover:scale-110 transition-transform w-fit mt-2`}
+        >
+          {icon}
+        </div>
+      </div>
+      <div>
+        <p className="text-3xl font-black text-gray-800 tracking-tight text-right">
           {value}
         </p>
       </div>

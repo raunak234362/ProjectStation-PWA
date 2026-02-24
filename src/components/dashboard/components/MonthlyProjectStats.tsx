@@ -99,10 +99,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
         summary[teamId].stats = data.stats;
       }
       summary[teamId].projectCount = data.projects.length;
-      summary[teamId].totalSeconds = data.totalSeconds;
+      // We will compute totalSeconds below by filtering tasks dynamically
+      summary[teamId].totalSeconds = 0;
     });
 
-    // Calculate monthly breakdown if filtered or for all tasks
+    // Calculate monthly breakdown and totalSeconds if filtered
     tasks.forEach((task) => {
       const project = projects.find((p) => p.id === task.project_id);
       const teamId = project?.team?.id || "unassigned";
@@ -121,14 +122,18 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           selectedMonth === undefined ||
           m === selectedMonth;
 
+        const hours = (task.workingHourTask || []).reduce(
+          (sum: number, wht: any) => sum + (wht.duration_seconds || 0),
+          0,
+        );
+
         if (matchesYear && matchesMonth) {
-          const hours = (task.workingHourTask || []).reduce(
-            (sum: number, wht: any) => sum + (wht.duration_seconds || 0),
-            0,
-          );
           const monthYear = `${months[m]} ${y}`;
           summary[teamId].monthlyBreakdown[monthYear] =
             (summary[teamId].monthlyBreakdown[monthYear] || 0) + hours;
+
+          // Add to total seconds for the month!
+          summary[teamId].totalSeconds += hours;
         }
       }
     });
@@ -140,12 +145,21 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
       "PEMB",
       "PEMB Designing",
     ];
-    return Object.values(summary).sort((a, b) => {
-      const indexA = teamOrder.indexOf(a.teamName);
-      const indexB = teamOrder.indexOf(b.teamName);
-      const aIndex = indexA === -1 ? teamOrder.length : indexA;
-      const bIndex = indexB === -1 ? teamOrder.length : indexB;
-      return aIndex - bIndex;
+
+    const normalizeTeamName = (name: string) =>
+      name.replace(/-/g, " ").replace(/\s+/g, " ").trim().toUpperCase();
+
+    const normalizedTeamOrder = teamOrder.map(normalizeTeamName);
+
+    const validTeams = Object.values(summary).filter((item) =>
+      normalizedTeamOrder.includes(normalizeTeamName(item.teamName)),
+    );
+
+    return validTeams.sort((a, b) => {
+      return (
+        normalizedTeamOrder.indexOf(normalizeTeamName(a.teamName)) -
+        normalizedTeamOrder.indexOf(normalizeTeamName(b.teamName))
+      );
     });
   }, [projects, tasks, teams, projectsByTeam, selectedMonth, selectedYear]);
 

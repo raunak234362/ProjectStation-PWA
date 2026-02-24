@@ -2322,16 +2322,7 @@ class Service {
       throw error;
     }
   }
-  // Get Analytics Score
-  static async GetAnalyticsScore(data?: any) {
-    try {
-      const response = await api.get(`analytics/score`, { params: data });
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching analytics score:", error);
-      throw error;
-    }
-  }
+
   //client dashboard data routes.
   static async DashboardData() {
     try {
@@ -2626,6 +2617,102 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("Error fetching sales dashboard:", error);
+      throw error;
+    }
+  }
+
+  //===========================================
+
+  //Get Admin analytics for manager dashboard
+  static async GetAdminAnalyticsForManagerDashboard(data: {
+    projectId?: string;
+    managerId?: string;
+  }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/admin/analytics/manager/dashboard`,
+         data ,
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching admin analytics for manager dashboard:",
+        error,
+      );
+      throw error;
+    }
+  }
+
+  //Get Admin MEAS analytics trendline
+  static async GetAdminMEASAnalyticsTrendline(data?: {
+    projectId?: string;
+    managerId?: string;
+  }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/admin/analytics/meas/trendline`,
+        data ,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching admin meas analytics trendline:", error);
+      throw error;
+    }
+  }
+
+  // Get Employee EPS
+  static async GetEmployeeEPS(data: {
+    employeeId: string;
+    year: number;
+    month: number;
+  }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/admin/analytics/employee/eps`,
+        data,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching employee EPS:", error);
+      throw error;
+    }
+  }
+
+  // Get Manager Bias
+  static async GetManagerBias(data: { managerId: string; projectId: string }) {
+    try {
+      const response = await api.post(`analytics/scores/manager/bias`, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching manager bias:", error);
+      throw error;
+    }
+  }
+
+  // Run Meas Manually
+  static async RunMeasManually(data: { managerId: string; projectId: string }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/meas/run-manually`,
+        data,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error running meas manually:", error);
+      throw error;
+    }
+  }
+
+  // Run Meas Monthly
+  static async RunMeasMonthly(data: { managerId: string; projectId: string }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/meas/run-monthly`,
+        data,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error running meas monthly:", error);
       throw error;
     }
   }

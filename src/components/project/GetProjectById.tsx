@@ -38,6 +38,7 @@ import AddCO from "../co/AddCO";
 import CoTable from "../co/CoTable";
 import ProjectMilestoneMetrics from "./ProjectMilestoneMetrics";
 import AllDocumentsByProjectID from "./designDrawings/AllDocumentsByProjectID";
+import TeamsAnalytics from "./TeamsAnalytics";
 
 const GetProjectById = ({
   id,
@@ -155,27 +156,27 @@ const GetProjectById = ({
   // Fetch analytics data
 
   // Fetch analytics data
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      // Don't fetch analytics for clients
-      if (userRole === "client" || userRole === "client_admin") return;
+  // useEffect(() => {
+  //   const fetchAnalytics = async () => {
+  //     // Don't fetch analytics for clients
+  //     if (userRole === "client" || userRole === "client_admin") return;
 
-      try {
-        const data = {
-          projectId: id,
-          managerId: sessionStorage.getItem("userId"),
-        };
-        const response = await Service.GetAnalyticsScore(data);
-        console.log("Analytics Score:", response);
-        const analyticsData = response?.data || response || [];
-        setAnalyticsData(analyticsData);
-      } catch (error) {
-        console.error("Error fetching analytics:", error);
-      }
-    };
-    fetchAnalytics();
-  }, [id, userRole]);
-  console.log(analyticsData);
+  //     try {
+  //       const data = {
+  //         projectId: id,
+  //         managerId: sessionStorage.getItem("userId"),
+  //       };
+  //       const response = await Service.GetAnalyticsScore(data);
+  //       console.log("Analytics Score:", response);
+  //       const analyticsData = response?.data || response || [];
+  //       setAnalyticsData(analyticsData);
+  //     } catch (error) {
+  //       console.error("Error fetching analytics:", error);
+  //     }
+  //   };
+  //   fetchAnalytics();
+  // }, [id, userRole]);
+  // console.log(analyticsData);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // const getTaskCompletionPercentage = (tasks: any[]) => {
@@ -268,6 +269,7 @@ const GetProjectById = ({
   const defaultDesktopTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
     { key: "analytics", label: "Analytics", icon: TrendingUp },
+    { key: "teamsAnalytics", label: "Teams Analytics", icon: Activity },
     { key: "details", label: "Details", icon: ClipboardList },
     { key: "files", label: "Files", icon: FileText },
     { key: "wbs", label: "WBS", icon: FileText },
@@ -283,6 +285,7 @@ const GetProjectById = ({
   const defaultMobileTabs = [
     { key: "details", label: "Details" },
     { key: "analytics", label: "Analytics" },
+    { key: "teamsAnalytics", label: "Teams Analytics" },
     { key: "files", label: "Files" },
     { key: "wbs", label: "WBS" },
     { key: "milestones", label: "Milestones" },
@@ -299,7 +302,7 @@ const GetProjectById = ({
 
   if (loading)
     return (
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md text-white">
+      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-md text-white">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         Loading project details...
       </div>
@@ -314,7 +317,7 @@ const GetProjectById = ({
     );
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
       <div className="bg-white dark:bg-slate-900 p-5 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3 mb-3">
@@ -327,9 +330,7 @@ const GetProjectById = ({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span
-              className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest"
-            >
+            <span className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
               {project.status}
             </span>
             {close && (
@@ -366,10 +367,11 @@ const GetProjectById = ({
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${activeTab === key
-                  ? "bg-green-50 text-black border-[#6bbd45]"
-                  : "bg-white text-black border-black hover:bg-green-50"
-                  }`}
+                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${
+                  activeTab === key
+                    ? "bg-green-50 text-black border-[#6bbd45]"
+                    : "bg-white text-black border-black hover:bg-green-50"
+                }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -396,9 +398,9 @@ const GetProjectById = ({
                     label="Hours Completed"
                     value={formatSeconds(
                       projectStats?.workedSeconds ||
-                      project.workedSeconds ||
-                      project.totalWorkedSeconds ||
-                      0,
+                        project.workedSeconds ||
+                        project.totalWorkedSeconds ||
+                        0,
                     )}
                     color="bg-green-50"
                     description="Total hours logged by team"
@@ -417,12 +419,12 @@ const GetProjectById = ({
                     value={
                       (projectStats?.isOverrun ?? project.isOverrun)
                         ? formatSeconds(
-                          (projectStats?.workedSeconds ||
-                            project.workedSeconds ||
-                            project.totalWorkedSeconds ||
-                            0) -
-                          (project.estimatedHours || 0) * 3600,
-                        )
+                            (projectStats?.workedSeconds ||
+                              project.workedSeconds ||
+                              project.totalWorkedSeconds ||
+                              0) -
+                              (project.estimatedHours || 0) * 3600,
+                          )
                         : "00:00"
                     }
                     color={
@@ -482,9 +484,7 @@ const GetProjectById = ({
                     <Activity size={32} className="text-green-500" />
                   </div>
                   <h4 className=" text-slate-800 mb-1">Project Status</h4>
-                  <div
-                    className="mt-2 px-6 py-2 rounded-lg text-md border border-gray-200 bg-gray-100 text-black uppercase tracking-widest"
-                  >
+                  <div className="mt-2 px-6 py-2 rounded-lg text-md border border-gray-200 bg-gray-100 text-black uppercase tracking-widest">
                     {project.status}
                   </div>
                   <p className="text-xs text-slate-400 mt-3 font-medium uppercase tracking-tighter">
@@ -500,10 +500,12 @@ const GetProjectById = ({
             <ProjectAnalyticsDashboard projectId={id} />
           )}
 
+          {/* ✅ Teams Analytics */}
+          {activeTab === "teamsAnalytics" && <TeamsAnalytics projectId={id} managerId={project.managerID} />}
+
           {/* ✅ Details */}
           {activeTab === "details" && (
             <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-
               <div className="space-y-3">
                 {/* <InfoRow
                   label="Estimated Hours"
@@ -513,7 +515,10 @@ const GetProjectById = ({
                   label="Department"
                   value={project.department?.name || "—"}
                 />
-                <InfoRow label="Team / Tools" value={project.team?.name || "—"} />
+                <InfoRow
+                  label="Team / Tools"
+                  value={project.team?.name || "—"}
+                />
                 <InfoRow
                   label="Manager"
                   value={
@@ -528,16 +533,6 @@ const GetProjectById = ({
                       label="Fabricator"
                       value={project.fabricator?.fabName || "—"}
                     />
-                    <InfoRow label="Tools" value={project.tools || "—"} />
-                  </>
-                )}
-                {userRole !== "client" && userRole !== "client_admin" && (
-                  <>
-                    <InfoRow
-                      label="Fabricator"
-                      value={project.fabricator?.fabName || "—"}
-                    />
-                    <InfoRow label="Tools" value={project.tools || "—"} />
                   </>
                 )}
               </div>
@@ -567,7 +562,6 @@ const GetProjectById = ({
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <ScopeTag
                     label="Main Design"
-
                     active={project.connectionDesign}
                   />
                   <ScopeTag label="Misc Design" active={project.miscDesign} />
@@ -579,7 +573,6 @@ const GetProjectById = ({
                     }
                     active={project.customerDesign}
                   />
-
                 </div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg border text-sm">
@@ -675,9 +668,10 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${
+                        rfiView === "list"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -688,9 +682,10 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${
+                          rfiView === "add"
+                            ? "border-[#6bbd45] text-black font-bold"
+                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -723,9 +718,10 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        rfiView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -736,9 +732,10 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          rfiView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -771,9 +768,10 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${
+                        submittalView === "list"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -784,9 +782,10 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${
+                          submittalView === "add"
+                            ? "border-[#6bbd45] text-black font-bold"
+                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -819,9 +818,10 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        submittalView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -832,9 +832,10 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          submittalView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -867,9 +868,10 @@ const GetProjectById = ({
                     onClick={() => setChangeOrderView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${changeOrderView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${
+                        changeOrderView === "list"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -880,9 +882,10 @@ const GetProjectById = ({
                       onClick={() => setChangeOrderView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${changeOrderView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${
+                          changeOrderView === "add"
+                            ? "border-[#6bbd45] text-black font-bold"
+                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -950,10 +953,11 @@ const InfoRow = ({
 
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-bold rounded-lg border ${active
-      ? "bg-green-50 text-black border-[#6bbd45]"
-      : "bg-gray-100 text-black border-gray-200"
-      }`}
+    className={`px-3 py-1 text-sm font-bold rounded-lg border ${
+      active
+        ? "bg-green-50 text-black border-[#6bbd45]"
+        : "bg-gray-100 text-black border-gray-200"
+    }`}
   >
     {label}
   </span>
@@ -976,8 +980,9 @@ const StatCard = ({
   isAlert?: boolean;
 }) => (
   <div
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-      }`}
+    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
+      isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+    }`}
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
