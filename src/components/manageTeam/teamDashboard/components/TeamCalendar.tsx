@@ -57,12 +57,10 @@ const TeamCalendar: React.FC<TeamCalendarProps> = ({
             <CalendarIcon size={24} strokeWidth={2.5} />
           </div>
           <div>
-            <h3 className="text-xl font-black text-black uppercase tracking-tight">
+            <h3 className="text-2xl text-black uppercase tracking-tight">
               Team Calendar - {selectedTeamName}
             </h3>
-            <p className="text-black/60 text-sm font-bold tracking-wide">
-              Schedule and task distribution for the current month
-            </p>
+
           </div>
         </div>
 

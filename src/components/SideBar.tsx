@@ -161,25 +161,24 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        <div className="space-y-1">
-          {/* <button
-            className={`w-full flex items-center gap-3 py-2.5 rounded-lg transition-all text-black hover:bg-gray-50 hover:text-black text-xs font-bold uppercase tracking-wider
-              ${isExpanded ? "justify-start px-4" : "justify-center px-0"}`}
-            onClick={handleRefresh}
+        <div className="space-y-3">
+          <button
+            className={`w-full flex items-center gap-3 py-2 rounded-full transition-all text-black bg-[#6bbd45]/10 border border-black/20 text-xs font-black uppercase tracking-widest hover:bg-[#6bbd45]/20
+              ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
+            onClick={() => window.location.reload()}
           >
-            <RefreshCw
-              size={18}
-              className="group-hover:rotate-180 transition-transform duration-700"
-            />
+            <div className={`transition-transform duration-700 ${!isExpanded ? "" : "group-hover:rotate-180"}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></svg>
+            </div>
             {isExpanded && <span>Refresh</span>}
-          </button> */}
+          </button>
 
           <button
-            className={`w-full flex items-center gap-3 py-2.5 rounded-lg transition-all text-black hover:bg-red-50 hover:text-red-700 text-xs font-bold uppercase tracking-wider
-              ${isExpanded ? "justify-start px-4" : "justify-center px-0"}`}
+            className={`w-full flex items-center gap-3 py-2 rounded-full transition-all text-black bg-white border border-black/20 text-xs font-black uppercase tracking-widest hover:bg-gray-50
+              ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
             onClick={fetchLogout}
           >
-            <LogOut size={18} />
+            <LogOut size={14} strokeWidth={3} />
             {isExpanded && <span>Logout</span>}
           </button>
         </div>

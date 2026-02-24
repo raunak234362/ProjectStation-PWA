@@ -761,94 +761,95 @@ const TeamDashboard = () => {
   };
 
   return (
-    <div className="h-full p-10 overflow-y-auto custom-scrollbar bg-gray-50/20">
-      <DashboardHeader
-        onAddTeam={() => setIsModalOpen(true)}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        dateFilter={dateFilter}
-        onDateFilterChange={setDateFilter}
-        onGenerateReport={handleGenerateReport}
-        onDailyReport={() => setIsReportModalOpen(true)}
-      />
+    <div className="h-full p-8 overflow-y-auto custom-scrollbar bg-gray-50/50">
+      <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-black/[0.03] min-h-full">
+        <DashboardHeader
+          onAddTeam={() => setIsModalOpen(true)}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          dateFilter={dateFilter}
+          onDateFilterChange={setDateFilter}
+          onGenerateReport={handleGenerateReport}
+          onDailyReport={() => setIsReportModalOpen(true)}
+        />
 
-      {loading && !selectedTeam ? (
-        <div className="flex items-center justify-center h-full min-h-[60vh]">
-          <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
-        </div>
-      ) : (
-        <div className="space-y-8">
-          <TeamsList
-            filteredTeams={filteredTeams}
-            selectedTeam={selectedTeam}
-            onTeamSelect={handleTeamSelect}
-          />
+        {loading && !selectedTeam ? (
+          <div className="flex items-center justify-center h-full min-h-[60vh]">
+            <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            <TeamsList
+              filteredTeams={filteredTeams}
+              selectedTeam={selectedTeam}
+              onTeamSelect={handleTeamSelect}
+            />
 
-          {selectedTeam && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* Premium Header Bar */}
-              <div className="w-full bg-green-200 rounded-[2.5rem] p-10 border border-black/5 shadow-medium flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                {/* Decorative Pattern / Glow */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -mr-20 -mt-20" />
+            {selectedTeam && (
+              <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Premium Header Bar */}
+                <div className="w-full bg-green-100 rounded-lg p-5 border border-[#6bbd45]/20 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                
 
-                <div className="relative z-10">
-                  <span className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2 block">Team View</span>
-                  <h1 className="text-4xl font-black text-black tracking-tight uppercase">
-                    {teams?.find((t) => t.id === selectedTeam)?.name ||
-                      "Team Detail"}
-                  </h1>
+                  <div className="relative z-10">
+
+
+                    <h1 className="text-2xl font-black text-black tracking-tight uppercase">
+                      {teams?.find((t) => t.id === selectedTeam)?.name ||
+                        "Team Detail"}
+                    </h1>
+                  </div>
+
+                  <div className="flex items-center gap-4 relative z-10">
+                    <span className="px-6 py-2.5 bg-white  text-black font-black text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
+                      Overview
+                    </span>
+                    <button
+                      onClick={() => setIsViewModalOpen(true)}
+                      className="px-6 py-2.5 bg-white text-black font-black text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
+                      View Details
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-4 relative z-10">
-                  <span className="px-6 py-2.5 bg-black/5 text-black font-black text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black/5">
-                    Overview
-                  </span>
-                  <button
-                    onClick={() => setIsViewModalOpen(true)}
-                    className="flex items-center gap-2 px-8 py-3.5 bg-white text-black font-black text-sm uppercase tracking-wider rounded-2xl hover:bg-gray-50 transition-all shadow-medium active:scale-95 border border-black/5"
-                  >
-                    View Details
-                  </button>
+                <TeamStatsCards teamStats={teamStats} />
+
+                <TeamCalendar
+                  members={allMemberStats}
+                  selectedTeamName={
+                    teams?.find((t) => t.id === selectedTeam)?.name
+                  }
+                />
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2">
+                    <EfficiencyAnalytics
+                      data={efficiencyData}
+                      teams={teams}
+                      selectedTeams={selectedComparisonTeams}
+                      onTeamSelectionChange={setSelectedComparisonTeams}
+                      timeFilter={timeFilter}
+                      onTimeFilterChange={handleTimeFilterChange}
+                      dateRange={analyticsDateRange}
+                      onDateRangeChange={setAnalyticsDateRange}
+                    />
+                  </div>
+                  <div>
+                    <TaskDistribution teamStats={teamStats} />
+                  </div>
                 </div>
+
+                <TeamMembersTable
+                  tableData={tableData}
+                  onMemberClick={handleMemberClick}
+                  formatToHoursMinutes={formatToHoursMinutes}
+                  getEfficiencyColorClass={getEfficiencyColorClass}
+                />
               </div>
-
-              <TeamStatsCards teamStats={teamStats} />
-
-              <TeamCalendar
-                members={allMemberStats}
-                selectedTeamName={
-                  teams?.find((t) => t.id === selectedTeam)?.name
-                }
-              />
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                  <EfficiencyAnalytics
-                    data={efficiencyData}
-                    teams={teams}
-                    selectedTeams={selectedComparisonTeams}
-                    onTeamSelectionChange={setSelectedComparisonTeams}
-                    timeFilter={timeFilter}
-                    onTimeFilterChange={handleTimeFilterChange}
-                    dateRange={analyticsDateRange}
-                    onDateRangeChange={setAnalyticsDateRange}
-                  />
-                </div>
-                <div>
-                  <TaskDistribution teamStats={teamStats} />
-                </div>
-              </div>
-
-              <TeamMembersTable
-                tableData={tableData}
-                onMemberClick={handleMemberClick}
-                formatToHoursMinutes={formatToHoursMinutes}
-                getEfficiencyColorClass={getEfficiencyColorClass}
-              />
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Modals */}
       {isModalOpen && (

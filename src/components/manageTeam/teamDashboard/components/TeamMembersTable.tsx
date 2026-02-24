@@ -24,7 +24,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         accessorKey: "name",
         cell: ({ row }) => (
           <div
-            className="font-black text-black cursor-pointer hover:text-[#6bbd45] transition-colors"
+            className="font-semibold cursor-pointer hover:text-black transition-colors"
             onClick={() => onMemberClick(row.original.id)}
           >
             {row.original.name}
@@ -35,7 +35,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         header: "Role",
         accessorKey: "role",
         cell: ({ row }) => (
-          <span className="px-3 py-1 inline-flex text-[10px] leading-5 font-black uppercase tracking-widest rounded-full bg-gray-100 text-black border border-black/5">
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-bold uppercase tracking-widest rounded-full bg-gray-100 text-black border border-black/5">
             {row.original.role}
           </span>
         ),
@@ -44,7 +44,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         header: "Assigned Hours",
         accessorKey: "assignedHours",
         cell: ({ row }) => (
-          <span className="text-sm font-bold text-black">
+          <span className="text-sm font-medium text-black">
             {formatToHoursMinutes(Number(row.original.assignedHours))}
           </span>
         ),
@@ -53,7 +53,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         header: "Worked Hours",
         accessorKey: "workedHours",
         cell: ({ row }) => (
-          <span className="text-sm font-bold text-black">
+          <span className="text-sm font-medium text-black">
             {formatToHoursMinutes(Number(row.original.workedHours))}
           </span>
         ),
@@ -63,7 +63,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         accessorKey: "tasks",
         cell: ({ row }) => (
           <div className="flex flex-col gap-1.5 w-32">
-            <div className="text-[10px] font-black text-black uppercase tracking-widest flex justify-between">
+            <div className="text-xs font-bold text-black uppercase tracking-widest flex justify-between">
               <span>
                 {row.original.completedTasks}/{row.original.totalTasks}
               </span>
@@ -97,7 +97,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         accessorKey: "efficiency",
         cell: ({ row }) => (
           <span
-            className={`px-4 py-1.5 inline-flex text-xs font-black uppercase tracking-tighter rounded-full border shadow-sm ${getEfficiencyColorClass(
+            className={`px-4 py-1.5 inline-flex text-xs font-bold uppercase tracking-tighter rounded-full border shadow-sm ${getEfficiencyColorClass(
               row.original.efficiency
             )}`}
           >
@@ -112,12 +112,10 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
   return (
     <div className="bg-white rounded-[2.5rem] border border-black/5 shadow-soft overflow-hidden mb-12">
       <div className="px-8 py-6 border-b border-black/5 bg-gray-50/30">
-        <h3 className="text-xl font-black text-black uppercase tracking-tight">
+        <h3 className="text-2xl font-black text-black uppercase tracking-tight">
           Team Members Performance
         </h3>
-        <p className="text-black/60 text-sm font-bold tracking-wide">
-          Individual metrics for team members of this group
-        </p>
+
       </div>
       <div className="p-6">
         <DataTable
