@@ -24,13 +24,13 @@ const MonthlyEfficiencyChart: React.FC<MonthlyEfficiencyChartProps> = ({
   const teamName = teams?.find((t) => t.id === selectedTeam)?.name || "Team";
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-8">
+    <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-soft mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg  text-gray-700">
+          <h3 className="text-2xl font-black text-black uppercase tracking-tight">
             Efficiency Analytics
           </h3>
-          <p className="text-sm text-gray-700">
+          <p className="text-base font-bold text-black/40">
             Monthly efficiency trend for {teamName}
           </p>
         </div>

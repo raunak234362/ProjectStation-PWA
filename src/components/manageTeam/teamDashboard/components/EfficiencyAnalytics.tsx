@@ -110,10 +110,10 @@ const EfficiencyAnalytics: React.FC<EfficiencyAnalyticsProps> = ({
     <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-soft mb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
         <div>
-          <h3 className="text-xl font-black text-black uppercase tracking-tight">
+          <h3 className="text-2xl font-black text-black uppercase tracking-tight">
             Efficiency Analytics
           </h3>
-          <p className="text-black/60 text-sm font-bold tracking-wide">
+          <p className="text-black/60 text-base font-bold tracking-wide">
             Comparative performance trends across selected teams
           </p>
         </div>

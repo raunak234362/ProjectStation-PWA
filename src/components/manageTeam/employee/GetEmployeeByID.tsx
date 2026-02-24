@@ -320,7 +320,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           employee?.role !== "CLIENT_GENERAL_CONSTRUCTOR" && (
             <Button
               onClick={() => handleModel(employee)}
-              className="flex items-center gap-2 px-8 py-3 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black/90 transition-all shadow-medium"
+              className="flex items-center gap-2 px-8 py-3 bg-green-200 text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black/90 transition-all shadow-medium"
             >
               Update Employee Data
             </Button>

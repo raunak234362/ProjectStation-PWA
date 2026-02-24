@@ -76,7 +76,7 @@ const TaskDistribution: React.FC<TaskDistributionProps> = ({ teamStats }) => {
 
   return (
     <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-soft mb-12 h-full">
-      <h3 className="text-xl font-black text-black mb-8 flex items-center gap-3 uppercase tracking-tight">
+      <h3 className="text-2xl font-black text-black mb-8 flex items-center gap-3 uppercase tracking-tight">
         <Layers className="text-[#6bbd45]" size={24} strokeWidth={2.5} />
         Task Distribution
         <span className="text-[10px] font-black text-[#4b8a2e] ml-auto bg-green-50 px-3 py-1.5 rounded-full border border-[#6bbd45]/20 uppercase tracking-widest">

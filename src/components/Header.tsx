@@ -1,5 +1,4 @@
-import { Menu, ChevronLeft } from "lucide-react";
-import Button from "./fields/Button";
+import { ChevronLeft } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { navItems } from "../constants/navigation";
 import NotificationPopup from "./NotificationPopup";
@@ -9,7 +8,7 @@ interface HeaderProps {
   toggleSidebar: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
+const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const location = useLocation();
 
   // Find the active tab label
@@ -23,38 +22,18 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
   const headerTitle = activeTab ? activeTab.label : "Dashboard";
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-3 px-6 bg-white rounded-2xl mb-4 border border-black shadow-md transition-all duration-300">
+    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-4 px-8 bg-transparent transition-all duration-300">
       {/* Left: Sidebar Toggle & Title */}
-      <div className="flex items-center gap-4">
-        <Button
+      <div className="flex items-center gap-6">
+        <button
           onClick={toggleSidebar}
-          className="w-10 h-10 flex items-center justify-center bg-gray-50 text-gray-900 border border-gray-200 rounded-xl hover:bg-white hover:border-[#6bbd45] hover:text-[#6bbd45] transition-all shadow-sm group"
+          className="w-10 h-10 flex items-center justify-center bg-white text-black border border-black/10 rounded-xl hover:bg-gray-50 transition-all shadow-sm"
         >
-          {isMinimized ? (
-            <Menu size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
-          ) : (
-            <ChevronLeft size={20} strokeWidth={3} className="group-hover:-translate-x-0.5 transition-transform" />
-          )}
-        </Button>
-        <div className="flex flex-col items-start gap-1">
-          <div className="flex flex-col">
-            <h1 className="text-lg md:text-xl font-bold text-gray-900 uppercase tracking-widest leading-none">
-              {headerTitle}
-            </h1>
-          </div>
-          <div className="flex-col items-end hidden sm:flex">
-            <span className="text-md md:text-lg font-medium text-gray-800 tracking-widest">
-              Welcome Back,
-              <span className="ml-1 text-md md:text-lg text-black font-bold tracking-widest uppercase">
-                {sessionStorage.getItem("firstName") || ""}{" "}
-                {sessionStorage.getItem("lastName") || ""}
-                {!sessionStorage.getItem("firstName") &&
-                  !sessionStorage.getItem("lastName") &&
-                  (sessionStorage.getItem("username") || "User")}
-              </span>
-            </span>
-          </div>
-        </div>
+          <ChevronLeft size={20} strokeWidth={2.5} />
+        </button>
+        <h1 className="text-xl font-black text-black uppercase tracking-tight">
+          {headerTitle}
+        </h1>
       </div>
 
       {/* Right: Greeting & Theme & Notifications */}
