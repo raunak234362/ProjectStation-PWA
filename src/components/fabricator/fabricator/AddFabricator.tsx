@@ -35,25 +35,19 @@ const AddFabricator = () => {
   useEffect(() => {
     const fetchWBTContacts = async () => {
       try {
-        const [admins, sales, managers] = await Promise.all([
-          Service.FetchEmployeeByRole("ADMIN"),
-          Service.FetchEmployeeByRole("SALES_PERSON"),
-          Service.FetchEmployeeByRole("SALES_MANAGER"),
-        ]);
+        const roles = ["ADMIN", "SALES_PERSON", "SALES_MANAGER"];
+        const results = await Promise.all(
+          roles.map((role) =>
+            Service.FetchEmployeeByRole(role).catch(() => ({ employees: [] })),
+          ),
+        );
 
-        const allContacts = [
-          ...(Array.isArray(admins?.data?.employees)
-            ? admins.data.employees
-            : []),
-          ...(Array.isArray(sales?.data?.employees)
-            ? sales.data.employees
-            : []),
-          ...(Array.isArray(managers?.data?.employees)
-            ? managers.data.employees
-            : []),
-        ];
-
-        console.log("All Contacts ==========", allContacts);
+        const allContacts = results.flatMap((res: any) => {
+          if (Array.isArray(res)) return res;
+          const employees =
+            res?.data?.employees || res?.employees || res?.data || [];
+          return Array.isArray(employees) ? employees : [];
+        });
 
         // Remove duplicates if any
         const uniqueContacts = Array.from(
@@ -339,7 +333,7 @@ const AddFabricator = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md"
+            className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md"
           >
             <div className="w-full max-w-5xl">
               <div className="bg-emerald-600 text-white p-6 rounded-t-[40px] flex items-center gap-4 border-b border-emerald-500 shadow-xl">

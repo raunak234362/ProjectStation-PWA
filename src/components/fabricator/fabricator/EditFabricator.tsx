@@ -10,11 +10,14 @@ import Service from "../../../api/Service";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
 import MultipleFileUpload from "../../fields/MultipleFileUpload";
-import MultiSelect from "../../fields/MultiSelect";
+
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
-
+import {
+  incrementModalCount,
+  decrementModalCount,
+} from "../../../store/uiSlice";
+import Select from "../../fields/Select";
 // --- File Interfaces (matching your fabricatorData.files structure) ---
 interface FabricatorFile {
   id: string;
@@ -33,15 +36,14 @@ type FabricatorFormData = {
   fabName: string;
   website?: string;
   drive?: string;
-  fabStage?: "RFQ" | "PRODUCTION";
+  fabStage?: string;
   accountId?: string;
   SAC?: string;
-  wbtFabricatorPointOfContact?: any[];
+  wbtFabricatorPointOfContact?: any;
   fabricatPercentage?: number;
   approvalPercentage?: number;
   paymenTDueDate?: number;
   currencyType?: string;
-  // Change files to File[] to match what RHF and MultipleFileUpload handle
   files?: File[] | null;
 };
 
@@ -112,32 +114,28 @@ const EditFabricator = ({
 
     const fetchWBTContacts = async () => {
       try {
-        const [admins, sales, managers] = await Promise.all([
+        const [admins, sales] = await Promise.all([
           Service.FetchEmployeeByRole("ADMIN"),
-          Service.FetchEmployeeByRole("SALES_PERSON"),
           Service.FetchEmployeeByRole("SALES_MANAGER"),
         ]);
-
+        
         const allContacts = [
           ...(Array.isArray(admins?.data?.employees)
             ? admins.data.employees
             : []),
           ...(Array.isArray(sales?.data?.employees)
             ? sales.data.employees
-            : []),
-          ...(Array.isArray(managers?.data?.employees)
-            ? managers.data.employees
-            : []),
+            : [])
         ];
 
         // Remove duplicates if any
         const uniqueContacts = Array.from(
-          new Map(allContacts.map((item: any) => [item.id, item])).values(),
+          new Map(allContacts.map((item: any) => [item.id || item._id, item])).values(),
         );
 
         const options = uniqueContacts.map((u: any) => ({
           label: `${u.firstName} ${u.lastName} (${u.role})`,
-          value: u.id,
+          value: u.id || u._id,
         }));
 
         setWbtContactOptions(options);
@@ -150,6 +148,7 @@ const EditFabricator = ({
     fetchWBTContacts();
   }, []);
 
+  console.log(wbtContactOptions);
   // Pre‑fill form with fabricator data and initialize filesToKeep
   useEffect(() => {
     reset({
@@ -163,8 +162,9 @@ const EditFabricator = ({
       approvalPercentage: fabricatorData.approvalPercentage || 0,
       paymenTDueDate: fabricatorData.paymenTDueDate || 0,
       currencyType: fabricatorData.currencyType || "",
-      wbtFabricatorPointOfContact:
-        fabricatorData.wbtFabricatorPointOfContact || [],
+      wbtFabricatorPointOfContact: Array.isArray(fabricatorData.wbtFabricatorPointOfContact)
+        ? fabricatorData.wbtFabricatorPointOfContact[0] || ""
+        : fabricatorData.wbtFabricatorPointOfContact || "",
       files: null,
     });
     setFilesToKeep((fabricatorData.files as FabricatorFile[]) || []);
@@ -177,7 +177,7 @@ const EditFabricator = ({
         `Are you sure you want to delete the file: ${fileName}? This change will take effect on save.`,
       )
     ) {
-      setFilesToKeep((prev) => prev.filter((file) => file.id !== fileId));
+      setFilesToKeep((prev) => prev.filter((file) => (file.id || (file as any)._id) !== fileId));
       toast.info(`File '${fileName}' marked for deletion.`);
     }
   };
@@ -197,7 +197,7 @@ const EditFabricator = ({
       if (data.wbtFabricatorPointOfContact)
         formData.append(
           "wbtFabricatorPointOfContact",
-          JSON.stringify(data.wbtFabricatorPointOfContact),
+          JSON.stringify(Array.isArray(data.wbtFabricatorPointOfContact) ? data.wbtFabricatorPointOfContact : [data.wbtFabricatorPointOfContact])
         );
       if (data.fabStage) formData.append("fabStage", data.fabStage);
       if (data.accountId) formData.append("accountId", data.accountId);
@@ -234,7 +234,7 @@ const EditFabricator = ({
 
       // API Call
       const response = await Service.EditFabricatorByID(
-        fabricatorData.id,
+        fabricatorData.id || (fabricatorData as any)._id,
         formData,
       );
       console.log(response);
@@ -255,7 +255,7 @@ const EditFabricator = ({
 
   return (
     <div
-      className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
@@ -314,7 +314,7 @@ const EditFabricator = ({
                     required: "Fabricator name is required",
                   })}
                   placeholder="e.g. SteelWorks Global"
-                  className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-700 transition-all"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-700 transition-all font-bold"
                 />
                 {errors.fabName && (
                   <p className="mt-2 text-[10px]  text-rose-600 dark:text-rose-400 uppercase tracking-wider">
@@ -344,10 +344,10 @@ const EditFabricator = ({
                 name="wbtFabricatorPointOfContact"
                 control={control}
                 render={({ field }) => (
-                  <MultiSelect
+                  <Select
                     options={wbtContactOptions}
-                    label="Select Point of Contact"
-                    value={field.value || []}
+                    label=""
+                    value={field.value}
                     onChange={(_, val) => field.onChange(val)}
                   />
                 )}
@@ -375,7 +375,7 @@ const EditFabricator = ({
                   {...register("drive")}
                   type="url"
                   placeholder="https://drive.repository"
-                  className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl font-bold"
                 />
               </div>
             </div>

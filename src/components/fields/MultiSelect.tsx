@@ -146,10 +146,10 @@ const MultiSelect = ({
             }, 100);
           }
         }}
-        className={`flex items-center justify-between p-2 text-sm border rounded-md bg-white dark:bg-slate-800 cursor-pointer transition-all min-h-[3rem] ${
+        className={`flex items-center justify-between p-2 text-sm border font-bold rounded-xl bg-white dark:bg-slate-800 cursor-pointer transition-all min-h-[3rem] ${
           isOpen
-            ? "border-blue-500 ring-2 ring-blue-100"
-            : "border-gray-300 dark:border-slate-700"
+            ? "border-green-500 ring-2 ring-green-100"
+            : "border-black/10 dark:border-slate-700"
         } ${className}`}
       >
         <div className="flex-1 flex flex-wrap gap-1">
@@ -159,13 +159,13 @@ const MultiSelect = ({
               return (
                 <span
                   key={val}
-                  className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center gap-1"
+                  className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full flex items-center gap-1"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {option?.label || val}
                   <X
                     size={12}
-                    className="cursor-pointer hover:text-blue-600"
+                    className="cursor-pointer hover:text-green-600"
                     onClick={(e) => removeValue(val, e)}
                   />
                 </span>
@@ -211,7 +211,7 @@ const MultiSelect = ({
           <div
             ref={menuRef}
             style={menuStyles}
-            className="text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-md shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
+            className="text-sm bg-white dark:bg-slate-800 border border-black/10 dark:border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
           >
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => {
@@ -221,8 +221,8 @@ const MultiSelect = ({
                     key={option.value}
                     className={`px-4 py-2 cursor-pointer transition-colors flex items-center justify-between ${
                       isSelected
-                        ? "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-200"
-                        : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-900 dark:text-white"
+                        ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-200"
+                        : "hover:bg-green-50 dark:hover:bg-slate-700 text-gray-900 font-bold dark:text-white"
                     }`}
                     onClick={() => handleSelect(option)}
                   >

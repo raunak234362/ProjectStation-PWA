@@ -107,7 +107,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
 
       {/* Milestone Approvals Section */}
       <div>
-        <h4 className="text-lg text-gray-800 dark:text-white mb-4 flex items-center gap-2 uppercase tracking-tight">
+        <h4 className="text-lg text-gray-800 mb-4 flex items-center gap-2 uppercase tracking-tight">
           <CalendarCheck size={20} className="text-green-600" />
           Project Progress
         </h4>
@@ -122,47 +122,47 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                     setIsUpdateModalOpen(true);
                   }
                 }}
-                className={`p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm flex flex-col justify-between transition-colors ${
+                className={`p-4 bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col justify-between transition-colors ${
                   ms.status === "PENDING"
-                    ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700/50"
+                    ? "cursor-pointer hover:bg-gray-50"
                     : ""
                 }`}
               >
                 <div>
-                  <h5 className="font-semibold text-gray-800 dark:text-slate-200 mb-1 line-clamp-1">
+                  <h5 className="font-semibold text-gray-800 mb-1 line-clamp-1">
                     {ms.subject}
                   </h5>
-                  <div className="flex justify-between items-center text-sm text-gray-500 dark:text-slate-500 mb-2">
+                  <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
                     <span>Status:</span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${
                         ms.status === "APPROVED" || ms.status === "COMPLETED"
-                          ? " text-green-700 dark:text-green-400"
-                          : " text-yellow-700 dark:text-yellow-400"
+                          ? " text-green-700"
+                          : " text-yellow-700"
                       }`}
                     >
                       {ms.status || "PENDING"}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-sm text-gray-500 dark:text-slate-500 mb-2">
+                  <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
                     <span>Stage:</span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${
                         ms.status === "APPROVED" || ms.status === "COMPLETED"
-                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                          : " text-green-900 dark:text-green-400"
+                          ? "bg-green-100 text-green-700"
+                          : " text-green-900"
                       }`}
                     >
                       {ms.stage || "PENDING"}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-sm text-gray-500 dark:text-slate-500 mb-2">
+                  <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
                     <span>Completion Percentage :</span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${
                         ms.status === "APPROVED" || ms.status === "COMPLETED"
-                          ? " text-green-700 dark:text-green-400"
-                          : " text-green-900 dark:text-green-400"
+                          ? " text-green-700"
+                          : " text-green-900"
                       }`}
                     >
                       {ms.completionPercentage ||
@@ -175,7 +175,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                         setSelectedMilestoneId(ms.id || ms._id);
                         setIsUpdateModalOpen(true);
                       }}
-                      className="ml-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                      className="ml-2 text-gray-400 hover:text-blue-600"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -194,10 +194,10 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                     </button>
                   </div>
                 </div>
-                <div className="w-full bg-red-500 dark:bg-slate-700 rounded-full h-2 relative overflow-hidden">
+                <div className="w-full bg-red-500 rounded-full h-2 relative overflow-hidden">
                   {/* Time Progress (background shadow layer) */}
                   <div
-                    className="absolute top-0 left-0 h-2 bg-gray-400 dark:bg-slate-500 opacity-40 transition-all duration-500"
+                    className="absolute top-0 left-0 h-2 bg-gray-400 opacity-40 transition-all duration-500"
                     style={{ width: `${ms.timePercent}%` }}
                   ></div>
                   {/* Task Completion (real progress) */}
@@ -208,12 +208,12 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                     }}
                   ></div>
                 </div>
-                <div className="border-t border-gray-100 dark:border-slate-800 pt-2 mt-2">
+                <div className="border-t border-gray-100 pt-2 mt-2">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500 dark:text-slate-500 uppercase text-xs font-semibold">
+                    <span className="text-gray-500 uppercase text-xs font-semibold">
                       Approval Date
                     </span>
-                    <span className="font-bold text-gray-700 dark:text-slate-300">
+                    <span className="font-bold text-gray-700">
                       {formatDate(ms.approvalDate)}
                     </span>
                   </div>
@@ -222,7 +222,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
             ))}
           </div>
         ) : (
-          <div className="p-6 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-800 text-center text-gray-500 dark:text-slate-500 italic">
+          <div className="p-6 bg-gray-50 rounded-xl border border-gray-100 text-center text-gray-500 italic">
             No milestones found.
           </div>
         )}

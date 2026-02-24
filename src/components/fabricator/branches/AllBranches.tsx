@@ -15,7 +15,10 @@ import { useState } from "react";
 import Button from "../../fields/Button";
 import { motion, AnimatePresence } from "motion/react";
 import { useDispatch } from "react-redux";
-import { incrementModalCount, decrementModalCount } from "../../../store/uiSlice";
+import {
+  incrementModalCount,
+  decrementModalCount,
+} from "../../../store/uiSlice";
 import { useEffect } from "react";
 
 interface AllBranchProps {
@@ -45,7 +48,7 @@ const AllBranches = ({
 
   return (
     <div
-      className="fixed inset-0 z-150 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-hidden"
+      className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-hidden"
       onClick={onClose}
     >
       <motion.div
@@ -122,13 +125,17 @@ const AllBranches = ({
                       </p>
                     </div>
                     <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
-                      <Mail size={16} className="shrink-0 text-slate-300 dark:text-slate-600" />
-                      <p className="text-xs  truncate">
-                        {branch.email}
-                      </p>
+                      <Mail
+                        size={16}
+                        className="shrink-0 text-slate-300 dark:text-slate-600"
+                      />
+                      <p className="text-xs  truncate">{branch.email}</p>
                     </div>
                     <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
-                      <Phone size={16} className="shrink-0 text-slate-300 dark:text-slate-600" />
+                      <Phone
+                        size={16}
+                        className="shrink-0 text-slate-300 dark:text-slate-600"
+                      />
                       <p className="text-xs ">
                         {branch.phone}{" "}
                         {branch.extension && (
@@ -156,7 +163,10 @@ const AllBranches = ({
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-slate-500">
               <div className="w-20 h-20 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center mb-4">
-                <Building2 size={40} className="text-slate-200 dark:text-slate-700" />
+                <Building2
+                  size={40}
+                  className="text-slate-200 dark:text-slate-700"
+                />
               </div>
               <p className="text-sm  uppercase tracking-widest mb-6">
                 Geographic Footprint Empty
@@ -174,7 +184,7 @@ const AllBranches = ({
         {/* ✅ Add Branch Modal */}
         <AnimatePresence>
           {addBranchModal && (
-            <div className="fixed inset-0 z-200 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[10002] flex items-center justify-center p-4">
               <AddBranch
                 fabricatorId={fabricator.id}
                 onClose={handleCloseAddBranch}
