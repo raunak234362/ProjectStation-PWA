@@ -16,7 +16,7 @@ const FabricatorLayout = () => {
             className={cn(
               "flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all",
               activeTab === "allFabricator"
-                ? "bg-green-200 text-black border border-black shadow-sm"
+               ? "bg-green-200 text-black border border-black shadow-sm"
                 : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
             )}
           >
@@ -28,7 +28,7 @@ const FabricatorLayout = () => {
             className={cn(
               "flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all",
               activeTab === "addFabricator"
-                ? "bg-green-200 text-black border border-black shadow-sm"
+               ? "bg-green-200 text-black border border-black shadow-sm"
                 : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
             )}
           >

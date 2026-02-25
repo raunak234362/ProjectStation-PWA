@@ -786,8 +786,8 @@ const TeamDashboard = () => {
   };
 
   return (
-    <div className="h-full p-8 overflow-y-auto custom-scrollbar bg-gray-50/50">
-      <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-black/[0.03] min-h-full">
+    <div className="h-full overflow-y-auto custom-scrollbar bg-gray-50/50">
+      <div className="bg-white rounded-sm p-5 shadow-sm border border-black/[0.03] min-h-full">
         <DashboardHeader
           onAddTeam={() => setIsModalOpen(true)}
           searchTerm={searchTerm}

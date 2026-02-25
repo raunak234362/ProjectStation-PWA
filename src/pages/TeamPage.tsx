@@ -57,9 +57,9 @@ const TeamPage = () => {
         <div className="px-10 py-6 bg-white border-b border-black/5 flex flex-wrap items-center justify-end gap-3">
           <button
             onClick={() => setActiveTab("teamDashboard")}
-            className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] transition-all border ${activeTab === "teamDashboard"
-              ? "bg-black text-white border-black shadow-medium scale-[1.02]"
-              : "bg-white border-black/5 text-black/40 hover:text-black hover:bg-gray-50 hover:border-black/10"
+            className={`px-8 py-3 rounded-2xl font-black uppercase text-sm tracking-[0.15em] transition-all border ${activeTab === "teamDashboard"
+              ? "bg-green-200 text-black border-black shadow-medium"
+              : "bg-white border-black text-black hover:text-black hover:bg-gray-50 hover:border-black/10"
               }`}
           >
             Team Dashboard
@@ -67,9 +67,9 @@ const TeamPage = () => {
 
           <button
             onClick={() => setActiveTab("manageEmployee")}
-            className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] transition-all border ${activeTab === "manageEmployee"
-              ? "bg-black text-white border-black shadow-medium scale-[1.02]"
-              : "bg-white border-black/5 text-black/40 hover:text-black hover:bg-gray-50 hover:border-black/10"
+            className={`px-8 py-3 rounded-2xl font-black uppercase text-sm tracking-[0.15em] transition-all border ${activeTab === "manageEmployee"
+              ? "bg-green-200 text-black border-black shadow-medium"
+              : "bg-white border-black text-black hover:text-black hover:bg-gray-50 hover:border-black/10"
               }`}
           >
             Manage Employee
@@ -78,9 +78,9 @@ const TeamPage = () => {
           {(userRole === "ADMIN" || userRole === "HUMAN_RESOURCE") && (
             <button
               onClick={() => setActiveTab("manageDepartment")}
-              className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] transition-all border ${activeTab === "manageDepartment"
-                ? "bg-black text-white border-black shadow-medium scale-[1.02]"
-                : "bg-white border-black/5 text-black/40 hover:text-black hover:bg-gray-50 hover:border-black/10"
+              className={`px-8 py-3 rounded-2xl font-black uppercase text-sm tracking-[0.15em] transition-all border ${activeTab === "manageDepartment"
+                ? "bg-green-200 text-black border-black shadow-medium"
+                : "bg-white border-black text-black hover:text-black hover:bg-gray-50 hover:border-black/10"
                 }`}
             >
               Manage Department
@@ -92,9 +92,9 @@ const TeamPage = () => {
             userRole === "HUMAN_RESOURCE") && (
               <button
                 onClick={() => setActiveTab("manageTeam")}
-                className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] transition-all border ${activeTab === "manageTeam"
-                  ? "bg-black text-white border-black shadow-medium scale-[1.02]"
-                  : "bg-white border-black/5 text-black/40 hover:text-black hover:bg-gray-50 hover:border-black/10"
+                className={`px-8 py-3 rounded-2xl font-black uppercase text-sm tracking-[0.15em] transition-all border ${activeTab === "manageTeam"
+                  ? "bg-green-200 text-black border-black shadow-medium"
+                  : "bg-white border-black text-black hover:text-black hover:bg-gray-50 hover:border-black/10"
                   }`}
               >
                 Manage Team

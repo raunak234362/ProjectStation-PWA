@@ -33,7 +33,7 @@ const InvoiceLayout = () => {
 
               <button
                 onClick={() => setActiveTab("addInvoice")}
-                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-bold transition-all ${activeTab === "addInvoice"
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-md text-sm md:text-base font-bold transition-all ${activeTab === "addInvoice"
                   ? "bg-green-50 text-black border border-black shadow-sm"
                   : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                   }`}

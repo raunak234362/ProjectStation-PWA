@@ -31,7 +31,7 @@ const EstimationLayout = () => {
           <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end w-full">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "dashboard"
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-md text-sm md:text-base font-bold transition-all ${activeTab === "dashboard"
                 ? "bg-green-200 text-black border border-black shadow-sm"
                 : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                 }`}
@@ -41,7 +41,7 @@ const EstimationLayout = () => {
 
             <button
               onClick={() => setActiveTab("addEstimation")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "addEstimation"
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-md text-sm md:text-base font-bold transition-all ${activeTab === "addEstimation"
                 ? "bg-green-200 text-black border border-black shadow-sm"
                 : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
                 }`}

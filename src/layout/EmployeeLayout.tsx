@@ -13,8 +13,8 @@ const EmployeeLayout = () => {
             <button
               onClick={() => setActiveTab("allEmployee")}
               className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "allEmployee"
-                ? "bg-white text-black shadow-medium border border-black/5"
-                : "text-black/40 hover:text-black"
+                ? "bg-green-200 text-black shadow-medium border border-black"
+                : "text-black border border-black hover:bg-green-50"
                 }`}
             >
               All Employees
@@ -24,8 +24,8 @@ const EmployeeLayout = () => {
               <button
                 onClick={() => setActiveTab("addEmployee")}
                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "addEmployee"
-                  ? "bg-white text-black shadow-medium border border-black/5"
-                  : "text-black/40 hover:text-black"
+                  ? "bg-green-200 text-black shadow-medium border border-black"
+                  : "text-black border border-black hover:bg-green-50"
                   }`}
               >
                 Add Employee
