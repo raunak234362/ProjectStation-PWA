@@ -366,11 +366,10 @@ const GetProjectById = ({
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${
-                  activeTab === key
+                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${activeTab === key
                     ? "bg-green-50 text-black border-[#6bbd45]"
                     : "bg-white text-black border-black hover:bg-green-50"
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -397,9 +396,9 @@ const GetProjectById = ({
                     label="Hours Completed"
                     value={formatSeconds(
                       projectStats?.workedSeconds ||
-                        project.workedSeconds ||
-                        project.totalWorkedSeconds ||
-                        0,
+                      project.workedSeconds ||
+                      project.totalWorkedSeconds ||
+                      0,
                     )}
                     color="bg-green-50"
                     description="Total hours logged by team"
@@ -418,12 +417,12 @@ const GetProjectById = ({
                     value={
                       (projectStats?.isOverrun ?? project.isOverrun)
                         ? formatSeconds(
-                            (projectStats?.workedSeconds ||
-                              project.workedSeconds ||
-                              project.totalWorkedSeconds ||
-                              0) -
-                              (project.estimatedHours || 0) * 3600,
-                          )
+                          (projectStats?.workedSeconds ||
+                            project.workedSeconds ||
+                            project.totalWorkedSeconds ||
+                            0) -
+                          (project.estimatedHours || 0) * 3600,
+                        )
                         : "00:00"
                     }
                     color={
@@ -501,7 +500,11 @@ const GetProjectById = ({
 
           {/* ✅ Teams Analytics */}
           {activeTab === "teamsAnalytics" && (
-            <TeamsAnalytics projectId={id} managerId={project.managerID} />
+            <TeamsAnalytics
+              projectId={id}
+              managerId={project.managerID}
+              tasks={allTasks}
+            />
           )}
 
           {/* ✅ Details */}
@@ -669,10 +672,9 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        rfiView === "list"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${rfiView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -683,10 +685,9 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          rfiView === "add"
-                            ? "border-[#6bbd45] text-black font-bold"
-                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${rfiView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -719,10 +720,9 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        rfiView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${rfiView === "list"
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -733,10 +733,9 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          rfiView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${rfiView === "add"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -769,10 +768,9 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        submittalView === "list"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${submittalView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -783,10 +781,9 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          submittalView === "add"
-                            ? "border-[#6bbd45] text-black font-bold"
-                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${submittalView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -819,10 +816,9 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        submittalView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${submittalView === "list"
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -833,10 +829,9 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          submittalView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${submittalView === "add"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -869,10 +864,9 @@ const GetProjectById = ({
                     onClick={() => setChangeOrderView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        changeOrderView === "list"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${changeOrderView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -883,10 +877,9 @@ const GetProjectById = ({
                       onClick={() => setChangeOrderView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          changeOrderView === "add"
-                            ? "border-[#6bbd45] text-black font-bold"
-                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${changeOrderView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -954,11 +947,10 @@ const InfoRow = ({
 
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-bold rounded-lg border ${
-      active
+    className={`px-3 py-1 text-sm font-bold rounded-lg border ${active
         ? "bg-green-50 text-black border-[#6bbd45]"
         : "bg-gray-100 text-black border-gray-200"
-    }`}
+      }`}
   >
     {label}
   </span>
@@ -981,9 +973,8 @@ const StatCard = ({
   isAlert?: boolean;
 }) => (
   <div
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
-      isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-    }`}
+    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+      }`}
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>

@@ -189,7 +189,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             "px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm border",
             selectedMonth === null
               ? "bg-[#6bbd45] text-white border-[#6bbd45]"
-              : "bg-white text-gray-400 hover:text-gray-900 hover:bg-gray-50 border-gray-200",
+              : "bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-gray-200",
           )}
         >
           All
@@ -202,7 +202,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               "px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm border",
               selectedMonth === index
                 ? "bg-[#6bbd45] text-white border-[#6bbd45]"
-                : "bg-white text-gray-400 hover:text-gray-900 hover:bg-gray-50 border-gray-200",
+                : "bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-gray-200",
             )}
           >
             {month}
@@ -255,7 +255,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                   const data = payload[0].payload;
                   return (
                     <div className="bg-white p-4 rounded-xl shadow-xl border border-gray-200 min-w-[160px]">
-                      <p className=" text-gray-400 mb-2 uppercase tracking-tight text-xs font-black">
+                      <p className=" text-gray-700 mb-2 uppercase tracking-tight text-xs font-black">
                         {selectedMonth !== null
                           ? `${months[selectedMonth]} ${label}`
                           : label}{" "}
@@ -279,7 +279,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                           </span>
                         </div>
                         <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-                          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                          <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                             INVOICES
                           </span>
                           <span className="text-xs font-bold text-gray-600">
@@ -303,7 +303,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                 paddingBottom: "20px",
                 fontSize: "12px",
                 fontWeight: 700,
-                color: theme === "dark" ? "#111827" : "#6b7280",
+                color: theme === "dark" ? "#111827" : "#111827",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
               }}
@@ -312,7 +312,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               dataKey="received"
               name="Received"
               stackId="a"
-              fill="#6bbd45"
+              fill="#b9e752"
               radius={[0, 0, 4, 4]}
               barSize={40}
             />
@@ -320,7 +320,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
               dataKey="pending"
               name="Pending"
               stackId="a"
-              fill={"#e2e8f0"} // Light grey for pending
+              fill={"#e06666"} // Light grey for pending
               radius={[4, 4, 0, 0]}
               barSize={40}
             />

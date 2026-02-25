@@ -98,18 +98,17 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
   }
 
   return (
-    <div className="bg-gray-50/50 p-10 rounded-3xl border border-black/5 shadow-inner">
+    <div className="bg-gray-50/50 p-5 rounded-3xl border border-black/5 shadow-inner">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 border-b border-black/5 pb-4">
-        <h3 className="text-2xl font-black text-black uppercase tracking-tight">
+      <div className="flex items-center justify-between mb-8 border-b border-black/5">
+        <h3 className="text-2xl font-semibold text-black uppercase tracking-tight">
           {employee.firstName} {employee.middleName} {employee.lastName}
         </h3>
         <span
-          className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-black/5 shadow-sm ${
-            employee.isActive
+          className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-black/5 shadow-sm ${employee.isActive
               ? "bg-green-100 text-black shadow-green-100/50"
               : "bg-red-100 text-black shadow-red-100/50"
-          }`}
+            }`}
         >
           {employee.isActive ? "Active" : "Inactive"}
         </span>
@@ -119,7 +118,6 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-sm">
         {/* Left Column */}
         <div className="space-y-4">
-          <InfoRow label="Employee ID" value={employee.id} />
           <InfoRow label="Username" value={employee.username} />
           <InfoRow
             label="Email"
@@ -148,18 +146,6 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         {/* Right Column */}
         <div className="space-y-4">
           <InfoRow label="Designation" value={employee.designation} />
-          <InfoRow
-            label="Role"
-            value={
-              <span className="px-4 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
-                {employee.role}
-              </span>
-            }
-          />
-          <InfoRow
-            label="Department"
-            value={employee.departmentId || "Not Assigned"}
-          />
           <InfoRow
             label="First Login"
             value={employee.isFirstLogin ? "Yes" : "No"}
@@ -298,21 +284,21 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         employee.state ||
         employee.country ||
         employee.zipCode) && (
-        <div className="mt-10 pt-8 border-t border-black/5">
-          <h4 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-4">
-            Address Information
-          </h4>
-          <div className="text-sm space-y-2 text-black font-bold tracking-tight">
-            {employee.address && <p>{employee.address}</p>}
-            <p>
-              {[employee.city, employee.state, employee.zipCode]
-                .filter(Boolean)
-                .join(", ") || "—"}
-            </p>
-            {employee.country && <p>{employee.country}</p>}
+          <div className="mt-10 pt-8 border-t border-black/5">
+            <h4 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-4">
+              Address Information
+            </h4>
+            <div className="text-sm space-y-2 text-black font-bold tracking-tight">
+              {employee.address && <p>{employee.address}</p>}
+              <p>
+                {[employee.city, employee.state, employee.zipCode]
+                  .filter(Boolean)
+                  .join(", ") || "—"}
+              </p>
+              {employee.country && <p>{employee.country}</p>}
+            </div>
           </div>
-        </div>
-      )}
+        )}
       <div className="flex flex-wrap gap-4 mt-10 pt-8 border-t border-black/5">
         {employee?.role !== "CLIENT" &&
           employee?.role !== "CLIENT_ADMIN" &&
@@ -361,18 +347,18 @@ const InfoRow = ({
   href?: string;
 }) => (
   <div className="flex justify-between items-center py-1">
-    <span className="text-black/40 font-black uppercase tracking-[0.15em] text-[10px]">
+    <span className="text-black/40 font-black uppercase tracking-[0.15em] text-sm">
       {label}
     </span>
     {href ? (
       <a
         href={href}
-        className="text-black font-black text-sm tracking-tight hover:underline transition-colors"
+        className="text-black text-sm tracking-wide hover:underline transition-colors"
       >
         {value}
       </a>
     ) : (
-      <span className="text-black font-black text-sm tracking-tight">
+      <span className="text-black  text-sm tracking-wide">
         {value}
       </span>
     )}
