@@ -12,9 +12,9 @@ const EmployeeLayout = () => {
           <div className="flex flex-row gap-4 items-center justify-end">
             <button
               onClick={() => setActiveTab("allEmployee")}
-              className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "allEmployee"
-                ? "bg-green-200 text-black shadow-medium border border-black"
-                : "text-black border border-black hover:bg-green-50"
+              className={`px-6 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all border border-black ${activeTab === "allEmployee"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50"
                 }`}
             >
               All Employees

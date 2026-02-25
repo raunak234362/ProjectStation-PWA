@@ -24,9 +24,9 @@ const RfqLayout = () => {
           <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
             <button
               onClick={() => setActiveTab("allRFQ")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "allRFQ"
-                ? "bg-green-200 text-black border border-black shadow-sm"
-                : "bg-white border border-black/10 text-black hover:bg-green-50 shadow-sm"
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allRFQ"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50"
                 }`}
             >
               All RFQ
@@ -34,9 +34,9 @@ const RfqLayout = () => {
 
             <button
               onClick={() => setActiveTab("addRFQ")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "addRFQ"
-                ? "bg-green-200 text-black border border-black shadow-sm"
-                : "bg-white border border-black/10 text-black hover:bg-green-50 shadow-sm"
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "addRFQ"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50"
                 }`}
             >
               Create RFQ

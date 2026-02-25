@@ -12,9 +12,9 @@ const InvoiceLayout = () => {
         <div className="px-3 py-2 flex flex-wrap items-center justify-center md:justify-end gap-3">
           <button
             onClick={() => setActiveTab("dashboard")}
-            className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-bold transition-all ${activeTab === "dashboard"
-              ? "bg-green-50 text-black border border-black shadow-sm"
-              : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
+            className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "dashboard"
+              ? "bg-green-200 text-black shadow-medium"
+              : "text-black hover:bg-green-50"
               }`}
           >
             Invoice Home
@@ -23,9 +23,9 @@ const InvoiceLayout = () => {
             <>
               <button
                 onClick={() => setActiveTab("allInvoices")}
-                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-bold transition-all ${activeTab === "allInvoices"
-                  ? "bg-green-50 text-black border border-black shadow-sm"
-                  : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allInvoices"
+                  ? "bg-green-200 text-black shadow-medium"
+                  : "text-black hover:bg-green-50"
                   }`}
               >
                 All Invoices
@@ -33,9 +33,9 @@ const InvoiceLayout = () => {
 
               <button
                 onClick={() => setActiveTab("addInvoice")}
-                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-md text-sm md:text-base font-bold transition-all ${activeTab === "addInvoice"
-                  ? "bg-green-50 text-black border border-black shadow-sm"
-                  : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "addInvoice"
+                  ? "bg-green-200 text-black shadow-medium"
+                  : "text-black hover:bg-green-50"
                   }`}
               >
                 Add Invoice
@@ -43,9 +43,9 @@ const InvoiceLayout = () => {
 
               <button
                 onClick={() => setActiveTab("accounts")}
-                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-bold transition-all ${activeTab === "accounts"
-                  ? "bg-green-50 text-black border border-black shadow-sm"
-                  : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "accounts"
+                  ? "bg-green-200 text-black shadow-medium"
+                  : "text-black hover:bg-green-50"
                   }`}
               >
                 Accounts

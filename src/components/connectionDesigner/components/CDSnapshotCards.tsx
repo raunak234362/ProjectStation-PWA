@@ -49,7 +49,6 @@ const CountriesPopover = ({
           </span>
         </div>
       </div>
-
       <div className="max-h-64 overflow-y-auto custom-scrollbar pr-1">
         <div className="flex flex-wrap gap-2">
           {countries.length > 0 ? (
@@ -110,7 +109,7 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({
       icon: HardHat,
       color: "indigo",
     },
- 
+
   ];
 
   const colorMap: Record<

@@ -76,7 +76,7 @@ const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className="px-3 py-1 text-[10px] uppercase font-bold tracking-tight rounded-lg bg-gray-100 text-black border border-gray-200"
+          className="px-3 py-1 text-sm uppercase tracking-wide rounded-lg bg-gray-100 text-black border border-gray-200"
         >
           {row.original.status === true ? "Pending" : "Responded"}
         </span>
