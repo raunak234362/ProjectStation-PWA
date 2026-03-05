@@ -77,6 +77,17 @@ const AppContent = () => {
         toast.error("Failed to load employees");
       }
     };
+
+    // const fetchAllEmployeeAdmin = async () => {
+    //   try {
+    //     const response = await Service.GetAdminMEASAnalyticsTrendline();
+    //     console.log(response);
+        
+    //   } catch (err) {
+    //     console.error("Failed to fetch employees:", err);
+    //     toast.error("Failed to load employees");
+    //   }
+    // };
     // Fetch all fabricator
     const fetchAllFabricator = async () => {
       try {

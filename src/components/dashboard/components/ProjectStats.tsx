@@ -69,7 +69,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
                 isClickable && card.status && onCardClick(card.status)
               }
               className={cn(
-                "p-5 h-[110px] rounded-xl flex items-center justify-between group transition-all duration-300 bg-white relative overflow-hidden",
+                "p-5 rounded-xl flex items-center justify-between group transition-all duration-300 bg-white relative overflow-hidden",
                 "border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm", // Solid black + green left border
                 "hover:shadow-md",
                 isClickable && "cursor-pointer",

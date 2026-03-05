@@ -10,7 +10,6 @@ import {
   User,
   Tag,
   Edit,
-  Trash2,
   Plus,
 } from "lucide-react";
 import Service from "../../../api/Service";
@@ -19,7 +18,6 @@ import { Button } from "../../ui/button";
 import EditMileStone from "./EditMileStone";
 import UpdateCompletionPer from "./UpdateCompletionPer";
 import DataTable from "../../ui/table";
-import RenderFiles from "../../ui/RenderFiles";
 import MilestoneResponseModal from "./MilestoneResponseModal";
 import MilestoneResponseDetailsModal from "./MilestoneResponseDetailsModal";
 import { formatDateTime } from "../../../utils/dateUtils";
@@ -164,17 +162,26 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
       cell: ({ row }: any) => {
         const plainText =
           row.original.description?.replace(/<[^>]*>?/gm, "") || "";
-        return <p className="truncate max-w-[300px] text-xs sm:text-sm">{plainText}</p>;
+        return (
+          <p className="truncate max-w-[300px] text-xs sm:text-sm">
+            {plainText}
+          </p>
+        );
       },
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }: any) => (
-        <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-tight border ${row.original.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-          row.original.status === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-200' :
-            'bg-gray-50 text-gray-700 border-gray-200'
-          }`}>
+        <span
+          className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-tight border ${
+            row.original.status === "APPROVED"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+              : row.original.status === "REJECTED"
+                ? "bg-red-50 text-red-700 border-red-200"
+                : "bg-gray-50 text-gray-700 border-gray-200"
+          }`}
+        >
           {row.original.status}
         </span>
       ),
@@ -185,7 +192,9 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
       cell: ({ row }: any) => {
         const count = row.original.files?.length ?? 0;
         return count > 0 ? (
-          <span className="text-black font-medium text-xs">{count} file(s)</span>
+          <span className="text-black font-medium text-xs">
+            {count} file(s)
+          </span>
         ) : (
           <span className="text-gray-300">—</span>
         );
@@ -356,14 +365,14 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
 
                 const finalProgress =
                   milestone.percentage !== undefined &&
-                    milestone.percentage !== null &&
-                    milestone.percentage !== ""
+                  milestone.percentage !== null &&
+                  milestone.percentage !== ""
                     ? Number(milestone.percentage)
                     : milestone.completionPercentage !== undefined &&
-                      milestone.completionPercentage !== null
+                        milestone.completionPercentage !== null
                       ? Number(milestone.completionPercentage)
                       : milestone.completeionPercentage !== undefined &&
-                        milestone.completeionPercentage !== null
+                          milestone.completeionPercentage !== null
                         ? Number(milestone.completeionPercentage)
                         : taskProgress;
 
@@ -411,7 +420,9 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
                 <h3 className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 uppercase tracking-widest">
                   Reason of Delay
                 </h3>
-                <p className="text-sm text-red-700 font-medium">{milestone.reason}</p>
+                <p className="text-sm text-red-700 font-medium">
+                  {milestone.reason}
+                </p>
               </div>
             )}
 
@@ -547,8 +558,13 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
-            <h3 className="text-xl font-black text-black uppercase tracking-tight mb-2">Delete Milestone</h3>
-            <p className="text-sm text-gray-500 mb-8">Are you sure you want to delete this milestone? This action cannot be undone.</p>
+            <h3 className="text-xl font-black text-black uppercase tracking-tight mb-2">
+              Delete Milestone
+            </h3>
+            <p className="text-sm text-gray-500 mb-8">
+              Are you sure you want to delete this milestone? This action cannot
+              be undone.
+            </p>
             <div className="flex gap-4">
               <Button
                 onClick={() => setShowDeleteModal(false)}

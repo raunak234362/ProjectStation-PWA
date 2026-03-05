@@ -38,7 +38,7 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({
     <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-soft flex flex-col h-full border border-black">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-6 shrink-0">
         <div>
-          <h2 className="text-2xl font-black text-black flex items-center gap-2 tracking-tight uppercase">
+          <h2 className="text-xl text-black flex items-center gap-2 tracking-tight uppercase">
             RFQ vs Production Analysis
           </h2>
           {/* <p className="text-[10px] text-black font-bold uppercase tracking-[0.2em] mt-2">

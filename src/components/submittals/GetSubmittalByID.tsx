@@ -16,7 +16,13 @@ const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
   </div>
 );
 
-const GetSubmittalByID = ({ id, onClose }: { id: string, onClose?: () => void }) => {
+const GetSubmittalByID = ({
+  id,
+  onClose,
+}: {
+  id: string;
+  onClose?: () => void;
+}) => {
   const [loading, setLoading] = useState(true);
   const [submittal, setSubmittal] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,17 +48,21 @@ const GetSubmittalByID = ({ id, onClose }: { id: string, onClose?: () => void })
 
   if (loading || !submittal || error) {
     return createPortal(
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
         <div className="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
           {loading ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin text-green-600" />
-              <span className="text-gray-700">Loading submittal details...</span>
+              <span className="text-gray-700">
+                Loading submittal details...
+              </span>
             </>
           ) : (
             <>
               <AlertCircle className="w-5 h-5 text-red-600" />
-              <span className="text-red-600">{error || "Submittal not found"}</span>
+              <span className="text-red-600">
+                {error || "Submittal not found"}
+              </span>
               <button
                 onClick={onClose}
                 className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
@@ -63,7 +73,7 @@ const GetSubmittalByID = ({ id, onClose }: { id: string, onClose?: () => void })
           )}
         </div>
       </div>,
-      document.body
+      document.body,
     );
   }
 
@@ -97,7 +107,7 @@ const GetSubmittalByID = ({ id, onClose }: { id: string, onClose?: () => void })
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
       <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
@@ -118,7 +128,9 @@ const GetSubmittalByID = ({ id, onClose }: { id: string, onClose?: () => void })
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* LEFT PANEL */}
             <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-5">
-              <h1 className="text-2xl font-black text-black uppercase tracking-tight">{submittal.subject}</h1>
+              <h1 className="text-2xl font-black text-black uppercase tracking-tight">
+                {submittal.subject}
+              </h1>
 
               <Info label="Project" value={submittal.project?.name || "—"} />
               <Info
@@ -144,7 +156,22 @@ const GetSubmittalByID = ({ id, onClose }: { id: string, onClose?: () => void })
               </div> */}
 
               <RenderFiles
-                files={submittal.versions || []}
+                files={(() => {
+                  const versions =
+                    submittal.versions?.length > 0
+                      ? submittal.versions
+                      : submittal.currentVersion
+                        ? [submittal.currentVersion]
+                        : [];
+
+                  return versions.map((v: any) => ({
+                    ...v,
+                    description:
+                      v.id === submittal.currentVersion?.id
+                        ? "Current Version"
+                        : `Version ${v.versionNumber || 1}`,
+                  }));
+                })()}
                 table="submittals"
                 parentId={submittal.id}
               />
@@ -204,7 +231,7 @@ const GetSubmittalByID = ({ id, onClose }: { id: string, onClose?: () => void })
         )}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

@@ -29,8 +29,25 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
       try {
         setLoading(true);
         const response = await Service.GetWBSTemplate();
-        // Assuming response.data contains the array based on user's provided JSON structure
-        setTemplates(response.data || []);
+
+        const sortOrderMap: Record<string, number> = {
+          MAIN_STEEL_PLACEMENT: 1,
+          MAIN_STEEL_CONNECTION: 2,
+          "MISC.STEEL_PLACEMENT_&_CONNECTION": 3,
+          ERECTION_OF_MAIN_STEEL: 4,
+          ERECTION_OF_MISC_STEEL: 5,
+          DETAILING_OF_MAIN_STEEL: 6,
+          DETAILING_OF_MISC_STEEL: 7,
+          OTHERS: 8,
+        };
+
+        const sortedTemplates = (response.data || []).sort((a: any, b: any) => {
+          const orderA = sortOrderMap[a.bundleKey] || 99;
+          const orderB = sortOrderMap[b.bundleKey] || 99;
+          return orderA - orderB;
+        });
+
+        setTemplates(sortedTemplates);
       } catch (error) {
         console.error("Error fetching WBS templates:", error);
       } finally {
@@ -77,7 +94,7 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
   const filteredTemplates = templates.filter(
     (template) =>
       template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.category.toLowerCase().includes(searchQuery.toLowerCase())
+      template.category.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (loading) {
@@ -124,16 +141,18 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
               <div
                 key={template.id}
                 onClick={() => toggleSelection(template.id)}
-                className={`group relative flex items-center p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${selectedIds.has(template.id)
+                className={`group relative flex items-center p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
+                  selectedIds.has(template.id)
                     ? "border-green-500 bg-green-50/50 shadow-sm"
                     : "border-gray-100 hover:border-green-200 hover:bg-gray-50"
-                  }`}
+                }`}
               >
                 <div
-                  className={`shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedIds.has(template.id)
+                  className={`shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
+                    selectedIds.has(template.id)
                       ? "bg-green-500 border-green-500"
                       : "border-gray-300 group-hover:border-green-400"
-                    }`}
+                  }`}
                 >
                   {selectedIds.has(template.id) && (
                     <Check className="w-4 h-4 text-white" />
@@ -142,10 +161,11 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
 
                 <div className="ml-4 grow">
                   <h3
-                    className={` transition-colors ${selectedIds.has(template.id)
+                    className={` transition-colors ${
+                      selectedIds.has(template.id)
                         ? "text-green-900"
                         : "text-gray-700"
-                      }`}
+                    }`}
                   >
                     {template.name}
                   </h3>
@@ -209,10 +229,11 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
             <Button
               onClick={handleSubmit}
               disabled={selectedIds.size === 0}
-              className={`px-8 py-2.5  transition-all ${selectedIds.size > 0
+              className={`px-8 py-2.5  transition-all ${
+                selectedIds.size > 0
                   ? "bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-200"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                }`}
+              }`}
             >
               Add Selected Templates
             </Button>

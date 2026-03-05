@@ -24,7 +24,7 @@ interface MonthlyProjectStatsProps {
   >;
   handleStatClick: (
     projects: ProjectData[],
-    stage: "IFA" | "IFC" | "CO#",
+    stage: "IFA" | "IFC" | "COR",
     status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
   ) => void;
 }
@@ -80,7 +80,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
         stats: {
           IFA: { active: 0, onHold: 0, completed: 0, total: 0 },
           IFC: { active: 0, onHold: 0, completed: 0, total: 0 },
-          "CO#": { active: 0, onHold: 0, completed: 0, total: 0 },
+          COR: { active: 0, onHold: 0, completed: 0, total: 0 },
         },
       };
     });
@@ -99,10 +99,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
         summary[teamId].stats = data.stats;
       }
       summary[teamId].projectCount = data.projects.length;
-      summary[teamId].totalSeconds = data.totalSeconds;
+      // We will compute totalSeconds below by filtering tasks dynamically
+      summary[teamId].totalSeconds = 0;
     });
 
-    // Calculate monthly breakdown if filtered or for all tasks
+    // Calculate monthly breakdown and totalSeconds if filtered
     tasks.forEach((task) => {
       const project = projects.find((p) => p.id === task.project_id);
       const teamId = project?.team?.id || "unassigned";
@@ -121,14 +122,18 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           selectedMonth === undefined ||
           m === selectedMonth;
 
+        const hours = (task.workingHourTask || []).reduce(
+          (sum: number, wht: any) => sum + (wht.duration_seconds || 0),
+          0,
+        );
+
         if (matchesYear && matchesMonth) {
-          const hours = (task.workingHourTask || []).reduce(
-            (sum: number, wht: any) => sum + (wht.duration_seconds || 0),
-            0,
-          );
           const monthYear = `${months[m]} ${y}`;
           summary[teamId].monthlyBreakdown[monthYear] =
             (summary[teamId].monthlyBreakdown[monthYear] || 0) + hours;
+
+          // Add to total seconds for the month!
+          summary[teamId].totalSeconds += hours;
         }
       }
     });
@@ -140,12 +145,21 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
       "PEMB",
       "PEMB Designing",
     ];
-    return Object.values(summary).sort((a, b) => {
-      const indexA = teamOrder.indexOf(a.teamName);
-      const indexB = teamOrder.indexOf(b.teamName);
-      const aIndex = indexA === -1 ? teamOrder.length : indexA;
-      const bIndex = indexB === -1 ? teamOrder.length : indexB;
-      return aIndex - bIndex;
+
+    const normalizeTeamName = (name: string) =>
+      name.replace(/-/g, " ").replace(/\s+/g, " ").trim().toUpperCase();
+
+    const normalizedTeamOrder = teamOrder.map(normalizeTeamName);
+
+    const validTeams = Object.values(summary).filter((item) =>
+      normalizedTeamOrder.includes(normalizeTeamName(item.teamName)),
+    );
+
+    return validTeams.sort((a, b) => {
+      return (
+        normalizedTeamOrder.indexOf(normalizeTeamName(a.teamName)) -
+        normalizedTeamOrder.indexOf(normalizeTeamName(b.teamName))
+      );
     });
   }, [projects, tasks, teams, projectsByTeam, selectedMonth, selectedYear]);
 
@@ -210,7 +224,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
             {/* IFA/IFC/CO# Grid - Responsive Stack */}
             <div className="border border-gray-300 rounded-xl overflow-hidden bg-white">
               <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-300">
-                {["IFA", "IFC", "CO#"].map((stage) => (
+                {["IFA", "IFC", "COR"].map((stage) => (
                   <div key={stage} className="flex-1">
                     {/* Header */}
                     <div className="bg-green-50/30 border-b border-gray-300 py-2 text-center text-xs sm:text-sm  tracking-widest text-gray-800 uppercase">

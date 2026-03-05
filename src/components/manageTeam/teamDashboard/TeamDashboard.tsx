@@ -114,17 +114,17 @@ const TeamDashboard = () => {
     fetchTeams();
   }, []);
 
-  useCallback(() => {
-    const fetchAnalyticsScore = async () => {
-      try {
-        const response = await Service.GetAnalyticsScore();
-        console.log("Analytics Score:", response.data);
-      } catch (error) {
-        console.error("Error fetching analytics score:", error);
-      }
-    };
-    fetchAnalyticsScore();
-  }, []);
+  // useCallback(() => {
+  //   const fetchAnalyticsScore = async () => {
+  //     try {
+  //       const response = await Service.GetAnalyticsScore();
+  //       console.log("Analytics Score:", response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching analytics score:", error);
+  //     }
+  //   };
+  //   fetchAnalyticsScore();
+  // }, []);
 
   // Fetch all tasks once on mount to populate the dashboard faster
   useEffect(() => {
@@ -340,7 +340,6 @@ const TeamDashboard = () => {
       format = "monthly";
     }
 
-
     // Override with state (which buttons should update)
     start = new Date(range.start);
     endDateToEndOfDay(start); // Start of day actually
@@ -474,7 +473,12 @@ const TeamDashboard = () => {
 
   const calculateTeamSummary = (filteredStats: any[]) => {
     try {
-      const allFilteredTasks = filteredStats.flatMap((m) => m.tasks || []);
+      const allFilteredTasks = filteredStats.flatMap((m) => {
+        const userName =
+          `${m.firstName || m.member?.firstName || ""} ${m.lastName || m.member?.lastName || ""}`.trim() ||
+          "Unknown";
+        return (m.tasks || []).map((t: any) => ({ ...t, userName }));
+      });
 
       const uniqueProjects: any[] = [];
       const projectIds = new Set();
@@ -522,11 +526,20 @@ const TeamDashboard = () => {
       // ── Task Type Counts ──
       const taskTypeCounts = {
         modelling: 0,
-        modelChecking: 0,
+        modeling_checking: 0,
         detailing: 0,
-        detailChecking: 0,
+        detail_checking: 0,
         erection: 0,
-        erectionChecking: 0,
+        erection_checking: 0,
+      };
+
+      const taskTypeDetails: Record<string, any[]> = {
+        modelling: [],
+        modeling_checking: [],
+        detailing: [],
+        detail_checking: [],
+        erection: [],
+        erection_checking: [],
       };
 
       allFilteredTasks.forEach((task: any) => {
@@ -542,28 +555,38 @@ const TeamDashboard = () => {
 
         if (
           typeString.includes("model checking") ||
-          typeString.includes("checking model")
+          typeString.includes("checking model") ||
+          typeString.includes("modeling_checking") ||
+          typeString.includes("model_checking")
         ) {
-          taskTypeCounts.modelChecking++;
+          taskTypeCounts.modeling_checking++;
+          taskTypeDetails.modeling_checking.push(task);
         } else if (
           typeString.includes("modelling") ||
           typeString.includes("modeling")
         ) {
           taskTypeCounts.modelling++;
+          taskTypeDetails.modelling.push(task);
         } else if (
+          typeString.includes("detailing_checking") ||
           typeString.includes("detail checking") ||
-          typeString.includes("checking detail")
+          typeString.includes("checking detailing") 
         ) {
-          taskTypeCounts.detailChecking++;
+          taskTypeCounts.detail_checking++;
+          taskTypeDetails.detail_checking.push(task);
         } else if (typeString.includes("detailing")) {
           taskTypeCounts.detailing++;
+          taskTypeDetails.detailing.push(task);
         } else if (
+          typeString.includes("erection_checking") ||
           typeString.includes("erection checking") ||
-          typeString.includes("checking erection")
+          typeString.includes("checking erection") 
         ) {
-          taskTypeCounts.erectionChecking++;
+          taskTypeCounts.erection_checking++;
+          taskTypeDetails.erection_checking.push(task);
         } else if (typeString.includes("erection")) {
           taskTypeCounts.erection++;
+          taskTypeDetails.erection.push(task);
         }
       });
 
@@ -627,6 +650,7 @@ const TeamDashboard = () => {
         projects: uniqueProjects,
         projectCount,
         taskTypeCounts,
+        taskTypeDetails,
       });
     } catch (error) {
       console.error("Error calculating team stats:", error);
@@ -733,8 +757,9 @@ const TeamDashboard = () => {
           sno: index + 1,
           id: member.userId || user.id || member.id,
           name:
-            `${user.firstName || ""} ${user.middleName || ""} ${user.lastName || ""
-              }`.trim() || "Unknown",
+            `${user.firstName || ""} ${user.middleName || ""} ${
+              user.lastName || ""
+            }`.trim() || "Unknown",
           role: member.role || "Member",
           assignedHours: assignedHours.toFixed(2),
           workedHours: workedHours.toFixed(2),
@@ -761,8 +786,8 @@ const TeamDashboard = () => {
   };
 
   return (
-    <div className="h-full p-8 overflow-y-auto custom-scrollbar bg-gray-50/50">
-      <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-black/[0.03] min-h-full">
+    <div className="h-full overflow-y-auto custom-scrollbar bg-gray-50/50">
+      <div className="bg-white rounded-sm p-5 shadow-sm border border-black/[0.03] min-h-full">
         <DashboardHeader
           onAddTeam={() => setIsModalOpen(true)}
           searchTerm={searchTerm}
@@ -788,25 +813,23 @@ const TeamDashboard = () => {
             {selectedTeam && (
               <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Premium Header Bar */}
-                <div className="w-full bg-green-100 rounded-lg p-5 border border-[#6bbd45]/20 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                <div className="w-full bg-green-50/70 rounded-lg p-5 border border-[#6bbd45]/20 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
                 
 
-                  <div className="relative z-10">
-
-
-                    <h1 className="text-2xl font-black text-black tracking-tight uppercase">
-                      {teams?.find((t) => t.id === selectedTeam)?.name ||
-                        "Team Detail"}
-                    </h1>
-                  </div>
+                <div className="relative z-10">
+                  <h1 className="text-2xl font-semibold text-black tracking-tight uppercase">
+                    {teams?.find((t) => t.id === selectedTeam)?.name ||
+                      "Team Detail"}
+                  </h1>
+                </div>
 
                   <div className="flex items-center gap-4 relative z-10">
-                    <span className="px-6 py-2.5 bg-white  text-black font-black text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
+                    <span className="px-6 py-2 bg-green-100 text-black font-semibold text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
                       Overview
                     </span>
                     <button
                       onClick={() => setIsViewModalOpen(true)}
-                      className="px-6 py-2.5 bg-white text-black font-black text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
+                      className="px-6 py-2 bg-white text-black font-semibold text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
                       View Details
                     </button>
                   </div>

@@ -140,12 +140,17 @@ const ProjectDashboard = () => {
 
   const filteredProjects = useMemo(() => {
     return projectsWithStats.filter((project) => {
-      if (selectedYear === null) return true;
-
       const projectDate = new Date(project.startDate);
-      const matchesYear = projectDate.getFullYear() === selectedYear;
+
+      const matchesYear =
+        selectedYear === null ||
+        selectedYear === undefined ||
+        projectDate.getFullYear() === selectedYear;
+
       const matchesMonth =
-        selectedMonth === null || projectDate.getMonth() === selectedMonth;
+        selectedMonth === null ||
+        selectedMonth === undefined ||
+        projectDate.getMonth() === selectedMonth;
 
       return matchesYear && matchesMonth;
     });
@@ -153,7 +158,7 @@ const ProjectDashboard = () => {
 
   // Group projects by Team
   const projectsByTeam = useMemo(() => {
-    const stages = ["IFA", "IFC", "CO#"] as const;
+    const stages = ["IFA", "IFC", "COR"] as const;
     const grouped: Record<
       string,
       {
@@ -179,7 +184,7 @@ const ProjectDashboard = () => {
           stats: {
             IFA: { active: 0, onHold: 0, completed: 0, total: 0 },
             IFC: { active: 0, onHold: 0, completed: 0, total: 0 },
-            "CO#": { active: 0, onHold: 0, completed: 0, total: 0 },
+            COR: { active: 0, onHold: 0, completed: 0, total: 0 },
           },
         };
       }
@@ -204,7 +209,7 @@ const ProjectDashboard = () => {
 
   const handleStatClick = (
     projects: ProjectData[],
-    stage: "IFA" | "IFC" | "CO#",
+    stage: "IFA" | "IFC" | "COR",
     status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
   ) => {
     let filtered = projects.filter((p) => p.stage === stage);
@@ -226,9 +231,9 @@ const ProjectDashboard = () => {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 laptop-fit">
+    <div className="flex flex-col h-[calc(100vh-200px)] animate-in fade-in duration-500">
       {/* Filters Header */}
-      <div className="bg-white p-3 md:p-4 rounded-2xl border border-green-500/10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+      <div className="shrink-0 mb-2 bg-white p-3 md:p-4 rounded-2xl border border-green-500/10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
         <div className="flex items-center gap-4">
           <div className="relative">
             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -302,17 +307,18 @@ const ProjectDashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Monthly Workload Stats */}
-      <MonthlyProjectStats
-        tasks={allTasks}
-        projects={projectsWithStats}
-        selectedMonth={selectedMonth}
-        selectedYear={selectedYear}
-        teams={allTeams}
-        projectsByTeam={projectsByTeam}
-        handleStatClick={handleStatClick}
-      />
+      <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
+        {/* Monthly Workload Stats */}
+        <MonthlyProjectStats
+          tasks={allTasks}
+          projects={projectsWithStats}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          teams={allTeams}
+          projectsByTeam={projectsByTeam}
+          handleStatClick={handleStatClick}
+        />
+      </div>
 
       {/* Project Timeline Calendar */}
       {/* <ProjectCalendar projects={projects} tasks={allTasks} /> */}

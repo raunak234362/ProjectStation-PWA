@@ -18,7 +18,6 @@ export interface EditMileStoneProps {
 
 const EditMileStone = ({
   milestoneId,
-  mileStoneVersionId,
   initialData,
   onClose,
   onSuccess,

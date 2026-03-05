@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
-import { Users, Globe, HardHat, FileText, ArrowUpRight } from "lucide-react";
+import { Users, Globe, HardHat } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface CDSnapshotCardsProps {
@@ -49,7 +49,6 @@ const CountriesPopover = ({
           </span>
         </div>
       </div>
-
       <div className="max-h-64 overflow-y-auto custom-scrollbar pr-1">
         <div className="flex flex-wrap gap-2">
           {countries.length > 0 ? (
@@ -92,38 +91,25 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({
 
   const cards = [
     {
-      label: "Partner Network",
       value: stats.totalCDs,
       subText: "Registered Designers",
       icon: Users,
       color: "emerald",
-      trend: "+2 this month",
     },
     {
-      label: "Geographic Reach",
-      value: `${stats.totalCountries} Countries`,
+      value: `${stats.totalCountries} COUNTRIES`,
       subText: `${stats.totalStates} Operational States`,
       icon: Globe,
       color: "blue",
-      trend: "Across 3 Regions",
       hasTooltip: true,
     },
     {
-      label: "Engineering Pool",
       value: stats.totalEngineers,
-      subText: "Total Skilled workforce",
+      subText: "Total POC",
       icon: HardHat,
       color: "indigo",
-      trend: "Avg 24/Designer",
     },
-    {
-      label: "Live Quotations",
-      value: stats.activeRFQs,
-      subText: "Active Engagements",
-      icon: FileText,
-      color: "amber",
-      trend: "Response rate 94%",
-    },
+
   ];
 
   const colorMap: Record<
@@ -176,29 +162,21 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({
           }}
           className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-black/10 dark:border-slate-800 shadow-soft hover:shadow-medium transition-all group relative overflow-hidden"
         >
-          <div className="flex flex-col h-full relative z-10">
-            <div className="flex justify-between items-start mb-6">
+          <div className="flex flex-row justify-between items-center h-full relative z-10">
+            <div className="flex items-center">
               <div
                 className={`p-3.5 rounded-2xl ${colorMap[card.color].bg} ${colorMap[card.color].icon} group-hover:scale-110 transition-transform duration-300`}
               >
                 <card.icon size={22} strokeWidth={2.5} />
               </div>
-              <div className="flex flex-col items-end">
-                <span className="text-[10px] font-bold text-black dark:text-slate-600 uppercase tracking-widest">
-                  {card.label}
-                </span>
-                <div className="flex items-center gap-1 text-[9px] font-bold text-green-600 dark:text-green-400 mt-1">
-                  <ArrowUpRight size={10} strokeWidth={3} />
-                  <span>{card.trend}</span>
-                </div>
-              </div>
+
             </div>
 
-            <div className="mt-auto">
-              <h3 className="text-3xl font-bold text-black dark:text-white tracking-tighter mb-1 leading-none">
+            <div className="mt-auto text-right flex flex-col">
+              <h3 className="text-2xl font-medium text-black dark:text-white tracking-wide mb-1 leading-none">
                 {card.value}
               </h3>
-              <p className="text-[10px] font-bold text-black dark:text-slate-500 uppercase tracking-tight">
+              <p className="text-sm text-black dark:text-slate-500 uppercase tracking-wide">
                 {card.subText}
               </p>
             </div>

@@ -29,7 +29,7 @@ const AllTasks = () => {
       try {
         setLoading(true);
         const response =
-          userRole === "admin"
+          userRole === "admin" || userRole === "project_manager" || userRole === "dept_manager" || userRole === "deputy_manager"
             ? await Service.GetAllTask()
             : await Service.GetMyTask();
 

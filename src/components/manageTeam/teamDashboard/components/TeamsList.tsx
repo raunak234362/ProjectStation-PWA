@@ -30,7 +30,7 @@ const TeamsList: React.FC<TeamsListProps> = ({
           <div
             key={team.id}
             onClick={() => onTeamSelect(team.id)}
-            className={`p-5 rounded-[1.25rem] border transition-all cursor-pointer group flex flex-col justify-between h-28 ${selectedTeam === team.id
+            className={`p-5 rounded-[1.25rem] border transition-all cursor-pointer group flex flex-col justify-between  ${selectedTeam === team.id
               ? "bg-green-50 border-[#6bbd45]/40 shadow-sm ring-1 ring-[#6bbd45]/5"
               : "bg-white border-black/10 hover:border-black/20 hover:shadow-sm"
               }`}
@@ -40,7 +40,7 @@ const TeamsList: React.FC<TeamsListProps> = ({
                 <h4 className={`text-xl font-black tracking-tight text-black/80 transition-colors uppercase ${selectedTeam === team.id ? 'text-black' : ''}`}>
                   {team.name}
                 </h4>
-                <p className="text-sm font-bold text-black/40 mt-7">
+                <p className="text-sm font-bold text-black/40">
                   {team.members?.length || 0} members
                 </p>
               </div>

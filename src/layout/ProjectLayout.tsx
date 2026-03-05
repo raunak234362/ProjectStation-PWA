@@ -107,9 +107,9 @@ const ProjectLayout = () => {
             ) && (
                 <button
                   onClick={() => setActiveTab("projectDashboard")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "projectDashboard"
-                    ? "bg-green-200 text-black border border-black shadow-sm"
-                    : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
+                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "projectDashboard"
+                    ? "bg-green-200 text-black shadow-medium"
+                    : "text-black hover:bg-green-50"
                     }`}
                 >
                   Project Home
@@ -121,9 +121,9 @@ const ProjectLayout = () => {
             ) && (
                 <button
                   onClick={() => setActiveTab("allProject")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "allProject"
-                    ? "bg-green-200 text-black border border-black shadow-sm"
-                    : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
+                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allProject"
+                    ? "bg-green-200 text-black shadow-medium"
+                    : "text-black hover:bg-green-50"
                     }`}
                 >
                   All Projects
@@ -142,9 +142,9 @@ const ProjectLayout = () => {
             ) && (
                 <button
                   onClick={() => setActiveTab("addProject")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[1.25rem] text-sm md:text-base font-bold transition-all ${activeTab === "addProject"
-                    ? "bg-green-200 text-black border border-black shadow-sm"
-                    : "bg-white border border-black text-black hover:bg-green-50 shadow-sm"
+                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "addProject"
+                    ? "bg-green-200 text-black shadow-medium"
+                    : "text-black hover:bg-green-50"
                     }`}
                 >
                   Add New Project

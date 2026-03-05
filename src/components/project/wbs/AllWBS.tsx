@@ -28,11 +28,31 @@ const AllWBS = ({ id, stage }: { id: string; stage: string }) => {
       setError(null);
 
       const wbsBundlesResponse = await Service.GetBundleByProjectId(projectId);
-      setWbsBundles(wbsBundlesResponse.data);
-      console.log("Fetched WBS Bundle:", wbsBundlesResponse.data);
-      dispatch(
-        setWBSForProject({ projectId, wbs: wbsBundlesResponse.data || [] })
+
+      const sortOrderMap: Record<string, number> = {
+        MAIN_STEEL_PLACEMENT: 1,
+        MAIN_STEEL_CONNECTION: 2,
+        "MISC.STEEL_PLACEMENT_&_CONNECTION": 3,
+        ERECTION_OF_MAIN_STEEL: 4,
+        ERECTION_OF_MISC_STEEL: 5,
+        DETAILING_OF_MAIN_STEEL: 6,
+        DETAILING_OF_MISC_STEEL: 7,
+        OTHERS: 8,
+      };
+
+      const sortedBundles = (wbsBundlesResponse.data || []).sort(
+        (a: any, b: any) => {
+          const keyA = a.bundleKey || a.bundle?.bundleKey;
+          const keyB = b.bundleKey || b.bundle?.bundleKey;
+          const orderA = sortOrderMap[keyA] || 99;
+          const orderB = sortOrderMap[keyB] || 99;
+          return orderA - orderB;
+        },
       );
+
+      setWbsBundles(sortedBundles);
+      console.log("Fetched WBS Bundle:", sortedBundles);
+      dispatch(setWBSForProject({ projectId, wbs: sortedBundles }));
     } catch (err) {
       console.error("Error fetching WBS:", err);
       setError("Failed to load WBS data");
@@ -44,6 +64,15 @@ const AllWBS = ({ id, stage }: { id: string; stage: string }) => {
   useEffect(() => {
     fetchAllWBS();
   }, [id, stage]);
+
+  const formatTime = (minutes: number) => {
+    if (!minutes || isNaN(minutes)) return "00:00";
+    const hrs = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    return `${hrs.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
   // ✅ Define table columns for bundles
   const columns: ColumnDef<any>[] = [
@@ -77,14 +106,18 @@ const AllWBS = ({ id, stage }: { id: string; stage: string }) => {
       accessorKey: "totalExecHr",
       header: "Total Exec Hrs",
       cell: ({ row }) => (
-        <span className="text-gray-700">{row.original.totalExecHr || 0}</span>
+        <span className="text-gray-700">
+          {formatTime(row.original.totalExecHr)} hrs
+        </span>
       ),
     },
     {
       accessorKey: "totalCheckHr",
       header: "Total Check Hrs",
       cell: ({ row }) => (
-        <span className="text-gray-700">{row.original.totalCheckHr || 0}</span>
+        <span className="text-gray-700">
+          {formatTime(row.original.totalCheckHr)} hrs
+        </span>
       ),
     },
   ];
@@ -95,6 +128,17 @@ const AllWBS = ({ id, stage }: { id: string; stage: string }) => {
   };
 
   // ✅ Render loading/error states
+  const totalExecHrsSum =
+    wbsBundles?.reduce(
+      (acc: number, curr: any) => acc + (curr.totalExecHr || 0),
+      0,
+    ) || 0;
+  const totalCheckHrsSum =
+    wbsBundles?.reduce(
+      (acc: number, curr: any) => acc + (curr.totalCheckHr || 0),
+      0,
+    ) || 0;
+
   if (loading)
     return (
       <div className="flex justify-center items-center py-10 text-gray-700">
@@ -118,12 +162,26 @@ const AllWBS = ({ id, stage }: { id: string; stage: string }) => {
           <h2 className="text-lg font-semibold text-gray-700 mb-3">
             Work Breakdown Structure (WBS)
           </h2>
-          <p className="text-sm text-gray-700 mb-4">
-            Total Bundles:{" "}
-            <span className="font-semibold text-gray-700">
-              {wbsBundles?.length || 0}
-            </span>
-          </p>
+          <div className="flex gap-4 text-sm text-gray-700 mb-4">
+            <p>
+              Total Bundles:{" "}
+              <span className="font-semibold text-gray-700">
+                {wbsBundles?.length || 0}
+              </span>
+            </p>
+            <p>
+              Total Exec Hrs:{" "}
+              <span className="font-semibold text-emerald-600">
+                {formatTime(totalExecHrsSum)} hrs
+              </span>
+            </p>
+            <p>
+              Total Check Hrs:{" "}
+              <span className="font-semibold text-emerald-600">
+                {formatTime(totalCheckHrsSum)} hrs
+              </span>
+            </p>
+          </div>
         </div>
         <div>
           <Button onClick={() => setShowFetchTemplate(true)}>
@@ -146,10 +204,6 @@ const AllWBS = ({ id, stage }: { id: string; stage: string }) => {
           />
         )}
         pageSizeOptions={[10, 25, 50, 100]}
-        initialSorting={[
-          { id: "totalQtyNo", desc: true },
-          { id: "bundleKey", desc: false },
-        ]}
       />
 
       {/* ✅ Modal for WBS Details */}

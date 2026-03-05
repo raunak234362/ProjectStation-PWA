@@ -304,11 +304,11 @@ const AddFabricator = () => {
           </section>
 
           {/* Form Actions */}
-          <div className="pt-10 w-full flex justify-end">
+          <div className="w-full">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-12 py-4 bg-green-200 text-black border border-black font-black rounded-2xl shadow-sm transition-all hover:bg-green-300 active:scale-95 flex items-center gap-4 text-[10px] uppercase tracking-[0.15em]"
+              className="w-full text-center px-12 py-4 bg-green-200 text-black border border-black font-black rounded-2xl shadow-sm transition-all hover:bg-green-300 active:scale-95 flex items-center justify-center gap-4 text-xs uppercase tracking-[0.15em]"
             >
               {isSubmitting ? (
                 <>
