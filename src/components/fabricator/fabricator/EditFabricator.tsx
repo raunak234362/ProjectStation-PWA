@@ -269,21 +269,18 @@ const EditFabricator = ({
         <div className="flex justify-between items-center px-10 py-8 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/50">
           <div>
             <h2 className="text-3xl  text-slate-900 dark:text-white tracking-tight leading-none mb-2 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-green-100 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
-                <Check className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-2xl dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
+           
               </div>
               Edit Engineering Partner
             </h2>
-            <p className="text-xs  text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-              Update global fabricator intelligence and credentials
-            </p>
           </div>
           <button
             onClick={onClose}
-            className="p-3 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 rounded-2xl text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
+            className="p-2 bg-red-100  shadow-sm border border-black dark:border-slate-700 rounded-2xl text-slate-400 hover:text-black dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
             aria-label="Close"
           >
-            <X className="w-6 h-6" />
+         close
           </button>
         </div>
 
@@ -532,14 +529,14 @@ const EditFabricator = ({
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-8 py-3 text-[10px]  uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all active:scale-95"
+              className="px-8 py-3 text-[10px] border-2 border-black dark:border-white  uppercase tracking-widest text-black dark:text-white hover:text-slate-600 dark:hover:text-slate-300 transition-all active:scale-95"
             >
               Cancel Edit
             </button>
             <Button
               type="submit"
               disabled={submitting}
-              className="px-10 py-3 bg-green-600 dark:bg-green-600 text-white text-[10px]  uppercase tracking-widest rounded-2xl shadow-xl shadow-green-100 dark:shadow-none transition-all active:scale-95 flex items-center gap-3 border-none"
+              className="px-10 py-3 bg-green-600 dark:bg-green-100 text-black dark:text-white font-bold text-[10px]  uppercase tracking-widest rounded-2xl shadow-xl shadow-green-100 dark:shadow-none transition-all active:scale-95 flex items-center gap-3 border border-black dark:border-white"
             >
               {submitting ? (
                 <>

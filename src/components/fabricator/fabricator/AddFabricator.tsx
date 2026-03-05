@@ -317,8 +317,7 @@ const AddFabricator = () => {
                 </>
               ) : (
                 <>
-                  <Check className="w-5 h-5" strokeWidth={3} />
-                  Deploy Fabricator Profile
+                  Add Fabricator
                 </>
               )}
             </button>

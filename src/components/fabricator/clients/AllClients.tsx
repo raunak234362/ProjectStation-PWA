@@ -167,23 +167,20 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
               </div>
               Points of Contact
             </h2>
-            <p className="text-xs  text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-              POC management for {fabricator.fabName}
-            </p>
           </div>
           <div className="flex items-center gap-4">
             <Button
               onClick={openAddClient}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl text-[10px]  uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 border-none"
+              className="bg-green-100 hover:bg-green-200 text-black px-6 py-2.5 rounded-2xl text-[10px]  uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 border border-black"
             >
               <Plus size={16} /> Add POC
             </Button>
             <button
               onClick={onClose}
-              className="p-3 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 rounded-2xl text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
+              className="p-2 bg-red-100 hover:bg-red-200 text-black px-6 py-2.5 rounded-2xl text-[10px]  uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 border border-black"
               aria-label="Close"
             >
-              <X className="w-6 h-6" />
+              Close
             </button>
           </div>
         </div>

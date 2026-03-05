@@ -161,7 +161,7 @@ const GetFabricatorByID = ({
               {fabricator.fabName}
             </h3>
             <p className="text-[10px] font-bold text-black/50 uppercase tracking-widest">
-              Global Operations Partner
+              Fabricator
             </p>
           </div>
         </div>
@@ -172,7 +172,7 @@ const GetFabricatorByID = ({
               : "bg-green-100 text-green-900 border-green-300"
               }`}
           >
-            {fabricator.isDeleted ? "Archived" : "Active Pool"}
+            {fabricator.isDeleted ? "Archived" : "Active"}
           </span>
           {close && (
             <button
@@ -194,7 +194,7 @@ const GetFabricatorByID = ({
             : "text-black/40 hover:text-black"
             }`}
         >
-          Executive Dashboard
+          Dashboard
           {activeTab === "dashboard" && (
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-black rounded-t-full" />
           )}
@@ -206,7 +206,7 @@ const GetFabricatorByID = ({
             : "text-black/40 hover:text-black"
             }`}
         >
-          Basic Intelligence
+          Basic Details
           {activeTab === "details" && (
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-black rounded-t-full" />
           )}
