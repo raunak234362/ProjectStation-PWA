@@ -79,21 +79,21 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   onActionClick(actionMap[action.title] || action.title);
                 }
               }}
-              className="p-5 rounded-xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
+              className="p-4 rounded-xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
             >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-3 rounded-full bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <action.icon size={24} strokeWidth={2} />
+              <div className="flex items-center gap-3 z-10 min-w-0 flex-1">
+                <div className="p-2 sm:p-2.5 rounded-full bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black shrink-0">
+                  <action.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] sm:text-xs font-black text-black/40 uppercase tracking-[0.1em] leading-tight break-words">
+                  <span className="text-[10px] sm:text-xs font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
                     {action.title}
                   </span>
                 </div>
               </div>
 
-              <div className="z-10 text-right ml-4 shrink-0">
-                <span className="text-[10px] sm:text-xs font-black text-black tracking-widest uppercase">
+              <div className="z-10 text-right ml-3 shrink-0">
+                <span className="text-lg sm:text-2xl md:text-3xl font-black text-black tracking-tight">
                   {action.count}
                 </span>
               </div>

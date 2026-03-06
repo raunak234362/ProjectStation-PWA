@@ -60,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <img
               src={LOGO}
               alt="Logo"
-              className="h-24 w-auto object-contain transition-all duration-300"
+              className="h-32 w-auto object-contain transition-all duration-300"
             />
           ) : (
             <img

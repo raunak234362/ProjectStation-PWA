@@ -69,30 +69,30 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
                 isClickable && card.status && onCardClick(card.status)
               }
               className={cn(
-                "p-5 rounded-xl flex items-center justify-between group transition-all duration-300 bg-white relative overflow-hidden",
-                "border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm", // Solid black + green left border
+                "p-4 rounded-xl flex items-center justify-between group transition-all duration-300 bg-white relative overflow-hidden",
+                "border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm",
                 "hover:shadow-md",
                 isClickable && "cursor-pointer",
               )}
             >
-              <div className="flex items-center gap-4 z-10">
+              <div className="flex items-center gap-3 z-10 min-w-0 flex-1">
                 <div
                   className={cn(
-                    "p-3 rounded-full transition-colors bg-gray-50 group-hover:bg-[#f4f6f8]",
-                    card.status === "ACTIVE" ? "text-black" : "text-black",
+                    "p-2 sm:p-2.5 rounded-full transition-colors bg-gray-50 group-hover:bg-[#f4f6f8] shrink-0",
+                    "text-black",
                   )}
                 >
-                  <card.icon size={24} strokeWidth={2} />
+                  <card.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] sm:text-xs font-black text-black/40 uppercase tracking-[0.1em] leading-tight break-words">
+                  <span className="text-[10px] sm:text-xs font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
                     {card.label}
                   </span>
                 </div>
               </div>
 
-              <div className="z-10 text-right ml-4 shrink-0">
-                <span className="text-[10px] sm:text-xs font-black text-black tracking-widest uppercase">
+              <div className="z-10 text-right ml-3 shrink-0">
+                <span className="text-lg sm:text-2xl md:text-3xl font-black text-black tracking-tight">
                   {card.value}
                 </span>
               </div>

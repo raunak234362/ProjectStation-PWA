@@ -119,10 +119,10 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
       >
         <div className="p-4 sm:p-5 border-b border-black/5 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base sm:text-lg font-bold text-black dark:text-white tracking-tight">
+            <h3 className="text-lg sm:text-xl font-black text-black dark:text-white tracking-widest uppercase">
               Connection Designer Directory
             </h3>
-            <p className="text-[9px] sm:text-[10px] text-black/40 dark:text-slate-500 font-black uppercase tracking-widest mt-0.5">
+            <p className="text-[10px] sm:text-xs text-black/40 dark:text-slate-500 font-bold uppercase tracking-[0.2em] mt-0.5">
               Click to view details • Hover to see states
             </p>
           </div>
@@ -180,14 +180,14 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                       {designer.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-xs sm:text-sm font-bold text-black dark:text-white tracking-tight truncate uppercase">
+                      <h4 className="text-sm sm:text-base font-medium text-black dark:text-white tracking-widest truncate uppercase">
                         {designer.name}
                       </h4>
                       <div className="flex flex-wrap items-center gap-2 mt-0.5">
                         {designer.email && (
-                          <span className="flex items-center gap-1 text-[9px] font-bold text-black/40 dark:text-slate-500 uppercase tracking-widest truncate max-w-[120px]">
+                          <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-black/50 dark:text-slate-500 uppercase tracking-widest truncate max-w-[200px]">
                             <Mail
-                              size={10}
+                              size={12}
                               className="text-black/30 dark:text-slate-600"
                             />{" "}
                             {designer.email}
@@ -198,7 +198,7 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0 ml-2">
-                    <span className="text-[9px] font-black text-black/40 dark:text-slate-400 bg-gray-50 dark:bg-slate-800 px-2 py-0.5 rounded-md uppercase tracking-widest border border-black/5">
+                    <span className="text-[10px] sm:text-[11px] font-black text-black/40 dark:text-slate-400 bg-gray-50 dark:bg-slate-800 px-3 py-1 rounded-md uppercase tracking-widest border border-black/5">
                       {states.length}{" "}
                       <span className="hidden xs:inline">{states.length === 1 ? 'State' : 'States'}</span>
                     </span>

@@ -170,10 +170,10 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({
             </div>
 
             <div className="flex flex-col min-w-0">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-black dark:text-white tracking-tight leading-tight truncate">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-black dark:text-white tracking-tight leading-tight truncate">
                 {card.value}
               </h3>
-              <p className="text-[10px] sm:text-xs text-black/50 dark:text-slate-500 uppercase font-black tracking-widest mt-0.5">
+              <p className="text-xs sm:text-sm text-black/50 dark:text-slate-500 uppercase font-black tracking-widest mt-0.5">
                 {card.subText}
               </p>
             </div>

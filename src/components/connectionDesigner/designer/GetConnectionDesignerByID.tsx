@@ -34,7 +34,7 @@ interface GetConnectionDesignerByIDProps {
 
 const DetailRow = ({ label, value, link, isExternal }: any) => (
   <div className="flex flex-col gap-1">
-    <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">
+    <span className="text-xs uppercase font-black tracking-[0.2em] text-black">
       {label}
     </span>
     {link ? (
@@ -42,18 +42,18 @@ const DetailRow = ({ label, value, link, isExternal }: any) => (
         href={link}
         target={isExternal ? "_blank" : undefined}
         rel={isExternal ? "noopener noreferrer" : undefined}
-        className="text-gray-900 dark:text-gray-100 hover:text-green-600 transition-colors truncate font-semibold flex items-center gap-1 group"
+        className="text-black hover:text-green-600 transition-colors truncate font-semibold flex items-center gap-1 group text-sm sm:text-lg tracking-wide"
       >
         {value || "—"}
         {isExternal && (
           <ExternalLink
-            size={10}
+            size={14}
             className="opacity-0 group-hover:opacity-100 transition-opacity"
           />
         )}
       </a>
     ) : (
-      <span className="text-gray-900 dark:text-gray-100 font-semibold truncate">
+      <span className="text-black font-semibold truncate text-sm sm:text-lg tracking-wide">
         {value || "—"}
       </span>
     )}
@@ -259,16 +259,16 @@ const GetConnectionDesignerByID = ({
             {designer.name.charAt(0)}
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight mb-0.5 truncate uppercase">
+            <h2 className="text-xl sm:text-3xl font-black text-black dark:text-white tracking-widest mb-0.5 truncate uppercase">
               {designer.name}
             </h2>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[8px] sm:text-[9px] font-bold uppercase tracking-widest text-black/40 dark:text-slate-400">
-              <span className="flex items-center gap-1">
-                <Calendar size={12} className="text-green-600" /> Since{" "}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-black">
+              <span className="flex items-center gap-1.5">
+                <Calendar size={14} className="text-green-600" /> Since{" "}
                 {formatDate(designer.createdAt)}
               </span>
-              <span className="flex items-center gap-1">
-                <MapPin size={12} className="text-green-600" />{" "}
+              <span className="flex items-center gap-1.5">
+                <MapPin size={14} className="text-green-600" />{" "}
                 {designer.location || "Global"}
               </span>
             </div>
@@ -277,25 +277,25 @@ const GetConnectionDesignerByID = ({
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-4">
           {/* Tab Switcher */}
-          <div className="flex bg-gray-50 p-0.5 sm:p-1 rounded-xl border border-black/5 shadow-sm h-8 sm:h-9 items-center overflow-x-auto hide-scrollbar">
+          <div className="flex bg-gray-50/50 p-1 rounded-xl border border-black/10 shadow-sm h-10 sm:h-12 items-center overflow-x-auto hide-scrollbar">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-[8px] sm:text-[9px] uppercase font-black tracking-widest transition-all h-full shrink-0 ${activeTab === "dashboard"
-                ? "bg-white text-black border border-black/5 shadow-sm"
-                : "text-black/30 hover:text-black hover:bg-white/50"
+              className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg text-[10px] sm:text-xs uppercase font-black tracking-widest transition-all h-full shrink-0 border ${activeTab === "dashboard"
+                ? "bg-green-200 text-black border-black shadow-sm"
+                : "text-black/40 border-transparent hover:text-black hover:bg-white/50"
                 }`}
             >
-              <LayoutDashboard size={12} />
+              <LayoutDashboard size={14} />
               Dashboard
             </button>
             <button
               onClick={() => setActiveTab("insights")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-[8px] sm:text-[9px] uppercase font-black tracking-widest transition-all h-full shrink-0 ${activeTab === "insights"
-                ? "bg-white text-black border border-black/5 shadow-sm"
-                : "text-black/30 hover:text-black hover:bg-white/50"
+              className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg text-[10px] sm:text-xs uppercase font-black tracking-widest transition-all h-full shrink-0 border ${activeTab === "insights"
+                ? "bg-green-200 text-black border-black shadow-sm"
+                : "text-black/40 border-transparent hover:text-black hover:bg-white/50"
                 }`}
             >
-              <Briefcase size={12} />
+              <Briefcase size={14} />
               Files
             </button>
           </div>
@@ -303,7 +303,7 @@ const GetConnectionDesignerByID = ({
           {close && (
             <button
               onClick={close}
-              className="px-3 sm:px-4 py-1.5 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl text-[8px] sm:text-[9px] uppercase font-black tracking-widest hover:bg-rose-100 transition-all shadow-sm h-8 sm:h-9"
+              className="px-4 sm:px-6 py-2 bg-white text-black border border-black rounded-xl text-[10px] sm:text-xs uppercase font-black tracking-widest hover:bg-red-50 hover:text-red-600 transition-all shadow-sm h-10 sm:h-12"
             >
               Close
             </button>
@@ -314,34 +314,33 @@ const GetConnectionDesignerByID = ({
       {activeTab === "dashboard" && (
         <>
           {/* Snapshot Row */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {statsCards.map((card, i) => (
               <div
                 key={i}
-                className="bg-white p-2.5 sm:p-3 rounded-xl border border-black/5 transition-all group relative flex items-center justify-between gap-2 overflow-hidden shadow-sm"
+                className="bg-white p-4 sm:p-5 rounded-xl border-l-4 border-l-[#6bbd45] border border-black/10 transition-all group relative flex flex-col items-start justify-between gap-4 overflow-hidden shadow-sm"
               >
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                  <div className={cn("p-1.5 sm:p-2 rounded-lg border border-black/5 bg-green-50 text-green-600 group-hover:scale-105 transition-transform shrink-0")}>
-                    <card.icon size={18} />
+                <div className="flex items-center gap-3 w-full justify-between">
+                  <div className={cn("p-2.5 sm:p-3 rounded-2xl border border-black/10 bg-white text-black group-hover:scale-105 transition-transform shrink-0 shadow-xs")}>
+                    <card.icon size={22} strokeWidth={2.5} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[9px] sm:text-[10px] font-black text-black/40 uppercase tracking-tight block truncate">
-                      {card.label}
-                    </span>
-                    <p className="text-[8px] sm:text-[9px] font-bold text-black/30 uppercase truncate leading-tight">
-                      {card.sub || "Engineers"}
-                    </p>
+                  <div className="text-right">
+                    <h4
+                      className={`text-2xl sm:text-3xl font-black tracking-tighter ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-[#6bbd45]") : "text-black"}`}
+                    >
+                      {card.value.split(' ')[0]}
+                    </h4>
                   </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <h4
-                    className={`text-xs sm:text-sm font-black ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-green-700") : "text-black"}`}
-                  >
-                    {card.value.split(' ')[0]}
-                  </h4>
-                  <span className="text-[7px] sm:text-[8px] font-bold text-black/20 uppercase block -mt-1 leading-none">
-                    {card.value.split(' ')[1] || ""}
+
+                <div className="w-full">
+                  <span className="text-[11px] sm:text-[12px] font-black text-black uppercase tracking-[0.2em] block">
+                    {card.label}
                   </span>
+                  <div className="mt-1 h-[1px] bg-black/5 w-full" />
+                  <p className="text-[10px] sm:text-[11px] font-black text-black uppercase tracking-[0.2em] mt-2 leading-tight">
+                    {card.sub || "Engineers"}
+                  </p>
                 </div>
               </div>
             ))}
@@ -352,13 +351,13 @@ const GetConnectionDesignerByID = ({
             <div className="lg:col-span-8 space-y-8">
               {/* Pending Actions */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
+                <div className="px-6 py-5 border-b border-black/10 flex items-center gap-2 bg-gray-50/50">
                   <ClipboardList
                     className="text-[#6bbd45]"
                     size={22}
                     strokeWidth={2.5}
                   />
-                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
+                  <h3 className="text-sm font-black text-black uppercase tracking-[0.2em]">
                     Pending Actions
                   </h3>
                 </div>
@@ -366,19 +365,19 @@ const GetConnectionDesignerByID = ({
                   {pendingActions.map((action, i) => (
                     <div
                       key={i}
-                      className="flex flex-row items-center gap-3 p-3 sm:p-4 rounded-xl bg-[#f9fdf7] border border-[#6bbd45]/5 hover:border-[#6bbd45]/20 transition-all group cursor-pointer"
+                      className="flex flex-row items-center gap-4 p-4 sm:p-5 rounded-xl bg-white border border-black/10 hover:border-[#6bbd45]/40 transition-all group cursor-pointer shadow-sm"
                     >
                       <div
-                        className={`p-2.5 rounded-lg shadow-xs ${action.color} ${action.iconColor}`}
+                        className={`p-3 rounded-2xl shadow-xs bg-white border border-black/10 ${action.iconColor}`}
                       >
-                        <action.icon size={20} strokeWidth={2.5} />
+                        <action.icon size={22} strokeWidth={2.5} />
                       </div>
                       <div className="flex flex-row gap-3 items-center min-w-0 flex-1 justify-between">
-                        <div className="font-bold text-[11px] text-slate-800 uppercase tracking-tight truncate">
+                        <div className="font-black text-xs sm:text-sm text-black uppercase tracking-[0.2em] truncate">
                           {action.title}
                         </div>
                         <div
-                          className={`text-xl font-black tracking-tight ${action.iconColor}`}
+                          className={`text-3xl sm:text-4xl font-black tracking-tighter ${action.iconColor}`}
                         >
                           {action.count}
                         </div>
@@ -389,10 +388,10 @@ const GetConnectionDesignerByID = ({
               </div>
 
               {/* Profile Details */}
-              <div className="bg-white rounded-xl border border-black/5 overflow-hidden shadow-sm">
-                <div className="bg-gray-50/70 px-5 py-3 border-b border-black/5 flex items-center gap-2">
-                  <ClipboardList size={14} className="text-green-600" />
-                  <h3 className="text-[10px] font-black text-black/40 uppercase tracking-widest">
+              <div className="bg-white rounded-xl border border-black/10 overflow-hidden shadow-sm">
+                <div className="bg-gray-50/70 px-5 py-3 border-b border-black/10 flex items-center gap-2">
+                  <ClipboardList size={16} className="text-green-600" />
+                  <h3 className="text-[11px] font-black text-black uppercase tracking-[0.25em]">
                     Profile Details
                   </h3>
                 </div>
@@ -426,27 +425,27 @@ const GetConnectionDesignerByID = ({
             <div className="lg:col-span-4 space-y-8">
               <div className="bg-white rounded-xl border border-black/5 p-5 shadow-sm flex flex-col min-h-[400px]">
                 {/* Quick Actions Card */}
-                <div className="bg-gray-50 p-6 rounded-3xl border border-black/5 relative overflow-hidden group">
-                  <h4 className="text-[9px] uppercase font-black tracking-[0.2em] text-black/40 mb-6 relative z-10">
+                <div className="bg-gray-50 p-6 rounded-3xl border border-black/10 relative overflow-hidden group">
+                  <h4 className="text-[12px] uppercase font-black tracking-[0.3em] text-black mb-6 relative z-10">
                     Administrative Control
                   </h4>
-                  <div className="space-y-3 relative z-10">
+                  <div className="space-y-4 relative z-10">
                     <Button
                       onClick={() => setEditModel(designer)}
-                      className="w-full justify-start gap-3 bg-white hover:bg-gray-100 text-black border border-black/5 rounded-xl py-3.5 text-[9px] uppercase font-black tracking-widest transition-all shadow-xs"
+                      className="w-full justify-start gap-4 bg-white hover:bg-gray-100 text-black border border-black/10 rounded-xl py-4 text-xs sm:text-sm uppercase font-black tracking-[0.2em] transition-all shadow-sm"
                     >
-                      <Briefcase size={16} className="text-black/40" />
+                      <Briefcase size={20} className="text-black/40" />
                       Edit Designer Info
                     </Button>
                     <Button
                       onClick={() => setEngineerModel(designer)}
-                      className="w-full justify-start gap-3 bg-white hover:bg-gray-100 text-black border border-black/5 rounded-xl py-3.5 text-[9px] uppercase font-black tracking-widest transition-all shadow-xs"
+                      className="w-full justify-start gap-4 bg-white hover:bg-gray-100 text-black border border-black/10 rounded-xl py-4 text-xs sm:text-sm uppercase font-black tracking-[0.2em] transition-all shadow-sm"
                     >
-                      <LayoutDashboard size={16} className="text-black/40" />
+                      <LayoutDashboard size={20} className="text-black/40" />
                       Manage Workforce
                     </Button>
-                    <Button className="w-full justify-start gap-3 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl py-3.5 text-[9px] uppercase font-black tracking-widest transition-all">
-                      <AlertCircle size={16} />
+                    <Button className="w-full justify-start gap-4 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl py-4 text-xs sm:text-sm uppercase font-black tracking-[0.2em] transition-all">
+                      <AlertCircle size={20} />
                       Archive Profile
                     </Button>
                   </div>
