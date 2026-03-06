@@ -90,6 +90,7 @@ const WBTDashboard = () => {
 
   // Pending Submittals state
   const [pendingSubmittals, setPendingSubmittals] = useState<any[]>([]);
+  const [pendingSubmittalsRes, setPendingSubmittalsRes] = useState<any[]>([]);
   const [pendingRFQs, setPendingRFQs] = useState<any[]>([]);
   const [pendingRFIs, setPendingRFIs] = useState<any[]>([]);
   const [pendingCOs, setPendingCOs] = useState<any[]>([]);
@@ -110,7 +111,7 @@ const WBTDashboard = () => {
           received,
           upcomingSubmittalsRes,
           allInvoices,
-          _pendingSubmittalsRes,
+          pendingSubmittalsRes,
           pendingRFIsData,
           pendingCOsData,
           dashboardData,
@@ -132,10 +133,17 @@ const WBTDashboard = () => {
           sent,
           received,
           upcomingSubmittalsRes,
+          pendingSubmittalsRes,
           allInvoices,
           dashboardData,
           pendingRFIsData,
         });
+
+        setPendingSubmittalsRes(
+          Array.isArray(pendingSubmittalsRes)
+            ? pendingSubmittalsRes
+            : pendingSubmittalsRes?.data || [],
+        );
 
         setPendingSubmittals(
           Array.isArray(upcomingSubmittalsRes)
@@ -319,7 +327,7 @@ const WBTDashboard = () => {
         <SubmittalListModal
           isOpen={isSubmittalModalOpen}
           onClose={() => setIsSubmittalModalOpen(false)}
-          data={pendingSubmittals}
+          data={pendingSubmittalsRes}
         />
 
         <ProjectDetailsModal
