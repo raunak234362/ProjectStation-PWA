@@ -152,7 +152,7 @@ const EstimationDashboard = () => {
   }
 
   return (
-    <div className="h-full p-6 lg:p-8 space-y-8 bg-white overflow-y-auto custom-scrollbar">
+    <div className="h-full p-4 sm:p-6 lg:p-8 space-y-8 bg-white overflow-y-auto custom-scrollbar">
       {/* Header Section */}
       <div className="flex flex-col gap-1">
         {/* <h2 className="text-3xl font-black text-black tracking-tight uppercase">
@@ -163,34 +163,43 @@ const EstimationDashboard = () => {
         </p> */}
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <div className="xl:col-span-3">
-          <EstimationStats
-            stats={{
-              ...stats,
-              totalHours: Number(stats.totalHours).toFixed(2),
-            }}
+      {/* Stats Section */}
+      <section className="space-y-4">
+        <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.3em]">
+          Executive Summary
+        </h3>
+        <EstimationStats
+          stats={{
+            ...stats,
+            totalHours: Number(stats.totalHours).toFixed(2),
+          }}
+        />
+      </section>
+
+      {/* Analytics Section */}
+      <section className="space-y-4">
+        <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.3em]">
+          Estimation Velocity & Trends
+        </h3>
+        <div className="border border-black/10 rounded-3xl overflow-hidden shadow-sm">
+          <FabricatorProjectChart
+            data={chartData}
+            fabricators={chartFabricators}
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
           />
         </div>
-      </div>
+      </section>
 
-      {/* Comparison Chart */}
-      <div className="w-full">
-        <FabricatorProjectChart
-          data={chartData}
-          fabricators={chartFabricators}
-          selectedYear={selectedYear}
-          setSelectedYear={setSelectedYear}
-        />
-      </div>
-
-      {/* List of Estimations */}
-      <div className="space-y-6">
-        <div className="bg-white overflow-hidden">
+      {/* List Section */}
+      <section className="space-y-4">
+        <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.3em]">
+          Project Estimation Manifesto
+        </h3>
+        <div className="bg-white rounded-2xl border border-black/10 overflow-hidden shadow-sm">
           <AllEstimation estimations={estimations} onRefresh={fetchData} />
         </div>
-      </div>
+      </section>
     </div>
   );
 };

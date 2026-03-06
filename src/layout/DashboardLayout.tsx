@@ -57,14 +57,14 @@ const Layout = () => {
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar container */}
       {!isModalOpen && (
-        <div className="md:hidden z-0">
+        <div className="md:hidden">
           <Sidebar
             isMinimized={!isMobileOpen}
             toggleSidebar={() => setIsMobileOpen(false)}
@@ -75,7 +75,7 @@ const Layout = () => {
 
       {/* Main Content Area */}
       <div
-        className={`flex flex-col flex-1 min-h-0 ${isModalOpen ? "p-0" : "p-4"} relative z-50 bg-white`} // Clean white background
+        className={`flex flex-col flex-1 min-w-0 min-h-0 ${isModalOpen ? "p-0" : "p-2 md:p-3.5"} relative z-50 bg-white`} // Clean white background
       >
         <div
           className={`
@@ -86,7 +86,7 @@ const Layout = () => {
         >
           {/* Header */}
           <div className="pb-4">
-            <Header isMinimized={isMinimized} toggleSidebar={toggleSidebar} />
+            <Header isMinimized={isMinimized} isMobileOpen={isMobileOpen} toggleSidebar={toggleSidebar} />
           </div>
 
           {/* Page Content */}

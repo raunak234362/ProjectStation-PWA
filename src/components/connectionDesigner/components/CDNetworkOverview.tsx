@@ -117,31 +117,31 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
         transition={{ duration: 0.5 }}
         className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[32px] shadow-soft border border-black/10 dark:border-slate-800 flex flex-col overflow-hidden min-h-[400px]"
       >
-        <div className="p-6 border-b border-black/10 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 border-b border-black/5 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-lg font-bold text-black dark:text-white tracking-tight">
+            <h3 className="text-base sm:text-lg font-bold text-black dark:text-white tracking-tight">
               Connection Designer Directory
             </h3>
-            <p className="text-[10px] text-black dark:text-slate-500 font-medium uppercase tracking-widest mt-1">
+            <p className="text-[9px] sm:text-[10px] text-black/40 dark:text-slate-500 font-black uppercase tracking-widest mt-0.5">
               Click to view details • Hover to see states
             </p>
           </div>
           <div className="relative w-full sm:w-auto">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500"
-              size={14}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500"
+              size={12}
             />
             <input
               type="text"
-              placeholder="Search by name, email, or state..."
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-black/10 rounded-xl text-sm focus:ring-1 focus:ring-green-500 outline-none w-full sm:w-56 text-black dark:text-white transition-all placeholder:text-gray-500"
+              className="pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-slate-800 border border-black/5 rounded-lg text-xs focus:ring-1 focus:ring-green-500 outline-none w-full sm:w-48 text-black dark:text-white transition-all placeholder:text-gray-400"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1.5 custom-scrollbar">
           {filteredDesigners.map((designer) => {
             let states: string[] = [];
             if (Array.isArray(designer.state)) states = designer.state;
@@ -170,25 +170,25 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                     setHoverRect(null);
                   }}
                   onClick={() => onSelect(designer.id || designer._id)}
-                  className={`group flex items-center justify-between p-4 rounded-2xl transition-all border border-black/10 cursor-pointer ${isHovered
-                    ? "bg-green-50/50 dark:bg-green-900/10 shadow-sm"
+                  className={`group flex items-center justify-between p-2.5 sm:p-3 rounded-xl transition-all border border-black/5 cursor-pointer ${isHovered
+                    ? "bg-green-50/30 dark:bg-green-900/10 shadow-sm"
                     : "bg-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
                     }`}
                 >
-                  <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-10 h-10 shrink-0 rounded-2xl bg-linear-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-gray-600 dark:text-slate-300  text-sm shadow-sm transition-transform group-hover:scale-110">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 shrink-0 rounded-lg bg-gray-50 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-300 font-bold text-xs shadow-sm transition-transform group-hover:scale-105">
                       {designer.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-sm font-bold text-black dark:text-white tracking-tight truncate">
+                      <h4 className="text-xs sm:text-sm font-bold text-black dark:text-white tracking-tight truncate uppercase">
                         {designer.name}
                       </h4>
-                      <div className="flex flex-wrap items-center gap-3 mt-1">
+                      <div className="flex flex-wrap items-center gap-2 mt-0.5">
                         {designer.email && (
-                          <span className="flex items-center gap-1.5 text-[10px] font-medium text-black dark:text-slate-500 uppercase tracking-wider truncate max-w-[150px]">
+                          <span className="flex items-center gap-1 text-[9px] font-bold text-black/40 dark:text-slate-500 uppercase tracking-widest truncate max-w-[120px]">
                             <Mail
                               size={10}
-                              className="text-black dark:text-slate-600"
+                              className="text-black/30 dark:text-slate-600"
                             />{" "}
                             {designer.email}
                           </span>
@@ -197,14 +197,14 @@ const CDNetworkOverview: React.FC<CDNetworkOverviewProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 shrink-0 ml-2">
-                    <span className="text-[10px] font-bold text-black dark:text-slate-400 bg-white dark:bg-slate-800 px-3 py-1 rounded-lg uppercase tracking-widest border border-black/10 dark:border-slate-700/50">
+                  <div className="flex items-center gap-3 shrink-0 ml-2">
+                    <span className="text-[9px] font-black text-black/40 dark:text-slate-400 bg-gray-50 dark:bg-slate-800 px-2 py-0.5 rounded-md uppercase tracking-widest border border-black/5">
                       {states.length}{" "}
-                      <span className="hidden xs:inline">States</span>
+                      <span className="hidden xs:inline">{states.length === 1 ? 'State' : 'States'}</span>
                     </span>
                     <ChevronRight
-                      size={16}
-                      className="text-black group-hover:text-green-600 transition-colors"
+                      size={14}
+                      className="text-black/20 group-hover:text-green-600 transition-colors"
                     />
                   </div>
                 </motion.div>

@@ -570,7 +570,7 @@ const TeamDashboard = () => {
         } else if (
           typeString.includes("detailing_checking") ||
           typeString.includes("detail checking") ||
-          typeString.includes("checking detailing") 
+          typeString.includes("checking detailing")
         ) {
           taskTypeCounts.detail_checking++;
           taskTypeDetails.detail_checking.push(task);
@@ -580,7 +580,7 @@ const TeamDashboard = () => {
         } else if (
           typeString.includes("erection_checking") ||
           typeString.includes("erection checking") ||
-          typeString.includes("checking erection") 
+          typeString.includes("checking erection")
         ) {
           taskTypeCounts.erection_checking++;
           taskTypeDetails.erection_checking.push(task);
@@ -757,9 +757,8 @@ const TeamDashboard = () => {
           sno: index + 1,
           id: member.userId || user.id || member.id,
           name:
-            `${user.firstName || ""} ${user.middleName || ""} ${
-              user.lastName || ""
-            }`.trim() || "Unknown",
+            `${user.firstName || ""} ${user.middleName || ""} ${user.lastName || ""
+              }`.trim() || "Unknown",
           role: member.role || "Member",
           assignedHours: assignedHours.toFixed(2),
           workedHours: workedHours.toFixed(2),
@@ -787,7 +786,7 @@ const TeamDashboard = () => {
 
   return (
     <div className="h-full overflow-y-auto custom-scrollbar bg-gray-50/50">
-      <div className="bg-white rounded-sm p-5 shadow-sm border border-black/[0.03] min-h-full">
+      <div className="bg-white rounded-2xl sm:rounded-none p-3 sm:p-5 shadow-sm border border-black/5 min-h-full">
         <DashboardHeader
           onAddTeam={() => setIsModalOpen(true)}
           searchTerm={searchTerm}
@@ -814,14 +813,14 @@ const TeamDashboard = () => {
               <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Premium Header Bar */}
                 <div className="w-full bg-green-50/70 rounded-lg p-5 border border-[#6bbd45]/20 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                
 
-                <div className="relative z-10">
-                  <h1 className="text-2xl font-semibold text-black tracking-tight uppercase">
-                    {teams?.find((t) => t.id === selectedTeam)?.name ||
-                      "Team Detail"}
-                  </h1>
-                </div>
+
+                  <div className="relative z-10">
+                    <h1 className="text-2xl font-semibold text-black tracking-tight uppercase">
+                      {teams?.find((t) => t.id === selectedTeam)?.name ||
+                        "Team Detail"}
+                    </h1>
+                  </div>
 
                   <div className="flex items-center gap-4 relative z-10">
                     <span className="px-6 py-2 bg-green-100 text-black font-semibold text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-black/10 transition-all border border-black">
@@ -876,11 +875,11 @@ const TeamDashboard = () => {
 
       {/* Modals */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-2xl sm:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
+              className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
             >
               <XIcon />
             </button>
@@ -892,15 +891,15 @@ const TeamDashboard = () => {
       )}
 
       {isViewModalOpen && selectedTeam && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-2xl sm:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
             <button
               onClick={() => setIsViewModalOpen(false)}
-              className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
+              className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
             >
               <XIcon />
             </button>
-            <div className="max-h-[80vh] overflow-y-auto p-8 custom-scrollbar">
+            <div className="max-h-[80vh] overflow-y-auto p-4 sm:p-8 custom-scrollbar">
               <GetTeamById id={selectedTeam} />
             </div>
           </div>
@@ -908,15 +907,15 @@ const TeamDashboard = () => {
       )}
 
       {selectedEmployee && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-2xl sm:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative">
             <button
               onClick={handleCloseModal}
-              className="absolute top-6 right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
+              className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 hover:bg-red-50 hover:text-red-500 rounded-full z-10 transition-colors"
             >
               <XIcon />
             </button>
-            <div className="max-h-[80vh] overflow-y-auto p-8 custom-scrollbar">
+            <div className="max-h-[80vh] overflow-y-auto p-4 sm:p-8 custom-scrollbar">
               <GetEmployeeByID id={selectedEmployee} />
             </div>
           </div>

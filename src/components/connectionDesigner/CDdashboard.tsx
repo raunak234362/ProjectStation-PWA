@@ -156,9 +156,9 @@ const CDdashboard = () => {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 30, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-slate-900 rounded-[40px] shadow-3xl w-[98%] max-w-[95vw] h-[95vh] overflow-y-auto relative custom-scrollbar border border-gray-100 dark:border-slate-800"
+              className="bg-white dark:bg-slate-900 rounded-[32px] sm:rounded-[40px] shadow-3xl w-[98%] max-w-[95vw] h-[95vh] overflow-y-auto relative custom-scrollbar border border-black/5"
             >
-              <div className="p-6 md:px-10 md:py-6">
+              <div className="p-4 sm:p-6 md:px-10 md:py-6">
                 <GetConnectionDesignerByID
                   id={selectedDesignerId}
                   close={() => setSelectedDesignerId(null)}

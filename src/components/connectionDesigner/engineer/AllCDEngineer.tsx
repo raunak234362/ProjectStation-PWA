@@ -127,11 +127,9 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
         <div className="flex items-center justify-between p-8 border-b border-gray-100 dark:border-slate-800">
           <div>
             <h2 className="text-2xl  text-gray-800 dark:text-white tracking-tight">
-              Workforce Intelligence
+             Connection Designer Engineer
             </h2>
-            <p className="text-[10px]  text-gray-400 dark:text-slate-500 uppercase tracking-widest mt-1">
-              Manage engineering team for {designerData.name}
-            </p>
+            
           </div>
           <button
             onClick={onClose}

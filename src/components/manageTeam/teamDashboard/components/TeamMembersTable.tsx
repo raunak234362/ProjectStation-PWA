@@ -23,10 +23,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         header: "Name",
         accessorKey: "name",
         cell: ({ row }) => (
-          <div
-            className="font-semibold cursor-pointer hover:text-black transition-colors"
-            onClick={() => onMemberClick(row.original.id)}
-          >
+          <div className="font-semibold text-black">
             {row.original.name}
           </div>
         ),
@@ -106,21 +103,21 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         ),
       },
     ],
-    [onMemberClick, formatToHoursMinutes, getEfficiencyColorClass]
+    [formatToHoursMinutes, getEfficiencyColorClass]
   );
 
   return (
-    <div className="bg-white rounded-[2.5rem] border border-black/5 shadow-soft overflow-hidden mb-12">
-      <div className="px-8 py-6 border-b border-black/5 bg-gray-50/30">
-        <h3 className="text-2xl font-black text-black uppercase tracking-tight">
+    <div className="bg-white rounded-xl sm:rounded-[2.5rem] border border-black/10 shadow-medium overflow-hidden mb-12">
+      <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-black/5 bg-gray-50/30">
+        <h3 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
           Team Members Performance
         </h3>
-
       </div>
-      <div className="p-6">
+      <div className="p-2 sm:p-6 sm:px-10">
         <DataTable
           columns={columns}
           data={tableData}
+          onRowClick={(row) => onMemberClick(row.id)}
           showColumnToggle={false}
         />
       </div>

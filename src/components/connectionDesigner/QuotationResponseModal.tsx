@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { X } from "lucide-react";
@@ -25,12 +24,10 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
   const onSubmit = async (data: Quotation) => {
     try {
       setLoading(true);
-      const connectionDesignerId =
-        sessionStorage.getItem("connectionDesignerId") || "";
+      const connectionDesignerId = sessionStorage.getItem("connectionDesignerId") || "";
       const userId = sessionStorage.getItem("userId") || "";
 
       const formData = new FormData();
-
       formData.append("rfqId", rfqId);
       formData.append("connectionDesignerId", connectionDesignerId);
       formData.append("userId", userId);
@@ -39,22 +36,14 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
       formData.append("weeks", data.weeks);
       formData.append("approvalStatus", String(data.approvalStatus || false));
 
-      if (data.approvalDate) {
-        formData.append("approvalDate", data.approvalDate);
-      }
-
-      if (files?.length) {
-        files.forEach((file) => {
-          formData.append("files", file);
-        });
-      }
+      if (data.approvalDate) formData.append("approvalDate", data.approvalDate);
+      if (files?.length) files.forEach((file) => formData.append("files", file));
 
       await Service.addConnectionDesignerQuotation(formData);
       toast.success("Quotation submitted successfully!");
       onSuccess();
       onClose();
     } catch (error) {
-      console.error("Quotation submission error:", error);
       toast.error("Failed to submit quotation");
     } finally {
       setLoading(false);
@@ -62,132 +51,61 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-2xl p-6 rounded-xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
-        >
-          <X size={20} />
-        </button>
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="bg-white w-full max-w-2xl rounded-2xl md:rounded-3xl shadow-2xl relative max-h-[90vh] overflow-hidden border border-black/10 flex flex-col">
+        <div className="flex items-center justify-between p-6 sm:p-8 border-b border-black/5 bg-white">
+          <div className="flex flex-col">
+            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">Quotation Response</h2>
+            <p className="text-[10px] font-bold text-black/40 uppercase tracking-[0.3em]">Bid & Estimation Protocol</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-rose-50 text-rose-500 rounded-xl transition-all">
+            <X size={24} />
+          </button>
+        </div>
 
-        <h2 className="text-2xl  text-green-700 mb-6">
-          Submit Quotation Response
-        </h2>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Bid Price */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Bid Price (USD) <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register("bidprice", { required: "Bid price is required" })}
-              type="number"
-              step="0.01"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 outline-none transition"
-              placeholder="Enter bid price"
-            />
-            {errors.bidprice && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.bidprice.message}
-              </p>
-            )}
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-10 space-y-8 overflow-y-auto custom-scrollbar">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Bid Price (USD)</label>
+              <input {...register("bidprice", { required: "Bid price is required" })} type="number" step="0.01" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" placeholder="0.00" />
+              {errors.bidprice && <p className="text-rose-500 text-[9px] font-black uppercase tracking-widest">{errors.bidprice.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Estimated Hours</label>
+              <input {...register("estimatedHours", { required: "Estimated hours is required" })} type="number" step="0.01" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" placeholder="40.0" />
+              {errors.estimatedHours && <p className="text-rose-500 text-[9px] font-black uppercase tracking-widest">{errors.estimatedHours.message}</p>}
+            </div>
           </div>
 
-          {/* Estimated Hours */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Estimated Hours <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register("estimatedHours", {
-                required: "Estimated hours is required",
-              })}
-              type="number"
-              step="0.01"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 outline-none transition"
-              placeholder="Enter estimated hours"
-            />
-            {errors.estimatedHours && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.estimatedHours.message}
-              </p>
-            )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Duration (Weeks)</label>
+              <input {...register("weeks", { required: "Duration in weeks is required" })} type="number" step="0.01" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" placeholder="2" />
+              {errors.weeks && <p className="text-rose-500 text-[9px] font-black uppercase tracking-widest">{errors.weeks.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Projected Approval</label>
+              <input {...register("approvalDate")} type="date" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" />
+            </div>
           </div>
 
-          {/* Weeks */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Duration (Weeks) <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register("weeks", {
-                required: "Duration in weeks is required",
-              })}
-              type="number"
-              step="0.01"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 outline-none transition"
-              placeholder="Enter duration in weeks"
-            />
-            {errors.weeks && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.weeks.message}
-              </p>
-            )}
+          <div className="flex items-center gap-4 bg-gray-50/50 p-4 rounded-xl border border-black/5">
+            <input {...register("approvalStatus")} type="checkbox" id="approvalStatus" className="w-6 h-6 text-black border-black/10 rounded-lg cursor-pointer" />
+            <label htmlFor="approvalStatus" className="text-xs font-black text-black uppercase tracking-widest cursor-pointer">Verify & Approve Quotation</label>
           </div>
 
-          {/* Approval Status */}
-          <div className="flex items-center gap-3">
-            <input
-              {...register("approvalStatus")}
-              type="checkbox"
-              id="approvalStatus"
-              className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
-            />
-            <label
-              htmlFor="approvalStatus"
-              className="text-sm font-medium text-gray-700"
-            >
-              Mark as Approved
-            </label>
+          <div className="space-y-4">
+            <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Supporting Documentation</label>
+            <div className="p-1 rounded-2xl border-2 border-dashed border-black/10 hover:border-black transition-all">
+              <MultipleFileUpload onFilesChange={setFiles} />
+            </div>
           </div>
 
-          {/* Approval Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Approval Date (Optional)
-            </label>
-            <input
-              {...register("approvalDate")}
-              type="date"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 outline-none transition"
-            />
-          </div>
-
-          {/* Files */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Attachments (Optional)
-            </label>
-            <MultipleFileUpload onFilesChange={setFiles} />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition disabled:bg-gray-400"
-            >
-              {loading ? "Submitting..." : "Submit Quotation"}
-            </Button>
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-black/5">
+            <button type="button" onClick={onClose} className="px-8 py-3 bg-white text-black border border-black/10 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50">Cancel</button>
+            <button type="submit" disabled={loading} className="px-10 py-3 bg-black text-white rounded-xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl disabled:bg-black/40 shrink-0">
+              {loading ? "Transmitting..." : "Submit Quotation"}
+            </button>
           </div>
         </form>
       </div>

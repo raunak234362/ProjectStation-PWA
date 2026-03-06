@@ -35,7 +35,7 @@ const RFQComparisonChart: React.FC<RFQComparisonChartProps> = ({
   const isDark = theme === "dark";
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-soft flex flex-col h-full border border-black">
+    <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl shadow-soft flex flex-col h-full border border-black">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-6 shrink-0">
         <div>
           <h2 className="text-xl text-black flex items-center gap-2 tracking-tight uppercase">

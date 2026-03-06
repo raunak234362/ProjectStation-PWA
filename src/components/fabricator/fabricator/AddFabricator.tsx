@@ -16,7 +16,6 @@ import {
   Layers,
   Percent,
   Calendar,
-  Check,
   Loader2,
   Building2,
 } from "lucide-react";
@@ -144,15 +143,15 @@ const AddFabricator = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden border border-black rounded-[2.5rem]"
+        className="overflow-hidden border-0 md:border md:border-black rounded-2xl md:rounded-[2.5rem] bg-white"
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="p-10 space-y-12">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6 md:p-10 space-y-8 md:space-y-12">
           {/* Identity & Presence */}
-          <section className="space-y-8">
+          <section className="space-y-6 md:space-y-8">
             <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
               Brand Identity & Digital Presence
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
               <div className="space-y-4">
                 <label className="block text-xs text-black font-black uppercase tracking-widest">
                   Fabricator Name <span className="text-rose-500">*</span>
@@ -203,7 +202,7 @@ const AddFabricator = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
               <div className="space-y-4">
                 <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Globe size={14} className="text-black/40" />
@@ -235,11 +234,11 @@ const AddFabricator = () => {
 
           {/* Operational Metrics */}
           {(userRole === "ADMIN" || userRole === "PROJECT_MANAGER_OFFICER") && (
-            <section className="space-y-8 pt-10 border-t border-black/10">
+            <section className="space-y-6 md:space-y-8 pt-8 md:pt-10 border-t border-black/10">
               <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                 Commercial & Operational Governance
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
                 <div className="space-y-4">
                   <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
                     <Percent size={14} className="text-black/40" />
@@ -284,11 +283,11 @@ const AddFabricator = () => {
           )}
 
           {/* Assets */}
-          <section className="space-y-8 pt-10 border-t border-black/10">
+          <section className="space-y-6 md:space-y-8 pt-8 md:pt-10 border-t border-black/10">
             <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
               Digital Assets & Compliance Media
             </h3>
-            <div className="bg-white p-8 rounded-3xl border border-black shadow-sm">
+            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl border border-black shadow-sm">
               <Controller
                 name="files"
                 control={control}

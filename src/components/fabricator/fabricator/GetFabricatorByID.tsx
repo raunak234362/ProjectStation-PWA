@@ -310,28 +310,28 @@ const GetFabricatorByID = ({
       </div>
 
       {/* Buttons */}
-      <div className="mt-10 pt-8 border-t border-black/10 flex flex-wrap gap-4">
+      <div className="mt-10 pt-8 border-t border-black/10 grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-4">
         <Button
           onClick={() => handleBranch(fabricator)}
-          className="px-6 py-3 bg-green-200 text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-green-300 transition-all shadow-sm active:scale-95"
+          className="w-full lg:w-auto px-6 py-3 bg-green-200 text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-green-300 transition-all shadow-sm active:scale-95"
         >
           View Branches
         </Button>
         <Button
           onClick={() => handlePoc(fabricator)}
-          className="px-6 py-3 bg-white text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+          className="w-full lg:w-auto px-6 py-3 bg-white text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95"
         >
           View POC
         </Button>
         <Button
           onClick={() => handleModel(fabricator)}
-          className="px-6 py-3 bg-white text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+          className="w-full lg:w-auto px-6 py-3 bg-white text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95"
         >
           Edit Partner
         </Button>
         <Button
           onClick={handleArchive}
-          className="px-6 py-3 bg-rose-200 text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-rose-300 transition-all shadow-sm active:scale-95 ml-auto"
+          className="w-full lg:w-auto px-6 py-3 bg-rose-200 text-black border border-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-rose-300 transition-all shadow-sm active:scale-95 lg:ml-auto"
         >
           Archive Partner
         </Button>

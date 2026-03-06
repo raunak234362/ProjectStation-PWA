@@ -22,9 +22,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onDailyReport,
 }) => {
   return (
-    <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-10">
-     
-      <div className="flex flex-wrap items-center gap-4">
+    <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-10">
+
+      <div className="flex flex-wrap items-center gap-2 sm:gap-4">
         {/* Search */}
         <div className="relative group">
           <Search

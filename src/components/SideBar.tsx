@@ -38,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       onMouseLeave={() => !isMobile && setIsHovered(false)}
       className={`
         h-full flex flex-col bg-white border-r border-gray-100 transition-all duration-300
-        z-50
+        z-[100]
         ${isMobile
           ? `fixed inset-y-0 left-0 w-72 transform shadow-2xl ${isMinimized ? "-translate-x-full" : "translate-x-0"
           }`
@@ -60,13 +60,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             <img
               src={LOGO}
               alt="Logo"
-              className="h-32 w-auto object-contain transition-all duration-300"
+              className="h-24 w-auto object-contain transition-all duration-300"
             />
           ) : (
             <img
               src={SLOGO}
               alt="Logo"
-              className="h-10 w-10 object-contain transition-all duration-300"
+              className="h-8 w-8 object-contain transition-all duration-300"
             />
           )}
         </div>
@@ -74,16 +74,16 @@ const Sidebar: React.FC<SidebarProps> = ({
         {isMobile && (
           <button
             onClick={toggleSidebar}
-            className="p-2 text-black hover:bg-gray-100 transition-colors rounded-lg"
+            className="p-1.5 text-black hover:bg-gray-100 transition-colors rounded-lg"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         )}
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 py-4 flex flex-col overflow-y-auto sidebar-scrollbar px-3 space-y-2">
-        <nav className="flex flex-col gap-1 w-full">
+      <div className="flex-1 py-2 flex flex-col overflow-y-auto sidebar-scrollbar px-2 space-y-1">
+        <nav className="flex flex-col gap-0.5 w-full">
           {navItems.map(
             ({ label, to, roles, icon }) =>
               canView(roles) && (
@@ -107,11 +107,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                     }
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
-                      `flex items-center gap-4 px-4 py-3 text-base font-bold rounded-lg transition-all duration-200 relative
+                      `flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-lg transition-all duration-200 relative
                       ${isActive
-                        ? "bg-gray-50 text-black border border-black border-l-[6px] border-l-[#6bbd45]"
-                        : "text-black hover:bg-gray-50 hover:text-black hover:border-y hover:border-r hover:border-black hover:border-l-[6px] hover:border-l-[#6bbd45] border border-transparent"
-                      } ${!isExpanded ? "justify-center px-0 w-12 h-12 mx-auto border-none p-0 bg-transparent" : ""}`
+                        ? "bg-gray-50 text-black border border-black/10 border-l-[4px] border-l-[#6bbd45]"
+                        : "text-black hover:bg-gray-50 hover:text-black hover:border-y hover:border-r hover:border-black/10 hover:border-l-[4px] hover:border-l-[#6bbd45] border border-transparent border-l-[4px] border-l-transparent"
+                      } ${!isExpanded ? "justify-center px-0 w-10 h-10 mx-auto border-none p-0 bg-transparent" : ""}`
                     }
                   >
                     {({ isActive }) => (

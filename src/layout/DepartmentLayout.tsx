@@ -5,22 +5,30 @@ const DepartmentLayout = () => {
   const [activeTab, setActiveTab] = useState("alldepartment");
   const userRole = sessionStorage.getItem("userRole");
 
-  const btnClass = (tab: string) =>
-    `px-6 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all border border-black ${activeTab === tab
-      ? "bg-green-200 text-black shadow-medium"
-      : "text-black hover:bg-green-50"
-    }`;
+
 
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
-        <div className="px-6 py-4 bg-gray-50/50 border-b border-black/5 rounded-t-2xl flex flex-col md:flex-row items-center justify-end gap-6">
-          <div className="flex flex-row gap-4 items-center justify-end">
-            <button onClick={() => setActiveTab("alldepartment")} className={btnClass("alldepartment")}>
+        <div className="px-4 md:px-6 py-4 bg-gray-50/50 border-b border-black/5 rounded-t-2xl flex flex-col md:flex-row items-center justify-center md:justify-end gap-4 md:gap-6">
+          <div className="flex flex-row gap-2 md:gap-4 items-center justify-center md:justify-end w-full md:w-auto">
+            <button
+              onClick={() => setActiveTab("alldepartment")}
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border ${activeTab === "alldepartment"
+                ? "bg-green-200 text-black border-black shadow-sm"
+                : "text-black/60 border-black/10 hover:bg-green-50"
+                }`}
+            >
               All Departments
             </button>
             {(userRole === "ADMIN" || userRole === "HUMAN_RESOURCE") && (
-              <button onClick={() => setActiveTab("addDepartment")} className={btnClass("addDepartment")}>
+              <button
+                onClick={() => setActiveTab("addDepartment")}
+                className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border ${activeTab === "addDepartment"
+                  ? "bg-green-200 text-black border-black shadow-sm"
+                  : "text-black/60 border-black/10 hover:bg-green-50"
+                  }`}
+              >
                 Add Department
               </button>
             )}

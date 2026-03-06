@@ -7,8 +7,8 @@ const ConnectionLayout = () => {
   const userRole = sessionStorage.getItem("userRole");
 
   const btnClass = (tab: string) =>
-    `flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === tab
-      ? "bg-green-200 text-black shadow-medium"
+    `flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-bold transition-all border border-black/10 ${activeTab === tab
+      ? "bg-green-200 text-black shadow-sm"
       : "text-black hover:bg-green-50"
     }`;
 

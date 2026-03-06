@@ -26,7 +26,7 @@ const AllProjects = () => {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <span className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
+        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
           {row.getValue("status")}
         </span>
       )
@@ -34,7 +34,7 @@ const AllProjects = () => {
   ];
 
   return (
-    <div className=" bg-white p-4 rounded-2xl shadow-sm">
+    <div className=" bg-white p-2 md:p-3 rounded-xl border border-black/5 shadow-sm">
       <DataTable
         columns={columns}
         data={projects}

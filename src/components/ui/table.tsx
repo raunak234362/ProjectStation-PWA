@@ -105,41 +105,41 @@ function MobileCardView({ table, DetailComponent, onRowClick }: any) {
   const [open, setOpen] = useState<string | null>(null);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {table.getPaginationRowModel().rows.map((row: any) => {
         const isOpen = open === row.id;
         return (
           <div
             key={row.id}
-            className="border border-gray-100 dark:border-slate-800 rounded-lg p-3 bg-white dark:bg-slate-900 shadow-sm cursor-pointer"
+            className="border border-black/10 rounded-2xl px-3 sm:px-4 py-4 bg-white shadow-medium cursor-pointer transition-all active:scale-[0.98]"
             onClick={() => onRowClick?.(row.original)}
           >
             {row.getVisibleCells().map((cell: any) => (
-              <div key={cell.id} className="flex justify-between py-1 text-sm">
-                <span className="text-gray-500 dark:text-slate-400">
+              <div key={cell.id} className="flex flex-row justify-between items-start py-2 text-xs border-b border-black/5 last:border-0 gap-3">
+                <span className="text-black/30 font-black uppercase tracking-widest shrink-0 text-[10px]">
                   {cell.column.columnDef.header as string}
                 </span>
-                <span className="font-medium text-gray-800 dark:text-slate-200">
+                <span className="font-black text-black text-right break-words uppercase leading-tight flex-1 min-w-0">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </span>
               </div>
             ))}
 
             {DetailComponent && (
-              <>
+              <div className="mt-4 pt-4 border-t border-black/10">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpen(isOpen ? null : row.id);
                   }}
-                  className="mt-2 text-green-600 dark:text-green-500 text-sm"
+                  className="w-full text-center text-green-700 font-black uppercase tracking-[0.2em] text-[10px] py-3 bg-gray-50 rounded-xl border border-black/5 hover:bg-green-50 transition-all active:scale-95"
                 >
-                  {isOpen ? "Hide details" : "View details"}
+                  {isOpen ? "Hide Intelligence" : "Expose Details"}
                 </button>
 
                 {isOpen && (
                   <div
-                    className="mt-2 bg-gray-50 dark:bg-slate-800 p-2 rounded"
+                    className="mt-4 animate-in slide-in-from-top-2 duration-200"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <DetailComponent
@@ -148,7 +148,7 @@ function MobileCardView({ table, DetailComponent, onRowClick }: any) {
                     />
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         );
@@ -186,7 +186,7 @@ export default function DataTable<T extends object>({
         const index = table
           .getPaginationRowModel()
           .rows.findIndex((r) => r.id === row.id);
-        return <span>{pageIndex * pageSize + index + 1}</span>;
+        return <span className="font-black text-black/20">{pageIndex * pageSize + index + 1}</span>;
       },
       enableSorting: false,
       enableColumnFilter: false,
@@ -237,23 +237,23 @@ export default function DataTable<T extends object>({
       {table
         .getAllColumns()
         .some((c) => (c.columnDef as any).enableColumnFilter) && (
-          <div className="flex flex-wrap items-center gap-4 mb-6 p-4 bg-gray-50 rounded-2xl border border-black/10 shadow-sm">
+          <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-gray-50 rounded-2xl border border-black/10 shadow-sm">
             {table
               .getAllColumns()
               .filter((c) => (c.columnDef as any).enableColumnFilter)
               .map((column) => (
                 <div
                   key={column.id}
-                  className="min-w-[200px]"
+                  className="min-w-[140px] flex-1"
                 >
                   <ColumnFilter column={column} />
                 </div>
               ))}
             <Button
               onClick={() => table.resetColumnFilters()}
-              className="text-xs text-black border border-black/20 hover:bg-green-100 transition-all h-9 px-4 font-bold rounded-xl flex items-center gap-2 bg-white shadow-sm"
+              className="text-xs text-black border border-black/20 hover:bg-green-100 transition-all h-10 px-6 font-black rounded-xl flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
             >
-              <X className="w-3.5 h-3.5" /> Clear Filters
+              <X className="w-4 h-4" /> Reset Filters
             </Button>
           </div>
         )}
@@ -275,7 +275,7 @@ export default function DataTable<T extends object>({
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-6 py-3 text-left text-xs md:text-sm lg:text-base xl:text-lg font-bold text-gray-900 border-b border-gray-200 tracking-wide"
+                        className="px-6 py-2.5 text-left text-[11px] md:text-sm font-bold text-gray-900 border-b border-gray-200 tracking-wide uppercase"
                         onClick={header.column.getToggleSortingHandler()}
                         style={{ width: header.column.getSize() }}
                       >
@@ -318,7 +318,7 @@ export default function DataTable<T extends object>({
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-6 py-3 text-xs md:text-sm lg:text-base xl:text-lg text-gray-700 font-normal leading-relaxed">
+                        <td key={cell.id} className="px-6 py-2.5 text-[11px] md:text-sm text-gray-800 font-medium leading-relaxed uppercase">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

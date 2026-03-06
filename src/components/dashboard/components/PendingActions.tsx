@@ -85,15 +85,15 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                 <div className="p-3 rounded-full bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
                   <action.icon size={24} strokeWidth={2} />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm md:text-base font-bold text-black uppercase tracking-widest">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] sm:text-xs font-black text-black/40 uppercase tracking-[0.1em] leading-tight break-words">
                     {action.title}
                   </span>
                 </div>
               </div>
 
-              <div className="z-10 text-right">
-                <span className="text-4xl font-black text-black tracking-tighter">
+              <div className="z-10 text-right ml-4 shrink-0">
+                <span className="text-[10px] sm:text-xs font-black text-black tracking-widest uppercase">
                   {action.count}
                 </span>
               </div>
