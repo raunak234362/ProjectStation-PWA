@@ -9,15 +9,15 @@ const FabricatorLayout = () => {
 
   return (
     <div className="w-full overflow-hidden flex flex-col h-full bg-transparent">
-      <div className="px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex flex-row gap-3 items-center bg-white/50 p-1.5 rounded-md shadow-soft border border-white/50 backdrop-blur-md">
+      <div className="px-1 md:px-3 py-2 flex flex-col md:flex-row items-start justify-between gap-4">
+        <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-start w-full">
           <button
             onClick={() => setActiveTab("allFabricator")}
             className={cn(
-              "flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all duration-300",
+              "flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-lg text-xs md:text-base font-bold transition-all border border-black",
               activeTab === "allFabricator"
-                ? "bg-[#6bbd45] text-white shadow-highlight"
-                : "text-slate-500 hover:text-slate-800 hover:bg-green-100"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50 shadow-sm"
             )}
           >
             Dashboard & Fabricators
@@ -26,10 +26,10 @@ const FabricatorLayout = () => {
           <button
             onClick={() => setActiveTab("addFabricator")}
             className={cn(
-              "flex items-center gap-2 px-6 py-2.5 rounded-sm font-bold transition-all duration-300",
+              "flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-lg text-xs md:text-base font-bold transition-all border border-black",
               activeTab === "addFabricator"
-                ? "bg-[#6bbd45] text-white shadow-highlight"
-                : "text-slate-500 hover:text-slate-800 hover:bg-green-100"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50 shadow-sm"
             )}
           >
             Add Fabricator
@@ -37,13 +37,13 @@ const FabricatorLayout = () => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 bg-white p-4 rounded-md overflow-y-auto custom-scrollbar border border-white/40 backdrop-blur-[2px]">
-        <div className="bg-green-100 rounded-md shadow-soft p-2 min-h-full">
+      <div className="flex-1 min-h-0 bg-white p-4 rounded-3xl overflow-y-auto custom-scrollbar">
+        <div className="min-h-full">
           {activeTab === "allFabricator" && (
             <div className="space-y-8">
               <FabricatorOverview />
 
-              <div className="pt-4 border-t border-green-200/50">
+              <div className="border-green-200/50">
                 <AllFabricator />
               </div>
             </div>

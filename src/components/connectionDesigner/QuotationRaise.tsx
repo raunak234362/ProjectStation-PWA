@@ -1,22 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { X } from "lucide-react";
 import Service from "../../api/Service";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { X } from "lucide-react";
 
 interface ConnectionDesigner {
   id: string;
   name: string;
-  state: string[] | string; // Can be string before parsing
+  state: string[] | string;
   contactInfo: string;
   email: string;
   location: string;
   websiteLink: string;
   CDEngineers?: { id: string; username: string;[key: string]: any }[];
 }
-
 
 const QuotationRaise = ({
   rfqId,
@@ -28,25 +26,15 @@ const QuotationRaise = ({
   onSuccess: () => void;
 }) => {
   const { handleSubmit, control, watch } = useForm<any>();
-
-
-
   const selectedDesignerIds = watch("ConnectionDesignerIds");
-  const [connectionDesigners, setConnectionDesigners] = useState<
-    ConnectionDesigner[]
-  >([]);
-  const [filteredDesigners, setFilteredDesigners] = useState<
-    ConnectionDesigner[]
-  >([]);
+  const [connectionDesigners, setConnectionDesigners] = useState<ConnectionDesigner[]>([]);
+  const [filteredDesigners, setFilteredDesigners] = useState<ConnectionDesigner[]>([]);
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
 
-  // Fetch all Connection Designers
   const fetchCD = async () => {
     try {
       const response = await Service.FetchAllConnectionDesigner();
       const rawData = response?.data || [];
-
-      // Parse 'state' safely
       const parsedData = rawData.map((cd: any) => {
         let parsedState: string[] = [];
         if (Array.isArray(cd.state)) {
@@ -56,17 +44,14 @@ const QuotationRaise = ({
             const parsed = JSON.parse(cd.state);
             parsedState = Array.isArray(parsed) ? parsed : [];
           } catch (e) {
-            console.warn("Failed to parse state for CD:", cd.name, e);
             parsedState = [];
           }
         }
         return { ...cd, state: parsedState };
       });
-
       setConnectionDesigners(parsedData);
       setFilteredDesigners(parsedData);
     } catch (error) {
-      console.error("Error fetching connection designers:", error);
       toast.error("Failed to load connection designers");
     }
   };
@@ -75,7 +60,6 @@ const QuotationRaise = ({
     fetchCD();
   }, []);
 
-  // Extract unique states from all designers
   const allStates = Array.from(
     new Set(
       connectionDesigners.flatMap((cd) =>
@@ -84,7 +68,6 @@ const QuotationRaise = ({
     )
   ).map((state) => ({ label: state, value: state }));
 
-  // Filter designers when states are selected
   useEffect(() => {
     if (selectedStates.length === 0) {
       setFilteredDesigners(connectionDesigners);
@@ -96,7 +79,6 @@ const QuotationRaise = ({
     }
   }, [selectedStates, connectionDesigners]);
 
-  // Derive available engineers from selected designers
   const availableEngineers = filteredDesigners
     .filter((cd) => Array.isArray(selectedDesignerIds) && selectedDesignerIds.some((item: any) => item.value === cd.id))
     .flatMap((cd) => cd.CDEngineers || [])
@@ -106,135 +88,76 @@ const QuotationRaise = ({
       designerName: connectionDesigners.find((cd) => cd.CDEngineers?.some(e => e.id === eng.id))?.name
     }));
 
-  // Submit — send IDs
   const RaiseForQuotation = async (data: any) => {
     try {
       const payload = {
-        ConnectionDesignerIds: data.ConnectionDesignerIds?.map(
-          (cd: any) => cd.value
-        ) || [],
+        ConnectionDesignerIds: data.ConnectionDesignerIds?.map((cd: any) => cd.value) || [],
         connectionEngineerIds: data.EngineerIds?.map((eng: any) => eng.value) || [],
       };
-
-      console.log("📦 Final Payload:", payload);
-
-      const response = await Service.UpdateRFQById(rfqId, payload);
-      console.log("Quotation raised successfully:", response);
-
+      await Service.UpdateRFQById(rfqId, payload);
       toast.success("Quotation raised successfully!");
       onSuccess();
       onClose();
     } catch (error) {
-      console.error("Error raising quotation:", error);
       toast.error("Failed to raise quotation");
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b bg-gray-50 rounded-t-2xl">
-          <h2 className="text-xl font-semibold text-gray-700">
-            Raise Connection Designer Quotation
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-700 hover:text-gray-700 transition"
-            aria-label="Close"
-          >
-            <X className="w-6 h-6" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-4xl bg-white rounded-2xl md:rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden border border-black/10">
+        <div className="flex items-center justify-between p-6 sm:p-8 border-b border-black/5 bg-white">
+          <div className="flex flex-col">
+            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+              Raise Connection Designer Quotation
+            </h2>
+            <p className="text-[10px] font-bold text-black/40 uppercase tracking-[0.3em]">Designer Solicitation Protocol</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-rose-50 text-rose-500 rounded-xl transition-all">
+            <X size={24} />
           </button>
         </div>
 
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit(RaiseForQuotation)}
-          className="p-6 space-y-6 overflow-y-auto"
-        >
-          {/* Multi-State Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by States
-            </label>
+        <form onSubmit={handleSubmit(RaiseForQuotation)} className="p-6 sm:p-10 space-y-8 overflow-y-auto custom-scrollbar">
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Geographical Constraints</label>
             <Select
               options={allStates}
               isMulti
-              placeholder="Search or select multiple states..."
-              onChange={(selected: any) =>
-                setSelectedStates(selected.map((s: any) => s.value))
-              }
-              classNamePrefix="react-select"
+              placeholder="Search vector states..."
+              onChange={(selected: any) => setSelectedStates(selected.map((s: any) => s.value))}
               styles={{
                 control: (base) => ({
-                  ...base,
-                  borderColor: "#cbd5e1",
-                  boxShadow: "none",
-                  "&:hover": { borderColor: "#0d9488" },
+                  ...base, borderColor: "rgba(0,0,0,0.1)", borderRadius: "0.75rem", padding: "4px", fontSize: "14px", boxShadow: "none", "&:hover": { borderColor: "#6bbd45" }
                 }),
-                multiValue: (base) => ({
-                  ...base,
-                  backgroundColor: "rgba(13,148,136,0.1)",
-                  borderRadius: "0.5rem",
-                  padding: "0 4px",
-                }),
-                multiValueLabel: (base) => ({
-                  ...base,
-                  color: "#0f766e",
-                  fontWeight: 500,
-                }),
+                multiValue: (base) => ({ ...base, backgroundColor: "rgba(107,189,69,0.1)", borderRadius: "0.5rem", padding: "0 4px" }),
+                multiValueLabel: (base) => ({ ...base, color: "#2d5a1e", fontWeight: 800, fontSize: "10px", textTransform: "uppercase" }),
               }}
             />
           </div>
 
-          {/* Connection Designer Select */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Connection Designers
-            </label>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Authorized Designer Entities</label>
             <Controller
               name="ConnectionDesignerIds"
               control={control}
-              rules={{
-                required: "Please select at least one connection designer",
-              }}
+              rules={{ required: "Please select at least one connection designer" }}
               render={({ field }) => (
                 <Select
                   {...field}
                   isMulti
-                  isSearchable
-                  placeholder="Search or select connection designers..."
-                  options={filteredDesigners.map((cd) => ({
-                    label: `${cd.name} (${cd.location})`,
-                    value: cd.id,
-                    states: cd.state,
-                  }))}
+                  placeholder="Identify entities..."
+                  options={filteredDesigners.map((cd) => ({ label: `${cd.name} (${cd.location})`, value: cd.id, states: cd.state }))}
                   styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderColor: "#cbd5e1",
-                      boxShadow: "none",
-                      "&:hover": { borderColor: "#0d9488" },
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isFocused
-                        ? "rgba(13,148,136,0.1)"
-                        : "white",
-                      color: "black",
-                    }),
+                    control: (base) => ({ ...base, borderColor: "rgba(0,0,0,0.1)", borderRadius: "0.75rem", padding: "4px", fontSize: "14px", boxShadow: "none", "&:hover": { borderColor: "#6bbd45" } }),
+                    option: (base, state) => ({ ...base, backgroundColor: state.isFocused ? "rgba(107,189,69,0.05)" : "white", color: "black", fontWeight: 700 }),
                   }}
                   formatOptionLabel={(option: any) => (
                     <div>
-                      <p className="font-medium text-gray-700">{option.label}</p>
+                      <p className="font-black text-black uppercase text-xs tracking-tight">{option.label}</p>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {Array.isArray(option.states) && option.states.map((s: string) => (
-                          <span
-                            key={s}
-                            className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full"
-                          >
-                            {s}
-                          </span>
+                          <span key={s} className="text-[9px] font-black bg-gray-100 text-black/60 px-2 py-0.5 rounded-full uppercase tracking-tighter">{s}</span>
                         ))}
                       </div>
                     </div>
@@ -244,12 +167,9 @@ const QuotationRaise = ({
             />
           </div>
 
-          {/* Engineer Select (Dependent) */}
           {availableEngineers.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Select Engineers (Optional)
-              </label>
+            <div className="space-y-2 animate-in slide-in-from-top-2">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Specialist Targeting</label>
               <Controller
                 name="EngineerIds"
                 control={control}
@@ -257,30 +177,13 @@ const QuotationRaise = ({
                   <Select
                     {...field}
                     isMulti
-                    isSearchable
-                    placeholder="Select engineers..."
+                    placeholder="Specific index targeting..."
                     options={availableEngineers}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        borderColor: "#cbd5e1",
-                        boxShadow: "none",
-                        "&:hover": { borderColor: "#0d9488" },
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        backgroundColor: state.isFocused
-                          ? "rgba(13,148,136,0.1)"
-                          : "white",
-                        color: "black",
-                      }),
-                    }}
+                    styles={{ control: (base) => ({ ...base, borderColor: "rgba(0,0,0,0.1)", borderRadius: "0.75rem", padding: "4px", fontSize: "14px", boxShadow: "none", "&:hover": { borderColor: "#6bbd45" } }) }}
                     formatOptionLabel={(option: any) => (
                       <div className="flex flex-col">
-                        <span className="font-medium text-gray-800">{option.label}</span>
-                        {option.designerName && (
-                          <span className="text-xs text-gray-500">from {option.designerName}</span>
-                        )}
+                        <span className="font-black text-black uppercase text-xs">{option.label}</span>
+                        {option.designerName && <span className="text-[9px] text-black/40 uppercase font-bold tracking-widest italic">from {option.designerName}</span>}
                       </div>
                     )}
                   />
@@ -289,13 +192,9 @@ const QuotationRaise = ({
             </div>
           )}
 
-          {/* Submit */}
-          <div className="flex justify-end pt-4 border-t border-gray-200">
-            <button
-              type="submit"
-              className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-all duration-200"
-            >
-              Raise for Quotation
+          <div className="flex justify-end pt-6 border-t border-black/5">
+            <button type="submit" className="w-full sm:w-auto px-10 py-4 bg-black text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-black/90 transition-all shadow-xl">
+              Raise Solicitation Request
             </button>
           </div>
         </form>

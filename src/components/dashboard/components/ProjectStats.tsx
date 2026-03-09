@@ -1,5 +1,11 @@
 import React from "react";
-import { Files, Activity, CheckCircle2, PauseCircle } from "lucide-react";
+import {
+  Files,
+  Activity,
+  CheckCircle2,
+  PauseCircle,
+  Building2,
+} from "lucide-react";
 import { cn } from "../../../lib/utils";
 
 interface ProjectStatsProps {
@@ -15,101 +21,86 @@ interface ProjectStatsProps {
 const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
   const projectCards = [
     {
-      label: "Total",
+      label: "TOTAL PROJECTS",
       value: stats.totalProjects,
       icon: Files,
-      color: "indigo",
-      clickable: false,
-    },
-    {
-      label: "Active",
-      value: stats.activeProjects,
-      icon: Activity,
-      color: "green",
-      status: "ACTIVE",
+      status: "TOTAL",
       clickable: true,
     },
     {
-      label: "Completed",
+      label: "ACTIVE",
+      value: stats.activeProjects,
+      icon: Activity,
+      status: "ACTIVE",
+      clickable: true,
+      active: true, // Primary status
+    },
+    {
+      label: "COMPLETED",
       value: stats.completedProjects,
       icon: CheckCircle2,
-      color: "blue",
       status: "COMPLETED",
       clickable: true,
     },
     {
-      label: "On Hold",
+      label: "ON HOLD",
       value: stats.onHoldProjects,
       icon: PauseCircle,
-      color: "orange",
       status: "ON_HOLD",
       clickable: true,
     },
   ];
 
-  const colorClasses = {
-    indigo: {
-      hoverBg: "hover:bg-indigo-100",
-      iconBg: "bg-indigo-500",
-      text: "text-indigo-700",
-    },
-    green: {
-      hoverBg: "hover:bg-green-100",
-      iconBg: "bg-green-500",
-      text: "text-green-700",
-    },
-    blue: {
-      hoverBg: "hover:bg-blue-100",
-      iconBg: "bg-blue-500",
-      text: "text-blue-700",
-    },
-    orange: {
-      hoverBg: "hover:bg-orange-100",
-      iconBg: "bg-orange-500",
-      text: "text-orange-700",
-    },
-  };
-
   return (
-    <div className="flex flex-col justify-center h-full bg-white shadow-sm rounded-2xl p-4">
-      <h2 className="text-xl font-extrabold text-slate-800 mb-4 px-2">
-        Project Statistics
+    <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
+      <h2 className="text-xl md:text-2xl font-bold text-black mb-6 flex items-center gap-3 tracking-tight ml-1">
+        <Building2 size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
+        PROJECT STATISTICS
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {projectCards.map((card) => {
-          const colors = colorClasses[card.color as keyof typeof colorClasses];
-          const isClickable = card.clickable;
+          const isClickable = card.clickable && onCardClick;
 
           return (
             <div
               key={card.label}
-              onClick={() => isClickable && card.status && onCardClick(card.status)}
+              onClick={() =>
+                isClickable && card.status && onCardClick(card.status)
+              }
               className={cn(
-                "flex items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft transition-all duration-300",
-                isClickable ? "cursor-pointer hover:shadow-medium hover:scale-[1.02] active:scale-[0.98]" : ""
+                "p-4 rounded-xl flex items-center justify-between group transition-all duration-300 bg-white relative overflow-hidden",
+                "border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm",
+                "hover:shadow-md",
+                isClickable && "cursor-pointer",
               )}
             >
-              <div
-                className={cn(
-                  "p-3 rounded-xl shadow-sm text-white shrink-0",
-                  colors.iconBg
-                )}
-              >
-                <card.icon size={22} strokeWidth={2.5} />
+              <div className="flex items-center gap-3 z-10 min-w-0 flex-1">
+                <div
+                  className={cn(
+                    "p-2 sm:p-2.5 rounded-full transition-colors bg-gray-50 group-hover:bg-[#f4f6f8] shrink-0",
+                    "text-black",
+                  )}
+                >
+                  <card.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] sm:text-xs font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
+                    {card.label}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex flex-row gap-5 items-center min-w-0">
-                <span className={cn(
-                  "text-2xl font-extrabold tracking-tight",
-                  colors.text
-                )}>
+              <div className="z-10 text-right ml-3 shrink-0">
+                <span className="text-lg sm:text-2xl md:text-3xl font-black text-black tracking-tight">
                   {card.value}
                 </span>
-                <span className="text-sm font-bold text-slate-500 uppercase tracking-tight truncate">
-                  {card.label}
-                </span>
               </div>
+
+              {/* Subtle background interaction */}
+              {isClickable && (
+                <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0" />
+              )}
             </div>
           );
         })}

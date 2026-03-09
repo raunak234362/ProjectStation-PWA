@@ -1,10 +1,20 @@
-import React, { Suspense } from "react";
-import { X as CloseIcon } from "lucide-react";
+import React, { Suspense, useEffect } from "react";
+import { createPortal } from "react-dom";
+
 const GetProjectById = React.lazy(() =>
   import("../../project/GetProjectById").then((module) => ({
-    default: module.default,
-  }))
+    default: module.default as React.ComponentType<{
+      id: string;
+      close?: () => void;
+      initialTab?: string;
+    }>,
+  })),
 );
+import { useDispatch } from "react-redux";
+import {
+  incrementModalCount,
+  decrementModalCount,
+} from "../../../store/uiSlice";
 
 interface ProjectDetailsModalProps {
   project: any | null;
@@ -15,35 +25,41 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
   project,
   onClose,
 }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (project) {
+      dispatch(incrementModalCount());
+      return () => {
+        dispatch(decrementModalCount());
+      };
+    }
+  }, [project, dispatch]);
+
   if (!project) return null;
 
-  return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-      <div className="bg-white w-[80%] max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-          <h3 className="text-lg font-bold text-gray-700">Project Details</h3>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-700"
-          >
-            <CloseIcon size={24} />
-          </button>
-        </div>
+  return createPortal(
+    <div className="fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="bg-white dark:bg-slate-900 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         <div className="flex-1 overflow-y-auto p-4">
-          <Suspense fallback={<div>Loading...</div>}>
-            <GetProjectById id={project.id || project._id} />
+          <Suspense
+            fallback={
+              <div className="text-gray-500 dark:text-slate-400">
+                Loading...
+              </div>
+            }
+          >
+            <GetProjectById
+              id={project.id || project._id}
+              close={onClose}
+              initialTab={project.showAnalytics ? "analytics" : "overview"}
+            />
           </Suspense>
         </div>
-        <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 bg-gray-800 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors"
-          >
-            Close
-          </button>
-        </div>
+
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

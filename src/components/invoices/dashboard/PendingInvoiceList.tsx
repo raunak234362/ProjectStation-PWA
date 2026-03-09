@@ -2,6 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
 import { Eye, Send } from "lucide-react";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface PendingListProps {
   invoices: any[];
@@ -31,7 +32,7 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
       header: "Issued Date",
       cell: ({ row }) => {
         const date = row.getValue("invoiceDate") as string;
-        return date ? new Date(date).toLocaleDateString() : "N/A";
+        return date ? formatDate(date) : "N/A";
       },
     },
     {
@@ -46,7 +47,7 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
           <span
             className={isOverdue ? "text-red-500 font-medium" : "text-gray-600"}
           >
-            {new Date(date).toLocaleDateString()}
+            {formatDate(date)}
           </span>
         );
       },
@@ -115,9 +116,9 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
   ];
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+    <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] mb-8">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-gray-800">Pending Invoices</h3>
+        <h3 className="text-lg  text-gray-800">Pending Invoices</h3>
         <button className="text-sm font-semibold text-green-600 hover:text-green-700">
           View All
         </button>

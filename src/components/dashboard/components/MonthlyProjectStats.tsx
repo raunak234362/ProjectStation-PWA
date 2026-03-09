@@ -24,8 +24,8 @@ interface MonthlyProjectStatsProps {
   >;
   handleStatClick: (
     projects: ProjectData[],
-    stage: "IFA" | "IFC" | "CO#",
-    status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL"
+    stage: "IFA" | "IFC" | "COR",
+    status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
   ) => void;
 }
 
@@ -80,7 +80,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
         stats: {
           IFA: { active: 0, onHold: 0, completed: 0, total: 0 },
           IFC: { active: 0, onHold: 0, completed: 0, total: 0 },
-          "CO#": { active: 0, onHold: 0, completed: 0, total: 0 },
+          COR: { active: 0, onHold: 0, completed: 0, total: 0 },
         },
       };
     });
@@ -99,10 +99,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
         summary[teamId].stats = data.stats;
       }
       summary[teamId].projectCount = data.projects.length;
-      summary[teamId].totalSeconds = data.totalSeconds;
+      // We will compute totalSeconds below by filtering tasks dynamically
+      summary[teamId].totalSeconds = 0;
     });
 
-    // Calculate monthly breakdown if filtered or for all tasks
+    // Calculate monthly breakdown and totalSeconds if filtered
     tasks.forEach((task) => {
       const project = projects.find((p) => p.id === task.project_id);
       const teamId = project?.team?.id || "unassigned";
@@ -121,95 +122,115 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           selectedMonth === undefined ||
           m === selectedMonth;
 
+        const hours = (task.workingHourTask || []).reduce(
+          (sum: number, wht: any) => sum + (wht.duration_seconds || 0),
+          0,
+        );
+
         if (matchesYear && matchesMonth) {
-          const hours = (task.workingHourTask || []).reduce(
-            (sum: number, wht: any) => sum + (wht.duration_seconds || 0),
-            0
-          );
           const monthYear = `${months[m]} ${y}`;
           summary[teamId].monthlyBreakdown[monthYear] =
             (summary[teamId].monthlyBreakdown[monthYear] || 0) + hours;
+
+          // Add to total seconds for the month!
+          summary[teamId].totalSeconds += hours;
         }
       }
     });
 
-    const teamOrder = ["Tekla", "SDS/2", "PEMB", "PEMB Designing"];
-    return Object.values(summary).sort((a, b) => {
-      const indexA = teamOrder.indexOf(a.teamName);
-      const indexB = teamOrder.indexOf(b.teamName);
-      const aIndex = indexA === -1 ? teamOrder.length : indexA;
-      const bIndex = indexB === -1 ? teamOrder.length : indexB;
-      return aIndex - bIndex;
+    const teamOrder = [
+      "Tekla",
+      "SDS/2",
+      "SDS/2 Team 2",
+      "PEMB",
+      "PEMB Designing",
+    ];
+
+    const normalizeTeamName = (name: string) =>
+      name.replace(/-/g, " ").replace(/\s+/g, " ").trim().toUpperCase();
+
+    const normalizedTeamOrder = teamOrder.map(normalizeTeamName);
+
+    const validTeams = Object.values(summary).filter((item) =>
+      normalizedTeamOrder.includes(normalizeTeamName(item.teamName)),
+    );
+
+    return validTeams.sort((a, b) => {
+      return (
+        normalizedTeamOrder.indexOf(normalizeTeamName(a.teamName)) -
+        normalizedTeamOrder.indexOf(normalizeTeamName(b.teamName))
+      );
     });
   }, [projects, tasks, teams, projectsByTeam, selectedMonth, selectedYear]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-2 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4">
       {teamSummary.map((team) => (
         <motion.div
           key={team.teamName}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:border-green-200 transition-all group"
+          className="bg-white rounded-xl shadow-sm border border-black/5 overflow-hidden hover:border-black/20 transition-all group"
         >
           {/* Team Header */}
-          <div className="bg-primary p-3 sm:p-4 text-center border-b border-gray-200">
+          <div className="bg-green-100/50 p-2 sm:p-3 text-center border-b border-black/5">
             <div className="flex items-center justify-center gap-2">
-              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-wider truncate">
+              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black/60" />
+              <h3 className="text-sm sm:text-base font-bold text-black uppercase tracking-widest truncate">
                 {team.teamName}
               </h3>
             </div>
           </div>
 
-          <div className="p-5 sm:max-w-3xl space-y-4">
+          <div className="p-3 sm:p-4 space-y-3">
             {/* Main Stats */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
                   const teamId = Object.keys(projectsByTeam).find(
-                    (k) => projectsByTeam[k].teamName === team.teamName
+                    (k) => projectsByTeam[k].teamName === team.teamName,
                   );
-                  const teamProjects = teamId ? projectsByTeam[teamId]?.projects || [] : [];
+                  const teamProjects = teamId
+                    ? projectsByTeam[teamId]?.projects || []
+                    : [];
                   handleStatClick(teamProjects, "IFA", "TOTAL");
                 }}
-                className="p-2 sm:p-3 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-gray-100 hover:bg-gray-100 hover:border-gray-200 transition-all cursor-pointer group/projects"
+                className="p-2 bg-gray-50/50 rounded-lg flex flex-col items-center justify-center border border-black/5 hover:bg-white hover:border-black/10 transition-all cursor-pointer group/projects"
               >
-                <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover/projects:text-gray-600">
+                <span className="text-[10px] text-gray-400 uppercase tracking-widest mb-0.5 group-hover/projects:text-gray-600">
                   Projects
                 </span>
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <span className="text-lg sm:text-xl font-black text-gray-800">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm sm:text-base font-bold text-gray-800">
                     {team.projectCount}
                   </span>
-                  <Briefcase className="w-4 h-4 text-gray-400 group-hover/projects:text-gray-600" />
+                  <Briefcase className="w-3.5 h-3.5 text-gray-400 group-hover/projects:text-gray-600" />
                 </div>
               </button>
-              <div className="p-2 sm:p-3 bg-green-50 rounded-xl flex flex-col items-center justify-center border border-green-100">
-                <span className="text-[10px] sm:text-xs font-bold text-green-600 uppercase tracking-widest mb-1">
+              <div className="p-2 bg-green-50/50 rounded-lg flex flex-col items-center justify-center border border-black/5">
+                <span className="text-[10px] text-black/40 uppercase tracking-widest mb-0.5">
                   Work Done
                 </span>
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <span className="text-lg sm:text-xl font-black text-green-600">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm sm:text-base font-bold text-black">
                     {formatSeconds(team.totalSeconds)}
                   </span>
-                  <Clock className="w-4 h-4 text-green-400" />
+                  <Clock className="w-3.5 h-3.5 text-green-500/50" />
                 </div>
               </div>
             </div>
 
-            {/* IFA/IFC/CO# Grid */}
-            {/* IFA/IFC/CO# Grid - Responsive Stack */}
-            <div className="border border-gray-100 rounded-xl overflow-hidden bg-white">
-              <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
-                {["IFA", "IFC", "CO#"].map((stage) => (
-                  <div key={stage} className="flex-1">
+            {/* IFA/IFC/COR Grid */}
+            <div className="border border-black/5 rounded-lg overflow-hidden bg-white">
+              <div className="grid grid-cols-3 divide-x divide-black/5">
+                {["IFA", "IFC", "COR"].map((stage) => (
+                  <div key={stage} className="flex flex-col">
                     {/* Header */}
-                    <div className="bg-gray-50 border-b border-gray-100 py-2 text-center text-xs sm:text-sm font-black tracking-widest text-gray-800 uppercase">
+                    <div className="bg-gray-50/80 border-b border-black/5 py-1 text-center text-[10px] font-bold tracking-widest text-black/60 uppercase">
                       {stage}
                     </div>
                     {/* Content */}
-                    <div className="p-1.5 sm:p-2 space-y-1.5 sm:space-y-2">
+                    <div className="p-1 space-y-0.5">
                       {[
                         { label: "Active", key: "active", color: "green" },
                         { label: "On-Hold", key: "onHold", color: "orange" },
@@ -226,20 +247,24 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                               projectsByTeam[
                                 Object.keys(projectsByTeam).find(
                                   (k) =>
-                                    projectsByTeam[k].teamName === team.teamName
+                                    projectsByTeam[k].teamName ===
+                                    team.teamName,
                                 ) || ""
                               ]?.projects || [],
                               stage as any,
-                              item.key.toUpperCase() as any
+                              item.key.toUpperCase() as any,
                             )
                           }
-                          className={`w-full flex items-center justify-between px-1.5 sm:px-2 py-1 rounded-lg hover:bg-${item.color}-50 transition-all group/btn border border-transparent hover:border-${item.color}-100`}
+                          className={`w-full flex items-center justify-between px-1.5 py-0.5 rounded-md hover:bg-gray-50 transition-all group/btn`}
                         >
-                          <span className="text-[10px] sm:text-xs font-bold text-gray-600 uppercase group-hover/btn:text-gray-900 truncate mr-1">
+                          <span className="text-[9px] font-medium text-gray-500 uppercase truncate">
                             {item.label}
                           </span>
                           <span
-                            className={`text-[11px] sm:text-sm font-black text-${item.color}-600`}
+                            className={`text-[10px] font-bold ${item.key === "active" ? "text-green-600" :
+                                item.key === "onHold" ? "text-orange-500" :
+                                  "text-blue-500"
+                              }`}
                           >
                             {(team.stats[stage] as any)?.[item.key] || 0}
                           </span>
@@ -253,11 +278,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
 
             {/* Monthly Breakdown Section (Only when filtered) */}
             {isFiltered && (
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">
+              <div className="space-y-1.5 pt-2 border-t border-black/5">
+                <h4 className="text-[9px] font-bold text-black/40 uppercase tracking-widest px-1">
                   Monthly Breakdown
                 </h4>
-                <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                <div className="space-y-1 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
                   {Object.entries(team.monthlyBreakdown)
                     .sort((a, b) => {
                       const [monthA, yearA] = a[0].split(" ");
@@ -269,19 +294,19 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                     .map(([monthYear, seconds]) => (
                       <div
                         key={monthYear}
-                        className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="flex items-center justify-between py-0.5 px-1.5 rounded-md hover:bg-gray-50 transition-colors"
                       >
                         <span className="text-[10px] font-medium text-gray-600">
                           {monthYear}
                         </span>
-                        <span className="text-[10px] font-bold text-gray-800">
+                        <span className="text-[10px] font-bold text-black">
                           {formatSeconds(seconds)}
                         </span>
                       </div>
                     ))}
                   {Object.keys(team.monthlyBreakdown).length === 0 && (
-                    <p className="text-[10px] text-gray-400 italic text-center py-2">
-                      No task data for this period
+                    <p className="text-[9px] text-gray-400 italic text-center py-1">
+                      No task data
                     </p>
                   )}
                 </div>

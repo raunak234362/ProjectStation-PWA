@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
 import { LogOut, X } from "lucide-react";
-import { useSelector } from "react-redux";
-import Button from "./fields/Button";
-import type { UserData } from "../interface";
 
 interface SidebarProps {
   isMinimized: boolean;
@@ -19,9 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleSidebar,
   isMobile = false,
 }) => {
-  const userData = useSelector(
-    (state: any) => state?.userInfo?.userDetail,
-  ) as UserData | null;
+  const [isHovered, setIsHovered] = useState(false);
 
   const navigate = useNavigate();
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
@@ -30,150 +26,162 @@ const Sidebar: React.FC<SidebarProps> = ({
     roles.includes(userRole.toLowerCase());
 
   const fetchLogout = (): void => {
-    try {
-      sessionStorage.clear();
-      navigate("/");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    sessionStorage.clear();
+    navigate("/");
   };
+
+  const isExpanded = !isMinimized || (isHovered && !isMobile);
 
   return (
     <aside
-      className={`h-full transition-all duration-300 flex flex-col 
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
+      className={`
+        h-full flex flex-col bg-white border-r border-gray-100 transition-all duration-300
+        z-[100]
         ${isMobile
-          ? `fixed inset-y-0 left-0 z-50 bg-[#6bbd45] shadow-2xl w-72 transform ${isMinimized ? "-translate-x-full" : "translate-x-0"}`
-          : `relative rounded-3xl bg-[#6bbd45] text-white shadow-soft ${isMinimized ? "w-24" : "w-72"}`
-        }`}
+          ? `fixed inset-y-0 left-0 w-72 transform shadow-2xl ${isMinimized ? "-translate-x-full" : "translate-x-0"
+          }`
+          : `relative ${isExpanded ? "w-64" : "w-20"}`
+        }
+      `}
     >
-      {/* Header */}
+      {/* Header / Logo */}
       <div
-        className={`flex items-center pt-6 pb-2 px-6 ${isMobile
-          ? "justify-between"
-          : isMinimized
+        className={`flex items-center ${isMobile
+          ? "justify-between px-6"
+          : isExpanded
             ? "justify-center"
-            : "justify-start"
+            : "justify-center"
           }`}
       >
-        <div className="flex items-center w-full justify-center">
-          {!isMinimized ? (
+        <div className="flex items-center justify-center transition-all duration-300">
+          {isExpanded ? (
             <img
               src={LOGO}
               alt="Logo"
-              className="bg-white w-56 object-contain rounded-xl drop-shadow-sm"
+              className="h-32 w-auto object-contain transition-all duration-300"
             />
           ) : (
             <img
               src={SLOGO}
               alt="Logo"
-              className="bg-white w-16 object-contain p-1 rounded-xl drop-shadow-sm"
+              className="h-8 w-8 object-contain transition-all duration-300"
             />
           )}
         </div>
 
         {isMobile && (
-          <Button
+          <button
             onClick={toggleSidebar}
-            className="p-2 bg-white/10 text-white rounded-[6px] hover:bg-white/20 transition-colors"
+            className="p-1.5 text-black hover:bg-gray-100 transition-colors rounded-lg"
           >
-            <X size={22} />
-          </Button>
+            <X size={18} />
+          </button>
         )}
       </div>
 
-      <div className="flex-1 py-2 flex flex-col overflow-y-auto sidebar-scrollbar">
-        <ul className="flex flex-col gap-0.5 w-full pl-4">
+      {/* Navigation */}
+      <div className="flex-1 py-2 flex flex-col overflow-y-auto sidebar-scrollbar px-2 space-y-1">
+        <nav className="flex flex-col gap-0.5 w-full">
           {navItems.map(
             ({ label, to, roles, icon }) =>
               canView(roles) && (
-                <li key={label} className="relative group">
+                <div key={label} className="relative group">
                   <NavLink
                     to={
-                      label === "Dashboard" &&
-                        (userRole === "sales" || userRole === "sales_manager")
-                        ? "/dashboard/sales"
+                      label === "Dashboard"
+                        ? userRole === "sales" || userRole === "sales_manager"
+                          ? "/dashboard/sales"
+                          : userRole === "client" || userRole === "client_admin"
+                            ? "/dashboard/client"
+                            : to
                         : to
                     }
-                    end={to === "/dashboard"}
+                    end={
+                      to === "/dashboard" &&
+                      userRole !== "client" &&
+                      userRole !== "client_admin" &&
+                      userRole !== "sales" &&
+                      userRole !== "sales_manager"
+                    }
                     onClick={isMobile ? toggleSidebar : undefined}
                     className={({ isActive }) =>
-                      `flex items-center gap-4 py-2.5 transition-all duration-200 text-xl tracking-wide relative 
+                      `flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-lg transition-all duration-200 relative
                       ${isActive
-                        ? `bg-white rounded-[6px] text-green-600 shadow-sm z-20 ${isMobile ? " mx-4 px-4" : "ml-0 pl-6"
-                        }`
-                        : `text-white rounded-[6px] hover:bg-white/10 ${isMobile ? " mx-4 px-4" : " ml-0 pl-6"
-                        }`
-                      } ${isMinimized
-                        ? "justify-center px-0 w-14 h-14 mx-auto rounded-[6px]! ml-0! pl-0!"
-                        : ""
-                      }`
+                        ? "bg-gray-50 text-black border border-black/10 border-l-[4px] border-l-[#6bbd45]"
+                        : "text-black hover:bg-gray-50 hover:text-black hover:border-y hover:border-r hover:border-black/10 hover:border-l-[4px] hover:border-l-[#6bbd45] border border-transparent border-l-[4px] border-l-transparent"
+                      } ${!isExpanded ? "justify-center px-0 w-10 h-10 mx-auto border-none p-0 bg-transparent" : ""}`
                     }
                   >
                     {({ isActive }) => (
                       <>
-                        {/* Inverted Corners for Active State Effect - Desktop Only */}
-                        {!isMinimized && isActive && !isMobile && (
-                          <>
-                            {/* Top Curve */}
-                            {/* <div className="absolute right-0 -top-5 w-5 h-5 bg-transparent rounded-br-[20px] shadow-[5px_5px_0_5px_#f9fafb] z-10 pointer-events-none"></div> */}
-                            {/* Bottom Curve */}
-                            {/* <div className="absolute right-0 -bottom-5 w-5 h-5 bg-transparent rounded-tr-[20px] shadow-[5px_-5px_0_5px_#f9fafb] z-10 pointer-events-none"></div> */}
-                          </>
-                        )}
                         <div
-                          className={`${isMinimized ? "" : ""} relative z-20`}
+                          className={`transition-colors duration-200 ${isActive ? "text-black" : "text-black group-hover:text-black"
+                            }`}
                         >
                           {icon}
                         </div>
-                        {!isMinimized && (
-                          <span className="relative z-20">{label}</span>
+                        {isExpanded && (
+                          <span className="truncate tracking-wide">
+                            {label}
+                          </span>
                         )}
                       </>
                     )}
                   </NavLink>
 
-                  {/* Tooltip for minimized sidebar */}
-                  {isMinimized && (
-                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 hidden group-hover:flex">
-                      <span className="bg-gray-800 text-white text-sm font-bold py-2 px-4 rounded-[6px] shadow-xl whitespace-nowrap">
-                        {label}
-                      </span>
+                  {/* Tooltip for minimized state */}
+                  {!isExpanded && (
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 bg-black text-white text-xs font-semibold rounded shadow-sm opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50">
+                      {label}
                     </div>
                   )}
-                </li>
+                </div>
               ),
           )}
-        </ul>
+        </nav>
       </div>
 
-      {/* Footer */}
-      <div className="p-6 mt-auto">
-        {!isMinimized && (
-          <div className="flex items-center gap-4 mb-4 bg-white/10 p-3 rounded-2xl border border-white/10 backdrop-blur-sm">
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-green-700 font-extrabold text-lg shadow-sm">
+      {/* User & Actions Footer */}
+      <div className="p-4 mt-auto border-t border-gray-100">
+        {isExpanded && (
+          <div className="flex items-center gap-3 mb-6 px-2">
+            <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-black font-bold text-sm">
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-white truncate">
-                {sessionStorage.getItem("username")}
+              <p className="text-lg font-bold text-black truncate">
+                {sessionStorage.getItem("firstName")}
               </p>
-              <p className="text-[10px] text-green-100 font-bold uppercase tracking-wider truncate opacity-80">
-                {userData?.role || userRole}
+              <p className="text-xs uppercase tracking-wider text-black font-semibold truncate">
+                {sessionStorage.getItem("userDesignation")}
               </p>
             </div>
           </div>
         )}
 
-        <Button
-          className={`w-full flex items-center gap-3 py-3 rounded-2xl transition-all ${isMinimized
-            ? "justify-center bg-white/10 text-white hover:bg-white/20"
-            : "justify-start px-6 bg-white/10 text-white hover:bg-white/20"
-            }`}
-          onClick={fetchLogout}
-        >
-          <LogOut size={20} />
-          {!isMinimized && <span className="font-bold text-sm">Logout</span>}
-        </Button>
+        <div className="space-y-3">
+          <button
+            className={`w-full flex items-center gap-3 py-2 rounded-full transition-all text-black bg-[#6bbd45]/10 border border-black/20 text-xs font-black uppercase tracking-widest hover:bg-[#6bbd45]/20
+              ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
+            onClick={() => window.location.reload()}
+          >
+            <div className={`transition-transform duration-700 ${!isExpanded ? "" : "group-hover:rotate-180"}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></svg>
+            </div>
+            {isExpanded && <span>Refresh</span>}
+          </button>
+
+          <button
+            className={`w-full flex items-center gap-3 py-2 rounded-full transition-all text-black bg-white border border-black/20 text-xs font-black uppercase tracking-widest hover:bg-gray-50
+              ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
+            onClick={fetchLogout}
+          >
+            <LogOut size={14} strokeWidth={3} />
+            {isExpanded && <span>Logout</span>}
+          </button>
+        </div>
       </div>
     </aside>
   );

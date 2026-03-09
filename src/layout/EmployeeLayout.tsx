@@ -8,27 +8,25 @@ const EmployeeLayout = () => {
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
-        <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 border-b rounded-t-2xl flex flex-col md:flex-row items-center justify-end gap-4">
-          <div className="flex flex-row gap-3 items-end justify-end">
+        <div className="px-4 md:px-6 py-4 bg-gray-50/50 border-b border-black/5 rounded-t-2xl flex flex-col md:flex-row items-center justify-center md:justify-end gap-4 md:gap-6">
+          <div className="flex flex-row gap-2 md:gap-4 items-center justify-center md:justify-end w-full md:w-auto">
             <button
               onClick={() => setActiveTab("allEmployee")}
-              className={`px-1.5 md:px-4 py-2 rounded-lg ${
-                activeTab === "allEmployee"
-                  ? "md:text-base text-sm bg-green-700 text-white font-bold"
-                  : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
-              }`}
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border ${activeTab === "allEmployee"
+                ? "bg-green-200 text-black border-black shadow-sm"
+                : "text-black/60 border-black/10 hover:bg-green-50"
+                }`}
             >
-              All Employee
+              All Employees
             </button>
 
-          {(userRole === "ADMIN" || userRole === "HUMAN_RESOURCE") && (
+            {(userRole === "ADMIN" || userRole === "HUMAN_RESOURCE") && (
               <button
                 onClick={() => setActiveTab("addEmployee")}
-                className={`px-1.5 md:px-4 py-2 rounded-lg ${
-                  activeTab === "addEmployee"
-                    ? "md:text-base text-sm bg-green-700 text-white font-bold"
-                    : "text-base md:text-base bg-white/70 backdrop-xl text-gray-700 font-semibold"
-                }`}
+                className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border ${activeTab === "addEmployee"
+                  ? "bg-green-200 text-black border-black shadow-sm"
+                  : "text-black/60 border-black/10 hover:bg-green-50"
+                  }`}
               >
                 Add Employee
               </button>
@@ -41,7 +39,7 @@ const EmployeeLayout = () => {
               <AllEmployee />
             </div>
           )}
-        
+
           {activeTab === "addEmployee" && (
             <div>
               {" "}

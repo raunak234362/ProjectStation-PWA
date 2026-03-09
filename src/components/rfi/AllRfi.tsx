@@ -5,6 +5,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { RFIItem } from "../../interface";
 import GetRFIByID from "./GetRFIByID";
 import { Loader2, Inbox } from "lucide-react";
+import { formatDate } from "../../utils/dateUtils";
+import { Suspense } from "react";
 
 interface AllRFIProps {
   rfiData?: RFIItem[];
@@ -13,15 +15,13 @@ interface AllRFIProps {
 const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
   const [loading, setLoading] = useState(true);
-  // const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
-console.log(rfiData);
+  const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
+  console.log(rfiData);
 
   const userRole = sessionStorage.getItem("userRole");
 
-
   useEffect(() => {
     if (rfiData && rfiData.length > 0) {
-    
       const normalized = rfiData.map((item: any) => ({
         ...item,
         createdAt: item.createdAt || item.date || null,
@@ -29,7 +29,6 @@ console.log(rfiData);
       setRFIs(normalized);
       setLoading(false);
     } else {
-   
     }
   }, [rfiData]);
 
@@ -47,14 +46,12 @@ console.log(rfiData);
         const s = row.original.sender;
         return s
           ? `${s.firstName ?? ""} ${s.middleName ?? ""} ${s.lastName ?? ""}`.trim() ||
-              s.username ||
-              "—"
+          s.username ||
+          "—"
           : "—";
       },
     },
   ];
-
-  
 
   columns.push(
     {
@@ -62,11 +59,7 @@ console.log(rfiData);
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 text-xs rounded-full ${
-            row.original.status === true
-              ? "bg-yellow-100 text-yellow-700"
-              : "bg-green-100 text-green-700"
-          }`}
+          className="px-3 py-1 text-sm uppercase tracking-wide rounded-lg bg-gray-100 text-black border border-gray-200"
         >
           {row.original.status ? "PENDING" : "RESPONDED"}
         </span>
@@ -75,15 +68,8 @@ console.log(rfiData);
     {
       accessorKey: "createdAt",
       header: "Created On",
-      cell: ({ row }) =>
-        row.original.createdAt
-          ? new Date(row.original.createdAt).toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
-          : "—",
-    }
+      cell: ({ row }) => formatDate(row.original.createdAt),
+    },
   );
 
   // ✅ Loading state
@@ -117,11 +103,14 @@ console.log(rfiData);
       <DataTable
         columns={columns}
         data={rfis}
-
-        detailComponent={({ row }) => <GetRFIByID id={row.id} />}
+        onRowClick={(row) => setSelectedRfiID(row.id)}
         pageSizeOptions={[5, 10, 25]}
       />
-
+      {selectedRfiID && (
+        <Suspense fallback={<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md text-white">Loading...</div>}>
+          <GetRFIByID id={selectedRfiID} onClose={() => setSelectedRfiID(null)} />
+        </Suspense>
+      )}
     </div>
   );
 };

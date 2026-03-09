@@ -7,122 +7,99 @@ import {
   Search,
 } from "lucide-react";
 import type { DashboardStats } from "../WBTDashboard";
-import { cn } from "../../../lib/utils";
+
 
 interface PendingActionsProps {
   dashboardStats: DashboardStats | null;
   onActionClick?: (actionType: string) => void;
+  filter?: ("RFQ" | "RFI" | "Submittals" | "COR")[];
 }
 
 const PendingActions: React.FC<PendingActionsProps> = ({
   dashboardStats,
   onActionClick,
+  filter,
 }) => {
   const actions = [
-    {
-      title: "RFI",
-      count: dashboardStats?.pendingRFI || 0,
-      subtitle: "New RFI",
-      subcount: dashboardStats?.newRFI || 0,
-      icon: FileText,
-      color: "amber",
-    },
-    {
-      title: "Submittals",
-      count: dashboardStats?.pendingSubmittals || 0,
-      subtitle: "Response Pending",
-      icon: RefreshCw,
-      color: "purple",
-    },
-    {
-      title: "Change Orders",
-      count: dashboardStats?.pendingChangeOrders || 0,
-      subtitle: "New Change Orders",
-      subcount: dashboardStats?.newChangeOrders || 0,
-      icon: Activity,
-      color: "rose",
-    },
     {
       title: "RFQ",
       count: dashboardStats?.pendingRFQ || 0,
       subcount: dashboardStats?.newRFQ || 0,
       subtitle: "New RFQ",
       icon: Search,
-      color: "cyan",
+      // No fills, using standard icon color transition
+    },
+    {
+      title: "RFI",
+      count: dashboardStats?.pendingRFI || 0,
+      subtitle: "New RFI",
+      subcount: dashboardStats?.newRFI || 0,
+      icon: FileText,
+    },
+    {
+      title: "Submittals",
+      count: dashboardStats?.pendingSubmittals,
+      subtitle: "Response Pending",
+      icon: RefreshCw,
+    },
+    {
+      title: "COR",
+      count: dashboardStats?.pendingChangeOrders || 0,
+      subtitle: "Change Orders",
+      subcount: dashboardStats?.newChangeOrders || 0,
+      icon: Activity,
     },
   ];
 
-  const colorClasses = {
-    amber: {
-      bg: "bg-amber-50",
-      hoverBg: "bg-amber-100",
-      text: "text-amber-600",
-    },
-    purple: {
-      bg: "bg-purple-50",
-      hoverBg: "bg-purple-100",
-      text: "text-purple-600",
-    },
-    rose: {
-      bg: "bg-rose-50",
-      hoverBg: "bg-rose-100",
-      text: "text-rose-600",
-    },
-    cyan: {
-      bg: "bg-cyan-50",
-      hoverBg: "bg-cyan-100",
-      text: "text-cyan-600",
-    },
-  };
+  const filteredActions = filter
+    ? actions.filter((action) => filter.includes(action.title as any))
+    : actions;
+
 
   return (
-    <div className="flex flex-col justify-center h-full bg-white shadow-sm rounded-2xl p-4">
-      <h3 className="font-bold text-xl text-slate-800 mb-4 flex items-center gap-2 px-2">
-        <ClipboardList className="text-[#6bbd45]" size={22} strokeWidth={2.5} />
-        Pending Actions
+    <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
+      <h3 className="text-xl md:text-2xl font-bold text-black mb-6 flex items-center gap-3 tracking-tight ml-1">
+        <ClipboardList size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
+        PENDING ACTIONS
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {actions.map((action) => {
-          const colors =
-            colorClasses[action.color as keyof typeof colorClasses];
-
+        {filteredActions.map((action) => {
           return (
             <div
               key={action.title}
               onClick={() => {
-                if (action.title === "Pending Submittals" && onActionClick) {
-                  onActionClick("PENDING_SUBMITTALS");
+                if (onActionClick) {
+                  const actionMap: Record<string, string> = {
+                    Submittals: "PENDING_SUBMITTALS",
+                    RFQ: "PENDING_RFQ",
+                    RFI: "PENDING_RFI",
+                    COR: "PENDING_COR",
+                  };
+                  onActionClick(actionMap[action.title] || action.title);
                 }
               }}
-              className="flex flex-row items-center gap-4 p-4 rounded-2xl bg-[#f9fdf7] shadow-soft transition-all duration-300 cursor-pointer hover:shadow-medium hover:scale-[1.02] active:scale-[0.98] group"
+              className="p-4 rounded-xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
             >
-              <div
-                className={cn(
-                  "p-3 rounded-xl shadow-sm transition-colors",
-                  colors.bg,
-                  colors.text
-                )}
-              >
-                <action.icon size={22} strokeWidth={2.5} />
+              <div className="flex items-center gap-3 z-10 min-w-0 flex-1">
+                <div className="p-2 sm:p-2.5 rounded-full bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black shrink-0">
+                  <action.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] sm:text-xs font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
+                    {action.title}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex flex-row gap-5 items-center min-w-0">
-                <div className="font-bold text-md text-slate-800 uppercase tracking-tight truncate">
-                  {action.title}
-                </div>
-                <div
-                  className="text-2xl font-extrabold tracking-tight"
-                  style={{ color: colors.text.replace("text-", "#") }}
-                >
+              <div className="z-10 text-right ml-3 shrink-0">
+                <span className="text-lg sm:text-2xl md:text-3xl font-black text-black tracking-tight">
                   {action.count}
-                </div>
-                {/* <div className="flex items-baseline gap-2">
-                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest truncate">
-                    {action.subtitle}
-                  </span>
-                </div> */}
+                </span>
               </div>
+
+              {/* Subtle background interaction */}
+              <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
             </div>
           );
         })}

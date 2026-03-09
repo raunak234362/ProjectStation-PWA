@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import { Button } from "../ui/button";
 import EditTask from "./EditTask";
 import { Edit } from "lucide-react";
+import { formatDateTime } from "../../utils/dateUtils";
 
 interface Task {
   id: string | number;
@@ -95,27 +96,15 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
       2,
-      "0"
+      "0",
     )}`;
   };
 
   const totalDurationSeconds =
     task?.workingHourTask?.reduce(
       (acc, wh) => acc + (Number(wh.duration_seconds) || 0),
-      0
+      0,
     ) || 0;
-
-  const toIST = (dateString?: string) => {
-    if (!dateString) return "—";
-    return new Intl.DateTimeFormat("en-IN", {
-      timeZone: "Asia/Kolkata",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(dateString));
-  };
 
   const handleAction = async (action: "start" | "pause" | "resume" | "end") => {
     if (!task?.id) return;
@@ -262,7 +251,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
               <ClipboardList className="w-7 h-7 text-green-700" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-700">{task.name}</h2>
+              <h2 className="text-2xl  text-gray-700">{task.name}</h2>
               <p className="text-sm text-gray-700">ID: #{task.id}</p>
             </div>
           </div>
@@ -301,7 +290,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
             <>
               {/* Task Info Card */}
               <div className="bg-green-50 rounded-2xl p-8 border border-green-200">
-                <h3 className="text-2xl font-bold text-green-900 mb-6 flex items-center gap-3">
+                <h3 className="text-2xl  text-green-900 mb-6 flex items-center gap-3">
                   <FileText className="w-7 h-7" />
                   Task Information
                 </h3>
@@ -329,12 +318,12 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
                   <InfoItem
                     icon={<Calendar />}
                     label="Due Date"
-                    value={toIST(task.due_date)}
+                    value={formatDateTime(task.due_date)}
                   />
                   <InfoItem
                     icon={<Clock />}
                     label="Created At"
-                    value={toIST(task.createdAt)}
+                    value={formatDateTime(task.createdAt)}
                   />
 
                   <div className="flex items-start gap-4">
@@ -342,7 +331,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
                       <div
                         className={`w-6 h-6 rounded-full ${priority.color.replace(
                           "text",
-                          "bg"
+                          "bg",
                         )}`}
                       ></div>
                     </div>
@@ -350,7 +339,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
                       <p className="text-sm font-medium text-gray-700">
                         Priority
                       </p>
-                      <p className={`font-bold mt-1 ${priority.color}`}>
+                      <p className={` mt-1 ${priority.color}`}>
                         {priority.label}
                       </p>
                     </div>
@@ -444,7 +433,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
               {task.workingHourTask && task.workingHourTask.length > 0 && (
                 <div className="bg-green-50 rounded-2xl p-6 border border-green-200">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-indigo-900 flex items-center gap-3">
+                    <h3 className="text-xl  text-indigo-900 flex items-center gap-3">
                       <Timer className="w-6 h-6" />
                       Work Summary
                     </h3>
@@ -543,7 +532,7 @@ const SummaryCard: React.FC<{
     </div>
     <div>
       <p className="text-sm text-gray-700">{label}</p>
-      <p className={`text-xl font-bold mt-2 ${color}`}>{value}</p>
+      <p className={`text-xl  mt-2 ${color}`}>{value}</p>
     </div>
   </div>
 );

@@ -1,9 +1,11 @@
+import { useState } from "react";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
+import { formatDate } from "../../utils/dateUtils";
 
 const AllRFQ = ({ rfq }: any) => {
-  const userType = localStorage.getItem("userType");
+  const userRole = sessionStorage.getItem("userRole");
 
   const columns: ExtendedColumnDef<RFQItem>[] = [
     {
@@ -12,16 +14,9 @@ const AllRFQ = ({ rfq }: any) => {
       enableColumnFilter: true,
       filterType: "text",
     },
-    {
-      accessorKey: "projectNumber",
-      header: "RFQ #",
-      enableColumnFilter: true,
-      filterType: "text",
-    },
   ];
 
-  // ➕ Only Admin / Staff see Fabricator
-  if (userType !== "CLIENT") {
+  if (userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN") {
     columns.push({
       accessorKey: "fabricator",
       header: "Fabricator",
@@ -53,36 +48,32 @@ const AllRFQ = ({ rfq }: any) => {
       ],
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 text-xs rounded-full ${row.original.status === "IN_REVIEW"
-              ? "bg-yellow-100 text-yellow-700"
-              : row.original.status === "COMPLETED"
-                ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-700"
-            }`}
+          className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
         >
-          {row.original.status}
+          {row.original.status?.replace("_", " ")}
         </span>
       ),
     },
     {
       accessorKey: "estimationDate",
       header: "Due Date",
-      cell: ({ row }) =>
-        row.original.estimationDate
-          ? new Date(row.original.estimationDate).toLocaleDateString()
-          : "—",
+      cell: ({ row }) => formatDate(row.original.estimationDate),
     },
   );
 
+  const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
+
   return (
-    <div className=" bg-white p-4 rounded-2xl shadow-sm">
+    <div className="bg-white p-4 rounded-2xl shadow-sm">
       <DataTable
         columns={columns}
         data={rfq || []}
-        detailComponent={({ row }) => <GetRFQByID id={row.id} />}
-        // onDelete={handleDelete}
-        pageSizeOptions={[5, 10, 25]}
+        onRowClick={(row: any) => setSelectedRfqId(row.id)}
+        pageSizeOptions={[25]}
       />
+      {selectedRfqId && (
+        <GetRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
+      )}
     </div>
   );
 };

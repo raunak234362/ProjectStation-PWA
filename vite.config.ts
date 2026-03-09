@@ -10,7 +10,8 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: false,
+      injectRegister: "auto",
+      strategies: "generateSW",
 
       pwaAssets: {
         disabled: false,
@@ -50,11 +51,23 @@ export default defineConfig({
       },
 
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // Allow larger bundles
+  globPatterns: ["**/*.{js,css,svg,png,ico}"],
+  cleanupOutdatedCaches: true,
+  clientsClaim: true,
+  skipWaiting: true,
+  maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+
+  runtimeCaching: [
+    {
+      urlPattern: ({ request }) => request.mode === 'navigate',
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'html-cache',
       },
+    },
+  ],
+},
+
 
       devOptions: {
         enabled: false,

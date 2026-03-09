@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
-  X,
   FileText,
   Calendar,
   DollarSign,
@@ -12,6 +11,7 @@ import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { toast } from "react-toastify";
+import { formatDate, formatDateTime } from "../../utils/dateUtils";
 
 interface Props {
   quotation: any;
@@ -72,16 +72,18 @@ const QuotationResponseDetailsModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+      <div className="bg-[#fafffb] w-full max-w-3xl rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto border border-green-100/50">
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-green-600 to-green-700 text-white p-6 rounded-t-xl flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Quotation Details</h2>
+        <div className="flex justify-between items-center mb-6 p-6 border-b border-gray-100">
+          <h2 className="text-xl font-black text-black uppercase tracking-tight">
+            Quotation Details
+          </h2>
           <button
             onClick={onClose}
-            className="text-white hover:bg-white/20 rounded-full p-2 transition"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            <X size={20} />
+            Close
           </button>
         </div>
 
@@ -125,7 +127,7 @@ const QuotationResponseDetailsModal = ({
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <p className="text-sm text-gray-600 mb-1">Approval Date</p>
               <p className="font-semibold text-gray-800">
-                {new Date(quotation.approvalDate).toLocaleDateString()}
+                {formatDate(quotation.approvalDate)}
               </p>
             </div>
           )}
@@ -139,14 +141,14 @@ const QuotationResponseDetailsModal = ({
                 "Connection Designer"}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              {new Date(quotation.createdAt || Date.now()).toLocaleString()}
+              {formatDateTime(quotation.createdAt || Date.now())}
             </p>
           </div>
 
           {/* Files */}
           {quotation.files && quotation.files.length > 0 && (
             <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <h3 className="font-black text-black mb-3 flex items-center gap-2 uppercase tracking-tight">
                 <FileText size={18} />
                 Attachments ({quotation.files.length})
               </h3>
@@ -170,7 +172,7 @@ const QuotationResponseDetailsModal = ({
           {/* Replies Section */}
           {quotation.replies && quotation.replies.length > 0 && (
             <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-700 mb-4">
+              <h3 className="font-black text-black mb-4 uppercase tracking-tight">
                 Replies ({quotation.replies.length})
               </h3>
               <div className="space-y-3">
@@ -184,7 +186,7 @@ const QuotationResponseDetailsModal = ({
                         {reply.userRole || "User"}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {new Date(reply.createdAt).toLocaleString()}
+                        {formatDateTime(reply.createdAt)}
                       </p>
                     </div>
                     <p className="text-sm text-gray-800">{reply.message}</p>
@@ -211,7 +213,7 @@ const QuotationResponseDetailsModal = ({
           )}
 
           {/* Reply Form */}
-          {isAdmin && (
+          {(isAdmin || userRole === "CONNECTION_DESIGNER_ENGINEER") && (
             <div className="border-t pt-4">
               {!showReplyForm ? (
                 <Button
@@ -255,15 +257,7 @@ const QuotationResponseDetailsModal = ({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="sticky bottom-0 bg-gray-50 border-t p-4 rounded-b-xl flex justify-end">
-          <Button
-            onClick={onClose}
-            className="px-6 py-2 bg-gray-600 text-white hover:bg-gray-700 rounded-lg transition"
-          >
-            Close
-          </Button>
-        </div>
+        {/* Footer removed since we have header close */}
       </div>
     </div>
   );
@@ -279,13 +273,13 @@ const DetailCard = ({
   label: string;
   value: string;
 }) => (
-  <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-lg p-4 flex items-start gap-3">
+  <div className="bg-linear-to-br from-gray-50 to-white border border-gray-200 rounded-lg p-4 flex items-start gap-3">
     <div className="mt-1">{icon}</div>
     <div>
       <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">
         {label}
       </p>
-      <p className="font-bold text-gray-800 text-lg">{value}</p>
+      <p className=" text-gray-800 text-lg">{value}</p>
     </div>
   </div>
 );

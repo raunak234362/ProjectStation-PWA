@@ -1,13 +1,18 @@
 import React, { useMemo, useState } from "react";
-import { ClipboardList, AlertCircle, X } from "lucide-react";
-import AddInvoice from "../../invoices/AddInvoice";
+import { ClipboardList, AlertCircle, X, FileText } from "lucide-react";
+import { cn } from "../../../lib/utils";
+
 import AddSubmittal from "../../submittals/AddSubmittals";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface UpcomingSubmittalsProps {
   pendingSubmittals: any[];
   invoices?: any[];
   initialTab?: "submittals" | "invoices";
   hideTabs?: boolean;
+  hideFabricator?: boolean;
+  onSubmittalClick?: (submittal: any) => void;
+  onInvoiceClick?: (invoice: any) => void;
 }
 
 const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
@@ -15,12 +20,16 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   invoices = [],
   initialTab = "submittals",
   hideTabs = false,
+  hideFabricator = false,
+  onSubmittalClick,
+  onInvoiceClick,
 }) => {
   const [activeTab, setActiveTab] = useState<"submittals" | "invoices">(
-    initialTab
+    initialTab,
   );
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
 
   const isOverdue = (dateString: string) => {
     if (!dateString) return false;
@@ -44,70 +53,91 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   }, [pendingSubmittals]);
 
   const invoiceNeedRaise = useMemo(() => {
-    // Filter invoices that are not paid or need action
     return invoices.filter((inv) => !inv.paymentStatus);
   }, [invoices]);
 
+
   return (
-    <div className="bg-white p-4 rounded-[6px] shadow-sm border border-gray-100 flex flex-col h-full">
+    <div className="flex flex-col h-full p-2 transition-all duration-300">
       {!hideTabs && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 shrink-0">
-          <div className="flex gap-2 bg-white/50 p-1 rounded-lg self-start sm:self-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 shrink-0">
+          <div className="flex gap-2 p-1 rounded-xl self-start sm:self-auto bg-gray-100/50">
             <button
               onClick={() => setActiveTab("submittals")}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "submittals"
-                ? "bg-green-500 text-white shadow-md shadow-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-white"
-                }`}
+              className={cn(
+                "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all",
+                activeTab === "submittals"
+                  ? "bg-white text-black shadow-sm border border-black"
+                  : "text-black hover:bg-gray-200/50"
+              )}
             >
               Upcoming Submittals
             </button>
             <button
               onClick={() => setActiveTab("invoices")}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm md:text-lg font-medium tracking-wider rounded-[6px] transition-all ${activeTab === "invoices"
-                ? "bg-green-500 text-white shadow-md shadow-green-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-white"
-                }`}
+              className={cn(
+                "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all",
+                activeTab === "invoices"
+                  ? "bg-white text-black shadow-sm border border-black"
+                  : "text-black hover:bg-gray-200/50"
+              )}
             >
-              Invoice Need Raise
+              Invoices
             </button>
           </div>
-          <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm self-start sm:self-auto">
+          <span className="px-3 py-1 bg-green-50 text-green-700 text-[10px] uppercase font-black rounded-full border border-green-100">
             {activeTab === "submittals"
-              ? `${pendingSubmittals.length} Pending`
-              : `${invoiceNeedRaise.length} Need Raise`}
+              ? `${pendingSubmittals.length} PENDING`
+              : `${invoiceNeedRaise.length} ACTION REQ`}
           </span>
         </div>
       )}
       {hideTabs && (
-        <div className="flex items-center justify-between mb-4 shrink-0">
-          <h3 className="text-lg font-bold text-gray-700">
-            {activeTab === "submittals" ? "Upcoming Submittals" : "Invoice Need Raise"}
+        <div className="flex items-center justify-between mb-6 shrink-0 ml-1">
+          <h3 className="text-xl md:text-2xl font-bold text-black flex items-center gap-3 tracking-tight">
+            {activeTab === "submittals" ? (
+              <>
+                <ClipboardList size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
+                UPCOMING SUBMITTALS
+              </>
+            ) : (
+              <>
+                <FileText size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
+                
+              </>
+            )}
           </h3>
-          <span className="px-3 py-1 bg-white text-green-700 text-xs font-bold rounded-full shadow-sm">
+          <span className="px-3 py-1 bg-gray-50 text-black text-[10px] uppercase font-black rounded-full border border-gray-100">
             {activeTab === "submittals"
-              ? `${pendingSubmittals.length} Pending`
-              : `${invoiceNeedRaise.length} Need Raise`}
+              ? `${pendingSubmittals.length} PENDING`
+              : `${invoiceNeedRaise.length} ACTION REQ`}
           </span>
         </div>
       )}
 
-      <div className="flex-1 space-y-4 min-h-0">
+      <div className="flex-1 space-y-4 min-h-0 overflow-y-auto custom-scrollbar pr-2">
         {activeTab === "submittals" ? (
           pendingSubmittals.length > 0 ? (
             Object.entries(groupedSubmittals).map(([projectName, items]) => (
-              <div key={projectName} className="space-y-2 bg-green-500/20 p-2 rounded-[6px] border border-green-200">
-                <div className="flex items-center gap-2 py-1">
+              <div
+                key={projectName}
+                className="space-y-2 bg-gray-50/50 p-3 rounded-xl border border-gray-100"
+              >
+                <div className="flex items-center gap-2 py-1 mb-1">
                   <div className="w-1 h-3 bg-green-500 rounded-full"></div>
-                  <h3 className="text-md font-bold text-gray-900 uppercase tracking-tight">
+                  <h3 className="text-sm font-bold text-black uppercase tracking-tight truncate">
                     {projectName}
                   </h3>
-                  <span className="text-sm bg-white text-green-700 px-1.5 py-0.5 rounded-[4px] font-bold shadow-sm border border-green-100">
+                  <span className="text-[10px] bg-white text-black font-bold px-1.5 py-0.5 rounded border border-gray-200 ml-auto">
                     {items.length}
                   </span>
-                  <span className="text-md font-bold text-green-900 bg-green-100 px-2 py-0.5 rounded-[4px] ml-auto uppercase tracking-wider">
-                    {items[0]?.fabricator?.fabName || items[0]?.fabName || "N/A"}
-                  </span>
+                  {!hideFabricator && (
+                    <span className="text-[10px] font-bold text-black bg-white border border-gray-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      {items[0]?.fabricator?.fabName ||
+                        items[0]?.fabName ||
+                        "N/A"}
+                    </span>
+                  )}
                 </div>
                 <div className="space-y-2">
                   {items.map((submittal, index) => {
@@ -116,105 +146,105 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                       <button
                         key={submittal.id || index}
                         onClick={() => {
-                          setSelectedItem(submittal);
-                          setIsModalOpen(true);
+                          if (onSubmittalClick) {
+                            onSubmittalClick(submittal);
+                          } else {
+                            setSelectedItem(submittal);
+                            setIsModalOpen(true);
+                          }
                         }}
-                        className={`w-full text-left p-3 rounded-[6px] border transition-all group ${overdue
-                          ? "bg-red-50 border-red-100 hover:bg-red-100/50 hover:border-red-200 shadow-sm shadow-red-50"
-                          : "bg-white border-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50"
-                          }`}
+                        className={cn(
+                          "w-full text-left flex flex-col gap-1 p-3 rounded-lg border transition-all bg-white hover:shadow-md group",
+                          overdue ? "border-red-500 border-l-[6px] border-l-red-500" : "border-black border-l-[6px] border-l-[#6bbd45]",
+                        )}
                       >
-                        <div className="flex justify-between items-start mb-1">
-                          <div className="flex items-center gap-2">
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-2 min-w-0">
                             {overdue && (
-                              <AlertCircle size={12} className="text-red-500" />
+                              <AlertCircle size={14} className="text-red-500 shrink-0" />
                             )}
                             <h4
-                              className={`font-bold text-sm transition-colors ${overdue
-                                ? "text-red-700"
-                                : "text-gray-700 group-hover:text-green-700"
-                                }`}
+                              className={cn(
+                                "text-sm font-semibold truncate transition-colors",
+                                overdue ? "text-red-700" : "text-black group-hover:text-black",
+                              )}
                             >
                               {submittal.subject || "No Subject"}
                             </h4>
                           </div>
                           <span
-                            className={`text-[10px] font-bold uppercase tracking-wider ${overdue ? "text-red-500" : "text-gray-400"
-                              }`}
+                            className={cn(
+                              "text-[10px] font-bold uppercase tracking-widest shrink-0 ml-2",
+                              overdue ? "text-red-500" : "text-black bg-gray-50 px-1.5 py-0.5 rounded",
+                            )}
                           >
-                            {submittal.approvalDate
-                              ? new Date(
-                                submittal.approvalDate
-                              ).toLocaleDateString()
-                              : "No Date"}
+                            {formatDate(submittal.approvalDate)}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between mt-1">
-                          {overdue && (
-                            <span className="text-[10px] font-bold text-red-500 animate-pulse">
-                              OVERDUE
-                            </span>
-                          )}
-                        </div>
+                        {overdue && (
+                          <p className="text-[10px] font-black text-red-600 tracking-wider">OVERDUE</p>
+                        )}
                       </button>
                     );
                   })}
                 </div>
               </div>
             ))
-
           ) : (
-            <div className="flex flex-col items-center justify-center h-full py-8 text-gray-400">
-              <ClipboardList size={32} className="mb-2 opacity-20" />
-              <p className="text-xs">No upcoming submittals found.</p>
+            <div className="flex flex-col items-center justify-center h-40 text-gray-400 border-2 border-dashed border-gray-100 rounded-xl">
+              <ClipboardList size={24} className="mb-2 opacity-20" />
+              <p className="text-xs font-medium">No upcoming submittals</p>
             </div>
           )
         ) : invoiceNeedRaise.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {invoiceNeedRaise.map((invoice, index) => (
-              <button
+              <div
                 key={invoice.id || index}
                 onClick={() => {
-                  setSelectedItem(invoice);
-                  setIsModalOpen(true);
+                  if (onInvoiceClick) {
+                    onInvoiceClick(invoice);
+                  } else {
+                    setSelectedItem(invoice);
+                    setIsModalOpen(true);
+                  }
                 }}
-                className="w-full text-left p-3 rounded-lg border border-white bg-white hover:border-green-100 hover:shadow-md hover:shadow-green-50/50 transition-all group"
+                className="w-full text-left p-4 rounded-xl border border-black border-l-[6px] border-l-[#6bbd45] bg-white hover:shadow-md transition-all cursor-pointer group relative overflow-hidden"
               >
-                <div className="flex justify-between items-start mb-1">
-                  <h4 className="font-bold text-sm text-gray-700 group-hover:text-green-700 transition-colors">
+
+                <div className="flex justify-between items-start mb-2 pl-2">
+                  <h4 className="text-sm font-bold text-black group-hover:text-black transition-colors">
                     {invoice.invoiceNumber || "No Number"}
                   </h4>
-                  <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">
-                    {invoice.invoiceDate
-                      ? new Date(invoice.invoiceDate).toLocaleDateString()
-                      : "No Date"}
+                  <span className="text-[10px] font-bold text-black uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded">
+                    {formatDate(invoice.invoiceDate)}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 pl-2">
                   <div className="flex flex-col">
-                    <span className="text-xs text-gray-400 uppercase font-medium">
+                    <span className="text-[10px] text-black uppercase font-black tracking-wider">
                       Customer
                     </span>
-                    <span className="text-xs font-semibold text-gray-700 truncate">
+                    <span className="text-xs font-semibold text-black truncate">
                       {invoice.customerName || "N/A"}
                     </span>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-xs text-gray-400 uppercase font-medium">
+                    <span className="text-[10px] text-black uppercase font-black tracking-wider">
                       Amount
                     </span>
-                    <span className="text-xs font-bold text-green-600">
+                    <span className="text-sm font-black text-black">
                       ${invoice.totalInvoiceValue?.toLocaleString() || "0"}
                     </span>
                   </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full py-8 text-gray-400">
-            <ClipboardList size={32} className="mb-2 opacity-20" />
-            <p className="text-xs">No invoices need raising.</p>
+          <div className="flex flex-col items-center justify-center h-40 text-gray-400 border-2 border-dashed border-gray-100 rounded-xl">
+            <ClipboardList size={24} className="mb-2 opacity-20" />
+            <p className="text-xs font-medium">{userRole === "client" ? "No invoices received" : "No active invoices"}</p>
           </div>
         )}
       </div>
@@ -224,8 +254,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-lg font-bold text-gray-700">
-                {activeTab === "submittals" ? "Create Submittal" : "Create Invoice"}
+              <h3 className="text-lg font-bold text-gray-800">
+                {activeTab === "submittals" ? "Submittal Details" : "Invoice Details"}
               </h3>
               <button
                 onClick={() => {
@@ -238,24 +268,13 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
-              {activeTab === "submittals" ? (
-                <AddSubmittal
-                  project={selectedItem?.project || selectedItem}
-                  initialData={{
-                    subject: selectedItem?.subject,
-                    description: selectedItem?.description,
-                  }}
-                />
-              ) : (
-                <AddInvoice
-                  initialFabricatorId={selectedItem?.fabricatorId || selectedItem?.fabricator_id}
-                  initialProjectId={selectedItem?.projectId || selectedItem?.project_id}
-                  onSuccess={() => {
-                    setIsModalOpen(false);
-                    setSelectedItem(null);
-                  }}
-                />
-              )}
+              <AddSubmittal
+                project={selectedItem?.project || selectedItem}
+                initialData={{
+                  subject: selectedItem?.subject,
+                  description: selectedItem?.description,
+                }}
+              />
             </div>
           </div>
         </div>

@@ -19,7 +19,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const config = useMemo(
     () => ({
       readonly: false,
-      placeholder: placeholder || "Start typing...",
+      placeholder: placeholder || "",
       toolbarAdaptive: false,
       buttons: [
         "bold",

@@ -7,21 +7,26 @@ import { useSelector } from "react-redux";
 
 const RfqLayout = () => {
   const [activeTab, setActiveTab] = useState("allRFQ");
-  const rfq = useSelector((state: any) => state.RFQInfos.RFQData);
+  const rfq = useSelector((state: any) => state.RFQInfos.RFQData) || [];
+
+  // const stats = {
+  //   total: rfq.length,
+  //   inReview: rfq.filter((r: any) => r.status === "IN_REVIEW").length,
+  //   completed: rfq.filter((r: any) => r.status === "COMPLETED").length,
+  //   pending: rfq.filter((r: any) => r.status === "PENDING" || r.status === "SENT").length,
+  // };
+
   return (
     <div className="w-full">
       <div className="flex flex-col w-full h-full mb-6">
-        <div className="px-6 py-4 backdrop-blur-2xl bg-white/60 border border-white/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-          <div className="flex flex-col">
-            <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">RFQ Management</h2>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Manage and track all request for quotations</p>
-          </div>
-          <div className="flex flex-row gap-4 items-center w-full md:w-auto">
+        <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
+
+          <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
             <button
               onClick={() => setActiveTab("allRFQ")}
-              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest transition-all ${activeTab === "allRFQ"
-                  ? "bg-green-500 text-white shadow-lg shadow-green-100 hover:bg-green-600 scale-[1.02]"
-                  : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allRFQ"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50"
                 }`}
             >
               All RFQ
@@ -29,12 +34,12 @@ const RfqLayout = () => {
 
             <button
               onClick={() => setActiveTab("addRFQ")}
-              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest transition-all ${activeTab === "addRFQ"
-                  ? "bg-green-500 text-white shadow-lg shadow-green-100 hover:bg-green-600 scale-[1.02]"
-                  : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-green-600 shadow-sm"
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "addRFQ"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50"
                 }`}
             >
-              Add RFQ
+              Create RFQ
             </button>
           </div>
         </div>

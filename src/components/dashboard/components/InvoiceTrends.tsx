@@ -7,8 +7,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 import { cn } from "../../../lib/utils";
+import { useTheme } from "../../../context/ThemeContext";
 
 interface InvoiceTrendsProps {
   invoices: any[];
@@ -29,6 +31,13 @@ const months = [
   "Dec",
 ];
 
+const quarters = [
+  { name: "Jan-Mar", label: "Q1", months: [0, 1, 2] },
+  { name: "Apr-Jun", label: "Q2", months: [3, 4, 5] },
+  { name: "Jul-Sep", label: "Q3", months: [6, 7, 8] },
+  { name: "Oct-Dec", label: "Q4", months: [9, 10, 11] },
+];
+
 const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
@@ -36,23 +45,41 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   const quarters = ["Q1", "Q2", "Q3", "Q4"];
 
   const processedChartData = useMemo(() => {
+    const parseVal = (val: any) => {
+      if (typeof val === "number") return val;
+      if (typeof val === "string")
+        return parseFloat(val.replace(/[^0-9.-]+/g, "")) || 0;
+      return 0;
+    };
+
     if (selectedMonth === null) {
-      // Quarterly view
-      return quarters.map((q, index) => {
+      // Yearly view - Quarterly grouping
+      return quarters.map((quarter) => {
         const quarterlyInvoices = invoices.filter((inv) => {
           const date = new Date(inv.invoiceDate);
-          const month = date.getMonth();
-          const quarterIndex = Math.floor(month / 3);
-          return date.getFullYear() === selectedYear && quarterIndex === index;
+          return (
+            date.getFullYear() === selectedYear &&
+            quarter.months.includes(date.getMonth())
+          );
         });
 
-        const totalAmount = quarterlyInvoices.reduce(
-          (sum, inv) => sum + (inv.totalInvoiceValue || 0),
-          0
+        const raised = quarterlyInvoices.reduce(
+          (sum, inv) => sum + parseVal(inv.totalInvoiceValue),
+          0,
         );
+        const received = quarterlyInvoices
+          .filter(
+            (inv) => inv.paymentStatus === "Paid" || inv.paymentStatus === true,
+          )
+          .reduce((sum, inv) => sum + parseVal(inv.totalInvoiceValue), 0);
+
+        const pending = Math.max(0, raised - received);
+
         return {
-          name: q,
-          amount: totalAmount,
+          name: quarter.name,
+          raised,
+          received,
+          pending,
           count: quarterlyInvoices.length,
         };
       });
@@ -61,7 +88,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
       const daysInMonth = new Date(
         selectedYear,
         selectedMonth + 1,
-        0
+        0,
       ).getDate();
       const dailyData = [];
       for (let i = 1; i <= daysInMonth; i++) {
@@ -74,13 +101,23 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
           );
         });
 
-        const totalAmount = dailyInvoices.reduce(
-          (sum, inv) => sum + (inv.totalInvoiceValue || 0),
-          0
+        const raised = dailyInvoices.reduce(
+          (sum, inv) => sum + parseVal(inv.totalInvoiceValue),
+          0,
         );
+        const received = dailyInvoices
+          .filter(
+            (inv) => inv.paymentStatus === "Paid" || inv.paymentStatus === true,
+          )
+          .reduce((sum, inv) => sum + parseVal(inv.totalInvoiceValue), 0);
+
+        const pending = Math.max(0, raised - received);
+
         dailyData.push({
           name: i.toString(),
-          amount: totalAmount,
+          raised,
+          received,
+          pending,
           count: dailyInvoices.length,
         });
       }
@@ -88,13 +125,16 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     }
   }, [invoices, selectedYear, selectedMonth]);
 
-  const { totalPeriodAmount } = useMemo(() => {
-    const amount = processedChartData.reduce(
-      (sum: number, item: any) => sum + item.amount,
-      0
+  const { totalRaisedAmount, totalReceivedAmount } = useMemo(() => {
+    const raised = processedChartData.reduce(
+      (sum, item) => sum + item.raised,
+      0,
     );
-    const count = processedChartData.reduce((sum: number, item: any) => sum + item.count, 0);
-    return { totalPeriodAmount: amount, totalPeriodCount: count };
+    const received = processedChartData.reduce(
+      (sum, item) => sum + item.received,
+      0,
+    );
+    return { totalRaisedAmount: raised, totalReceivedAmount: received };
   }, [processedChartData]);
 
   const years = useMemo(() => {
@@ -102,55 +142,69 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
     return Array.from({ length: 5 }, (_, i) => currentYear - i);
   }, []);
 
+  const { theme } = useTheme();
+
   return (
-    <div className="bg-[#f9fdf7] p-6 rounded-3xl shadow-soft flex flex-col h-full border border-slate-50">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col h-full transition-colors duration-300 relative overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 shrink-0">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-            Invoice Trends (Quarterly)
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2 mb-1">
+            INVOICE TRENDS
           </h2>
-          <p className="text-sm text-slate-500 font-bold mt-1">
-            Total Revenue: <span className="text-[#6bbd45]">${totalPeriodAmount.toLocaleString()}</span>
-          </p>
+          <div className="flex flex-row items-center gap-5">
+            <div className="text-xs font-medium flex flex-col gap-1 mt-1">
+              <p className=" text-gray-500 uppercase tracking-wider">
+                Total Raised:{" "}
+                <span className="text-lg font-black text-gray-900 ml-1">
+                  ${totalRaisedAmount.toLocaleString()}
+                </span>
+              </p>
+              <p className=" text-gray-500 uppercase tracking-wider">
+                Received:{" "}
+                <span className="text-lg font-black text-[#6bbd45] ml-1">
+                  ${totalReceivedAmount.toLocaleString()}
+                </span>
+              </p>
+            </div>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+              className="py-1 px-3 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-[#6bbd45] bg-white text-gray-900 shadow-sm transition-all cursor-pointer hover:border-gray-300 uppercase tracking-wider font-bold"
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="py-2 px-4 text-sm border border-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] bg-slate-50 font-bold shadow-soft transition-all"
-          >
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
+        <div className="flex items-center gap-2"></div>
       </div>
 
       {/* Month Filter Row */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar shrink-0">
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 custom-scrollbar shrink-0">
         <button
           onClick={() => setSelectedMonth(null)}
           className={cn(
-            "px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shadow-soft border",
+            "px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm border",
             selectedMonth === null
-              ? "bg-[#6bbd45] text-white border-[#6bbd45] shadow-highlight"
-              : "bg-white text-slate-500 hover:bg-slate-50 border-slate-100"
+              ? "bg-[#6bbd45] text-white border-[#6bbd45]"
+              : "bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-gray-200",
           )}
         >
-          Quarterly View
+          All
         </button>
         {months.map((month, index) => (
           <button
             key={month}
             onClick={() => setSelectedMonth(index)}
             className={cn(
-              "px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shadow-soft border",
+              "px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm border",
               selectedMonth === index
-                ? "bg-[#6bbd45] text-white border-[#6bbd45] shadow-highlight"
-                : "bg-white text-slate-500 hover:bg-slate-50 border-slate-100"
+                ? "bg-[#6bbd45] text-white border-[#6bbd45]"
+                : "bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-gray-200",
             )}
           >
             {month}
@@ -160,46 +214,80 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
 
       <div className="flex-1 min-h-0 w-full px-1">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={processedChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+          <ComposedChart
+            data={processedChartData}
+            margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
+          >
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
-              stroke="#f0f0f0"
+              stroke={"#f1f5f9"}
             />
             <XAxis
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#9ca3af", fontSize: 10 }}
-              dy={5}
+              tick={{
+                fill: theme === "dark" ? "#111827" : "#6b7280", // Using dark text for light mode as per request (black/grey)
+                fontSize: 12,
+                fontWeight: 700,
+              }}
+              dy={15}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#9ca3af", fontSize: 10 }}
-              tickFormatter={(value: number) =>
+              tick={{
+                fill: theme === "dark" ? "#6bbd45" : "#9ca3af",
+                fontSize: 11,
+                fontWeight: 600,
+              }}
+              tickFormatter={(value) =>
                 `$${value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`
               }
-              width={35}
+              width={40}
             />
             <Tooltip
+              cursor={{
+                fill: "#f8fafc",
+                opacity: 0.6,
+              }}
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   return (
-                    <div className="bg-white p-2 rounded-lg shadow-xl border border-gray-100 text-xs">
-                      <p className="font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                    <div className="bg-white p-4 rounded-xl shadow-xl border border-gray-200 min-w-[160px]">
+                      <p className=" text-gray-700 mb-2 uppercase tracking-tight text-xs font-black">
                         {selectedMonth !== null
                           ? `${months[selectedMonth]} ${label}`
-                          : label}
+                          : label}{" "}
+                        {selectedYear}
                       </p>
-                      <div className="flex flex-col gap-0.5">
-                        <p className="font-bold text-green-700">
-                          Amount: ${data.amount.toLocaleString()}
-                        </p>
-                        <p className="font-medium text-gray-700">
-                          Invoices: {data.count}
-                        </p>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            RAISED
+                          </span>
+                          <span className="text-sm font-black text-gray-900">
+                            ${(data.raised || 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="text-xs font-bold text-[#6bbd45] uppercase tracking-wider">
+                            RECEIVED
+                          </span>
+                          <span className="text-sm font-black text-[#6bbd45]">
+                            ${(data.received || 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+                          <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            INVOICES
+                          </span>
+                          <span className="text-xs font-bold text-gray-600">
+                            {data.count}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
@@ -207,12 +295,36 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
                 return null;
               }}
             />
+            <Legend
+              verticalAlign="top"
+              align="right"
+              iconType="circle"
+              iconSize={8}
+              wrapperStyle={{
+                paddingTop: "0px",
+                paddingBottom: "20px",
+                fontSize: "12px",
+                fontWeight: 700,
+                color: theme === "dark" ? "#111827" : "#111827",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            />
             <Bar
-              dataKey="amount"
-              name="Total Amount"
-              fill="#6bbd45"
+              dataKey="received"
+              name="Received"
+              stackId="a"
+              fill="#b9e752"
+              radius={[0, 0, 4, 4]}
+              barSize={40}
+            />
+            <Bar
+              dataKey="pending"
+              name="Pending"
+              stackId="a"
+              fill={"#e06666"} // Light grey for pending
               radius={[4, 4, 0, 0]}
-              barSize={selectedMonth === null ? 60 : 20}
+              barSize={40}
             />
           </BarChart>
         </ResponsiveContainer>

@@ -5,6 +5,8 @@ import RFQReducer from "./rfqSlice";
 import projectReducer from "./projectSlice";
 import milestoneReducer from "./milestoneSlice";
 import wbsReducer from "./wbsSlice";
+import notificationReducer from "./notificationSlice";
+import uiReducer from "./uiSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ const store = configureStore({
     projectInfo: projectReducer,
     milestoneInfo: milestoneReducer,
     wbsInfo: wbsReducer,
+    notificationInfo: notificationReducer,
+    ui: uiReducer,
   },
 });
 

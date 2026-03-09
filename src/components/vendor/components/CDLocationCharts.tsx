@@ -30,7 +30,7 @@ const CDLocationCharts: React.FC<CDLocationChartsProps> = ({ stateData }) => {
       <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-bold text-gray-800">
+            <h3 className="text-lg  text-gray-800">
               Network Growth Velocity
             </h3>
             <p className="text-xs text-gray-400 mt-1">
@@ -82,7 +82,7 @@ const CDLocationCharts: React.FC<CDLocationChartsProps> = ({ stateData }) => {
 
       {/* State-wise Presence (Secondary) - Takes up 1/3 */}
       <div className="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-        <h3 className="text-lg font-bold text-gray-800 mb-6">
+        <h3 className="text-lg  text-gray-800 mb-6">
           State-wise Presence
         </h3>
         <div className="flex-1 min-h-[250px] relative">
@@ -125,7 +125,7 @@ const CDLocationCharts: React.FC<CDLocationChartsProps> = ({ stateData }) => {
           </ResponsiveContainer>
           {/* Center Text */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none mb-8">
-            <span className="text-2xl font-bold text-gray-800">
+            <span className="text-2xl  text-gray-800">
               {stateData.reduce((a, b) => a + b.count, 0)}
             </span>
             <p className="text-xs text-gray-500">Total States</p>

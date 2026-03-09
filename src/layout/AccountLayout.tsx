@@ -25,27 +25,20 @@ const AccountLayout = () => {
     fetchAccounts();
   }, []);
 
+  const btnClass = (tab: string) =>
+    `flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === tab
+      ? "bg-green-200 text-black shadow-medium"
+      : "text-black hover:bg-green-50"
+    }`;
+
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
         <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 rounded-t-[6px] flex flex-wrap items-center justify-center md:justify-end gap-3">
-          <button
-            onClick={() => setActiveTab("allAccounts")}
-            className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-semibold transition-all ${activeTab === "allAccounts"
-                ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
-              }`}
-          >
+          <button onClick={() => setActiveTab("allAccounts")} className={btnClass("allAccounts")}>
             All Accounts
           </button>
-
-          <button
-            onClick={() => setActiveTab("addAccount")}
-            className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-semibold transition-all ${activeTab === "addAccount"
-                ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600 shadow-sm"
-              }`}
-          >
+          <button onClick={() => setActiveTab("addAccount")} className={btnClass("addAccount")}>
             Add Account
           </button>
         </div>

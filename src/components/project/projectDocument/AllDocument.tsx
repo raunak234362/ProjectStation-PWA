@@ -3,22 +3,23 @@ import AllDesignDrawings from "../designDrawings/AllDesignDrawings";
 import AddDesignDrawing from "../designDrawings/AddDesignDrawing";
 import { useParams } from "react-router-dom";
 
-const AllDocument = () => {
+const AllDocument = ({ projectId }: { projectId?: string }) => {
   const { id } = useParams<{ id: string }>();
+  const finalId = projectId || id;
   const [view, setView] = useState<"list" | "add">("list");
 
-  if (!id) return null;
+  if (!finalId) return null;
 
   return (
     <div className="space-y-4 mt-6">
       <div className="flex justify-between items-center border-b pb-2">
-        <h2 className="text-xl font-bold text-green-700">Design Drawings</h2>
+        <h2 className="text-xl  text-black">Design Drawings</h2>
         <div className="flex gap-2">
           <button
             onClick={() => setView("list")}
             className={`px-3 py-1 text-sm font-medium rounded-md ${
               view === "list"
-                ? "bg-green-600 text-white"
+                ? "border border-black bg-green-50 text-black"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
@@ -28,7 +29,7 @@ const AllDocument = () => {
             onClick={() => setView("add")}
             className={`px-3 py-1 text-sm font-medium rounded-md ${
               view === "add"
-                ? "bg-green-600 text-white"
+                ? "border border-black bg-green-50 text-black"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
@@ -38,9 +39,12 @@ const AllDocument = () => {
       </div>
 
       {view === "list" ? (
-        <AllDesignDrawings projectId={id} />
+        <AllDesignDrawings projectId={finalId as string} />
       ) : (
-        <AddDesignDrawing projectId={id} onSuccess={() => setView("list")} />
+        <AddDesignDrawing
+          projectId={finalId as string}
+          onSuccess={() => setView("list")}
+        />
       )}
     </div>
   );

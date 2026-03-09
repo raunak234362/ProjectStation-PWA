@@ -55,18 +55,25 @@ const AddProject: React.FC = () => {
       })),
   );
 
-  const { register, handleSubmit, control, watch, setValue } =
-    useForm<AddProjectPayload>({
-      defaultValues: {
-        tools: "TEKLA",
-        connectionDesign: false,
-        miscDesign: false,
-        customerDesign: false,
-        detailingMain: false,
-        detailingMisc: false,
-        files: [],
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<AddProjectPayload>({
+    defaultValues: {
+      tools: "TEKLA",
+      connectionDesign: false,
+      miscDesign: false,
+      customerDesign: false,
+      detailingMain: false,
+      detailingMisc: false,
+      files: [],
+    },
+  });
 
   useEffect(() => {
     Service.FetchAllConnectionDesigner()
@@ -115,9 +122,9 @@ const AddProject: React.FC = () => {
     setValue(
       "projectNumber",
       selectedRfq.projectNumber ||
-        `PROJ-${new Date().getFullYear()}-${String(
-          rfqData.indexOf(selectedRfq) + 1,
-        ).padStart(3, "0")}`,
+      `PROJ-${new Date().getFullYear()}-${String(
+        rfqData.indexOf(selectedRfq) + 1,
+      ).padStart(3, "0")}`,
     );
     setValue("description", selectedRfq.description || "");
     setValue("fabricatorID", String(selectedRfq.fabricatorId || ""));
@@ -134,7 +141,16 @@ const AddProject: React.FC = () => {
     });
   }, [selectedRfq, setValue, rfqData]);
 
+  const onFormError = (errors: any) => {
+    console.log("Form Errors:", errors);
+    const firstError = Object.values(errors)[0] as any;
+    toast.error(firstError?.message || "Please fill all required fields", {
+      toastId: "validation-error",
+    });
+  };
+
   const onSubmit = async (data: AddProjectPayload) => {
+    const loadingToast = toast.loading("Launching project...");
     try {
       setIsSubmitting(true);
       const formData = new FormData();
@@ -154,12 +170,26 @@ const AddProject: React.FC = () => {
       formData.append("stage", "IFA");
 
       const res = await Service.AddProject(formData);
-      if (res?.data) {
-        dispatch(addProject(res.data));
+      if (res?.data || res) {
+        dispatch(addProject(res?.data || res));
+        toast.update(loadingToast, {
+          render: "Project Added successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+        reset();
+      } else {
+        throw new Error("Empty response from server");
       }
-      toast.success("Project launched successfully!");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to create project");
+      console.error("Submission error:", error);
+      toast.update(loadingToast, {
+        render: error?.response?.data?.message || "Failed to create project",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -170,7 +200,7 @@ const AddProject: React.FC = () => {
       <div className="w-full mx-auto">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, onFormError)}
             className="p-4 md:p-10 space-y-8 md:space-y-14"
           >
             {/* Link RFQ — Hero Section */}
@@ -207,26 +237,26 @@ const AddProject: React.FC = () => {
               <div className="bg-linear-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl p-8 -mt-6 mb-10 shadow-inner">
                 <div className="flex items-center gap-3 mb-4">
                   <Zap className="w-5 h-5 md:w-7 md:h-7 text-emerald-600" />
-                  <h3 className="text-lg md:text-2xl font-bold text-emerald-900">
+                  <h3 className="text-lg md:text-2xl  text-emerald-900">
                     RFQ Auto-Filled
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-sm">
                   <div className="bg-white/70 p-4 rounded-xl">
                     <p className="text-gray-700">Project</p>
-                    <p className="font-bold text-gray-700 truncate">
+                    <p className=" text-gray-700 truncate">
                       {selectedRfq.projectName}
                     </p>
                   </div>
                   <div className="bg-white/70 p-4 rounded-xl">
                     <p className="text-gray-700">Fabricator</p>
-                    <p className="font-bold">
+                    <p className="">
                       {selectedRfq.fabricator?.fabName}
                     </p>
                   </div>
                   <div className="bg-white/70 p-4 rounded-xl">
                     <p className="text-gray-700">Tool</p>
-                    <p className="font-bold text-purple-700">
+                    <p className=" text-purple-700">
                       {selectedRfq.tools || "TEKLA"}
                     </p>
                   </div>
@@ -240,12 +270,14 @@ const AddProject: React.FC = () => {
               <Input
                 label="Project Number *"
                 placeholder="PROJ-2025-089"
-                {...register("projectNumber", { required: "Required" })}
+                error={errors.projectNumber?.message}
+                {...register("projectNumber", { required: "Project number is required" })}
               />
               <Input
                 label="Project Name *"
                 placeholder="Empire State Tower - Phase II"
-                {...register("name", { required: "Required" })}
+                error={errors.name?.message}
+                {...register("name", { required: "Project name is required" })}
               />
               <div className="md:col-span-2">
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -254,13 +286,18 @@ const AddProject: React.FC = () => {
                 <Controller
                   name="description"
                   control={control}
-                  rules={{ required: "Required" }}
+                  rules={{ required: "Description is required" }}
                   render={({ field }) => (
-                    <RichTextEditor
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                      placeholder="Full structural steel detailing for 40-story commercial building..."
-                    />
+                    <div className="flex flex-col gap-1">
+                      <RichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Full structural steel detailing for 40-story commercial building..."
+                      />
+                      {errors.description && (
+                        <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>
+                      )}
+                    </div>
                   )}
                 />
               </div>
@@ -276,17 +313,22 @@ const AddProject: React.FC = () => {
                 <Controller
                   name="fabricatorID"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: "Fabricator is required" }}
                   render={({ field }) => (
-                    <Select
-                      options={options.fabricators}
-                      value={options.fabricators.find(
-                        (o) => o.value === field.value,
+                    <div className="flex flex-col gap-1">
+                      <Select
+                        options={options.fabricators}
+                        value={options.fabricators.find(
+                          (o) => o.value === field.value,
+                        )}
+                        onChange={(o) => field.onChange(o?.value || "")}
+                        placeholder="Select..."
+                        isSearchable
+                      />
+                      {errors.fabricatorID && (
+                        <p className="text-red-500 text-xs mt-1">{errors.fabricatorID.message}</p>
                       )}
-                      onChange={(o) => field.onChange(o?.value || "")}
-                      placeholder="Select..."
-                      isSearchable
-                    />
+                    </div>
                   )}
                 />
               </div>
@@ -298,17 +340,22 @@ const AddProject: React.FC = () => {
                 <Controller
                   name="managerID"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: "Manager is required" }}
                   render={({ field }) => (
-                    <Select
-                      options={managerOption}
-                      value={managerOption.find(
-                        (o: any) => String(o.value) === String(field.value),
+                    <div className="flex flex-col gap-1">
+                      <Select
+                        options={managerOption}
+                        value={managerOption.find(
+                          (o: any) => String(o.value) === String(field.value),
+                        )}
+                        onChange={(o) => field.onChange(o?.value || "")}
+                        placeholder="Assign manager"
+                        isSearchable
+                      />
+                      {errors.managerID && (
+                        <p className="text-red-500 text-xs mt-1">{errors.managerID.message}</p>
                       )}
-                      onChange={(o) => field.onChange(o?.value || "")}
-                      placeholder="Assign manager"
-                      isSearchable
-                    />
+                    </div>
                   )}
                 />
               </div>
@@ -319,16 +366,21 @@ const AddProject: React.FC = () => {
                 <Controller
                   name="departmentID"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: "Department is required" }}
                   render={({ field }) => (
-                    <Select
-                      options={options.departments}
-                      value={options.departments.find(
-                        (o) => o.value === field.value,
+                    <div className="flex flex-col gap-1">
+                      <Select
+                        options={options.departments}
+                        value={options.departments.find(
+                          (o) => o.value === field.value,
+                        )}
+                        onChange={(o) => field.onChange(o?.value || "")}
+                        placeholder="Select dept"
+                      />
+                      {errors.departmentID && (
+                        <p className="text-red-500 text-xs mt-1">{errors.departmentID.message}</p>
                       )}
-                      onChange={(o) => field.onChange(o?.value || "")}
-                      placeholder="Select dept"
-                    />
+                    </div>
                   )}
                 />
               </div>
@@ -396,7 +448,7 @@ const AddProject: React.FC = () => {
               <div className="flex items-center gap-4 mb-8">
                 <Layers className="w-5 h-5 text-cyan-600" />
                 <div>
-                  <h3 className="text-lg md:text-xl font-bold text-cyan-900">
+                  <h3 className="text-lg md:text-xl  text-cyan-900">
                     Connection Design Scope
                   </h3>
                   <p className="text-cyan-700">
@@ -436,7 +488,7 @@ const AddProject: React.FC = () => {
               <div className="flex items-center gap-4 mb-8">
                 <Wrench className="w-5 h-5 text-amber-600" />
                 <div>
-                  <h3 className="text-lg md:text-xl font-bold text-amber-900">
+                  <h3 className="text-lg md:text-xl  text-amber-900">
                     Detailing Scope
                   </h3>
                   <p className="text-amber-700">
@@ -477,16 +529,19 @@ const AddProject: React.FC = () => {
                 label="Estimated Hours"
                 type="number"
                 placeholder="1200"
+                error={errors.estimatedHours?.message}
                 {...register("estimatedHours")}
               />
               <Input
                 label="Start Date *"
                 type="date"
-                {...register("startDate", { required: "Required" })}
+                error={errors.startDate?.message}
+                {...register("startDate", { required: "Start date is required" })}
               />
               <Input
                 label="Target End Date"
                 type="date"
+                error={errors.endDate?.message}
                 {...register("endDate")}
               />
             </div>

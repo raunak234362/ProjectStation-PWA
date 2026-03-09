@@ -1,18 +1,17 @@
- 
-import { Provider, useDispatch } from "react-redux";
-import store from "./store/store";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Layout from "./layout/DashboardLayout";
 import Service from "./api/Service";
 import { setUserData, showStaff } from "./store/userSlice";
-import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import socket, { connectSocket } from "./socket";
 import PWABadge from "./PWABadge";
 import { loadFabricator } from "./store/fabricatorSlice";
 import { setRFQData } from "./store/rfqSlice";
 import { setProjectData } from "./store/projectSlice";
-import { useSelector } from "react-redux";
+import { setNotifications } from "./store/notificationSlice";
 import useNotifications from "./hooks/useNotifications";
+import NotificationReceiver from "./util/NotificationReceiver";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -32,8 +31,13 @@ const AppContent = () => {
 
       sessionStorage.setItem("userId", userDetail.id);
       sessionStorage.setItem("username", userDetail.username);
+      sessionStorage.setItem("userDesignation", userDetail.designation);
       sessionStorage.setItem("firstName", userDetail.firstName);
-      sessionStorage.setItem("connectionDesignerId", userDetail.connectionDesignerId);
+      sessionStorage.setItem("lastName", userDetail.lastName);
+      sessionStorage.setItem(
+        "connectionDesignerId",
+        userDetail.connectionDesignerId,
+      );
 
       // setUserId(userDetail.id);
       dispatch(setUserData(userDetail));
@@ -73,6 +77,17 @@ const AppContent = () => {
         toast.error("Failed to load employees");
       }
     };
+
+    // const fetchAllEmployeeAdmin = async () => {
+    //   try {
+    //     const response = await Service.GetAdminMEASAnalyticsTrendline();
+    //     console.log(response);
+        
+    //   } catch (err) {
+    //     console.error("Failed to fetch employees:", err);
+    //     toast.error("Failed to load employees");
+    //   }
+    // };
     // Fetch all fabricator
     const fetchAllFabricator = async () => {
       try {
@@ -85,10 +100,21 @@ const AppContent = () => {
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        const response = await Service.Notifications();
+        const data = response?.data || [];
+        dispatch(setNotifications(data));
+      } catch (err) {
+        console.error("Failed to fetch notifications:", err);
+        toast.error("Failed to load notifications");
+      }
+    };
+
     const fetchInboxRFQ = async () => {
       try {
         let rfqDetail;
-        if (userType === "CLIENT") {
+        if (userType === "CLIENT" || userType === "CLIENT_ADMIN") {
           rfqDetail = await Service.RfqSent();
         } else if (
           userType === "OPERATION_EXECUTIVE" ||
@@ -98,14 +124,12 @@ const AppContent = () => {
           userType === "ADMIN"
         ) {
           rfqDetail = await Service.getAllRFQ();
-        }
-        else if (userType === "CONNECTION_DESIGNER_ENGINEER") {
+        } else if (userType === "CONNECTION_DESIGNER_ENGINEER") {
           const designerId = sessionStorage.getItem("connectionDesignerId");
           if (designerId) {
             rfqDetail = await Service.getConnectionEngineerQuotation();
           }
-        }
-        else {
+        } else {
           rfqDetail = await Service.RFQRecieved();
         }
         // setRfq(rfqDetail.data);
@@ -113,6 +137,8 @@ const AppContent = () => {
         const rfqData = Array.isArray(rfqDetail)
           ? rfqDetail
           : rfqDetail?.data || [];
+        console.log(rfqData);
+
         dispatch(setRFQData(rfqData));
         console.log("Dispatched RFQ Data:", rfqData);
       } catch (error) {
@@ -120,8 +146,11 @@ const AppContent = () => {
       }
     };
 
-    fetchAllFabricator();
+    if (userType !== "CLIENT" && userType !== "CLIENT_ADMIN") {
+      fetchAllFabricator();
+    }
     fetchAllEmployee();
+    fetchNotifications();
     fetchInboxRFQ();
     // Cleanup socket on unmount
     return () => {
@@ -135,6 +164,7 @@ const AppContent = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={1000} />
+      <NotificationReceiver />
 
       <Layout />
     </>
@@ -142,10 +172,10 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <Provider store={store}>
+  <>
     <AppContent />
     <PWABadge />
-  </Provider>
+  </>
 );
 
 export default App;

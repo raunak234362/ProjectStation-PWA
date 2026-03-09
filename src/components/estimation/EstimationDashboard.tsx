@@ -17,6 +17,9 @@ const EstimationDashboard = () => {
   // Chart Data State
   const [chartData, setChartData] = useState<any[]>([]);
   const [chartFabricators, setChartFabricators] = useState<string[]>([]);
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear(),
+  );
 
   useEffect(() => {
     fetchData();
@@ -27,20 +30,24 @@ const EstimationDashboard = () => {
       setLoading(true);
       const response = await Service.AllEstimation();
       // Ensure we treat the response correctly based on API structure
-      // Typically response.data or response directly is the array
       const allEstimations = Array.isArray(response)
         ? response
         : response?.data || [];
 
       setEstimations(allEstimations);
       calculateStats(allEstimations);
-      processChartData(allEstimations);
     } catch (error) {
       console.error("Failed to fetch estimation data", error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (estimations.length > 0) {
+      processChartData(estimations, selectedYear);
+    }
+  }, [estimations, selectedYear]);
 
   const calculateStats = (data: any[]) => {
     if (!data) return;
@@ -49,18 +56,14 @@ const EstimationDashboard = () => {
     const totalEstimated = data.length;
 
     // 2. Total Awarded Projects
-    // Checking for status 'AWARDED' or 'COMPLETED' ?
-    // Assuming 'AWARDED' based on common workflows, or case-insensitive check
     const totalAwarded = data.filter(
       (e: any) =>
         e.status?.toUpperCase() === "AWARDED" ||
-        e.status?.toUpperCase() === "COMPLETED"
+        e.status?.toUpperCase() === "COMPLETED",
     ).length;
 
     // 3. Total Hours
-    // Summing up estimated hours. Field might be 'estimatedHours', 'finalHours', or 'totalAgreatedHours'
     const totalHours = data.reduce((sum: number, e: any) => {
-      // Fallback checks for various possible field names
       const hours =
         e.estimatedHours || e.finalHours || e.totalAgreatedHours || 0;
       return sum + Number(hours);
@@ -73,48 +76,59 @@ const EstimationDashboard = () => {
     });
   };
 
-  const processChartData = (data: any[]) => {
+  const processChartData = (data: any[], year: number) => {
     if (!data) return;
 
+    // Initialize all 12 months for the selected year
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
     const monthlyData: Record<string, any> = {};
+    months.forEach((month, index) => {
+      const key = `${year}-${String(index + 1).padStart(2, "0")}`;
+      monthlyData[key] = { name: month, sortKey: key };
+    });
+
     const allFabricators = new Set<string>();
 
     data.forEach((e: any) => {
-      // Get Data
-      const dateStr = e.estimateDate || e.createdAt; // Use estimateDate or createdAt
+      const dateStr = e.estimateDate || e.createdAt;
       if (!dateStr) return;
 
       const date = new Date(dateStr);
-      const monthYear = date.toLocaleString("default", {
-        month: "short",
-        year: "2-digit",
-      }); // e.g. "Jan 23"
+      if (date.getFullYear() !== year) return;
 
-      // Use ISO string YYYY-MM for sorting usage if needed, but for now we trust insertion order or sort later
-      // To sort correctly, we key by YYYY-MM then map to display name
       const sortKey = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
+        date.getMonth() + 1,
       ).padStart(2, "0")}`;
 
-      if (!monthlyData[sortKey]) {
-        monthlyData[sortKey] = { name: monthYear, sortKey };
-      }
+      if (!monthlyData[sortKey]) return; // Should not happen with Jan-Dec init
 
       // Get Fabricator
       const fabName = e.fabricator?.fabName || e.fabricatorName || "Unknown";
-
-      // Always add to chart, even if unknown, so we see the data
       allFabricators.add(fabName);
 
       if (!monthlyData[sortKey][fabName]) {
         monthlyData[sortKey][fabName] = 0;
       }
-      monthlyData[sortKey][fabName] += 1; // Logic: Count projects. User asked for "which fabricator has done the more projects" in bar graph
+      monthlyData[sortKey][fabName] += 1;
     });
 
     // Convert to Array and Sort
     const sortedData = Object.values(monthlyData).sort((a: any, b: any) =>
-      a.sortKey.localeCompare(b.sortKey)
+      a.sortKey.localeCompare(b.sortKey),
     );
 
     setChartData(sortedData);
@@ -123,45 +137,69 @@ const EstimationDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-500 font-medium">
-          Loading Estimation Dashboard...
+      <div className="flex flex-col items-center justify-center h-full min-h-[600px] bg-white">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-green-100 border-t-green-600 rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 bg-white rounded-full shadow-inner"></div>
+          </div>
+        </div>
+        <p className="mt-6 text-[10px] font-bold text-black uppercase tracking-[0.3em] animate-pulse">
+          Synchronizing Intelligence...
         </p>
       </div>
     );
   }
 
   return (
-    <div className="h-full p-4 rounded-xl space-y-6 bg-gray-50 overflow-y-auto min-h-screen">
-      {/* Header / Title if needed, though usually Sidebar handles it */}
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2">
-          <EstimationStats
-            stats={{ ...stats, totalHours: stats.totalHours.toFixed(2) }}
+    <div className="h-full p-4 sm:p-6 lg:p-8 space-y-8 bg-white overflow-y-auto custom-scrollbar">
+      {/* Header Section */}
+      <div className="flex flex-col gap-1">
+        {/* <h2 className="text-3xl font-black text-black tracking-tight uppercase">
+          Estimation Engineering
+        </h2>
+        <p className="text-[10px] font-bold text-black uppercase tracking-[0.2em]">
+          Project Quantification & Fabricator Analysis
+        </p> */}
+      </div>
+
+      {/* Stats Section */}
+      <section className="space-y-4">
+        <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.3em]">
+          Executive Summary
+        </h3>
+        <EstimationStats
+          stats={{
+            ...stats,
+            totalHours: Number(stats.totalHours).toFixed(2),
+          }}
+        />
+      </section>
+
+      {/* Analytics Section */}
+      <section className="space-y-4">
+        <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.3em]">
+          Estimation Velocity & Trends
+        </h3>
+        <div className="border border-black/10 rounded-3xl overflow-hidden shadow-sm">
+          <FabricatorProjectChart
+            data={chartData}
+            fabricators={chartFabricators}
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
           />
         </div>
-        {/* <div className="xl:col-span-1">
-                    <TopFabricatorWidget fabricator={topFabricator} />
-                </div> */}
-      </div>
+      </section>
 
-      {/* Comparison Chart */}
-      <div className="w-full h-96">
-        <FabricatorProjectChart
-          data={chartData}
-          fabricators={chartFabricators}
-        />
-      </div>
-
-      {/* List of Estimations */}
-      <div className="pt-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 px-1">
-          All Estimations
+      {/* List Section */}
+      <section className="space-y-4">
+        <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.3em]">
+          Project Estimation Manifesto
         </h3>
-        <AllEstimation estimations={estimations} onRefresh={fetchData} />
-      </div>
+        <div className="bg-white rounded-2xl border border-black/10 overflow-hidden shadow-sm">
+          <AllEstimation estimations={estimations} onRefresh={fetchData} />
+        </div>
+      </section>
     </div>
   );
 };

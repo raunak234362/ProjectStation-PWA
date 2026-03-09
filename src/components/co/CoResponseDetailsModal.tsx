@@ -2,7 +2,6 @@ import { useState } from "react";
 import type { ChangeEvent } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
-import { X } from "lucide-react";
 import RenderFiles from "../ui/RenderFiles";
 
 const STATUS_OPTIONS = ["PENDING", "APPROVED", "REJECTED"];
@@ -37,15 +36,19 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-      <div className="bg-white p-6 w-full max-w-lg rounded-xl relative space-y-4">
-        <button onClick={onClose} className="absolute top-3 right-3">
-          <X size={18} />
-        </button>
-
-        <h2 className="text-xl font-semibold text-green-700">
-          Response Details
-        </h2>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="bg-[#fafffb] p-8 w-full max-w-lg rounded-3xl shadow-2xl relative space-y-4 border border-green-100/50">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-black text-black uppercase tracking-tight">
+            Response Details
+          </h2>
+          <button
+            onClick={onClose}
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+          >
+            Close
+          </button>
+        </div>
 
         <p className="bg-gray-100 p-3 rounded border">{response.description}</p>
 
@@ -85,8 +88,11 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
         />
 
         <div className="flex justify-end gap-3">
-          <Button onClick={onClose}>Cancel</Button>
-          <Button className="bg-green-600 text-white" onClick={handleReply}>
+          <Button onClick={onClose} className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200">Cancel</Button>
+          <Button
+            className="px-6 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+            onClick={handleReply}
+          >
             Send Reply
           </Button>
         </div>

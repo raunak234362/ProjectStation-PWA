@@ -86,28 +86,28 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
     if (isClient) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col items-center justify-center text-center">
                     <div className="p-3 bg-blue-50 rounded-xl mb-3">
                         <Banknote className="w-8 h-8 text-blue-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Invoiced</span>
-                    <span className="text-3xl font-bold text-gray-800 mt-1">${totalInvoiced.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Invoiced</span>
+                    <span className="text-3xl  text-gray-800 mt-1">${totalInvoiced.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col items-center justify-center text-center">
                     <div className="p-3 bg-green-50 rounded-xl mb-3">
                         <CheckCircle2 className="w-8 h-8 text-green-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Paid</span>
-                    <span className="text-3xl font-bold text-green-600 mt-1">${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Paid</span>
+                    <span className="text-3xl  text-green-600 mt-1">${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col items-center justify-center text-center">
                     <div className="p-3 bg-red-50 rounded-xl mb-3">
                         <AlertCircle className="w-8 h-8 text-red-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Balance Due</span>
-                    <span className="text-3xl font-bold text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Balance Due</span>
+                    <span className="text-3xl  text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
             </div>
         );
@@ -116,9 +116,9 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             {/* 1. Trends Line Chart */}
-            <div className="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div className="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45]">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-bold text-gray-800">Invoices & Payments Trend</h3>
+                    <h3 className="text-lg  text-gray-800">Invoices & Payments Trend</h3>
                     <select className="text-sm border-none bg-gray-50 rounded-lg px-3 py-1 focus:ring-1 focus:ring-green-500 text-gray-600 outline-hidden cursor-pointer">
                         <option>Last 6 Months</option>
                         <option>This Year</option>
@@ -153,8 +153,8 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
 
             {/* 2. Status Donut Chart & Payment Breakdown */}
             <div className="lg:col-span-1 space-y-6">
-                <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[280px]">
-                    <h3 className="text-lg font-bold text-gray-800 mb-2">Invoice Status</h3>
+                <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col h-[280px]">
+                    <h3 className="text-lg  text-gray-800 mb-2">Invoice Status</h3>
                     <div className="flex-1 relative">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -186,8 +186,8 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
                     </div>
                 </div>
 
-                <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">Payment Methods</h3>
+                <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45]">
+                    <h3 className="text-lg  text-gray-800 mb-4">Payment Methods</h3>
                     <div className="space-y-4">
                         {paymentMethods.map((pm, i) => (
                             <div key={i} className="flex items-center justify-between">
@@ -198,7 +198,7 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
                                     <span className="text-sm font-medium text-gray-700">{pm.method}</span>
                                 </div>
                                 <div className="text-right">
-                                    <span className="block text-sm font-bold text-gray-800">{pm.percentage}%</span>
+                                    <span className="block text-sm  text-gray-800">{pm.percentage}%</span>
                                     <div className="w-16 h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
                                         <div className="h-full bg-green-500 rounded-full" style={{ width: `${pm.percentage}%` }}></div>
                                     </div>

@@ -29,8 +29,25 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
       try {
         setLoading(true);
         const response = await Service.GetWBSTemplate();
-        // Assuming response.data contains the array based on user's provided JSON structure
-        setTemplates(response.data || []);
+
+        const sortOrderMap: Record<string, number> = {
+          MAIN_STEEL_PLACEMENT: 1,
+          MAIN_STEEL_CONNECTION: 2,
+          "MISC.STEEL_PLACEMENT_&_CONNECTION": 3,
+          ERECTION_OF_MAIN_STEEL: 4,
+          ERECTION_OF_MISC_STEEL: 5,
+          DETAILING_OF_MAIN_STEEL: 6,
+          DETAILING_OF_MISC_STEEL: 7,
+          OTHERS: 8,
+        };
+
+        const sortedTemplates = (response.data || []).sort((a: any, b: any) => {
+          const orderA = sortOrderMap[a.bundleKey] || 99;
+          const orderB = sortOrderMap[b.bundleKey] || 99;
+          return orderA - orderB;
+        });
+
+        setTemplates(sortedTemplates);
       } catch (error) {
         console.error("Error fetching WBS templates:", error);
       } finally {
@@ -77,7 +94,7 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
   const filteredTemplates = templates.filter(
     (template) =>
       template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.category.toLowerCase().includes(searchQuery.toLowerCase())
+      template.category.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (loading) {
@@ -144,7 +161,7 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
 
                 <div className="ml-4 grow">
                   <h3
-                    className={`font-bold transition-colors ${
+                    className={` transition-colors ${
                       selectedIds.has(template.id)
                         ? "text-green-900"
                         : "text-gray-700"
@@ -154,7 +171,7 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
                   </h3>
                   {/* Tooltip for Line Items */}
                   <div className="invisible group-hover:visible absolute left-full ml-4 top-0 z-50 w-64 p-4 bg-white/90 backdrop-blur-md border border-gray-100 rounded-2xl shadow-2xl transition-all duration-300 opacity-0 group-hover:opacity-100 pointer-events-none">
-                    <h4 className="text-xs font-bold text-green-600 uppercase tracking-widest mb-2">
+                    <h4 className="text-xs  text-green-600 uppercase tracking-widest mb-2">
                       Line Items
                     </h4>
                     <ul className="space-y-1">
@@ -197,7 +214,7 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
         {/* Footer Actions */}
         <div className="pt-4 flex items-center justify-between border-t border-gray-100">
           <p className="text-sm text-gray-700">
-            <span className="font-bold text-green-600">{selectedIds.size}</span>{" "}
+            <span className=" text-green-600">{selectedIds.size}</span>{" "}
             templates selected
           </p>
           <div className="flex space-x-3">
@@ -212,7 +229,7 @@ const FetchWBSTemplate = ({ id, onSelect, onClose }: FetchWBSTemplateProps) => {
             <Button
               onClick={handleSubmit}
               disabled={selectedIds.size === 0}
-              className={`px-8 py-2.5 font-bold transition-all ${
+              className={`px-8 py-2.5  transition-all ${
                 selectedIds.size > 0
                   ? "bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-200"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"

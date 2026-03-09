@@ -246,11 +246,11 @@ const AddConnectionDesigner: React.FC = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end w-full mt-6">
           <Button
-            type="submit"
+            type="submit" 
             disabled={isSubmitting}
-            className="bg-green-700 py-5 rounded-lg hover:opacity-60 shadow-2xl"
+            className="w-full text-center px-12 py-4 bg-green-200 text-black border border-black font-black rounded-2xl shadow-sm transition-all hover:bg-green-300 active:scale-95 flex items-center justify-center gap-4 text-xs uppercase tracking-[0.15em]"
           >
             {isSubmitting ? "Creating..." : "Create Connection Designer"}
           </Button>

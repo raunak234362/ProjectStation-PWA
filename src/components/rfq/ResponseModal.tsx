@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { toast } from "react-toastify";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { X, Printer } from "lucide-react";
@@ -10,6 +11,7 @@ import ASCI from "../../assets/asci.webp";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import Select from "../fields/Select";
+import { formatDate } from "../../utils/dateUtils";
 
 interface ResponseModalProps {
   rfqId: string;
@@ -163,7 +165,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
               <div><span>Our Proposal ID: <span>WBT/${est.estimationNumber || "Estimation Number"
       }/${new Date().getFullYear()}/VER 1.0</span></span></div>
-              <div><span>Date: <span>${new Date().toLocaleDateString()}</span></span></div>
+              <div><span>Date: <span>${formatDate(new Date())}</span></span></div>
             </div>
 
             <p style="font-size: 12px; margin-bottom: 25px; color: #444;">
@@ -382,240 +384,272 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     `);
     printWindow.document.close();
   };
-
   // Submit Handler
-  const onSubmit = async (data: RfqResponsePayload) => {
+  const onSubmit = async (data: any) => {
     try {
       setLoading(true);
 
       const userId = sessionStorage.getItem("userId") || ""; // assuming userId stored in session
       const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
-      const payload: RfqResponsePayload = {
-        ...data,
-        rfqId,
-        userId,
-        parentResponseId: data.parentResponseId || "",
-        files,
-      };
-      console.log(payload);
-
-      // Convert to FormData
       const formData = new FormData();
-      formData.append("rfqId", payload.rfqId);
-      formData.append("description", payload.description);
-      formData.append("status", "OPEN");
-      formData.append("wbtStatus", "OPEN");
+      formData.append("rfqId", rfqId);
+      formData.append("description", data.description);
+      formData.append("status", "OPEN"); // response status
+      formData.append("wbtStatus", data.wbtStatus || "OPEN"); // parent rfq status
       formData.append("userRole", userRole ?? "");
       formData.append("userId", userId ?? "");
 
-      if (payload.link) formData.append("link", payload.link);
+      if (data.link) formData.append("link", data.link);
 
       if (files.length > 0) {
         files.forEach((file) => formData.append("files", file));
       }
 
       await Service.addResponse(formData, rfqId);
-
+      toast.success("Response added successfully!");
       reset();
       setFiles([]);
       onSuccess();
       onClose();
     } catch (err) {
       console.error("Response submission failed:", err);
+      toast.error("Failed to add response");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white shadow-lg rounded-xl p-6 w-[90%] max-w-7xl relative overflow-y-auto max-h-[90vh]">
-        {/* Close Button */}
-        <Button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-700 hover:text-red-500"
-        >
-          <X className="w-5 h-5" />
-        </Button>
-
-        <h2 className="text-xl font-bold text-green-700 mb-4">Add Response</h2>
-
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          {/* Estimation Selection */}
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Select Estimation for Proposal
-              </label>
-              <Select
-                name="estimationId"
-                options={estimations.map((est) => ({
-                  label: `${est.estimationNumber} - ${est.projectName}`,
-                  value: est.id,
-                }))}
-                value={selectedEstimationId}
-                onChange={(_: any, val: any) =>
-                  handleEstimationChange(val as string)
-                }
-                placeholder="Select an estimation..."
-              />
-            </div>
-            <Button
-              type="button"
-              onClick={handlePrint}
-              disabled={!selectedEstimationId}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 h-[42px]"
-            >
-              <Printer className="w-4 h-4" />
-              Print Proposal
-            </Button>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-6xl relative flex flex-col h-[95vh] md:h-auto md:max-h-[90vh] border border-black/10">
+        {/* Fixed Header */}
+        <div className="px-5 sm:px-8 py-4 sm:py-5 border-b border-black/10 flex justify-between items-center bg-white rounded-t-2xl md:rounded-t-3xl shrink-0">
+          <div className="flex flex-col">
+            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">Add Response</h2>
+            <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">RFQ Response Protocol</p>
           </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-rose-50 text-rose-500 rounded-xl transition-all border border-transparent hover:border-rose-100"
+          >
+            <X size={24} />
+          </button>
+        </div>
 
-          {/* Pricing Items Selection */}
-          {selectedEstimationId && (
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
-              <h3 className="text-sm font-semibold text-gray-700 border-bottom pb-2">
-                Select Pricing Items
-              </h3>
-              <div className="grid grid-cols-1 gap-3">
-                {pricingItems.map((item, index) => (
-                  <div key={item.label} className="space-y-2">
-                    <label className="flex items-center gap-3 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={item.selected}
-                        onChange={(e) =>
-                          handlePricingItemChange(
-                            index,
-                            "selected",
-                            e.target.checked,
-                          )
-                        }
-                        className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                      />
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-green-700 transition-colors">
-                        {item.label}
-                      </span>
-                    </label>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-5 sm:p-8">
+          <form
+            id="response-form"
+            className="space-y-6 sm:space-y-8"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            {/* Estimation Selection */}
+            <div className="bg-gray-50/50 p-4 sm:p-6 rounded-2xl border border-black/5 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+                <div className="flex-1">
+                  <label className="block text-[10px] sm:text-xs font-black text-black/40 uppercase tracking-[0.2em] mb-2">
+                    Select Estimation for Proposal
+                  </label>
+                  <Select
+                    name="estimationId"
+                    options={estimations.map((est) => ({
+                      label: `${est.estimationNumber} - ${est.projectName}`,
+                      value: est.id,
+                    }))}
+                    value={selectedEstimationId}
+                    onChange={(_: any, val: any) =>
+                      handleEstimationChange(val as string)
+                    }
+                    placeholder="Search intelligence..."
+                    className="h-12"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  onClick={handlePrint}
+                  disabled={!selectedEstimationId}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 h-12 bg-white text-black rounded-xl border border-black hover:bg-gray-50 transition-all disabled:opacity-30 shadow-sm font-black uppercase text-xs tracking-widest shrink-0"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print Proposal
+                </Button>
+              </div>
 
-                    {item.selected && (
-                      <div className="ml-7 flex gap-4 items-center animate-in fade-in slide-in-from-left-2 duration-200">
-                        <div className="flex-1">
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">
-                              {selectedEstimation?.fabricators?.currencyType ||
-                                "USD"}
-                            </span>
+              {/* Pricing Items Selection */}
+              {selectedEstimationId && (
+                <div className="mt-6 pt-6 border-t border-black/5 space-y-6">
+                  <h3 className="text-xs font-black text-black uppercase tracking-widest flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                    Quantification Matrix
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    {pricingItems.map((item, index) => (
+                      <div key={item.label} className="bg-white p-4 rounded-xl border border-black/10 shadow-sm hover:border-green-400 group transition-all">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <label className="flex items-center gap-3 cursor-pointer flex-1">
                             <input
-                              type="number"
-                              value={item.price}
+                              type="checkbox"
+                              checked={item.selected}
                               onChange={(e) =>
                                 handlePricingItemChange(
                                   index,
-                                  "price",
-                                  e.target.value,
+                                  "selected",
+                                  e.target.checked,
                                 )
                               }
-                              placeholder="Price"
-                              className="w-full pl-12 pr-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none"
+                              className="w-5 h-5 text-green-600 rounded-lg border-black/20 focus:ring-green-500 cursor-pointer"
                             />
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={item.weeks}
-                              onChange={(e) =>
-                                handlePricingItemChange(
-                                  index,
-                                  "weeks",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Weeks"
-                              className="w-full pl-3 pr-12 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 outline-none"
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
-                              weeks
+                            <span className="text-sm font-black text-black uppercase tracking-tight group-hover:text-green-600 transition-colors">
+                              {item.label}
                             </span>
-                          </div>
+                          </label>
+
+                          {item.selected && (
+                            <div className="flex flex-row gap-2 sm:gap-3 items-center animate-in slide-in-from-right-4 duration-300">
+                              <div className="relative flex-1 sm:w-32">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30 text-[10px] font-black uppercase">
+                                  {selectedEstimation?.fabricators?.currencyType || "USD"}
+                                </span>
+                                <input
+                                  type="number"
+                                  value={item.price}
+                                  onChange={(e) =>
+                                    handlePricingItemChange(
+                                      index,
+                                      "price",
+                                      e.target.value,
+                                    )
+                                  }
+                                  placeholder="0.00"
+                                  className="w-full pl-12 pr-3 h-10 text-sm border border-black/10 rounded-lg focus:ring-1 focus:ring-green-500 outline-none font-black"
+                                />
+                              </div>
+                              <div className="relative flex-1 sm:w-28">
+                                <input
+                                  type="number"
+                                  value={item.weeks}
+                                  onChange={(e) =>
+                                    handlePricingItemChange(
+                                      index,
+                                      "weeks",
+                                      e.target.value,
+                                    )
+                                  }
+                                  placeholder="0"
+                                  className="w-full pl-3 pr-12 h-10 text-sm border border-black/10 rounded-lg focus:ring-1 focus:ring-green-500 outline-none font-black"
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-black/30 text-[10px] font-black uppercase">
+                                  WKS
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
+                    ))}
                   </div>
-                ))}
+                </div>
+              )}
+            </div>
+
+            {/* Description */}
+            <div className="space-y-3">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                Proposal Narrative / Detailed Description *
+              </label>
+              <div className="border border-black/10 rounded-2xl overflow-hidden focus-within:border-green-400 transition-all">
+                <Controller
+                  name="description"
+                  control={control}
+                  rules={{ required: "Message is required" }}
+                  render={({ field }) => (
+                    <RichTextEditor
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      placeholder="Synthesize your response here..."
+                    />
+                  )}
+                />
               </div>
             </div>
-          )}
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Message *
-            </label>
-            <Controller
-              name="description"
-              control={control}
-              rules={{ required: "Message is required" }}
-              render={({ field }) => (
-                <RichTextEditor
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                  placeholder="Type your response..."
+            {/* Optional Link & Status */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                  Lifecycle Status Transition
+                </label>
+                <div className="relative">
+                  <select
+                    {...register("wbtStatus")}
+                    className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-black uppercase text-xs tracking-widest appearance-none cursor-pointer"
+                    defaultValue="OPEN"
+                  >
+                    <option value="OPEN">OPEN - ACTIVE</option>
+                    <option value="IN_PROGRESS">IN PROGRESS - SYNTHESIZING</option>
+                    <option value="CLOSED">CLOSED - TERMINATED</option>
+                    <option value="AWARDED">AWARDED - SUCCESS</option>
+                    <option value="RE_APPROVED">RE-APPROVED - REITERATE</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-black/20">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                  Asset Link (External)
+                </label>
+                <input
+                  {...register("link")}
+                  placeholder="HTTPS://EXTERNAL.RESOURCE.LINK"
+                  className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-medium text-sm"
                 />
-              )}
-            />
-          </div>
+              </div>
+            </div>
 
-          {/* Optional Link */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Optional Link
-            </label>
-            <input
-              {...register("link")}
-              placeholder="Paste URL if any"
-              className="w-full border rounded-md p-2"
-            />
-          </div>
-
-          {/* Files */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Attach Files
-            </label>
-            <Controller
-              name="files"
-              control={control}
-              render={() => (
-                <MultipleFileUpload
-                  onFilesChange={(uploadedFiles) => setFiles(uploadedFiles)}
+            {/* Files */}
+            <div className="space-y-3">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                Technical Appendices / Supporting Files
+              </label>
+              <div className="p-1 rounded-2xl border-2 border-dashed border-black/10 hover:border-green-400/50 transition-all bg-gray-50/30">
+                <Controller
+                  name="files"
+                  control={control}
+                  render={() => (
+                    <MultipleFileUpload
+                      onFilesChange={(uploadedFiles) => setFiles(uploadedFiles)}
+                    />
+                  )}
                 />
-              )}
-            />
-          </div>
+              </div>
+            </div>
+          </form>
+        </div>
 
-          {/* Submit */}
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-200"
-            >
-              Cancel
-            </Button>
+        {/* Fixed Footer */}
+        <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-black/10 bg-gray-50/50 rounded-b-2xl md:rounded-b-3xl flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 shrink-0">
+          <Button
+            type="button"
+            onClick={onClose}
+            className="w-full sm:w-auto px-6 py-3 text-black border border-black/20 bg-white rounded-xl hover:bg-gray-50 font-black uppercase text-xs tracking-widest transition-all"
+          >
+            Abort
+          </Button>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-            >
-              {loading ? "Submitting..." : "Submit Response"}
-            </Button>
-          </div>
-        </form>
+          <Button
+            type="submit"
+            form="response-form"
+            disabled={loading}
+            className="w-full sm:w-auto px-10 py-3 bg-green-200 text-black rounded-xl border border-black hover:bg-green-300 transition-all disabled:opacity-50 font-black uppercase text-xs tracking-[0.2em] shadow-sm"
+          >
+            {loading ? "Transmitting..." : "Initialize Submission"}
+          </Button>
+        </div>
       </div>
     </div>
   );

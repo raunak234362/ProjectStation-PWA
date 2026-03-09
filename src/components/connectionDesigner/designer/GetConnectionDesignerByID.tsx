@@ -1,38 +1,81 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useSelector } from "react-redux";
 import Service from "../../../api/Service";
-import { Loader2, AlertCircle, FileText, Link2, MapPin, HardHat, Activity, CheckCircle2, Globe, RefreshCw, Search, Calendar, ExternalLink } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  FileText,
+  MapPin,
+  Globe,
+  HardHat,
+  ExternalLink,
+  Calendar,
+  ClipboardList,
+  Search,
+  RefreshCw,
+  Activity,
+  CheckCircle2,
+  Briefcase,
+  LayoutDashboard,
+} from "lucide-react";
 import Button from "../../fields/Button";
-import { openFileSecurely } from "../../../utils/openFileSecurely";
-import type { ConnectionDesigner } from "../../../interface";
+import type { ConnectionDesigner, ProjectData } from "../../../interface";
+import { cn } from "../../../lib/utils";
 import EditConnectionDesigner from "./EditConnectionDesigner";
 import { AllCDEngineer } from "../..";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
+
+import RenderFiles from "../../ui/RenderFiles";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface GetConnectionDesignerByIDProps {
   id: string;
+  close?: () => void;
 }
 
-const COLORS = [
-  "#10b981", "#3b82f6", "#f59e0b", "#8b5cf6", "#ec4899",
-  "#14b8a6", "#6366f1", "#ef4444", "#84cc16", "#0ea5e9",
-  "#d946ef", "#f97316", "#64748b", "#a855f7",
-];
+const DetailRow = ({ label, value, link, isExternal }: any) => (
+  <div className="flex flex-col gap-1">
+    <span className="text-xs uppercase font-black tracking-[0.2em] text-black">
+      {label}
+    </span>
+    {link ? (
+      <a
+        href={link}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className="text-black hover:text-green-600 transition-colors truncate font-semibold flex items-center gap-1 group text-sm sm:text-lg tracking-wide"
+      >
+        {value || "—"}
+        {isExternal && (
+          <ExternalLink
+            size={14}
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+          />
+        )}
+      </a>
+    ) : (
+      <span className="text-black font-semibold truncate text-sm sm:text-lg tracking-wide">
+        {value || "—"}
+      </span>
+    )}
+  </div>
+);
 
-const truncateText = (text: string, max: number = 40) =>
-  text.length > max ? text.substring(0, max) + "..." : text;
-
-const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
+const GetConnectionDesignerByID = ({
+  id,
+  close,
+}: GetConnectionDesignerByIDProps) => {
   const [designer, setDesigner] = useState<ConnectionDesigner | null>(null);
-  const [quotations, setQuotations] = useState<any[]>([]);
+  const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editModel, setEditModel] = useState<ConnectionDesigner | null>(null);
-  const [engineerModel, setEngineerModel] = useState<ConnectionDesigner | null>(null);
+  const [engineerModel, setEngineerModel] = useState<ConnectionDesigner | null>(
+    null,
+  );
 
-  const allProjects = useSelector((state: any) => state.projectInfo.projectData || []);
-  const designerProjects = allProjects.filter((p: any) => p.connectionDesignerID === id);
+  const [activeTab, setActiveTab] = useState<"insights" | "dashboard">(
+    "dashboard",
+  );
 
   const fetchData = async () => {
     if (!id) {
@@ -43,13 +86,14 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
     try {
       setLoading(true);
       setError(null);
-      const [designerRes, quotationsRes] = await Promise.all([
+
+      const [designerRes, projectsRes] = await Promise.all([
         Service.FetchConnectionDesignerByID(id),
-        Service.FetchConnectionQuotationByDesignerID(id)
+        Service.GetAllProjects(),
       ]);
 
       let designerData = designerRes?.data || null;
-      if (designerData && typeof designerData.state === 'string') {
+      if (designerData && typeof designerData.state === "string") {
         try {
           designerData.state = JSON.parse(designerData.state);
         } catch {
@@ -57,8 +101,15 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
         }
       }
 
+      const allProjects = Array.isArray(projectsRes)
+        ? projectsRes
+        : projectsRes?.data || [];
+      const associatedProjects = allProjects.filter(
+        (p: any) => p.connectionDesignerID === id,
+      );
+
       setDesigner(designerData);
-      setQuotations(quotationsRes?.data || []);
+      setProjects(associatedProjects);
     } catch (err) {
       console.error("Error fetching Designer data:", err);
       setError("Failed to load designer intelligence");
@@ -69,30 +120,38 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center py-24 text-gray-500">
-      <Loader2 className="w-10 h-10 animate-spin text-green-500 mb-4" />
-      <p className="text-sm font-medium animate-pulse">Synchronizing designer data...</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-gray-500">
+        <Loader2 className="w-10 h-10 animate-spin text-green-500 mb-4" />
+        <p className="text-sm font-medium animate-pulse">
+          Synchronizing designer data...
+        </p>
+      </div>
+    );
 
-  if (error || !designer) return (
-    <div className="flex flex-col items-center justify-center py-20 text-red-500">
-      <AlertCircle className="w-10 h-10 mb-4" />
-      <p className="font-semibold">{error || "Connection Designer not found"}</p>
-    </div>
-  );
+  if (error || !designer)
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-red-500">
+        <AlertCircle className="w-10 h-10 mb-4" />
+        <p className="font-semibold">
+          {error || "Connection Designer not found"}
+        </p>
+      </div>
+    );
 
   // Data Preparation
   const getStates = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rawState = (designer as any).state;
     let pool: string[] = [];
 
     if (Array.isArray(rawState)) {
       pool = rawState;
-    } else if (typeof rawState === 'string') {
+    } else if (typeof rawState === "string") {
       try {
         const parsed = JSON.parse(rawState);
         pool = Array.isArray(parsed) ? parsed : [parsed];
@@ -102,9 +161,9 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
     }
 
     const result: string[] = [];
-    pool.forEach(item => {
-      if (typeof item === 'string') {
-        item.split(/[,\n;]/).forEach(s => {
+    pool.forEach((item) => {
+      if (typeof item === "string") {
+        item.split(/[,\n;]/).forEach((s) => {
           const trimmed = s.trim();
           if (trimmed) result.push(trimmed);
         });
@@ -117,222 +176,335 @@ const GetConnectionDesignerByID = ({ id }: GetConnectionDesignerByIDProps) => {
   };
 
   const states = getStates();
-  const stateData = states.map((s: string) => ({ name: s, value: 1 }));
+
   const engineerCount = designer.CDEngineers?.length || 0;
 
-  const activeProjects = designerProjects.filter((p: any) => p.status === "ACTIVE").length;
-  const pendingQuotations = quotations.filter((q: any) => q.status === "PENDING").length;
-
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleString("en-IN", { dateStyle: "medium" });
+  // Replaced designerProjects with projects
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const activeProjects = projects.filter(
+    (p: any) => p.status === "ACTIVE",
+  ).length;
+  // Replaced undefined quotations with empty array for now
+  const pendingQuotations = 0; // quotations.filter((q: any) => q.status === "PENDING").length;
 
   const statsCards = [
-    { label: "Execution Power", value: `${engineerCount} Engineers`, icon: HardHat, sub: "Live resource pool", color: "green" },
-    { label: "Active Pipeline", value: `${activeProjects} Projects`, icon: Activity, sub: "Currently in progress", color: "blue" },
-    { label: "Status", value: designer.isDeleted ? "Inactive" : "Active", icon: CheckCircle2, sub: "Operational cycle", color: "emerald", isStatus: true },
-    { label: "Availability", value: `${states.length} States`, icon: Globe, sub: designer.location || "North America", color: "amber" },
+    {
+      label: "Total Engineers",
+      value: `${engineerCount} Engineers`,
+      icon: HardHat,
+
+      color: "green",
+    },
+    {
+      label: "Active Projects",
+      value: `${activeProjects} Projects`,
+      icon: Activity,
+
+      color: "blue",
+    },
+    {
+      label: "Status",
+      value: designer.isDeleted ? "Inactive" : "Active",
+      icon: CheckCircle2,
+
+      color: "emerald",
+      isStatus: true,
+    },
+    {
+      label: "Availability",
+      value: `${states.length} States`,
+      icon: Globe,
+      sub: designer.location || "North America",
+      color: "green",
+    },
   ];
 
   const pendingActions = [
-    { title: "RFI", count: 0, icon: FileText, color: "bg-amber-50", iconColor: "text-amber-600" },
-    { title: "SUBMITTALS", count: 0, icon: RefreshCw, color: "bg-purple-50", iconColor: "text-purple-600" },
-    { title: "CHANGE ORDERS", count: 0, icon: Activity, color: "bg-rose-50", iconColor: "text-rose-600" },
-    { title: "RFQ", count: pendingQuotations, icon: Search, color: "bg-cyan-50", iconColor: "text-cyan-600" },
+    {
+      title: "RFI",
+      count: 0,
+      icon: FileText,
+      color: "bg-green-50",
+      iconColor: "text-green-600",
+    },
+    {
+      title: "SUBMITTALS",
+      count: 0,
+      icon: RefreshCw,
+      color: "bg-purple-50",
+      iconColor: "text-purple-600",
+    },
+    {
+      title: "CHANGE ORDERS",
+      count: 0,
+      icon: Activity,
+      color: "bg-rose-50",
+      iconColor: "text-rose-600",
+    },
+    {
+      title: "RFQ",
+      count: pendingQuotations,
+      icon: Search,
+      color: "bg-cyan-50",
+      iconColor: "text-cyan-600",
+    },
   ];
-
-  const colorClasses: Record<string, string> = {
-    green: "border-l-green-500 text-green-600 bg-green-50",
-    blue: "border-l-blue-500 text-blue-600 bg-blue-50",
-    emerald: "border-l-emerald-500 text-emerald-600 bg-emerald-50",
-    amber: "border-l-amber-500 text-amber-600 bg-amber-50",
-  };
 
   return (
     <div className="space-y-8 pb-10">
       {/* Header with Edit Buttons */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-gray-100 pb-8">
-        <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-green-600 to-emerald-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-green-100 shrink-0">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-black/5 pb-4 pt-1 sm:pb-6 sm:pt-2">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-green-100 border border-black/10 flex items-center justify-center text-black text-lg sm:text-2xl font-black shadow-sm shrink-0">
             {designer.name.charAt(0)}
           </div>
-          <div>
-            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-1">{designer.name}</h2>
-            <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-gray-500">
-              <span className="flex items-center gap-1.5"><Calendar size={13} className="text-green-500" /> Since {formatDate(designer.createdAt)}</span>
-              <span className="flex items-center gap-1.5"><MapPin size={13} className="text-green-500" /> {designer.location || "Global"}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setEditModel(designer)} className="px-6 py-2.5 text-xs font-bold uppercase tracking-widest bg-green-600 hover:bg-green-700 text-white shadow-xl shadow-green-100 transition-all active:scale-95">Edit Profile</Button>
-          <Button onClick={() => setEngineerModel(designer)} className="px-6 py-2.5 text-xs font-bold uppercase tracking-widest bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all active:scale-95">Manage Engineers</Button>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statsCards.map((card, idx) => (
-          <div key={idx} className={`p-4 rounded-xl border border-gray-100 bg-white shadow-sm flex items-start gap-4 transition-all hover:shadow-md border-l-4 ${colorClasses[card.color]?.split(' ')[0]}`}>
-            <div className={`p-2 rounded-lg ${colorClasses[card.color]?.split(' ').slice(1).join(' ')}`}>
-              <card.icon size={20} />
-            </div>
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{card.label}</p>
-              <p className="text-lg font-bold text-gray-900">{card.value}</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">{card.sub}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pending Actions */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {pendingActions.map((action, idx) => (
-          <div key={idx} className={`${action.color} p-4 rounded-xl border border-white/50 flex flex-col items-center justify-center text-center gap-2 group cursor-pointer hover:shadow-lg transition-all`}>
-            <div className={`${action.iconColor} p-2 rounded-full bg-white/80 group-hover:scale-110 transition-transform`}>
-              <action.icon size={18} />
-            </div>
-            <div>
-              <p className={`text-xl font-black ${action.iconColor}`}>{action.count}</p>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{action.title}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Details Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <FileText className="text-green-500" size={20} />
-              Company Intelligence
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
-              <DetailRow label="Primary Email" value={designer.email} />
-              <DetailRow label="Phone Number" value={designer.contactInfo} />
-              <DetailRow label="Office Address" value={designer.location} />
-              <DetailRow label="Operating States" value={states.join(", ")} />
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-3xl font-black text-black dark:text-white tracking-widest mb-0.5 truncate uppercase">
+              {designer.name}
+            </h2>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-black">
+              <span className="flex items-center gap-1.5">
+                <Calendar size={14} className="text-green-600" /> Since{" "}
+                {formatDate(designer.createdAt)}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <MapPin size={14} className="text-green-600" />{" "}
+                {designer.location || "Global"}
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Globe className="text-green-500" size={20} />
-              Territory Distribution
-            </h3>
-            <div className="h-48 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={stateData.length > 0 ? stateData : [{ name: "None", value: 1 }]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={60}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {(stateData.length > 0 ? stateData : [{ name: "None", value: 1 }]).map((_entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-2 space-y-1">
-              {states.slice(0, 5).map((s, i) => (
-                <div key={s} className="flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }}></span>
-                    {s}
-                  </span>
-                  <span className="text-gray-400 font-medium">Active</span>
-                </div>
-              ))}
-              {states.length > 5 && <p className="text-[10px] text-center text-gray-400 mt-2">+{states.length - 5} more regions</p>}
-            </div>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+          {/* Tab Switcher */}
+          <div className="flex bg-gray-50/50 p-1 rounded-xl border border-black/10 shadow-sm h-10 sm:h-12 items-center overflow-x-auto hide-scrollbar">
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg text-[10px] sm:text-xs uppercase font-black tracking-widest transition-all h-full shrink-0 border ${activeTab === "dashboard"
+                ? "bg-green-200 text-black border-black shadow-sm"
+                : "text-black/40 border-transparent hover:text-black hover:bg-white/50"
+                }`}
+            >
+              <LayoutDashboard size={14} />
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab("insights")}
+              className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg text-[10px] sm:text-xs uppercase font-black tracking-widest transition-all h-full shrink-0 border ${activeTab === "insights"
+                ? "bg-green-200 text-black border-black shadow-sm"
+                : "text-black/40 border-transparent hover:text-black hover:bg-white/50"
+                }`}
+            >
+              <Briefcase size={14} />
+              Files
+            </button>
           </div>
+
+          {close && (
+            <button
+              onClick={close}
+              className="px-4 sm:px-6 py-2 bg-white text-black border border-black rounded-xl text-[10px] sm:text-xs uppercase font-black tracking-widest hover:bg-red-50 hover:text-red-600 transition-all shadow-sm h-10 sm:h-12"
+            >
+              Close
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Files Section */}
-      {Array.isArray(designer.files) && designer.files.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-green-200">
-          <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
-            <FileText className="w-4 h-4" /> Files
-          </h4>
-          <ul className="text-gray-700 space-y-1">
-            {designer.files.map((file) => (
-              <li
-                key={file.id}
-                className="flex justify-between items-center bg-white px-3 py-2 rounded-md shadow-sm"
+      {activeTab === "dashboard" && (
+        <>
+          {/* Snapshot Row */}
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {statsCards.map((card, i) => (
+              <div
+                key={i}
+                className="bg-white p-4 sm:p-5 rounded-xl border-l-4 border-l-[#6bbd45] border border-black/10 transition-all group relative flex flex-col items-start justify-between gap-4 overflow-hidden shadow-sm"
               >
-                <span>{file.originalName}</span>
-                <a
-                  className="text-green-600 text-sm flex items-center gap-1 hover:underline cursor-pointer"
-                  onClick={() =>
-                    openFileSecurely("connection-designer", id, file.id)
-                  }
-                >
-                  <Link2 className="w-3 h-3" /> Open
-                </a>
-              </li>
+                <div className="flex items-center gap-3 w-full justify-between">
+                  <div className={cn("p-2.5 sm:p-3 rounded-2xl border border-black/10 bg-white text-black group-hover:scale-105 transition-transform shrink-0 shadow-xs")}>
+                    <card.icon size={22} strokeWidth={2.5} />
+                  </div>
+                  <div className="text-right">
+                    <h4
+                      className={`text-2xl sm:text-3xl font-black tracking-tighter ${card.isStatus ? (designer.isDeleted ? "text-red-600" : "text-[#6bbd45]") : "text-black"}`}
+                    >
+                      {card.value.split(' ')[0]}
+                    </h4>
+                  </div>
+                </div>
+
+                <div className="w-full">
+                  <span className="text-[11px] sm:text-[12px] font-black text-black uppercase tracking-[0.2em] block">
+                    {card.label}
+                  </span>
+                  <div className="mt-1 h-[1px] bg-black/5 w-full" />
+                  <p className="text-[10px] sm:text-[11px] font-black text-black uppercase tracking-[0.2em] mt-2 leading-tight">
+                    {card.sub || "Engineers"}
+                  </p>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left Section (8 Cols) */}
+            <div className="lg:col-span-8 space-y-8">
+              {/* Pending Actions */}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
+                <div className="px-6 py-5 border-b border-black/10 flex items-center gap-2 bg-gray-50/50">
+                  <ClipboardList
+                    className="text-[#6bbd45]"
+                    size={22}
+                    strokeWidth={2.5}
+                  />
+                  <h3 className="text-sm font-black text-black uppercase tracking-[0.2em]">
+                    Pending Actions
+                  </h3>
+                </div>
+                <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  {pendingActions.map((action, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-row items-center gap-4 p-4 sm:p-5 rounded-xl bg-white border border-black/10 hover:border-[#6bbd45]/40 transition-all group cursor-pointer shadow-sm"
+                    >
+                      <div
+                        className={`p-3 rounded-2xl shadow-xs bg-white border border-black/10 ${action.iconColor}`}
+                      >
+                        <action.icon size={22} strokeWidth={2.5} />
+                      </div>
+                      <div className="flex flex-row gap-3 items-center min-w-0 flex-1 justify-between">
+                        <div className="font-black text-xs sm:text-sm text-black uppercase tracking-[0.2em] truncate">
+                          {action.title}
+                        </div>
+                        <div
+                          className={`text-3xl sm:text-4xl font-black tracking-tighter ${action.iconColor}`}
+                        >
+                          {action.count}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Profile Details */}
+              <div className="bg-white rounded-xl border border-black/10 overflow-hidden shadow-sm">
+                <div className="bg-gray-50/70 px-5 py-3 border-b border-black/10 flex items-center gap-2">
+                  <ClipboardList size={16} className="text-green-600" />
+                  <h3 className="text-[11px] font-black text-black uppercase tracking-[0.25em]">
+                    Profile Details
+                  </h3>
+                </div>
+                <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 text-xs font-medium">
+                  <DetailRow
+                    label="Principal Email"
+                    value={designer.email}
+                    link={`mailto:${designer.email}`}
+                  />
+                  <DetailRow
+                    label="Digital Presence"
+                    value={designer.websiteLink}
+                    link={designer.websiteLink}
+                    isExternal
+                  />
+                  <DetailRow
+                    label="Secure Contact"
+                    value={designer.contactInfo}
+                  />
+                  <DetailRow
+                    label="Coverage"
+                    value={
+                      states.length > 0 ? states.join(", ") : "Not specified"
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Section (4 Cols) */}
+            <div className="lg:col-span-4 space-y-8">
+              <div className="bg-white rounded-xl border border-black/5 p-5 shadow-sm flex flex-col min-h-[400px]">
+                {/* Quick Actions Card */}
+                <div className="bg-gray-50 p-6 rounded-3xl border border-black/10 relative overflow-hidden group">
+                  <h4 className="text-[12px] uppercase font-black tracking-[0.3em] text-black mb-6 relative z-10">
+                    Administrative Control
+                  </h4>
+                  <div className="space-y-4 relative z-10">
+                    <Button
+                      onClick={() => setEditModel(designer)}
+                      className="w-full justify-start gap-4 bg-white hover:bg-gray-100 text-black border border-black/10 rounded-xl py-4 text-xs sm:text-sm uppercase font-black tracking-[0.2em] transition-all shadow-sm"
+                    >
+                      <Briefcase size={20} className="text-black/40" />
+                      Edit Designer Info
+                    </Button>
+                    <Button
+                      onClick={() => setEngineerModel(designer)}
+                      className="w-full justify-start gap-4 bg-white hover:bg-gray-100 text-black border border-black/10 rounded-xl py-4 text-xs sm:text-sm uppercase font-black tracking-[0.2em] transition-all shadow-sm"
+                    >
+                      <LayoutDashboard size={20} className="text-black/40" />
+                      Manage Workforce
+                    </Button>
+                    <Button className="w-full justify-start gap-4 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl py-4 text-xs sm:text-sm uppercase font-black tracking-[0.2em] transition-all">
+                      <AlertCircle size={20} />
+                      Archive Profile
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === "insights" && (
+        <div className="space-y-6">
+          <RenderFiles
+            files={designer.files}
+            table="connection-designer"
+            parentId={id}
+          />
+
+          <div className="py-6 flex flex-wrap items-center gap-3">
+            <Button
+              onClick={() => setEditModel(designer)}
+              className="px-6 py-2 bg-white text-black border border-black rounded-xl text-[10px] uppercase font-black tracking-widest hover:bg-gray-50 transition-all shadow-sm"
+            >
+              Edit
+            </Button>
+            <Button
+              className="px-6 py-2 bg-rose-100 text-black border border-black rounded-xl text-[10px] uppercase font-black tracking-widest hover:bg-rose-200 transition-all shadow-sm"
+            >
+              Archive
+            </Button>
+            <Button
+              onClick={() => setEngineerModel(designer)}
+              className="px-6 py-2 bg-green-50 text-black border border-black rounded-xl text-[10px] uppercase font-black tracking-widest hover:bg-green-100 transition-all shadow-sm"
+            >
+              Connection Designer Engineer
+            </Button>
+          </div>
         </div>
       )}
 
-      {/* Buttons */}
-      <div className="py-3 flex flex-wrap items-center gap-2 sm:gap-3">
-        <Button
-          onClick={() => setEditModel(designer)}
-          className="py-1 px-3 text-sm sm:text-base font-semibold"
-        >
-          Edit
-        </Button>
-        <Button className="py-1 px-3 text-sm sm:text-base font-semibold bg-red-200 text-red-700 hover:bg-red-300">
-          Archive
-        </Button>
-        <Button
-          onClick={() => setEngineerModel(designer)}
-          className="py-1 px-3 text-sm sm:text-base font-semibold"
-        >
-          Connection Designer Engineer
-        </Button>
-      </div>
-
-      {editModel && createPortal(
-        <EditConnectionDesigner onClose={() => setEditModel(null)} designerData={designer} onSuccess={fetchData} />,
-        document.body
-      )}
-      {engineerModel && createPortal(
-        <AllCDEngineer onClose={() => setEngineerModel(null)} designerData={designer} />,
-        document.body
-      )}
+      {editModel &&
+        createPortal(
+          <EditConnectionDesigner
+            onClose={() => setEditModel(null)}
+            designerData={designer}
+            onSuccess={fetchData}
+          />,
+          document.body,
+        )}
+      {engineerModel &&
+        createPortal(
+          <AllCDEngineer
+            onClose={() => setEngineerModel(null)}
+            designerData={designer}
+          />,
+          document.body,
+        )}
     </div>
   );
 };
-
-// Tactical UI Components
-const DetailRow = ({ label, value, link, isExternal }: { label: string; value?: string | number; link?: string; isExternal?: boolean }) => (
-  <div className="group/row">
-    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest block mb-0.5 group-hover/row:text-green-500 transition-colors">{label}</span>
-    <div className="flex items-center gap-2">
-      <p className="text-[13px] font-bold text-gray-700 break-all leading-tight">
-        {link ? (
-          <a href={link} target={isExternal ? "_blank" : undefined} rel="noreferrer" className="text-green-600 hover:text-green-700 underline flex items-center gap-1.5 underline-offset-2">
-            {truncateText(String(value || "N/A"), 30)} {isExternal && <ExternalLink size={11} className="shrink-0" />}
-          </a>
-        ) : (
-          value || "Not available"
-        )}
-      </p>
-    </div>
-  </div>
-);
 
 export default GetConnectionDesignerByID;

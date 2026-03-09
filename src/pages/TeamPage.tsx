@@ -15,7 +15,7 @@ const TeamPage = () => {
   const userRole = sessionStorage.getItem("userRole");
 
   const departmentDatas = useSelector(
-    (state: any) => state?.userInfo?.departmentData
+    (state: any) => state?.userInfo?.departmentData,
   );
   const teamDatas = useSelector((state: any) => state?.userInfo?.teamData);
 
@@ -54,12 +54,12 @@ const TeamPage = () => {
     <div className="h-full w-full overflow-y-auto overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
         {/* ---------- TOP TABS ---------- */}
-        <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 rounded-t-[6px] flex flex-wrap items-center justify-center md:justify-end gap-3">
+        <div className="px-4 sm:px-10 py-4 sm:py-6 bg-white border-b border-black/5 flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
           <button
             onClick={() => setActiveTab("teamDashboard")}
-            className={`px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-bold transition-all shadow-sm ${activeTab === "teamDashboard"
-                ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600"
+            className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] transition-all border ${activeTab === "teamDashboard"
+              ? "bg-green-200 text-black border-black shadow-sm"
+              : "text-black/60 border-black/10 hover:bg-green-50"
               }`}
           >
             Team Dashboard
@@ -67,9 +67,9 @@ const TeamPage = () => {
 
           <button
             onClick={() => setActiveTab("manageEmployee")}
-            className={`px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-bold transition-all shadow-sm ${activeTab === "manageEmployee"
-                ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600"
+            className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] transition-all border ${activeTab === "manageEmployee"
+              ? "bg-green-200 text-black border-black shadow-sm"
+              : "text-black/60 border-black/10 hover:bg-green-50"
               }`}
           >
             Manage Employee
@@ -78,9 +78,9 @@ const TeamPage = () => {
           {(userRole === "ADMIN" || userRole === "HUMAN_RESOURCE") && (
             <button
               onClick={() => setActiveTab("manageDepartment")}
-              className={`px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-bold transition-all shadow-sm ${activeTab === "manageDepartment"
-                  ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600"
+              className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] transition-all border ${activeTab === "manageDepartment"
+                ? "bg-green-200 text-black border-black shadow-sm"
+                : "text-black/60 border-black/10 hover:bg-green-50"
                 }`}
             >
               Manage Department
@@ -92,9 +92,9 @@ const TeamPage = () => {
             userRole === "HUMAN_RESOURCE") && (
               <button
                 onClick={() => setActiveTab("manageTeam")}
-                className={`px-4 md:px-6 py-2 md:py-3 rounded-[6px] text-sm md:text-base font-bold transition-all shadow-sm ${activeTab === "manageTeam"
-                    ? "bg-green-500 text-white shadow-[0_8px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(34,197,94,0.5)]"
-                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-green-600"
+                className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] transition-all border ${activeTab === "manageTeam"
+                  ? "bg-green-200 text-black border-black shadow-sm"
+                  : "text-black/60 border-black/10 hover:bg-green-50"
                   }`}
               >
                 Manage Team

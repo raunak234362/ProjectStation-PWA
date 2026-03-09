@@ -1,4 +1,3 @@
- 
 import { useEffect, useState } from "react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -6,6 +5,7 @@ import type { DesignDrawing } from "../../../interface";
 import Service from "../../../api/Service";
 import { Loader2, Inbox } from "lucide-react";
 import DesignDrawingDetails from "./DesignDrawingDetails";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface AllDesignDrawingsProps {
   projectId: string;
@@ -43,12 +43,7 @@ const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
     {
       accessorKey: "createdAt",
       header: "Created On",
-      cell: ({ row }) =>
-        new Date(row.original.createdAt).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
+      cell: ({ row }) => formatDate(row.original.createdAt),
     },
   ];
 
@@ -73,7 +68,7 @@ const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div className="p-4 border-b border-gray-50 bg-gray-50/50">
-        <h3 className="font-bold text-gray-800">Design Drawings</h3>
+        <h3 className=" text-gray-800">Design Drawings</h3>
       </div>
       <div className="p-0 overflow-x-auto">
         <DataTable

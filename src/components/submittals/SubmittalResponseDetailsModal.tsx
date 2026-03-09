@@ -1,4 +1,5 @@
-import { X, CalendarDays } from "lucide-react";
+import { CalendarDays } from "lucide-react";
+import { formatDateTime } from "../../utils/dateUtils";
 import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
@@ -53,18 +54,20 @@ const SubmittalResponseDetailsModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
-      <div className="bg-white w-full max-w-lg p-6 rounded-xl space-y-5 relative">
+    <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 backdrop-blur-sm">
+      <div className="bg-[#fafffb] w-full max-w-lg p-8 rounded-3xl shadow-2xl space-y-5 relative border border-gray-100">
         {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-700 hover:text-red-600"
-        >
-          <X size={18} />
-        </button>
-
-        {/* Title */}
-        <h2 className="text-xl font-bold text-green-700">Response Details</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-black text-black uppercase tracking-tight">
+            Response Details
+          </h2>
+          <button
+            onClick={onClose}
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+          >
+            Close
+          </button>
+        </div>
 
         {/* Parent Message */}
         <div
@@ -84,7 +87,7 @@ const SubmittalResponseDetailsModal = ({
         {/* Timestamp */}
         <div className="flex items-center gap-2 text-xs text-gray-700">
           <CalendarDays size={14} />
-          {new Date(response.createdAt).toLocaleString()}
+          {formatDateTime(response.createdAt)}
         </div>
 
         {/* 🔥 CHILD RESPONSES THREAD */}
@@ -102,7 +105,7 @@ const SubmittalResponseDetailsModal = ({
                     {child.user?.firstName || "User"}{" "}
                     {child.user?.lastName || ""} ({child.user?.role || "N/A"})
                   </span>
-                  <span>{new Date(child.createdAt).toLocaleString()}</span>
+                  <span>{formatDateTime(child.createdAt)}</span>
                 </div>
 
                 <div
@@ -123,11 +126,10 @@ const SubmittalResponseDetailsModal = ({
           </div>
         )}
 
-
         {/* Reply Button */}
         {canReply && !replyMode && (
           <Button
-            className="bg-blue-600 text-white mt-4"
+            className="px-6 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md mt-4"
             onClick={() => setReplyMode(true)}
           >
             Reply
@@ -173,9 +175,9 @@ const SubmittalResponseDetailsModal = ({
 
             {/* Actions */}
             <div className="flex justify-end gap-3">
-              <Button onClick={() => setReplyMode(false)}>Cancel</Button>
+              <Button onClick={() => setReplyMode(false)} className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200">Cancel</Button>
               <Button
-                className="bg-green-600 text-white"
+                className="px-6 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
                 onClick={handleReplySubmit}
               >
                 Send Reply

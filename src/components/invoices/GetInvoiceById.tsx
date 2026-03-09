@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { Loader2, AlertCircle, X, Download } from "lucide-react";
 import Service from "../../api/Service";
 import logo from "../../assets/logo.png";
+import { useDispatch } from "react-redux";
+import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 
 const GetInvoiceById = ({
   id,
@@ -18,6 +20,14 @@ const GetInvoiceById = ({
   const [error, setError] = useState<string | null>(null);
 
   const componentRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(incrementModalCount());
+    return () => {
+      dispatch(decrementModalCount());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -53,7 +63,10 @@ const GetInvoiceById = ({
       });
     };
 
-    const itemsHtml = invoice.invoiceItems?.map((item: any, index: number) => `
+    const itemsHtml =
+      invoice.invoiceItems
+        ?.map(
+          (item: any, index: number) => `
       <tr style="border-bottom: 1px solid black;">
         <td style="padding: 8px; text-align: left;">${index + 1}.</td>
         <td style="padding: 8px; text-align: left;">${item.description}</td>
@@ -63,7 +76,9 @@ const GetInvoiceById = ({
         <td style="padding: 8px; text-align: center;">${item.totalUSD?.toFixed(0) || "000"}</td>
         <td style="padding: 8px; text-align: center;">${item.totalUSD?.toFixed(0) || "000"}</td>
       </tr>
-    `).join('') || '';
+    `,
+        )
+        .join("") || "";
 
     const bankInfo = invoice?.fabricator?.bankAccount || null;
 
@@ -92,7 +107,7 @@ const GetInvoiceById = ({
             .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
             .company-name { font-family: serif; color: #6bbd45; font-size: 28px; font-weight: 500; margin: 0; line-height: 1; }
             .logo { height: 90px; object-fit: contain; }
-            .divider-red { height: 1px; background: #e6554d; width: 100%; margin-bottom: 20px; }
+            .divider-red { height: 1px; background: #6bbd45; width: 100%; margin-bottom: 20px; }
 
             .details-container { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 20px; line-height: 1.4; }
             .billing-details { width: 60%; }
@@ -103,15 +118,15 @@ const GetInvoiceById = ({
             .value { font-weight: normal; }
             .meta-grid { display: grid; grid-template-columns: 1fr 100px; gap: 4px; text-align: left; }
             
-            table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1px solid black; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1px solid #6bbd45; }
             thead { background: #6bbd45; color: white; font-size: 11px; font-weight: bold; }
             th { padding: 8px; text-align: center; text-transform: uppercase; border-right: 1px solid rgba(255,255,255,0.8); }
             th:last-child { border-right: none; }
             tbody { font-size: 12px; }
             
-            .total-row { font-weight: bold; border-top: 2px solid black; border-bottom: 1px solid black; }
-            .gst-row { font-size: 11px; font-weight: bold; border-bottom: 1px solid black; }
-            .value-row { font-weight: bold; font-size: 13px; border-bottom: 1px solid black; }
+            .total-row { font-weight: bold; border-top: 2px solid #6bbd45; border-bottom: 1px solid #6bbd45; }
+            .gst-row { font-size: 11px; font-weight: bold; border-bottom: 1px solid #6bbd45; }
+            .value-row { font-weight: bold; font-size: 13px; border-bottom: 1px solid #6bbd45; }
             
             .instructions { margin-bottom: 25px; }
             .instr-title { color: #6bbd45; font-weight: bold; font-size: 13px; margin-bottom: 5px; }
@@ -203,7 +218,7 @@ const GetInvoiceById = ({
                   <td style="padding: 8px; text-align: right;">$ ${invoice.totalInvoiceValue?.toFixed(2) || "0.00"}</td>
                 </tr>
                 <tr>
-                  <td colspan="7" style="padding: 8px; border-bottom: 1.5px solid black; font-weight: bold;">
+                  <td colspan="7" style="padding: 8px; border-bottom: 1.5px solid #6bbd45; font-weight: bold;">
                     Total Invoice Value (in Words): <span style="text-transform: uppercase; margin-left: 10px;">${invoice.totalInvoiceValueInWords || "—"}</span>
                   </td>
                 </tr>
@@ -256,7 +271,9 @@ const GetInvoiceById = ({
 
             <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 30px;">ACH / Domestic Wire instructions:</h3>
 
-            ${bankInfo ? `
+            ${
+              bankInfo
+                ? `
               <div class="bank-grid">
                 <span class="label">ABA/Routing number:</span><span class="value">${bankInfo.abaRoutingNumber || "—"}</span>
                 <span class="label">Account number:</span><span class="value">${bankInfo.accountNumber || "—"}</span>
@@ -266,11 +283,13 @@ const GetInvoiceById = ({
                 <span class="label">Bank information:</span><span class="value">${bankInfo.bankName || "—"}</span>
                 <span class="label">Bank Address:</span><span class="value">${bankInfo.bankAddress || "—"}</span>
               </div>
-            ` : `
+            `
+                : `
               <div style="background: #fef2f2; border: 1px solid #fee2e2; color: #991b1b; padding: 30px; text-align: center; border-radius: 4px; font-weight: bold;">
                 No bank account information attached to this invoice.
               </div>
-            `}
+            `
+            }
 
             <p style="font-size: 11px; color: #666; font-style: italic; margin-top: 20px;">
               *Use this name as the recipient's name of the wire.
@@ -361,7 +380,7 @@ const GetInvoiceById = ({
         }}
       />
 
-      <div className="modal-root fixed inset-0 z-100 flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0">
+      <div className="modal-root fixed inset-0 z-1000 flex items-start justify-center overflow-auto bg-black/80 backdrop-blur-xl pt-0 pb-0">
         {/* Action Header */}
         <div className="fixed top-6 right-10 z-110 flex gap-4 no-print">
           <button
@@ -375,7 +394,7 @@ const GetInvoiceById = ({
           {handleClose && (
             <button
               onClick={handleClose}
-              className="flex items-center gap-2 px-3 py-3 bg-white text-gray-900 rounded-full shadow-2xl hover:bg-red-50 hover:text-red-600 transition-all border border-gray-100 scale-110 font-bold"
+              className="flex items-center gap-2 px-3 py-3 bg-white text-gray-900 rounded-full shadow-2xl hover:bg-red-50 hover:text-red-600 transition-all border border-gray-100 scale-110 "
             >
               <X className="w-5 h-3" />
               Close
@@ -402,65 +421,55 @@ const GetInvoiceById = ({
               {/* Ensure logo height is proportional */}
               <img src={logo} alt="Logo" className="h-25 object-contain" />
             </div>
-            <div className="h-[1px] bg-[#e6554d] w-full mb-2"></div>
+            <div className="h-px bg-[#6bbd45] w-full mb-2"></div>
 
             <div className="flex justify-between items-start mb-2 text-[12px]">
               {/* Receiver Details */}
               <div className="w-1/2">
-                <h2 className="font-bold text-black mb-2 text-[13px]">
+                <h2 className=" text-black mb-2 text-[13px]">
                   Details of Receiver (Billed to)
                 </h2>
                 <div className="grid grid-cols-[120px_1fr] gap-y-1">
                   <span className="text-black">Name:</span>
-                  <span className="font-bold">{invoice.customerName}</span>
+                  <span className="">{invoice.customerName}</span>
 
                   <span className="text-black">Contact Name:</span>
-                  <span className="font-bold">
-                    {invoice.contactName || "—"}
-                  </span>
+                  <span className="">{invoice.contactName || "—"}</span>
 
                   <span className="text-black">Address:</span>
-                  <span className="font-bold leading-tight">
-                    {invoice.address}
-                  </span>
+                  <span className=" leading-tight">{invoice.address}</span>
 
-                  <span className="text-black ">Country/State  /Code:</span>
+                  <span className="text-black ">Country/State /Code:</span>
 
-                  <span className="font-bold ">  {invoice.stateCode || "-"}  </span>
+                  <span className=" "> {invoice.stateCode || "-"} </span>
 
                   <span className="text-black ">GSTIN / UNIQUE ID:</span>
-                  <span className="font-bold ">{invoice.GSTIN || "-"}</span>
+                  <span className=" ">{invoice.GSTIN || "-"}</span>
                 </div>
               </div>
 
               {/* Invoice Metadata */}
               <div className="w-[220px]">
                 <div className="text-right mb-4">
-                  <h2 className="font-bold text-[14px]">
-                    Original for Recipient
-                  </h2>
+                  <h2 className=" text-[14px]">Original for Recipient</h2>
                 </div>
                 <div className="grid grid-cols-[100px_1fr] gap-y-2">
                   <span className="text-black">Invoice No:</span>
-                  <span className="font-bold">{invoice.invoiceNumber}</span>
+                  <span className="">{invoice.invoiceNumber}</span>
 
                   <span className="text-black">Invoice Date:</span>
-                  <span className="font-bold">
-                    {formatDate(invoice.invoiceDate)}
-                  </span>
+                  <span className="">{formatDate(invoice.invoiceDate)}</span>
 
                   <span className="text-black">Date of Supply:</span>
-                  <span className="font-bold">
-                    {formatDate(invoice.dateOfSupply)}
-                  </span>
+                  <span className="">{formatDate(invoice.dateOfSupply)}</span>
 
                   <span className="text-black">Place of Supply:</span>
-                  <span className="font-bold">
+                  <span className="">
                     {invoice.placeOfSupply || "Electronic"}
                   </span>
 
                   <span className="text-black">Job Name:</span>
-                  <span className="font-bold">{invoice.jobName}</span>
+                  <span className="">{invoice.jobName}</span>
                 </div>
               </div>
             </div>
@@ -470,32 +479,32 @@ const GetInvoiceById = ({
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-green-600 text-white">
-                    <th className="py-2 px-3 border-r border-gray-300 text-left w-[50px] font-bold text-[11px] uppercase">
+                    <th className="py-2 px-3 border-r border-gray-300 text-left w-[50px]  text-[11px] uppercase">
                       SL #
                     </th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center font-bold text-[11px] uppercase">
+                    <th className="py-2 px-3 border-r border-gray-300 text-center  text-[11px] uppercase">
                       Description of Engineering Services
                     </th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[70px] font-bold text-[11px] uppercase">
+                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[70px]  text-[11px] uppercase">
                       SAC
                     </th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[50px] font-bold text-[11px] uppercase">
+                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[50px]  text-[11px] uppercase">
                       Unit
                     </th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px] font-bold text-[11px] uppercase whitespace-nowrap">
+                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px]  text-[11px] uppercase whitespace-nowrap">
                       Rate (USD)
                     </th>
-                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px] font-bold text-[11px] uppercase whitespace-nowrap">
+                    <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px]  text-[11px] uppercase whitespace-nowrap">
                       Total
                     </th>
-                    <th className="py-2 px-3 text-center w-[110px] font-bold text-[11px] uppercase whitespace-nowrap">
+                    <th className="py-2 px-3 text-center w-[110px]  text-[11px] uppercase whitespace-nowrap">
                       Total (USD)
                     </th>
                   </tr>
                 </thead>
                 <tbody className="text-[12px] text-black">
                   {invoice.invoiceItems?.map((item: any, index: number) => (
-                    <tr key={index} className="border-b border-black">
+                    <tr key={index} className="border-b border-green-600/20">
                       <td className="py-1 px-3 text-left align-top">
                         {index + 1}.
                       </td>
@@ -539,19 +548,16 @@ const GetInvoiceById = ({
                   ))}
 
                   {/* Summary Section */}
-                  <tr className="border-b border-black font-bold h-7">
+                  <tr className="border-b border-black  h-7">
                     <td colSpan={5} className="px-16 text-left">
                       Total
                     </td>
-                    <td
-                      colSpan={2}
-                      className="px-3 text-right font-bold text-[15px]"
-                    >
+                    <td colSpan={2} className="px-3 text-right  text-[15px]">
                       $ {invoice.totalInvoiceValue?.toFixed(0) || "0000"}
                     </td>
                   </tr>
 
-                  <tr className="text-[11px] font-bold text-gray-900 border-b border-black h-7">
+                  <tr className="text-[11px]  text-gray-900 border-b border-black h-7">
                     <td colSpan={4}></td>
                     <td className="py-1 text-center">IGST</td>
                     <td className="py-1 text-center whitespace-nowrap">Rate</td>
@@ -565,14 +571,14 @@ const GetInvoiceById = ({
                     <td className="py-1 text-center pr-6">-</td>
                   </tr>
 
-                  <tr className="font-bold text-[11px] text-gray-900 border-b border-black h-7">
+                  <tr className=" text-[11px] text-gray-900 border-b border-black h-7">
                     <td colSpan={4}></td>
                     <td className="py-1 text-center">Total GST</td>
                     <td className="py-1 text-center">-</td>
                     <td className="py-1 text-center pr-6">-</td>
                   </tr>
 
-                  <tr className="font-bold h-7 text-[13px] border-b border-black">
+                  <tr className=" h-7 text-[13px] border-b border-black">
                     <td colSpan={6} className="px-3 text-left">
                       Total Invoice Value (in Figures)
                     </td>
@@ -584,10 +590,10 @@ const GetInvoiceById = ({
                   <tr className="border-b border-black">
                     <td colSpan={7} className="px-3 py-1">
                       <div className="flex gap-2 text-[12px] items-center">
-                        <span className="font-bold">
+                        <span className="">
                           Total Invoice Value (in Words):
                         </span>
-                        <span className="font-bold uppercase tracking-tight text-gray-700">
+                        <span className=" uppercase tracking-tight text-gray-700">
                           {invoice.totalInvoiceValueInWords || "—"}
                         </span>
                       </div>
@@ -599,19 +605,16 @@ const GetInvoiceById = ({
 
             {/* Instructions */}
             <div className="mb-3">
-              <h4 className="text-green-600 font-bold text-[12px] mb-1 tracking-tight">
+              <h4 className="text-green-600  text-[12px] mb-1 tracking-tight">
                 Instructions
               </h4>
-              <p className="text-xs text-gray-700 leading-relaxed border border-gray-600 p-1 mb-1">
+              <p className="text-xs text-gray-700 leading-relaxed border border-green-500/20 p-2 mb-1 rounded-lg bg-green-50/30">
                 Consulting Proforma Invoice for Steel Detailing of{" "}
-                {invoice.jobName} -{" "}
-                <span className="font-bold">Cobb P.O #</span>
+                {invoice.jobName} - <span className="">Cobb P.O #</span>
               </p>
               <p className="text-xs text-black">
                 All payments to be made to{" "}
-                <span className="font-bold uppercase">
-                  Whiteboard Technologies LLC
-                </span>{" "}
+                <span className=" uppercase">Whiteboard Technologies LLC</span>{" "}
                 in US Dollars via Wire Transfers within 15 days.
               </p>
             </div>
@@ -625,7 +628,7 @@ const GetInvoiceById = ({
                 <p className="text-[12px] font-bold text-gray-900 mb-10">
                   For Whiteboard Technologies Pvt Ltd
                 </p>
-                <div className="border-t border-black w-full pt-1">
+                <div className="border-t border-[#6bbd45]/20 w-full pt-1">
                   <p className="text-[10px] font-bold text-black uppercase tracking-wider">
                     Authorised signatory
                   </p>
@@ -641,23 +644,23 @@ const GetInvoiceById = ({
                 </p>
                 <div className="flex gap-16">
                   <div className="flex flex-col items-start justify-start gap-1">
-                    <span className="uppercase font-bold text-[12px]">
+                    <span className="uppercase  text-[12px]">
                       {" "}
                       <span className="text-[#6bbd45] ">Tel:</span> USA: +1
                       612.605.5833
                     </span>
-                    <span className="uppercase font-bold text-[12px]">
+                    <span className="uppercase  text-[12px]">
                       INDIA: +1 770.256.6888
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">
+                    <span className="text-[#6bbd45] uppercase  text-[12px]">
                       Email:{" "}
                       <span className="text-gray-500 normal-case font-medium">
                         raj@whiteboardtec.com
                       </span>
                     </span>
-                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">
+                    <span className="text-[#6bbd45] uppercase  text-[12px]">
                       Web:{" "}
                       <span className="text-gray-500 normal-case font-medium">
                         www.whiteboardtec.com
@@ -687,11 +690,11 @@ const GetInvoiceById = ({
             <div className="h-px bg-[#e6554d] w-full mb-3"></div>
             <p className="mb-10 text-[14px] leading-relaxed text-gray-700">
               Please initiate the ACH/Wire Transfer in{" "}
-              <span className="font-bold underline">USD</span> currency from
-              your local Bank with the following information:
+              <span className=" underline">USD</span> currency from your local
+              Bank with the following information:
             </p>
 
-            <h3 className="font-bold text-[15px] text-gray-800 mb-10">
+            <h3 className=" text-[15px] text-gray-800 mb-10">
               ACH / Domestic Wire instructions:
             </h3>
 
@@ -735,7 +738,7 @@ const GetInvoiceById = ({
               </div>
             ) : (
               <div className="bg-red-50 p-8 rounded text-center">
-                <p className="text-red-500 font-bold">
+                <p className="text-red-500 ">
                   No bank account information attached to this invoice.
                 </p>
               </div>
@@ -753,23 +756,23 @@ const GetInvoiceById = ({
                 </p>
                 <div className="flex gap-16">
                   <div className="flex flex-col items-start justify-start gap-1">
-                    <span className="uppercase font-bold text-[12px]">
+                    <span className="uppercase  text-[12px]">
                       {" "}
                       <span className="text-[#6bbd45] ">Tel:</span> USA: +1
                       612.605.5833
                     </span>
-                    <span className="uppercase font-bold text-[12px]">
+                    <span className="uppercase  text-[12px]">
                       INDIA: +1 770.256.6888
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">
+                    <span className="text-[#6bbd45] uppercase  text-[12px]">
                       Email:{" "}
                       <span className="text-gray-500 normal-case font-medium">
                         raj@whiteboardtec.com
                       </span>
                     </span>
-                    <span className="text-[#6bbd45] uppercase font-bold text-[12px]">
+                    <span className="text-[#6bbd45] uppercase  text-[12px]">
                       Web:{" "}
                       <span className="text-gray-500 normal-case font-medium">
                         www.whiteboardtec.com

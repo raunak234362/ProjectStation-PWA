@@ -14,7 +14,7 @@ import { Button } from "../ui/button";
 const ProjectDashboard = () => {
   const dispatch = useDispatch();
   const projects = useSelector(
-    (state: any) => state.projectInfo?.projectData || []
+    (state: any) => state.projectInfo?.projectData || [],
   ) as ProjectData[];
   // const milestonesByProject = useSelector(
   //   (state: any) => state.milestoneInfo?.milestonesByProject || {}
@@ -86,7 +86,7 @@ const ProjectDashboard = () => {
                 setMilestonesForProject({
                   projectId: p.id,
                   milestones: milestonesRes.data,
-                })
+                }),
               );
             }
 
@@ -114,13 +114,13 @@ const ProjectDashboard = () => {
   const projectsWithStats = useMemo(() => {
     return projects.map((project) => {
       const projectTasks = allTasks.filter(
-        (task) => task.project_id === project.id
+        (task) => task.project_id === project.id,
       );
 
       const workedSeconds = projectTasks.reduce((sum, task) => {
         const taskSeconds = (task.workingHourTask || []).reduce(
           (tSum: number, wht: any) => tSum + (wht.duration_seconds || 0),
-          0
+          0,
         );
         return sum + taskSeconds;
       }, 0);
@@ -140,12 +140,17 @@ const ProjectDashboard = () => {
 
   const filteredProjects = useMemo(() => {
     return projectsWithStats.filter((project) => {
-      if (selectedYear === null) return true;
-
       const projectDate = new Date(project.startDate);
-      const matchesYear = projectDate.getFullYear() === selectedYear;
+
+      const matchesYear =
+        selectedYear === null ||
+        selectedYear === undefined ||
+        projectDate.getFullYear() === selectedYear;
+
       const matchesMonth =
-        selectedMonth === null || projectDate.getMonth() === selectedMonth;
+        selectedMonth === null ||
+        selectedMonth === undefined ||
+        projectDate.getMonth() === selectedMonth;
 
       return matchesYear && matchesMonth;
     });
@@ -153,7 +158,7 @@ const ProjectDashboard = () => {
 
   // Group projects by Team
   const projectsByTeam = useMemo(() => {
-    const stages = ["IFA", "IFC", "CO#"] as const;
+    const stages = ["IFA", "IFC", "COR"] as const;
     const grouped: Record<
       string,
       {
@@ -179,7 +184,7 @@ const ProjectDashboard = () => {
           stats: {
             IFA: { active: 0, onHold: 0, completed: 0, total: 0 },
             IFC: { active: 0, onHold: 0, completed: 0, total: 0 },
-            "CO#": { active: 0, onHold: 0, completed: 0, total: 0 },
+            COR: { active: 0, onHold: 0, completed: 0, total: 0 },
           },
         };
       }
@@ -204,8 +209,8 @@ const ProjectDashboard = () => {
 
   const handleStatClick = (
     projects: ProjectData[],
-    stage: "IFA" | "IFC" | "CO#",
-    status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL"
+    stage: "IFA" | "IFC" | "COR",
+    status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
   ) => {
     let filtered = projects.filter((p) => p.stage === stage);
     if (status !== "TOTAL") {
@@ -226,20 +231,20 @@ const ProjectDashboard = () => {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 laptop-fit">
+    <div className="flex flex-col h-full animate-in fade-in duration-500">
       {/* Filters Header */}
-      <div className="bg-white p-3 md:p-4 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+      <div className="shrink-0 mb-2 bg-white p-2 md:p-3 rounded-xl border border-black/5 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-2 md:gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-4 flex-1">
+          <div className="relative min-w-[140px]">
+            <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
             <select
               value={selectedYear === null ? "all" : selectedYear}
               onChange={(e) =>
                 setSelectedYear(
-                  e.target.value === "all" ? null : parseInt(e.target.value)
+                  e.target.value === "all" ? null : parseInt(e.target.value),
                 )
               }
-              className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm md:text-lg font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-gray-100 transition-colors w-full md:w-auto"
+              className="pl-8 pr-6 py-1.5 bg-white border border-black/10 rounded-lg text-xs md:text-sm font-bold text-black focus:ring-1 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-green-50 transition-colors w-full"
             >
               <option value="all">All Years</option>
               {years.map((year) => (
@@ -248,20 +253,21 @@ const ProjectDashboard = () => {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5 pointer-events-none" />
           </div>
-          <div className="flex-1 w-full md:w-auto min-w-0">
+
+          <div className="flex-1 min-w-0">
             {/* Mobile Month Dropdown */}
             <div className="md:hidden relative w-full">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
               <select
                 value={selectedMonth === null ? "all" : selectedMonth}
                 onChange={(e) =>
                   setSelectedMonth(
-                    e.target.value === "all" ? null : parseInt(e.target.value)
+                    e.target.value === "all" ? null : parseInt(e.target.value),
                   )
                 }
-                className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-gray-100 transition-colors w-full"
+                className="pl-8 pr-6 py-1.5 bg-white border border-black/10 rounded-lg text-xs font-bold text-black focus:ring-1 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-green-50 transition-colors w-full"
               >
                 <option value="all">All Months</option>
                 {months.map((month, index) => (
@@ -270,16 +276,16 @@ const ProjectDashboard = () => {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5 pointer-events-none" />
             </div>
 
             {/* Desktop Month Buttons */}
-            <div className="hidden md:flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+            <div className="hidden md:flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
               <Button
                 onClick={() => setSelectedMonth(null)}
-                className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === null
-                  ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
+                className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${selectedMonth === null
+                  ? "bg-green-200 text-black border border-black/10"
+                  : "bg-gray-50 text-gray-600 border border-transparent hover:bg-green-50"
                   }`}
               >
                 All Months
@@ -288,9 +294,9 @@ const ProjectDashboard = () => {
                 <Button
                   key={month}
                   onClick={() => setSelectedMonth(index)}
-                  className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-sm md:text-base font-semibold transition-all whitespace-nowrap h-auto ${selectedMonth === index
-                    ? "bg-green-600 text-white shadow-md shadow-green-100 hover:bg-green-700"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-none"
+                  className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${selectedMonth === index
+                    ? "bg-green-200 text-black border border-black/10"
+                    : "bg-gray-50 text-gray-600 border border-transparent hover:bg-green-50"
                     }`}
                 >
                   {month}
@@ -299,20 +305,19 @@ const ProjectDashboard = () => {
             </div>
           </div>
         </div>
-
-
       </div>
-
-      {/* Monthly Workload Stats */}
-      <MonthlyProjectStats
-        tasks={allTasks}
-        projects={projectsWithStats}
-        selectedMonth={selectedMonth}
-        selectedYear={selectedYear}
-        teams={allTeams}
-        projectsByTeam={projectsByTeam}
-        handleStatClick={handleStatClick}
-      />
+      <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
+        {/* Monthly Workload Stats */}
+        <MonthlyProjectStats
+          tasks={allTasks}
+          projects={projectsWithStats}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          teams={allTeams}
+          projectsByTeam={projectsByTeam}
+          handleStatClick={handleStatClick}
+        />
+      </div>
 
       {/* Project Timeline Calendar */}
       {/* <ProjectCalendar projects={projects} tasks={allTasks} /> */}

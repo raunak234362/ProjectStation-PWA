@@ -1,15 +1,15 @@
-import React from "react";
-import { Menu, ChevronLeft, Bell } from "lucide-react";
-import Button from "./fields/Button";
+import { ChevronLeft, Menu } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { navItems } from "../constants/navigation";
+import NotificationPopup from "./NotificationPopup";
 
 interface HeaderProps {
   isMinimized: boolean;
+  isMobileOpen: boolean;
   toggleSidebar: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
+const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMinimized, isMobileOpen }) => {
   const location = useLocation();
 
   // Find the active tab label
@@ -20,47 +20,34 @@ const Header: React.FC<HeaderProps> = ({ isMinimized, toggleSidebar }) => {
     return location.pathname === fullPath;
   });
 
-  const headerTitle = activeTab ? activeTab.label : "Whiteboard Technologies";
+  const headerTitle = activeTab ? activeTab.label : "Dashboard";
+
+  // Use Menu icon on mobile when closed, or on desktop when minimized
+  const isMobile = window.innerWidth < 768;
+  const showMenuIcon = isMobile ? !isMobileOpen : isMinimized;
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-3 px-6 bg-white rounded-2xl mb-4 border border-gray-100 shadow-sm">
+    <header className="sticky top-0 z-40 flex items-center justify-between w-full py-1.5 px-3 sm:py-2.5 sm:px-6 bg-transparent transition-all duration-300 gap-4">
       {/* Left: Sidebar Toggle & Title */}
-      <div className="flex items-center gap-4">
-        <Button
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+        <button
           onClick={toggleSidebar}
-          className="w-10 h-10 flex items-center justify-center bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all shadow-[0_4px_10px_-2px_rgba(34,197,94,0.4)]"
+          className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-white text-black border border-black/5 rounded-lg hover:bg-gray-50 transition-all shadow-sm shrink-0"
         >
-          {isMinimized ? (
+          {showMenuIcon ? (
             <Menu size={18} strokeWidth={2.5} />
           ) : (
-            <ChevronLeft size={20} strokeWidth={3} />
+            <ChevronLeft size={18} strokeWidth={2.5} />
           )}
-        </Button>
-        <div className="flex flex-col">
-          <h1 className="text-xl font-black text-green-600 uppercase tracking-widest leading-none">
-            {headerTitle}
-          </h1>
-        </div>
+        </button>
+        <h1 className="text-sm sm:text-xl font-black text-black uppercase tracking-tight truncate">
+          {headerTitle}
+        </h1>
       </div>
 
       {/* Right: Greeting & Notifications */}
-      <div className="flex items-center gap-3">
-        <div className="flex-col items-end hidden sm:flex">
-          <span className="text-md font-extrabold text-gray-800 tracking-widest">
-            Welcome Back,
-            <span className="ml-1 text-md font-bold text-green-500 tracking-widest uppercase">
-              {sessionStorage.getItem("username") || "User"}
-            </span>
-          </span>
-        </div>
-        <button className="relative p-2.5 bg-green-50 text-green-600 hover:bg-green-100 rounded-xl transition-all shadow-sm group">
-          <Bell
-            size={20}
-            strokeWidth={2.5}
-            className="group-hover:scale-110 transition-transform"
-          />
-          <span className="absolute top-2.5 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-        </button>
+      <div className="flex items-center gap-3 shrink-0">
+        <NotificationPopup />
       </div>
     </header>
   );

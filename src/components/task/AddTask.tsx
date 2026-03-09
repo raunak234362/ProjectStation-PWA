@@ -526,10 +526,10 @@ const AddTask: React.FC = () => {
                           <Clock className="w-6 h-6 text-blue-600" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                          <p className="text-xs  text-blue-600 uppercase tracking-wider">
                             Execution Hours
                           </p>
-                          <p className="text-xl font-black text-slate-900">
+                          <p className="text-xl  text-slate-900">
                             {selectedWbs.totalExecHr || 0}h
                           </p>
                         </div>
@@ -539,10 +539,10 @@ const AddTask: React.FC = () => {
                           <Clock className="w-6 h-6 text-indigo-600" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+                          <p className="text-xs  text-indigo-600 uppercase tracking-wider">
                             Checking Hours
                           </p>
-                          <p className="text-xl font-black text-slate-900">
+                          <p className="text-xl  text-slate-900">
                             {selectedWbs.totalCheckHr || 0}h
                           </p>
                         </div>
@@ -552,10 +552,10 @@ const AddTask: React.FC = () => {
                           <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                          <p className="text-xs  text-emerald-600 uppercase tracking-wider">
                             Total Bundle Hours
                           </p>
-                          <p className="text-xl font-black text-slate-900">
+                          <p className="text-xl  text-slate-900">
                             {totalWbsHours}h
                           </p>
                         </div>
@@ -566,10 +566,10 @@ const AddTask: React.FC = () => {
                           <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                          <p className="text-xs  text-emerald-600 uppercase tracking-wider">
                             Remaining Hours
                           </p>
-                          <p className="text-xl font-black text-slate-900">
+                          <p className="text-xl  text-slate-900">
                             {remainingHours}h
                           </p>
                         </div>
@@ -615,6 +615,7 @@ const AddTask: React.FC = () => {
                       <Input
                         label="Start Date *"
                         type="date"
+                        min={new Date().toISOString().split("T")[0]}
                         {...register("start_date", {
                           required: "Start date is required",
                         })}
@@ -629,6 +630,10 @@ const AddTask: React.FC = () => {
                       <Input
                         label="Due Date *"
                         type="date"
+                        min={
+                          watch("start_date") ||
+                          new Date().toISOString().split("T")[0]
+                        }
                         {...register("due_date", {
                           required: "Due date is required",
                         })}
@@ -679,7 +684,7 @@ const AddTask: React.FC = () => {
                         Assigned:
                       </span>
                       <span
-                        className={`text-sm font-bold ${
+                        className={`text-sm  ${
                           totalAssignedHours > remainingHours
                             ? "text-red-600"
                             : "text-indigo-600"
@@ -697,7 +702,7 @@ const AddTask: React.FC = () => {
                         className="flex items-end gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100"
                       >
                         <div className="flex-1 space-y-2">
-                          <label className="text-xs font-bold text-slate-500 uppercase">
+                          <label className="text-xs  text-slate-500 uppercase">
                             Employee
                           </label>
                           <Controller
@@ -726,7 +731,7 @@ const AddTask: React.FC = () => {
                                     totalWbsHours;
                                   if (isDuplicate || isOverLimit) {
                                     return (
-                                      <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 uppercase">
+                                      <div className="flex items-center gap-1 text-[10px]  text-amber-600 uppercase">
                                         <AlertCircle className="w-3 h-3" />
                                         Will be marked as Rework
                                         {isDuplicate && " (Duplicate User)"}
@@ -749,7 +754,7 @@ const AddTask: React.FC = () => {
                           />
                         </div>
                         <div className="w-32 space-y-2">
-                          <label className="text-xs font-bold text-slate-500 uppercase">
+                          <label className="text-xs  text-slate-500 uppercase">
                             Duration
                           </label>
                           <div className="space-y-1">
@@ -807,7 +812,7 @@ const AddTask: React.FC = () => {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
+                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white  shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
                   >
                     {isSubmitting ? "Assigning..." : "Confirm & Assign Tasks"}
                   </Button>

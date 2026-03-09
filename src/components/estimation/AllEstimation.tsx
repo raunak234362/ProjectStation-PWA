@@ -1,6 +1,7 @@
 import React from "react";
 import DataTable from "../ui/table";
 import GetEstimationByID from "./GetEstimationByID";
+import { formatDate } from "../../utils/dateUtils";
 
 interface Estimation {
   id: string;
@@ -20,10 +21,11 @@ interface AllEstimationProps {
   onRefresh?: () => void;
 }
 
-const AllEstimation: React.FC<AllEstimationProps> = ({ estimations, onRefresh }) => {
+const AllEstimation: React.FC<AllEstimationProps> = ({
+  estimations,
+  onRefresh,
+}) => {
   console.log(estimations);
-
-
 
   const handleRowClick = (row: any) => {
     // setSelectedEstimationId(row.id); // Assuming id exists in payload or response
@@ -35,23 +37,38 @@ const AllEstimation: React.FC<AllEstimationProps> = ({ estimations, onRefresh })
     { accessorKey: "projectName", header: "Project Name" },
     { accessorKey: "fabricator.fabName", header: "Fabricator" }, // Assuming fabricator is populated
     { accessorKey: "status", header: "Status" },
-    { 
-      accessorKey: "estimateDate", 
+    {
+      accessorKey: "estimateDate",
       header: "Date",
-      cell: ({ row }: { row: { original: Estimation } }) => row.original.estimateDate ? new Date(row.original.estimateDate).toLocaleDateString() : "-"
-    }
+      cell: ({ row }: { row: { original: Estimation } }) =>
+        formatDate(row.original.estimateDate),
+    },
   ];
 
   return (
-    <div className="bg-white p-2 rounded-2xl">
+    <div className="rounded-2xl">
       <DataTable
         columns={columns}
         data={estimations || []}
         onRowClick={handleRowClick}
-           detailComponent={({ row }: { row: Estimation }) => {
-          const estimationUniqueId =
-            row.id ?? row.fabId ?? "";
-          return <GetEstimationByID id={estimationUniqueId} onRefresh={onRefresh} />;
+        noBorder={true}
+        detailComponent={({
+          row,
+          close,
+        }: {
+          row: Estimation;
+          close: () => void;
+        }) => {
+          const estimationUniqueId = row.id ?? row.fabId ?? "";
+          return (
+            <GetEstimationByID
+              id={estimationUniqueId}
+              onRefresh={() => {
+                onRefresh?.();
+                close();
+              }}
+            />
+          );
         }}
         pageSizeOptions={[5, 10, 25]}
       />

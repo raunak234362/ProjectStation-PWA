@@ -98,12 +98,14 @@ export interface DepartmentPayload {
 export interface FabricatorPayload {
   fabName: string;
   website?: string;
+  wbtFabricatorPointOfContact?: any[]
   drive?: string;
   fabStage?: "RFQ" | "PRODUCTION";
   files?: File | string | "";
   approvalPercentage?: number;
   paymenTDueDate?: number;
   fabricatPercentage?: number;
+  wbtContactId?: string;
 }
 export interface FabricatorEditPayload {
   fabName: string;
@@ -111,6 +113,7 @@ export interface FabricatorEditPayload {
   drive?: string;
   fabStage?: "RFQ" | "PRODUCTION";
   files?: File | [] | "";
+  wbtContactId?: string;
 }
 
 // ↓ New Branch Interface
@@ -144,6 +147,7 @@ export interface Fabricator {
   fabricatPercentage?: number;
   approvalPercentage?: number;
   paymenTDueDate?: number;
+  wbtContactId?: string;
   currencyType?: string;
   files: File[] | [];
   branches: Branch[];
@@ -151,6 +155,7 @@ export interface Fabricator {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
+  wbtFabricatorPointOfContact?: any[]
   pointOfContact?: FabricatorClient[];
 }
 
@@ -278,6 +283,7 @@ export interface RFQItem {
   detailingMisc: boolean;
   files?: File[] | string[];
   responses?: RfqResponse[];
+  CDQuotas?: any[] | undefined;
 }
 
 export interface RFQpayload {
@@ -290,6 +296,7 @@ export interface RFQpayload {
   salesPersonId: string | null | " ";
   subject: string;
   description: string;
+  location: string;
   status: boolean;
   tools: string;
   wbtStatus: boolean | any;
@@ -311,6 +318,7 @@ export interface RfqResponsePayload {
   description: string;
   files?: File[] | string[];
   link?: string | null;
+  wbtStatus?: string;
 }
 
 export interface Staff {
@@ -376,6 +384,8 @@ export interface ConnectionDesigner {
   updatedAt: string;
   isDeleted: boolean;
   state: string[];
+  states?: string[];
+  insurenceLiability?: string;
   files?: { id: string; originalName: string }[];
 }
 
@@ -640,6 +650,7 @@ export interface CreateProjectNotePayload {
 
 export interface ProjectMilestone {
   id: string;
+  stage: string;
   subject: string;
   name?: string;
   date: string;
@@ -649,6 +660,30 @@ export interface ProjectMilestone {
   project_id?: string;
   fabricator_id?: string;
   description?: string;
+  responses?: MilestoneResponse[];
+}
+
+export interface MilestoneResponse {
+  id: string;
+  milestoneId: string;
+  userId: string;
+  parentResponseId: string | null;
+  description: string;
+  files?: { id: string; originalName: string; url?: string }[];
+  link?: string | null;
+  createdAt: string;
+  status: string;
+  childResponses?: MilestoneResponse[];
+}
+
+export interface MilestoneResponsePayload {
+  milestoneId: string;
+  userId: string;
+  parentResponseId: string | null;
+  description: string;
+  files?: File[] | string[];
+  link?: string | null;
+  status?: string;
 }
 
 export interface SubmittalPayload {
@@ -761,13 +796,12 @@ export interface DesignDrawing {
   createdAt: string;
   updatedAt: string;
 }
-export interface Quotation{
-  connectionDesignerId:string;
-  rfqId:string;
- bidprice:string;
-  estimatedHours:string;
-  weeks:string;
-  approvalStatus:boolean;
-  approvalDate:string;
-  
+export interface Quotation {
+  connectionDesignerId: string;
+  rfqId: string;
+  bidprice: string;
+  estimatedHours: string;
+  weeks: string;
+  approvalStatus: boolean;
+  approvalDate: string;
 }

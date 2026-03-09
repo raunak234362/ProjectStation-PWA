@@ -41,10 +41,10 @@ const EditProject: React.FC<EditProjectProps> = ({
   const [loading, setLoading] = useState(true);
 
   const fabricators = useSelector(
-    (state: any) => state.fabricatorInfo?.fabricatorData || []
+    (state: any) => state.fabricatorInfo?.fabricatorData || [],
   );
   const departmentDatas = useSelector(
-    (state: any) => state.userInfo?.departmentData || []
+    (state: any) => state.userInfo?.departmentData || [],
   );
   const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
@@ -99,13 +99,13 @@ const EditProject: React.FC<EditProjectProps> = ({
             "startDate",
             project.startDate
               ? new Date(project.startDate).toISOString().split("T")[0]
-              : ""
+              : "",
           );
           setValue(
             "endDate",
             project.endDate
               ? new Date(project.endDate).toISOString().split("T")[0]
-              : ""
+              : "",
           );
 
           setValue("connectionDesign", project.connectionDesign);
@@ -129,13 +129,13 @@ const EditProject: React.FC<EditProjectProps> = ({
       (f: any) => ({
         label: f.fabName,
         value: String(f.id),
-      })
+      }),
     ),
     departments: (Array.isArray(departmentDatas) ? departmentDatas : []).map(
       (d: any) => ({
         label: d.name,
         value: String(d.id),
-      })
+      }),
     ),
     managers: (Array.isArray(users) ? users : []).map((u: any) => ({
       label: `${u.firstName} ${u.lastName}`,
@@ -192,7 +192,7 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <div className="text-center">Loading project data...</div>
         </div>
@@ -202,7 +202,7 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40"
       onClick={onCancel}
     >
       <div
@@ -212,7 +212,7 @@ const EditProject: React.FC<EditProjectProps> = ({
         {/* Scrollable Content */}
         <div className="overflow-y-auto p-6">
           <div className="flex justify-between items-center mb-6 border-b pb-4 sticky top-0 bg-white z-10">
-            <h2 className="text-2xl font-bold text-gray-700">Edit Project</h2>
+            <h2 className="text-2xl  text-gray-700">Edit Project</h2>
             <button
               onClick={onCancel}
               className="text-gray-700 hover:text-gray-700"
@@ -258,7 +258,7 @@ const EditProject: React.FC<EditProjectProps> = ({
                     <Select
                       options={options.fabricators}
                       value={options.fabricators.find(
-                        (o: any) => o.value === field.value
+                        (o: any) => o.value === field.value,
                       )}
                       onChange={(o: any) => field.onChange(o?.value || "")}
                       placeholder="Select..."
@@ -278,7 +278,7 @@ const EditProject: React.FC<EditProjectProps> = ({
                     <Select
                       options={options.managers}
                       value={options.managers.find(
-                        (o: any) => o.value === field.value
+                        (o: any) => o.value === field.value,
                       )}
                       onChange={(o: any) => field.onChange(o?.value || "")}
                       placeholder="Assign manager"
@@ -298,7 +298,7 @@ const EditProject: React.FC<EditProjectProps> = ({
                     <Select
                       options={options.departments}
                       value={options.departments.find(
-                        (o: any) => o.value === field.value
+                        (o: any) => o.value === field.value,
                       )}
                       onChange={(o: any) => field.onChange(o?.value || "")}
                       placeholder="Select dept"
@@ -315,11 +315,13 @@ const EditProject: React.FC<EditProjectProps> = ({
                   control={control}
                   render={({ field }) => {
                     const selectedDeptId = watch("departmentID");
-                    const filteredTeams = (Array.isArray(teamDatas) ? teamDatas : [])
+                    const filteredTeams = (
+                      Array.isArray(teamDatas) ? teamDatas : []
+                    )
                       .filter(
                         (t: any) =>
                           !selectedDeptId ||
-                          String(t.departmentID) === String(selectedDeptId)
+                          String(t.departmentID) === String(selectedDeptId),
                       )
                       .map((t: any) => ({
                         label: t.name,
@@ -330,7 +332,7 @@ const EditProject: React.FC<EditProjectProps> = ({
                       <Select
                         options={filteredTeams}
                         value={filteredTeams.find(
-                          (o: any) => o.value === field.value
+                          (o: any) => o.value === field.value,
                         )}
                         onChange={(o: any) => field.onChange(o?.value || "")}
                         placeholder="Select team"
@@ -348,7 +350,7 @@ const EditProject: React.FC<EditProjectProps> = ({
             <div className="bg-cyan-50/50 rounded-xl p-4 border border-cyan-100">
               <div className="flex items-center gap-2 mb-4">
                 <Layers className="w-5 h-5 text-cyan-600" />
-                <h3 className="text-lg font-bold text-cyan-900">
+                <h3 className="text-lg  text-cyan-900">
                   Connection Design Scope
                 </h3>
               </div>
@@ -383,9 +385,7 @@ const EditProject: React.FC<EditProjectProps> = ({
             <div className="bg-amber-50/50 rounded-xl p-4 border border-amber-100">
               <div className="flex items-center gap-2 mb-4">
                 <Wrench className="w-5 h-5 text-amber-600" />
-                <h3 className="text-lg font-bold text-amber-900">
-                  Detailing Scope
-                </h3>
+                <h3 className="text-lg  text-amber-900">Detailing Scope</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[

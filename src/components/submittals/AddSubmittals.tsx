@@ -80,8 +80,14 @@ const AddSubmittal: React.FC<{
 
   const onSubmit = async (data: any) => {
     try {
+      // Remove " - IFA" or " - IFC" from subject if present
+      const cleanedSubject = data.subject
+        ? data.subject.replace(/ - IFA/g, "").replace(/ - IFC/g, "")
+        : "";
+
       const payload: any = {
         ...data,
+        subject: cleanedSubject,
         fabricator_id: String(fabricatorId),
         project_id: String(projectId),
 
@@ -193,8 +199,8 @@ const AddSubmittal: React.FC<{
 
         <MultipleFileUpload onFilesChange={setFiles} />
 
-        <div className="flex justify-center w-full mt-6">
-          <Button type="submit" className="w-full">
+        <div className="flex justify-center w-full mt-6 border border-black">
+          <Button type="submit" className="w-full text-black border border-black bg-green-100">
             Submit Submittal
           </Button>
         </div>

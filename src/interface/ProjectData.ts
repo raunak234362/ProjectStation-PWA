@@ -48,4 +48,7 @@ export interface ProjectData {
     endDateChangeLog?: string[];
     projectWbs?: any[];
     projectBundles?: any[];
+    workedSeconds?: number;
+    totalWorkedSeconds?: number;
+    isOverrun?: boolean;
 }

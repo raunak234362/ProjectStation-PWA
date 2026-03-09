@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import DataTable, { type ExtendedColumnDef } from "../../../ui/table";
+import { motion } from "framer-motion";
 
 interface TeamMembersTableProps {
   tableData: any[];
@@ -15,17 +16,14 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
   getEfficiencyColorClass,
 }) => {
   console.log(tableData);
-  
+
   const columns = useMemo<ExtendedColumnDef<any>[]>(
     () => [
       {
         header: "Name",
         accessorKey: "name",
         cell: ({ row }) => (
-          <div
-            className="font-medium text-gray-700 cursor-pointer hover:text-green-600 transition-colors"
-            onClick={() => onMemberClick(row.original.id)}
-          >
+          <div className="font-semibold text-black">
             {row.original.name}
           </div>
         ),
@@ -34,7 +32,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         header: "Role",
         accessorKey: "role",
         cell: ({ row }) => (
-          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-700">
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-bold uppercase tracking-widest rounded-full bg-gray-100 text-black border border-black/5">
             {row.original.role}
           </span>
         ),
@@ -43,7 +41,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         header: "Assigned Hours",
         accessorKey: "assignedHours",
         cell: ({ row }) => (
-          <span className="text-sm text-gray-700">
+          <span className="text-sm font-medium text-black">
             {formatToHoursMinutes(Number(row.original.assignedHours))}
           </span>
         ),
@@ -52,7 +50,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         header: "Worked Hours",
         accessorKey: "workedHours",
         cell: ({ row }) => (
-          <span className="text-sm text-gray-700">
+          <span className="text-sm font-medium text-black">
             {formatToHoursMinutes(Number(row.original.workedHours))}
           </span>
         ),
@@ -61,34 +59,32 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         header: "Tasks (C/T)",
         accessorKey: "tasks",
         cell: ({ row }) => (
-          <div className="flex flex-col gap-1 w-32">
-            <div className="text-sm text-gray-700 flex justify-between">
+          <div className="flex flex-col gap-1.5 w-32">
+            <div className="text-xs font-bold text-black uppercase tracking-widest flex justify-between">
               <span>
                 {row.original.completedTasks}/{row.original.totalTasks}
               </span>
-              <span className="text-xs text-gray-400">
+              <span className="text-black/40">
                 {row.original.totalTasks > 0
                   ? Math.round(
-                      (row.original.completedTasks / row.original.totalTasks) *
-                        100
-                    )
+                    (row.original.completedTasks / row.original.totalTasks) * 100
+                  )
                   : 0}
                 %
               </span>
             </div>
-            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-green-500 rounded-full transition-all duration-500"
-                style={{
-                  width: `${
-                    row.original.totalTasks > 0
-                      ? (row.original.completedTasks /
-                          row.original.totalTasks) *
-                        100
-                      : 0
-                  }%`,
+            <div className="w-full h-2 bg-gray-100 rounded-full border border-black/5 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{
+                  width: `${row.original.totalTasks > 0
+                    ? (row.original.completedTasks / row.original.totalTasks) * 100
+                    : 0
+                    }%`,
                 }}
-              ></div>
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="h-full bg-[#6bbd45] rounded-full"
+              />
             </div>
           </div>
         ),
@@ -98,7 +94,7 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         accessorKey: "efficiency",
         cell: ({ row }) => (
           <span
-            className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${getEfficiencyColorClass(
+            className={`px-4 py-1.5 inline-flex text-xs font-bold uppercase tracking-tighter rounded-full border shadow-sm ${getEfficiencyColorClass(
               row.original.efficiency
             )}`}
           >
@@ -107,23 +103,21 @@ const TeamMembersTable: React.FC<TeamMembersTableProps> = ({
         ),
       },
     ],
-    [onMemberClick, formatToHoursMinutes, getEfficiencyColorClass]
+    [formatToHoursMinutes, getEfficiencyColorClass]
   );
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
-      <div className="p-6 border-b border-gray-50">
-        <h3 className="text-lg font-bold text-gray-700">
+    <div className="bg-white rounded-xl sm:rounded-[2.5rem] border border-black/10 shadow-medium overflow-hidden mb-12">
+      <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-black/5 bg-gray-50/30">
+        <h3 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
           Team Members Performance
         </h3>
-        <p className="text-sm text-gray-700">
-          Individual metrics for team members
-        </p>
       </div>
-      <div className="p-4">
+      <div className="p-2 sm:p-6 sm:px-10">
         <DataTable
           columns={columns}
           data={tableData}
+          onRowClick={(row) => onMemberClick(row.id)}
           showColumnToggle={false}
         />
       </div>

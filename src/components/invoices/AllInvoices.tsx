@@ -3,6 +3,7 @@ import Service from "../../api/Service";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import GetInvoiceById from "./GetInvoiceById";
+import { formatDate } from "../../utils/dateUtils";
 
 const AllInvoices = () => {
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -38,10 +39,7 @@ const AllInvoices = () => {
     {
       accessorKey: "invoiceDate",
       header: "Date",
-      cell: ({ row }) => {
-        const date = row.getValue("invoiceDate") as string;
-        return date ? new Date(date).toLocaleDateString() : "N/A";
-      },
+      cell: ({ row }) => formatDate(row.getValue("invoiceDate")),
     },
     {
       accessorKey: "totalInvoiceValue",
@@ -62,10 +60,7 @@ const AllInvoices = () => {
         const status = row.getValue("paymentStatus");
         return (
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${status
-                ? "bg-green-100 text-green-700"
-                : "bg-yellow-100 text-yellow-700"
-              }`}
+            className="px-2 py-1 rounded-full text-xs md:text-sm lg:text-base xl:text-lg bg-gray-100 text-black border border-gray-200"
           >
             {status ? "Paid" : "Pending"}
           </span>
@@ -74,7 +69,9 @@ const AllInvoices = () => {
     },
   ];
 
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
+    null,
+  );
 
   if (loading) {
     return (
@@ -85,9 +82,9 @@ const AllInvoices = () => {
   }
 
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-sm">
+    <div className="bg-white p-4 rounded-2xl border border-black shadow-sm">
       <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-700">All Invoices</h2>
+        <h2 className="text-xl font-bold text-black uppercase tracking-tight">All Invoices</h2>
       </div>
       <DataTable
         columns={columns}

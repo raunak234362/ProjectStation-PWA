@@ -141,7 +141,7 @@ const EditTask: React.FC<EditTaskProps> = ({ id, onClose, refresh }) => {
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden max-w-4xl mx-auto">
       <div className="bg-slate-50 px-8 py-4 border-b border-slate-200 flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+        <h2 className="text-xl  text-slate-800 flex items-center gap-2">
           <FileText className="w-5 h-5 text-indigo-500" /> Edit Task
         </h2>
         <button
@@ -324,7 +324,7 @@ const EditTask: React.FC<EditTaskProps> = ({ id, onClose, refresh }) => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="px-10 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+            className="px-10 py-2 bg-indigo-600 hover:bg-indigo-700 text-white  shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
           >
             {isSubmitting ? (
               "Saving..."

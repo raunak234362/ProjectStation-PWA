@@ -6,32 +6,32 @@ import { X, Clock, Layers, AlignLeft, Edit2, Save, Calculator } from "lucide-rea
 import RichTextEditor from "../../fields/RichTextEditor";
 
 interface LineItemListProps {
-  id: string;
-  onClose: () => void;
+    id: string;
+    onClose: () => void;
 }
 
 interface LineItem {
-  id: string;
-  scopeOfWork: string;
-  quantity: number;
-  hoursPerQty: number;
-  totalHours: number;
+    id: string;
+    scopeOfWork: string;
+    quantity: number;
+    hoursPerQty: number;
+    totalHours: number;
 }
 
 interface GroupData {
-  group?: {
-    id: string;
-    name: string;
-    description: string;
-    divisor: number;
-  };
-  totalHours: number;
+    group?: {
+        id: string;
+        name: string;
+        description: string;
+        divisor: number;
+    };
+    totalHours: number;
 }
 
 const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
     const [lineItem, setLineItem] = useState<LineItem[]>([]);
     const [groupData, setGroupData] = useState<GroupData | null>(null);
-     
+
     const [, setLoading] = useState(false);
 
     const groupId = groupData?.group?.id
@@ -197,7 +197,7 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                         placeholder="Enter scope of work"
                     />
                 ) : (
-                    <div 
+                    <div
                         className="prose prose-sm max-w-none"
                         dangerouslySetInnerHTML={{ __html: row.original.scopeOfWork }}
                     />
@@ -296,7 +296,7 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
 
         >
                 <div className="flex justify-between items-center mb-6 border-b pb-4 sticky top-0 bg-white z-10">
-                    <h2 className="text-2xl font-bold text-gray-700">Line Items</h2>
+                    <h2 className="text-2xl  text-gray-700">Line Items</h2>
                     <button
                         onClick={onClose}
                         className="text-gray-700 hover:text-gray-700"
@@ -340,13 +340,13 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                                 </div>
                             ) : (
                                 <>
-                                    <h3 className="text-lg font-bold text-gray-700 flex items-center gap-2 mb-2">
+                                    <h3 className="text-lg  text-gray-700 flex items-center gap-2 mb-2">
                                         <Layers className="w-5 h-5 text-green-600" />
                                         {groupData?.group?.name || "Unnamed Group"}
                                     </h3>
                                     <div className="flex items-start gap-2 text-gray-700">
                                         <AlignLeft className="w-4 h-4 mt-1 shrink-0 text-gray-400" />
-                                        <div 
+                                        <div
                                             className="text-sm leading-relaxed prose prose-sm max-w-none"
                                             dangerouslySetInnerHTML={{ __html: groupData?.group?.description || "No description available." }}
                                         />
@@ -369,17 +369,17 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                                                     type="number"
                                                     value={groupFormData.divisor}
                                                     onChange={(e) => handleGroupInputRawChange(e, "divisor")}
-                                                    className="w-16 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none text-right font-bold text-gray-700"
+                                                    className="w-16 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none text-right  text-gray-700"
                                                     placeholder="Div"
                                                 />
                                                 <span className="text-gray-400 text-sm">=</span>
-                                                <span className="text-sm font-bold text-gray-700">
+                                                <span className="text-sm  text-gray-700">
                                                     {groupFormData.divisor > 0 ? (groupFormData.totalHours / groupFormData.divisor).toFixed(2) : "0.00"}
                                                 </span>
                                             </div>
                                         ) : (
                                             <div className="flex flex-col items-end">
-                                                <span className="text-lg font-bold text-gray-700">
+                                                <span className="text-lg  text-gray-700">
                                                     {groupData?.group?.divisor ? (groupData?.totalHours / groupData?.group?.divisor).toFixed(2) : "0.00"}
                                                 </span>
                                                 <span className="text-[10px] text-gray-400">
@@ -401,10 +401,10 @@ const LineItemList: React.FC<LineItemListProps> = ({ id, onClose }) => {
                                                 type="number"
                                                 value={groupFormData.totalHours}
                                                 onChange={(e) => handleGroupInputRawChange(e, "totalHours")}
-                                                className="w-24 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none text-right font-bold text-gray-700"
+                                                className="w-24 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none text-right  text-gray-700"
                                             />
                                         ) : (
-                                            <span className="text-lg font-bold text-gray-700">
+                                            <span className="text-lg  text-gray-700">
                                                 {formatDecimalHours(groupData?.totalHours)}
                                             </span>
                                         )}

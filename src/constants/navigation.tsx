@@ -5,7 +5,6 @@ import {
   Calculator,
   Briefcase,
   Receipt,
-  Landmark,
   CheckSquare,
   Users,
   MessageCircle,
@@ -105,6 +104,9 @@ export const navItems: NavItem[] = [
       "estimator",
       "sales",
       "connection_designer_engineer",
+
+
+
     ],
   }, */
   {
@@ -148,12 +150,6 @@ export const navItems: NavItem[] = [
     to: "invoices",
     icon: <Receipt />,
     roles: ["admin", "project_manager_officer", "client_admin", "pmo", "client"],
-  },
-  {
-    label: "Accounts",
-    to: "accounts",
-    icon: <Landmark />,
-    roles: ["admin", "project_manager_officer", "pmo"],
   },
   {
     label: "Tasks",

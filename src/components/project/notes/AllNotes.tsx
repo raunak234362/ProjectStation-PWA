@@ -12,6 +12,7 @@ import type { ProjectNote } from "../../../interface";
 import Button from "../../fields/Button";
 import AddNotes from "./AddNotes";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
+import { formatDateTime } from "../../../utils/dateUtils";
 
 const AllNotes = ({ projectId }: { projectId: string }) => {
   const [notes, setNotes] = useState<ProjectNote[]>([]);
@@ -32,13 +33,6 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
   };
 
   return (
@@ -72,7 +66,7 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
                   </span>
                   <span className="text-xs text-gray-700 flex items-center gap-1">
                     <Calendar className="w-3 h-3" />{" "}
-                    {formatDate(note.createdAt)}
+                    {formatDateTime(note.createdAt)}
                   </span>
                 </div>
                 <div className="text-xs text-gray-700 flex items-center gap-1">

@@ -12,72 +12,67 @@ interface EstimationStatsProps {
 const EstimationStats: React.FC<EstimationStatsProps> = ({ stats }) => {
     const cards = [
         {
-            label: "Total Estimated Project",
+            label: "Total Projects Estimated",
             value: stats.totalEstimated,
             icon: CopyPlus,
             color: "blue",
         },
         {
-            label: "Total Awarded Project",
+            label: "Total Projects Awarded",
             value: stats.totalAwarded,
             icon: Trophy,
             color: "green",
         },
         {
-            label: "Total Number of hours Worked",
+            label: "Aggregate Engineering Hours",
             value: stats.totalHours,
             icon: Clock,
             color: "purple",
         },
     ];
 
-    const colorClasses = {
+    const colorClasses: Record<string, { shadow: string, icon: string, bg: string }> = {
         blue: {
-            bg: "bg-blue-50",
-            iconBg: "bg-blue-500",
-            text: "text-blue-700",
+            shadow: "shadow-blue-100 dark:shadow-none",
+            icon: "text-blue-600 dark:text-blue-400",
+            bg: "bg-blue-50 dark:bg-blue-900/20"
         },
         green: {
-            bg: "bg-green-50",
-            iconBg: "bg-green-500",
-            text: "text-green-700",
+            shadow: "shadow-emerald-100 dark:shadow-none",
+            icon: "text-emerald-600 dark:text-emerald-400",
+            bg: "bg-emerald-50 dark:bg-emerald-900/20"
         },
         purple: {
-            bg: "bg-purple-50",
-            iconBg: "bg-purple-500",
-            text: "text-purple-700",
+            shadow: "shadow-purple-100 dark:shadow-none",
+            icon: "text-purple-600 dark:text-purple-400",
+            bg: "bg-purple-50 dark:bg-purple-900/20"
         },
     };
 
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
-            <h2 className="text-lg font-semibold text-gray-800 mb-6">
-                Estimation Stats
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {cards.map((card) => {
-                    const colors = colorClasses[card.color as keyof typeof colorClasses];
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl shadow-soft h-full border border-black/5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                {cards.map((card, index) => {
+                    const colors = colorClasses[card.color];
 
                     return (
                         <div
-                            key={card.label}
-                            className={`
-                flex items-center gap-4 p-4 rounded-xl border 
-                ${colors.bg} border-gray-200
-              `}
+                            key={index}
+                            className="flex flex-row items-center justify-between p-3 sm:p-4 rounded-xl md:rounded-2xl bg-white dark:bg-slate-800/30 border border-black/10 transition-all duration-300 hover:shadow-md hover:bg-slate-50 group min-w-0"
                         >
-                            <div
-                                className={`p-3 rounded-lg ${colors.iconBg} text-white shrink-0`}
-                            >
-                                <card.icon size={24} />
+                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                                <div className={`p-2.5 sm:p-3 rounded-lg md:rounded-xl ${colors.bg} group-hover:scale-105 transition-transform duration-300 shadow-sm border border-black/5 shrink-0`}>
+                                    <card.icon size={18} strokeWidth={2.5} className={colors.icon} />
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                    <span className="text-[10px] sm:text-xs font-black text-black/40 dark:text-slate-400 uppercase tracking-[0.1em] leading-tight break-words">
+                                        {card.label}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="flex flex-col">
-                                <span className="text-sm font-medium text-gray-600">
-                                    {card.label}
-                                </span>
-                                <span className={`text-2xl font-bold mt-1 ${colors.text}`}>
+                            <div className="flex items-center ml-2 shrink-0">
+                                <span className="text-[10px] sm:text-xs font-black text-black dark:text-white uppercase tracking-widest">
                                     {card.value}
                                 </span>
                             </div>

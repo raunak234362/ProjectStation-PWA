@@ -434,6 +434,20 @@ class Service {
       console.error("cannot find rfqs", error);
     }
   }
+
+  // Client Admin Pending RFQs (Received)
+  static async ClientAdminPendingRFQs() {
+    try {
+      // Assuming existing dashboard logic uses 'received' and filters it locally.
+      // We'll use a specific endpoint if available, but for now mimicking the likely pattern or reusing received if auth handles it.
+      // Given the pattern, let's try `rfq/received/clientAdmin`
+      const response = await api.get(`rfq/pending/clientAdmin`);
+      console.log("Client Admin RFQ received:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfqs for Client Admin", error);
+    }
+  }
   //getting rfqbyID
 
   static async GetRFQbyId(rfqId: string) {
@@ -473,20 +487,13 @@ class Service {
   }
 
   // Add Connection Designer Quotation Response
-  static async addConnectionDesignerQuotation(
-    formData: FormData,
-    rfqId: string,
-  ) {
+  static async addConnectionDesignerQuotation(formData: FormData) {
     try {
-      const response = await api.post(
-        `connectionDesignerQuota/${rfqId}/quotations`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await api.post(`rfq/connectionDesignerQuota`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       console.log("Connection Designer Quotation added:", response.data);
       return response.data;
     } catch (error) {
@@ -1032,6 +1039,7 @@ class Service {
       return response.data;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 
@@ -1121,6 +1129,66 @@ class Service {
     }
   }
 
+  // update exsting milestone y Id
+  static async EditExistingMilestoneByID(id: string, data: any) {
+    try {
+      const response = await api.put(`mileStone/existing/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // edit milestone by ID
+  static async EditMilestoneById(id: string, data: any) {
+    try {
+      const response = await api.put(`mileStone/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Update the completion percent by milestone id
+  static async UpdateCompletionPercentById(id: string, data: any) {
+    try {
+      const response = await api.put(`mileStone/completion/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Get All Documents by Project ID
+  static async GetAllDocumentsByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`project/getAllDocuments/${projectId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   //Get mileston by ID
   static async GetMilestoneById(id: string) {
     try {
@@ -1133,6 +1201,83 @@ class Service {
       return response.data;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  // Delete milestone by ID
+  static async DeleteMilestoneById(milestoneId: string) {
+    try {
+      const response = await api.delete(`mileStone/${milestoneId}`);
+      console.log("Milestone deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting milestone:", error);
+      throw error;
+    }
+  }
+
+  // Create milestone response
+  static async CreateMilestoneResponse(formData: FormData) {
+    try {
+      const response = await api.post(`mileStone/responses`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Milestone response created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating milestone response:", error);
+      throw error;
+    }
+  }
+
+  // Update milestone response status
+  static async UpdateMilestoneResponseStatus(
+    parentResponseId: string,
+    data: any,
+  ) {
+    try {
+      const response = await api.patch(
+        `mileStone/responses/${parentResponseId}/status`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      console.log("Milestone response status updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating milestone response status:", error);
+      throw error;
+    }
+  }
+
+  // Get milestone response by ID
+  static async GetMilestoneResponseById(id: string) {
+    try {
+      const response = await api.get(`mileStone/responses/${id}`);
+      console.log("Milestone response fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching milestone response:", error);
+      throw error;
+    }
+  }
+
+  // View milestone response file
+  static async ViewMilestoneResponseFile(responseId: string, fileId: string) {
+    try {
+      const response = await api.get(
+        `mileStone/response/${responseId}/viewFile/${fileId}`,
+      );
+      console.log("Milestone response file:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error viewing milestone response file:", error);
+      throw error;
     }
   }
 
@@ -1474,6 +1619,35 @@ class Service {
     }
   }
 
+  // Client Admin Pending RFIs
+  static async ClientAdminPendingRFIs() {
+    try {
+      const response = await api.get(`rfi/pending/clientAdmin`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Client Admin pending RFIs:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find pending RFIs for Client Admin", error);
+    }
+  }
+
+  static async ClientAdminPendingSubmittals() {
+    try {
+      const response = await api.get(`submittal/pending/clientAdmin`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Client Admin pending RFIs:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find pending RFIs for Client Admin", error);
+    }
+  }
+
   static async RfiSent() {
     try {
       const response = await api.get(`rfi/sents`, {
@@ -1565,7 +1739,6 @@ class Service {
           "Content-Type": "application/json",
         },
       });
-      console.log(" Pending submittals:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find submittals", error);
@@ -1580,7 +1753,6 @@ class Service {
           "Content-Type": "application/json",
         },
       });
-      console.log(" Submittals sents:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find submittals", error);
@@ -1595,7 +1767,6 @@ class Service {
         },
       });
 
-      console.log("  Submittal received:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find submittal's", error);
@@ -1608,7 +1779,6 @@ class Service {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All submittal fetched by submittalID:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find submittal", error);
@@ -1622,7 +1792,6 @@ class Service {
     } catch (error) {
       console.error("cannot add submittal response", error);
     }
-
   }
   static async GetSubmittalResponsebyId(subId: string) {
     try {
@@ -1661,6 +1830,21 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find Co", error);
+    }
+  }
+
+  // Client Admin Pending COs
+  static async ClientAdminPendingCOs() {
+    try {
+      const response = await api.get(`changeOrder/pending/clientAdmin`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Client Admin Pending Co:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find Co for Client Admin", error);
     }
   }
 
@@ -2012,6 +2196,18 @@ class Service {
     }
   }
 
+  //upcoming rfi
+  static async ClientAdminPendingMilestoneSubmittals() {
+    try {
+      const response = await api.get(`mileStone/pendingSubmittals/clientAdmin`);
+      console.log("Upcoming RFI fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching upcoming RFI:", error);
+      throw error;
+    }
+  }
+
   // Create Share Link
   static async createShareLink(
     table: string,
@@ -2127,14 +2323,396 @@ class Service {
     }
   }
 
-  // Analytics
-  static async GetAnalyticsScore() {
+  //client dashboard data routes.
+  static async DashboardData() {
     try {
-      const response = await api.get(`analytics/scores`);
-      console.log("Analytics Score:", response.data);
+      const response = await api.get(`dashBoardData/clientAdmin`);
+      console.log("Client Dashboard Data:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching analytics:", error);
+      console.error("Error fetching dashboard data:", error);
+      throw error;
+    }
+  }
+  // INVOICE DASHBOARD DATA
+  static async InvoiceDashboardData() {
+    try {
+      const response = await api.get(`invoice/pending/fabricator`);
+      console.log("Invoice Dashboard Data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching invoice dashboard data:", error);
+      throw error;
+    }
+  }
+  //dashboard milestone
+  static async DashboardMilestone() {
+    try {
+      const response = await api.get(`milestone/pendingSubmittals/clientAdmin`);
+      console.log("Dashboard Milestone Data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching dashboard milestone:", error);
+      throw error;
+    }
+  }
+  static async Notifications() {
+    try {
+      const response = await api.get(`notifications`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      throw error;
+    }
+  }
+
+  static async MarkNotificationAsRead(id: string) {
+    try {
+      const response = await api.patch(`notifications/read/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      throw error;
+    }
+  }
+
+  // ==================== MEETINGS API ====================
+
+  // Create a new meeting
+  static async CreateMeeting(data: any) {
+    try {
+      const response = await api.post(`meetings`, data);
+      console.log("Meeting created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating meeting:", error);
+      throw error;
+    }
+  }
+
+  // Record attendance for a meeting
+  static async RecordAttendance(data: any) {
+    try {
+      const response = await api.post(`meetings/attendance`, data);
+      console.log("Attendance recorded:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error recording attendance:", error);
+      throw error;
+    }
+  }
+
+  // Get attendance history
+  static async GetAttendanceHistory() {
+    try {
+      const response = await api.get(`meetings/attendance/history`);
+      console.log("Attendance history:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching attendance history:", error);
+      throw error;
+    }
+  }
+
+  // Add participants to a meeting
+  static async AddMeetingParticipants(data: any) {
+    try {
+      const response = await api.post(`meetings/participants`, data);
+      console.log("Participants added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding participants:", error);
+      throw error;
+    }
+  }
+
+  // Delete a participant from a meeting
+  static async DeleteMeetingParticipant(attendeeId: string) {
+    try {
+      const response = await api.delete(`meetings/participants/${attendeeId}`);
+      console.log("Participant deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting participant:", error);
+      throw error;
+    }
+  }
+
+  // Update a participant in a meeting
+  static async UpdateMeetingParticipant(attendeeId: string, data: any) {
+    try {
+      const response = await api.put(
+        `meetings/participants/${attendeeId}`,
+        data,
+      );
+      console.log("Participant updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating participant:", error);
+      throw error;
+    }
+  }
+
+  // Get meeting status count
+  static async GetMeetingStatusCount() {
+    try {
+      const response = await api.get(`meetings/status/count`);
+      console.log("Meeting status count:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting status count:", error);
+      throw error;
+    }
+  }
+
+  // Get current user's meetings
+  static async GetMyMeetings() {
+    try {
+      const response = await api.get(`meetings/user/me`);
+      console.log("My meetings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching my meetings:", error);
+      throw error;
+    }
+  }
+
+  // Get current user's past meetings
+  static async GetMyPastMeetings() {
+    try {
+      const response = await api.get(`meetings/user/me/past`);
+      console.log("My past meetings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching my past meetings:", error);
+      throw error;
+    }
+  }
+
+  // Get current user's upcoming meetings
+  static async GetMyUpcomingMeetings() {
+    try {
+      const response = await api.get(`meetings/user/me/upcoming`);
+      console.log("My upcoming meetings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching my upcoming meetings:", error);
+      throw error;
+    }
+  }
+
+  // View a file from a meeting
+  static async ViewMeetingFile(meetingId: string, fileId: string) {
+    try {
+      const response = await api.get(
+        `meetings/viewFile/${meetingId}/${fileId}`,
+      );
+      console.log("Meeting file:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error viewing meeting file:", error);
+      throw error;
+    }
+  }
+
+  // Delete a meeting by ID
+  static async DeleteMeeting(id: string) {
+    try {
+      const response = await api.delete(`meetings/${id}`);
+      console.log("Meeting deleted:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting meeting:", error);
+      throw error;
+    }
+  }
+
+  // Get a meeting by ID
+  static async GetMeetingById(id: string) {
+    try {
+      const response = await api.get(`meetings/${id}`);
+      console.log("Meeting details:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting by ID:", error);
+      throw error;
+    }
+  }
+
+  // Update a meeting by ID
+  static async UpdateMeeting(id: string, data: any) {
+    try {
+      const response = await api.put(`meetings/${id}`, data);
+      console.log("Meeting updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating meeting:", error);
+      throw error;
+    }
+  }
+
+  // Update meeting status
+  static async UpdateMeetingStatus(id: string, data: any) {
+    try {
+      const response = await api.patch(`meetings/${id}/status`, data);
+      console.log("Meeting status updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating meeting status:", error);
+      throw error;
+    }
+  }
+
+  // Get meeting summary
+  static async GetMeetingSummary(id: string) {
+    try {
+      const response = await api.get(`meetings/${id}/summary`);
+      console.log("Meeting summary:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting summary:", error);
+      throw error;
+    }
+  }
+
+  // Get attendance for a specific meeting
+  static async GetMeetingAttendance(meetingId: string) {
+    try {
+      const response = await api.get(`meetings/${meetingId}/attendance`);
+      console.log("Meeting attendance:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting attendance:", error);
+      throw error;
+    }
+  }
+
+  // Get a specific file from a meeting
+  static async GetMeetingFileById(meetingId: string, fileId: string) {
+    try {
+      const response = await api.get(`meetings/${meetingId}/files/${fileId}`);
+      console.log("Meeting file:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching meeting file:", error);
+      throw error;
+    }
+  }
+
+  // Update RSVP for a meeting
+  static async UpdateMeetingRSVP(meetingId: string, data: any) {
+    try {
+      const response = await api.patch(`meetings/${meetingId}/rsvp`, data);
+      console.log("RSVP updated:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating RSVP:", error);
+      throw error;
+    }
+  }
+  //sales dashboard
+  static async SalesDashboard() {
+    try {
+      const response = await api.get(`dashBoardData/sales`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching sales dashboard:", error);
+      throw error;
+    }
+  }
+
+  //===========================================
+
+  //Get Admin analytics for manager dashboard
+  static async GetAdminAnalyticsForManagerDashboard(data: {
+    projectId?: string;
+    managerId?: string;
+  }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/admin/analytics/manager/dashboard`,
+         data ,
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching admin analytics for manager dashboard:",
+        error,
+      );
+      throw error;
+    }
+  }
+
+  //Get Admin MEAS analytics trendline
+  static async GetAdminMEASAnalyticsTrendline(data?: {
+    projectId?: string;
+    managerId?: string;
+  }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/admin/analytics/meas/trendline`,
+        data ,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching admin meas analytics trendline:", error);
+      throw error;
+    }
+  }
+
+  // Get Employee EPS
+  static async GetEmployeeEPS(data: {
+    employeeId: string;
+    year: number;
+    month: number;
+  }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/admin/analytics/employee/eps`,
+        data,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching employee EPS:", error);
+      throw error;
+    }
+  }
+
+  // Get Manager Bias
+  static async GetManagerBias(data: { managerId: string; projectId: string }) {
+    try {
+      const response = await api.post(`analytics/scores/manager/bias`, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching manager bias:", error);
+      throw error;
+    }
+  }
+
+  // Run Meas Manually
+  static async RunMeasManually(data: { managerId: string; projectId: string }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/meas/run-manually`,
+        data,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error running meas manually:", error);
+      throw error;
+    }
+  }
+
+  // Run Meas Monthly
+  static async RunMeasMonthly(data: { managerId: string; projectId: string }) {
+    try {
+      const response = await api.post(
+        `analytics/scores/meas/run-monthly`,
+        data,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error running meas monthly:", error);
       throw error;
     }
   }
