@@ -42,7 +42,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
 
-  const quarters = ["Q1", "Q2", "Q3", "Q4"];
+
 
   const processedChartData = useMemo(() => {
     const parseVal = (val: any) => {
@@ -214,7 +214,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
 
       <div className="flex-1 min-h-0 w-full px-1">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart
+          <BarChart
             data={processedChartData}
             margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
           >

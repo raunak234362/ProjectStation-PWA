@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from "react";
+import Service from "../../api/Service";
 import { motion, AnimatePresence } from "framer-motion";
 import SalesStatsCards from "./components/SalesStatsCards";
 import SalesSecondaryStats from "./components/SalesSecondaryStats";
