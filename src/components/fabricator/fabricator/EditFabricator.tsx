@@ -3,7 +3,7 @@
 // src/components/fabricator/EditFabricator.tsx
 import { useEffect, useState } from "react";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
-import { Loader2, X, Check, Trash2, Paperclip } from "lucide-react";
+import { Loader2, Check, Trash2, Paperclip } from "lucide-react";
 import { motion } from "motion/react";
 import type { Fabricator, SelectOption } from "../../../interface";
 import Service from "../../../api/Service";
@@ -118,7 +118,7 @@ const EditFabricator = ({
           Service.FetchEmployeeByRole("ADMIN"),
           Service.FetchEmployeeByRole("SALES_MANAGER"),
         ]);
-        
+
         const allContacts = [
           ...(Array.isArray(admins?.data?.employees)
             ? admins.data.employees
@@ -270,7 +270,7 @@ const EditFabricator = ({
           <div>
             <h2 className="text-3xl  text-slate-900 dark:text-white tracking-tight leading-none mb-2 flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
-           
+
               </div>
               Edit Engineering Partner
             </h2>
@@ -280,7 +280,7 @@ const EditFabricator = ({
             className="p-2 bg-red-100  shadow-sm border border-black dark:border-slate-700 rounded-2xl text-slate-400 hover:text-black dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
             aria-label="Close"
           >
-         close
+            close
           </button>
         </div>
 

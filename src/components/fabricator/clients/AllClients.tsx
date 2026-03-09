@@ -2,7 +2,7 @@
 import { useState, useMemo } from "react";
 import type { Fabricator, UserData } from "../../../interface";
 import Button from "../../fields/Button";
-import { X, UserCheck, Plus, MoreVertical } from "lucide-react";
+import { UserCheck, Plus, MoreVertical } from "lucide-react";
 import AddClients from "./AddClient";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
@@ -199,7 +199,7 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
               <DataTable
                 columns={columns}
                 data={clients}
-                onRowClick={() => {}}
+                onRowClick={() => { }}
                 detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
                 pageSizeOptions={[5, 10, 25]}
               />
