@@ -260,6 +260,7 @@ export interface RfqResponse {
 }
 
 export interface RFQItem {
+  fabricator: any;
   id: string;
   projectName: string;
   projectNumber?: string;
