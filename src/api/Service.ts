@@ -574,6 +574,18 @@ class Service {
     }
   }
 
+  //rfq file
+
+  static async viewRfqFile(Id: string, fileId: string) {
+    try {
+      const response = await api.get(`rfq/followups/viewFile/${Id}/${fileId}`);
+      console.log("RFQ file fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot fetch RFQ file", error);
+    }
+  }
+
 
   //Add Vendor
   static async AddVendor(data: FormData | any) {

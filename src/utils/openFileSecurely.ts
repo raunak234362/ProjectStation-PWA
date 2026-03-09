@@ -23,6 +23,9 @@ const getDownloadUrl = (table: string, parentId: string | number, fileId: string
     case 'rfqResponse':
     case 'rfq/response':
       return `${baseURL}/rfq/response/viewFile/${parentId}/${fileId}`
+    case 'rfqFollowup':
+    case 'rfq/followup':
+      return `${baseURL}/rfq/followups/viewFile/${parentId}/${fileId}`
     case 'changeOrders':
     case 'changeOrder/response':
     case 'cOResponse':

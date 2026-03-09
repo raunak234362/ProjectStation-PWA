@@ -16,6 +16,7 @@ import QuotationResponseModal from "../connectionDesigner/QuotationResponseModal
 import QuotationResponseDetailsModal from "../connectionDesigner/QuotationResponseDetailsModal";
 import { Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
+import { openFileSecurely } from "../../utils/openFileSecurely";
 import { useDispatch } from "react-redux";
 import { deleteRFQ, updateRFQ } from "../../store/rfqSlice";
 import { toast } from "react-toastify";
@@ -372,7 +373,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
+            <div className="border border-green-100/50 p-4 sm:p-6 rounded-3xl bg-gray-100 shadow-sm space-y-5 sm:space-y-6">
               {/* Header */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -382,7 +383,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
                   {/* Status tag */}
                   <span
-                    className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gray-100 text-black border border-gray-200"
+                    className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-green-100 text-black border border-gray-200"
                   >
                     {rfq?.status}
                   </span>
@@ -430,12 +431,12 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 <Info label="Status" value={rfq?.status || ""} />
                 <Info label="Tools" value={rfq?.tools || "N/A"} />
                 <Info label="Due Date" value={formatDate(rfq?.estimationDate)} />
-                <Info label="Bid Amount (USD)" value={rfq?.bidPrice ?? "—"} />
+                <Info label="Bid Amount (USD)" value={rfq?.bidPrice || "----"} />
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <h4 className="text-gray-700 text-xs font-bold uppercase tracking-wider">Description</h4>
+                <h4 className="text-gray-700 text-lg bg-white p-3 rounded-lg border font-bold uppercase tracking-wider">Description:</h4>
                 <div
                   className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm overflow-hidden break-words w-full [&_*]:max-w-full [&_table]:w-full [&_table]:overflow-x-auto [&_table]:block"
                   dangerouslySetInnerHTML={{
@@ -445,7 +446,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               </div>
 
               {/* Followups */}
-              <div className="space-y-3 border border-grey-400 rounded-2xl p-4">
+              <div className="space-y-3 border border-grey-400 bg-white rounded-2xl p-4">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-black text-black uppercase tracking-tight">Followups</h4>
                   <Button
@@ -542,33 +543,48 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     ]}
                     data={followups}
                     pageSizeOptions={[5, 10]}
-                    detailComponent={({ row }: { row: any; close: () => void }) => (
-                      <div className="space-y-3 text-sm">
-                        <div>
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Description</p>
-                          <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{row.description || "—"}</p>
-                        </div>
-                        {row.files?.length > 0 && (
+                    detailComponent={({ row }: { row: any; close: () => void }) => {
+                      const [loadingFileId, setLoadingFileId] = useState<string | null>(null);
+
+                      const handleViewFile = async (followupId: string, fileId: string) => {
+                        console.log("[ViewFile] Opening file:", { followupId, fileId });
+                        setLoadingFileId(fileId);
+                        try {
+                          await openFileSecurely("rfqFollowup", followupId, fileId);
+                        } catch (err) {
+                          console.error("[ViewFile] Error:", err);
+                        } finally {
+                          setLoadingFileId(null);
+                        }
+                      };
+
+                      return (
+                        <div className="space-y-3 text-sm">
                           <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Attachments</p>
-                            <div className="flex flex-col gap-1.5">
-                              {row.files.map((file: any, i: number) => (
-                                <a
-                                  key={file.id || i}
-                                  href={file.url || file.fileUrl || file.path || "#"}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-xs text-blue-600 hover:underline"
-                                >
-                                  <span>📎</span>
-                                  {file.fileName || file.name || `File ${i + 1}`}
-                                </a>
-                              ))}
-                            </div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Description</p>
+                            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{row.description || "—"}</p>
                           </div>
-                        )}
-                      </div>
-                    )}
+                          {row.files?.length > 0 && (
+                            <div>
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Attachments</p>
+                              <div className="flex flex-col gap-1.5">
+                                {row.files.map((file: any, i: number) => (
+                                  <button
+                                    key={file.id || i}
+                                    onClick={() => handleViewFile(row.id, file.id)}
+                                    disabled={loadingFileId === file.id}
+                                    className="flex items-center gap-2 text-xs text-blue-600 hover:underline text-left disabled:opacity-50"
+                                  >
+                                    <span>📎</span>
+                                    {loadingFileId === file.id ? "Opening..." : (file.fileName || file.originalName || file.name || `File ${i + 1}`)}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }}
                   />
                 ) : (
                   <p className="text-xs text-gray-400 italic">No followups yet.</p>
@@ -578,10 +594,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               {/* Scopes */}
               <div className="space-y-3">
                 <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-tight">
+                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
                     <Settings className="w-4 h-4" /> Connection Design Scope
                   </h4>
-                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs tracking-wider">
                     <Scope
                       label="Main Design"
                       enabled={rfq?.connectionDesign || false}
@@ -601,10 +617,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   </div>
                 </div>
                 <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-tight">
+                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
                     <Settings2 className="w-4 h-4" /> Detailing Scope
                   </h4>
-                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs tracking-wider">
                     <Scope
                       label="Detailing Main"
                       enabled={rfq?.detailingMain || false}
@@ -645,7 +661,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
             </div>
 
             {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
+            <div className="bg-gray-100 border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
               {/* Header + Add Response Button */}
               <div className="flex justify-between items-center gap-4">
                 <h1 className="text-xl sm:text-2xl text-black uppercase tracking-tight">

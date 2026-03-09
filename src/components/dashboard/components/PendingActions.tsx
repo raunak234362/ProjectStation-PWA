@@ -86,7 +86,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   <action.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] sm:text-xs font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
+                  <span className="text-xs sm:text-sm font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
                     {action.title}
                   </span>
                 </div>
