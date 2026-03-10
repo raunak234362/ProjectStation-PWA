@@ -125,12 +125,14 @@ const EditFabricator = ({
             : []),
           ...(Array.isArray(sales?.data?.employees)
             ? sales.data.employees
-            : [])
+            : []),
         ];
 
         // Remove duplicates if any
         const uniqueContacts = Array.from(
-          new Map(allContacts.map((item: any) => [item.id || item._id, item])).values(),
+          new Map(
+            allContacts.map((item: any) => [item.id || item._id, item]),
+          ).values(),
         );
 
         const options = uniqueContacts.map((u: any) => ({
@@ -162,7 +164,9 @@ const EditFabricator = ({
       approvalPercentage: fabricatorData.approvalPercentage || 0,
       paymenTDueDate: fabricatorData.paymenTDueDate || 0,
       currencyType: fabricatorData.currencyType || "",
-      wbtFabricatorPointOfContact: Array.isArray(fabricatorData.wbtFabricatorPointOfContact)
+      wbtFabricatorPointOfContact: Array.isArray(
+        fabricatorData.wbtFabricatorPointOfContact,
+      )
         ? fabricatorData.wbtFabricatorPointOfContact[0] || ""
         : fabricatorData.wbtFabricatorPointOfContact || "",
       files: null,
@@ -177,7 +181,9 @@ const EditFabricator = ({
         `Are you sure you want to delete the file: ${fileName}? This change will take effect on save.`,
       )
     ) {
-      setFilesToKeep((prev) => prev.filter((file) => (file.id || (file as any)._id) !== fileId));
+      setFilesToKeep((prev) =>
+        prev.filter((file) => (file.id || (file as any)._id) !== fileId),
+      );
       toast.info(`File '${fileName}' marked for deletion.`);
     }
   };
@@ -197,7 +203,11 @@ const EditFabricator = ({
       if (data.wbtFabricatorPointOfContact)
         formData.append(
           "wbtFabricatorPointOfContact",
-          JSON.stringify(Array.isArray(data.wbtFabricatorPointOfContact) ? data.wbtFabricatorPointOfContact : [data.wbtFabricatorPointOfContact])
+          JSON.stringify(
+            Array.isArray(data.wbtFabricatorPointOfContact)
+              ? data.wbtFabricatorPointOfContact
+              : [data.wbtFabricatorPointOfContact],
+          ),
         );
       if (data.fabStage) formData.append("fabStage", data.fabStage);
       if (data.accountId) formData.append("accountId", data.accountId);
