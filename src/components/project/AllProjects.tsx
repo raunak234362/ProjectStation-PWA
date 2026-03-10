@@ -1,4 +1,3 @@
-import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import React, { Suspense, useEffect, useState } from "react";
 import Service from "../../api/Service";
@@ -46,7 +45,7 @@ const AllProjects = () => {
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => (
+      cell: ({ row }: { row: any }) => (
         <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
           {row.getValue("status")}
         </span>

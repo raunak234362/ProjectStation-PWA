@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Filter, XCircle } from "lucide-react";
 import DataTable from "../../ui/table";
-import type { ColumnDef } from "@tanstack/react-table";
 import { formatSeconds } from "../../../utils/timeUtils";
 import { useDispatch } from "react-redux";
 import {

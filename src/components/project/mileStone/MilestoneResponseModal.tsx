@@ -3,7 +3,6 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import MultipleFileUpload from "../../fields/MultipleFileUpload";
 import Service from "../../../api/Service";
-import { X } from "lucide-react";
 import type { MilestoneResponsePayload } from "../../../interface";
 import Button from "../../fields/Button";
 import RichTextEditor from "../../fields/RichTextEditor";
@@ -66,7 +65,7 @@ const MilestoneResponseModal: React.FC<MilestoneResponseModalProps> = ({
                         onClick={onClose}
                         className="text-black border border-red-600 bg-red-50 hover:text-red-500 hover:bg-red-100 p-1"
                     >
-                       close
+                        close
                     </Button>
                 </div>
 
