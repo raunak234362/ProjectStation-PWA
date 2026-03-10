@@ -3,7 +3,7 @@
 // src/components/fabricator/EditFabricator.tsx
 import { useEffect, useState } from "react";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
-import { Loader2, X, Check, Trash2, Paperclip } from "lucide-react";
+import { Loader2, Check, Trash2, Paperclip } from "lucide-react";
 import { motion } from "motion/react";
 import type { Fabricator, SelectOption } from "../../../interface";
 import Service from "../../../api/Service";
@@ -118,19 +118,21 @@ const EditFabricator = ({
           Service.FetchEmployeeByRole("ADMIN"),
           Service.FetchEmployeeByRole("SALES_MANAGER"),
         ]);
-        
+
         const allContacts = [
           ...(Array.isArray(admins?.data?.employees)
             ? admins.data.employees
             : []),
           ...(Array.isArray(sales?.data?.employees)
             ? sales.data.employees
-            : [])
+            : []),
         ];
 
         // Remove duplicates if any
         const uniqueContacts = Array.from(
-          new Map(allContacts.map((item: any) => [item.id || item._id, item])).values(),
+          new Map(
+            allContacts.map((item: any) => [item.id || item._id, item]),
+          ).values(),
         );
 
         const options = uniqueContacts.map((u: any) => ({
@@ -162,7 +164,9 @@ const EditFabricator = ({
       approvalPercentage: fabricatorData.approvalPercentage || 0,
       paymenTDueDate: fabricatorData.paymenTDueDate || 0,
       currencyType: fabricatorData.currencyType || "",
-      wbtFabricatorPointOfContact: Array.isArray(fabricatorData.wbtFabricatorPointOfContact)
+      wbtFabricatorPointOfContact: Array.isArray(
+        fabricatorData.wbtFabricatorPointOfContact,
+      )
         ? fabricatorData.wbtFabricatorPointOfContact[0] || ""
         : fabricatorData.wbtFabricatorPointOfContact || "",
       files: null,
@@ -177,7 +181,9 @@ const EditFabricator = ({
         `Are you sure you want to delete the file: ${fileName}? This change will take effect on save.`,
       )
     ) {
-      setFilesToKeep((prev) => prev.filter((file) => (file.id || (file as any)._id) !== fileId));
+      setFilesToKeep((prev) =>
+        prev.filter((file) => (file.id || (file as any)._id) !== fileId),
+      );
       toast.info(`File '${fileName}' marked for deletion.`);
     }
   };
@@ -197,7 +203,11 @@ const EditFabricator = ({
       if (data.wbtFabricatorPointOfContact)
         formData.append(
           "wbtFabricatorPointOfContact",
-          JSON.stringify(Array.isArray(data.wbtFabricatorPointOfContact) ? data.wbtFabricatorPointOfContact : [data.wbtFabricatorPointOfContact])
+          JSON.stringify(
+            Array.isArray(data.wbtFabricatorPointOfContact)
+              ? data.wbtFabricatorPointOfContact
+              : [data.wbtFabricatorPointOfContact],
+          ),
         );
       if (data.fabStage) formData.append("fabStage", data.fabStage);
       if (data.accountId) formData.append("accountId", data.accountId);
@@ -269,9 +279,7 @@ const EditFabricator = ({
         <div className="flex justify-between items-center px-10 py-8 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/50">
           <div>
             <h2 className="text-3xl  text-slate-900 dark:text-white tracking-tight leading-none mb-2 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
-           
-              </div>
+              <div className="w-10 h-10 rounded-2xl dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400"></div>
               Edit Engineering Partner
             </h2>
           </div>
@@ -280,7 +288,7 @@ const EditFabricator = ({
             className="p-2 bg-red-100  shadow-sm border border-black dark:border-slate-700 rounded-2xl text-slate-400 hover:text-black dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
             aria-label="Close"
           >
-         close
+            close
           </button>
         </div>
 
