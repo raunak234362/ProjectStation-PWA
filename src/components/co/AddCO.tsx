@@ -21,7 +21,7 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo.fabricatorData,
   );
-  const staff = useSelector((state: any) => state.userInfo.staffData);
+  // const staff = useSelector((state: any) => state.userInfo.staffData);
 
   const fabricatorID = project?.fabricatorID;
 
@@ -38,13 +38,13 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
     })) ?? [];
 
   // WBT staff options (mirrors AddRFI's recepient_id)
-  const recipientOptions: SelectOption[] =
-    staff
-      ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
-      .map((s: any) => ({
-        label: `${s.firstName} ${s.lastName}`,
-        value: String(s.id),
-      })) ?? [];
+  // const recipientOptions: SelectOption[] =
+  //   staff
+  //     ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
+  //     .map((s: any) => ({
+  //       label: `${s.firstName} ${s.lastName}`,
+  //       value: String(s.id),
+  //     })) ?? [];
 
   const { register, handleSubmit, control, reset } =
     useForm<changeOrdersPayload>();
