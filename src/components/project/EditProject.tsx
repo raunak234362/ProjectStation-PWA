@@ -48,7 +48,7 @@ const EditProject: React.FC<EditProjectProps> = ({
   const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
 
-  const { register, handleSubmit, control, setValue, watch } =
+  const { register, handleSubmit, control, watch, reset, formState: { dirtyFields } } =
     useForm<AddProjectPayload>({
       defaultValues: {
         tools: "TEKLA",
@@ -89,50 +89,46 @@ const EditProject: React.FC<EditProjectProps> = ({
 
         const project = projectRes?.data;
         if (project) {
-          setValue("name", project.name);
-          setValue("projectNumber", project.projectNumber);
-          setValue("description", project.description);
-          setValue("fabricatorID", project.fabricatorID);
-          setValue("managerID", project.managerID);
-          setValue("departmentID", project.department?.id);
-          setValue("teamID", project.team?.id);
-          setValue("tools", project.tools);
-          setValue("stage", project.stage);
-          setValue("status", project.status);
-          setValue("estimatedHours", project.estimatedHours);
-
-          // New Fields
-          setValue("rfqId", project.rfqId);
-          setValue("CDQuataionID", project.CDQuataionID);
-          setValue("connectionDesignerID", project.connectionDesignerID);
-          setValue("detailCheckingHours", project.detailCheckingHours);
-          setValue("detailingHours", project.detailingHours);
-          setValue("executionCheckingHours", project.executionCheckingHours);
-          setValue("executionHours", project.executionHours);
-          setValue("modelCheckingHours", project.modelCheckingHours);
-          setValue("modelingHours", project.modelingHours);
-          setValue("mailReminder", project.mailReminder);
-          setValue("submissionMailReminder", project.submissionMailReminder);
-          setValue("approvalDateChangeReason", project.approvalDateChangeReason);
-          setValue("fabricationDateChangeReason", project.fabricationDateChangeReason);
-
           const formatDate = (date: any) => date ? new Date(date).toISOString().split("T")[0] : "";
 
-          setValue("startDate", formatDate(project.startDate));
-          setValue("endDate", formatDate(project.endDate));
-          setValue("approvalDate", formatDate(project.approvalDate));
-          setValue("fabricationDate", formatDate(project.fabricationDate));
-
-          setValue("connectionDesign", project.connectionDesign);
-          setValue("miscDesign", project.miscDesign);
-          setValue("customerDesign", project.customerDesign);
-          setValue("detailingMain", project.detailingMain);
-          setValue("detailingMisc", project.detailingMisc);
-
-          if (project.projectWbs) {
-            const templateIds = project.projectWbs.map((wbs: any) => wbs.templateId).filter(Boolean);
-            setValue("wbsTemplateIds", templateIds);
-          }
+          reset({
+            name: project.name,
+            projectNumber: project.projectNumber,
+            description: project.description,
+            fabricatorID: project.fabricatorID,
+            managerID: project.managerID,
+            departmentID: project.department?.id,
+            teamID: project.team?.id,
+            tools: project.tools,
+            stage: project.stage,
+            status: project.status,
+            estimatedHours: project.estimatedHours,
+            rfqId: project.rfqId,
+            CDQuataionID: project.CDQuataionID,
+            connectionDesignerID: project.connectionDesignerID,
+            detailCheckingHours: project.detailCheckingHours,
+            detailingHours: project.detailingHours,
+            executionCheckingHours: project.executionCheckingHours,
+            executionHours: project.executionHours,
+            modelCheckingHours: project.modelCheckingHours,
+            modelingHours: project.modelingHours,
+            mailReminder: project.mailReminder,
+            submissionMailReminder: project.submissionMailReminder,
+            approvalDateChangeReason: project.approvalDateChangeReason,
+            fabricationDateChangeReason: project.fabricationDateChangeReason,
+            startDate: formatDate(project.startDate),
+            endDate: formatDate(project.endDate),
+            approvalDate: formatDate(project.approvalDate),
+            fabricationDate: formatDate(project.fabricationDate),
+            connectionDesign: project.connectionDesign,
+            miscDesign: project.miscDesign,
+            customerDesign: project.customerDesign,
+            detailingMain: project.detailingMain,
+            detailingMisc: project.detailingMisc,
+            wbsTemplateIds: project.projectWbs
+              ? project.projectWbs.map((wbs: any) => wbs.templateId).filter(Boolean)
+              : [],
+          });
         }
       } catch (error) {
         console.error("Failed to load data", error);
@@ -142,7 +138,7 @@ const EditProject: React.FC<EditProjectProps> = ({
       }
     };
     fetchData();
-  }, [projectId, setValue]);
+  }, [projectId, reset]);
 
   const options = {
     fabricators: (Array.isArray(fabricators) ? fabricators : []).map(
@@ -201,12 +197,13 @@ const EditProject: React.FC<EditProjectProps> = ({
       setIsSubmitting(true);
       const formData = new FormData();
 
-      Object.entries(data).forEach(([key, value]) => {
+      Object.keys(dirtyFields).forEach((key) => {
+        const value = data[key as keyof AddProjectPayload];
         if (value === null || value === undefined) return;
         if (key === "files") return;
 
         if (Array.isArray(value)) {
-          value.forEach(v => formData.append(`${key}[]`, v));
+          value.forEach((v) => formData.append(`${key}[]`, v));
         } else if (typeof value === "boolean") {
           formData.append(key, value ? "true" : "false");
         } else {
@@ -305,16 +302,9 @@ const EditProject: React.FC<EditProjectProps> = ({
                     )}
                   />
                 </div>
-                <Input label="RFQ ID" {...register("rfqId")} />
-                <div className="md:col-span-2 lg:col-span-3">
-                  <Input
-                    label="Description / Scope"
-                    placeholder="Brief overview of the project scope..."
-                    {...register("description")}
-                  />
-                </div>
               </div>
             </div>
+
 
             {/* Team & Organizational Assignment */}
             <div className="space-y-6">
@@ -438,7 +428,6 @@ const EditProject: React.FC<EditProjectProps> = ({
                     )}
                   />
                 </div>
-                <Input label="CD Quotation ID" {...register("CDQuataionID")} />
               </div>
             </div>
 
@@ -447,12 +436,6 @@ const EditProject: React.FC<EditProjectProps> = ({
               <SectionTitle title="Hours Allocation & Tracking" />
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <Input label="Estimated Hours" type="number" {...register("estimatedHours")} />
-                <Input label="Detailing Hours" type="number" {...register("detailingHours")} />
-                <Input label="Detail Checking" type="number" {...register("detailCheckingHours")} />
-                <Input label="Modeling Hours" type="number" {...register("modelingHours")} />
-                <Input label="Model Checking" type="number" {...register("modelCheckingHours")} />
-                <Input label="Execution Hours" type="number" {...register("executionHours")} />
-                <Input label="Exec Checking" type="number" {...register("executionCheckingHours")} />
               </div>
             </div>
 
@@ -493,15 +476,6 @@ const EditProject: React.FC<EditProjectProps> = ({
               </div>
             </div>
 
-            {/* Notifications */}
-            <div className="space-y-6">
-              <SectionTitle title="Notification Settings" />
-              <div className="flex flex-wrap gap-12">
-                <Controller name="mailReminder" control={control} render={({ field }) => <ToggleField label="Enable Mail Reminders" checked={!!field.value} onChange={field.onChange} />} />
-                <Controller name="submissionMailReminder" control={control} render={({ field }) => <ToggleField label="Submission Reminders" checked={!!field.value} onChange={field.onChange} />} />
-              </div>
-            </div>
-
             {/* Tools */}
             <div className="w-full max-w-xs">
               <label className="flex items-center gap-2 text-sm font-black text-black uppercase tracking-widest mb-2">
@@ -521,7 +495,7 @@ const EditProject: React.FC<EditProjectProps> = ({
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 pt-10 border-t border-black/5 sticky bottom-[-32px] bg-white z-20 pb-2">
+            <div className="flex justify-end gap-4 pt-10  border-black/5   z-20 pb-2">
               <button
                 type="button"
                 onClick={onCancel}
