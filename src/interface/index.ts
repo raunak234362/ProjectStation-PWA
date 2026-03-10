@@ -715,6 +715,7 @@ export interface changeOrdersPayload {
   project: string;
   sender: string;
   recipients: string;
+  fabricator_contact?: string; // fabricator POC (mirrors RFI sender_id)
   remarks: string;
   changeOrderNumber: string;
   description: string;

@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
-import { X, Printer } from "lucide-react";
+import { Printer } from "lucide-react";
 import type { RfqResponsePayload } from "../../interface";
 import mainLogo from "../../assets/mainLogo.png";
 import Logo from "../../assets/Logo.svg";
@@ -431,9 +431,9 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-rose-50 text-rose-500 rounded-xl transition-all border border-transparent hover:border-rose-100"
+            className="p-2 hover:bg-rose-50 text-black rounded-xl transition-all border border-red-600 hover:border-rose-100"
           >
-            <X size={24} />
+            Close
           </button>
         </div>
 
@@ -638,7 +638,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             onClick={onClose}
             className="w-full sm:w-auto px-6 py-3 text-black border border-black/20 bg-white rounded-xl hover:bg-gray-50 font-black uppercase text-xs tracking-widest transition-all"
           >
-            Abort
+            Cancel
           </Button>
 
           <Button
@@ -647,7 +647,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             disabled={loading}
             className="w-full sm:w-auto px-10 py-3 bg-green-200 text-black rounded-xl border border-black hover:bg-green-300 transition-all disabled:opacity-50 font-black uppercase text-xs tracking-[0.2em] shadow-sm"
           >
-            {loading ? "Transmitting..." : "Initialize Submission"}
+            {loading ? "Transmitting..." : "Submit"}
           </Button>
         </div>
       </div>

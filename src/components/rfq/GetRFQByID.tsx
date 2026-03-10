@@ -435,14 +435,47 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               </div>
 
               {/* Description */}
-              <div className="space-y-2">
-                <h4 className="text-gray-700 text-lg bg-white p-3 rounded-lg border font-bold uppercase tracking-wider">Description:</h4>
-                <div
-                  className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm overflow-hidden break-words w-full [&_*]:max-w-full [&_table]:w-full [&_table]:overflow-x-auto [&_table]:block"
-                  dangerouslySetInnerHTML={{
-                    __html: rfq?.description || "No description provided",
-                  }}
-                />
+              <div className="space-y-3">
+                <h4 className="text-black text-sm bg-white p-4 rounded-xl border border-black/5 font-black uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-green-500 rounded-full"></span>
+                  Description
+                </h4>
+                <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden w-full">
+                  <style>{`
+                    .rfq-description * {
+                      max-width: 100% !important;
+                      width: auto !important;
+                      box-sizing: border-box !important;
+                      overflow-x: hidden !important;
+                    }
+                    .rfq-description table {
+                      width: 100% !important;
+                      table-layout: fixed !important;
+                    }
+                    .rfq-description td, .rfq-description th {
+                      word-break: break-word !important;
+                    }
+                    .rfq-description img {
+                      max-width: 100% !important;
+                      height: auto !important;
+                    }
+                    .rfq-description center {
+                      display: block !important;
+                      text-align: left !important;
+                    }
+                    .rfq-description a {
+                      color: #2563eb !important;
+                      word-break: break-all !important;
+                    }
+                    .rfq-description p { margin-bottom: 1rem !important; }
+                  `}</style>
+                  <div
+                    className="rfq-description text-gray-800 p-5 text-xs sm:text-sm break-words leading-relaxed"
+                    dangerouslySetInnerHTML={{
+                      __html: rfq?.description || "No description provided",
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Followups */}
