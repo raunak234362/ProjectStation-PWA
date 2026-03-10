@@ -16,6 +16,7 @@ import QuotationResponseModal from "../connectionDesigner/QuotationResponseModal
 import QuotationResponseDetailsModal from "../connectionDesigner/QuotationResponseDetailsModal";
 import { Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
+import { openFileSecurely } from "../../utils/openFileSecurely";
 import { useDispatch } from "react-redux";
 import { deleteRFQ, updateRFQ } from "../../store/rfqSlice";
 import { toast } from "react-toastify";
@@ -47,7 +48,16 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
   const [showQuotationResponseModal, setShowQuotationResponseModal] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<any | null>(null);
 
+  // Followup states
+  const [showFollowupForm, setShowFollowupForm] = useState(false);
+  const [followupDescription, setFollowupDescription] = useState("");
+  const [followupFiles, setFollowupFiles] = useState<File[]>([]);
+  const [isSubmittingFollowup, setIsSubmittingFollowup] = useState(false);
+  const [followups, setFollowups] = useState<any[]>([]);
+
   const dispatch = useDispatch();
+
+  console.log(rfq);
   const fetchRfq = async () => {
     try {
       if (!rfq) setLoading(true);
@@ -58,6 +68,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         setRfq(rfqData);
         dispatch(updateRFQ(rfqData));
       }
+
+      // followUps are included in the RFQ response directly
+      const rfqFollowUps = rfqData?.followUps ?? [];
+      console.log("[Followups] Setting followups state:", rfqFollowUps);
+      setFollowups(Array.isArray(rfqFollowUps) ? rfqFollowUps : []);
     } catch (err) {
       console.error("Error fetching RFQ:", err);
       if (!rfq) setError("Failed to load RFQ");
@@ -106,6 +121,39 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       setIsDeleting(false);
       setShowDeleteModal(false);
       setDeleteConfirmText("");
+    }
+  };
+
+  const handleAddFollowup = async () => {
+    if (!followupDescription.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+    console.log("[Followup] Submitting followup for RFQ ID:", id);
+    console.log("[Followup] Description:", followupDescription);
+    console.log("[Followup] Files:", followupFiles);
+
+    const formData = new FormData();
+    formData.append("description", followupDescription);
+    followupFiles.forEach((file) => {
+      formData.append("files", file);
+      console.log("[Followup] Appending file:", file.name);
+    });
+
+    try {
+      setIsSubmittingFollowup(true);
+      const res = await Service.addRFQFollowups(formData, id);
+      console.log("[Followup] Response:", res);
+      toast.success("Followup added successfully");
+      setFollowupDescription("");
+      setFollowupFiles([]);
+      setShowFollowupForm(false);
+      fetchRfq();
+    } catch (err) {
+      console.error("[Followup] Error adding followup:", err);
+      toast.error("Failed to add followup");
+    } finally {
+      setIsSubmittingFollowup(false);
     }
   };
 
@@ -313,7 +361,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-end bg-white">
-  
+
           <button
             onClick={onClose}
             className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
@@ -325,7 +373,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
+            <div className="border border-green-100/50 p-4 sm:p-6 rounded-3xl bg-gray-100 shadow-sm space-y-5 sm:space-y-6">
               {/* Header */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -335,7 +383,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
                   {/* Status tag */}
                   <span
-                    className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gray-100 text-black border border-gray-200"
+                    className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-green-100 text-black border border-gray-200"
                   >
                     {rfq?.status}
                   </span>
@@ -383,29 +431,175 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 <Info label="Status" value={rfq?.status || ""} />
                 <Info label="Tools" value={rfq?.tools || "N/A"} />
                 <Info label="Due Date" value={formatDate(rfq?.estimationDate)} />
-                <Info label="Bid Amount (USD)" value={rfq?.bidPrice ?? "—"} />
+                <Info label="Bid Amount (USD)" value={rfq?.bidPrice || "----"} />
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <h4 className=" text-gray-700 text-sm">Description</h4>
+                <h4 className="text-gray-700 text-lg bg-white p-3 rounded-lg border font-bold uppercase tracking-wider">Description:</h4>
                 <div
-                  className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm overflow-x-auto break-words"
+                  className="text-gray-700 bg-white p-3 rounded-lg border prose prose-sm max-w-none text-xs sm:text-sm overflow-hidden break-words w-full [&_*]:max-w-full [&_table]:w-full [&_table]:overflow-x-auto [&_table]:block"
                   dangerouslySetInnerHTML={{
                     __html: rfq?.description || "No description provided",
                   }}
                 />
               </div>
 
+              {/* Followups */}
+              <div className="space-y-3 border border-grey-400 bg-white rounded-2xl p-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-black text-black uppercase tracking-tight">Followups</h4>
+                  <Button
+                    onClick={() => setShowFollowupForm((v) => !v)}
+                    className="px-3 py-1.5 text-xs bg-green-50 text-black border border-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-100 transition-all"
+                  >
+                    {showFollowupForm ? "Cancel" : "+ Add Followup"}
+                  </Button>
+                </div>
+
+                {showFollowupForm && (
+                  <div className="bg-white border border-green-100 rounded-2xl p-4 space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Description *</label>
+                      <textarea
+                        value={followupDescription}
+                        onChange={(e) => setFollowupDescription(e.target.value)}
+                        placeholder="Enter followup details..."
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Files (optional)</label>
+                      <input
+                        type="file"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          console.log("[Followup] Files selected:", files.map((f) => f.name));
+                          setFollowupFiles(files);
+                        }}
+                        className="w-full text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-xs file:font-bold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                      />
+                      {followupFiles.length > 0 && (
+                        <p className="text-xs text-gray-500 mt-1">{followupFiles.length} file(s) selected</p>
+                      )}
+                    </div>
+                    <Button
+                      onClick={handleAddFollowup}
+                      disabled={isSubmittingFollowup}
+                      className="w-full py-2 bg-green-200 text-black border border-black rounded-lg font-bold uppercase tracking-tight text-sm hover:bg-green-300 transition-all disabled:opacity-60"
+                    >
+                      {isSubmittingFollowup ? "Submitting..." : "Submit Followup"}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Existing Followups — Table with inline accordion */}
+                {followups.length > 0 ? (
+                  <DataTable
+                    columns={[
+                      {
+                        accessorKey: "createdBy",
+                        header: "Created By",
+                        cell: ({ row }: any) => {
+                          const cb = row.original.createdBy;
+                          const name = cb
+                            ? `${cb.firstName ?? ""} ${cb.lastName ?? ""}`.trim()
+                            : "—";
+                          return <span className="font-medium text-xs sm:text-sm">{name}</span>;
+                        },
+                      },
+                      {
+                        accessorKey: "createdAt",
+                        header: "Created At",
+                        cell: ({ row }: any) => (
+                          <span className="text-gray-700 text-xs">
+                            {formatDateTime(row.original.createdAt)}
+                          </span>
+                        ),
+                      },
+                      {
+                        accessorKey: "description",
+                        header: "Description",
+                        cell: ({ row }: any) => (
+                          <p className="truncate max-w-[160px] text-xs text-gray-800">
+                            {row.original.description || "—"}
+                          </p>
+                        ),
+                      },
+                      {
+                        accessorKey: "files",
+                        header: "Files",
+                        cell: ({ row }: any) => {
+                          const count = row.original.files?.length ?? 0;
+                          return count > 0 ? (
+                            <span className="text-black font-medium text-xs">{count} file(s)</span>
+                          ) : (
+                            <span className="text-gray-400 text-xs">—</span>
+                          );
+                        },
+                      },
+                    ]}
+                    data={followups}
+                    pageSizeOptions={[5, 10]}
+                    detailComponent={({ row }: { row: any; close: () => void }) => {
+                      const [loadingFileId, setLoadingFileId] = useState<string | null>(null);
+
+                      const handleViewFile = async (followupId: string, fileId: string) => {
+                        console.log("[ViewFile] Opening file:", { followupId, fileId });
+                        setLoadingFileId(fileId);
+                        try {
+                          await openFileSecurely("rfqFollowup", followupId, fileId);
+                        } catch (err) {
+                          console.error("[ViewFile] Error:", err);
+                        } finally {
+                          setLoadingFileId(null);
+                        }
+                      };
+
+                      return (
+                        <div className="space-y-3 text-sm">
+                          <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Description</p>
+                            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{row.description || "—"}</p>
+                          </div>
+                          {row.files?.length > 0 && (
+                            <div>
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Attachments</p>
+                              <div className="flex flex-col gap-1.5">
+                                {row.files.map((file: any, i: number) => (
+                                  <button
+                                    key={file.id || i}
+                                    onClick={() => handleViewFile(row.id, file.id)}
+                                    disabled={loadingFileId === file.id}
+                                    className="flex items-center gap-2 text-xs text-blue-600 hover:underline text-left disabled:opacity-50"
+                                  >
+                                    <span>📎</span>
+                                    {loadingFileId === file.id ? "Opening..." : (file.fileName || file.originalName || file.name || `File ${i + 1}`)}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }}
+                  />
+                ) : (
+                  <p className="text-xs text-gray-400 italic">No followups yet.</p>
+                )}
+              </div>
+
               {/* Scopes */}
               <div className="space-y-3">
                 <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-tight">
+                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
                     <Settings className="w-4 h-4" /> Connection Design Scope
                   </h4>
-                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs tracking-wider">
                     <Scope
-                      label="Connection Design"
+                      label="Main Design"
                       enabled={rfq?.connectionDesign || false}
                     />
                     <Scope
@@ -414,19 +608,19 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     />
                     <Scope
                       label={
-                        !rfq?.customerDesign && rfq?.sender?.fabricator?.fabName
-                          ? `Connection design by ${rfq.sender.fabricator.fabName}`
-                          : "Connection Design by WBT"
+                        rfq?.customerDesign
+                          ? "Connection Design by WBT"
+                          : `Connection Design by ${rfq?.fabricator?.fabName ?? "Fabricator"}`
                       }
                       enabled={true}
                     />
                   </div>
                 </div>
                 <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-tight">
+                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
                     <Settings2 className="w-4 h-4" /> Detailing Scope
                   </h4>
-                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs">
+                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs tracking-wider">
                     <Scope
                       label="Detailing Main"
                       enabled={rfq?.detailingMain || false}
@@ -467,7 +661,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
             </div>
 
             {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
+            <div className="bg-gray-100 border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
               {/* Header + Add Response Button */}
               <div className="flex justify-between items-center gap-4">
                 <h1 className="text-xl sm:text-2xl text-black uppercase tracking-tight">

@@ -199,7 +199,7 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
               <DataTable
                 columns={columns}
                 data={clients}
-                onRowClick={() => {}}
+                onRowClick={() => { }}
                 detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
                 pageSizeOptions={[5, 10, 25]}
               />

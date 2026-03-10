@@ -279,7 +279,9 @@ const EditFabricator = ({
         <div className="flex justify-between items-center px-10 py-8 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/50">
           <div>
             <h2 className="text-3xl  text-slate-900 dark:text-white tracking-tight leading-none mb-2 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400"></div>
+              <div className="w-10 h-10 rounded-2xl dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
+
+              </div>
               Edit Engineering Partner
             </h2>
           </div>

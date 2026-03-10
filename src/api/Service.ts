@@ -559,6 +559,34 @@ class Service {
     return response.data;
   }
 
+  //rfq followups:
+  static async addRFQFollowups(formData: FormData, rfqId: string) {
+    try {
+      const response = await api.post(`rfq/${rfqId}/followups`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("RFQ followups added:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot add RFQ followups", error);
+    }
+  }
+
+  //rfq file
+
+  static async viewRfqFile(Id: string, fileId: string) {
+    try {
+      const response = await api.get(`rfq/followups/viewFile/${Id}/${fileId}`);
+      console.log("RFQ file fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot fetch RFQ file", error);
+    }
+  }
+
+
   //Add Vendor
   static async AddVendor(data: FormData | any) {
     console.log(data);
@@ -2631,7 +2659,7 @@ class Service {
     try {
       const response = await api.post(
         `analytics/scores/admin/analytics/manager/dashboard`,
-         data ,
+        data,
       );
       return response.data;
     } catch (error) {
@@ -2651,7 +2679,7 @@ class Service {
     try {
       const response = await api.post(
         `analytics/scores/admin/analytics/meas/trendline`,
-        data ,
+        data,
       );
       return response.data;
     } catch (error) {
