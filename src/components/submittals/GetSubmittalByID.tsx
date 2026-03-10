@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import { createPortal } from "react-dom";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, X } from "lucide-react";
 import RenderFiles from "../ui/RenderFiles";
 import Button from "../fields/Button";
 import DataTable from "../ui/table";
@@ -108,7 +108,7 @@ const GetSubmittalByID = ({
 
   return createPortal(
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
-      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
           <div>
@@ -118,16 +118,16 @@ const GetSubmittalByID = ({
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
           >
-            Close
+            <X className="w-6 h-6 text-black/60 group-hover:text-black transition-colors" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* LEFT PANEL */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-5">
+            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-2xl shadow-sm space-y-5">
               <h1 className="text-2xl font-black text-black uppercase tracking-tight">
                 {submittal.subject}
               </h1>
@@ -178,14 +178,14 @@ const GetSubmittalByID = ({
             </div>
 
             {/* RIGHT PANEL */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
+            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-2xl shadow-sm space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-black text-black uppercase tracking-tight">
                   Responses
                 </h2>
                 {(userRole === "CLIENT_ADMIN" || userRole === "CLIENT") && (
                   <Button
-                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+                    className="px-6 py-2 bg-green-100/80 text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all border border-black shadow-sm"
                     onClick={() => setShowResponseModal(true)}
                   >
                     + Add Response

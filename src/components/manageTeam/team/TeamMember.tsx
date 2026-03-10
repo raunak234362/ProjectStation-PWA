@@ -121,7 +121,7 @@ const TeamMember = ({ members, onClose }: AllTeamProps) => {
         <div className="flex justify-end mb-6">
           <Button
             onClick={handleOpenAddTeam}
-            className="flex items-center gap-2 px-8 py-3 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black/90 transition-all shadow-medium"
+            className="flex items-center gap-2 px-8 py-3 bg-green-100/80 text-black border border-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-soft"
           >
             + Add Team Member
           </Button>

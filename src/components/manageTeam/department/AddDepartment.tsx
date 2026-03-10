@@ -100,19 +100,23 @@ const AddDepartment: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white rounded-[2.5rem] shadow-soft p-12 mt-10 border border-black/5">
+    <div className="w-full bg-white rounded-[2.5rem] p-6 sm:p-10 border border-black/5">
       <div className="mb-10 text-center">
-        <h2 className="text-3xl font-black text-black uppercase tracking-tight">Add New Department</h2>
-        <p className="text-black/60 text-sm font-bold tracking-wide mt-2">Organize your workforce efficiently</p>
+        <h2 className="text-3xl font-black text-black uppercase tracking-tight">
+          Add New Department
+        </h2>
+    
       </div>
 
       {loading ? (
         <div className="flex flex-col items-center justify-center p-20 gap-4">
           <div className="animate-spin rounded-full h-10 w-10 border-4 border-black/5 border-t-black"></div>
-          <span className="text-black font-black uppercase tracking-widest text-[10px]">Loading managers...</span>
+          <span className="text-black font-black uppercase tracking-widest text-[10px]">
+            Loading managers...
+          </span>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto space-y-8">
           {/* ── Department Name ── */}
           <div className="space-y-2">
             <Input
@@ -120,10 +124,12 @@ const AddDepartment: React.FC = () => {
               type="text"
               {...register("name", { required: "Department name is required" })}
               placeholder="e.g. Engineering"
-              className="w-full"
+              className="w-full font-bold uppercase tracking-wide placeholder:font-normal placeholder:lowercase"
             />
             {errors.name && (
-              <p className="text-red-500 text-[10px] font-black uppercase ml-1">{errors.name.message}</p>
+              <p className="text-red-500 text-[10px] font-black uppercase ml-1">
+                {errors.name.message}
+              </p>
             )}
           </div>
 
@@ -176,13 +182,13 @@ const AddDepartment: React.FC = () => {
           </div>
 
           {/* ── Submit Button ── */}
-          <div className="pt-6">
+          <div className="pt-6 border-t border-black/5">
             <Button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-medium flex items-center justify-center gap-3 ${isSubmitting
-                ? "bg-gray-100 text-black/20 cursor-not-allowed"
-                : "bg-black text-white hover:bg-black/90 active:scale-95"
+              className={`w-full px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-soft border flex items-center justify-center gap-3 ${isSubmitting
+                  ? "bg-gray-100 text-black/20 border-black/5 cursor-not-allowed"
+                  : "bg-green-100/80 text-black border-black hover:bg-green-200/80 active:scale-95"
                 }`}
             >
               {isSubmitting ? (

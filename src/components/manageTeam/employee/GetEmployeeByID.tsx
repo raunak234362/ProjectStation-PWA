@@ -98,7 +98,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
   }
 
   return (
-    <div className="bg-gray-50/50 p-5 rounded-3xl border border-black/5 shadow-inner">
+    <div className="bg-gray-50/50 p-5 rounded-2xl border border-black/5 shadow-inner">
       {/* Header */}
       <div className="flex items-center justify-between mb-8 border-b border-black/5">
         <h3 className="text-2xl font-semibold text-black uppercase tracking-tight">
@@ -106,8 +106,8 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
         </h3>
         <span
           className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-black/5 shadow-sm ${employee.isActive
-              ? "bg-green-100 text-black shadow-green-100/50"
-              : "bg-red-100 text-black shadow-red-100/50"
+            ? "bg-green-100 text-black shadow-green-100/50"
+            : "bg-red-100 text-black shadow-red-100/50"
             }`}
         >
           {employee.isActive ? "Active" : "Inactive"}
@@ -306,7 +306,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           employee?.role !== "CLIENT_GENERAL_CONSTRUCTOR" && (
             <Button
               onClick={() => handleModel(employee)}
-              className="flex items-center gap-2 px-8 py-3 bg-green-200 text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black/90 transition-all shadow-medium"
+              className="flex items-center gap-2 px-8 py-3 bg-green-100/80 text-black border border-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-soft"
             >
               Update Employee Data
             </Button>
@@ -315,7 +315,7 @@ const GetEmployeeByID = ({ id }: GetEmployeeByIDProps) => {
           <>
             <Button
               onClick={() => handleModel(employee)}
-              className="flex items-center gap-2 px-8 py-3 bg-white border border-black/10 rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm"
+              className="flex items-center gap-2 px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
             >
               Edit Profile
             </Button>

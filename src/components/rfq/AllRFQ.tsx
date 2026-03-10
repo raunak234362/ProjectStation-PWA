@@ -13,6 +13,7 @@ const AllRFQ = ({ rfq }: any) => {
       header: "Project Name",
       enableColumnFilter: true,
       filterType: "text",
+      filterFn: "includesString",
     },
   ];
 
@@ -41,6 +42,7 @@ const AllRFQ = ({ rfq }: any) => {
       header: "Status",
       enableColumnFilter: true,
       filterType: "select",
+      filterFn: "equals",
       filterOptions: [
         { label: "In Review", value: "IN_REVIEW" },
         { label: "Completed", value: "COMPLETED" },

@@ -12,7 +12,7 @@ import {
     Cell,
     Legend,
 } from "recharts";
-import { CreditCard, Banknote, CheckCircle2, AlertCircle } from "lucide-react";
+import { Banknote, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface AnalyticsProps {
     invoices: any[];
@@ -71,10 +71,6 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
         { name: "Overdue", value: overdueCount, color: "#ef4444" },
     ].filter(d => d.value > 0);
 
-    const paymentMethods = [
-        { method: "Bank Transfer", count: 45, percentage: 60, icon: Banknote, color: "bg-blue-100 text-blue-600" },
-        { method: "Card Payment", count: 20, percentage: 25, icon: CreditCard, color: "bg-purple-100 text-purple-600" },
-    ];
 
     // --- Data processing for Client ---
     const totalInvoiced = invoices.reduce((acc, inv) => acc + (parseFloat(inv.totalInvoiceValue) || 0), 0);
@@ -151,19 +147,19 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
                 </div>
             </div>
 
-            {/* 2. Status Donut Chart & Payment Breakdown */}
-            <div className="lg:col-span-1 space-y-6">
-                <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col h-[280px]">
+            {/* 2. Status Donut Chart */}
+            <div className="lg:col-span-1">
+                <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col h-full">
                     <h3 className="text-lg  text-gray-800 mb-2">Invoice Status</h3>
-                    <div className="flex-1 relative">
+                    <div className="flex-1 relative min-h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
                                     data={pieData}
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
+                                    innerRadius={70}
+                                    outerRadius={90}
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
@@ -174,37 +170,15 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
                                 <Tooltip />
                                 <Legend verticalAlign="bottom" height={36} iconType="circle" />
                                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
-                                    <tspan x="50%" dy="-0.5em" fontSize="20" fontWeight="bold" fill="#374151">
+                                    <tspan x="50%" dy="-0.5em" fontSize="24" fontWeight="bold" fill="#374151">
                                         {invoices.length}
                                     </tspan>
-                                    <tspan x="50%" dy="1.5em" fontSize="12" fill="#9ca3af">
+                                    <tspan x="50%" dy="1.5em" fontSize="14" fill="#9ca3af">
                                         Total
                                     </tspan>
                                 </text>
                             </PieChart>
                         </ResponsiveContainer>
-                    </div>
-                </div>
-
-                <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45]">
-                    <h3 className="text-lg  text-gray-800 mb-4">Payment Methods</h3>
-                    <div className="space-y-4">
-                        {paymentMethods.map((pm, i) => (
-                            <div key={i} className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-lg ${pm.color}`}>
-                                        <pm.icon size={16} />
-                                    </div>
-                                    <span className="text-sm font-medium text-gray-700">{pm.method}</span>
-                                </div>
-                                <div className="text-right">
-                                    <span className="block text-sm  text-gray-800">{pm.percentage}%</span>
-                                    <div className="w-16 h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
-                                        <div className="h-full bg-green-500 rounded-full" style={{ width: `${pm.percentage}%` }}></div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
                     </div>
                 </div>
             </div>

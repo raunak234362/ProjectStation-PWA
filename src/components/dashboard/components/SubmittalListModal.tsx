@@ -69,6 +69,15 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
         <span className="text-gray-700">{formatDate(row.original.date)}</span>
       ),
     },
+    {
+      accessorKey: "stage",
+      header: "Stage",
+      cell: ({ row }: any) => (
+        <span className="font-bold text-[#6bbd45] bg-[#6bbd45]/10 px-2 py-0.5 rounded-full text-[10px] uppercase border border-[#6bbd45]/20">
+          {row.original.stage || "N/A"}
+        </span>
+      ),
+    },
     // {
     //   accessorKey: "status",
     //   header: "Status",

@@ -127,13 +127,16 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
   const hasActiveFilters =
     selectedManager || selectedFabricator || selectedStage || showOverrunOnly;
 
-  const columns: ColumnDef<any>[] = [
+  const columns: any[] = [
     {
       accessorKey: "name",
       header: "Project Name",
       cell: ({ row }: any) => (
         <span className="font-medium text-gray-700">{row.original.name}</span>
       ),
+      enableColumnFilter: true,
+      filterType: "text",
+      filterFn: "includesString",
     },
     {
       accessorKey: "fabricator.name",

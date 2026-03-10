@@ -218,10 +218,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         <form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6 md:p-10 space-y-8 md:space-y-12">
           {/* Identity & Presence */}
           <section className="space-y-6 md:space-y-8">
-            <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
-              <Building2 size={14} className="text-black/40" />
-              RFQ Identity & Classification
-            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
               {/* FABRICATOR (HIDDEN FOR CLIENTS) */}
               {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
@@ -462,22 +458,22 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           {/* Service Matrix Section */}
           <section className="space-y-6 md:space-y-8 pt-8 md:pt-10 border-t border-black/10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="space-y-6">
+              <div className="space-y-6 border border-black p-10">
                 <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                   Connection Design Matrix
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 ">
                   <Toggle label="Main Design" {...register("connectionDesign")} />
                   <Toggle label="Misc Design" {...register("miscDesign")} />
                   <Toggle label="Customer Design" {...register("customerDesign")} />
                 </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-6 border border-black p-10">
                 <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                   Detailing Deliverables
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6">
                   <Toggle label="Main Steel" {...register("detailingMain")} />
                   <Toggle label="Misc Steel" {...register("detailingMisc")} />
                 </div>
@@ -521,9 +517,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 "Initiate Project RFQ"
               )}
             </button>
-            <p className="text-[10px] text-black/40 font-bold uppercase tracking-widest text-center md:text-right max-w-xs leading-relaxed">
-              * By initiating this RFQ, you agree to our standard service level agreements and technical processing terms.
-            </p>
+
           </div>
         </form>
       </motion.div>

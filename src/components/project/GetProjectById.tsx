@@ -355,6 +355,15 @@ const GetProjectById = ({
             <span className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
               {project.status}
             </span>
+            {userRole === "admin" && (
+              <button
+                onClick={() => handleEditModel(project)}
+                className="px-6 py-1.5 bg-green-50 text-black border-2 border-[#6bbd45] rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm flex items-center gap-2"
+              >
+                <Settings className="w-4 h-4" />
+                Edit
+              </button>
+            )}
             {close && (
               <button
                 onClick={close}

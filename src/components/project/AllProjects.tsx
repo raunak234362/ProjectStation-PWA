@@ -1,26 +1,47 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
-import React, { Suspense } from "react";
-import { useSelector } from "react-redux";
+import React, { Suspense, useEffect, useState } from "react";
+import Service from "../../api/Service";
+import { Loader2 } from "lucide-react";
+
 const GetProjectById = React.lazy(() =>
   import("./GetProjectById").then((module) => ({ default: module.default }))
 );
 
-
-
 const AllProjects = () => {
-  const [selectedProjectId, setSelectedProjectId] = React.useState<string | null>(null);
-  const projects = useSelector(
-    (state: any) => state.projectInfo?.projectData || []
-  );
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const response = await Service.GetAllProjects();
+      setProjects(Array.isArray(response) ? response : response?.data || []);
+    } catch (error) {
+      console.error("Error fetching all projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   const handleRowClick = (row: any) => {
-    const projectUniqueId = (row as any).id ?? (row as any).fabId ?? "";
+    const projectUniqueId = row.id || row._id || "";
     setSelectedProjectId(projectUniqueId);
   };
 
-  const columns: ColumnDef<any>[] = [
-    { accessorKey: "name", header: "Project Name" },
+  const columns: any[] = [
+    {
+      accessorKey: "name",
+      header: "Project Name",
+      enableColumnFilter: true,
+      filterType: "text",
+      filterFn: "includesString",
+    },
     { accessorKey: "stage", header: "Stage" },
     {
       accessorKey: "status",
@@ -33,14 +54,21 @@ const AllProjects = () => {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <Loader2 className="h-8 w-8 animate-spin text-[#6bbd45]" />
+      </div>
+    );
+  }
+
   return (
     <div className=" bg-white p-2 md:p-3 rounded-xl border border-black/5 shadow-sm">
       <DataTable
         columns={columns}
         data={projects}
         onRowClick={handleRowClick}
-        disablePagination={true}
-        pageSizeOptions={[25]}
+        pageSizeOptions={[25, 50, 100]}
       />
       {selectedProjectId && (
         <Suspense fallback={<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md text-white">Loading...</div>}>

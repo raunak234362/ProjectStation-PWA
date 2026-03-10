@@ -6,6 +6,7 @@ import DataTable from "../../ui/table";
 import GetEmployeeByID from "./GetEmployeeByID";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSelector } from "react-redux";
+import { X } from "lucide-react";
 const AllEmployee = () => {
   const staffData = useSelector((state: any) => state.userInfo.staffData);
   const [employees, setEmployees] = useState<UserData[]>(staffData);
@@ -41,7 +42,7 @@ const AllEmployee = () => {
       accessorKey: "username",
       header: "Username",
       cell: ({ row }) => (
-        <span className="font-black text-black uppercase tracking-tight text-sm">
+        <span className="font-black text-black uppercase tracking-wide text-base">
           {row.original.username}
         </span>
       ),
@@ -63,7 +64,7 @@ const AllEmployee = () => {
       header: "Full Name",
       id: "fullName",
       cell: ({ getValue }) => (
-        <span className="text-black font-black uppercase tracking-wide text-xs whitespace-nowrap">
+        <span className="text-black font-black uppercase tracking-widest text-sm whitespace-nowrap">
           {getValue() as string}
         </span>
       ),
@@ -86,7 +87,7 @@ const AllEmployee = () => {
       accessorKey: "designation",
       header: "Designation",
       cell: ({ row }) => (
-        <span className="px-4 py-1.5 bg-gray-100 text-black font-black uppercase tracking-widest rounded-full text-[10px] border border-black/5 shadow-sm whitespace-nowrap">
+        <span className="px-4 py-1.5 bg-gray-100 text-black font-black uppercase tracking-[0.2em] rounded-full text-xs border border-black/5 shadow-sm whitespace-nowrap">
           {row.original.designation || "—"}
         </span>
       ),
@@ -126,11 +127,28 @@ const AllEmployee = () => {
           columns={columns}
           data={employees}
           onRowClick={handleRowClick}
-          detailComponent={({ row }) => <GetEmployeeByID id={row.id} />}
           onDelete={handleDelete}
           pageSizeOptions={[5, 10, 25]}
         />
       </div>
+
+      {employeeID && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-[1200px] max-w-full bg-white rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-black/5 overflow-hidden">
+            <div className="relative">
+              <button
+                onClick={() => setEmployeeID(null)}
+                className="absolute right-6 top-6 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
+              >
+                <X className="w-6 h-6 text-black" />
+              </button>
+              <div className="max-h-[90vh] overflow-y-auto custom-scrollbar">
+                <GetEmployeeByID id={employeeID} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

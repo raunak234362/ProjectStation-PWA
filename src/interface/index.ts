@@ -476,8 +476,8 @@ export interface AddProjectPayload {
   rfqId?: string;
   CDQuataionID?: string;
   connectionDesignerID?: string;
-  status: "ACTIVE" | "INACTIVE" | "DRAFT";
-  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA" | "IFC" | "CO#";
+  status: "ACTIVE" | "INACTIVE" | "DRAFT" | "ON_HOLD" | "COMPLETED";
+  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA" | "IFC" | "CO#" | "RFI";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   miscDesign: boolean;
@@ -498,7 +498,10 @@ export interface AddProjectPayload {
   mailReminder: boolean;
   submissionMailReminder: boolean;
   files?: File[] | null; // supports direct File objects or a typed File interface
+  wbsTemplateIds?: string[];
   endDateChangeLog?: string[];
+  approvalDateChangeReason?: string;
+  fabricationDateChangeReason?: string;
 }
 
 // Project Data
@@ -795,6 +798,7 @@ export interface DesignDrawing {
   description: string;
   files: any[];
   createdAt: string;
+  uploadedAt?: string;
   updatedAt: string;
 }
 export interface Quotation {

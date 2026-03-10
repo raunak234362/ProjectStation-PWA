@@ -122,9 +122,9 @@ const AddTeamMembers = ({ teamMember, onClose }: AllTeamProps) => {
         <div className="flex flex-col gap-3 pt-6">
           <button
             type="submit"
-            className={`w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-medium flex items-center justify-center gap-2 ${isSubmitting
-              ? "bg-gray-100 text-black/20 cursor-not-allowed"
-              : "bg-black text-white hover:bg-black/90 active:scale-95 shadow-black/10"
+            className={`w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-soft border flex items-center justify-center gap-2 ${isSubmitting
+                ? "bg-gray-100 text-black/20 border-black/5 cursor-not-allowed"
+                : "bg-green-100/80 text-black border-black hover:bg-green-200/80 active:scale-95"
               }`}
             disabled={isSubmitting}
           >

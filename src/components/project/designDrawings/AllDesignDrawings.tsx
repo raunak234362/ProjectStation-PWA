@@ -41,9 +41,9 @@ const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
       ),
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "uploadedAt",
       header: "Created On",
-      cell: ({ row }) => formatDate(row.original.createdAt),
+      cell: ({ row }) => formatDate(row.original.uploadedAt || row.original.createdAt),
     },
   ];
 

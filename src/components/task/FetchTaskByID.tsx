@@ -171,9 +171,9 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
       },
       PENDING: {
         label: "Pending",
-        bg: "bg-yellow-100",
-        text: "text-yellow-700",
-        border: "border-yellow-300",
+        bg: "bg-[#6bbd45]",
+        text: "text-black",
+        border: "border-[#6bbd45]",
       },
     };
     return (
@@ -229,7 +229,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
           </p>
           <Button
             onClick={onClose}
-            className="mt-6 px-8 py-3 font-semibold transition"
+            className="mt-6 px-8 py-3 font-semibold transition bg-red-50 text-black border border-red-50 hover:bg-red-100 hover:text-red-700"
           >
             Close
           </Button>

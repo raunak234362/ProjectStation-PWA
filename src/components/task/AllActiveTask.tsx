@@ -51,7 +51,7 @@ const AllActiveTask = () => {
       case "ASSIGNED":
         return "bg-green-100 text-green-700 border-green-200";
       case "PENDING":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+        return "bg-[#6bbd45] text-black border-[#6bbd45]";
       default:
         return "bg-gray-100 text-gray-700 border-gray-200";
     }
@@ -75,7 +75,10 @@ const AllActiveTask = () => {
       {
         accessorKey: "name",
         header: "Task Details",
-        cell: ({ row }) => (
+        enableColumnFilter: true,
+        filterType: "text",
+        filterFn: "includesString",
+        cell: ({ row }: any) => (
           <div className="flex flex-col">
             <span className="font-semibold text-gray-700">
               {row.original.name}
@@ -92,7 +95,7 @@ const AllActiveTask = () => {
       {
         accessorKey: "project.name",
         header: "Project & Stage",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-sm text-gray-700">
               <Briefcase className="w-3.5 h-3.5 text-gray-400" />
@@ -102,17 +105,17 @@ const AllActiveTask = () => {
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-700">
               <Tag className="w-3.5 h-3.5 text-gray-400" />
-              <span>Stage: {row.original.Stage || "N/A"}</span>
+              <span>Stage: {row.original.stage || row.original.Stage || "N/A"}</span>
             </div>
           </div>
-        ),
+        ) as any,
       },
       {
         accessorKey: "user.firstName",
         header: "Assigned To",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white text-xs  shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-[#6bbd45] flex items-center justify-center text-black text-xs font-bold shadow-sm">
               {row.original.user?.firstName?.charAt(0) || (
                 <User className="w-4 h-4" />
               )}
@@ -133,7 +136,7 @@ const AllActiveTask = () => {
       {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <span
             className={`px-3 py-1 rounded-full text-xs  border ${getStatusColor(
               row.original.status,
@@ -146,7 +149,7 @@ const AllActiveTask = () => {
       {
         accessorKey: "priority",
         header: "Priority",
-        cell: ({ row }) => {
+        cell: ({ row }: any) => {
           const priority = getPriorityLabel(row.original.priority);
           return (
             <div
@@ -166,7 +169,7 @@ const AllActiveTask = () => {
       {
         accessorKey: "due_date",
         header: "Due Date",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div className="flex items-center gap-2 text-sm text-gray-700">
             <Calendar className="w-4 h-4 text-gray-400" />
             {formatDate(row.original.due_date)}
