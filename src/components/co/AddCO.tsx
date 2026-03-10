@@ -57,9 +57,9 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
       formData.append("project", project?.id);
       formData.append("sender", userDetail.id);
       formData.append("recipients", data.recipients);
-      if (data.fabricator_contact) {
-        formData.append("fabricator_contact", data.fabricator_contact);
-      }
+      // if (data.fabricator_contact) {
+      //   formData.append("fabricator_contact", data.fabricator_contact);
+      // }
       formData.append("changeOrderNumber", data.changeOrderNumber);
       formData.append("remarks", data.remarks);
       formData.append("reason", data.reason || "");
@@ -103,7 +103,7 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
               Fabricator Contact
             </label>
             <Controller
-              name="fabricator_contact"
+              name="recipients"
               control={control}
               render={({ field }) => (
                 <Select<SelectOption, false>
@@ -122,7 +122,7 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
           </div>
 
           {/* BOX 2: WBT Recipient */}
-          <div>
+          {/* <div>
             <label className="block text-xs font-black text-black uppercase tracking-widest mb-2">
               WBT Contact <span className="text-red-500">*</span>
             </label>
@@ -139,7 +139,7 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
                 />
               )}
             />
-          </div>
+          </div> */}
         </div>
 
         <SectionTitle title="Details" />
