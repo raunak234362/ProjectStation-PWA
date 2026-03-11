@@ -9,7 +9,14 @@ import Service from "../../api/Service";
 
 import type { Fabricator, SelectOption, RFQpayload } from "../../interface";
 
-import { Loader2, Building2, Layers, Globe, Percent, Calendar } from "lucide-react";
+import {
+  Loader2,
+  Building2,
+  Layers,
+  Globe,
+  Percent,
+  Calendar,
+} from "lucide-react";
 
 import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
@@ -99,8 +106,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
   const clientOptions: SelectOption[] =
     selectedFabricator?.pointOfContact?.map((client) => ({
-      label: `${client.firstName} ${client.middleName ?? ""} ${client.lastName
-        }`,
+      label: `${client.firstName} ${client.middleName ?? ""} ${
+        client.lastName
+      }`,
       value: String(client.id),
     })) ?? [];
 
@@ -188,9 +196,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           fabricator: selectedFab || createdRFQ.fabricator,
           sender: selectedSender
             ? {
-              firstName: selectedSender.label.split(" ")[0],
-              lastName: selectedSender.label.split(" ").slice(1).join(" "),
-            }
+                firstName: selectedSender.label.split(" ")[0],
+                lastName: selectedSender.label.split(" ").slice(1).join(" "),
+              }
             : userDetail,
         };
         dispatch(addRFQ(enrichedRFQ));
@@ -213,18 +221,22 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden border-0 md:border md:border-black rounded-2xl md:rounded-[2.5rem] bg-white transition-all duration-500"
+        className="overflow-hidden  rounded-2xl md:rounded-[2.5rem] bg-white transition-all duration-500"
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6 md:p-10 space-y-8 md:space-y-12">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="p-4 sm:p-5 md:p-6 space-y-4 md:space-y-6"
+        >
           {/* Identity & Presence */}
-          <section className="space-y-6 md:space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+          <section className="space-y-3 md:space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* FABRICATOR (HIDDEN FOR CLIENTS) */}
               {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
                 <>
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <label className="block text-xs text-black font-black uppercase tracking-widest">
-                      Fabricator Partner <span className="text-rose-500">*</span>
+                      Fabricator Partner{" "}
+                      <span className="text-rose-500">*</span>
                     </label>
 
                     <Controller
@@ -265,9 +277,10 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     )}
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <label className="block text-xs text-black font-black uppercase tracking-widest">
-                      Fabricator Contact <span className="text-rose-500">*</span>
+                      Fabricator Contact{" "}
+                      <span className="text-rose-500">*</span>
                     </label>
                     <Controller
                       name="senderId"
@@ -323,7 +336,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             )}
           </div> */}
 
-              <div className="md:col-span-2 space-y-4">
+              <div className="md:col-span-2 space-y-2">
                 <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Layers size={14} className="text-black/40" />
                   Project Designation <span className="text-rose-500">*</span>
@@ -342,7 +355,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 )}
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <label className="block text-xs text-black font-black uppercase tracking-widest">
                   Project Number
                 </label>
@@ -353,7 +366,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 />
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Globe size={14} className="text-black/40" />
                   Geographic Location
@@ -368,15 +381,11 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </section>
 
           {/* Technical Specs Section */}
-          <section className="space-y-6 md:space-y-8 pt-8 md:pt-10 border-t border-black/10">
-            <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
-              <Building2 size={14} className="text-black/40" />
-              Scope of Work & Technical specs
-            </h3>
-            <div className="space-y-6">
-              <div className="space-y-4">
+          <section className="space-y-3 md:space-y-4">
+            <div className="space-y-3">
+              <div className="space-y-2">
                 <label className="block text-xs text-black font-black uppercase tracking-widest">
-                  Manifest Subject
+                  Subject
                 </label>
                 <Input
                   {...register("subject")}
@@ -385,7 +394,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 />
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <label className="block text-xs text-black font-black uppercase tracking-widest">
                   Project Scope & Detailed Description
                 </label>
@@ -398,10 +407,11 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
-                <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                <div className="space-y-2">
                   <label className="block text-xs text-black font-black uppercase tracking-widest">
-                    Preferred Modeling Tools <span className="text-rose-500">*</span>
+                    Preferred Modeling Tools{" "}
+                    <span className="text-rose-500">*</span>
                   </label>
                   <Controller
                     name="tools"
@@ -425,7 +435,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   />
                 </div>
 
-                <div className="space-y-4">
+                {/* <div className="space-y-4">
                   <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
                     <Percent size={14} className="text-black/40" />
                     Bid Price ({selectedFabricator?.currencyType || "USD"})
@@ -436,9 +446,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     placeholder="0.00"
                     className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black"
                   />
-                </div>
+                </div> */}
 
-                <div className="space-y-4">
+                <div className="space-y-2">
                   <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
                     <Calendar size={14} className="text-black/40" />
                     Response Due Date <span className="text-rose-500">*</span>
@@ -456,24 +466,30 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </section>
 
           {/* Service Matrix Section */}
-          <section className="space-y-6 md:space-y-8 pt-8 md:pt-10 border-t border-black/10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="space-y-6 border border-black p-10">
+          <section className="space-y-3 md:space-y-4 pt-4 md:pt-5 border-t border-black/10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="space-y-3 border border-black p-4 md:p-6">
                 <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                   Connection Design Matrix
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 ">
-                  <Toggle label="Main Design" {...register("connectionDesign")} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+                  <Toggle
+                    label="Main Design"
+                    {...register("connectionDesign")}
+                  />
                   <Toggle label="Misc Design" {...register("miscDesign")} />
-                  <Toggle label="Customer Design" {...register("customerDesign")} />
+                  <Toggle
+                    label="Customer Design"
+                    {...register("customerDesign")}
+                  />
                 </div>
               </div>
 
-              <div className="space-y-6 border border-black p-10">
+              <div className="space-y-3 border border-black p-4 md:p-6">
                 <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                   Detailing Deliverables
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                   <Toggle label="Main Steel" {...register("detailingMain")} />
                   <Toggle label="Misc Steel" {...register("detailingMisc")} />
                 </div>
@@ -482,11 +498,11 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </section>
 
           {/* Assets Section */}
-          <section className="space-y-6 md:space-y-8 pt-8 md:pt-10 border-t border-black/10">
+          <section className="space-y-3 md:space-y-4 pt-4 md:pt-5 border-t border-black/10">
             <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
-              Project Attachments & Compliance media
+              Project Attachments
             </h3>
-            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl border border-black shadow-sm">
+            <div className="bg-white p-3 sm:p-4 md:p-5 rounded-2xl md:rounded-3xl border border-black shadow-sm">
               <Controller
                 name="files"
                 control={control}
@@ -502,7 +518,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </section>
 
           {/* Action Footer */}
-          <div className="pt-10 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-black/10">
+          <div className="pt-5 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-black/10">
             <button
               type="submit"
               disabled={isSubmitting}
@@ -514,10 +530,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   Synchronizing RFQ Data...
                 </>
               ) : (
-                "Initiate Project RFQ"
+                "Initiate rfq"
               )}
             </button>
-
           </div>
         </form>
       </motion.div>

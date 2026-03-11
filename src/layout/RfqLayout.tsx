@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 // import GetRFQByID from "../components/rfq/GetRFQByID";
 
 const RfqLayout = () => {
-  const [activeTab, setActiveTab] = useState("allRFQ");
+  const [activeTab, setActiveTab] = useState("addRFQ");
   const rfq = useSelector((state: any) => state.RFQInfos.RFQData) || [];
 
   // const stats = {
@@ -20,26 +20,27 @@ const RfqLayout = () => {
     <div className="w-full">
       <div className="flex flex-col w-full h-full mb-6">
         <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
-
           <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
             <button
-              onClick={() => setActiveTab("allRFQ")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allRFQ"
-                ? "bg-green-200 text-black shadow-medium"
-                : "text-black hover:bg-green-50"
-                }`}
+              onClick={() => setActiveTab("addRFQ")}
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${
+                activeTab === "addRFQ"
+                  ? "bg-green-200 text-black shadow-medium"
+                  : "text-black hover:bg-green-50"
+              }`}
             >
-              All RFQ
+              Create RFQ
             </button>
 
             <button
-              onClick={() => setActiveTab("addRFQ")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "addRFQ"
-                ? "bg-green-200 text-black shadow-medium"
-                : "text-black hover:bg-green-50"
-                }`}
+              onClick={() => setActiveTab("allRFQ")}
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${
+                activeTab === "allRFQ"
+                  ? "bg-green-200 text-black shadow-medium"
+                  : "text-black hover:bg-green-50"
+              }`}
             >
-              Create RFQ
+              All RFQ
             </button>
           </div>
         </div>
