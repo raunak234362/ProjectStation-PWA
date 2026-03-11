@@ -54,7 +54,7 @@ const CoResponseModal = ({ CoId, onClose, onSuccess }: Props) => {
           <X size={18} />
         </button>
 
-        <h2 className="text-xl font-semibold text-green-700">
+        <h2 className="text-xl font-semibold text-black">
           Add CO Response
         </h2>
 
@@ -90,7 +90,7 @@ const CoResponseModal = ({ CoId, onClose, onSuccess }: Props) => {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-green-600 text-white"
+              className="bg-green-50 text-black"
             >
               {loading ? "Submitting..." : "Submit"}
             </Button>

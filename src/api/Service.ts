@@ -155,7 +155,7 @@ class Service {
   static async EditDepartment(id: string, departmentData: DepartmentPayload) {
     try {
       const response = await api.put(
-        `department/department/${id}`,
+        `department/update/${id}`,
         departmentData,
         {
           headers: {
