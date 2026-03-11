@@ -337,15 +337,15 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </div> */}
 
               <div className="md:col-span-2 space-y-2">
-                <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Layers size={14} className="text-black/40" />
-                  Project Designation <span className="text-rose-500">*</span>
+                  Project Name <span className="text-rose-500">*</span>
                 </label>
                 <Input
                   {...register("projectName", {
                     required: "Project name is required",
                   })}
-                  placeholder="e.g. SKYLINE COMMERCE CENTER PH-II"
+                  placeholder=""
                   className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black placeholder:text-black/20"
                 />
                 {errors.projectName && (
@@ -356,24 +356,24 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs text-black font-black uppercase tracking-widest">
+                <label className="block text-sm text-black font-black uppercase tracking-widest">
                   Project Number
                 </label>
                 <Input
                   {...register("projectNumber")}
-                  placeholder="JOB# 2024-X"
+                  placeholder=""
                   className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black placeholder:text-black/20"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Globe size={14} className="text-black/40" />
-                  Geographic Location
+                  Location
                 </label>
                 <Input
                   {...register("location")}
-                  placeholder="HOUSTON, TX"
+                  placeholder=""
                   className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black placeholder:text-black/20"
                 />
               </div>
@@ -384,32 +384,32 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           <section className="space-y-3 md:space-y-4">
             <div className="space-y-3">
               <div className="space-y-2">
-                <label className="block text-xs text-black font-black uppercase tracking-widest">
+                <label className="block text-sm text-black font-black uppercase tracking-widest">
                   Subject
                 </label>
                 <Input
                   {...register("subject")}
-                  placeholder="e.g. Structural Steel Detail Estimate"
+                  placeholder=""
                   className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs text-black font-black uppercase tracking-widest">
+                <label className="block text-sm text-black font-black uppercase tracking-widest">
                   Project Scope & Detailed Description
                 </label>
                 <div className="border border-black rounded-2xl overflow-hidden min-h-[200px] bg-white">
                   <RichTextEditor
                     value={description}
                     onChange={setDescription}
-                    placeholder="Enter exhaustive project scope..."
+                    placeholder=""
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 <div className="space-y-2">
-                  <label className="block text-xs text-black font-black uppercase tracking-widest">
+                  <label className="block text-sm text-black font-black uppercase tracking-widest">
                     Preferred Modeling Tools{" "}
                     <span className="text-rose-500">*</span>
                   </label>
@@ -435,8 +435,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   />
                 </div>
 
-                {/* <div className="space-y-4">
-                  <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                <div className="space-y-4">
+                  <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                     <Percent size={14} className="text-black/40" />
                     Bid Price ({selectedFabricator?.currencyType || "USD"})
                   </label>
@@ -446,10 +446,10 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     placeholder="0.00"
                     className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black"
                   />
-                </div> */}
+                </div>
 
                 <div className="space-y-2">
-                  <label className="block text-xs text-black font-black uppercase tracking-widest flex items-center gap-2">
+                  <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                     <Calendar size={14} className="text-black/40" />
                     Response Due Date <span className="text-rose-500">*</span>
                   </label>
@@ -466,13 +466,13 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </section>
 
           {/* Service Matrix Section */}
-          <section className="space-y-3 md:space-y-4 pt-4 md:pt-5 border-t border-black/10">
+          <section className="space-y-3 md:space-y-4 pt-4 md:pt-5  border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div className="space-y-3 border border-black p-4 md:p-6">
-                <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                  Connection Design Matrix
+                <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                  Connection Design Scope
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 ">
                   <Toggle
                     label="Main Design"
                     {...register("connectionDesign")}
@@ -486,8 +486,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               </div>
 
               <div className="space-y-3 border border-black p-4 md:p-6">
-                <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                  Detailing Deliverables
+                <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                  Detailing Scope
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                   <Toggle label="Main Steel" {...register("detailingMain")} />
@@ -498,8 +498,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </section>
 
           {/* Assets Section */}
-          <section className="space-y-3 md:space-y-4 pt-4 md:pt-5 border-t border-black/10">
-            <h3 className="text-[10px] text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
+          <section className="space-y-3 md:space-y-4 pt-4 md:pt-5  border-gray-200">
+            <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
               Project Attachments
             </h3>
             <div className="bg-white p-3 sm:p-4 md:p-5 rounded-2xl md:rounded-3xl border border-black shadow-sm">

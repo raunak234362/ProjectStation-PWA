@@ -1,5 +1,3 @@
-
-
 import React, { useId, useState, forwardRef } from "react";
 
 /* ---------------------------------------------------
@@ -16,8 +14,10 @@ export interface ToggleChangeEvent {
 
 // Props for the Toggle component
 // Props for the Toggle component
-export interface ToggleProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+export interface ToggleProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange"
+> {
   label?: React.ReactNode;
   className?: string;
   name?: string;
@@ -40,13 +40,18 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
     };
 
     return (
-      <div className={`flex flex-row items-center justify-between gap-4 w-full max-w-[280px] group cursor-pointer ${className}`}>
+      <div
+        className={`flex flex-row items-center justify-between gap-4 w-full max-w-[280px] group cursor-pointer ${className}`}
+      >
         {/* LABEL */}
         {label && (
           <label
             htmlFor={id}
-            className={`cursor-pointer font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all ${checked ? "text-black opacity-100" : "text-black/40 opacity-60 group-hover:opacity-80"
-              }`}
+            className={`cursor-pointer font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all ${
+              checked
+                ? "text-black opacity-100"
+                : "text-black opacity-80 group-hover:opacity-100"
+            }`}
           >
             {label}
           </label>
@@ -82,7 +87,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default Toggle;
