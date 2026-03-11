@@ -6,7 +6,6 @@ import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
 import { Loader2 } from "lucide-react";
-import type { DocType } from "./components/DocumentsOverviewCard";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -26,12 +25,7 @@ const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
 const GetMilestoneByID = lazy(
   () => import("../project/mileStone/GetMilestoneByID"),
 );
-const DocumentsOverviewCard = lazy(
-  () => import("./components/DocumentsOverviewCard"),
-);
-const DocumentListModal = lazy(
-  () => import("./components/DocumentListModal"),
-);
+
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
@@ -53,9 +47,6 @@ const ClientDashboard = () => {
   const [isRfqModalOpen, setIsRfqModalOpen] = useState(false);
   const [isRfiModalOpen, setIsRfiModalOpen] = useState(false);
   const [isCoModalOpen, setIsCoModalOpen] = useState(false);
-  // Documents Overview Modal
-  const [isDocModalOpen, setIsDocModalOpen] = useState(false);
-  const [docModalType, setDocModalType] = useState<DocType>("ALL_RFQ");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
@@ -256,10 +247,6 @@ const ClientDashboard = () => {
     }
   };
 
-  const handleDocCardClick = (type: DocType) => {
-    setDocModalType(type);
-    setIsDocModalOpen(true);
-  };
 
   if (loading) {
     return <DashboardSkeleton />;
@@ -284,19 +271,6 @@ const ClientDashboard = () => {
               />
             </div>
           </div>
-        </div>
-
-        {/* Documents Overview Card */}
-        <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 p-1">
-          <DocumentsOverviewCard
-            counts={{
-              rfq: pendingRFQs.length,
-              rfi: pendingRFIs.length,
-              submittals: pendingSubmittals.length,
-              cor: pendingCOs.length,
-            }}
-            onCardClick={handleDocCardClick}
-          />
         </div>
 
         {/* Detailed Info Section */}
@@ -411,21 +385,6 @@ const ClientDashboard = () => {
           data={pendingCOs}
         />
 
-        {/* Documents Overview Modal */}
-        <DocumentListModal
-          isOpen={isDocModalOpen}
-          onClose={() => setIsDocModalOpen(false)}
-          type={docModalType}
-          data={
-            docModalType === "ALL_RFQ"
-              ? pendingRFQs
-              : docModalType === "ALL_RFI"
-                ? pendingRFIs
-                : docModalType === "ALL_SUBMITTALS"
-                  ? pendingSubmittals
-                  : pendingCOs
-          }
-        />
       </Suspense>
     </div>
   );
