@@ -76,7 +76,7 @@ const ResponseDetailsModal = ({
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
           <div className="flex flex-col">
-            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">Response Intelligence</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">Response</h2>
             <div className="flex items-center gap-2 mt-1">
               <CalendarDays size={12} className="text-black/30" />
               <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">{formatDateTime(response.createdAt)}</span>
@@ -173,12 +173,7 @@ const ResponseDetailsModal = ({
 
         {/* Footer */}
         <div className="px-6 py-5 border-t border-black/10 bg-gray-50/50 flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 shrink-0">
-          <Button
-            onClick={onClose}
-            className="w-full sm:w-auto px-10 py-3 bg-white text-black border border-black/20 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-gray-50"
-          >
-            Exit Intelligence
-          </Button>
+          
           {!replyMode && userRole === "client" && (
             <Button
               onClick={() => setReplyMode(true)}
