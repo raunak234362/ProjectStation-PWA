@@ -106,15 +106,15 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     const inclusionsHtml =
       inclusions.length > 0
         ? inclusions
-          .map((item: string) => `<li><span>${item}</span></li>`)
-          .join("")
+            .map((item: string) => `<li><span>${item}</span></li>`)
+            .join("")
         : `<li><span>No inclusions specified</span></li>`;
 
     const exclusionsHtml =
       exclusions.length > 0
         ? exclusions
-          .map((item: string) => `<li><span>${item}</span></li>`)
-          .join("")
+            .map((item: string) => `<li><span>${item}</span></li>`)
+            .join("")
         : `<li><span>No exclusions specified</span></li>`;
 
     const selectedItems = items.filter((item) => item.selected);
@@ -123,10 +123,12 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         (item) => `
       <tr style="text-align: center;">
         <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #333;">${item.label.toUpperCase()}</td>
-        <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #0056b3;"><span>${currency}: ${currencySymbol} ${item.price || "—"
-          }/-</span></td>
-        <td style="border: 2px solid #333; padding: 15px; font-weight: bold;"><span>${item.weeks || "—"
-          } weeks</span></td>
+        <td style="border: 2px solid #333; padding: 5px; font-weight: bold; color: #0056b3;"><span>${currency}: ${currencySymbol} ${
+          item.price || "—"
+        }/-</span></td>
+        <td style="border: 2px solid #333; padding: 15px; font-weight: bold;"><span>${
+          item.weeks || "—"
+        } weeks</span></td>
       </tr>
     `,
       )
@@ -146,32 +148,38 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                 DETAILING <span>${est.projectName || "Project Name"}</span> JOB
               </h1>
               <div style="margin-top: 5px;">
-                <span style="font-weight: bold; font-size: 12px; color: #0056b3;">For ${est.fabricators?.fabName || "Fabricator Name"
-      }</span>
+                <span style="font-weight: bold; font-size: 12px; color: #0056b3;">For ${
+                  est.fabricators?.fabName || "Fabricator Name"
+                }</span>
               </div>
-              ${est.fabricators?.branches?.[0]
-        ? `
+              ${
+                est.fabricators?.branches?.[0]
+                  ? `
                 <div style="display: block; font-size: 11px; margin-top: 8px; color: #555;">
-                  ${est.fabricators.branches[0].address || ""}, ${est.fabricators.branches[0].city || ""
-        }, ${est.fabricators.branches[0].state || ""} ${est.fabricators.branches[0].zipCode || ""
-        }, Tel: ${est.fabricators.branches[0].phone || ""}
+                  ${est.fabricators.branches[0].address || ""}, ${
+                    est.fabricators.branches[0].city || ""
+                  }, ${est.fabricators.branches[0].state || ""} ${
+                    est.fabricators.branches[0].zipCode || ""
+                  }, Tel: ${est.fabricators.branches[0].phone || ""}
                 </div>
               `
-        : ""
-      }
+                  : ""
+              }
             </div>
 
             <!-- Proposal ID & Date -->
             <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-              <div><span>Our Proposal ID: <span>WBT/${est.estimationNumber || "Estimation Number"
-      }/${new Date().getFullYear()}/VER 1.0</span></span></div>
+              <div><span>Our Proposal ID: <span>WBT/${
+                est.estimationNumber || "Estimation Number"
+              }/${new Date().getFullYear()}/VER 1.0</span></span></div>
               <div><span>Date: <span>${formatDate(new Date())}</span></span></div>
             </div>
 
             <p style="font-size: 12px; margin-bottom: 25px; color: #444;">
               WHITEBOARD TECHNOLOGIES is pleased to submit this proposal for taking some of the detailing activities of 
-              <span style="font-weight: bold; color: #333;">${est.projectName || "SAMPLE PROJECT"
-      }</span> JOB.
+              <span style="font-weight: bold; color: #333;">${
+                est.projectName || "SAMPLE PROJECT"
+              }</span> JOB.
             </p>
 
             <!-- Pricing Table -->
@@ -184,9 +192,10 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                 </tr>
               </thead>
               <tbody>
-                ${tableRows ||
-      `<tr><td colspan="3" style="border: 2px solid #333; padding: 10px; text-align: center;">No items selected</td></tr>`
-      }
+                ${
+                  tableRows ||
+                  `<tr><td colspan="3" style="border: 2px solid #333; padding: 10px; text-align: center;">No items selected</td></tr>`
+                }
               </tbody>
             </table>
 
@@ -295,8 +304,9 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             </div>
 
             <p style="font-size: 14px; margin-bottom: 20px; color: #444;">
-              We look forward to working with <span style="font-weight: bold; color: #333;">${est.fabricatorName || "Cobb Industrial, Inc"
-      }</span> and supporting your efforts on this job. We are confident that we can meet the challenges ahead and stand ready to partner with you in delivering an effective detailing solution.
+              We look forward to working with <span style="font-weight: bold; color: #333;">${
+                est.fabricatorName || "Cobb Industrial, Inc"
+              }</span> and supporting your efforts on this job. We are confident that we can meet the challenges ahead and stand ready to partner with you in delivering an effective detailing solution.
             </p>
             
             <p style="font-size: 14px; margin-bottom: 30px; color: #444;">
@@ -426,12 +436,16 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         {/* Fixed Header */}
         <div className="px-5 sm:px-8 py-4 sm:py-5 border-b border-black/10 flex justify-between items-center bg-white rounded-t-2xl md:rounded-t-3xl shrink-0">
           <div className="flex flex-col">
-            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">Add Response</h2>
-            <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">RFQ Response Protocol</p>
+            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+              Add Response
+            </h2>
+            <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
+              RFQ Response Protocol
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-rose-50 text-black rounded-xl transition-all border border-red-600 hover:border-rose-100"
+            className="p-1 px-3 bg-red-50 hover:bg-red-100 text-black rounded-lg border border-red-600 transition-all flex items-center justify-center font-bold text-xs"
           >
             Close
           </button>
@@ -485,7 +499,10 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                   </h3>
                   <div className="grid grid-cols-1 gap-4">
                     {pricingItems.map((item, index) => (
-                      <div key={item.label} className="bg-white p-4 rounded-xl border border-black/10 shadow-sm hover:border-green-400 group transition-all">
+                      <div
+                        key={item.label}
+                        className="bg-white p-4 rounded-xl border border-black/10 shadow-sm hover:border-green-400 group transition-all"
+                      >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <label className="flex items-center gap-3 cursor-pointer flex-1">
                             <input
@@ -509,7 +526,8 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                             <div className="flex flex-row gap-2 sm:gap-3 items-center animate-in slide-in-from-right-4 duration-300">
                               <div className="relative flex-1 sm:w-32">
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30 text-[10px] font-black uppercase">
-                                  {selectedEstimation?.fabricators?.currencyType || "USD"}
+                                  {selectedEstimation?.fabricators
+                                    ?.currencyType || "USD"}
                                 </span>
                                 <input
                                   type="number"
@@ -587,14 +605,26 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                     defaultValue="OPEN"
                   >
                     <option value="OPEN">OPEN - ACTIVE</option>
-                    <option value="IN_PROGRESS">IN PROGRESS - SYNTHESIZING</option>
+                    <option value="IN_PROGRESS">
+                      IN PROGRESS - SYNTHESIZING
+                    </option>
                     <option value="CLOSED">CLOSED - TERMINATED</option>
                     <option value="AWARDED">AWARDED - SUCCESS</option>
                     <option value="RE_APPROVED">RE-APPROVED - REITERATE</option>
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-black/20">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
