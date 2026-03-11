@@ -1,35 +1,130 @@
 import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
-import { createPortal } from "react-dom";
-import { Loader2, AlertCircle, X } from "lucide-react";
-import RenderFiles from "../ui/RenderFiles";
+import { Loader2, AlertCircle, ChevronDown, ChevronUp, Clock, History } from "lucide-react";
 import Button from "../fields/Button";
 import DataTable from "../ui/table";
-import type { ColumnDef } from "@tanstack/react-table";
+
 import SubmittalResponseModal from "./SubmittalResponseModal";
 import SubmittalResponseDetailsModal from "./SubmittalResponseDetailsModal";
+import UpdateSubmittalById from "./UpdateSubmittalById";
+import RenderFiles from "../ui/RenderFiles";
 
-const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
+const Info = ({ label, value }) => (
   <div className="mb-2">
     <h4 className="text-sm text-gray-700">{label}</h4>
     <div className="font-medium text-gray-700">{value}</div>
   </div>
 );
 
-const GetSubmittalByID = ({
-  id,
-  onClose,
-}: {
-  id: string;
-  onClose?: () => void;
-}) => {
+// ── Version History Row ──────────────────────────────────────────────────────
+const VersionRow = ({ version, index, total, isCurrent }) => {
+  const [open, setOpen] = useState(false);
+
+  const uploadedAt = version.createdAt || version.updatedAt || version.date;
+  const uploader = version.user || version.sender;
+  const uploaderName = uploader
+    ? `${uploader.firstName || uploader.f_name || ""} ${uploader.lastName || uploader.l_name || ""}`.trim()
+    : null;
+
+  return (
+    <div
+      className={`border rounded-xl overflow-hidden transition-all ${isCurrent
+        ? "border-[#6bbd45] bg-[#6bbd45]/5"
+        : "border-gray-200 bg-white"
+        }`}
+    >
+      {/* Row Header — always visible */}
+      <button
+        className="w-full flex items-center justify-between px-4 py-3 text-left gap-3 hover:bg-black/5 transition-colors"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Version badge */}
+          <span
+            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${isCurrent
+              ? "bg-[#6bbd45] text-white"
+              : "bg-gray-100 text-gray-500"
+              }`}
+          >
+            v{total - index}
+            {isCurrent && " · Current"}
+          </span>
+
+          {/* Timestamp */}
+          <div className="flex items-center gap-1.5 text-xs text-gray-400 min-w-0">
+            <Clock className="w-3 h-3 shrink-0" />
+            <span className="truncate">
+              {uploadedAt
+                ? new Date(uploadedAt).toLocaleString()
+                : "—"}
+            </span>
+            {uploaderName && (
+              <span className="truncate text-gray-500">· by {uploaderName}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Chevron */}
+        <span className="shrink-0 text-gray-400">
+          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </span>
+      </button>
+
+      {/* Expanded Content */}
+      {open && (
+        <div className="px-4 pb-4 space-y-3 border-t border-gray-100">
+          {/* Description */}
+          {(version.description) && (
+            <div className="pt-3">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
+                Description
+              </p>
+              <div
+                className="p-3 bg-white border border-gray-200 rounded-lg prose prose-sm max-w-none text-sm text-gray-700"
+                dangerouslySetInnerHTML={{ __html: version.description }}
+              />
+            </div>
+          )}
+
+          {/* Attached files for this version */}
+          {(version.files?.length > 0 || version.file) && (
+            <div className="pt-1">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                Attachments
+              </p>
+              <RenderFiles
+                files={[version]}
+                table="submittals"
+                parentId={version.submittalId || version.submittalsId}
+                versionId={version.id}
+                hideHeader
+              />
+            </div>
+          )}
+
+          {/* Nothing to show */}
+          {!version.description && !version.files?.length && !version.file && (
+            <p className="pt-3 text-xs text-gray-400 italic">
+              No details available for this version.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+const GetSubmittalByID = ({ id }) => {
   const [loading, setLoading] = useState(true);
-  const [submittal, setSubmittal] = useState<any | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [submittal, setSubmittal] = useState(null);
+  const [error, setError] = useState(null);
 
   const [showResponseModal, setShowResponseModal] = useState(false);
-  const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedResponse, setSelectedResponse] = useState(null);
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -46,48 +141,45 @@ const GetSubmittalByID = ({
     fetchData();
   }, [id]);
 
-  if (loading || !submittal || error) {
-    return createPortal(
-      <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
-        <div className="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
-          {loading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin text-green-600" />
-              <span className="text-gray-700">
-                Loading submittal details...
-              </span>
-            </>
-          ) : (
-            <>
-              <AlertCircle className="w-5 h-5 text-red-600" />
-              <span className="text-red-600">
-                {error || "Submittal not found"}
-              </span>
-              <button
-                onClick={onClose}
-                className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
-              >
-                Close
-              </button>
-            </>
-          )}
-        </div>
-      </div>,
-      document.body,
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 py-8 text-gray-700">
+        <Loader2 className="w-5 h-5 animate-spin" />
+        Loading submittal details...
+      </div>
     );
   }
 
-  const responseColumns: ColumnDef<any>[] = [
+  if (!submittal || error) {
+    return (
+      <div className="flex items-center gap-2 py-8 text-red-600">
+        <AlertCircle className="w-5 h-5" />
+        {error || "Submittal not found"}
+      </div>
+    );
+  }
+
+  // Sort versions newest → oldest
+  const sortedVersions = [...(submittal.versions || [])].sort(
+    (a, b) =>
+      new Date(b.createdAt || b.updatedAt || b.date || 0) -
+      new Date(a.createdAt || a.updatedAt || a.date || 0)
+  );
+  const hasMultipleVersions = sortedVersions.length > 1;
+
+  const responseColumns = [
     {
       accessorKey: "description",
       header: "Message",
       cell: ({ row }) => (
         <div
-          className="prose prose-sm max-w-none"
+          className="prose prose-sm max-w-none text-gray-700"
           style={{
             marginLeft: row.original.parentResponseId ? "20px" : "0px",
           }}
-          dangerouslySetInnerHTML={{ __html: row.original.description || "—" }}
+          dangerouslySetInnerHTML={{
+            __html: row.original.description || "—",
+          }}
         />
       ),
     },
@@ -106,132 +198,150 @@ const GetSubmittalByID = ({
     },
   ];
 
-  return createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
-      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
-        {/* Modal Header */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
-          <div>
-            <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-tight">
-              Submittal Details
-            </h3>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
-          >
-            <X className="w-6 h-6 text-black/60 group-hover:text-black transition-colors" />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* LEFT PANEL */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-2xl shadow-sm space-y-5">
-              <h1 className="text-2xl font-black text-black uppercase tracking-tight">
+  return (
+    <>
+      <div className="p-6 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* LEFT PANEL */}
+          <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl text-black font-semibold">
                 {submittal.subject}
               </h1>
-
-              <Info label="Project" value={submittal.project?.name || "—"} />
-              <Info
-                label="Submitted By"
-                value={submittal.sender?.firstName || "—"}
-              />
-              <Info
-                label="Created On"
-                value={new Date(submittal.date).toLocaleString()}
-              />
-
-              {/* <div>
-                <h4 className="font-semibold text-gray-700">Description</h4>
-                <div
-                  className="p-3 bg-gray-50 border rounded-lg prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      submittal.description ||
-                      submittal.currentVersion?.description ||
-                      "—",
-                  }}
-                />
-              </div> */}
-
-              <RenderFiles
-                files={(() => {
-                  const versions =
-                    submittal.versions?.length > 0
-                      ? submittal.versions
-                      : submittal.currentVersion
-                        ? [submittal.currentVersion]
-                        : [];
-
-                  return versions.map((v: any) => ({
-                    ...v,
-                    description:
-                      v.id === submittal.currentVersion?.id
-                        ? "Current Version"
-                        : `Version ${v.versionNumber || 1}`,
-                  }));
-                })()} 
-                table="submittals"
-                parentId={submittal.id}
-              />
-            </div>
-
-            {/* RIGHT PANEL */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-2xl shadow-sm space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-black text-black uppercase tracking-tight">
-                  Responses
-                </h2>
-                {(userRole === "CLIENT_ADMIN" || userRole === "CLIENT") && (
-                  <Button
-                    className="px-6 py-2 bg-green-100/80 text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all border border-black shadow-sm"
-                    onClick={() => setShowResponseModal(true)}
-                  >
-                    + Add Response
-                  </Button>
-                )}
-              </div>
-
-              {submittal.submittalsResponse?.length > 0 ? (
-                <DataTable
-                  columns={responseColumns}
-                  data={submittal.submittalsResponse}
-                  onRowClick={(row) => setSelectedResponse(row)}
-                  pageSizeOptions={[5, 10]}
-                />
-              ) : (
-                <p className="text-gray-700 italic">No responses yet.</p>
+              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+              <Button
+                className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
+                onClick={() => setShowUpdateModal(true)}
+              >
+                Update Submittal
+              </Button>
               )}
             </div>
+
+            <Info label="Project" value={submittal.project?.name || "—"} />
+            <Info
+              label="Submitted By"
+              value={submittal.sender?.firstName || "—"}
+            />
+            <Info
+              label="Created On"
+              value={new Date(submittal.date).toLocaleString()}
+            />
+
+            {/* <div>
+              <h4 className="font-semibold text-gray-700">Description</h4>
+              <div
+                className="p-3 bg-white border rounded-lg prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    submittal.description ||
+                    submittal.currentVersion?.description ||
+                    "—",
+                }}
+              />
+            </div> */}
+
+            {/* Current version attachments (flat file) */}
+            {/* <RenderFiles
+              files={submittal.versions || []}
+              table="submittals"
+              parentId={submittal.id}
+            /> */}
+          </div>
+
+          {/* RIGHT PANEL */}
+          <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-[#6bbd45]">Responses</h2>
+              {userRole === "CLIENT_ADMIN" && (
+                <Button
+                  className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
+                  onClick={() => setShowResponseModal(true)}
+                >
+                  + Add Response
+                </Button>
+              )}
+            </div>
+
+            {submittal.submittalsResponse?.length > 0 ? (
+              <DataTable
+                columns={responseColumns}
+                data={submittal.submittalsResponse}
+                onRowClick={(row) => setSelectedResponse(row)}
+              />
+            ) : (
+              <p className="text-gray-700 italic">No responses yet.</p>
+            )}
           </div>
         </div>
 
-        {/* ADD RESPONSE MODAL */}
-        {showResponseModal && (
-          <SubmittalResponseModal
-            submittal={submittal}
-            onClose={() => setShowResponseModal(false)}
-            onSuccess={() => {
-              setShowResponseModal(false);
-              fetchData();
-            }}
-          />
-        )}
+        {/* ── VERSION HISTORY (only when > 1 versions) ── */}
+        {hasMultipleVersions && (
+          <div className="bg-gray-100 border border-gray-100 rounded-xl p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <History className="w-5 h-5 text-[#6bbd45]" />
+              <h2 className="text-lg font-black text-black uppercase tracking-tight">
+                Version History
+              </h2>
+              <span className="ml-auto text-[10px] font-black text-gray-400 uppercase tracking-widest bg-white border border-gray-200 px-2 py-1 rounded-md">
+                {sortedVersions.length} versions
+              </span>
+            </div>
 
-        {/* RESPONSE DETAILS MODAL */}
-        {selectedResponse && (
-          <SubmittalResponseDetailsModal
-            response={selectedResponse}
-            onClose={() => {
-              setSelectedResponse(null);
-              fetchData();
-            }}
-          />
+            <div className="space-y-2">
+              {sortedVersions.map((version, index) => (
+                <VersionRow
+                  key={version.id || index}
+                  version={version}
+                  index={index}
+                  total={sortedVersions.length}
+                  isCurrent={
+                    version.id === submittal.currentVersionId ||
+                    index === 0
+                  }
+                />
+              ))}
+            </div>
+          </div>
         )}
       </div>
-    </div>,
-    document.body,
+
+      {/* ADD RESPONSE MODAL */}
+      {showResponseModal && (
+        <SubmittalResponseModal
+          submittalId={submittal.id}
+          submittalVersionId={submittal.currentVersionId}
+          onClose={() => setShowResponseModal(false)}
+          onSuccess={() => {
+            setShowResponseModal(false);
+            fetchData();
+          }}
+        />
+      )}
+
+      {/* RESPONSE DETAILS MODAL */}
+      {selectedResponse && (
+        <SubmittalResponseDetailsModal
+          response={selectedResponse}
+          onClose={() => {
+            setSelectedResponse(null);
+            fetchData();
+          }}
+        />
+      )}
+
+      {/* UPDATE SUBMITTAL MODAL */}
+      {showUpdateModal && (
+        <UpdateSubmittalById
+          submittal={submittal}
+          onClose={() => setShowUpdateModal(false)}
+          onSuccess={() => {
+            setShowUpdateModal(false);
+            fetchData();
+          }}
+        />
+      )}
+    </>
   );
 };
 
