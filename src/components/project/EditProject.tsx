@@ -9,14 +9,12 @@ import {
   UserCheck,
   HardHat,
   Wrench,
-  Layers,
-  X,
   Save,
   Users,
+  Loader2,
 } from "lucide-react";
 
 import Input from "../fields/input";
-import Button from "../fields/Button";
 import SectionTitle from "../ui/SectionTitle";
 import Service from "../../api/Service";
 import ToggleField from "../fields/Toggle";
@@ -38,6 +36,7 @@ const EditProject: React.FC<EditProjectProps> = ({
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [connectionDesigners, setConnectionDesigners] = useState<any[]>([]);
+  const [wbsTemplates, setWbsTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fabricators = useSelector(
@@ -49,15 +48,18 @@ const EditProject: React.FC<EditProjectProps> = ({
   const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
 
-  const { register, handleSubmit, control, setValue, watch } =
+  const { register, handleSubmit, control, watch, reset, formState: { dirtyFields } } =
     useForm<AddProjectPayload>({
       defaultValues: {
         tools: "TEKLA",
+        status: "ACTIVE",
         connectionDesign: false,
         miscDesign: false,
         customerDesign: false,
         detailingMain: false,
         detailingMisc: false,
+        mailReminder: true,
+        submissionMailReminder: true,
       },
     });
 
@@ -65,10 +67,11 @@ const EditProject: React.FC<EditProjectProps> = ({
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [cdRes, projectRes, deptRes, teamRes, staffRes] =
+        const [cdRes, projectRes, wbsRes, deptRes, teamRes, staffRes] =
           await Promise.all([
             Service.FetchAllConnectionDesigner(),
             Service.GetProjectById(projectId),
+            Service.GetWBSTemplate(),
             departmentDatas.length === 0
               ? Service.AllDepartments()
               : Promise.resolve(null),
@@ -79,40 +82,53 @@ const EditProject: React.FC<EditProjectProps> = ({
           ]);
 
         setConnectionDesigners(cdRes?.data || []);
+        setWbsTemplates(wbsRes?.data || []);
         if (deptRes) dispatch(showDepartment(deptRes.data || deptRes));
         if (teamRes) dispatch(showTeam(teamRes.data || teamRes));
         if (staffRes) dispatch(showStaff(staffRes.data || staffRes));
 
         const project = projectRes?.data;
         if (project) {
-          setValue("name", project.name);
-          setValue("projectNumber", project.projectNumber);
-          setValue("description", project.description);
-          setValue("fabricatorID", project.fabricatorID);
-          setValue("managerID", project.managerID);
-          setValue("departmentID", project.department?.id);
-          setValue("teamID", project.team?.id);
-          setValue("tools", project.tools);
-          setValue("stage", project.stage);
-          setValue("estimatedHours", project.estimatedHours);
-          setValue(
-            "startDate",
-            project.startDate
-              ? new Date(project.startDate).toISOString().split("T")[0]
-              : "",
-          );
-          setValue(
-            "endDate",
-            project.endDate
-              ? new Date(project.endDate).toISOString().split("T")[0]
-              : "",
-          );
+          const formatDate = (date: any) => date ? new Date(date).toISOString().split("T")[0] : "";
 
-          setValue("connectionDesign", project.connectionDesign);
-          setValue("miscDesign", project.miscDesign);
-          setValue("customerDesign", project.customerDesign);
-          setValue("detailingMain", project.detailingMain);
-          setValue("detailingMisc", project.detailingMisc);
+          reset({
+            name: project.name,
+            projectNumber: project.projectNumber,
+            description: project.description,
+            fabricatorID: project.fabricatorID,
+            managerID: project.managerID,
+            departmentID: project.department?.id,
+            teamID: project.team?.id,
+            tools: project.tools,
+            stage: project.stage,
+            status: project.status,
+            estimatedHours: project.estimatedHours,
+            rfqId: project.rfqId,
+            CDQuataionID: project.CDQuataionID,
+            connectionDesignerID: project.connectionDesignerID,
+            detailCheckingHours: project.detailCheckingHours,
+            detailingHours: project.detailingHours,
+            executionCheckingHours: project.executionCheckingHours,
+            executionHours: project.executionHours,
+            modelCheckingHours: project.modelCheckingHours,
+            modelingHours: project.modelingHours,
+            mailReminder: project.mailReminder,
+            submissionMailReminder: project.submissionMailReminder,
+            approvalDateChangeReason: project.approvalDateChangeReason,
+            fabricationDateChangeReason: project.fabricationDateChangeReason,
+            startDate: formatDate(project.startDate),
+            endDate: formatDate(project.endDate),
+            approvalDate: formatDate(project.approvalDate),
+            fabricationDate: formatDate(project.fabricationDate),
+            connectionDesign: project.connectionDesign,
+            miscDesign: project.miscDesign,
+            customerDesign: project.customerDesign,
+            detailingMain: project.detailingMain,
+            detailingMisc: project.detailingMisc,
+            wbsTemplateIds: project.projectWbs
+              ? project.projectWbs.map((wbs: any) => wbs.templateId).filter(Boolean)
+              : [],
+          });
         }
       } catch (error) {
         console.error("Failed to load data", error);
@@ -122,7 +138,7 @@ const EditProject: React.FC<EditProjectProps> = ({
       }
     };
     fetchData();
-  }, [projectId, setValue]);
+  }, [projectId, reset]);
 
   const options = {
     fabricators: (Array.isArray(fabricators) ? fabricators : []).map(
@@ -149,15 +165,30 @@ const EditProject: React.FC<EditProjectProps> = ({
       label: c.connectionDesignerName || c.name,
       value: String(c.id),
     })),
+    wbsTemplates: wbsTemplates.map((w: any) => ({
+      label: w.name,
+      value: String(w.id),
+    })),
     tools: [
       { label: "TEKLA", value: "TEKLA" },
       { label: "SDS2", value: "SDS2" },
       { label: "Both (TEKLA + SDS2)", value: "BOTH" },
     ],
+    status: [
+      { label: "ACTIVE", value: "ACTIVE" },
+      { label: "INACTIVE", value: "INACTIVE" },
+      { label: "ON HOLD", value: "ON_HOLD" },
+      { label: "COMPLETED", value: "COMPLETED" },
+      { label: "DRAFT", value: "DRAFT" },
+    ],
     stage: [
       { label: "IFA - (Issue for Approval)", value: "IFA" },
       { label: "IFC - (Issue for Construction)", value: "IFC" },
       { label: "CO# - (Change Order)", value: "CO#" },
+      { label: "RFI - (Request for Information)", value: "RFI" },
+      { label: "PLANNING", value: "PLANNING" },
+      { label: "IN PROGRESS", value: "IN_PROGRESS" },
+      { label: "COMPLETED", value: "COMPLETED" },
     ],
   };
 
@@ -166,11 +197,14 @@ const EditProject: React.FC<EditProjectProps> = ({
       setIsSubmitting(true);
       const formData = new FormData();
 
-      Object.entries(data).forEach(([key, value]) => {
+      Object.keys(dirtyFields).forEach((key) => {
+        const value = data[key as keyof AddProjectPayload];
         if (value === null || value === undefined) return;
         if (key === "files") return;
 
-        if (typeof value === "boolean") {
+        if (Array.isArray(value)) {
+          value.forEach((v) => formData.append(`${key}[]`, v));
+        } else if (typeof value === "boolean") {
           formData.append(key, value ? "true" : "false");
         } else {
           formData.append(key, String(value));
@@ -192,9 +226,10 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <div className="text-center">Loading project data...</div>
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center">
+          <Loader2 className="w-10 h-10 animate-spin text-[#6bbd45] mb-4" />
+          <div className="text-center font-bold text-gray-700">Loading project details...</div>
         </div>
       </div>
     );
@@ -202,293 +237,286 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={onCancel}
     >
       <div
-        className="bg-white w-full max-w-5xl rounded-xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        className="bg-white w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col border border-black/5"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Scrollable Content */}
-        <div className="overflow-y-auto p-6">
-          <div className="flex justify-between items-center mb-6 border-b pb-4 sticky top-0 bg-white z-10">
-            <h2 className="text-2xl  text-gray-700">Edit Project</h2>
+        <div className="overflow-y-auto p-4 md:p-8 custom-scrollbar">
+          <div className="flex justify-between items-center mb-8 border-b border-black/5 pb-5 sticky top-[-32px] bg-white z-20">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight">Edit Project</h2>
+            </div>
             <button
               onClick={onCancel}
-              className="text-gray-700 hover:text-gray-700"
+              className="p-1 bg-red-50 hover:bg-red-100 text-black border border-red-600 hover:text-red-500 rounded-md transition-all"
             >
-              <X className="w-6 h-6" />
+              CLOSE
             </button>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-            {/* Project Info */}
-            <SectionTitle title="Project Details" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input
-                label="Project Number"
-                placeholder="PROJ-2025-089"
-                {...register("projectNumber")}
-              />
-              <Input
-                label="Project Name"
-                placeholder="Empire State Tower - Phase II"
-                {...register("name")}
-              />
-              <div className="md:col-span-2">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+            {/* Core Project Info */}
+            <div className="space-y-6">
+              <SectionTitle title="Core Project Information" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Input
-                  label="Description"
-                  placeholder="Full structural steel detailing for 40-story commercial building..."
-                  {...register("description")}
+                  label="Project Number"
+                  placeholder="PROJ-2025-089"
+                  {...register("projectNumber")}
                 />
-              </div>
-            </div>
-
-            {/* Team Assignment */}
-            <SectionTitle title="Team & Assignments" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <Building2 className="w-4 h-4 text-blue-600" /> Fabricator
-                </label>
-                <Controller
-                  name="fabricatorID"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      options={options.fabricators}
-                      value={options.fabricators.find(
-                        (o: any) => o.value === field.value,
-                      )}
-                      onChange={(o: any) => field.onChange(o?.value || "")}
-                      placeholder="Select..."
-                      isSearchable
-                    />
-                  )}
+                <Input
+                  label="Project Name"
+                  placeholder="Empire State Tower - Phase II"
+                  {...register("name")}
                 />
-              </div>
-              <div>
-                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <HardHat className="w-4 h-4 text-amber-600" /> Project Manager
-                </label>
-                <Controller
-                  name="managerID"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      options={options.managers}
-                      value={options.managers.find(
-                        (o: any) => o.value === field.value,
-                      )}
-                      onChange={(o: any) => field.onChange(o?.value || "")}
-                      placeholder="Assign manager"
-                      isSearchable
-                    />
-                  )}
-                />
-              </div>
-              <div>
-                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <UserCheck className="w-4 h-4 text-green-600" /> Department
-                </label>
-                <Controller
-                  name="departmentID"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      options={options.departments}
-                      value={options.departments.find(
-                        (o: any) => o.value === field.value,
-                      )}
-                      onChange={(o: any) => field.onChange(o?.value || "")}
-                      placeholder="Select dept"
-                    />
-                  )}
-                />
-              </div>
-              <div>
-                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <Users className="w-4 h-4 text-purple-600" /> Team
-                </label>
-                <Controller
-                  name="teamID"
-                  control={control}
-                  render={({ field }) => {
-                    const selectedDeptId = watch("departmentID");
-                    const filteredTeams = (
-                      Array.isArray(teamDatas) ? teamDatas : []
-                    )
-                      .filter(
-                        (t: any) =>
-                          !selectedDeptId ||
-                          String(t.departmentID) === String(selectedDeptId),
-                      )
-                      .map((t: any) => ({
-                        label: t.name,
-                        value: String(t.id),
-                      }));
-
-                    return (
+                <div>
+                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">Stage</label>
+                  <Controller
+                    name="stage"
+                    control={control}
+                    render={({ field }) => (
                       <Select
-                        options={filteredTeams}
-                        value={filteredTeams.find(
-                          (o: any) => o.value === field.value,
-                        )}
-                        onChange={(o: any) => field.onChange(o?.value || "")}
-                        placeholder="Select team"
-                        isSearchable
-                        isClearable
-                        isDisabled={!selectedDeptId}
+                        options={options.stage}
+                        value={options.stage.find((o) => o.value === field.value)}
+                        onChange={(o) => field.onChange(o?.value || "IFA")}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
                       />
-                    );
-                  }}
-                />
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">Status</label>
+                  <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={options.status}
+                        value={options.status.find((o) => o.value === field.value)}
+                        onChange={(o) => field.onChange(o?.value || "ACTIVE")}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Connection Design */}
-            <div className="bg-cyan-50/50 rounded-xl p-4 border border-cyan-100">
-              <div className="flex items-center gap-2 mb-4">
-                <Layers className="w-5 h-5 text-cyan-600" />
-                <h3 className="text-lg  text-cyan-900">
-                  Connection Design Scope
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  "connectionDesign::Main Connection Design",
-                  "miscDesign::Misc Design",
-                  "customerDesign::Customer Design",
-                ].map((item) => {
-                  const [key, label] = item.split("::");
-                  return (
-                    <Controller
-                      key={key}
-                      name={key as keyof AddProjectPayload}
-                      control={control}
-                      render={({ field }) => (
-                        <div className="bg-white rounded-lg p-3 shadow-sm border border-cyan-100">
-                          <ToggleField
-                            label={label}
-                            checked={!!field.value}
-                            onChange={field.onChange}
-                          />
-                        </div>
-                      )}
-                    />
-                  );
-                })}
+
+            {/* Team & Organizational Assignment */}
+            <div className="space-y-6">
+              <SectionTitle title="Assignments & Organization" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-black text-black uppercase tracking-widest mb-2">
+                    <Building2 className="w-4 h-4 text-[#6bbd45]" /> Fabricator
+                  </label>
+                  <Controller
+                    name="fabricatorID"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={options.fabricators}
+                        value={options.fabricators.find((o: any) => o.value === field.value)}
+                        onChange={(o: any) => field.onChange(o?.value || "")}
+                        placeholder="Select fabricator"
+                        isSearchable
+                      />
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-black text-black uppercase tracking-widest mb-2">
+                    <HardHat className="w-4 h-4 text-[#6bbd45]" /> Manager
+                  </label>
+                  <Controller
+                    name="managerID"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={options.managers}
+                        value={options.managers.find((o: any) => o.value === field.value)}
+                        onChange={(o: any) => field.onChange(o?.value || "")}
+                        placeholder="Assign manager"
+                        isSearchable
+                      />
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-black text-black uppercase tracking-widest mb-2">
+                    <UserCheck className="w-4 h-4 text-[#6bbd45]" /> Department
+                  </label>
+                  <Controller
+                    name="departmentID"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={options.departments}
+                        value={options.departments.find((o: any) => o.value === field.value)}
+                        onChange={(o: any) => field.onChange(o?.value || "")}
+                        placeholder="Department"
+                      />
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-black text-black uppercase tracking-widest mb-2">
+                    <Users className="w-4 h-4 text-[#6bbd45]" /> Team
+                  </label>
+                  <Controller
+                    name="teamID"
+                    control={control}
+                    render={({ field }) => {
+                      const selectedDeptId = watch("departmentID");
+                      const filteredTeams = (Array.isArray(teamDatas) ? teamDatas : [])
+                        .filter((t: any) => !selectedDeptId || String(t.departmentID) === String(selectedDeptId))
+                        .map((t: any) => ({ label: t.name, value: String(t.id) }));
+
+                      return (
+                        <Select
+                          options={filteredTeams}
+                          value={filteredTeams.find((o: any) => o.value === field.value)}
+                          onChange={(o: any) => field.onChange(o?.value || "")}
+                          placeholder="Team"
+                          isDisabled={!selectedDeptId}
+                        />
+                      );
+                    }}
+                  />
+                </div>
+                <div className="md:col-span-2 lg:col-span-4">
+                  <label className="flex items-center gap-2 text-sm font-black text-black uppercase tracking-widest mb-2">
+                    WBS Templates
+                  </label>
+                  <Controller
+                    name="wbsTemplateIds"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={options.wbsTemplates}
+                        value={options.wbsTemplates.filter((o: any) => field.value?.includes(o.value))}
+                        onChange={(o: any) => field.onChange(o ? o.map((x: any) => x.value) : [])}
+                        isMulti
+                        placeholder="Attach WBS templates..."
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Detailing Scope */}
-            <div className="bg-amber-50/50 rounded-xl p-4 border border-amber-100">
-              <div className="flex items-center gap-2 mb-4">
-                <Wrench className="w-5 h-5 text-amber-600" />
-                <h3 className="text-lg  text-amber-900">Detailing Scope</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  "detailingMain::Detailing Main",
-                  "detailingMisc::Detailing Misc",
-                ].map((item) => {
-                  const [key, label] = item.split("::");
-                  return (
-                    <Controller
-                      key={key}
-                      name={key as keyof AddProjectPayload}
-                      control={control}
-                      render={({ field }) => (
-                        <div className="bg-white rounded-lg p-3 shadow-sm border border-amber-100">
-                          <ToggleField
-                            label={label}
-                            checked={!!field.value}
-                            onChange={field.onChange}
-                          />
-                        </div>
-                      )}
-                    />
-                  );
-                })}
+            {/* Connection Designer Section */}
+            <div className="space-y-6">
+              <SectionTitle title="Connection Design Details" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">Connection Designer</label>
+                  <Controller
+                    name="connectionDesignerID"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={options.connectionDesigners}
+                        value={options.connectionDesigners.find((o: any) => o.value === field.value)}
+                        onChange={(o: any) => field.onChange(o?.value || "")}
+                        isClearable
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Tools & Timeline */}
-            <SectionTitle title="Tools & Timeline" />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div>
-                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <Wrench className="w-4 h-4 text-purple-600" /> Tool
-                </label>
-                <Controller
-                  name="tools"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      options={options.tools}
-                      value={options.tools.find((o) => o.value === field.value)}
-                      onChange={(o) => field.onChange(o?.value || "TEKLA")}
-                    />
-                  )}
-                />
+            {/* Hours Tracking */}
+            <div className="space-y-6">
+              <SectionTitle title="Hours Allocation & Tracking" />
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <Input label="Estimated Hours" type="number" {...register("estimatedHours")} />
               </div>
-              <div>
-                <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
-                  <Layers className="w-4 h-4 text-cyan-600" /> Stage
-                </label>
-                <Controller
-                  name="stage"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      options={options.stage}
-                      value={options.stage.find((o) => o.value === field.value)}
-                      onChange={(o) => field.onChange(o?.value || "IFA")}
-                    />
-                  )}
-                />
+            </div>
+
+            {/* Timeline & Milestones */}
+            <div className="space-y-6">
+              <SectionTitle title="Project Timeline & Deadlines" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Input label="Start Date" type="date" {...register("startDate")} />
+                <Input label="End Date" type="date" {...register("endDate")} />
+                <Input label="Approval Date" type="date" {...register("approvalDate")} />
+                <Input label="Fabrication Date" type="date" {...register("fabricationDate")} />
+
+                <div className="md:col-span-2">
+                  <Input label="Approval Date Change Reason" {...register("approvalDateChangeReason")} />
+                </div>
+                <div className="md:col-span-2">
+                  <Input label="Fabrication Date Change Reason" {...register("fabricationDateChangeReason")} />
+                </div>
               </div>
-              <Input
-                label="Estimated Hours"
-                type="number"
-                placeholder="1200"
-                {...register("estimatedHours")}
+            </div>
+
+            {/* Scope Toggles */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-green-50/50 rounded-2xl p-6 border border-green-100 flex flex-col gap-4">
+                <h3 className="text-lg font-black text-black uppercase tracking-tight mb-2 border-b border-green-200 pb-2">Design Scope</h3>
+                <div className="space-y-3">
+                  <Controller name="connectionDesign" control={control} render={({ field }) => <ToggleField label="Main Connection Design" checked={!!field.value} onChange={field.onChange} />} />
+                  <Controller name="miscDesign" control={control} render={({ field }) => <ToggleField label="Misc Design" checked={!!field.value} onChange={field.onChange} />} />
+                  <Controller name="customerDesign" control={control} render={({ field }) => <ToggleField label="Customer Design" checked={!!field.value} onChange={field.onChange} />} />
+                </div>
+              </div>
+              <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 flex flex-col gap-4">
+                <h3 className="text-lg font-black text-black uppercase tracking-tight mb-2 border-b border-blue-200 pb-2">Detailing Scope</h3>
+                <div className="space-y-3">
+                  <Controller name="detailingMain" control={control} render={({ field }) => <ToggleField label="Detailing Main" checked={!!field.value} onChange={field.onChange} />} />
+                  <Controller name="detailingMisc" control={control} render={({ field }) => <ToggleField label="Detailing Misc" checked={!!field.value} onChange={field.onChange} />} />
+                </div>
+              </div>
+            </div>
+
+            {/* Tools */}
+            <div className="w-full max-w-xs">
+              <label className="flex items-center gap-2 text-sm font-black text-black uppercase tracking-widest mb-2">
+                <Wrench className="w-4 h-4 text-[#6bbd45]" /> Detailing Tool
+              </label>
+              <Controller
+                name="tools"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    options={options.tools}
+                    value={options.tools.find((o) => o.value === field.value)}
+                    onChange={(o) => field.onChange(o?.value || "TEKLA")}
+                  />
+                )}
               />
-              <Input
-                label="Start Date"
-                type="date"
-                {...register("startDate")}
-              />
-              <Input
-                label="Target End Date"
-                type="date"
-                {...register("endDate")}
-              />
             </div>
 
-            {/* Submit */}
-            <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
-              <Button
-                className="bg-gray-500 hover:bg-gray-600"
-                onClick={onCancel}
+            {/* Actions */}
+            <div className="flex justify-end gap-4 pt-10  border-black/5   z-20 pb-2">
+              <button
                 type="button"
+                onClick={onCancel}
+                className="px-8 py-3 bg-gray-100 text-black border-2 border-black rounded-xl hover:bg-gray-200 transition-all font-black uppercase tracking-wider text-sm"
               >
                 Cancel
-              </Button>
-              <Button
-                className="flex items-center gap-2"
+              </button>
+              <button
                 type="submit"
                 disabled={isSubmitting}
+                className="flex items-center gap-2 px-10 py-3 bg-[#6bbd45]/50 text-black border-2 border-black hover:text-white hover:bg-[#6bbd45] rounded-xl transition-all font-black uppercase tracking-wider text-sm shadow-xl shadow-green-200 disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <>Saving...</>
+                  <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
                     <Save className="w-4 h-4" />
                     Save Changes
                   </>
                 )}
-              </Button>
+              </button>
             </div>
           </form>
         </div>

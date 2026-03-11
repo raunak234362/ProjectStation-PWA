@@ -103,7 +103,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             ) : (
               <>
                 <FileText size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
-                
+
               </>
             )}
           </h3>
@@ -172,14 +172,21 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                               {submittal.subject || "No Subject"}
                             </h4>
                           </div>
-                          <span
-                            className={cn(
-                              "text-[10px] font-bold uppercase tracking-widest shrink-0 ml-2",
-                              overdue ? "text-red-500" : "text-black bg-gray-50 px-1.5 py-0.5 rounded",
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span
+                              className={cn(
+                                "text-[10px] font-bold uppercase tracking-widest shrink-0",
+                                overdue ? "text-red-500" : "text-black bg-gray-50 px-1.5 py-0.5 rounded",
+                              )}
+                            >
+                              {formatDate(submittal.approvalDate)}
+                            </span>
+                            {submittal.stage && (
+                              <span className="text-[10px] font-bold uppercase tracking-widest shrink-0 bg-[#6bbd45]/10 text-black border border-[#6bbd45]/20 px-1.5 py-0.5 rounded">
+                                {submittal.stage}
+                              </span>
                             )}
-                          >
-                            {formatDate(submittal.approvalDate)}
-                          </span>
+                          </div>
                         </div>
                         {overdue && (
                           <p className="text-[10px] font-black text-red-600 tracking-wider">OVERDUE</p>

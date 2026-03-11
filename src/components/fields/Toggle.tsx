@@ -40,12 +40,12 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
     };
 
     return (
-      <div className="flex flex-row items-center w-full">
+      <div className={`flex flex-row items-center justify-between gap-4 w-full max-w-[280px] group cursor-pointer ${className}`}>
         {/* LABEL */}
         {label && (
           <label
             htmlFor={id}
-            className={`block mb-1 w-fit min-w-28 font-normal text-sm text-gray-700 ${checked ? "font-semibold" : ""
+            className={`cursor-pointer font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all ${checked ? "text-black opacity-100" : "text-black/40 opacity-60 group-hover:opacity-80"
               }`}
           >
             {label}
@@ -53,17 +53,33 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         )}
 
         {/* TOGGLE */}
-        <input
-          type="checkbox"
-          id={id}
-          name={name}
-          onChange={handleChange}
-          ref={ref}
-          {...props}
-        />
-
-        {/* SELECTED TEXT */}
-        {checked && <span className=" text-green-500">Selected</span>}
+        <div className="relative flex items-center">
+          <input
+            type="checkbox"
+            id={id}
+            name={name}
+            className="w-5 h-5 rounded-md border-2 border-black/10 checked:bg-green-200 checked:border-black transition-all appearance-none cursor-pointer"
+            checked={checked}
+            onChange={handleChange}
+            ref={ref}
+            {...props}
+          />
+          {checked && (
+            <svg
+              className="absolute w-3 h-3 text-black pointer-events-none left-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="4"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          )}
+        </div>
       </div>
     );
   }

@@ -6,7 +6,7 @@ import Input from "../fields/input";
 import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
-import type { changeOrdersPayload, SelectOption } from "../../interface";
+import type { changeOrdersPayload, SelectOption, Fabricator } from "../../interface";
 import SectionTitle from "../ui/SectionTitle";
 import Select from "react-select";
 import RichTextEditor from "../fields/RichTextEditor";
@@ -18,20 +18,38 @@ interface AddCOProps {
 
 const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
   const userDetail = useSelector((state: any) => state.userInfo.userDetail);
-  const staff = useSelector((state: any) => state.userInfo.staffData);
+  const fabricators = useSelector(
+    (state: any) => state.fabricatorInfo.fabricatorData,
+  );
+  // const staff = useSelector((state: any) => state.userInfo.staffData);
+
+  const fabricatorID = project?.fabricatorID;
+
+  // Match the project's fabricator and get their points of contact
+  const selectedFabricator = fabricators?.find(
+    (f: Fabricator) => String(f.id) === String(fabricatorID),
+  );
+
+  // Fabricator POC options (mirrors AddRFI's sender_id)
+  const pocOptions: SelectOption[] =
+    selectedFabricator?.pointOfContact?.map((p: any) => ({
+      label: `${p.firstName} ${p.middleName ?? ""} ${p.lastName}`.replace(/\s+/g, " ").trim(),
+      value: String(p.id),
+    })) ?? [];
+
+  // WBT staff options (mirrors AddRFI's recepient_id)
+  // const recipientOptions: SelectOption[] =
+  //   staff
+  //     ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
+  //     .map((s: any) => ({
+  //       label: `${s.firstName} ${s.lastName}`,
+  //       value: String(s.id),
+  //     })) ?? [];
 
   const { register, handleSubmit, control, reset } =
     useForm<changeOrdersPayload>();
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-
-  const recipientOptions: SelectOption[] =
-    staff
-      ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
-      .map((s: any) => ({
-        label: `${s.firstName} ${s.lastName}`,
-        value: String(s.id),
-      })) ?? [];
 
   const onSubmit = async (data: changeOrdersPayload) => {
     try {
@@ -39,6 +57,9 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
       formData.append("project", project?.id);
       formData.append("sender", userDetail.id);
       formData.append("recipients", data.recipients);
+      // if (data.fabricator_contact) {
+      //   formData.append("fabricator_contact", data.fabricator_contact);
+      // }
       formData.append("changeOrderNumber", data.changeOrderNumber);
       formData.append("remarks", data.remarks);
       formData.append("reason", data.reason || "");
@@ -54,8 +75,6 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
 
       if (createdCO) {
         toast.success("Change Order Created!");
-
-        // This is where your error happened because onSuccess was undefined
         if (typeof onSuccess === "function") {
           onSuccess(createdCO);
         } else {
@@ -63,6 +82,8 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
         }
       }
       reset();
+      setDescription("");
+      setFiles([]);
     } catch (err) {
       console.error(err);
       toast.error("Failed to create Change Order");
@@ -73,19 +94,53 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
     <div className="w-full bg-white p-6 rounded-xl shadow-lg border border-gray-100">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <SectionTitle title="Fabrication & Routing" />
-        <Controller
-          name="recipients"
-          control={control}
-          rules={{ required: "Recipient is required" }}
-          render={({ field }) => (
-            <Select
-              placeholder="Select Recipient *"
-              options={recipientOptions}
-              value={recipientOptions.find((o) => o.value === field.value)}
-              onChange={(option) => field.onChange(option?.value)}
+
+        {/* Two separate boxes mirroring AddRFI */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* BOX 1: Fabricator Contact (POC) */}
+          <div>
+            <label className="block text-xs font-black text-black uppercase tracking-widest mb-2">
+              Fabricator Contact
+            </label>
+            <Controller
+              name="recipients"
+              control={control}
+              render={({ field }) => (
+                <Select<SelectOption, false>
+                  placeholder="Select Fabricator Contact"
+                  options={pocOptions}
+                  value={pocOptions.find((o) => o.value === field.value) ?? null}
+                  onChange={(option) => field.onChange(option ? option.value : null)}
+                  noOptionsMessage={() =>
+                    fabricatorID
+                      ? "No contacts found for this fabricator"
+                      : "No fabricator linked to this project"
+                  }
+                />
+              )}
             />
-          )}
-        />
+          </div>
+
+          {/* BOX 2: WBT Recipient */}
+          {/* <div>
+            <label className="block text-xs font-black text-black uppercase tracking-widest mb-2">
+              WBT Contact <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="recipients"
+              control={control}
+              rules={{ required: "WBT recipient is required" }}
+              render={({ field }) => (
+                <Select<SelectOption, false>
+                  placeholder="Select WBT Contact *"
+                  options={recipientOptions}
+                  value={recipientOptions.find((o) => o.value === field.value) ?? null}
+                  onChange={(option) => field.onChange(option ? option.value : null)}
+                />
+              )}
+            />
+          </div> */}
+        </div>
 
         <SectionTitle title="Details" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -118,7 +173,7 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
         <div className="flex justify-center w-full pt-4">
           <Button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg transition-all"
+            className="w-full bg-green-100 border border-black hover:bg-green-200 text-black px-8 py-2 rounded-lg transition-all"
           >
             Save & Continue
           </Button>

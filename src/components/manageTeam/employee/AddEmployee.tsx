@@ -85,15 +85,19 @@ const AddEmployee: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white rounded-[2.5rem] shadow-soft p-12 mt-10 border border-black/5">
+    <div className="w-full bg-white rounded-[2.5rem] p-6 sm:p-10 border border-black/5">
       <div className="mb-10 text-center">
-        <h2 className="text-3xl font-black text-black uppercase tracking-tight">Add New Employee</h2>
-        <p className="text-black/60 text-sm font-bold tracking-wide mt-2">Scale your team with new talent</p>
+        <h2 className="text-3xl font-black text-black uppercase tracking-tight">
+          Add New Employee
+        </h2>
+        <p className="text-black/60 text-sm font-bold tracking-wide mt-2">
+          Onboard a new member to the organization
+        </p>
       </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-2 gap-8"
+        className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8"
       >
         {/* Username */}
         <div className="space-y-2">
@@ -101,8 +105,8 @@ const AddEmployee: React.FC = () => {
             label="Username"
             type="text"
             {...register("username", { required: "Username is required" })}
-            placeholder="Enter username"
-            className="w-full"
+            placeholder="ENTER USERNAME"
+            className="w-full font-bold uppercase tracking-wide placeholder:font-normal placeholder:lowercase"
           />
           {errors.username && (
             <p className="text-red-500 text-[10px] font-black uppercase ml-1">
@@ -112,105 +116,100 @@ const AddEmployee: React.FC = () => {
         </div>
 
         {/* Email */}
-        <div>
+        <div className="space-y-2">
           <Input
             label="Email"
             type="email"
             {...register("email", { required: "Email is required" })}
             placeholder="employee@company.com"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
+            className="w-full font-bold tracking-wide placeholder:font-normal"
           />
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-          )}
-        </div>
-
-        {/* Phone & Extension */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <Input
-              label="Phone"
-              type="tel"
-              {...register("phone", { required: "Phone number is required" })}
-              placeholder="+91XXXXXXXXXX"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
-            {errors.phone && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.phone.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <Input
-              label="Extension"
-              type="text"
-              {...register("extension")}
-              placeholder="Ext"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
-          </div>
-        </div>
-
-        {/* First Name */}
-        <div>
-          <Input
-            label="First Name"
-            type="text"
-            {...register("firstName", { required: "First name is required" })}
-            placeholder="John"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
-          {errors.firstName && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.firstName.message}
+            <p className="text-red-500 text-[10px] font-black uppercase ml-1">
+              {errors.email.message}
             </p>
           )}
         </div>
 
-        {/* Middle Name */}
-        <div>
-          <Input
-            label="Middle Name"
-            type="text"
-            {...register("middleName")}
-            placeholder="M."
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
+        {/* Phone & Extension */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Input
+              label="Phone"
+              type="tel"
+              {...register("phone", { required: "Phone number is required" })}
+              placeholder="+1 XXX XXX XXXX"
+              className="w-full font-bold tracking-wide placeholder:font-normal"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-[10px] font-black uppercase ml-1">
+                {errors.phone.message}
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Input
+              label="Extension"
+              type="text"
+              {...register("extension")}
+              placeholder="EXT"
+              className="w-full font-bold uppercase tracking-wide placeholder:font-normal placeholder:lowercase"
+            />
+          </div>
         </div>
 
-        {/* Last Name */}
-        <div>
-          <Input
-            label="Last Name"
-            type="text"
-            {...register("lastName")}
-            placeholder="Doe"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
-          />
+        {/* Names Grid */}
+        <div className="grid grid-cols-3 gap-4 md:col-span-1">
+          <div className="space-y-2">
+            <Input
+              label="First Name"
+              type="text"
+              {...register("firstName", { required: "Required" })}
+              placeholder="FIRST"
+              className="w-full font-bold uppercase tracking-wide placeholder:font-normal placeholder:lowercase"
+            />
+          </div>
+          <div className="space-y-2">
+            <Input
+              label="Middle"
+              type="text"
+              {...register("middleName")}
+              placeholder="M."
+              className="w-full font-bold uppercase tracking-wide placeholder:font-normal placeholder:lowercase"
+            />
+          </div>
+          <div className="space-y-2">
+            <Input
+              label="Last Name"
+              type="text"
+              {...register("lastName", { required: "Required" })}
+              placeholder="LAST"
+              className="w-full font-bold uppercase tracking-wide placeholder:font-normal placeholder:lowercase"
+            />
+          </div>
         </div>
 
         {/* Designation */}
-        <div>
+        <div className="space-y-2">
           <Input
             label="Designation"
             type="text"
             {...register("designation", {
               required: "Designation is required",
             })}
-            placeholder="Software Engineer"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500"
+            placeholder="e.g. Lead Developer"
+            className="w-full font-bold uppercase tracking-wide placeholder:font-normal placeholder:lowercase"
           />
           {errors.designation && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-red-500 text-[10px] font-black uppercase ml-1">
               {errors.designation.message}
             </p>
           )}
         </div>
 
-        {/* Role – FIXED */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        {/* Role */}
+        <div className="space-y-2">
+          <label className="block text-[10px] font-black text-black uppercase tracking-[0.15em] ml-1">
             Role
           </label>
           <Select
@@ -219,38 +218,38 @@ const AddEmployee: React.FC = () => {
             value={selectedRoleOption?.value}
             onChange={(_, value) => setValue("role", value as string)}
             placeholder="Select role..."
-            className="mt-1"
+            className="w-full"
           />
           {errors.role && (
-            <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>
+            <p className="text-red-500 text-[10px] font-black uppercase ml-1">
+              {errors.role.message}
+            </p>
           )}
         </div>
 
         {/* Department */}
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label className="block text-[10px] font-black text-black uppercase tracking-[0.15em] ml-1">
             Department
           </label>
           <Select
             options={departmentOptions}
             {...register("departmentId")}
-            // We need to handle the value and onChange slightly differently for this custom Select
-            // if it behaves like the Role select above
             value={watch("departmentId")}
             onChange={(_, value) => setValue("departmentId", value as string)}
             placeholder="Select Department..."
-            className="mt-1"
+            className="w-full"
           />
         </div>
 
         {/* Submit */}
-        <div className="md:col-span-2 pt-10">
+        <div className="md:col-span-2 pt-10 border-t border-black/5">
           <Button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-medium flex items-center justify-center gap-3 ${isSubmitting
-              ? "bg-gray-100 text-black/20 cursor-not-allowed"
-              : "bg-black text-white hover:bg-black/90 active:scale-95"
+            className={`w-full px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-soft border flex items-center justify-center gap-3 ${isSubmitting
+                ? "bg-gray-100 text-black/20 border-black/5 cursor-not-allowed"
+                : "bg-green-100/80 text-black border-black hover:bg-green-200/80 active:scale-95"
               }`}
           >
             {isSubmitting ? (

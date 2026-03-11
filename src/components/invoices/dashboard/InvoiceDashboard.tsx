@@ -5,14 +5,12 @@ import InvoiceStatsCards from "./InvoiceStatsCards";
 import InvoiceAnalytics from "./InvoiceAnalytics";
 import PendingInvoiceList from "./PendingInvoiceList";
 import RecentInvoiceActivity from "./RecentInvoiceActivity";
-import QuickActionsPanel from "./QuickActionsPanel";
 
 interface InvoiceDashboardProps {
   navigateToCreate: () => void;
 }
 
 const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
-  navigateToCreate,
 }) => {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,11 +102,10 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
               <button
                 key={filter}
                 onClick={() => setDateFilter(filter)}
-                className={`px-5 py-2 rounded-full text-md font-semibold transition-all shrink-0 ${
-                  dateFilter === filter
+                className={`px-5 py-2 rounded-full text-md font-semibold transition-all shrink-0 ${dateFilter === filter
                     ? "bg-[#6bbd45] text-white shadow-[0_4px_12px_rgba(107,189,69,0.3)]"
-                    : "bg-white text-gray-600 hover:bg-green-50 border border-green-500/10"
-                }`}
+                    : "bg-green-50 text-gray-600 hover:bg-green-100 border border-green-500/10"
+                  }`}
               >
                 {filter}
               </button>
@@ -121,15 +118,6 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
         <>
           {/* 1. Stats Cards */}
           <InvoiceStatsCards invoices={invoices} />
-
-          {/* 2. Quick Actions */}
-          <QuickActionsPanel
-            onRaiseInvoice={navigateToCreate}
-            onDownloadReport={() =>
-              alert("Report download feature coming soon!")
-            }
-            onSendReminders={() => alert("Reminders sent successfully!")}
-          />
         </>
       )}
 
@@ -137,11 +125,11 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
       <InvoiceAnalytics invoices={invoices} />
 
       {/* Bottom Section: List + Activity */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+        <div className="xl:col-span-2 h-full">
           <PendingInvoiceList invoices={invoices} />
         </div>
-        <div className="xl:col-span-1">
+        <div className="xl:col-span-1 h-full">
           <RecentInvoiceActivity invoices={invoices} />
         </div>
       </div>

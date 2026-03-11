@@ -3,7 +3,6 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import MultipleFileUpload from "../../fields/MultipleFileUpload";
 import Service from "../../../api/Service";
-import { X } from "lucide-react";
 import type { MilestoneResponsePayload } from "../../../interface";
 import Button from "../../fields/Button";
 import RichTextEditor from "../../fields/RichTextEditor";
@@ -61,12 +60,12 @@ const MilestoneResponseModal: React.FC<MilestoneResponseModalProps> = ({
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
             <div className="bg-white shadow-lg rounded-xl w-full max-w-4xl relative flex flex-col max-h-[90vh]">
                 <div className="px-6 py-4 border-b flex justify-between items-center bg-white rounded-t-xl z-10">
-                    <h2 className="text-xl font-bold text-green-700">Add Milestone Response</h2>
+                    <h2 className="text-xl font-bold text-black">Add Milestone Response</h2>
                     <Button
                         onClick={onClose}
-                        className="text-gray-700 hover:text-red-500 p-1"
+                        className="text-black border border-red-600 bg-red-50 hover:text-red-500 hover:bg-red-100 p-1"
                     >
-                        <X className="w-5 h-5" />
+                        close
                     </Button>
                 </div>
 
@@ -144,7 +143,7 @@ const MilestoneResponseModal: React.FC<MilestoneResponseModalProps> = ({
                     <Button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-200"
+                        className="px-4 py-2 border border-gray-400 rounded-lg text-black hover:bg-gray-200"
                     >
                         Cancel
                     </Button>
@@ -153,7 +152,7 @@ const MilestoneResponseModal: React.FC<MilestoneResponseModalProps> = ({
                         type="submit"
                         form="milestone-response-form"
                         disabled={loading}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                        className="px-4 py-2 bg-green-50 text-black border border-black rounded-lg hover:bg-green-100 transition disabled:opacity-50"
                     >
                         {loading ? "Submitting..." : "Submit Response"}
                     </Button>

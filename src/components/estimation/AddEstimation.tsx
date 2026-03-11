@@ -166,12 +166,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
   return (
     <div className="w-full mx-auto bg-white rounded-2xl md:rounded-3xl border border-black/10 overflow-hidden shadow-medium transition-all duration-300">
       <div className="bg-gray-50/50 p-6 md:p-8 border-b border-black/5">
-        <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight text-center">
-          {isRfqLocked ? "Estimation Intelligence Configuration" : "Initialize New Quantification"}
-        </h2>
-        <p className="text-[10px] font-bold text-black/40 uppercase tracking-[0.3em] text-center mt-2">
-          Technical Resource & Engineering Analysis
-        </p>
+        
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-10 space-y-10">
@@ -339,7 +334,7 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
             disabled={isSubmitting}
             className="w-full sm:w-auto px-12 py-4 bg-green-200 text-black border border-black rounded-xl hover:bg-green-300 font-black uppercase text-xs tracking-[0.2em] shadow-sm transition-all disabled:opacity-50"
           >
-            {isSubmitting ? "Transmitting Intelligence..." : "Initialize Estimation"}
+            {isSubmitting ? "Transmitting Intelligence..." : "Add Estimation"}
           </Button>
         </div>
       </form>

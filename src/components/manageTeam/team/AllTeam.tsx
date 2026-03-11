@@ -5,6 +5,7 @@ import DataTable from "../../ui/table";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import GetTeamById from "./GetTeamById";
+import { X } from "lucide-react";
 
 interface Team {
   id: string;
@@ -79,7 +80,7 @@ const AllTeam = () => {
       accessorKey: "name",
       header: "Team Name",
       cell: ({ row }) => (
-        <span className="font-black text-black uppercase tracking-tight text-sm">
+        <span className="font-black text-black uppercase tracking-wide text-base">
           {row.original.name}
         </span>
       ),
@@ -94,7 +95,7 @@ const AllTeam = () => {
       cell: ({ getValue }) => {
         const value = getValue() as string | undefined;
         return (
-          <span className="text-black/60 font-bold uppercase tracking-wide text-xs">
+          <span className="text-black/60 font-bold uppercase tracking-widest text-sm">
             {value || "—"}
           </span>
         );
@@ -105,7 +106,7 @@ const AllTeam = () => {
       header: "Department",
       id: "department",
       cell: ({ getValue }) => (
-        <span className="px-5 py-1.5 bg-gray-100 text-black font-black uppercase tracking-widest rounded-full text-[10px] border border-black/5 shadow-sm">
+        <span className="px-5 py-1.5 bg-gray-100 text-black font-black uppercase tracking-[0.2em] rounded-full text-xs border border-black/5 shadow-sm">
           {String(getValue() ?? "—")}
         </span>
       ),
@@ -148,16 +149,24 @@ const AllTeam = () => {
           onRowClick={handleRowClick}
           onDelete={handleDelete}
           pageSizeOptions={[10, 20, 50]}
-          detailComponent={({ row }) => <GetTeamById id={row.id} />}
         />
       </div>
 
-      {/* Optional: Close detail on backdrop */}
+      {/* ✅ Team Detail Modal */}
       {selectedTeamId && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setSelectedTeamId(null)}
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-[800px] max-w-full bg-white rounded-[2.5rem] p-2 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-black/5 overflow-hidden">
+            <div className="relative">
+              <button
+                onClick={() => setSelectedTeamId(null)}
+                className="absolute right-6 top-6 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
+              >
+                <X className="w-6 h-6 text-black" />
+              </button>
+              <GetTeamById id={selectedTeamId} />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

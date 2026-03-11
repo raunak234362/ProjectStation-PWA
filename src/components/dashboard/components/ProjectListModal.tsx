@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Filter, XCircle } from "lucide-react";
 import DataTable from "../../ui/table";
-import type { ColumnDef } from "@tanstack/react-table";
 import { formatSeconds } from "../../../utils/timeUtils";
 import { useDispatch } from "react-redux";
 import {
@@ -127,13 +126,16 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
   const hasActiveFilters =
     selectedManager || selectedFabricator || selectedStage || showOverrunOnly;
 
-  const columns: ColumnDef<any>[] = [
+  const columns: any[] = [
     {
       accessorKey: "name",
       header: "Project Name",
       cell: ({ row }: any) => (
         <span className="font-medium text-gray-700">{row.original.name}</span>
       ),
+      enableColumnFilter: true,
+      filterType: "text",
+      filterFn: "includesString",
     },
     {
       accessorKey: "fabricator.name",

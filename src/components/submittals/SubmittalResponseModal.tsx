@@ -3,6 +3,7 @@ import Button from "../fields/Button";
 import Service from "../../api/Service";
 import RichTextEditor from "../fields/RichTextEditor";
 import { toast } from "react-toastify";
+import { X } from "lucide-react";
 
 interface SubmittalResponseModalProps {
   submittal: any;
@@ -55,14 +56,16 @@ const SubmittalResponseModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-lg relative space-y-4">
-        {/* CLOSE BUTTON */}
-        {/* <button onClick={onClose} className="absolute top-3 right-3">
-          <X size={18} />
-        </button> */}
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+      <div className="bg-white p-8 rounded-2xl w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative space-y-8 border border-black/5 animate-in fade-in zoom-in duration-200">
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors group z-10"
+        >
+          <X className="w-5 h-5 text-black/40 group-hover:text-black transition-colors" />
+        </button>
 
-        <h2 className="text-xl font-semibold text-green-700">
+        <h2 className="text-2xl font-black text-black uppercase tracking-tight">
           Add Submittal Response
         </h2>
 
@@ -116,9 +119,17 @@ const SubmittalResponseModal = ({
         </div>
 
         {/* ACTIONS */}
-        <div className="flex justify-end gap-2 pt-2">
-          <Button onClick={onClose}>Cancel</Button>
-          <Button className="bg-green-600 text-white" onClick={handleSubmit}>
+        <div className="flex justify-end gap-3 pt-4 border-t border-black/5">
+          <Button
+            onClick={onClose}
+            className="px-8 py-3 bg-gray-50 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-gray-100 transition-all"
+          >
+            Cancel
+          </Button>
+          <Button
+            className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
+            onClick={handleSubmit}
+          >
             Submit Response
           </Button>
         </div>

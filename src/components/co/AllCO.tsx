@@ -50,8 +50,8 @@ const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
         const s = row.original.senders;
         return s
           ? `${s.firstName ?? ""} ${s.middleName ?? ""} ${s.lastName ?? ""}`.trim() ||
-              s.username ||
-              "—"
+          s.username ||
+          "—"
           : "—";
       },
     },
@@ -112,8 +112,8 @@ const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
       <DataTable
         columns={columns}
         data={changeOrders}
-        detailComponent={({ row }) => (
-          <GetCOByID id={row.id} projectId={row.project} />
+        detailComponent={({ row, close }) => (
+          <GetCOByID id={row.id} projectId={row.project} onClose={close} />
         )}
       />
     </div>

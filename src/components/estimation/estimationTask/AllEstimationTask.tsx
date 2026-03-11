@@ -100,7 +100,7 @@ const AllEstimationTask: React.FC<AllEstimationTaskProps> = ({
           status === "COMPLETED"
             ? "bg-green-100 text-green-800"
             : status === "ASSIGNED"
-              ? "bg-yellow-100 text-yellow-800"
+              ? "bg-[#6bbd45] text-black"
               : status === "BREAK"
                 ? "bg-orange-100 text-orange-800"
                 : "bg-blue-100 text-blue-800";

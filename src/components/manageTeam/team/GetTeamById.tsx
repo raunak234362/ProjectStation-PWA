@@ -143,7 +143,7 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-4 mt-8 pt-6 border-t border-black/5">
-        <Button className="flex items-center gap-2 px-8 py-3 bg-white border border-black/10 rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm">
+        <Button className="flex items-center gap-2 px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm">
           Edit Team
         </Button>
         <Button className="flex items-center gap-2 px-8 py-3 bg-red-50 border border-red-100 rounded-2xl text-red-600 font-black text-xs uppercase tracking-widest hover:bg-red-100 transition-all shadow-sm">
@@ -151,7 +151,7 @@ const GetTeamByID = ({ id }: GetTeamByIDProps) => {
         </Button>
         <Button
           onClick={() => handleTeamMember(team)}
-          className="flex items-center gap-2 px-8 py-3 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black/90 transition-all shadow-medium"
+          className="flex items-center gap-2 px-8 py-3 bg-green-100/80 text-black border border-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-soft"
         >
           Team Members
         </Button>

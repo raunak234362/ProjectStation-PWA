@@ -60,18 +60,18 @@ function ColumnFilter({ column }: { column: any }) {
         value={column.getFilterValue() as string}
         onChange={(_, val) => column.setFilterValue(val || undefined)}
         placeholder={`All ${header as string}`}
-        className="py-1! text-xs!"
+        className="h-11! text-xs! font-bold!"
       />
     );
   }
 
   return (
-    <div className="relative group">
-      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black/40 group-focus-within:text-green-600 transition-colors" />
+    <div className="relative group h-11">
+      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black/30 group-focus-within:text-green-600 transition-colors" />
       <input
         value={column.getFilterValue() ?? ""}
         onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-        className="pl-9 pr-3 py-2 w-full border border-black/10 dark:border-slate-700 rounded-xl text-xs font-bold focus:ring-1 focus:ring-green-500 outline-none transition-all bg-white dark:bg-slate-800 text-black dark:text-slate-200 placeholder:text-black/30 shadow-xs"
+        className="pl-11 pr-4 h-full w-full border border-black/10 dark:border-slate-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none transition-all bg-white dark:bg-slate-800 text-black dark:text-slate-200 placeholder:text-black/30 shadow-xs"
         placeholder={`Search ${header as string}...`}
       />
     </div>
@@ -212,6 +212,7 @@ export default function DataTable<T extends object>({
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    enableColumnFilters: true,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -244,14 +245,14 @@ export default function DataTable<T extends object>({
               .map((column) => (
                 <div
                   key={column.id}
-                  className="min-w-[140px] flex-1"
+                  className="min-w-[200px] flex-1"
                 >
                   <ColumnFilter column={column} />
                 </div>
               ))}
             <Button
               onClick={() => table.resetColumnFilters()}
-              className="text-xs text-black border border-black/20 hover:bg-green-100 transition-all h-10 px-6 font-black rounded-xl flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
+              className="text-xs text-black border border-black hover:bg-green-100 transition-all h-11 px-8 font-black rounded-xl flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
             >
               <X className="w-4 h-4" /> Reset Filters
             </Button>

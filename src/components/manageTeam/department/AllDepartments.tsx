@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import type { Department } from "../../../interface";
 import DataTable from "../../ui/table";
 import GetDepartmentById from "./GetDepartmentById";
+import { X } from "lucide-react";
 
 const AllDepartments = () => {
   const departments = useSelector(
@@ -44,7 +45,7 @@ const AllDepartments = () => {
       accessorKey: "name",
       header: "Department Name",
       cell: ({ row }) => (
-        <span className="font-black text-black uppercase tracking-tight text-sm">
+        <span className="font-black text-black uppercase tracking-wide text-base">
           {row.original.name}
         </span>
       ),
@@ -69,7 +70,7 @@ const AllDepartments = () => {
         }
 
         return (
-          <span className="text-black/60 font-bold uppercase tracking-wide text-xs">
+          <span className="text-black/60 font-bold uppercase tracking-widest text-sm">
             {managerName || "No Manager Assigned"}
           </span>
         );
@@ -91,10 +92,26 @@ const AllDepartments = () => {
           columns={columns}
           data={departments}
           onRowClick={handleRowClick}
-          detailComponent={({ row }) => <GetDepartmentById id={row.id || ""} />}
           pageSizeOptions={[5, 10, 25]}
         />
       </div>
+
+      {/* ✅ Department Detail Modal */}
+      {departmentID && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-[800px] max-w-full bg-white rounded-[2.5rem] p-2 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-black/5 overflow-hidden">
+            <div className="relative">
+              <button
+                onClick={() => setDepartmentID(null)}
+                className="absolute right-6 top-6 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
+              >
+                <X className="w-6 h-6 text-black" />
+              </button>
+              <GetDepartmentById id={departmentID} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

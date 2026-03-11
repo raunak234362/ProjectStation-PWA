@@ -133,13 +133,15 @@ const AddTeam = () => {
   const hasDepartments = departmentOptions.some((opt) => opt.value);
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white rounded-[2.5rem] shadow-soft p-12 mt-10 border border-black/5">
+    <div className="w-full bg-white rounded-[2.5rem] p-6 sm:p-10 border border-black/5">
       <div className="mb-10 text-center">
-        <h2 className="text-3xl font-black text-black uppercase tracking-tight">Create New Team</h2>
-        <p className="text-black/60 text-sm font-bold tracking-wide mt-2">Initialize a new organizational unit</p>
+        <h2 className="text-3xl font-black text-black uppercase tracking-tight">
+          Create New Team
+        </h2>
+   
       </div>
 
-      <form onSubmit={handleSubmit(addTeam)} className="space-y-8">
+      <form onSubmit={handleSubmit(addTeam)} className="max-w-2xl mx-auto space-y-8">
         {/* Team Name */}
         <div className="space-y-2">
           <Input
@@ -147,57 +149,61 @@ const AddTeam = () => {
             type="text"
             placeholder="e.g. Alpha Squad"
             {...register("name", { required: "Team name is required" })}
-            className="w-full"
+            className="w-full font-bold uppercase tracking-wide placeholder:font-normal placeholder:lowercase"
           />
           {errors.name && (
-            <p className="text-red-500 text-[10px] font-black uppercase ml-1">{errors.name.message}</p>
-          )}
-        </div>
-
-        {/* Manager Select */}
-        <div className="space-y-2">
-          <Select
-            label="Team Manager"
-            placeholder={
-              hasManagers ? "Choose a manager" : "No managers available"
-            }
-            options={managerOptions}
-            {...register("managerID")}
-            onChange={(_, value) => setValue("managerID", value as string)}
-          />
-          {!hasManagers && (
-            <p className="text-amber-600 font-bold text-xs mt-1 ml-1">
-              Managers will appear once added in the system.
+            <p className="text-red-500 text-[10px] font-black uppercase ml-1">
+              {errors.name.message}
             </p>
           )}
         </div>
 
-        {/* Department Select */}
-        <div className="space-y-2">
-          <Select
-            label="Department"
-            placeholder={
-              hasDepartments ? "Choose a department" : "No departments found"
-            }
-            options={departmentOptions}
-            {...register("departmentID")}
-            onChange={(_, value) => setValue("departmentID", value as string)}
-          />
-          {!hasDepartments && (
-            <p className="text-amber-600 font-bold text-xs mt-1 ml-1">
-              Create departments first to assign teams.
-            </p>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Manager Select */}
+          <div className="space-y-2">
+            <Select
+              label="Team Manager"
+              placeholder={
+                hasManagers ? "Choose a manager" : "No managers available"
+              }
+              options={managerOptions}
+              {...register("managerID")}
+              onChange={(_, value) => setValue("managerID", value as string)}
+            />
+            {!hasManagers && (
+              <p className="text-amber-600 font-bold text-[10px] uppercase tracking-widest mt-1 ml-1">
+                Managers will appear once added.
+              </p>
+            )}
+          </div>
+
+          {/* Department Select */}
+          <div className="space-y-2">
+            <Select
+              label="Department"
+              placeholder={
+                hasDepartments ? "Choose a department" : "No departments found"
+              }
+              options={departmentOptions}
+              {...register("departmentID")}
+              onChange={(_, value) => setValue("departmentID", value as string)}
+            />
+            {!hasDepartments && (
+              <p className="text-amber-600 font-bold text-[10px] uppercase tracking-widest mt-1 ml-1">
+                Create departments first.
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Submit */}
-        <div className="pt-6">
+        <div className="pt-6 border-t border-black/5">
           <Button
             type="submit"
             disabled={isSubmitting || !hasManagers || !hasDepartments}
-            className={`w-full px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-medium ${isSubmitting || !hasManagers || !hasDepartments
-              ? "bg-gray-100 text-black/20 cursor-not-allowed"
-              : "bg-black text-white hover:bg-black/90 active:scale-95"
+            className={`w-full px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-soft border ${isSubmitting || !hasManagers || !hasDepartments
+                ? "bg-gray-100 text-black/20 border-black/5 cursor-not-allowed"
+                : "bg-green-100/80 text-black border-black hover:bg-green-200/80 active:scale-95"
               }`}
           >
             {isSubmitting ? "Processing..." : "Create Team"}
