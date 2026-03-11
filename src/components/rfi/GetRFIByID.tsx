@@ -213,7 +213,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
                 {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
                   <Button
                     onClick={() => setShowModal(true)}
-                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200 transition-all border border-black shadow-md"
                   >
                     + Add Response
                   </Button>
