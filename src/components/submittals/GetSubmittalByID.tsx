@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
 import {
   Loader2,
@@ -17,7 +16,7 @@ import SubmittalResponseDetailsModal from "./SubmittalResponseDetailsModal";
 import UpdateSubmittalById from "./UpdateSubmittalById";
 import RenderFiles from "../ui/RenderFiles";
 
-const Info = ({ label, value }: any) => (
+const Info = ({ label, value }) => (
   <div className="mb-2">
     <h4 className="text-sm text-gray-700">{label}</h4>
     <div className="font-medium text-gray-700">{value}</div>
@@ -25,7 +24,7 @@ const Info = ({ label, value }: any) => (
 );
 
 // ── Version History Row ──────────────────────────────────────────────────────
-const VersionRow = ({ version, index, total, isCurrent }: any) => {
+const VersionRow = ({ version, index, total, isCurrent }) => {
   const [open, setOpen] = useState(false);
 
   const uploadedAt = version.createdAt || version.updatedAt || version.date;
@@ -128,10 +127,11 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
   );
 };
 
-const GetSubmittalByID = ({ id, onClose }: any) => {
+
+const GetSubmittalByID = ({ id }) => {
   const [loading, setLoading] = useState(true);
-  const [submittal, setSubmittal] = useState<any>(null);
-  const [error, setError] = useState<any>(null);
+  const [submittal, setSubmittal] = useState(null);
+  const [error, setError] = useState(null);
 
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -191,8 +191,8 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
   // Sort versions newest → oldest
   const sortedVersions = [...(submittal.versions || [])].sort(
     (a, b) =>
-      new Date(b.createdAt || b.updatedAt || b.date || 0).getTime() -
-      new Date(a.createdAt || a.updatedAt || a.date || 0).getTime(),
+      new Date(b.createdAt || b.updatedAt || b.date || 0) -
+      new Date(a.createdAt || a.updatedAt || a.date || 0)
   );
   const hasMultipleVersions = sortedVersions.length > 1;
 
@@ -227,41 +227,25 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
     },
   ];
 
-  return createPortal(
-    <div className="fixed inset-0 z-10001 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
-      <div className="bg-white dark:bg-slate-900 w-[95%] max-w-[90vw] h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
-        {/* Modal Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50/50">
-          <h2 className="text-xl font-bold text-black flex items-center gap-2">
-            <span className="w-2 h-6 bg-[#6bbd45] rounded-full"></span>
-            Submittal Details
-          </h2>
-          <button
-            onClick={onClose}
-            className="px-4 py-1.5 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-all font-bold text-sm"
-          >
-            Close
-          </button>
-        </div>
-
-        {/* Modal Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* LEFT PANEL */}
-            <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
-              <div className="flex justify-between items-center">
-                <h1 className="text-2xl text-black font-semibold">
-                  {submittal.subject}
-                </h1>
-                {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
-                  <Button
-                    className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
-                    onClick={() => setShowUpdateModal(true)}
-                  >
-                    Update Submittal
-                  </Button>
-                )}
-              </div>
+  return (
+    <>
+      <div className="p-6 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* LEFT PANEL */}
+          <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl text-black font-semibold">
+                {submittal.subject}
+              </h1>
+              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+              <Button
+                className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
+                onClick={() => setShowUpdateModal(true)}
+              >
+                Update Submittal
+              </Button>
+              )}
+            </div>
 
               <Info label="Project" value={submittal.project?.name || "—"} />
               <Info
@@ -274,21 +258,19 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
               />
             </div>
 
-            {/* RIGHT PANEL */}
-            <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-[#6bbd45]">
-                  Responses
-                </h2>
-                {userRole === "CLIENT_ADMIN" && (
-                  <Button
-                    className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
-                    onClick={() => setShowResponseModal(true)}
-                  >
-                    + Add Response
-                  </Button>
-                )}
-              </div>
+          {/* RIGHT PANEL */}
+          <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-[#6bbd45]">Responses</h2>
+              {userRole === "CLIENT_ADMIN" && (
+                <Button
+                  className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
+                  onClick={() => setShowResponseModal(true)}
+                >
+                  + Add Response
+                </Button>
+              )}
+            </div>
 
               {submittal.submittalsResponse?.length > 0 ? (
                 <DataTable
@@ -315,22 +297,22 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 </span>
               </div>
 
-              <div className="space-y-2">
-                {sortedVersions.map((version, index) => (
-                  <VersionRow
-                    key={version.id || index}
-                    version={version}
-                    index={index}
-                    total={sortedVersions.length}
-                    isCurrent={
-                      version.id === submittal.currentVersionId || index === 0
-                    }
-                  />
-                ))}
-              </div>
+            <div className="space-y-2">
+              {sortedVersions.map((version, index) => (
+                <VersionRow
+                  key={version.id || index}
+                  version={version}
+                  index={index}
+                  total={sortedVersions.length}
+                  isCurrent={
+                    version.id === submittal.currentVersionId ||
+                    index === 0
+                  }
+                />
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* ADD RESPONSE MODAL */}
