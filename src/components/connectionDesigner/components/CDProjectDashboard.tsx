@@ -19,7 +19,7 @@ const CDProjectDashboard: React.FC<CDProjectDashboardProps> = ({
       activeProjects: projects.filter((p) => p.status === "ACTIVE").length,
       completedProjects: projects.filter((p) => p.status === "COMPLETED")
         .length,
-      onHoldProjects: projects.filter((p) => p.status === "ON_HOLD").length,
+      onHoldProjects: projects.filter((p) => p.status === "ONHOLD").length,
     };
   }, [projects]);
 

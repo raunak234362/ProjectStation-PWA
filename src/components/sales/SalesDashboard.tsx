@@ -20,7 +20,9 @@ const SalesDashboard = () => {
 
   // Modal states
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"PROJECTS" | "RFQS" | "INVOICES" | "CLIENTS">("PROJECTS");
+  const [modalType, setModalType] = useState<
+    "PROJECTS" | "RFQS" | "INVOICES" | "CLIENTS"
+  >("PROJECTS");
   const [modalTitle, setModalTitle] = useState("");
   const [modalData, setModalData] = useState<any[]>([]);
 
@@ -29,7 +31,10 @@ const SalesDashboard = () => {
       try {
         setLoading(true);
         const salesData = await Service.SalesDashboard();
-        console.log("Fetched Sales Dashboard Data from dashBoardData/sales:", salesData);
+        console.log(
+          "Fetched Sales Dashboard Data from dashBoardData/sales:",
+          salesData,
+        );
 
         // Map the backend structure correctly
         // salesData might be { data: { ... }, activeProjectsFromSales: ... }
@@ -53,31 +58,37 @@ const SalesDashboard = () => {
 
   const computedData = useMemo(() => {
     const rawData = allData?.data || allData || {};
-    const {
-      projects = [],
-      rfqs = [],
-      clients = [],
-      invoices = []
-    } = allData;
+    const { projects = [], rfqs = [], clients = [], invoices = [] } = allData;
 
     // Use backend provided stats if available, fallback to local calculation
     return {
       stats: {
         totalRfqs: allData?.totalRFQs ?? rawData?.totalRFQs ?? rfqs.length,
-        totalProjects: allData?.totalProjectsFromSales ?? rawData?.totalProjectsFromSales ?? projects.length,
+        totalProjects:
+          allData?.totalProjectsFromSales ??
+          rawData?.totalProjectsFromSales ??
+          projects.length,
         projectsAwarded: allData?.awardedRFQs ?? rawData?.awardedRFQs ?? 0,
         winRate: allData?.winRate ?? rawData?.winRate ?? 0,
         totalSalesValue: allData?.totalBidPrice ?? rawData?.totalBidPrice ?? 0,
-        activeProjects: allData?.activeProjectsFromSales ?? rawData?.activeProjectsFromSales ?? 0,
-        completed: allData?.completedProjectsFromSales ?? rawData?.completedProjectsFromSales ?? 0,
-        onHold: projects.filter((p: any) => p.status === "ON_HOLD").length,
+        activeProjects:
+          allData?.activeProjectsFromSales ??
+          rawData?.activeProjectsFromSales ??
+          0,
+        completed:
+          allData?.completedProjectsFromSales ??
+          rawData?.completedProjectsFromSales ??
+          0,
+        onHold: projects.filter((p: any) => p.status === "ONHOLD").length,
         delayed: projects.filter((p: any) => {
           if (p.status === "COMPLETED") return false;
           if (!p.endDate) return false;
           return new Date(p.endDate) < new Date();
         }).length,
-        conversionRate: allData?.projectConversionRate ?? rawData?.projectConversionRate ?? 0,
-        totalClients: allData?.totalClients ?? rawData?.totalClients ?? clients.length,
+        conversionRate:
+          allData?.projectConversionRate ?? rawData?.projectConversionRate ?? 0,
+        totalClients:
+          allData?.totalClients ?? rawData?.totalClients ?? clients.length,
 
         // New Backend Fields
         inPipelineRFQs: allData?.inPipelineRFQs ?? rawData?.inPipelineRFQs ?? 0,
@@ -86,7 +97,8 @@ const SalesDashboard = () => {
         rejectedRFQs: allData?.rejectedRFQs ?? rawData?.rejectedRFQs ?? 0,
 
         // Invoice Analytics
-        invoiceAnalytics: allData?.invoiceAnalytics || rawData?.invoiceAnalytics || {},
+        invoiceAnalytics:
+          allData?.invoiceAnalytics || rawData?.invoiceAnalytics || {},
 
         // Raw Arrays for Modals
         rawProjects: projects,
@@ -249,7 +261,9 @@ const SalesDashboard = () => {
       <div className="pt-2">
         <SalesSecondaryStats
           stats={stats}
-          onCardClick={(type, title, data) => openDetailModal(type, title, data)}
+          onCardClick={(type, title, data) =>
+            openDetailModal(type, title, data)
+          }
         />
       </div>
 

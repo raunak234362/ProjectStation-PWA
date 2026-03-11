@@ -197,7 +197,7 @@ const ProjectDashboard = () => {
         const s = stage as (typeof stages)[number];
         grouped[teamId].stats[s].total += 1;
         if (project.status === "ACTIVE") grouped[teamId].stats[s].active += 1;
-        else if (project.status === "ON_HOLD")
+        else if (project.status === "ONHOLD")
           grouped[teamId].stats[s].onHold += 1;
         else if (project.status === "COMPLETED")
           grouped[teamId].stats[s].completed += 1;
@@ -210,7 +210,7 @@ const ProjectDashboard = () => {
   const handleStatClick = (
     projects: ProjectData[],
     stage: "IFA" | "IFC" | "COR",
-    status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
+    status: "ACTIVE" | "ONHOLD" | "COMPLETED" | "TOTAL",
   ) => {
     let filtered = projects.filter((p) => p.stage === stage);
     if (status !== "TOTAL") {
@@ -283,10 +283,11 @@ const ProjectDashboard = () => {
             <div className="hidden md:flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
               <Button
                 onClick={() => setSelectedMonth(null)}
-                className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${selectedMonth === null
-                  ? "bg-green-200 text-black border border-black/10"
-                  : "bg-gray-50 text-gray-600 border border-transparent hover:bg-green-50"
-                  }`}
+                className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${
+                  selectedMonth === null
+                    ? "bg-green-200 text-black border border-black/10"
+                    : "bg-gray-50 text-gray-600 border border-transparent hover:bg-green-50"
+                }`}
               >
                 All Months
               </Button>
@@ -294,10 +295,11 @@ const ProjectDashboard = () => {
                 <Button
                   key={month}
                   onClick={() => setSelectedMonth(index)}
-                  className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${selectedMonth === index
-                    ? "bg-green-200 text-black border border-black/10"
-                    : "bg-gray-50 text-gray-600 border border-transparent hover:bg-green-50"
-                    }`}
+                  className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${
+                    selectedMonth === index
+                      ? "bg-green-200 text-black border border-black/10"
+                      : "bg-gray-50 text-gray-600 border border-transparent hover:bg-green-50"
+                  }`}
                 >
                   {month}
                 </Button>

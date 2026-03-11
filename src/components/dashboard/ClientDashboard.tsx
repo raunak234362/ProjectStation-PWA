@@ -26,7 +26,6 @@ const GetMilestoneByID = lazy(
   () => import("../project/mileStone/GetMilestoneByID"),
 );
 
-
 const ClientDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -140,7 +139,7 @@ const ClientDashboard = () => {
           (p: any) => p.status === "COMPLETED",
         ).length;
         const onHoldProjects = projects.filter(
-          (p: any) => p.status === "ON_HOLD",
+          (p: any) => p.status === "ONHOLD",
         ).length;
 
         setStats({
@@ -246,7 +245,6 @@ const ClientDashboard = () => {
       setIsCoModalOpen(true);
     }
   };
-
 
   if (loading) {
     return <DashboardSkeleton />;
@@ -384,7 +382,6 @@ const ClientDashboard = () => {
           type="PENDING_COR"
           data={pendingCOs}
         />
-
       </Suspense>
     </div>
   );

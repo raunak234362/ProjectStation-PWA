@@ -174,7 +174,7 @@ const WBTDashboard = () => {
           (p: any) => p.status === "COMPLETED",
         ).length;
         const onHoldProjects = projects.filter(
-          (p: any) => p.status === "ON_HOLD",
+          (p: any) => p.status === "ONHOLD",
         ).length;
 
         setStats({

@@ -82,13 +82,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-  | string
-  | []
-  | {
-    firstName?: string;
-    lastName?: string;
-    middleName?: string;
-  };
+    | string
+    | []
+    | {
+        firstName?: string;
+        lastName?: string;
+        middleName?: string;
+      };
 }
 
 export interface DepartmentPayload {
@@ -98,7 +98,7 @@ export interface DepartmentPayload {
 export interface FabricatorPayload {
   fabName: string;
   website?: string;
-  wbtFabricatorPointOfContact?: any[]
+  wbtFabricatorPointOfContact?: any[];
   drive?: string;
   fabStage?: "RFQ" | "PRODUCTION";
   files?: File | string | "";
@@ -155,7 +155,7 @@ export interface Fabricator {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
-  wbtFabricatorPointOfContact?: any[]
+  wbtFabricatorPointOfContact?: any[];
   pointOfContact?: FabricatorClient[];
 }
 
@@ -476,8 +476,15 @@ export interface AddProjectPayload {
   rfqId?: string;
   CDQuataionID?: string;
   connectionDesignerID?: string;
-  status: "ACTIVE" | "INACTIVE" | "DRAFT" | "ON_HOLD" | "COMPLETED";
-  stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA" | "IFC" | "CO#" | "RFI";
+  status: "ACTIVE" | "INACTIVE" | "DRAFT" | "ONHOLD" | "COMPLETED";
+  stage:
+    | "PLANNING"
+    | "IN_PROGRESS"
+    | "COMPLETED"
+    | "IFA"
+    | "IFC"
+    | "CO#"
+    | "RFI";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   miscDesign: boolean;

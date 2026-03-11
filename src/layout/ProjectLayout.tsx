@@ -7,7 +7,10 @@ import { showDepartment, showTeam } from "../store/userSlice";
 const ProjectLayout = () => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const [activeTab, setActiveTab] = useState(
-    userRole === "connection_designer_engineer" || userRole === "estimation_head" || userRole === "client_admin" || userRole === "client"
+    userRole === "connection_designer_engineer" ||
+      userRole === "estimation_head" ||
+      userRole === "client_admin" ||
+      userRole === "client"
       ? "allProject"
       : "projectDashboard",
   );
@@ -24,7 +27,7 @@ const ProjectLayout = () => {
     total: projects.length,
     active: projects.filter((p: any) => p.status === "ACTIVE").length,
     completed: projects.filter((p: any) => p.status === "COMPLETED").length,
-    onHold: projects.filter((p: any) => p.status === "ON_HOLD").length,
+    onHold: projects.filter((p: any) => p.status === "ONHOLD").length,
   };
   // ✅ Fetch Departments only when data is null or empty
   const fetchDepartment = async () => {
@@ -105,30 +108,36 @@ const ProjectLayout = () => {
             ].includes(
               sessionStorage.getItem("userRole")?.toLowerCase() || "",
             ) && (
-                <button
-                  onClick={() => setActiveTab("projectDashboard")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "projectDashboard"
+              <button
+                onClick={() => setActiveTab("projectDashboard")}
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${
+                  activeTab === "projectDashboard"
                     ? "bg-green-200 text-black shadow-medium"
                     : "text-black hover:bg-green-50"
-                    }`}
-                >
-                  Project Home
-                </button>
-              )}
+                }`}
+              >
+                Project Home
+              </button>
+            )}
 
-            {["connection_designer_engineer", "estimation_head", "admin"].includes(
+            {[
+              "connection_designer_engineer",
+              "estimation_head",
+              "admin",
+            ].includes(
               sessionStorage.getItem("userRole")?.toLowerCase() || "",
             ) && (
-                <button
-                  onClick={() => setActiveTab("allProject")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allProject"
+              <button
+                onClick={() => setActiveTab("allProject")}
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${
+                  activeTab === "allProject"
                     ? "bg-green-200 text-black shadow-medium"
                     : "text-black hover:bg-green-50"
-                    }`}
-                >
-                  All Projects
-                </button>
-              )}
+                }`}
+              >
+                All Projects
+              </button>
+            )}
 
             {[
               "admin",
@@ -140,16 +149,17 @@ const ProjectLayout = () => {
             ].includes(
               sessionStorage.getItem("userRole")?.toLowerCase() || "",
             ) && (
-                <button
-                  onClick={() => setActiveTab("addProject")}
-                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "addProject"
+              <button
+                onClick={() => setActiveTab("addProject")}
+                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${
+                  activeTab === "addProject"
                     ? "bg-green-200 text-black shadow-medium"
                     : "text-black hover:bg-green-50"
-                    }`}
-                >
-                  Add New Project
-                </button>
-              )}
+                }`}
+              >
+                Add New Project
+              </button>
+            )}
           </div>
         </div>
       </div>

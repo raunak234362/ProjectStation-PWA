@@ -48,20 +48,26 @@ const EditProject: React.FC<EditProjectProps> = ({
   const teamDatas = useSelector((state: any) => state.userInfo?.teamData || []);
   const users = useSelector((state: any) => state.userInfo?.staffData || []);
 
-  const { register, handleSubmit, control, watch, reset, formState: { dirtyFields } } =
-    useForm<AddProjectPayload>({
-      defaultValues: {
-        tools: "TEKLA",
-        status: "ACTIVE",
-        connectionDesign: false,
-        miscDesign: false,
-        customerDesign: false,
-        detailingMain: false,
-        detailingMisc: false,
-        mailReminder: true,
-        submissionMailReminder: true,
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    reset,
+    formState: { dirtyFields },
+  } = useForm<AddProjectPayload>({
+    defaultValues: {
+      tools: "TEKLA",
+      status: "ACTIVE",
+      connectionDesign: false,
+      miscDesign: false,
+      customerDesign: false,
+      detailingMain: false,
+      detailingMisc: false,
+      mailReminder: true,
+      submissionMailReminder: true,
+    },
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +95,8 @@ const EditProject: React.FC<EditProjectProps> = ({
 
         const project = projectRes?.data;
         if (project) {
-          const formatDate = (date: any) => date ? new Date(date).toISOString().split("T")[0] : "";
+          const formatDate = (date: any) =>
+            date ? new Date(date).toISOString().split("T")[0] : "";
 
           reset({
             name: project.name,
@@ -126,7 +133,9 @@ const EditProject: React.FC<EditProjectProps> = ({
             detailingMain: project.detailingMain,
             detailingMisc: project.detailingMisc,
             wbsTemplateIds: project.projectWbs
-              ? project.projectWbs.map((wbs: any) => wbs.templateId).filter(Boolean)
+              ? project.projectWbs
+                  .map((wbs: any) => wbs.templateId)
+                  .filter(Boolean)
               : [],
           });
         }
@@ -178,7 +187,7 @@ const EditProject: React.FC<EditProjectProps> = ({
       { label: "ACTIVE", value: "ACTIVE" },
       { label: "INACTIVE", value: "INACTIVE" },
       { label: "ON HOLD", value: "ONHOLD" },
-      { label: "COMPLETE", value: "COMPLETE" },
+      { label: "COMPLETE", value: "COMPLETED" },
       { label: "DELAY", value: "DELAY" },
       { label: "ASSIGNED", value: "ASSIGNED" },
     ],
@@ -230,7 +239,9 @@ const EditProject: React.FC<EditProjectProps> = ({
       <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
         <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center">
           <Loader2 className="w-10 h-10 animate-spin text-[#6bbd45] mb-4" />
-          <div className="text-center font-bold text-gray-700">Loading project details...</div>
+          <div className="text-center font-bold text-gray-700">
+            Loading project details...
+          </div>
         </div>
       </div>
     );
@@ -248,7 +259,9 @@ const EditProject: React.FC<EditProjectProps> = ({
         <div className="overflow-y-auto p-4 md:p-8 custom-scrollbar">
           <div className="flex justify-between items-center mb-8 border-b border-black/5 pb-5 sticky top-[-32px] bg-white z-20">
             <div>
-              <h2 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight">Edit Project</h2>
+              <h2 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight">
+                Edit Project
+              </h2>
             </div>
             <button
               onClick={onCancel}
@@ -274,14 +287,18 @@ const EditProject: React.FC<EditProjectProps> = ({
                   {...register("name")}
                 />
                 <div>
-                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">Stage</label>
+                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">
+                    Stage
+                  </label>
                   <Controller
                     name="stage"
                     control={control}
                     render={({ field }) => (
                       <Select
                         options={options.stage}
-                        value={options.stage.find((o) => o.value === field.value)}
+                        value={options.stage.find(
+                          (o) => o.value === field.value,
+                        )}
                         onChange={(o) => field.onChange(o?.value || "IFA")}
                         className="react-select-container"
                         classNamePrefix="react-select"
@@ -290,14 +307,18 @@ const EditProject: React.FC<EditProjectProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">Status</label>
+                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">
+                    Status
+                  </label>
                   <Controller
                     name="status"
                     control={control}
                     render={({ field }) => (
                       <Select
                         options={options.status}
-                        value={options.status.find((o) => o.value === field.value)}
+                        value={options.status.find(
+                          (o) => o.value === field.value,
+                        )}
                         onChange={(o) => field.onChange(o?.value || "ACTIVE")}
                       />
                     )}
@@ -305,7 +326,6 @@ const EditProject: React.FC<EditProjectProps> = ({
                 </div>
               </div>
             </div>
-
 
             {/* Team & Organizational Assignment */}
             <div className="space-y-6">
@@ -321,7 +341,9 @@ const EditProject: React.FC<EditProjectProps> = ({
                     render={({ field }) => (
                       <Select
                         options={options.fabricators}
-                        value={options.fabricators.find((o: any) => o.value === field.value)}
+                        value={options.fabricators.find(
+                          (o: any) => o.value === field.value,
+                        )}
                         onChange={(o: any) => field.onChange(o?.value || "")}
                         placeholder="Select fabricator"
                         isSearchable
@@ -339,7 +361,9 @@ const EditProject: React.FC<EditProjectProps> = ({
                     render={({ field }) => (
                       <Select
                         options={options.managers}
-                        value={options.managers.find((o: any) => o.value === field.value)}
+                        value={options.managers.find(
+                          (o: any) => o.value === field.value,
+                        )}
                         onChange={(o: any) => field.onChange(o?.value || "")}
                         placeholder="Assign manager"
                         isSearchable
@@ -357,7 +381,9 @@ const EditProject: React.FC<EditProjectProps> = ({
                     render={({ field }) => (
                       <Select
                         options={options.departments}
-                        value={options.departments.find((o: any) => o.value === field.value)}
+                        value={options.departments.find(
+                          (o: any) => o.value === field.value,
+                        )}
                         onChange={(o: any) => field.onChange(o?.value || "")}
                         placeholder="Department"
                       />
@@ -373,14 +399,25 @@ const EditProject: React.FC<EditProjectProps> = ({
                     control={control}
                     render={({ field }) => {
                       const selectedDeptId = watch("departmentID");
-                      const filteredTeams = (Array.isArray(teamDatas) ? teamDatas : [])
-                        .filter((t: any) => !selectedDeptId || String(t.departmentID) === String(selectedDeptId))
-                        .map((t: any) => ({ label: t.name, value: String(t.id) }));
+                      const filteredTeams = (
+                        Array.isArray(teamDatas) ? teamDatas : []
+                      )
+                        .filter(
+                          (t: any) =>
+                            !selectedDeptId ||
+                            String(t.departmentID) === String(selectedDeptId),
+                        )
+                        .map((t: any) => ({
+                          label: t.name,
+                          value: String(t.id),
+                        }));
 
                       return (
                         <Select
                           options={filteredTeams}
-                          value={filteredTeams.find((o: any) => o.value === field.value)}
+                          value={filteredTeams.find(
+                            (o: any) => o.value === field.value,
+                          )}
                           onChange={(o: any) => field.onChange(o?.value || "")}
                           placeholder="Team"
                           isDisabled={!selectedDeptId}
@@ -399,8 +436,12 @@ const EditProject: React.FC<EditProjectProps> = ({
                     render={({ field }) => (
                       <Select
                         options={options.wbsTemplates}
-                        value={options.wbsTemplates.filter((o: any) => field.value?.includes(o.value))}
-                        onChange={(o: any) => field.onChange(o ? o.map((x: any) => x.value) : [])}
+                        value={options.wbsTemplates.filter((o: any) =>
+                          field.value?.includes(o.value),
+                        )}
+                        onChange={(o: any) =>
+                          field.onChange(o ? o.map((x: any) => x.value) : [])
+                        }
                         isMulti
                         placeholder="Attach WBS templates..."
                       />
@@ -415,14 +456,18 @@ const EditProject: React.FC<EditProjectProps> = ({
               <SectionTitle title="Connection Design Details" />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">Connection Designer</label>
+                  <label className="block text-sm font-black text-black uppercase tracking-widest mb-2">
+                    Connection Designer
+                  </label>
                   <Controller
                     name="connectionDesignerID"
                     control={control}
                     render={({ field }) => (
                       <Select
                         options={options.connectionDesigners}
-                        value={options.connectionDesigners.find((o: any) => o.value === field.value)}
+                        value={options.connectionDesigners.find(
+                          (o: any) => o.value === field.value,
+                        )}
                         onChange={(o: any) => field.onChange(o?.value || "")}
                         isClearable
                       />
@@ -436,7 +481,11 @@ const EditProject: React.FC<EditProjectProps> = ({
             <div className="space-y-6">
               <SectionTitle title="Hours Allocation & Tracking" />
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <Input label="Estimated Hours" type="number" {...register("estimatedHours")} />
+                <Input
+                  label="Estimated Hours"
+                  type="number"
+                  {...register("estimatedHours")}
+                />
               </div>
             </div>
 
@@ -444,16 +493,34 @@ const EditProject: React.FC<EditProjectProps> = ({
             <div className="space-y-6">
               <SectionTitle title="Project Timeline & Deadlines" />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Input label="Start Date" type="date" {...register("startDate")} />
+                <Input
+                  label="Start Date"
+                  type="date"
+                  {...register("startDate")}
+                />
                 <Input label="End Date" type="date" {...register("endDate")} />
-                <Input label="Approval Date" type="date" {...register("approvalDate")} />
-                <Input label="Fabrication Date" type="date" {...register("fabricationDate")} />
+                <Input
+                  label="Approval Date"
+                  type="date"
+                  {...register("approvalDate")}
+                />
+                <Input
+                  label="Fabrication Date"
+                  type="date"
+                  {...register("fabricationDate")}
+                />
 
                 <div className="md:col-span-2">
-                  <Input label="Approval Date Change Reason" {...register("approvalDateChangeReason")} />
+                  <Input
+                    label="Approval Date Change Reason"
+                    {...register("approvalDateChangeReason")}
+                  />
                 </div>
                 <div className="md:col-span-2">
-                  <Input label="Fabrication Date Change Reason" {...register("fabricationDateChangeReason")} />
+                  <Input
+                    label="Fabrication Date Change Reason"
+                    {...register("fabricationDateChangeReason")}
+                  />
                 </div>
               </div>
             </div>
@@ -461,18 +528,72 @@ const EditProject: React.FC<EditProjectProps> = ({
             {/* Scope Toggles */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-green-50/50 rounded-2xl p-6 border border-green-100 flex flex-col gap-4">
-                <h3 className="text-lg font-black text-black uppercase tracking-tight mb-2 border-b border-green-200 pb-2">Design Scope</h3>
+                <h3 className="text-lg font-black text-black uppercase tracking-tight mb-2 border-b border-green-200 pb-2">
+                  Design Scope
+                </h3>
                 <div className="space-y-3">
-                  <Controller name="connectionDesign" control={control} render={({ field }) => <ToggleField label="Main Connection Design" checked={!!field.value} onChange={field.onChange} />} />
-                  <Controller name="miscDesign" control={control} render={({ field }) => <ToggleField label="Misc Design" checked={!!field.value} onChange={field.onChange} />} />
-                  <Controller name="customerDesign" control={control} render={({ field }) => <ToggleField label="Customer Design" checked={!!field.value} onChange={field.onChange} />} />
+                  <Controller
+                    name="connectionDesign"
+                    control={control}
+                    render={({ field }) => (
+                      <ToggleField
+                        label="Main Connection Design"
+                        checked={!!field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="miscDesign"
+                    control={control}
+                    render={({ field }) => (
+                      <ToggleField
+                        label="Misc Design"
+                        checked={!!field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="customerDesign"
+                    control={control}
+                    render={({ field }) => (
+                      <ToggleField
+                        label="Customer Design"
+                        checked={!!field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
                 </div>
               </div>
               <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 flex flex-col gap-4">
-                <h3 className="text-lg font-black text-black uppercase tracking-tight mb-2 border-b border-blue-200 pb-2">Detailing Scope</h3>
+                <h3 className="text-lg font-black text-black uppercase tracking-tight mb-2 border-b border-blue-200 pb-2">
+                  Detailing Scope
+                </h3>
                 <div className="space-y-3">
-                  <Controller name="detailingMain" control={control} render={({ field }) => <ToggleField label="Detailing Main" checked={!!field.value} onChange={field.onChange} />} />
-                  <Controller name="detailingMisc" control={control} render={({ field }) => <ToggleField label="Detailing Misc" checked={!!field.value} onChange={field.onChange} />} />
+                  <Controller
+                    name="detailingMain"
+                    control={control}
+                    render={({ field }) => (
+                      <ToggleField
+                        label="Detailing Main"
+                        checked={!!field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="detailingMisc"
+                    control={control}
+                    render={({ field }) => (
+                      <ToggleField
+                        label="Detailing Misc"
+                        checked={!!field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
                 </div>
               </div>
             </div>

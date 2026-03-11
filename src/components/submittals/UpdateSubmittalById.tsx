@@ -3,14 +3,14 @@ import { X, Check, Loader2, Upload } from "lucide-react";
 import Service from "../../api/Service";
 import RichTextEditor from "../fields/RichTextEditor";
 
-const UpdateSubmittalById = ({ submittal, onClose, onSuccess }) => {
-    const [subject, setSubject] = useState(submittal?.subject || "");
-    const [description, setDescription] = useState(
-        submittal?.description || submittal?.currentVersion?.description || ""
-    );
-    const [file, setFile] = useState(null);
-    const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState(null);
+const UpdateSubmittalById = ({ submittal, onClose, onSuccess }: any) => {
+  const [subject, setSubject] = useState(submittal?.subject || "");
+  const [description, setDescription] = useState(
+    submittal?.description || submittal?.currentVersion?.description || "",
+  );
+  const [file, setFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     if (!subject.trim()) {
@@ -31,17 +31,18 @@ const UpdateSubmittalById = ({ submittal, onClose, onSuccess }) => {
 
       await Service.updateSubmittalVersionById(submittal.id, formData);
 
-            onSuccess?.();
-            onClose();
-        } catch (err) {
-            console.error("Update submittal failed:", err);
-            setError(
-                err?.response?.data?.message || "Failed to update submittal. Please try again."
-            );
-        } finally {
-            setSubmitting(false);
-        }
-    };
+      onSuccess?.();
+      onClose();
+    } catch (err: any) {
+      console.error("Update submittal failed:", err);
+      setError(
+        err?.response?.data?.message ||
+          "Failed to update submittal. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-120 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">

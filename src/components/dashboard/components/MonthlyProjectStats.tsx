@@ -25,7 +25,7 @@ interface MonthlyProjectStatsProps {
   handleStatClick: (
     projects: ProjectData[],
     stage: "IFA" | "IFC" | "COR",
-    status: "ACTIVE" | "ON_HOLD" | "COMPLETED" | "TOTAL",
+    status: "ACTIVE" | "ONHOLD" | "COMPLETED" | "TOTAL",
   ) => void;
 }
 
@@ -232,12 +232,23 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                     {/* Content */}
                     <div className="p-1 space-y-0.5">
                       {[
-                        { label: "Active", key: "active", color: "green" },
-                        { label: "On-Hold", key: "onHold", color: "orange" },
+                        {
+                          label: "Active",
+                          key: "active",
+                          color: "green",
+                          status: "ACTIVE",
+                        },
+                        {
+                          label: "On-Hold",
+                          key: "onHold",
+                          color: "orange",
+                          status: "ONHOLD",
+                        },
                         {
                           label: "Completed",
                           key: "completed",
                           color: "blue",
+                          status: "COMPLETED",
                         },
                       ].map((item) => (
                         <button
@@ -252,7 +263,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                                 ) || ""
                               ]?.projects || [],
                               stage as any,
-                              item.key.toUpperCase() as any,
+                              item.status as any,
                             )
                           }
                           className={`w-full flex items-center justify-between px-1.5 py-0.5 rounded-md hover:bg-gray-50 transition-all group/btn`}
@@ -261,10 +272,13 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                             {item.label}
                           </span>
                           <span
-                            className={`text-[10px] font-bold ${item.key === "active" ? "text-green-600" :
-                                item.key === "onHold" ? "text-orange-500" :
-                                  "text-blue-500"
-                              }`}
+                            className={`text-[10px] font-bold ${
+                              item.key === "active"
+                                ? "text-green-600"
+                                : item.key === "onHold"
+                                  ? "text-orange-500"
+                                  : "text-blue-500"
+                            }`}
                           >
                             {(team.stats[stage] as any)?.[item.key] || 0}
                           </span>

@@ -167,8 +167,9 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Worked Hours",
       cell: ({ row }: any) => (
         <span
-          className={` ${row.original.isOverrun ? "text-red-600" : "text-green-600"
-            }`}
+          className={` ${
+            row.original.isOverrun ? "text-red-600" : "text-green-600"
+          }`}
         >
           {formatSeconds(row.original.workedSeconds || 0)}
         </span>
@@ -183,7 +184,9 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             OVERRUN
           </span>
         ) : (
-          <span className="text-gray-300 text-xs md:text-sm lg:text-base xl:text-lg uppercase">Normal</span>
+          <span className="text-gray-300 text-xs md:text-sm lg:text-base xl:text-lg uppercase">
+            Normal
+          </span>
         ),
     },
     {
@@ -214,12 +217,13 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             </div>
             <div className="h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200/30">
               <div
-                className={`h-full transition-all duration-500 rounded-full ${isOverrun
-                  ? "bg-red-500"
-                  : percentage > 80
-                    ? "bg-orange-500"
-                    : "bg-green-500"
-                  }`}
+                className={`h-full transition-all duration-500 rounded-full ${
+                  isOverrun
+                    ? "bg-red-500"
+                    : percentage > 80
+                      ? "bg-orange-500"
+                      : "bg-green-500"
+                }`}
                 style={{ width: `${percentage}%` }}
               ></div>
             </div>
@@ -231,9 +235,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       accessorKey: "status",
       header: "Status",
       cell: ({ row }: any) => (
-        <span
-          className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
-        >
+        <span className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
           {row.original.status}
         </span>
       ),
@@ -260,22 +262,22 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
           <div>
             <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
               <div
-                className={`w-2 h-6 rounded-full ${status.includes("ACTIVE") || status.includes("IFA")
-                  ? "bg-green-500"
-                  : status.includes("COMPLETED") ||
-                    status.includes("IFC") ||
-                    status.includes("Done")
-                    ? "bg-blue-500"
-                    : status.includes("ON_HOLD") ||
-                      status.includes("CO#") ||
-                      status.includes("On-Hold")
-                      ? "bg-orange-500"
-                      : "bg-gray-500"
-                  }`}
+                className={`w-2 h-6 rounded-full ${
+                  status.includes("ACTIVE") || status.includes("IFA")
+                    ? "bg-green-500"
+                    : status.includes("COMPLETED") ||
+                        status.includes("IFC") ||
+                        status.includes("Done")
+                      ? "bg-blue-500"
+                      : status.includes("ONHOLD") ||
+                          status.includes("CO#") ||
+                          status.includes("On-Hold")
+                        ? "bg-orange-500"
+                        : "bg-gray-500"
+                }`}
               ></div>
               {status.replace("_", " ")} Projects
             </h3>
-
           </div>
           <button
             onClick={onClose}
@@ -387,8 +389,6 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             pageSizeOptions={[25]}
           />
         </div>
-
-
       </div>
     </div>,
     document.body,
