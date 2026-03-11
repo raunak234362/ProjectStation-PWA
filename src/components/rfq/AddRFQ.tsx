@@ -472,7 +472,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                   Connection Design Scope
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 ">
                   <Toggle
                     label="Main Design"
                     {...register("connectionDesign")}
