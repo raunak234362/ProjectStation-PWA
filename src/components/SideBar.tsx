@@ -163,7 +163,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <div className="space-y-3">
           <button
-            className={`w-full flex items-center gap-3 py-2 rounded-full transition-all text-black bg-[#6bbd45]/10 border border-black/20 text-xs font-black uppercase tracking-widest hover:bg-[#6bbd45]/20
+            className={`w-full flex items-center gap-3 py-2 rounded-full transition-all text-black bg-transparent border border-black/20 text-xs font-black uppercase tracking-widest hover:bg-gray-50
               ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
             onClick={() => window.location.reload()}
           >
