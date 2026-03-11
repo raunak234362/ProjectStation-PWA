@@ -171,7 +171,7 @@ const GetSubmittalByID = ({
                         ? "Current Version"
                         : `Version ${v.versionNumber || 1}`,
                   }));
-                })()}
+                })()} 
                 table="submittals"
                 parentId={submittal.id}
               />
