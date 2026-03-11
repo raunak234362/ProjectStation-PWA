@@ -267,7 +267,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
 
                 {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
                   <Button
-                    className="px-4 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+                    className="px-4 py-2 bg-green-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200 transition-all border border-black shadow-md"
                     onClick={() => setShowResponseModal(true)}
                   >
                     + Add Response
