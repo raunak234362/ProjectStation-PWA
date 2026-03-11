@@ -61,7 +61,10 @@ const GetProjectById = ({
   >("list");
   const [selectedCoId, setSelectedCoId] = useState<string | null>(null);
   const [allTasks, setAllTasks] = useState<any[]>([]); // Tasks for stats
-  const [selectedOtherBundle, setSelectedOtherBundle] = useState<{ key: string; tasks: any[] } | null>(null);
+  const [selectedOtherBundle, setSelectedOtherBundle] = useState<{
+    key: string;
+    tasks: any[];
+  } | null>(null);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const rfiData = useMemo(() => {
     return project?.rfi || [];
@@ -279,12 +282,12 @@ const GetProjectById = ({
   const clientTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
     // { key: "analytics", label: "Analytics", icon: TrendingUp },
-    { key: "details", label: "Details", icon: ClipboardList },
     { key: "files", label: "Files", icon: FileText },
-    { key: "milestones", label: "Milestones", icon: FileText },
+    // { key: "milestones", label: "Milestones", icon: FileText },
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
+    { key: "details", label: "Details", icon: ClipboardList },
   ];
 
   const defaultDesktopTabs = [
@@ -353,6 +356,9 @@ const GetProjectById = ({
           </div>
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
+              {project.stage}
+            </span>
+            <span className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
               {project.status}
             </span>
             {userRole === "admin" && (
@@ -398,10 +404,11 @@ const GetProjectById = ({
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${activeTab === key
-                  ? "bg-green-50 text-black border-[#6bbd45]"
-                  : "bg-white text-black border-black hover:bg-green-50"
-                  }`}
+                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${
+                  activeTab === key
+                    ? "bg-green-50 text-black border-[#6bbd45]"
+                    : "bg-white text-black border-black hover:bg-green-50"
+                }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -442,9 +449,9 @@ const GetProjectById = ({
                     label="Hours Completed"
                     value={formatSeconds(
                       projectStats?.workedSeconds ||
-                      project.workedSeconds ||
-                      project.totalWorkedSeconds ||
-                      0,
+                        project.workedSeconds ||
+                        project.totalWorkedSeconds ||
+                        0,
                     )}
                     color="bg-green-50"
                     description="Total hours logged by team"
@@ -463,12 +470,12 @@ const GetProjectById = ({
                     value={
                       (projectStats?.isOverrun ?? project.isOverrun)
                         ? formatSeconds(
-                          (projectStats?.workedSeconds ||
-                            project.workedSeconds ||
-                            project.totalWorkedSeconds ||
-                            0) -
-                          (project.estimatedHours || 0) * 3600,
-                        )
+                            (projectStats?.workedSeconds ||
+                              project.workedSeconds ||
+                              project.totalWorkedSeconds ||
+                              0) -
+                              (project.estimatedHours || 0) * 3600,
+                          )
                         : "00:00"
                     }
                     color={
@@ -498,116 +505,143 @@ const GetProjectById = ({
                       Other Tasks &mdash; Logged Time
                     </h4>
                     <span className="ml-auto text-[10px] text-slate-400 font-semibold uppercase tracking-widest">
-                      {Object.values(otherTasksByBundle).reduce((s, t) => s + t.length, 0)} tasks
+                      {Object.values(otherTasksByBundle).reduce(
+                        (s, t) => s + t.length,
+                        0,
+                      )}{" "}
+                      tasks
                     </span>
                   </div>
 
                   {/* Grouped by bundleKey */}
                   <div className="divide-y divide-gray-100">
-                    {Object.entries(otherTasksByBundle).map(([bundleKey, tasks]) => {
-                      const bundleTotalSeconds = tasks.reduce(
-                        (sum: number, t: any) =>
-                          sum + (t.workingHourTask || []).reduce(
-                            (s: number, w: any) => s + (w.duration_seconds || 0), 0,
-                          ),
-                        0,
-                      );
+                    {Object.entries(otherTasksByBundle).map(
+                      ([bundleKey, tasks]) => {
+                        const bundleTotalSeconds = tasks.reduce(
+                          (sum: number, t: any) =>
+                            sum +
+                            (t.workingHourTask || []).reduce(
+                              (s: number, w: any) =>
+                                s + (w.duration_seconds || 0),
+                              0,
+                            ),
+                          0,
+                        );
 
-                      const statusMap: Record<string, string> = {
-                        completed: "bg-green-100 text-green-700 border-green-200",
-                        complete: "bg-green-100 text-green-700 border-green-200",
-                        validate_complete: "bg-green-100 text-green-700 border-green-200",
-                        assigned: "bg-blue-100 text-blue-700 border-blue-200",
-                        in_progress: "bg-yellow-100 text-yellow-700 border-yellow-200",
-                        rework: "bg-orange-100 text-orange-700 border-orange-200",
-                      };
+                        const statusMap: Record<string, string> = {
+                          completed:
+                            "bg-green-100 text-green-700 border-green-200",
+                          complete:
+                            "bg-green-100 text-green-700 border-green-200",
+                          validate_complete:
+                            "bg-green-100 text-green-700 border-green-200",
+                          assigned: "bg-blue-100 text-blue-700 border-blue-200",
+                          in_progress:
+                            "bg-yellow-100 text-yellow-700 border-yellow-200",
+                          rework:
+                            "bg-orange-100 text-orange-700 border-orange-200",
+                        };
 
-                      return (
-                        <div key={bundleKey}>
-                          {/* Bundle key header */}
-                          <div className="flex items-center gap-3 px-5 py-2 bg-slate-50/70 border-b border-gray-100">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#6bbd45] shrink-0" />
-                            <span className="flex-1 text-xs font-black uppercase tracking-widest text-slate-600">
-                              {bundleKey}
-                            </span>
-                            <span className="text-xs font-bold text-slate-500">
-                              {tasks.length} task{tasks.length !== 1 ? "s" : ""}
-                            </span>
-                            <span className="text-xs font-black text-[#3a8a1a] min-w-[52px] text-right">
-                              {formatSeconds(bundleTotalSeconds)}
-                            </span>
-                          </div>
+                        return (
+                          <div key={bundleKey}>
+                            {/* Bundle key header */}
+                            <div className="flex items-center gap-3 px-5 py-2 bg-slate-50/70 border-b border-gray-100">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#6bbd45] shrink-0" />
+                              <span className="flex-1 text-xs font-black uppercase tracking-widest text-slate-600">
+                                {bundleKey}
+                              </span>
+                              <span className="text-xs font-bold text-slate-500">
+                                {tasks.length} task
+                                {tasks.length !== 1 ? "s" : ""}
+                              </span>
+                              <span className="text-xs font-black text-[#3a8a1a] min-w-[52px] text-right">
+                                {formatSeconds(bundleTotalSeconds)}
+                              </span>
+                            </div>
 
-                          {/* Tasks */}
-                          <div className="divide-y divide-gray-50">
-                            {tasks.map((task: any, idx: number) => {
-                              const assignee = task.user
-                                ? `${task.user.firstName || ""} ${task.user.lastName || ""}`.trim()
-                                : task.assignedTo
-                                  ? `${task.assignedTo.firstName || ""} ${task.assignedTo.lastName || ""}`.trim()
-                                  : "Unassigned";
+                            {/* Tasks */}
+                            <div className="divide-y divide-gray-50">
+                              {tasks.map((task: any, idx: number) => {
+                                const assignee = task.user
+                                  ? `${task.user.firstName || ""} ${task.user.lastName || ""}`.trim()
+                                  : task.assignedTo
+                                    ? `${task.assignedTo.firstName || ""} ${task.assignedTo.lastName || ""}`.trim()
+                                    : "Unassigned";
 
-                              const initials = assignee
-                                .split(" ")
-                                .filter(Boolean)
-                                .map((n: string) => n[0])
-                                .slice(0, 2)
-                                .join("")
-                                .toUpperCase();
+                                const initials = assignee
+                                  .split(" ")
+                                  .filter(Boolean)
+                                  .map((n: string) => n[0])
+                                  .slice(0, 2)
+                                  .join("")
+                                  .toUpperCase();
 
-                              const taskSeconds = (task.workingHourTask || []).reduce(
-                                (s: number, w: any) => s + (w.duration_seconds || 0), 0,
-                              );
+                                const taskSeconds = (
+                                  task.workingHourTask || []
+                                ).reduce(
+                                  (s: number, w: any) =>
+                                    s + (w.duration_seconds || 0),
+                                  0,
+                                );
 
-                              const sc =
-                                statusMap[(task.status || "").toLowerCase()] ||
-                                "bg-gray-100 text-gray-500 border-gray-200";
+                                const sc =
+                                  statusMap[
+                                    (task.status || "").toLowerCase()
+                                  ] ||
+                                  "bg-gray-100 text-gray-500 border-gray-200";
 
-                              return (
-                                <div
-                                  key={task.id || idx}
-                                  className="flex items-center gap-3 px-5 py-2.5 bg-white hover:bg-slate-50 transition-colors"
-                                >
-                                  {/* Avatar */}
-                                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-[10px] font-black text-white shrink-0">
-                                    {initials || "?"}
-                                  </div>
+                                return (
+                                  <div
+                                    key={task.id || idx}
+                                    className="flex items-center gap-3 px-5 py-2.5 bg-white hover:bg-slate-50 transition-colors"
+                                  >
+                                    {/* Avatar */}
+                                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                      {initials || "?"}
+                                    </div>
 
-                                  {/* Assignee + task name */}
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold text-gray-800 truncate leading-tight">
-                                      {assignee}
-                                    </p>
-                                    <p className="text-[10px] text-gray-400 truncate leading-tight mt-0.5">
-                                      {task.name || task.title || `Task #${idx + 1}`}
-                                    </p>
-                                  </div>
+                                    {/* Assignee + task name */}
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs font-bold text-gray-800 truncate leading-tight">
+                                        {assignee}
+                                      </p>
+                                      <p className="text-[10px] text-gray-400 truncate leading-tight mt-0.5">
+                                        {task.name ||
+                                          task.title ||
+                                          `Task #${idx + 1}`}
+                                      </p>
+                                    </div>
 
-                                  {/* Status */}
-                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wide shrink-0 ${sc}`}>
-                                    {task.status || "—"}
-                                  </span>
-
-                                  {/* Logged time from duration_seconds */}
-                                  <div className="flex items-center gap-1 shrink-0">
-                                    <Clock className="w-3 h-3 text-gray-400" />
-                                    <span className="text-xs font-black text-gray-700 min-w-[42px] text-right">
-                                      {taskSeconds > 0 ? formatSeconds(taskSeconds) : "—"}
+                                    {/* Status */}
+                                    <span
+                                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wide shrink-0 ${sc}`}
+                                    >
+                                      {task.status || "—"}
                                     </span>
+
+                                    {/* Logged time from duration_seconds */}
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      <Clock className="w-3 h-3 text-gray-400" />
+                                      <span className="text-xs font-black text-gray-700 min-w-[42px] text-right">
+                                        {taskSeconds > 0
+                                          ? formatSeconds(taskSeconds)
+                                          : "—"}
+                                      </span>
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      },
+                    )}
                   </div>
                 </div>
               )}
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                {/* <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                   <h4 className=" text-slate-800 mb-4 flex items-center gap-2">
                     <Clock size={18} className="text-indigo-600" />
                     Timeline Overview
@@ -621,26 +655,26 @@ const GetProjectById = ({
                         {formatDate(project.startDate)}
                       </span>
                     </div>
-                    {/* <div className="flex justify-between items-center text-sm">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-500 font-medium">
                         Approval Date
                       </span>
                       <span className="text-slate-800 ">
                         {formatDate(project.approvalDate)}
                       </span>
-                    </div> */}
-                    {/* <div className="flex justify-between items-center text-sm">
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-500 font-medium">
                         Expected Project Completion Date
                       </span>
                       <span className="text-slate-800 ">
                         {formatDate(project.endDate)}
                       </span>
-                    </div> */}
+                    </div>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col justify-center items-center text-center">
+                {/*<div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col justify-center items-center text-center">
                   <div className="mb-4 p-4 bg-white rounded-full shadow-inner border border-slate-200">
                     <Activity size={32} className="text-green-500" />
                   </div>
@@ -651,7 +685,7 @@ const GetProjectById = ({
                   <p className="text-xs text-slate-400 mt-3 font-medium uppercase tracking-tighter">
                     Current Development Phase: {project.stage}
                   </p>
-                </div>
+                </div>*/}
               </div>
             </div>
           )}
@@ -840,9 +874,10 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${
+                        rfiView === "list"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -853,9 +888,10 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${
+                          rfiView === "add"
+                            ? "border-[#6bbd45] text-black font-bold"
+                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -888,9 +924,10 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        rfiView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -901,9 +938,10 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          rfiView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -936,9 +974,10 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${
+                        submittalView === "list"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -949,9 +988,10 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${
+                          submittalView === "add"
+                            ? "border-[#6bbd45] text-black font-bold"
+                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -984,9 +1024,10 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${
+                        submittalView === "list"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -997,9 +1038,10 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${
+                          submittalView === "add"
+                            ? "border-green-500 text-green-600"
+                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -1032,9 +1074,10 @@ const GetProjectById = ({
                     onClick={() => setChangeOrderView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${changeOrderView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${
+                        changeOrderView === "list"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -1045,9 +1088,10 @@ const GetProjectById = ({
                       onClick={() => setChangeOrderView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${changeOrderView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${
+                          changeOrderView === "add"
+                            ? "border-[#6bbd45] text-black font-bold"
+                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -1115,13 +1159,15 @@ const GetProjectById = ({
                   </h3>
                   <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
                     {selectedOtherBundle.tasks.length} task
-                    {selectedOtherBundle.tasks.length !== 1 ? "s" : ""} &nbsp;·&nbsp;
+                    {selectedOtherBundle.tasks.length !== 1 ? "s" : ""}{" "}
+                    &nbsp;·&nbsp;
                     {formatSeconds(
                       selectedOtherBundle.tasks.reduce(
                         (s: number, t: any) =>
                           s +
                           (t.workingHourTask || []).reduce(
-                            (ws: number, w: any) => ws + (w.duration_seconds || 0),
+                            (ws: number, w: any) =>
+                              ws + (w.duration_seconds || 0),
                             0,
                           ),
                         0,
@@ -1166,9 +1212,11 @@ const GetProjectById = ({
                     const statusMap: Record<string, string> = {
                       completed: "bg-green-100 text-green-700 border-green-200",
                       complete: "bg-green-100 text-green-700 border-green-200",
-                      validate_complete: "bg-green-100 text-green-700 border-green-200",
+                      validate_complete:
+                        "bg-green-100 text-green-700 border-green-200",
                       assigned: "bg-blue-100 text-blue-700 border-blue-200",
-                      in_progress: "bg-yellow-100 text-yellow-700 border-yellow-200",
+                      in_progress:
+                        "bg-yellow-100 text-yellow-700 border-yellow-200",
                       rework: "bg-orange-100 text-orange-700 border-orange-200",
                     };
                     const sc =
@@ -1209,7 +1257,8 @@ const GetProjectById = ({
                             <span className="text-sm font-black">
                               {formatSeconds(
                                 (task.workingHourTask || []).reduce(
-                                  (s: number, w: any) => s + (w.duration_seconds || 0),
+                                  (s: number, w: any) =>
+                                    s + (w.duration_seconds || 0),
                                   0,
                                 ),
                               )}
@@ -1249,10 +1298,11 @@ const InfoRow = ({
 
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-bold rounded-lg border ${active
-      ? "bg-green-50 text-black border-[#6bbd45]"
-      : "bg-gray-100 text-black border-gray-200"
-      }`}
+    className={`px-3 py-1 text-sm font-bold rounded-lg border ${
+      active
+        ? "bg-green-50 text-black border-[#6bbd45]"
+        : "bg-gray-100 text-black border-gray-200"
+    }`}
   >
     {label}
   </span>
@@ -1275,8 +1325,9 @@ const StatCard = ({
   isAlert?: boolean;
 }) => (
   <div
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-      }`}
+    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
+      isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+    }`}
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
@@ -1304,9 +1355,7 @@ const OtherTasksPanel = ({
   otherTasksByBundle: Record<string, any[]>;
 }) => {
   const bundleKeys = Object.keys(otherTasksByBundle);
-  const [selectedKey, setSelectedKey] = useState<string>(
-    bundleKeys[0] || "",
-  );
+  const [selectedKey, setSelectedKey] = useState<string>(bundleKeys[0] || "");
 
   // Keep selectedKey in sync when bundleKeys change (e.g. first load)
   useEffect(() => {
@@ -1335,7 +1384,8 @@ const OtherTasksPanel = ({
     if (s === "assigned") return "bg-blue-100 text-blue-700 border-blue-200";
     if (s === "in_progress" || s === "inprogress")
       return "bg-yellow-100 text-yellow-700 border-yellow-200";
-    if (s === "rework") return "bg-orange-100 text-orange-700 border-orange-200";
+    if (s === "rework")
+      return "bg-orange-100 text-orange-700 border-orange-200";
     return "bg-gray-100 text-gray-600 border-gray-200";
   };
 
@@ -1353,19 +1403,21 @@ const OtherTasksPanel = ({
             <li key={key}>
               <button
                 onClick={() => setSelectedKey(key)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${selectedKey === key
-                  ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
-                  : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
-                  }`}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${
+                  selectedKey === key
+                    ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
+                    : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
+                }`}
               >
                 <span className="uppercase tracking-tight leading-tight">
                   {key}
                 </span>
                 <span
-                  className={`ml-2 shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedKey === key
-                    ? "bg-[#6bbd45]/20 text-[#3a8a1a]"
-                    : "bg-slate-200 text-slate-500"
-                    }`}
+                  className={`ml-2 shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                    selectedKey === key
+                      ? "bg-[#6bbd45]/20 text-[#3a8a1a]"
+                      : "bg-slate-200 text-slate-500"
+                  }`}
                 >
                   {otherTasksByBundle[key].length}
                 </span>

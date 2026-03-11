@@ -1812,6 +1812,23 @@ class Service {
       console.error("cannot find submittal", error);
     }
   }
+
+  // update submittal version by ID
+  static async updateSubmittalVersionById(id: string, data: FormData | any) {
+    try {
+      const response = await api.post(`submittal/${id}/versions`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      console.log('Submittal version updated:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('cannot update submittal version', error)
+      throw error
+    }
+  }
+
   //submittal responses
   static async addSubmittalResponse(formData: FormData) {
     try {
