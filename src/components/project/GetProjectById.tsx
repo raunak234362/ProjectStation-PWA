@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   TrendingUp,
   Activity,
+  MessageSquare,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
@@ -52,6 +53,7 @@ const GetProjectById = ({
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [allDocuments, setAllDocuments] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [rfiView, setRfiView] = useState<"list" | "add">("list");
   const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
@@ -253,7 +255,7 @@ const GetProjectById = ({
       setLoading(true);
       setError(null);
       const response = await Service.GetAllDocumentsByProjectId(id);
-      //   setProject(response?.data || null);
+      setAllDocuments(response?.data || null);
       console.log(response);
     } catch (err) {
       setError("Failed to load WBS details");
@@ -492,6 +494,45 @@ const GetProjectById = ({
                   />
                 </div>
               )}
+
+              {/* ✅ New Summary Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard
+                  icon={<MessageSquare className="text-purple-600" />}
+                  label="Total RFIs"
+                  value={project.rfi?.length || 0}
+                  color="bg-purple-50"
+                  description="Total RFIs for this project"
+                  onClick={() => setActiveTab("rfi")}
+                />
+                <StatCard
+                  icon={<FileText className="text-orange-600" />}
+                  label="Total Submittals"
+                  value={project.submittals?.length || 0}
+                  color="bg-orange-50"
+                  description="Total submittals for this project"
+                  onClick={() => setActiveTab("submittals")}
+                />
+                <StatCard
+                  icon={<ClipboardList className="text-indigo-600" />}
+                  label="Change Orders"
+                  value={project.changeOrders?.length || 0}
+                  color="bg-indigo-50"
+                  description="Total change orders"
+                  onClick={() => setActiveTab("changeOrder")}
+                />
+                <StatCard
+                  icon={<FolderOpenDot className="text-amber-600" />}
+                  label="Documents / Files"
+                  value={
+                    (allDocuments?.designDrawings?.length || 0) +
+                    (allDocuments?.project?.files?.length || 0)
+                  }
+                  color="bg-amber-50"
+                  description="Total project documents & files"
+                  onClick={() => setActiveTab("files")}
+                />
+              </div>
 
               <ProjectMilestoneMetrics projectId={id} />
 
@@ -1316,6 +1357,7 @@ const StatCard = ({
   color,
   description,
   isAlert = false,
+  onClick,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -1323,11 +1365,13 @@ const StatCard = ({
   color: string;
   description?: string;
   isAlert?: boolean;
+  onClick?: () => void;
 }) => (
   <div
+    onClick={onClick}
     className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
       isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-    }`}
+    } ${onClick ? "cursor-pointer" : ""}`}
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
