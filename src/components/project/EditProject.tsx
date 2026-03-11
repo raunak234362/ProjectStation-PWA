@@ -177,9 +177,10 @@ const EditProject: React.FC<EditProjectProps> = ({
     status: [
       { label: "ACTIVE", value: "ACTIVE" },
       { label: "INACTIVE", value: "INACTIVE" },
-      { label: "ON HOLD", value: "ON_HOLD" },
-      { label: "COMPLETED", value: "COMPLETED" },
-      { label: "DRAFT", value: "DRAFT" },
+      { label: "ON HOLD", value: "ONHOLD" },
+      { label: "COMPLETE", value: "COMPLETE" },
+      { label: "DELAY", value: "DELAY" },
+      { label: "ASSIGNED", value: "ASSIGNED" },
     ],
     stage: [
       { label: "IFA - (Issue for Approval)", value: "IFA" },
