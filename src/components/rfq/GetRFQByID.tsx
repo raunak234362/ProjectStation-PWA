@@ -613,7 +613,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                       },
                       {
                         accessorKey: "createdAt",
-                        header: "Created At",
+                        header: "Created On",
                         cell: ({ row }: any) => (
                           <span className="text-gray-700 text-xs">
                             {formatDateTime(row.original.createdAt)}
