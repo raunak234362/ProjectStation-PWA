@@ -9,14 +9,7 @@ import Service from "../../api/Service";
 
 import type { Fabricator, SelectOption, RFQpayload } from "../../interface";
 
-import {
-  Loader2,
-  Building2,
-  Layers,
-  Globe,
-  Percent,
-  Calendar,
-} from "lucide-react";
+import { Loader2, Layers, Globe, Percent, Calendar } from "lucide-react";
 
 import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";

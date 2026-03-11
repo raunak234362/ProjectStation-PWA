@@ -1,6 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Service from "../../api/Service";
-import { Loader2, AlertCircle, ChevronDown, ChevronUp, Clock, History } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  History,
+} from "lucide-react";
 import Button from "../fields/Button";
 import DataTable from "../ui/table";
 
@@ -9,7 +16,7 @@ import SubmittalResponseDetailsModal from "./SubmittalResponseDetailsModal";
 import UpdateSubmittalById from "./UpdateSubmittalById";
 import RenderFiles from "../ui/RenderFiles";
 
-const Info = ({ label, value }) => (
+const Info = ({ label, value }: any) => (
   <div className="mb-2">
     <h4 className="text-sm text-gray-700">{label}</h4>
     <div className="font-medium text-gray-700">{value}</div>
@@ -17,7 +24,7 @@ const Info = ({ label, value }) => (
 );
 
 // ── Version History Row ──────────────────────────────────────────────────────
-const VersionRow = ({ version, index, total, isCurrent }) => {
+const VersionRow = ({ version, index, total, isCurrent }: any) => {
   const [open, setOpen] = useState(false);
 
   const uploadedAt = version.createdAt || version.updatedAt || version.date;
@@ -28,10 +35,11 @@ const VersionRow = ({ version, index, total, isCurrent }) => {
 
   return (
     <div
-      className={`border rounded-xl overflow-hidden transition-all ${isCurrent
-        ? "border-[#6bbd45] bg-[#6bbd45]/5"
-        : "border-gray-200 bg-white"
-        }`}
+      className={`border rounded-xl overflow-hidden transition-all ${
+        isCurrent
+          ? "border-[#6bbd45] bg-[#6bbd45]/5"
+          : "border-gray-200 bg-white"
+      }`}
     >
       {/* Row Header — always visible */}
       <button
@@ -41,10 +49,11 @@ const VersionRow = ({ version, index, total, isCurrent }) => {
         <div className="flex items-center gap-3 min-w-0">
           {/* Version badge */}
           <span
-            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${isCurrent
-              ? "bg-[#6bbd45] text-white"
-              : "bg-gray-100 text-gray-500"
-              }`}
+            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${
+              isCurrent
+                ? "bg-[#6bbd45] text-white"
+                : "bg-gray-100 text-gray-500"
+            }`}
           >
             v{total - index}
             {isCurrent && " · Current"}
@@ -54,19 +63,23 @@ const VersionRow = ({ version, index, total, isCurrent }) => {
           <div className="flex items-center gap-1.5 text-xs text-gray-400 min-w-0">
             <Clock className="w-3 h-3 shrink-0" />
             <span className="truncate">
-              {uploadedAt
-                ? new Date(uploadedAt).toLocaleString()
-                : "—"}
+              {uploadedAt ? new Date(uploadedAt).toLocaleString() : "—"}
             </span>
             {uploaderName && (
-              <span className="truncate text-gray-500">· by {uploaderName}</span>
+              <span className="truncate text-gray-500">
+                · by {uploaderName}
+              </span>
             )}
           </div>
         </div>
 
         {/* Chevron */}
         <span className="shrink-0 text-gray-400">
-          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {open ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
         </span>
       </button>
 
@@ -74,7 +87,7 @@ const VersionRow = ({ version, index, total, isCurrent }) => {
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-gray-100">
           {/* Description */}
-          {(version.description) && (
+          {version.description && (
             <div className="pt-3">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
                 Description
@@ -114,15 +127,14 @@ const VersionRow = ({ version, index, total, isCurrent }) => {
   );
 };
 
-
-const GetSubmittalByID = ({ id }) => {
+const GetSubmittalByID = ({ id }: any) => {
   const [loading, setLoading] = useState(true);
-  const [submittal, setSubmittal] = useState(null);
-  const [error, setError] = useState(null);
+  const [submittal, setSubmittal] = useState<any>(null);
+  const [error, setError] = useState<any>(null);
 
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedResponse, setSelectedResponse] = useState(null);
+  const [selectedResponse, setSelectedResponse] = useState<any>(null);
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
 
   const fetchData = async () => {
@@ -162,8 +174,8 @@ const GetSubmittalByID = ({ id }) => {
   // Sort versions newest → oldest
   const sortedVersions = [...(submittal.versions || [])].sort(
     (a, b) =>
-      new Date(b.createdAt || b.updatedAt || b.date || 0) -
-      new Date(a.createdAt || a.updatedAt || a.date || 0)
+      new Date(b.createdAt || b.updatedAt || b.date || 0).getTime() -
+      new Date(a.createdAt || a.updatedAt || a.date || 0).getTime(),
   );
   const hasMultipleVersions = sortedVersions.length > 1;
 
@@ -171,7 +183,7 @@ const GetSubmittalByID = ({ id }) => {
     {
       accessorKey: "description",
       header: "Message",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <div
           className="prose prose-sm max-w-none text-gray-700"
           style={{
@@ -186,7 +198,7 @@ const GetSubmittalByID = ({ id }) => {
     {
       accessorKey: "files",
       header: "Files",
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         const count = row.original.files?.length ?? 0;
         return count > 0 ? `${count} file(s)` : "—";
       },
@@ -194,7 +206,7 @@ const GetSubmittalByID = ({ id }) => {
     {
       accessorKey: "createdAt",
       header: "Created",
-      cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
+      cell: ({ row }: any) => new Date(row.original.createdAt).toLocaleString(),
     },
   ];
 
@@ -209,12 +221,12 @@ const GetSubmittalByID = ({ id }) => {
                 {submittal.subject}
               </h1>
               {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
-              <Button
-                className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
-                onClick={() => setShowUpdateModal(true)}
-              >
-                Update Submittal
-              </Button>
+                <Button
+                  className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
+                  onClick={() => setShowUpdateModal(true)}
+                >
+                  Update Submittal
+                </Button>
               )}
             </div>
 
@@ -252,7 +264,9 @@ const GetSubmittalByID = ({ id }) => {
           {/* RIGHT PANEL */}
           <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-[#6bbd45]">Responses</h2>
+              <h2 className="text-xl font-semibold text-[#6bbd45]">
+                Responses
+              </h2>
               {userRole === "CLIENT_ADMIN" && (
                 <Button
                   className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
@@ -296,8 +310,7 @@ const GetSubmittalByID = ({ id }) => {
                   index={index}
                   total={sortedVersions.length}
                   isCurrent={
-                    version.id === submittal.currentVersionId ||
-                    index === 0
+                    version.id === submittal.currentVersionId || index === 0
                   }
                 />
               ))}
@@ -309,8 +322,7 @@ const GetSubmittalByID = ({ id }) => {
       {/* ADD RESPONSE MODAL */}
       {showResponseModal && (
         <SubmittalResponseModal
-          submittalId={submittal.id}
-          submittalVersionId={submittal.currentVersionId}
+          submittal={submittal}
           onClose={() => setShowResponseModal(false)}
           onSuccess={() => {
             setShowResponseModal(false);
