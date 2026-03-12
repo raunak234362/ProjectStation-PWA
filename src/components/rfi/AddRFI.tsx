@@ -22,7 +22,6 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo.fabricatorData,
   );
-  const staff = useSelector((state: any) => state.userInfo.staffData);
   const project_id = project?.id;
   const fabricatorID = project?.fabricatorID;
   console.log("Fabricators from Redux:", fabricators);
@@ -50,13 +49,6 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
       value: String(p.id),
     })) ?? [];
 
-  const recipientOptions: SelectOption[] =
-    staff
-      ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
-      .map((s: any) => ({
-        label: `${s.firstName} ${s.lastName}`,
-        value: String(s.id),
-      })) ?? [];
 
   const onSubmit = async (data: RFIPayload) => {
     try {
