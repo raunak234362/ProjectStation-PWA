@@ -145,10 +145,8 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
           render={({ field }) => (
             <Select<SelectOption, false>
               placeholder="WBT Contact *"
-              options={recipientOptions}
-              value={
-                recipientOptions.find((o) => o.value === field.value) ?? null
-              }
+              options={pocOptions}
+              value={pocOptions.find((o) => o.value === field.value) ?? null}
               onChange={(option) =>
                 field.onChange(option ? option.value : null)
               }
