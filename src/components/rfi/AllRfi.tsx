@@ -21,20 +21,15 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const userRole = sessionStorage.getItem("userRole");
 
   useEffect(() => {
-    if (rfiData && rfiData.length > 0) {
+    if (rfiData) {
       const normalized = rfiData.map((item: any) => ({
         ...item,
         createdAt: item.createdAt || item.date || null,
       }));
       setRFIs(normalized);
       setLoading(false);
-    } else {
     }
   }, [rfiData]);
-
-  // const handleRowClick = (row: RFIItem) => {
-  //   // setSelectedRfiID(row.id);
-  // };
 
   // ✅ Define columns
   const columns: ColumnDef<RFIItem>[] = [
@@ -72,18 +67,8 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
     },
   );
 
-  // ✅ Loading state
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-gray-700">
-        <Loader2 className="w-6 h-6 animate-spin mb-2" />
-        Loading RFIs...
-      </div>
-    );
-  }
-
   // ✅ Empty state
-  if (!loading && (!rfis || rfis.length === 0)) {
+  if (!loading && rfis.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-gray-700">
         <Inbox className="w-10 h-10 mb-3 text-gray-400" />
