@@ -498,7 +498,7 @@ const GetProjectById = ({
               )}
 
               {/* ✅ New Summary Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-black text-sm">
                 <StatCard
                   icon={<MessageSquare className="text-purple-600" />}
                   label="Total RFIs"
@@ -1368,17 +1368,17 @@ const StatCard = ({
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
-      <p className="text-xs  text-gray-500 uppercase tracking-widest">
+      <p className="text-sm font-bold text-gray-700 uppercase tracking-widest">
         {label}
       </p>
     </div>
     <p
-      className={`text-2xl  ${isAlert ? "text-red-700" : "text-gray-800"} tracking-tight`}
+      className={`text-3xl font-black ${isAlert ? "text-red-700" : "text-black"} tracking-tight`}
     >
       {value}
     </p>
     {description && (
-      <p className="text-[10px] text-gray-400 mt-2 font-medium uppercase tracking-tighter">
+      <p className="text-sm text-gray-400 mt-2 font-medium uppercase tracking-tighter">
         {description}
       </p>
     )}
