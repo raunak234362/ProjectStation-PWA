@@ -290,7 +290,7 @@ const GetProjectById = ({
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
-    { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
+    { key: "projectNotes", label: "Team Meeting Notes", icon: MessageSquare },
     { key: "details", label: "Details", icon: ClipboardList },
   ];
 
@@ -303,7 +303,7 @@ const GetProjectById = ({
     { key: "wbs", label: "WBS", icon: FileText },
     { key: "milestones", label: "Milestones", icon: FileText },
     { key: "notes", label: "Notes", icon: FolderOpenDot },
-    { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
+    { key: "projectNotes", label: "Team Meeting Notes", icon: MessageSquare },
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "CDrfi", label: "CD RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },

@@ -71,7 +71,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
             <div className="flex justify-between items-center">
                 <h3 className="text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
                     <FileText size={18} className="text-[#6bbd45]" />
-                    Project Notes
+                    Team Meeting Notes
                 </h3>
                 <button
                     onClick={() => setShowAddModal(true)}
