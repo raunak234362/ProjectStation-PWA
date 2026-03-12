@@ -181,7 +181,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
                 value={rfi?.fabricator?.fabName || "—"}
               />
               <Info
-                label="Created At"
+                label="Created On"
                 value={new Date(rfi?.date).toLocaleString()}
               />
 

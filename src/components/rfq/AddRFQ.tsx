@@ -47,6 +47,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   });
 
   const selectedFabricatorId = watch("fabricatorId");
+  const mtoStickModelEnabled = watch("mtoStickModelEnabled");
+
 
   const [description, setDescription] = useState("");
 
@@ -99,9 +101,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
   const clientOptions: SelectOption[] =
     selectedFabricator?.pointOfContact?.map((client) => ({
-      label: `${client.firstName} ${client.middleName ?? ""} ${
-        client.lastName
-      }`,
+      label: `${client.firstName} ${client.middleName ?? ""} ${client.lastName
+        }`,
       value: String(client.id),
     })) ?? [];
 
@@ -133,6 +134,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         customerDesign: data.customerDesign,
         detailingMain: data.detailingMain,
         detailingMisc: data.detailingMisc,
+        MTOManual: !!data.MTOManual,
+        MTOStickModel: data.mtoStickModelEnabled ? (data.MTOStickModel || "") : "",
 
         files: data.files ?? [],
       };
@@ -157,12 +160,14 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         };
       }
 
-      // Convert to FormData
       const formData = new FormData();
       for (const [key, value] of Object.entries(payload)) {
+        if (value === undefined || value === null) continue;
         if (key === "files" && Array.isArray(value)) {
           value.forEach((file) => formData.append("files", file));
-        } else if (value !== undefined && value !== null) {
+        } else if (typeof value === "boolean") {
+          formData.append(key, value ? "true" : "false");
+        } else {
           formData.append(key, value as string);
         }
       }
@@ -189,9 +194,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           fabricator: selectedFab || createdRFQ.fabricator,
           sender: selectedSender
             ? {
-                firstName: selectedSender.label.split(" ")[0],
-                lastName: selectedSender.label.split(" ").slice(1).join(" "),
-              }
+              firstName: selectedSender.label.split(" ")[0],
+              lastName: selectedSender.label.split(" ").slice(1).join(" "),
+            }
             : userDetail,
         };
         dispatch(addRFQ(enrichedRFQ));
@@ -485,7 +490,24 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                   <Toggle label="Main Steel" {...register("detailingMain")} />
                   <Toggle label="Misc Steel" {...register("detailingMisc")} />
+                  <Toggle label="MTO - Manual" {...register("MTOManual")} />
+                  <Toggle
+                    label="MTO - Stick Model"
+                    {...register("mtoStickModelEnabled")}
+                  />
                 </div>
+                {mtoStickModelEnabled && (
+                  <div className="mt-3 space-y-1">
+                    <label className="block text-xs font-black text-black uppercase tracking-widest">
+                      MTO Stick Model Details
+                    </label>
+                    <input
+                      {...register("MTOStickModel")}
+                      placeholder="Enter MTO Stick Model details..."
+                      className="w-full px-4 py-2.5 border border-black rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all bg-white"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </section>

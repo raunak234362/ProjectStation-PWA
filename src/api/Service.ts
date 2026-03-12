@@ -2761,5 +2761,61 @@ class Service {
       throw error;
     }
   }
+  //team meeting notes
+  static async AddTeamMeetingNotes(formData: FormData) {
+    try {
+      const response = await api.post(`team-meeting-notes`, formData);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching team meeting notes:", error);
+      throw error;
+    }
+  }
+
+  static async GetTeamMeetingNotesAll() {
+    try {
+      const response = await api.get(`team-meeting-notes`);
+      return response;
+    } catch (error) {
+      console.error("Error fetching team meeting notes:", error);
+      throw error;
+    }
+  }
+  static async GetTeamMeetingNotesById(id: string) {
+    try {
+      const response = await api.get(`team-meeting-notes/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching team meeting notes:", error);
+      throw error;
+    }
+  }
+  static async UpdateTeamMeetingNotes(id: string, data: any) {
+    try {
+      const response = await api.put(`team-meeting-notes/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating team meeting notes:", error);
+      throw error;
+    }
+  }
+  static async DeleteTeamMeetingNotes(id: string) {
+    try {
+      const response = await api.delete(`team-meeting-notes/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting team meeting notes:", error);
+      throw error;
+    }
+  }
+  static async ViewFileNotesTeamMeeting(noteId: string, fileId: string) {
+    try {
+      const response = await api.get(`team-meeting-notes/viewFile/${noteId}/${fileId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching file notes:", error);
+      throw error;
+    }
+  }
 }
 export default Service;

@@ -23,6 +23,7 @@ import AllMileStone from "./mileStone/AllMileStone";
 import ProjectAnalyticsDashboard from "./ProjectAnalyticsDashboard";
 import WBS from "./wbs/WBS";
 import AllNotes from "./notes/AllNotes";
+import AllProjectNotes from "./notes/AllProjectNotes";
 import AllRFI from "../rfi/AllRfi";
 import AddRFI from "../rfi/AddRFI";
 import AllSubmittals from "../submittals/AllSubmittals";
@@ -142,6 +143,7 @@ const ProjectDetailsContent = ({
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
+    { key: "projectNotes", label: "Project Notes", icon: FolderOpenDot },
   ];
 
   const defaultDesktopTabs = [
@@ -152,6 +154,7 @@ const ProjectDetailsContent = ({
     { key: "wbs", label: "WBS", icon: FileText },
     { key: "milestones", label: "Milestones", icon: FileText },
     { key: "notes", label: "Notes", icon: FolderOpenDot },
+    { key: "projectNotes", label: "Project Notes", icon: FolderOpenDot },
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "CDrfi", label: "CD RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
@@ -204,11 +207,10 @@ const ProjectDetailsContent = ({
           <button
             key={key}
             onClick={() => setActiveTab(key)}
-            className={`flex items-center gap-2 px-3 py-1 text-sm rounded-md whitespace-nowrap ${
-              activeTab === key
+            className={`flex items-center gap-2 px-3 py-1 text-sm rounded-md whitespace-nowrap ${activeTab === key
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
-            }`}
+              }`}
           >
             <Icon className="w-3 h-3" />
             {label}
@@ -234,9 +236,9 @@ const ProjectDetailsContent = ({
                   label="Hours Completed"
                   value={formatSeconds(
                     projectStats?.workedSeconds ||
-                      project.workedSeconds ||
-                      project.totalWorkedSeconds ||
-                      0,
+                    project.workedSeconds ||
+                    project.totalWorkedSeconds ||
+                    0,
                   )}
                   color="bg-green-50"
                   description="Total hours logged by team"
@@ -255,12 +257,12 @@ const ProjectDetailsContent = ({
                   value={
                     (projectStats?.isOverrun ?? project.isOverrun)
                       ? formatSeconds(
-                          (projectStats?.workedSeconds ||
-                            project.workedSeconds ||
-                            project.totalWorkedSeconds ||
-                            0) -
-                            (project.estimatedHours || 0) * 3600,
-                        )
+                        (projectStats?.workedSeconds ||
+                          project.workedSeconds ||
+                          project.totalWorkedSeconds ||
+                          0) -
+                        (project.estimatedHours || 0) * 3600,
+                      )
                       : "00:00"
                   }
                   color={
@@ -425,6 +427,8 @@ const ProjectDetailsContent = ({
         )}
 
         {activeTab === "notes" && <AllNotes projectId={id} />}
+
+        {activeTab === "projectNotes" && <AllProjectNotes projectId={id} />}
 
         {activeTab === "rfi" && (
           <div className="space-y-4">
@@ -640,11 +644,10 @@ const InfoRow = ({
 // ✅ ScopeTag Component
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-medium rounded-full ${
-      active
+    className={`px-3 py-1 text-sm font-medium rounded-full ${active
         ? "bg-green-100 text-green-800 border border-green-300"
         : "bg-gray-100 text-gray-700 border border-gray-200"
-    }`}
+      }`}
   >
     {label}
   </span>
@@ -667,9 +670,8 @@ const StatCard = ({
   isAlert?: boolean;
 }) => (
   <div
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
-      isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-    }`}
+    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+      }`}
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>

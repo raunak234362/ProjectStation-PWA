@@ -253,7 +253,7 @@ function TaskDetailPanel({ taskId, onClose }: { taskId: string; onClose: () => v
                                 )}
                                 {task.createdAt && (
                                     <div style={{ background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: "10px", padding: "10px 12px" }}>
-                                        <div style={{ fontSize: "10px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "3px" }}>Created At</div>
+                                        <div style={{ fontSize: "10px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "3px" }}>Created On</div>
                                         <div style={{ fontSize: "12px", fontWeight: 700, color: "#111827" }}>{formatDate(task.createdAt)}</div>
                                     </div>
                                 )}

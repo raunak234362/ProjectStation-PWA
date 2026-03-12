@@ -31,6 +31,7 @@ import AllRFI from "../rfi/AllRfi";
 import AddRFI from "../rfi/AddRFI";
 import AllSubmittals from "../submittals/AllSubmittals";
 import AllNotes from "./notes/AllNotes";
+import AllProjectNotes from "./notes/AllProjectNotes";
 import EditProject from "./EditProject";
 import AddSubmittal from "../submittals/AddSubmittals";
 
@@ -289,6 +290,7 @@ const GetProjectById = ({
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
+    { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
     { key: "details", label: "Details", icon: ClipboardList },
   ];
 
@@ -301,6 +303,7 @@ const GetProjectById = ({
     { key: "wbs", label: "WBS", icon: FileText },
     { key: "milestones", label: "Milestones", icon: FileText },
     { key: "notes", label: "Notes", icon: FolderOpenDot },
+    { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "CDrfi", label: "CD RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
@@ -406,11 +409,10 @@ const GetProjectById = ({
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${
-                  activeTab === key
-                    ? "bg-green-50 text-black border-[#6bbd45]"
-                    : "bg-white text-black border-black hover:bg-green-50"
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${activeTab === key
+                  ? "bg-green-50 text-black border-[#6bbd45]"
+                  : "bg-white text-black border-black hover:bg-green-50"
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -451,9 +453,9 @@ const GetProjectById = ({
                     label="Hours Completed"
                     value={formatSeconds(
                       projectStats?.workedSeconds ||
-                        project.workedSeconds ||
-                        project.totalWorkedSeconds ||
-                        0,
+                      project.workedSeconds ||
+                      project.totalWorkedSeconds ||
+                      0,
                     )}
                     color="bg-green-50"
                     description="Total hours logged by team"
@@ -472,12 +474,12 @@ const GetProjectById = ({
                     value={
                       (projectStats?.isOverrun ?? project.isOverrun)
                         ? formatSeconds(
-                            (projectStats?.workedSeconds ||
-                              project.workedSeconds ||
-                              project.totalWorkedSeconds ||
-                              0) -
-                              (project.estimatedHours || 0) * 3600,
-                          )
+                          (projectStats?.workedSeconds ||
+                            project.workedSeconds ||
+                            project.totalWorkedSeconds ||
+                            0) -
+                          (project.estimatedHours || 0) * 3600,
+                        )
                         : "00:00"
                     }
                     color={
@@ -627,7 +629,7 @@ const GetProjectById = ({
 
                                 const sc =
                                   statusMap[
-                                    (task.status || "").toLowerCase()
+                                  (task.status || "").toLowerCase()
                                   ] ||
                                   "bg-gray-100 text-gray-500 border-gray-200";
 
@@ -895,6 +897,9 @@ const GetProjectById = ({
 
           {/* ✅ Notes */}
           {activeTab === "notes" && <AllNotes projectId={id} />}
+          {/* ✅ Project Notes (Team Meeting Notes) */}
+          {activeTab === "projectNotes" && <AllProjectNotes projectId={id} />}
+
           {activeTab === "wbs" && (
             <div className="text-gray-700 italic text-center">
               {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
@@ -915,10 +920,9 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        rfiView === "list"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${rfiView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -929,10 +933,9 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          rfiView === "add"
-                            ? "border-[#6bbd45] text-black font-bold"
-                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${rfiView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -965,10 +968,9 @@ const GetProjectById = ({
                     onClick={() => setRfiView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        rfiView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${rfiView === "list"
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -979,10 +981,9 @@ const GetProjectById = ({
                       onClick={() => setRfiView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          rfiView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${rfiView === "add"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -1015,10 +1016,9 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        submittalView === "list"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${submittalView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -1029,10 +1029,9 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          submittalView === "add"
-                            ? "border-[#6bbd45] text-black font-bold"
-                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${submittalView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -1065,10 +1064,9 @@ const GetProjectById = ({
                     onClick={() => setSubmittalView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        submittalView === "list"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                      ${submittalView === "list"
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                       }
                     `}
                   >
@@ -1079,10 +1077,9 @@ const GetProjectById = ({
                       onClick={() => setSubmittalView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          submittalView === "add"
-                            ? "border-green-500 text-green-600"
-                            : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
+                        ${submittalView === "add"
+                          ? "border-green-500 text-green-600"
+                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
                         }
                     `}
                     >
@@ -1115,10 +1112,9 @@ const GetProjectById = ({
                     onClick={() => setChangeOrderView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${
-                        changeOrderView === "list"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${changeOrderView === "list"
+                        ? "border-[#6bbd45] text-black font-bold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -1129,10 +1125,9 @@ const GetProjectById = ({
                       onClick={() => setChangeOrderView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          changeOrderView === "add"
-                            ? "border-[#6bbd45] text-black font-bold"
-                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${changeOrderView === "add"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -1339,11 +1334,10 @@ const InfoRow = ({
 
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-bold rounded-lg border ${
-      active
-        ? "bg-green-50 text-black border-[#6bbd45]"
-        : "bg-gray-100 text-black border-gray-200"
-    }`}
+    className={`px-3 py-1 text-sm font-bold rounded-lg border ${active
+      ? "bg-green-50 text-black border-[#6bbd45]"
+      : "bg-gray-100 text-black border-gray-200"
+      }`}
   >
     {label}
   </span>
@@ -1369,9 +1363,8 @@ const StatCard = ({
 }) => (
   <div
     onClick={onClick}
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
-      isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-    } ${onClick ? "cursor-pointer" : ""}`}
+    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+      } ${onClick ? "cursor-pointer" : ""}`}
   >
     <div className="flex items-center gap-3 mb-3">
       <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
@@ -1447,21 +1440,19 @@ const OtherTasksPanel = ({
             <li key={key}>
               <button
                 onClick={() => setSelectedKey(key)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${
-                  selectedKey === key
-                    ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
-                    : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
-                }`}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${selectedKey === key
+                  ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
+                  : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
+                  }`}
               >
                 <span className="uppercase tracking-tight leading-tight">
                   {key}
                 </span>
                 <span
-                  className={`ml-2 shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                    selectedKey === key
-                      ? "bg-[#6bbd45]/20 text-[#3a8a1a]"
-                      : "bg-slate-200 text-slate-500"
-                  }`}
+                  className={`ml-2 shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedKey === key
+                    ? "bg-[#6bbd45]/20 text-[#3a8a1a]"
+                    : "bg-slate-200 text-slate-500"
+                    }`}
                 >
                   {otherTasksByBundle[key].length}
                 </span>
