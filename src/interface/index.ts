@@ -82,13 +82,13 @@ export interface Department {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   managerIds?:
-    | string
-    | []
-    | {
-        firstName?: string;
-        lastName?: string;
-        middleName?: string;
-      };
+  | string
+  | []
+  | {
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+  };
 }
 
 export interface DepartmentPayload {
@@ -478,13 +478,13 @@ export interface AddProjectPayload {
   connectionDesignerID?: string;
   status: "ACTIVE" | "INACTIVE" | "DRAFT" | "ONHOLD" | "COMPLETED";
   stage:
-    | "PLANNING"
-    | "IN_PROGRESS"
-    | "COMPLETED"
-    | "IFA"
-    | "IFC"
-    | "CO#"
-    | "RFI";
+  | "PLANNING"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "IFA"
+  | "IFC"
+  | "CO#"
+  | "RFI";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;
   miscDesign: boolean;
