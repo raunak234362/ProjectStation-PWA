@@ -40,8 +40,9 @@ const Profile = () => {
         "Profile updated, but failed to refresh view. Please reload."
       );
     }
+    console.log(user);
   };
-
+  console.log(user);
   if (!user) {
     return (
       <div className="flex justify-center items-center h-screen text-gray-700">
@@ -149,16 +150,20 @@ const Profile = () => {
             </div> */}
 
             <div>
-              <p className="text-gray-700 text-sm">Created At</p>
+              <p className="text-gray-700 text-sm">Created On</p>
               <p className="text-gray-700 font-medium">
-                {new Date(user.createdAt).toLocaleString()}
+                {user?.FabricatorPointOfContacts?.[0]?.createdAt
+                  ? new Date(user.FabricatorPointOfContacts[0].createdAt).toLocaleString()
+                  : "N/A"}
               </p>
             </div>
 
             <div>
               <p className="text-gray-700 text-sm">Last Updated</p>
               <p className="text-gray-700 font-medium">
-                {new Date(user.updatedAt).toLocaleString()}
+                {user?.FabricatorPointOfContacts?.[0]?.updatedAt
+                  ? new Date(user.FabricatorPointOfContacts[0].updatedAt).toLocaleString()
+                  : "N/A"}
               </p>
             </div>
           </div>

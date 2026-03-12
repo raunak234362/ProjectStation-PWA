@@ -322,7 +322,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
                   />
                   <InfoItem
                     icon={<Clock />}
-                    label="Created At"
+                    label="Created On"
                     value={formatDateTime(task.createdAt)}
                   />
 

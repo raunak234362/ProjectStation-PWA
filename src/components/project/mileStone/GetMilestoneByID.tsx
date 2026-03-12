@@ -315,7 +315,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
           />
           <InfoCard
             icon={<Clock className="w-5 h-5" />}
-            label="Created At"
+            label="Created On"
             value={formatDate(milestone.date)}
             color="text-purple-600"
             bg="bg-purple-50"
