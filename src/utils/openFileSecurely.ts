@@ -39,6 +39,8 @@ const getDownloadUrl = (table: string, parentId: string | number, fileId: string
       return `${baseURL}/${table}/viewfile/${parentId}/${fileId}`
     case 'team-meeting-notes':
       return `${baseURL}/team-meeting-notes/viewFile/${parentId}/${fileId}`
+    case 'teamMeetingResponse':
+      return `${baseURL}/team-meeting-notes/responses/viewFile/${parentId}/${fileId}`
     default:
       return `${baseURL}/${table}/viewFile/${parentId}/${fileId}`
   }

@@ -655,12 +655,30 @@ export interface ProjectNote {
     originalName: string;
     path: string;
   }[];
+  responses?: ProjectNoteResponse[];
 }
 
 export interface CreateProjectNotePayload {
   content: string;
   stage: string;
   projectId: string;
+  files?: File[];
+}
+
+export interface ProjectNoteResponse {
+  id: string;
+  teamMeetingNoteId: string;
+  userId: string;
+  parentResponseId: string | null;
+  content: string;
+  files?: { id: string; originalName: string; path: string }[];
+  createdAt: string;
+  childResponses?: ProjectNoteResponse[];
+}
+
+export interface ProjectNoteResponsePayload {
+  content: string;
+  parentResponseId?: string | null;
   files?: File[];
 }
 
