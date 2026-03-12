@@ -4,7 +4,7 @@ import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RFIItem } from "../../interface";
 import GetRFIByID from "./GetRFIByID";
-import { Loader2, Inbox } from "lucide-react";
+import { Inbox } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
 import { Suspense } from "react";
 
