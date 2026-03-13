@@ -120,10 +120,12 @@ const AddSubmittal: React.FC<{
   };
 
   useEffect(() => {
-    if (milestones.length > 0) {
+    if (initialData?.mileStoneId) {
+      setValue("mileStoneId", String(initialData.mileStoneId));
+    } else if (milestones.length > 0) {
       setValue("mileStoneId", String(milestones[0].id));
     }
-  }, [milestones]);
+  }, [milestones, initialData?.mileStoneId]);
 
   return (
     <div className="w-full mx-auto bg-white p-4 rounded-xl shadow">
@@ -200,7 +202,10 @@ const AddSubmittal: React.FC<{
         <MultipleFileUpload onFilesChange={setFiles} />
 
         <div className="flex justify-center w-full mt-6 border border-black">
-          <Button type="submit" className="w-full text-black border border-black bg-green-100">
+          <Button
+            type="submit"
+            className="w-full text-black border border-black bg-green-100"
+          >
             Submit Submittal
           </Button>
         </div>

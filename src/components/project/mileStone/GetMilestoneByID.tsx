@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Loader2,
   Calendar,
-  FileText,
   CheckCircle2,
   AlertCircle,
   Clock,
@@ -21,6 +20,33 @@ import DataTable from "../../ui/table";
 import MilestoneResponseModal from "./MilestoneResponseModal";
 import MilestoneResponseDetailsModal from "./MilestoneResponseDetailsModal";
 import { formatDateTime } from "../../../utils/dateUtils";
+import AddSubmittal from "../../submittals/AddSubmittals";
+import { useDispatch } from "react-redux";
+import { setMilestonesForProject } from "../../../store/milestoneSlice";
+
+const InfoCard = ({
+  icon,
+  label,
+  value,
+  color,
+  bg,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  color: string;
+  bg: string;
+}) => (
+  <div className="flex flex-col gap-1">
+    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+      {label}
+    </span>
+    <div className="flex items-center gap-2 mt-1">
+      <div className={`p-2 ${bg} ${color} rounded-xl shadow-sm`}>{icon}</div>
+      <span className="text-sm font-bold text-gray-800">{value}</span>
+    </div>
+  </div>
+);
 
 interface Milestone {
   id: string | number;
@@ -33,40 +59,36 @@ interface Milestone {
   updatedAt?: string;
   project?: {
     name: string;
+    id?: string | number;
   };
-  Tasks?: Array<{
-    id: string | number;
-    name: string;
-    status: string;
-    user?: {
-      firstName: string;
-      lastName: string;
-    };
-  }>;
-  tasks?: Array<{
-    id: string | number;
-    name: string;
-    status: string;
-    user?: {
-      firstName: string;
-      lastName: string;
-    };
-  }>;
+  project_id?: string | number;
+  Tasks?: Array<any>;
+  tasks?: Array<any>;
   percentage?: string | number;
   completionPercentage?: string | number;
   completeionPercentage?: string | number;
   reason?: string;
   responses?: any[];
   currentVersionId?: string | number;
+  versions?: any[];
 }
 
 interface GetMilestoneByIDProps {
   row: any;
   close: () => void;
+  onUpdate?: () => void;
 }
 
-const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
+const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
+  row,
+  close,
+  onUpdate,
+}) => {
+  const dispatch = useDispatch();
   const [milestone, setMilestone] = useState<Milestone | null>(null);
+  const [expandedVersionId, setExpandedVersionId] = useState<
+    string | number | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdateProgressModalOpen, setIsUpdateProgressModalOpen] =
@@ -75,6 +97,8 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAddSubmittalOpen, setIsAddSubmittalOpen] = useState(false);
+  const [showTasksModal, setShowTasksModal] = useState(false);
 
   const id = row?.id;
   const userRole = sessionStorage.getItem("userRole");
@@ -97,11 +121,44 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
     fetchMilestone();
   }, [id]);
 
+  const refreshReduxStore = async (projId: string) => {
+    if (!projId) return;
+    try {
+      const response = await Service.GetProjectMilestoneById(projId);
+      if (response && response.data) {
+        dispatch(
+          setMilestonesForProject({
+            projectId: projId,
+            milestones: response.data,
+          }),
+        );
+      }
+    } catch (error) {
+      console.error("Error refreshing milestones in Redux:", error);
+    }
+  };
+
+  const handleSuccess = async () => {
+    await fetchMilestone();
+    const projId =
+      milestone?.project_id || milestone?.project?.id || row?.project_id;
+    if (projId) {
+      await refreshReduxStore(projId.toString());
+    }
+    if (onUpdate) onUpdate();
+  };
+
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
       await Service.DeleteMilestoneById(id.toString());
       toast.success("Milestone deleted successfully");
+      const projId =
+        milestone?.project_id || milestone?.project?.id || row?.project_id;
+      if (projId) {
+        await refreshReduxStore(projId.toString());
+      }
+      if (onUpdate) onUpdate();
       close();
     } catch (error) {
       console.error("Delete failed:", error);
@@ -170,33 +227,48 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
       },
     },
     {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }: any) => (
-        <span
-          className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-tight border ${
-            row.original.status === "APPROVED"
-              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-              : row.original.status === "REJECTED"
-                ? "bg-red-50 text-red-700 border-red-200"
-                : "bg-gray-50 text-gray-700 border-gray-200"
-          }`}
-        >
-          {row.original.status}
-        </span>
-      ),
+      accessorKey: "user",
+      header: "By",
+      cell: ({ row }: any) => {
+        const user = row.original.user;
+        const name = user
+          ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+          : null;
+        return (
+          <div className="flex items-center gap-1.5">
+            <User className="w-3 h-3 text-gray-400 shrink-0" />
+            <span className="text-xs font-semibold text-gray-700 truncate max-w-[120px]">
+              {name || user?.username || "—"}
+            </span>
+          </div>
+        );
+      },
     },
     {
-      accessorKey: "files",
-      header: "Files",
+      accessorKey: "status",
+      header: "Status",
       cell: ({ row }: any) => {
-        const count = row.original.files?.length ?? 0;
-        return count > 0 ? (
-          <span className="text-black font-medium text-xs">
-            {count} file(s)
+        const s = row.original.status;
+        const cls =
+          s === "ON_TIME"
+            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+            : s === "DELAYED"
+              ? "bg-red-50 text-red-700 border-red-200"
+              : s === "NOT_STARTED"
+                ? "bg-gray-50 text-gray-600 border-gray-200"
+                : s === "CLARIFICATION_REQUIRED"
+                  ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                  : s === "APPROVED"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : s === "REJECTED"
+                      ? "bg-red-50 text-red-700 border-red-200"
+                      : "bg-gray-50 text-gray-600 border-gray-200";
+        return (
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-tight border ${cls}`}
+          >
+            {s?.replace(/_/g, " ") || "—"}
           </span>
-        ) : (
-          <span className="text-gray-300">—</span>
         );
       },
     },
@@ -248,368 +320,557 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({ row, close }) => {
 
   const statusConfig = getStatusConfig(milestone.status);
 
-  return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
-      {/* Header */}
-      <div className=" px-6 py-4 border-b flex justify-between items-center bg-gray-50/30">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-green-100 rounded-lg">
-            <CheckCircle2 className="w-6 h-6 text-green-700" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-black leading-tight">
-              {milestone.subject}
-            </h2>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsUpdateProgressModalOpen(true)}
-                className="text-black border border-black bg-white hover:bg-green-50 flex items-center gap-2 h-9"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                Update Progress
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsEditModalOpen(true)}
-                className="text-black border border-black bg-white hover:bg-green-50 flex items-center gap-2 h-9"
-              >
-                <Edit className="w-4 h-4" />
-                Edit
-              </Button>
-              {/* <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setShowDeleteModal(true)}
-                className="flex items-center gap-2 h-9"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </Button> */}
-            </>
-          )}
-          <button
-            onClick={close}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
-          >
-            Close
-          </button>
-        </div>
-      </div>
+  // Responses are nested inside versions — flatten + sort newest first
+  const allResponses = (milestone.versions || [])
+    .flatMap((v) => v.responses || [])
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
-      <div className="p-6 space-y-8">
-        {/* Info Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <InfoCard
-            icon={<Calendar className="w-5 h-5" />}
-            label="Approval Date"
-            value={formatDate(milestone.approvalDate)}
-            color="text-blue-600"
-            bg="bg-blue-50"
-          />
-          <InfoCard
-            icon={<Clock className="w-5 h-5" />}
-            label="Created On"
-            value={formatDate(milestone.date)}
-            color="text-purple-600"
-            bg="bg-purple-50"
-          />
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Status
-            </span>
-            <div
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} w-fit mt-1`}
-            >
-              {statusConfig.label}
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] border border-gray-200 overflow-hidden flex flex-col relative">
+        {/* Header */}
+        <div className=" px-6 py-4 border-b flex justify-between items-center bg-gray-50/30 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <CheckCircle2 className="w-6 h-6 text-green-700" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-black leading-tight">
+                {milestone.subject}
+              </h2>
             </div>
           </div>
-          <InfoCard
-            icon={<Tag className="w-5 h-5" />}
-            label="Project"
-            value={milestone.project?.name || "—"}
-            color="text-green-600"
-            bg="bg-green-50"
-          />
-          <div className="flex flex-col gap-1 w-full col-span-1 md:col-span-2 lg:col-span-1">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Progress
-            </span>
-            <div className="mt-2 w-full">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsAddSubmittalOpen(true)}
+              className="text-black border border-black bg-[#6bbd45]/10 hover:bg-[#6bbd45]/20 flex items-center gap-2 h-9"
+            >
+              <Plus className="w-4 h-4" />
+              Create Submittal
+            </Button>
+            {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsUpdateProgressModalOpen(true)}
+                  className="text-black border border-black bg-white hover:bg-green-50 flex items-center gap-2 h-9"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  Update Progress
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="text-black border border-black bg-white hover:bg-green-50 flex items-center gap-2 h-9"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </Button>
+              </>
+            )}
+            <button
+              onClick={close}
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
+          {/* Info Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <InfoCard
+              icon={<Calendar className="w-5 h-5" />}
+              label="Approval Date"
+              value={formatDate(milestone.approvalDate)}
+              color="text-blue-600"
+              bg="bg-blue-50"
+            />
+            <InfoCard
+              icon={<Clock className="w-5 h-5" />}
+              label="Created At"
+              value={formatDate(milestone.date)}
+              color="text-purple-600"
+              bg="bg-purple-50"
+            />
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Status
+              </span>
+              <div
+                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} w-fit mt-1`}
+              >
+                {statusConfig.label}
+              </div>
+            </div>
+            <InfoCard
+              icon={<Tag className="w-5 h-5" />}
+              label="Project"
+              value={milestone.project?.name || "—"}
+              color="text-green-600"
+              bg="bg-green-50"
+            />
+            <div className="flex flex-col gap-1 w-full col-span-1 md:col-span-2 lg:col-span-1">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Progress
+              </span>
+              <div className="mt-2 w-full">
+                {(() => {
+                  const msTasks = milestone.Tasks || milestone.tasks || [];
+                  const totalTasks = msTasks.length;
+                  let taskProgress = 0;
+
+                  if (totalTasks > 0) {
+                    const completedStatuses = [
+                      "COMPLETE",
+                      "VALIDATE_COMPLETE",
+                      "COMPLETE_OTHER",
+                      "USER_FAULT",
+                      "COMPLETED",
+                    ];
+                    const completedCount = msTasks.filter((t) =>
+                      completedStatuses.includes(t.status),
+                    ).length;
+                    taskProgress = Math.round(
+                      (completedCount / totalTasks) * 100,
+                    );
+                  }
+
+                  const finalProgress =
+                    milestone.percentage !== undefined &&
+                    milestone.percentage !== null &&
+                    milestone.percentage !== ""
+                      ? Number(milestone.percentage)
+                      : milestone.completionPercentage !== undefined &&
+                        milestone.completionPercentage !== null
+                        ? Number(milestone.completionPercentage)
+                        : milestone.completeionPercentage !== undefined &&
+                          milestone.completeionPercentage !== null
+                          ? Number(milestone.completeionPercentage)
+                          : taskProgress;
+
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex justify-between text-xs font-bold text-gray-700">
+                        <span>{finalProgress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                        <div
+                          className="bg-green-600 h-2.5 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.min(100, Math.max(0, finalProgress))}%`,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
+
+          {/* VERSION HISTORY */}
+          {milestone?.versions && milestone.versions.length > 0 && (
+            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200/50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-green-600" /> Version History
+                </h3>
+                <span className="text-xs font-bold bg-gray-200 text-gray-600 px-3 py-1 rounded-md">
+                  {milestone.versions.length} Versions
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {[...milestone.versions]
+                  .sort((a, b) => b.versionNumber - a.versionNumber)
+                  .map((v) => {
+                    const isCurrent =
+                      String(v.id) === String(milestone.currentVersionId);
+                    const isExpanded =
+                      String(expandedVersionId) === String(v.id);
+
+                    return (
+                      <div
+                        key={v.id}
+                        className={`rounded-xl border transition-all duration-200 ${
+                          isCurrent
+                            ? "bg-green-50/50 border-green-200 shadow-sm"
+                            : "bg-white border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <div
+                          className="flex items-center justify-between px-4 py-3 cursor-pointer"
+                          onClick={() =>
+                            setExpandedVersionId(isExpanded ? null : v.id)
+                          }
+                        >
+                          <div className="flex items-center gap-3">
+                            <span
+                              className={`text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider ${
+                                isCurrent
+                                  ? "bg-green-600 text-white"
+                                  : "bg-gray-100 text-gray-600"
+                              }`}
+                            >
+                              V{v.versionNumber} {isCurrent && "· Current"}
+                            </span>
+                            <span className="text-[10px] text-gray-400 font-semibold flex items-center gap-1">
+                              {formatDateTime(v.createdAt)}
+                            </span>
+                          </div>
+                          <Plus
+                            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isExpanded ? "rotate-45" : ""}`}
+                          />
+                        </div>
+
+                        {isExpanded && (
+                          <div className="px-4 pb-4 pt-2 border-t border-gray-100 bg-white/50 rounded-b-xl animate-in slide-in-from-top-1 duration-200">
+                            {v.description && (
+                              <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-1">
+                                  Notes
+                                </p>
+                                <div
+                                  className="text-sm text-gray-700 prose prose-sm max-w-none prose-p:my-1"
+                                  dangerouslySetInnerHTML={{
+                                    __html: v.description,
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-8">
+            <div className="space-y-8">
+              {milestone.reason && (
+                <div className="bg-red-50/50 rounded-2xl p-6 border border-red-100 shadow-sm">
+                  <h3 className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 uppercase tracking-widest">
+                    Reason of Delay
+                  </h3>
+                  <p className="text-sm text-red-700 font-medium">
+                    {milestone.reason}
+                  </p>
+                </div>
+              )}
+
+              {/* Tasks Button */}
               {(() => {
                 const msTasks = milestone.Tasks || milestone.tasks || [];
-                const totalTasks = msTasks.length;
-                let taskProgress = 0;
-
-                if (totalTasks > 0) {
-                  const completedStatuses = [
-                    "COMPLETE",
-                    "VALIDATE_COMPLETE",
-                    "COMPLETE_OTHER",
-                    "USER_FAULT",
-                    "COMPLETED",
-                  ];
-                  const completedCount = msTasks.filter((t: any) =>
-                    completedStatuses.includes(t.status),
-                  ).length;
-                  taskProgress = Math.round(
-                    (completedCount / totalTasks) * 100,
-                  );
-                }
-
-                const finalProgress =
-                  milestone.percentage !== undefined &&
-                  milestone.percentage !== null &&
-                  milestone.percentage !== ""
-                    ? Number(milestone.percentage)
-                    : milestone.completionPercentage !== undefined &&
-                        milestone.completionPercentage !== null
-                      ? Number(milestone.completionPercentage)
-                      : milestone.completeionPercentage !== undefined &&
-                          milestone.completeionPercentage !== null
-                        ? Number(milestone.completeionPercentage)
-                        : taskProgress;
-
                 return (
-                  <div className="flex flex-col gap-1">
-                    <div className="flex justify-between text-xs font-bold text-gray-700">
-                      <span>{finalProgress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-                      <div
-                        className="bg-green-600 h-2.5 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${Math.min(100, Math.max(0, finalProgress))}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
+                  msTasks.length > 0 && (
+                    <button
+                      onClick={() => setShowTasksModal(true)}
+                      className="w-full flex items-center justify-between px-5 py-4 bg-white border border-gray-200 rounded-2xl hover:border-[#6bbd45] hover:bg-[#6bbd45]/5 transition-all shadow-sm group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-green-50 rounded-xl group-hover:bg-green-100 transition-colors">
+                          <ClipboardList className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-sm font-black text-black uppercase tracking-tight">
+                            Associated Tasks
+                          </p>
+                          <p className="text-[10px] text-gray-400 font-semibold mt-0.5">
+                            Click to view all tasks
+                          </p>
+                        </div>
+                      </div>
+                      <span className="shrink-0 text-xs font-black bg-[#6bbd45]/15 text-black border border-[#6bbd45]/30 px-3 py-1 rounded-full">
+                        {msTasks.length} task{msTasks.length !== 1 ? "s" : ""}
+                      </span>
+                    </button>
+                  )
                 );
               })()}
             </div>
+
+            {/* Responses */}
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-widest">
+                  Responses
+                </h3>
+                <Button
+                  onClick={() => setShowResponseModal(true)}
+                  size="sm"
+                  className="bg-green-600 text-white rounded-xl flex items-center gap-2 h-9 text-xs font-bold px-4"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Response
+                </Button>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden min-h-[200px]">
+                {allResponses.length > 0 ? (
+                  <DataTable
+                    columns={responseColumns}
+                    data={allResponses}
+                    onRowClick={(row: any) => setSelectedResponse(row)}
+                  />
+                ) : (
+                  <div className="p-8 text-center text-gray-400 text-sm italic">
+                    No responses yet.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left side: Description and tasks */}
-          <div className="space-y-8">
-            {/* Description */}
-            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm">
-              <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2 uppercase tracking-widest">
-                <FileText className="w-4 h-4 text-green-600" />
-                Description
-              </h3>
-              <div
-                className="text-gray-700 text-sm leading-relaxed prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    milestone.description ||
-                    "No description provided for this milestone.",
+        {/* Edit Modal */}
+        {isEditModalOpen && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="w-full max-w-2xl h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+              <EditMileStone
+                milestoneId={id.toString()}
+                initialData={milestone}
+                mileStoneVersionId={milestone.currentVersionId}
+                onClose={() => setIsEditModalOpen(false)}
+                onSuccess={() => {
+                  handleSuccess();
+                  setIsEditModalOpen(false);
                 }}
               />
             </div>
+          </div>
+        )}
 
-            {milestone.reason && (
-              <div className="bg-red-50/50 rounded-2xl p-6 border border-red-100 shadow-sm">
-                <h3 className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 uppercase tracking-widest">
-                  Reason of Delay
-                </h3>
-                <p className="text-sm text-red-700 font-medium">
-                  {milestone.reason}
-                </p>
+        {/* Update Progress Modal */}
+        {isUpdateProgressModalOpen && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="w-full max-w-lg h-auto bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+              <UpdateCompletionPer
+                milestoneId={id.toString()}
+                onClose={() => setIsUpdateProgressModalOpen(false)}
+                onSuccess={() => {
+                  handleSuccess();
+                  setIsUpdateProgressModalOpen(false);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Response Modal */}
+        {showResponseModal && (
+          <MilestoneResponseModal
+            milestoneId={id.toString()}
+            mileStoneVersionId={milestone.currentVersionId}
+            onClose={() => setShowResponseModal(false)}
+            onSuccess={fetchMilestone}
+          />
+        )}
+
+        {/* Response Details Modal */}
+        {selectedResponse && (
+          <MilestoneResponseDetailsModal
+            response={selectedResponse}
+            milestoneId={milestone.id}
+            onClose={() => setSelectedResponse(null)}
+            onSuccess={fetchMilestone}
+          />
+        )}
+
+        {/* Tasks Popup Modal */}
+        {showTasksModal && (
+          <div className="fixed inset-0 z-110 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden border border-gray-200 animate-in zoom-in duration-150">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-50 rounded-xl">
+                    <ClipboardList className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-black uppercase tracking-tight">
+                      Associated Tasks
+                    </h3>
+                    <p className="text-[10px] text-gray-400 font-semibold tracking-widest uppercase mt-0.5">
+                      {milestone?.subject} ·{" "}
+                      {(milestone.Tasks || milestone.tasks || []).length} task
+                      {(milestone.Tasks || milestone.tasks || []).length !== 1
+                        ? "s"
+                        : ""}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowTasksModal(false)}
+                  className="px-5 py-1.5 bg-red-50 text-black border border-red-300 rounded-lg hover:bg-red-100 transition-all font-black text-[10px] uppercase tracking-widest"
+                >
+                  Close
+                </button>
               </div>
-            )}
 
-            {/* Tasks Section */}
-            {milestone.tasks && milestone.tasks.length > 0 && (
-              <div>
-                <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2 uppercase tracking-widest">
-                  <ClipboardList className="w-4 h-4 text-green-600" />
-                  Associated Tasks ({milestone.tasks.length})
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {milestone.tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl hover:border-green-200 transition-all shadow-sm group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors">
+              <div className="overflow-y-auto flex-1 p-5 space-y-2 custom-scrollbar">
+                {(milestone.Tasks || milestone.tasks || []).map(
+                  (task: any, index: number) => {
+                    const statusColors: any = {
+                      COMPLETE:
+                        "bg-emerald-50 text-emerald-700 border-emerald-200",
+                      VALIDATE_COMPLETE:
+                        "bg-emerald-50 text-emerald-700 border-emerald-200",
+                      COMPLETED:
+                        "bg-emerald-50 text-emerald-700 border-emerald-200",
+                      IN_REVIEW: "bg-blue-50 text-blue-700 border-blue-200",
+                      IN_PROGRESS:
+                        "bg-yellow-50 text-yellow-700 border-yellow-200",
+                      ASSIGNED:
+                        "bg-purple-50 text-purple-700 border-purple-200",
+                      REWORK:
+                        "bg-orange-50 text-orange-700 border-orange-200",
+                      USER_FAULT: "bg-red-50 text-red-700 border-red-200",
+                      COMPLETE_OTHER:
+                        "bg-teal-50 text-teal-700 border-teal-200",
+                    };
+                    const statusCls =
+                      statusColors[task.status] ||
+                      "bg-gray-50 text-gray-600 border-gray-200";
+
+                    return (
+                      <div
+                        key={task.id}
+                        className="flex items-center gap-4 px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl hover:border-[#6bbd45]/40 hover:bg-[#6bbd45]/5 transition-all group"
+                      >
+                        <span className="shrink-0 w-6 h-6 flex items-center justify-center text-[10px] font-black text-gray-400 bg-white border border-gray-200 rounded-lg">
+                          {index + 1}
+                        </span>
+                        <div className="shrink-0 w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center group-hover:border-[#6bbd45]/30 transition-colors">
                           <ClipboardList className="w-4 h-4 text-green-600" />
                         </div>
-                        <div>
-                          <p className="text-xs font-bold text-gray-700">
-                            {task.name}
-                          </p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <User className="w-3 h-3 text-gray-400" />
-                            <span className="text-[10px] text-gray-500 font-medium">
-                              {task.user
-                                ? `${task.user.firstName} ${task.user.lastName}`
-                                : "Unassigned"}
-                            </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-black text-black truncate">
+                              {task.name}
+                            </p>
+                            {task.serialNo && (
+                              <span className="text-[9px] font-black text-gray-400 bg-white border border-gray-200 px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0">
+                                {task.serialNo}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3 mt-1 flex-wrap">
+                            <div className="flex items-center gap-1">
+                              <User className="w-3 h-3 text-gray-400" />
+                              <span className="text-[10px] text-gray-500 font-semibold">
+                                {task.user
+                                  ? `${task.user.firstName || ""} ${task.user.lastName || ""}`.trim()
+                                  : "Unassigned"}
+                              </span>
+                            </div>
+                            {task.due_date && (
+                              <div className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3 text-gray-400" />
+                                <span className="text-[10px] text-gray-500 font-semibold">
+                                  {new Date(task.due_date).toLocaleDateString(
+                                    "en-IN",
+                                    {
+                                      day: "2-digit",
+                                      month: "short",
+                                      year: "numeric",
+                                    },
+                                  )}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
+                        <span
+                          className={`shrink-0 text-[9px] font-black px-2.5 py-1 rounded-full border uppercase tracking-wider ${statusCls}`}
+                        >
+                          {task.status?.replace(/_/g, " ")}
+                        </span>
                       </div>
-                      <span className="text-[9px] font-black  px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 uppercase tracking-tighter">
-                        {task.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                    );
+                  },
+                )}
               </div>
-            )}
+            </div>
           </div>
+        )}
 
-          {/* Right side: Responses */}
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-widest">
-                Responses
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-md p-8 animate-in fade-in zoom-in duration-200 text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-black text-black uppercase tracking-tight mb-2">
+                Delete Milestone
               </h3>
-              <Button
-                onClick={() => setShowResponseModal(true)}
-                size="sm"
-                className="bg-green-600 text-white rounded-xl flex items-center gap-2 h-9 text-xs font-bold px-4"
-              >
-                <Plus className="w-4 h-4" />
-                Add Response
-              </Button>
+              <p className="text-sm text-gray-500 mb-8">
+                Are you sure you want to delete this milestone? This action
+                cannot be undone.
+              </p>
+              <div className="flex gap-4">
+                <Button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 bg-gray-100 text-gray-700 rounded-xl font-bold h-12"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  variant="destructive"
+                  className="flex-1 rounded-xl font-bold h-12 shadow-md"
+                >
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </Button>
+              </div>
             </div>
+          </div>
+        )}
 
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              {milestone.responses && milestone.responses.length > 0 ? (
-                <DataTable
-                  columns={responseColumns}
-                  data={milestone.responses}
-                  onRowClick={(row: any) => setSelectedResponse(row)}
+        {/* Add Submittal Modal */}
+        {isAddSubmittalOpen && (
+          <div className="fixed inset-0 z-130 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col">
+              <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 className="text-lg font-bold">Create New Submittal</h3>
+                <button
+                  onClick={() => setIsAddSubmittalOpen(false)}
+                  className="p-1 hover:bg-gray-200 rounded-full"
+                >
+                  <Plus className="w-6 h-6 rotate-45" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6">
+                <AddSubmittal
+                  project={milestone.project || row.project}
+                  initialData={{
+                    subject: milestone.subject,
+                    description: milestone.description,
+                    mileStoneId: milestone.id,
+                  }}
+                  onSuccess={() => {
+                    setIsAddSubmittalOpen(false);
+                    fetchMilestone();
+                  }}
                 />
-              ) : (
-                <div className="p-8 text-center text-gray-400 text-sm italic">
-                  No responses yet.
-                </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
-
-      {/* Edit Modal */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <EditMileStone
-              milestoneId={id.toString()}
-              mileStoneVersionId={milestone.currentVersionId}
-              onClose={() => setIsEditModalOpen(false)}
-              onSuccess={() => {
-                fetchMilestone();
-                setIsEditModalOpen(false);
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Update Progress Modal */}
-      {isUpdateProgressModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg h-auto bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <UpdateCompletionPer
-              milestoneId={id.toString()}
-              onClose={() => setIsUpdateProgressModalOpen(false)}
-              onSuccess={() => {
-                fetchMilestone();
-                setIsUpdateProgressModalOpen(false);
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Response Modal */}
-      {showResponseModal && (
-        <MilestoneResponseModal
-          milestoneId={id.toString()}
-          onClose={() => setShowResponseModal(false)}
-          onSuccess={fetchMilestone}
-        />
-      )}
-
-      {/* Response Details Modal */}
-      {selectedResponse && (
-        <MilestoneResponseDetailsModal
-          response={selectedResponse}
-          onClose={() => setSelectedResponse(null)}
-          onSuccess={fetchMilestone}
-        />
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 animate-in fade-in zoom-in duration-200 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-8 h-8 text-red-600" />
-            </div>
-            <h3 className="text-xl font-black text-black uppercase tracking-tight mb-2">
-              Delete Milestone
-            </h3>
-            <p className="text-sm text-gray-500 mb-8">
-              Are you sure you want to delete this milestone? This action cannot
-              be undone.
-            </p>
-            <div className="flex gap-4">
-              <Button
-                onClick={() => setShowDeleteModal(false)}
-                className="flex-1 bg-gray-100 text-gray-700 rounded-xl font-bold uppercase tracking-tight h-12"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                variant="destructive"
-                className="flex-1 rounded-xl font-bold uppercase tracking-tight h-12 shadow-md"
-              >
-                {isDeleting ? "Deleting..." : "Delete"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
-
-const InfoCard = ({
-  icon,
-  label,
-  value,
-  color,
-  bg,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  color: string;
-  bg: string;
-}) => (
-  <div className="flex flex-col gap-1">
-    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-      {label}
-    </span>
-    <div className="flex items-center gap-2 mt-1">
-      <div className={`p-2 ${bg} ${color} rounded-xl shadow-sm`}>{icon}</div>
-      <span className="text-sm font-bold text-gray-800">{value}</span>
-    </div>
-  </div>
-);
 
 export default GetMilestoneByID;
