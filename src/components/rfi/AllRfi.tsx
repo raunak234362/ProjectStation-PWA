@@ -89,7 +89,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
         columns={columns}
         data={rfis}
         onRowClick={(row) => setSelectedRfiID(row.id)}
-        pageSizeOptions={[5, 10, 25]}
+        pageSizeOptions={[10]}
       />
       {selectedRfiID && (
         <Suspense fallback={<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md text-white">Loading...</div>}>

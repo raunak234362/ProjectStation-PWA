@@ -22,6 +22,7 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
   const fabricators = useSelector(
     (state: any) => state.fabricatorInfo.fabricatorData,
   );
+  const staff = useSelector((state: any) => state.userInfo.staffData);
   const project_id = project?.id;
   const fabricatorID = project?.fabricatorID;
   console.log("Fabricators from Redux:", fabricators);
@@ -30,6 +31,7 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
     useForm<RFIPayload>();
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Match selected fabricator
   const selectedFabricator = fabricators?.find(
@@ -49,9 +51,17 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
       value: String(p.id),
     })) ?? [];
 
+  const recipientOptions: SelectOption[] =
+    staff
+      ?.filter((s: any) => ["ADMIN", "SALES"].includes(s.role))
+      .map((s: any) => ({
+        label: `${s.firstName} ${s.lastName}`,
+        value: String(s.id),
+      })) ?? [];
 
   const onSubmit = async (data: RFIPayload) => {
     try {
+      setLoading(true);
       const payload: RFIPayload = {
         ...data,
         project_id: project_id,
@@ -74,14 +84,16 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
       });
 
       await Service.addRFI(formData);
-      toast.success("RFI Submitted");
+      toast.success("RFI Submitted Successfully");
       reset();
       setDescription("");
       setFiles([]);
       onSuccess?.();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Failed to create RFI");
+      toast.error(err?.response?.data?.message || "Failed to create RFI");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,56 +101,39 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
     if (userRole === "CLIENT") {
       setValue("sender_id", String(userDetail?.id)); // auto-select logged-in client
     }
-  }, [userRole]);
+  }, [userRole, userDetail, setValue]);
   useEffect(() => {
     if (userRole === "CLIENT" && selectedFabricator) {
       setValue("fabricator_id", String(selectedFabricator.id));
       setValue("sender_id", String(userDetail?.id));
     }
-  }, [userRole, selectedFabricator]);
+  }, [userRole, selectedFabricator, userDetail, setValue]);
   useEffect(() => {
     if (userRole === "CLIENT" && projectOptions.length > 0) {
       setValue("project_id", String(projectOptions[0].value));
     }
-  }, [userRole, projectOptions]);
+  }, [userRole, projectOptions, setValue]);
 
   return (
     <div className="w-full mx-auto bg-white p-2 rounded-xl shadow">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <SectionTitle title="Fabrication & Routing" />
+        {/* <SectionTitle title="Fabrication & Routing" /> */}
 
-        {userRole !== "CLIENT" && (
-          <>
-            {/* CLIENT CONTACT */}
-            <Controller
-              name="sender_id"
-              control={control}
-              render={({ field }) => (
-                <Select<SelectOption, false>
-                  placeholder="Fabricator Contact"
-                  options={pocOptions}
-                  value={
-                    pocOptions.find((o) => o.value === field.value) ?? null
-                  }
-                  onChange={(option) =>
-                    field.onChange(option ? option.value : null)
-                  }
-                />
-              )}
-            />
-          </>
-        )}
 
-        {/* WBT RECIPIENT */}
+        <label className="text-sm font-medium text-gray-700">
+          Select Recipient
+        </label>
         <Controller
           name="recepient_id"
           control={control}
           rules={{ required: "Recipient required" }}
           render={({ field }) => (
-            <Select<SelectOption, false>
-              placeholder="WBT Contact *"
+            <Select
+              placeholder="Recipient *"
               options={pocOptions}
-              value={pocOptions.find((o) => o.value === field.value) ?? null}
+              value={
+                pocOptions.find((o) => o.value === field.value) ?? null
+              }
               onChange={(option) =>
                 field.onChange(option ? option.value : null)
               }
@@ -146,7 +141,8 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
           )}
         />
 
-        <SectionTitle title="Details" />
+
+        {/* <SectionTitle title="Details" /> */}
 
         <Input
           label="Subject"
@@ -165,13 +161,13 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
           />
         </div>
 
-        <SectionTitle title="Files" />
+        {/* <SectionTitle title="Files" /> */}
 
         <MultipleFileUpload onFilesChange={setFiles} />
 
         <div className="flex justify-center w-full mt-6">
-          <Button type="submit" className="w-full">
-            Submit RFI
+          <Button type="submit" className="w-full text-black border border-black bg-green-100" disabled={loading}>
+            {loading ? "Submitting RFI..." : "Submit RFI"}
           </Button>
         </div>
       </form>

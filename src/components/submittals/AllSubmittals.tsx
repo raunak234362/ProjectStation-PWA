@@ -116,7 +116,7 @@ const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
         columns={columns}
         data={submittals}
         onRowClick={(row) => setSelectedSubmittalId(row.id)}
-        pageSizeOptions={[5, 10, 25]}
+        pageSizeOptions={[10]}
       />
       {selectedSubmittalId && (
         <GetSubmittalByID
