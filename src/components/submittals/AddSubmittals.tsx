@@ -182,7 +182,7 @@ const AddSubmittal: React.FC<{
 
         <Input
           label="Subject"
-          placeholder="Enter Submittal Subject"
+          placeholder="Enter Submittal ,e.g:TR#011_ProjectNumber_ProjectName_SubmittalName_Stage_MM-DD-YY"
           {...register("subject", { required: true })}
         />
 

@@ -133,7 +133,7 @@ const Profile = () => {
         {/* Account Info */}
         <div className="border-t border-gray-200 pt-6">
           <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
-            <User className="w-5 h-5 text-green-600" /> Account Details
+            <User className="w-5 h-5 text-green-600" /> Profile Details
           </h3>
           <div className="grid sm:grid-cols-2 gap-6">
             {/* <div>

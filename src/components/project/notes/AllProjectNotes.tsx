@@ -1,27 +1,31 @@
 import { useEffect, useState } from "react";
 import {
     Loader2,
-    Plus,
-    FileText,
     Calendar,
-    User,
+    Paperclip,
+    Trash2,
     ChevronDown,
     ChevronUp,
-    Trash2,
-    Paperclip,
+    Inbox,
+    Plus,
 } from "lucide-react";
 import Service from "../../../api/Service";
+import { toast } from "react-toastify";
 import AddProjectNote from "./AddProjectNote";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
+import DataTable from "../../ui/table";
+import NoteResponseModal from "./NoteResponseModal";
+import NoteResponseDetailsModal from "./NoteResponseDetailsModal";
+import { formatDateTime } from "../../../utils/dateUtils";
 
 interface Note {
     id: string;
-    title: string;
     content: string;
-    visibility?: string;
     createdAt?: string;
     createdBy?: { firstName?: string; lastName?: string };
     files?: { id: string; originalName?: string; fileName?: string }[];
+    responses?: any[];
+    serialNo?: string;
 }
 
 const AllProjectNotes = ({ projectId }: { projectId: string }) => {
@@ -30,15 +34,17 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [showResponseModal, setShowResponseModal] = useState<string | null>(null);
+    const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
+    const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
 
     const fetchNotes = async () => {
         try {
             setLoading(true);
-            // Fetch all notes then filter by projectId (API returns all, we filter)
-            const res = await Service.GetTeamMeetingNotesAll();
+            const res = await Service.GetTeamMeetingNotesByProjectId(projectId);
             const all = res?.data ?? res ?? [];
             const arr = Array.isArray(all) ? all : [];
-            setNotes(arr.filter((n: any) => !projectId || n.projectId === projectId));
+            setNotes(arr);
         } catch (err) {
             console.error("Error fetching project notes:", err);
             setNotes([]);
@@ -48,97 +54,131 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
     };
 
     useEffect(() => {
-        if (projectId) fetchNotes();
+        fetchNotes();
     }, [projectId]);
 
+    const fetchResponsesForNote = async (noteId: string) => {
+        try {
+            const res = await Service.Getallrepliesforanote(noteId);
+            const responses = res?.data ?? res ?? [];
+            setNotes(prev => prev.map(n => n.id === noteId ? { ...n, responses } : n));
+        } catch (err) {
+            console.error("Error fetching responses for note:", err, noteId);
+        }
+    };
+
+    const handleExpandNote = (id: string) => {
+        if (expandedId === id) {
+            setExpandedId(null);
+        } else {
+            setExpandedId(id);
+            fetchResponsesForNote(id);
+        }
+    };
+
     const handleDelete = async (id: string) => {
-        if (!confirm("Delete this note?")) return;
+        if (!window.confirm("Are you sure you want to delete this note?")) return;
         try {
             setDeletingId(id);
             await Service.DeleteTeamMeetingNotes(id);
-            setNotes((prev) => prev.filter((n) => n.id !== id));
+            toast.success("Note deleted successfully");
+            fetchNotes();
         } catch (err) {
-            console.error("Error deleting note:", err);
+            console.error("Delete failed:", err);
+            toast.error("Failed to delete note");
         } finally {
             setDeletingId(null);
         }
     };
 
+    const handleDeleteResponse = async (id: string, noteId: string) => {
+        if (!window.confirm("Are you sure you want to delete this response?")) return;
+        try {
+            await Service.DeleteTeamMeetingResponse(id);
+            toast.success("Response deleted successfully");
+            fetchResponsesForNote(noteId);
+        } catch (err) {
+            console.error("Delete response failed:", err);
+            toast.error("Failed to delete response");
+        }
+    };
+
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-12 text-gray-700">
+                <Loader2 className="w-6 h-6 animate-spin mb-2" />
+                Loading Project Notes...
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">
-            {/* Header */}
-            <div className="flex justify-between items-center">
-                <h3 className="text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
-                    <FileText size={18} className="text-[#6bbd45]" />
-                    Project Notes
-                </h3>
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                    <h2 className="text-xl font-black text-black uppercase tracking-tight">
+                        Project Notes
+                    </h2>
+
+                </div>
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-50 text-black border border-[#6bbd45] rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-[#6bbd45]/50 text-black rounded-xl hover:bg-[#5aa83a] transition-all shadow-sm font-black uppercase text-xs tracking-widest border border-black/10"
                 >
-                    <Plus size={14} />
-                    Add Note
+                    <Plus size={14} strokeWidth={3} />
+                    Create Note
                 </button>
             </div>
 
-            {/* Content */}
-            {loading ? (
-                <div className="flex justify-center py-12">
-                    <Loader2 className="w-6 h-6 animate-spin text-[#6bbd45]" />
-                </div>
-            ) : notes.length === 0 ? (
-                <div className="text-center py-14 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
-                    <FileText className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 font-medium">No project notes yet.</p>
-                    <button
-                        onClick={() => setShowAddModal(true)}
-                        className="mt-2 text-[#6bbd45] font-bold hover:underline text-sm"
-                    >
-                        Create the first note
-                    </button>
+            {notes.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    <Inbox className="w-12 h-12 mb-4 text-gray-200" />
+                    <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">
+                        No Project Notes Found
+                    </p>
                 </div>
             ) : (
-                <div className="grid gap-3">
+                <div className="grid grid-cols-1 gap-4">
                     {notes.map((note) => {
                         const isExpanded = expandedId === note.id;
-                        const creatorName = [
-                            note.createdBy?.firstName,
-                            note.createdBy?.lastName,
-                        ]
-                            .filter(Boolean)
-                            .join(" ");
-
                         return (
                             <div
                                 key={note.id}
-                                className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden border-l-[4px] border-l-[#6bbd45]"
+                                className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${isExpanded
+                                    ? "border-[#6bbd45] shadow-md scale-[1.01]"
+                                    : "border-gray-100 hover:border-gray-200 shadow-sm"
+                                    }`}
                             >
-                                {/* Note Header */}
                                 <button
-                                    className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
-                                    onClick={() =>
-                                        setExpandedId(isExpanded ? null : note.id)
-                                    }
+                                    onClick={() => handleExpandNote(note.id)}
+                                    className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-50/50"
                                 >
-                                    <div className="flex flex-col gap-1 min-w-0">
-                                        <span className="font-black text-black text-sm uppercase tracking-tight truncate">
-                                            {note.title}
-                                        </span>
-                                        <div className="flex items-center gap-3 text-xs text-gray-400">
-                                            {creatorName && (
-                                                <span className="flex items-center gap-1">
-                                                    <User size={10} />
-                                                    {creatorName}
+                                    <div className="flex-1 min-w-0 pr-4">
+                                        <div
+                                            className="text-sm font-black text-black truncate pr-4 uppercase tracking-tight mb-2"
+                                            dangerouslySetInnerHTML={{
+                                                __html: note.content || "Untitled Note",
+                                            }}
+                                        />
+                                        <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            {note.createdBy && (
+                                                <span className="flex items-center gap-1.5 bg-gray-100 px-2 py-0.5 rounded-full text-gray-600">
+                                                    {note.createdBy.firstName} {note.createdBy.lastName}
                                                 </span>
                                             )}
                                             {note.createdAt && (
                                                 <span className="flex items-center gap-1">
                                                     <Calendar size={10} />
-                                                    {new Date(note.createdAt).toLocaleString()}
+                                                    {new Intl.DateTimeFormat("en-IN", {
+                                                        day: "2-digit",
+                                                        month: "short",
+                                                        year: "numeric",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit"
+                                                    }).format(new Date(note.createdAt))}
                                                 </span>
                                             )}
-
                                         </div>
                                     </div>
 
@@ -166,22 +206,26 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                     </div>
                                 </button>
 
-                                {/* Expanded Content */}
                                 {isExpanded && (
-                                    <div className="px-5 pb-5 space-y-4 border-t border-gray-100 pt-4">
+                                    <div className="px-5 pb-5 space-y-6 border-t border-gray-100 pt-5 bg-white">
                                         {/* Content */}
-                                        <div
-                                            className="prose prose-sm max-w-none text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100"
-                                            dangerouslySetInnerHTML={{
-                                                __html: note.content || "No content.",
-                                            }}
-                                        />
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                Observation / Discussion
+                                            </p>
+                                            <div
+                                                className="prose prose-sm max-w-none text-gray-700 bg-gray-50/50 p-4 rounded-xl border border-gray-100 font-medium"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: note.content || "No content.",
+                                                }}
+                                            />
+                                        </div>
 
                                         {/* Files */}
                                         {note.files && note.files.length > 0 && (
-                                            <div>
-                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-                                                    Attachments
+                                            <div className="space-y-2">
+                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                    Attached Intelligence
                                                 </p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {note.files.map((file) => (
@@ -194,15 +238,143 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                                                     file.id,
                                                                 )
                                                             }
-                                                            className="flex items-center gap-1.5 text-xs bg-[#6bbd45]/10 text-black border border-[#6bbd45]/30 px-3 py-1.5 rounded-lg hover:bg-[#6bbd45]/20 transition-colors font-medium"
+                                                            className="flex items-center gap-1.5 text-xs bg-white text-black border border-black/10 px-3 py-2 rounded-xl hover:border-[#6bbd45] hover:bg-gray-50 transition-all font-bold shadow-sm"
                                                         >
-                                                            <Paperclip size={11} />
+                                                            <Paperclip size={11} className="text-[#6bbd45]" />
                                                             {file.originalName || file.fileName || file.id}
                                                         </button>
                                                     ))}
                                                 </div>
                                             </div>
                                         )}
+
+                                        {/* Responses Section */}
+                                        <div className="space-y-4 pt-4 border-t border-gray-100">
+                                            <div className="flex justify-between items-center">
+                                                <h4 className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 bg-[#6bbd45] rounded-full"></span>
+                                                    Responses
+                                                </h4>
+                                                <button
+                                                    onClick={() => setShowResponseModal(note.id)}
+                                                    className="text-[11px] font-black text-black border border-black uppercase tracking-widest hover:bg-green-200 px-4 py-1.5 bg-green-100 rounded-lg transition-all shadow-sm"
+                                                >
+                                                    + Add Response
+                                                </button>
+                                            </div>
+
+                                            {note.responses && note.responses.length > 0 ? (
+                                                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                                                    <DataTable
+                                                        columns={[
+                                                            {
+                                                                accessorKey: "content",
+                                                                header: "Message",
+                                                                cell: ({ row }: any) => {
+                                                                    const plainText = row.original.content?.replace(/<[^>]*>?/gm, "") || "";
+                                                                    return (
+                                                                        <div className="space-y-1">
+                                                                            <p className="truncate max-w-[300px] text-xs sm:text-sm font-medium">
+                                                                                {plainText}
+                                                                            </p>
+                                                                        </div>
+                                                                    );
+                                                                },
+                                                            },
+                                                            {
+                                                                accessorKey: "files",
+                                                                header: "Files",
+                                                                cell: ({ row }: any) => {
+                                                                    const count = row.original.files?.length ?? 0;
+                                                                    return count > 0 ? (
+                                                                        <span className="text-black font-medium text-xs font-black">
+                                                                            {count} file(s)
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="text-gray-300">—</span>
+                                                                    );
+                                                                },
+                                                            },
+                                                            {
+                                                                accessorKey: "createdAt",
+                                                                header: "Date",
+                                                                cell: ({ row }: any) => (
+                                                                    <span className="text-gray-500 text-[10px] sm:text-xs">
+                                                                        {formatDateTime(row.original.createdAt)}
+                                                                    </span>
+                                                                ),
+                                                            },
+                                                            {
+                                                                id: "actions",
+                                                                header: "Actions",
+                                                                cell: ({ row }: any) => (
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleDeleteResponse(row.original.id, note.id);
+                                                                        }}
+                                                                        className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
+                                                                        title="Delete response"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                    </button>
+                                                                ),
+                                                            },
+                                                        ]}
+                                                        data={note.responses?.filter(r => !r.parentResponseId) || []}
+                                                        detailComponent={({ row }) => {
+                                                            const replies = note.responses?.filter(r => r.parentResponseId === row.id) || [];
+                                                            if (replies.length === 0) return null;
+                                                            return (
+                                                                <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 ml-8 mb-4 space-y-4">
+                                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                                                        <span className="w-1 h-1 bg-[#6bbd45] rounded-full"></span>
+                                                                        Replies ({replies.length})
+                                                                    </p>
+                                                                    <div className="space-y-3">
+                                                                        {replies.map(reply => (
+                                                                            <div key={reply.id} className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm transition-all hover:border-[#6bbd45]/20">
+                                                                                <div className="flex justify-between items-start mb-1">
+                                                                                    <span className="text-[10px] font-bold text-[#6bbd45] uppercase tracking-wider">
+                                                                                        {reply.createdBy ? `${reply.createdBy.firstName} ${reply.createdBy.lastName}` : (reply.firstName ? `${reply.firstName} ${reply.lastName}` : "User")}
+                                                                                    </span>
+                                                                                    <div className="flex items-center gap-2">
+                                                                                        <span className="text-[10px] text-gray-400">{formatDateTime(reply.createdAt)}</span>
+                                                                                        <button
+                                                                                            onClick={(e) => {
+                                                                                                e.stopPropagation();
+                                                                                                handleDeleteResponse(reply.id, note.id);
+                                                                                            }}
+                                                                                            className="p-1 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-500 transition-colors"
+                                                                                            title="Delete reply"
+                                                                                        >
+                                                                                            <Trash2 size={10} />
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div
+                                                                                    className="text-xs text-gray-700 line-clamp-2"
+                                                                                    dangerouslySetInnerHTML={{ __html: reply.content }}
+                                                                                />
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        }}
+                                                        onRowClick={(row) => {
+                                                            setSelectedResponse(row);
+                                                            setActiveNoteId(note.id);
+                                                        }}
+                                                        pageSizeOptions={[5, 10]}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="p-8 text-center bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+                                                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest italic">No responses recorded</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -211,14 +383,42 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                 </div>
             )}
 
-            {/* Add Note Modal */}
+            {/* Modals */}
             {showAddModal && (
-                <AddProjectNote
-                    projectId={projectId}
-                    onClose={() => setShowAddModal(false)}
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <AddProjectNote
+                            projectId={projectId}
+                            onClose={() => setShowAddModal(false)}
+                            onSuccess={() => {
+                                setShowAddModal(false);
+                                fetchNotes();
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {showResponseModal && (
+                <NoteResponseModal
+                    noteId={showResponseModal}
+                    onClose={() => setShowResponseModal(null)}
                     onSuccess={() => {
-                        setShowAddModal(false);
-                        fetchNotes();
+                        fetchResponsesForNote(showResponseModal);
+                    }}
+                />
+            )}
+
+            {selectedResponse && activeNoteId && (
+                <NoteResponseDetailsModal
+                    noteId={activeNoteId}
+                    response={selectedResponse}
+                    onClose={() => {
+                        setSelectedResponse(null);
+                        setActiveNoteId(null);
+                    }}
+                    onSuccess={() => {
+                        fetchResponsesForNote(activeNoteId);
                     }}
                 />
             )}
