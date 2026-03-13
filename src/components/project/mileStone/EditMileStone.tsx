@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
-import { X, CheckCircle, Save } from "lucide-react";
+import { CheckCircle, Save, Trash2 } from "lucide-react";
 import Select from "react-select";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
@@ -21,6 +21,7 @@ const EditMileStone = ({
   initialData,
   onClose,
   onSuccess,
+  mileStoneVersionId,
 }: EditMileStoneProps) => {
   const [loading, setLoading] = useState(false);
   const {
@@ -34,7 +35,7 @@ const EditMileStone = ({
     defaultValues: {
       subject: "",
       description: "",
-      status: "PENDING",
+      status: "ACTIVE",
       percentage: 0,
       approvalDate: "",
       stage: "",
@@ -43,10 +44,27 @@ const EditMileStone = ({
   });
 
   const statusOptions = [
-    { label: "Pending", value: "PENDING" },
-    { label: "In Progress", value: "IN_PROGRESS" },
-    { label: "Completed", value: "COMPLETED" },
-    { label: "Approved", value: "APPROVED" },
+    { label: "In Progress", value: "ACTIVE" },
+    { label: "On Hold", value: "ONHOLD" },
+    { label: "Completed", value: "COMPLETE" },
+    { label: "Delay", value: "DELAY" },
+  ];
+
+  const subjectOptions = [
+    { label: "Anchor Bolt", value: "Anchor Bolt" },
+    { label: "Main Steel", value: "Main Steel" },
+    {
+      label: "Main Steel Connection Design",
+      value: "Main Steel Connection Design",
+    },
+    { label: "Misc Steel", value: "Misc Steel" },
+    {
+      label: "Misc Steel Connection Design",
+      value: "Misc Steel Connection Design",
+    },
+    { label: "Foundation Embeds", value: "Foundation Embeds" },
+    { label: "Panel Embeds", value: "Panel Embeds" },
+    { label: "Others", value: "Others" },
   ];
 
   const stageOptions = [
@@ -94,6 +112,58 @@ const EditMileStone = ({
     fetchData();
   }, [milestoneId, initialData, reset]);
 
+  const handleDelete = () => {
+    toast.info(
+      ({ closeToast }) => (
+        <div className="flex flex-col gap-3 p-1">
+          <p className="font-bold text-gray-800 text-sm">Delete Milestone?</p>
+          <p className="text-xs text-gray-600 font-medium">
+            This action cannot be undone.
+          </p>
+          <div className="flex gap-4 items-center mt-2">
+            <button
+              onClick={async () => {
+                closeToast();
+                try {
+                  setLoading(true);
+                  await Service.DeleteMilestoneById(milestoneId);
+                  toast.success("Milestone deleted successfully!", {
+                    position: "bottom-right",
+                  });
+                  if (onSuccess) await onSuccess();
+                  onClose();
+                } catch (error) {
+                  console.error(error);
+                  toast.error("Failed to delete milestone");
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-all shadow-md active:scale-95"
+            >
+              Confirm Delete
+            </button>
+            <button
+              onClick={closeToast}
+              className="text-gray-500 hover:text-gray-800 text-xs font-bold transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        closeButton: false,
+        position: "top-center",
+        className: "shadow-2xl rounded-2xl border border-gray-100",
+        style: { width: "320px" },
+      },
+    );
+  };
+
   const onSubmit = async (data: any) => {
     try {
       const payload = {
@@ -104,7 +174,11 @@ const EditMileStone = ({
           : null,
       };
 
-      await Service.EditExistingMilestoneByID(milestoneId, payload);
+      if (mileStoneVersionId) {
+        await Service.EditMilestoneById(milestoneId, payload);
+      } else {
+        await Service.EditExistingMilestoneByID(milestoneId, payload);
+      }
       toast.success("Milestone updated successfully!");
       if (onSuccess) onSuccess();
       onClose();
@@ -134,21 +208,53 @@ const EditMileStone = ({
         </h3>
         <button
           onClick={onClose}
-          className="p-2 rounded-full hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
+          className=" text-black bg-red-200 hover:bg-red-500 hover:text-white border border-black rounded-md px-2 py-1 "
         >
-          <X className="w-5 h-5" />
+          close
         </button>
       </div>
 
       {/* Form Content */}
       <div className="flex-1 overflow-y-auto p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <Input
-            label="Subject *"
-            placeholder="e.g. 50% Submission"
-            {...register("subject", { required: "Subject is required" })}
-            error={errors.subject?.message}
-          />
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Subject *
+            </label>
+            <Controller
+              name="subject"
+              control={control}
+              rules={{ required: "Subject is required" }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={subjectOptions}
+                  value={subjectOptions.find(
+                    (opt) => opt.value === field.value,
+                  )}
+                  onChange={(opt) => field.onChange(opt?.value || "")}
+                  className="text-sm"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      borderRadius: "0.5rem",
+                      padding: "2px",
+                      borderColor: "#e5e7eb",
+                      boxShadow: "none",
+                      "&:hover": {
+                        borderColor: "#d1d5db",
+                      },
+                    }),
+                  }}
+                />
+              )}
+            />
+            {errors.subject && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.subject.message}
+              </p>
+            )}
+          </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -240,23 +346,37 @@ const EditMileStone = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-6 mt-4 border-t border-gray-100">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="px-6"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {isSubmitting ? "Saving..." : "Save Changes"}
-            </Button>
+          <div className="flex justify-between items-center pt-6 mt-4 border-t border-gray-100">
+            <div>
+              {milestoneId && (
+                <Button
+                  type="button"
+                  onClick={handleDelete}
+                  className="bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:text-red-700 px-4 font-bold flex items-center gap-2 h-10 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="px-6 h-10 border-gray-200 hover:bg-gray-50 font-bold"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-gray-200 hover:bg-green-500 text-black px-8 flex items-center gap-2 h-10 font-bold shadow-sm"
+              >
+                <Save className="w-4 h-4" />
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
           </div>
         </form>
       </div>

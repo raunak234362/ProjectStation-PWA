@@ -450,10 +450,10 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                     milestone.percentage !== ""
                       ? Number(milestone.percentage)
                       : milestone.completionPercentage !== undefined &&
-                        milestone.completionPercentage !== null
+                          milestone.completionPercentage !== null
                         ? Number(milestone.completionPercentage)
                         : milestone.completeionPercentage !== undefined &&
-                          milestone.completeionPercentage !== null
+                            milestone.completeionPercentage !== null
                           ? Number(milestone.completeionPercentage)
                           : taskProgress;
 
@@ -534,19 +534,25 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
 
                         {isExpanded && (
                           <div className="px-4 pb-4 pt-2 border-t border-gray-100 bg-white/50 rounded-b-xl animate-in slide-in-from-top-1 duration-200">
-                            {v.description && (
-                              <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-1">
-                                  Notes
-                                </p>
-                                <div
-                                  className="text-sm text-gray-700 prose prose-sm max-w-none prose-p:my-1"
-                                  dangerouslySetInnerHTML={{
-                                    __html: v.description,
-                                  }}
-                                />
-                              </div>
-                            )}
+                            <div>
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-1">
+                                Notes
+                              </p>
+                              <div
+                                className="text-sm text-gray-700 prose prose-sm max-w-none prose-p:my-1"
+                                dangerouslySetInnerHTML={{
+                                  __html: v.description,
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-1">
+                                Approval Date
+                              </p>
+                              <p className="text-sm text-gray-700 ">
+                                {formatDate(v.approvalDate)}
+                              </p>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -732,8 +738,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                         "bg-yellow-50 text-yellow-700 border-yellow-200",
                       ASSIGNED:
                         "bg-purple-50 text-purple-700 border-purple-200",
-                      REWORK:
-                        "bg-orange-50 text-orange-700 border-orange-200",
+                      REWORK: "bg-orange-50 text-orange-700 border-orange-200",
                       USER_FAULT: "bg-red-50 text-red-700 border-red-200",
                       COMPLETE_OTHER:
                         "bg-teal-50 text-teal-700 border-teal-200",
