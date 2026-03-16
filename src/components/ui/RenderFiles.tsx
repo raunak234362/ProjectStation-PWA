@@ -37,13 +37,64 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
 
   // Step 2: Group files by description
   const groupedFiles = projectFiles.reduce((acc: Record<string, any[]>, curr: any) => {
-    if (curr.files && Array.isArray(curr.files)) {
-      // Handle "Document" structure (nested files)
-      const desc = curr.description || 'No Description'
+    // Handle Submittal Versions (if present on the object)
+    if (curr.versions && Array.isArray(curr.versions) && curr.versions.length > 0) {
+      if (curr.versions.length === 1) {
+        // Single version: show files under the main description
+        const version = curr.versions[0];
+        const desc = curr.description && curr.description !== '<p>&nbsp;<br></p>' ? curr.description : 'Attachments';
+        if (!acc[desc]) acc[desc] = [];
+        const filesToMap = version.files || curr.files || [];
+        filesToMap.forEach((f: any) => {
+          acc[desc].push({
+            ...f,
+            id: f.id,
+            uploadedAt: version.createdAt || curr.createdAt || curr.date,
+            user: version.user || version.sender || curr.sender,
+            documentID: version.submittalId || curr.id,
+            versionId: version.id,
+            stage: version.stage || curr.stage,
+            overrideTable: (curr.serialNo?.startsWith('SUB') || curr.versions) ? 'submittals' : undefined
+          });
+        });
+      } else {
+        // Multiple versions
+        curr.versions.forEach((version: any, idx: number) => {
+          const vNum = version.versionNumber || (curr.versions.length - idx);
+          const baseDesc = curr.description && curr.description !== '<p>&nbsp;<br></p>' ? curr.description : 'Submittal';
+          const hiddenDesc = hideHeader ? 'Attachments' : `Version ${vNum}`;
+          const desc = hideHeader ? hiddenDesc : `${baseDesc} (Version ${vNum})`;
+          if (!acc[desc]) acc[desc] = [];
+          const filesToMap = version.files || [];
+          filesToMap.forEach((f: any) => {
+            acc[desc].push({
+              ...f,
+              id: f.id,
+              uploadedAt: version.createdAt || curr.createdAt || curr.date,
+              user: version.user || version.sender || curr.sender,
+              documentID: version.submittalId || curr.id,
+              versionId: version.id,
+              stage: version.stage || curr.stage,
+              overrideTable: (curr.serialNo?.startsWith('SUB') || curr.versions) ? 'submittals' : undefined
+            });
+          });
+        });
+      }
+    }
+    // Handle "Document" structure (nested files)
+    else if (curr.files && Array.isArray(curr.files)) {
+      const desc = curr.versionNumber
+        ? hideHeader
+          ? 'Attachments'
+          : `Version ${curr.versionNumber}`
+        : curr.description && curr.description !== '<p>&nbsp;<br></p>'
+          ? curr.description
+          : 'Attachments';
       if (!acc[desc]) acc[desc] = []
       curr.files.forEach((f: any) => {
         acc[desc].push({
           ...f,
+          id: f.id, // Ensure we preserve the file id for nested too
           uploadedAt: curr.uploadedAt || curr.createdAt || curr.date,
           user: curr.user || curr.sender,
           documentID: table === 'submittals' && parentId ? parentId : curr.id,
@@ -52,11 +103,12 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
         })
       })
     } else {
-      // Handle "Flat File" structure (e.g., RFI, Submittals)
+      // Handle "Flat File" structure (e.g., RFI, Submittals, rFQ)
       const desc = 'Attachments'
       if (!acc[desc]) acc[desc] = []
       acc[desc].push({
         ...curr,
+        id: curr.id, // Ensure we preserve the file id!
         documentID: parentId, // Use passed parentId for flat files
         versionId: curr.versionId || versionId
       })
@@ -67,18 +119,21 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
   const handleShare = async (e: React.MouseEvent, file: any) => {
     e.preventDefault()
     e.stopPropagation()
-    await shareFileSecurely(table, file.documentID, file.id, file.versionId || versionId)
+    const finalTable = file.overrideTable || table;
+    await shareFileSecurely(finalTable, file.documentID, file.id, file.versionId || versionId)
   }
 
   const handleDownload = async (e: React.MouseEvent, file: any) => {
     e.preventDefault()
     e.stopPropagation()
-    await downloadFileSecurely(table, file.documentID, file.id, file.originalName, file.versionId || versionId)
+    const finalTable = file.overrideTable || table;
+    await downloadFileSecurely(finalTable, file.documentID, file.id, file.originalName, file.versionId || versionId)
   }
 
   const handleOpen = (e: React.MouseEvent, file: any) => {
     e.preventDefault()
-    openFileSecurely(table, file.documentID, file.id, file.versionId || versionId)
+    const finalTable = file.overrideTable || table;
+    openFileSecurely(finalTable, file.documentID, file.id, file.versionId || versionId)
   }
 
   // Step 3: Render grouped sections

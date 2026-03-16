@@ -36,11 +36,10 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
 
   return (
     <div
-      className={`border rounded-xl overflow-hidden transition-all ${
-        isCurrent
-          ? "border-[#6bbd45] bg-[#6bbd45]/5"
-          : "border-gray-200 bg-white"
-      }`}
+      className={`border rounded-xl overflow-hidden transition-all ${isCurrent
+        ? "border-[#6bbd45] bg-[#6bbd45]/5"
+        : "border-gray-200 bg-white"
+        }`}
     >
       {/* Row Header — always visible */}
       <button
@@ -50,11 +49,10 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
         <div className="flex items-center gap-3 min-w-0">
           {/* Version badge */}
           <span
-            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${
-              isCurrent
-                ? "bg-[#6bbd45] text-white"
-                : "bg-gray-100 text-gray-500"
-            }`}
+            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${isCurrent
+              ? "bg-[#6bbd45] text-white"
+              : "bg-gray-100 text-gray-500"
+              }`}
           >
             v{total - index}
             {isCurrent && " · Current"}
@@ -273,6 +271,23 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 value={new Date(submittal.date).toLocaleString()}
               />
             </div>
+
+            {/* Single Version File Display */}
+            {!hasMultipleVersions && sortedVersions.length === 1 && (
+              <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5 mt-6">
+                <h4 className="text-black text-sm p-4 rounded-xl border border-black/5 font-black uppercase tracking-widest flex items-center gap-2 bg-white">
+                  <span className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></span>
+                  Submittal Files
+                </h4>
+                <RenderFiles
+                  files={sortedVersions}
+                  table="submittals"
+                  parentId={submittal.id}
+                  versionId={sortedVersions[0]?.id}
+                  hideHeader
+                />
+              </div>
+            )}
 
             {/* RIGHT PANEL */}
             <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
