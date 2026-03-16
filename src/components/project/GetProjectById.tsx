@@ -765,7 +765,7 @@ const GetProjectById = ({
                   value={project.team?.name || "—"}
                 />
                 <InfoRow
-                  label="Manager"
+                  label="WBT Manager"
                   value={
                     project.manager
                       ? `${project.manager.firstName} ${project.manager.lastName} (${project.manager.username})`

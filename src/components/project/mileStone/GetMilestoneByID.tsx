@@ -55,6 +55,7 @@ interface Milestone {
   approvalDate: string;
   status: string;
   date: string;
+  startDate?: string;
   createdAt?: string;
   updatedAt?: string;
   project?: {
@@ -396,7 +397,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
             />
             <InfoCard
               icon={<Clock className="w-5 h-5" />}
-              label="Created At"
+              label="Created On"
               value={formatDate(milestone.date)}
               color="text-purple-600"
               bg="bg-purple-50"
@@ -444,27 +445,45 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                     );
                   }
 
+                  let timeProgress = 0;
+                  const start = new Date(milestone.startDate || milestone.date || 0); // Using date as fallback if StartDate is missing
+                  const approval = new Date(milestone.approvalDate);
+
+                  if (!isNaN(start.getTime()) && !isNaN(approval.getTime())) {
+                    const totalDuration = approval.getTime() - start.getTime();
+                    const elapsed = Date.now() - start.getTime();
+
+                    if (totalDuration > 0) {
+                      timeProgress = Math.min(
+                        100,
+                        Math.max(0, Math.round((elapsed / totalDuration) * 100)),
+                      );
+                    } else if (Date.now() > approval.getTime()) {
+                      timeProgress = 100;
+                    }
+                  }
+
                   const finalProgress =
                     milestone.percentage !== undefined &&
-                    milestone.percentage !== null &&
-                    milestone.percentage !== ""
+                      milestone.percentage !== null &&
+                      milestone.percentage !== ""
                       ? Number(milestone.percentage)
-                      : milestone.completionPercentage !== undefined &&
-                          milestone.completionPercentage !== null
-                        ? Number(milestone.completionPercentage)
-                        : milestone.completeionPercentage !== undefined &&
-                            milestone.completeionPercentage !== null
-                          ? Number(milestone.completeionPercentage)
-                          : taskProgress;
+                      : taskProgress;
 
                   return (
-                    <div className="flex flex-col gap-1">
-                      <div className="flex justify-between text-xs font-bold text-gray-700">
+                    <div className="flex flex-col gap-1 w-full">
+                      <div className="flex justify-between items-center text-xs font-bold text-gray-700 mb-1">
                         <span>{finalProgress}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                      <div className="w-full bg-red-500 rounded-full h-2.5 relative overflow-hidden">
+                        {/* Time Progress (background shadow layer) */}
                         <div
-                          className="bg-green-600 h-2.5 rounded-full transition-all duration-500"
+                          className="absolute top-0 left-0 h-2.5 bg-gray-400 opacity-40 transition-all duration-500"
+                          style={{ width: `${timeProgress}%` }}
+                        ></div>
+                        {/* Task Completion (real progress) */}
+                        <div
+                          className="absolute top-0 left-0 h-2.5 rounded-full bg-teal-500 transition-all duration-500"
                           style={{
                             width: `${Math.min(100, Math.max(0, finalProgress))}%`,
                           }}
@@ -501,11 +520,10 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                     return (
                       <div
                         key={v.id}
-                        className={`rounded-xl border transition-all duration-200 ${
-                          isCurrent
-                            ? "bg-green-50/50 border-green-200 shadow-sm"
-                            : "bg-white border-gray-200 hover:border-gray-300"
-                        }`}
+                        className={`rounded-xl border transition-all duration-200 ${isCurrent
+                          ? "bg-green-50/50 border-green-200 shadow-sm"
+                          : "bg-white border-gray-200 hover:border-gray-300"
+                          }`}
                       >
                         <div
                           className="flex items-center justify-between px-4 py-3 cursor-pointer"
@@ -515,11 +533,10 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                         >
                           <div className="flex items-center gap-3">
                             <span
-                              className={`text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider ${
-                                isCurrent
-                                  ? "bg-green-600 text-white"
-                                  : "bg-gray-100 text-gray-600"
-                              }`}
+                              className={`text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider ${isCurrent
+                                ? "bg-green-600 text-white"
+                                : "bg-gray-100 text-gray-600"
+                                }`}
                             >
                               V{v.versionNumber} {isCurrent && "· Current"}
                             </span>
