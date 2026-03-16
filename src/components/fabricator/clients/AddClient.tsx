@@ -9,7 +9,7 @@ import Input from "../../fields/input";
 import { useDispatch } from "react-redux";
 import { addStaff } from "../../../store/userSlice";
 import Select from "../../fields/Select";
-import { X, UserPlus, Check, Loader2 } from "lucide-react";
+import { UserPlus, Check, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 
 interface AddClientProps {
@@ -79,24 +79,22 @@ const AddClients: React.FC<AddClientProps> = ({
             <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
               <UserPlus className="w-6 h-6" />
             </div>
-            Onboard POC
+           Create Point of Contact
           </h2>
-          <p className="text-xs  text-slate-400 dark:text-slate-500 uppercase tracking-widest">Registering a new point of contact for {fabricator.fabName}</p>
+         
         </div>
         <button
           onClick={onClose}
-          className="p-3 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 rounded-2xl text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
+          className="px-4 py-1 bg-red-50  dark:bg-slate-800 shadow-sm border border-red-600 border-2 dark:border-slate-700 rounded-2xl text-black hover:text-black dark:hover:text-black hover:bg-rose-50 dark:hover:bg-rose-900/20"
         >
-          <X className="w-6 h-6" />
+         Close
         </button>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="px-10 py-8 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
         {/* Core Identity */}
         <section className="space-y-6">
-          <h3 className="text-[10px]  text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-            Authentication & Role
-          </h3>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <label className="block text-xs  text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">Username</label>
@@ -152,9 +150,7 @@ const AddClients: React.FC<AddClientProps> = ({
 
         {/* Profile Details */}
         <section className="space-y-6 pt-8 border-t border-slate-50 dark:border-slate-800">
-          <h3 className="text-[10px]  text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-            Personal Intelligence
-          </h3>
+      
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-xs  text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">First Name</label>
@@ -186,9 +182,7 @@ const AddClients: React.FC<AddClientProps> = ({
 
         {/* Org Unit */}
         <section className="space-y-6 pt-8 border-t border-slate-50 dark:border-slate-800">
-          <h3 className="text-[10px]  text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-            Organizational Context
-          </h3>
+       
           <div>
             <label className="block text-xs  text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-2">Department Token (Optional)</label>
             <Input label="" {...register("departmentId")} placeholder="UUID or Code" className="bg-slate-50 dark:bg-slate-800 rounded-2xl" />
@@ -200,14 +194,14 @@ const AddClients: React.FC<AddClientProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-8 py-3 text-[10px]  uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all active:scale-95"
+            className="px-8 py-3 text-[10px] text-black border-black border-2 uppercase tracking-widest dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all active:scale-95"
           >
-            Discard Draft
+            Cancel
           </button>
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="px-10 py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-[10px]  uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 flex items-center gap-3 border-none"
+            className="px-8 py-3 bg-green-100 text-black text-[10px]  uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 flex items-center "
           >
             {isSubmitting ? (
               <>

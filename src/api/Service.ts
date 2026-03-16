@@ -2884,5 +2884,74 @@ class Service {
     }
   }
 
+
+  //client dashboard routes
+  
+static async GetClientDashboardData() {
+    try {
+      console.log('Fetching client dashboard data...');
+      const response = await api.get(`/dashBoardData/client`)
+      console.log('Client dashboard data fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching client dashboard data:', error)
+      throw error
+    }
+  }
+  static async GetClientSubmittals() {
+    try {
+      console.log('Fetching client submittals...');
+      const response = await api.get(`/submittal/pending/client`)
+      console.log('Client submittals fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching client submittals:', error)
+      throw error
+    }
+  }
+  static async GetClientRFI() {
+    try {
+      console.log('Fetching client rfi...');
+      const response = await api.get(`/rfi/pending/client`)
+      console.log('Client rfi fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching client rfi:', error)
+      throw error
+    }
+  }
+  static async GetClientCO() {
+    try {
+      console.log('Fetching client co...');
+      const response = await api.get(`/changeOrder/pending/client`)
+      console.log('Client co fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching client co:', error)
+      throw error
+    }
+  }
+  static async GetClientRFQ() {
+    try {
+      console.log('Fetching client rfq...');
+      const response = await api.get(`/rfq/pending/client`)
+      console.log('Client rfq fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching client rfq:', error)
+      throw error
+    }
+  }
+  static async GetClientMilestone() {
+    try {
+      console.log('Fetching client milestone...');
+      const response = await api.get(`/milestone/pendingSubmittals/client`)
+      console.log('Client milestone fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching client milestone:', error)
+      throw error
+    }
+  }
 }
 export default Service;

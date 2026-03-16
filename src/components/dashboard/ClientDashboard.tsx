@@ -30,6 +30,9 @@ const ClientDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+  const isClientRole = userRole === "client";
+
   // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
     null,
@@ -119,7 +122,7 @@ const ClientDashboard = () => {
             Service.RfqSent(),
             Service.SubmittalRecieved(),
             Service.InvoiceDashboardData(),
-            Service.ClientAdminPendingCOs(), // Updated
+            isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(), // Updated
           ],
         );
 
@@ -164,7 +167,8 @@ const ClientDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await Service.DashboardData();
+      const response = isClientRole ? await Service.GetClientDashboardData() : await Service.DashboardData();
+     console.log("Dashboard client Data", response);
       setDashboardStats(response?.data || response || null);
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
@@ -173,7 +177,7 @@ const ClientDashboard = () => {
 
   const fetchUpcomingSubmittals = async () => {
     try {
-      const response = await Service.ClientAdminPendingMilestoneSubmittals();
+      const response = isClientRole ? await Service.GetClientMilestone() : await Service.ClientAdminPendingMilestoneSubmittals();
       console.log(response);
 
       setUpcomingSubmittals(response?.data || []);
@@ -184,7 +188,7 @@ const ClientDashboard = () => {
 
   const fetchPendingSubmittals = async () => {
     try {
-      const response = await Service.ClientAdminPendingSubmittals();
+      const response = isClientRole ? await Service.GetClientSubmittals() : await Service.ClientAdminPendingSubmittals();
       console.log("RFI___________________+++", response);
 
       setPendingSubmittals(response?.data || []);
@@ -195,7 +199,7 @@ const ClientDashboard = () => {
 
   const fetchPendingRFIs = async () => {
     try {
-      const response = await Service.ClientAdminPendingRFIs();
+      const response = isClientRole ? await Service.GetClientRFI() : await Service.ClientAdminPendingRFIs();
       console.log(response);
 
       setPendingRFIs(response?.data || []);
@@ -206,7 +210,7 @@ const ClientDashboard = () => {
 
   const fetchPendingRFQs = async () => {
     try {
-      const response = await Service.ClientAdminPendingRFQs();
+      const response = isClientRole ? await Service.GetClientRFQ() : await Service.ClientAdminPendingRFQs();
       console.log(response);
 
       setPendingRFQs(response?.data || []);

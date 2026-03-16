@@ -499,39 +499,39 @@ const GetProjectById = ({
               )}
 
               {/* ✅ New Summary Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-black text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-black text-sm ">
                 <StatCard
-                  icon={<MessageSquare className="text-purple-600" />}
+                  icon={<MessageSquare className="text-green-600" />}
                   label="Total RFIs"
                   value={project.rfi?.length || 0}
-                  color="bg-purple-50"
+                  color="bg-green-50"
                   description="Total RFIs for this project"
                   onClick={() => setActiveTab("rfi")}
                 />
                 <StatCard
-                  icon={<FileText className="text-orange-600" />}
+                  icon={<FileText className="text-green-600" />}
                   label="Total Submittals"
                   value={project.submittals?.length || 0}
-                  color="bg-orange-50"
+                  color="bg-green-50"
                   description="Total submittals for this project"
                   onClick={() => setActiveTab("submittals")}
                 />
                 <StatCard
-                  icon={<ClipboardList className="text-indigo-600" />}
+                  icon={<ClipboardList className="text-green-600" />}
                   label="Change Orders"
                   value={project.changeOrders?.length || 0}
-                  color="bg-indigo-50"
+                  color="bg-green-50"
                   description="Total change orders"
                   onClick={() => setActiveTab("changeOrder")}
                 />
                 <StatCard
-                  icon={<FolderOpenDot className="text-amber-600" />}
+                  icon={<FolderOpenDot className="text-green-600" />}
                   label="Documents / Files"
                   value={
                     (allDocuments?.designDrawings?.length || 0) +
                     (allDocuments?.project?.files?.length || 0)
                   }
-                  color="bg-amber-50"
+                  color="bg-green-50"
                   description="Total project documents & files"
                   onClick={() => setActiveTab("files")}
                 />
