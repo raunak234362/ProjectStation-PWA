@@ -236,9 +236,9 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
           </h2>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-all font-bold text-sm"
+            className="px-4 py-1.5 bg-red-50 text-black border border-red-600 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-sm"
           >
-            Close
+            CLOSE
           </button>
         </div>
 
@@ -297,7 +297,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 </h2>
                 {userRole === "CLIENT_ADMIN" && (
                   <Button
-                    className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
+                    className="bg-[#6bbd45]/20 text-black border border-black rounded-lg hover:bg-[#6bbd45]/30 font-bold text-sm"
                     onClick={() => setShowResponseModal(true)}
                   >
                     + Add Response

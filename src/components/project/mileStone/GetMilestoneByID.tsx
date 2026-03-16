@@ -632,7 +632,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                 <Button
                   onClick={() => setShowResponseModal(true)}
                   size="sm"
-                  className="bg-green-600 text-white rounded-xl flex items-center gap-2 h-9 text-xs font-bold px-4"
+                  className="bg-green-100 border border-black rounded-lg hover:bg-green-200 transition-all font-bold text-sm text-black"
                 >
                   <Plus className="w-4 h-4" />
                   Add Response

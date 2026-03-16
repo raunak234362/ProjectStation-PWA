@@ -124,9 +124,8 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                 </div>
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-[#6bbd45]/50 text-black rounded-xl hover:bg-[#5aa83a] transition-all shadow-sm font-black uppercase text-xs tracking-widest border border-black/10"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-green-100 text-black rounded-xl hover:bg-green-200 transition-all shadow-sm font-black uppercase text-xs tracking-widest border border-black border-2"
                 >
-                    <Plus size={14} strokeWidth={3} />
                     Create Note
                 </button>
             </div>
@@ -257,7 +256,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                                 </h4>
                                                 <button
                                                     onClick={() => setShowResponseModal(note.id)}
-                                                    className="text-[11px] font-black text-black border border-black uppercase tracking-widest hover:bg-green-200 px-4 py-1.5 bg-green-100 rounded-lg transition-all shadow-sm"
+                                                    className="text-[11px] font-black text-black border border-black uppercase tracking-widest hover:bg-green-200 px-4 py-1.5  rounded-lg"
                                                 >
                                                     + Add Response
                                                 </button>
