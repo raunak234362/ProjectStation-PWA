@@ -262,11 +262,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${
-            row.original.status === "OPEN"
-              ? "bg-gray-100 text-black border border-gray-200"
-              : "bg-gray-100 text-black border border-gray-200"
-          }`}
+          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${row.original.status === "OPEN"
+            ? "bg-gray-100 text-black border border-gray-200"
+            : "bg-gray-100 text-black border border-gray-200"
+            }`}
         >
           {row.original.status}
         </span>
@@ -317,11 +316,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${
-            row.original.approvalStatus
-              ? "bg-gray-100 text-black border border-gray-200"
-              : "bg-gray-100 text-black border border-gray-200"
-          }`}
+          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${row.original.approvalStatus
+            ? "bg-gray-100 text-black border border-gray-200"
+            : "bg-gray-100 text-black border border-gray-200"
+            }`}
         >
           {row.original.approvalStatus ? "Approved" : "Pending"}
         </span>
@@ -707,9 +705,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                                     {loadingFileId === file.id
                                       ? "Opening..."
                                       : file.fileName ||
-                                        file.originalName ||
-                                        file.name ||
-                                        `File ${i + 1}`}
+                                      file.originalName ||
+                                      file.name ||
+                                      `File ${i + 1}`}
                                   </button>
                                 ))}
                               </div>
@@ -764,14 +762,16 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 {(userRole === "ADMIN" ||
                   userRole === "DEPUTY_MANAGER" ||
                   userRole === "OPERATION_EXECUTIVE" ||
-                  userRole === "USER") && (
-                  <Button
-                    onClick={() => setShowResponseModal(true)}
-                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
-                  >
-                    + Add Response
-                  </Button>
-                )}
+                  userRole === "USER" ||
+                  userRole === "CLIENT" ||
+                  userRole === "CLIENT_ADMIN") && (
+                    <Button
+                      onClick={() => setShowResponseModal(true)}
+                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
+                    >
+                      + Add Response
+                    </Button>
+                  )}
               </div>
               {showResponseModal && (
                 <ResponseModal
@@ -924,11 +924,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteConfirmText !== "DELETE" || isDeleting}
-                  className={`flex-1 ${
-                    deleteConfirmText === "DELETE"
-                      ? "bg-red-600 hover:bg-red-700"
-                      : "bg-red-300 cursor-not-allowed"
-                  } text-white`}
+                  className={`flex-1 ${deleteConfirmText === "DELETE"
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-red-300 cursor-not-allowed"
+                    } text-white`}
                 >
                   {isDeleting ? "Deleting..." : "Confirm Delete"}
                 </Button>
@@ -1019,11 +1018,10 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${
-      enabled
-        ? "bg-green-100/50 border-green-200 text-black"
-        : "bg-gray-50 border-gray-200 text-gray-500"
-    }`}
+    className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${enabled
+      ? "bg-green-100/50 border-green-200 text-black"
+      : "bg-gray-50 border-gray-200 text-gray-500"
+      }`}
   >
     {label}
   </div>
