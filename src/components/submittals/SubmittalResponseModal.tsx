@@ -3,7 +3,6 @@ import Button from "../fields/Button";
 import Service from "../../api/Service";
 import RichTextEditor from "../fields/RichTextEditor";
 import { toast } from "react-toastify";
-import { X } from "lucide-react";
 
 interface SubmittalResponseModalProps {
   submittal: any;
