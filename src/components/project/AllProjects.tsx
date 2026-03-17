@@ -33,11 +33,14 @@ const AllProjects = () => {
     setSelectedProjectId(projectUniqueId);
   };
 
+  const userRole = sessionStorage.getItem("userRole");
+  const isClient = userRole === "CLIENT" || userRole === "CLIENT_ADMIN";
+
   const columns: any[] = [
     {
       accessorKey: "name",
       header: "Project Name",
-      enableColumnFilter: true,
+      enableColumnFilter: !isClient,
       filterType: "text",
       filterFn: "includesString",
     },
@@ -49,7 +52,7 @@ const AllProjects = () => {
         <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
           {row.getValue("status")}
         </span>
-      )
+      ),
     },
   ];
 

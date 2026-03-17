@@ -167,9 +167,8 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Worked Hours",
       cell: ({ row }: any) => (
         <span
-          className={` ${
-            row.original.isOverrun ? "text-red-600" : "text-green-600"
-          }`}
+          className={` ${row.original.isOverrun ? "text-red-600" : "text-green-600"
+            }`}
         >
           {formatSeconds(row.original.workedSeconds || 0)}
         </span>
@@ -217,13 +216,12 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
             </div>
             <div className="h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200/30">
               <div
-                className={`h-full transition-all duration-500 rounded-full ${
-                  isOverrun
-                    ? "bg-red-500"
-                    : percentage > 80
-                      ? "bg-orange-500"
-                      : "bg-green-500"
-                }`}
+                className={`h-full transition-all duration-500 rounded-full ${isOverrun
+                  ? "bg-red-500"
+                  : percentage > 80
+                    ? "bg-orange-500"
+                    : "bg-green-500"
+                  }`}
                 style={{ width: `${percentage}%` }}
               ></div>
             </div>
@@ -243,7 +241,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
   ].filter((col) => {
     if (
       (userRole === "client" || userRole === "client_admin") &&
-      ["Est. Hours", "Worked Hours", "Overrun", "Progress"].includes(
+      ["Fabricator Name", "Est. Hours", "Worked Hours", "Overrun", "Progress"].includes(
         col.header as string,
       )
     ) {
@@ -262,19 +260,18 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
           <div>
             <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
               <div
-                className={`w-2 h-6 rounded-full ${
-                  status.includes("ACTIVE") || status.includes("IFA")
-                    ? "bg-green-500"
-                    : status.includes("COMPLETED") ||
-                        status.includes("IFC") ||
-                        status.includes("Done")
-                      ? "bg-blue-500"
-                      : status.includes("ONHOLD") ||
-                          status.includes("CO#") ||
-                          status.includes("On-Hold")
-                        ? "bg-orange-500"
-                        : "bg-gray-500"
-                }`}
+                className={`w-2 h-6 rounded-full ${status.includes("ACTIVE") || status.includes("IFA")
+                  ? "bg-green-500"
+                  : status.includes("COMPLETED") ||
+                    status.includes("IFC") ||
+                    status.includes("Done")
+                    ? "bg-blue-500"
+                    : status.includes("ONHOLD") ||
+                      status.includes("CO#") ||
+                      status.includes("On-Hold")
+                      ? "bg-orange-500"
+                      : "bg-gray-500"
+                  }`}
               ></div>
               {status.replace("_", " ")} Projects
             </h3>
@@ -288,97 +285,99 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
         </div>
 
         {/* Filters Section */}
-        <div className="p-4 border-b border-gray-100 bg-gray-50/30">
-          <div className="flex items-center gap-2 mb-3">
-            <Filter size={16} className="text-gray-600 dark:text-slate-400" />
-            <h4 className="text-sm font-bold text-black uppercase tracking-wide">
-              Filters
-            </h4>
-            {hasActiveFilters && (
-              <button
-                onClick={clearFilters}
-                className="ml-auto flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors border border-red-200"
-              >
-                <XCircle size={14} />
-                Clear Filters
-              </button>
-            )}
+        {!(userRole === "client" || userRole === "client_admin") && (
+          <div className="p-4 border-b border-gray-100 bg-gray-50/30">
+            <div className="flex items-center gap-2 mb-3">
+              <Filter size={16} className="text-gray-600 dark:text-slate-400" />
+              <h4 className="text-sm font-bold text-black uppercase tracking-wide">
+                Filters
+              </h4>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="ml-auto flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors border border-red-200"
+                >
+                  <XCircle size={14} />
+                  Clear Filters
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* Manager Filter */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">
+                  Manager
+                </label>
+                <select
+                  value={selectedManager}
+                  onChange={(e) => setSelectedManager(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
+                >
+                  <option value="">All Managers</option>
+                  {managers.map((manager) => (
+                    <option key={manager} value={manager}>
+                      {manager}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Fabricator Filter */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">
+                  Fabricator
+                </label>
+                <select
+                  value={selectedFabricator}
+                  onChange={(e) => setSelectedFabricator(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
+                >
+                  <option value="">All Fabricators</option>
+                  {fabricators.map((fabricator) => (
+                    <option key={fabricator} value={fabricator}>
+                      {fabricator}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Stage Filter */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">
+                  Stage
+                </label>
+                <select
+                  value={selectedStage}
+                  onChange={(e) => setSelectedStage(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
+                >
+                  <option value="">All Stages</option>
+                  {stages.map((stage) => (
+                    <option key={stage} value={stage}>
+                      {stage}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Overrun Filter */}
+              <div className="flex items-end">
+                <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors w-full">
+                  <input
+                    type="checkbox"
+                    checked={showOverrunOnly}
+                    onChange={(e) => setShowOverrunOnly(e.target.checked)}
+                    className="w-4 h-4 text-red-600 border-green-300 rounded focus:ring-red-500 focus:ring-2"
+                  />
+                  <span className="text-sm font-semibold text-gray-700 dark:text-slate-200">
+                    Overrun Only
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Manager Filter */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">
-                Manager
-              </label>
-              <select
-                value={selectedManager}
-                onChange={(e) => setSelectedManager(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
-              >
-                <option value="">All Managers</option>
-                {managers.map((manager) => (
-                  <option key={manager} value={manager}>
-                    {manager}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Fabricator Filter */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">
-                Fabricator
-              </label>
-              <select
-                value={selectedFabricator}
-                onChange={(e) => setSelectedFabricator(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
-              >
-                <option value="">All Fabricators</option>
-                {fabricators.map((fabricator) => (
-                  <option key={fabricator} value={fabricator}>
-                    {fabricator}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Stage Filter */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">
-                Stage
-              </label>
-              <select
-                value={selectedStage}
-                onChange={(e) => setSelectedStage(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
-              >
-                <option value="">All Stages</option>
-                {stages.map((stage) => (
-                  <option key={stage} value={stage}>
-                    {stage}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Overrun Filter */}
-            <div className="flex items-end">
-              <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors w-full">
-                <input
-                  type="checkbox"
-                  checked={showOverrunOnly}
-                  onChange={(e) => setShowOverrunOnly(e.target.checked)}
-                  className="w-4 h-4 text-red-600 border-green-300 rounded focus:ring-red-500 focus:ring-2"
-                />
-                <span className="text-sm font-semibold text-gray-700 dark:text-slate-200">
-                  Overrun Only
-                </span>
-              </label>
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6">

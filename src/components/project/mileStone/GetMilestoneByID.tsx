@@ -593,7 +593,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
               )}
 
               {/* Tasks Button */}
-              {(() => {
+              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (() => {
                 const msTasks = milestone.Tasks || milestone.tasks || [];
                 return (
                   msTasks.length > 0 && (
