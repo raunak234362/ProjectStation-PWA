@@ -64,7 +64,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             <button
               onClick={() => setActiveTab("submittals")}
               className={cn(
-                "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all",
+                "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all cursor-pointer",
                 activeTab === "submittals"
                   ? "bg-white text-black shadow-sm border border-black"
                   : "text-black hover:bg-gray-200/50",
@@ -75,7 +75,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             <button
               onClick={() => setActiveTab("invoices")}
               className={cn(
-                "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all",
+                "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all cursor-pointer",
                 activeTab === "invoices"
                   ? "bg-white text-black shadow-sm border border-black"
                   : "text-black hover:bg-gray-200/50",
@@ -160,7 +160,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                           }
                         }}
                         className={cn(
-                          "w-full text-left flex flex-col gap-1 p-3 rounded-lg border transition-all bg-white hover:shadow-md group",
+                          "w-full text-left flex flex-col gap-1 p-3 rounded-lg border transition-all bg-white hover:shadow-md group cursor-pointer",
                           overdue
                             ? "border-red-500 border-l-[6px] border-l-red-500"
                             : "border-black border-l-[6px] border-l-[#6bbd45]",
@@ -291,7 +291,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                   setIsModalOpen(false);
                   setSelectedItem(null);
                 }}
-                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-700"
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-700 cursor-pointer"
               >
                 <X size={20} />
               </button>

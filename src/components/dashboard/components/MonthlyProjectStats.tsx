@@ -266,19 +266,18 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                               item.status as any,
                             )
                           }
-                          className={`w-full flex items-center justify-between px-1.5 py-0.5 rounded-md hover:bg-gray-50 transition-all group/btn`}
+                          className={`w-full flex items-center justify-between px-1.5 py-0.5 rounded-md hover:bg-gray-50 transition-all cursor-pointer group/btn`}
                         >
                           <span className="text-[9px] font-medium text-gray-500 uppercase truncate">
                             {item.label}
                           </span>
                           <span
-                            className={`text-[10px] font-bold ${
-                              item.key === "active"
+                            className={`text-[10px] font-bold ${item.key === "active"
                                 ? "text-green-600"
                                 : item.key === "onHold"
                                   ? "text-orange-500"
                                   : "text-blue-500"
-                            }`}
+                              }`}
                           >
                             {(team.stats[stage] as any)?.[item.key] || 0}
                           </span>

@@ -92,7 +92,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         <div className="flex items-center gap-2 bg-white border border-green-500/20 rounded-xl px-2 py-1">
           <button
             onClick={handlePrevMonth}
-            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
           >
             <ChevronLeft size={18} className="text-gray-700" />
           </button>
@@ -101,7 +101,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
           </span>
           <button
             onClick={handleNextMonth}
-            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
           >
             <ChevronRight size={18} className="text-gray-700" />
           </button>
@@ -122,9 +122,8 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
           return (
             <div
               key={idx}
-              className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${
-                day === null ? "bg-gray-50/30" : ""
-              }`}
+              className={`bg-white min-h-[100px] p-2 transition-colors hover:bg-gray-50/50 ${day === null ? "bg-gray-50/30" : ""
+                }`}
             >
               {day && (
                 <>

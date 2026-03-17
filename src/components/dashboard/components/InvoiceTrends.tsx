@@ -186,7 +186,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
         <button
           onClick={() => setSelectedMonth(null)}
           className={cn(
-            "px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm border",
+            "px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm border cursor-pointer",
             selectedMonth === null
               ? "bg-[#6bbd45] text-white border-[#6bbd45]"
               : "bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-gray-200",
@@ -199,7 +199,7 @@ const InvoiceTrends: React.FC<InvoiceTrendsProps> = ({ invoices }) => {
             key={month}
             onClick={() => setSelectedMonth(index)}
             className={cn(
-              "px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm border",
+              "px-3 py-1.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm border cursor-pointer",
               selectedMonth === index
                 ? "bg-[#6bbd45] text-white border-[#6bbd45]"
                 : "bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-gray-200",
