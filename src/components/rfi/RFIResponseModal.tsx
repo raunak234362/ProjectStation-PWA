@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
-import { X } from "lucide-react";
 import Button from "../fields/Button";
 import type { RFIResponseSchema } from "../../interface";
 import RichTextEditor from "../fields/RichTextEditor";
@@ -41,6 +40,7 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
       //   formData.append("responseState", data.responseState ? "true" : "false");
       formData.append("userRole", userRole);
       formData.append("userId", userId);
+      formData.append("wbtStatus", data.wbtStatus || "");
 
       files.forEach((file) => formData.append("files", file));
 
@@ -61,7 +61,7 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg relative">
         <button onClick={onClose} className="absolute top-3 right-3 px-4 py-1.5 bg-red-50 text-black border border-red-600 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-sm">
-         
+
           CLOSE
         </button>
 
@@ -88,6 +88,30 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
             control={control}
             render={() => (
               <MultipleFileUpload onFilesChange={(f) => setFiles(f)} />
+            )}
+          />
+
+          {/* Status Dropdown */}
+          <Controller
+            name="wbtStatus"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <div className="flex flex-col gap-1">
+                <select
+                  {...field}
+                  className="w-full border border-gray-300 rounded-md p-2 text-sm text-gray-700"
+                  required
+                >
+                  <option value="">Select Status</option>
+                  <option value="PARTIAL">Partial</option>
+                  <option value="COMPLETE">Complete</option>
+                  <option value="OPEN">Open</option>
+                  <option value="SENT">Sent</option>
+                  <option value="RECEIVED">Received</option>
+                  <option value="IN_REVIEW">In Review</option>
+                </select>
+              </div>
             )}
           />
 

@@ -11,6 +11,9 @@ const STATUS_OPTIONS = [
   { label: "Partial", value: "PARTIAL" },
   { label: "Complete", value: "COMPLETE" },
   { label: "Open", value: "OPEN" },
+  { label: "Sent", value: "SENT" },
+  { label: "Received", value: "RECEIVED" },
+  { label: "In Review", value: "IN_REVIEW" },
 ];
 
 const RFIResponseDetailsModal = ({ response, onClose }: any) => {

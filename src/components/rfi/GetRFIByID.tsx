@@ -4,6 +4,7 @@ import Service from "../../api/Service";
 import type { RFIItem } from "../../interface";
 import { AlertCircle, Loader2 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useSelector } from "react-redux";
 import DataTable from "../ui/table";
 import Button from "../fields/Button";
 import RenderFiles from "../ui/RenderFiles";
@@ -29,7 +30,8 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
 
-  //
+  const users = useSelector((state: any) => state.userInfo?.staffData || []);
+
   const fetchRfi = async () => {
     try {
       setLoading(true);
@@ -74,17 +76,24 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
       document.body,
     );
   }
+
   const userRole = sessionStorage.getItem("userRole");
 
   const responseColumns: ColumnDef<any>[] = [
     {
       accessorKey: "createdByRole",
-      header: "From",
-      cell: ({ row }) => (
-        <span className="font-medium text-sm">
-          {row.original.createdByRole === "CLIENT" ? "Client" : "WBT Team"}
-        </span>
-      ),
+      header: "To",
+      cell: ({ row }) => {
+        if (row.original.userRole === "CLIENT" || row.original.userRole === "CLIENT_ADMIN") {
+          return <span className="font-medium text-sm">Client</span>;
+        }
+
+        const responderId = row.original.userId;
+        const user = users.find((u: any) => String(u.id) === String(responderId));
+        const name = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "WBT Team";
+
+        return <span className="font-medium text-sm">{name}</span>;
+      },
     },
     {
       accessorKey: "description",
@@ -115,7 +124,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
       header: "Created",
       cell: ({ row }) => (
         <span className="text-gray-700 text-sm">
-          {new Date(row.original.date).toLocaleString()}
+          {new Date(row.original.createdAt).toLocaleString()}
         </span>
       ),
     },
@@ -124,14 +133,10 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.original.status;
+        const status = row.original.wbtStatus || row.original.status;
         return status ? (
           <span
-            className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${
-              status === "OPEN"
-                ? "bg-gray-100 text-black border border-gray-200"
-                : "bg-gray-100 text-black border border-gray-200"
-            }`}
+            className={`px-3 py-1.5 rounded-md text-sm uppercase font-bold tracking-tight bg-gray-100 text-black border border-gray-200`}
           >
             {status}
           </span>

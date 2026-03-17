@@ -295,7 +295,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 <h2 className="text-xl font-semibold text-[#6bbd45]">
                   Responses
                 </h2>
-                {userRole === "CLIENT_ADMIN" && (
+                {(userRole === "CLIENT_ADMIN" || userRole === "CLIENT") && (
                   <Button
                     className="bg-[#6bbd45]/20 text-black border border-black rounded-lg hover:bg-[#6bbd45]/30 font-bold text-sm"
                     onClick={() => setShowResponseModal(true)}

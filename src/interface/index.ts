@@ -579,8 +579,7 @@ export interface RFIItem {
 
 export interface RFIResponseSchema {
   files?: File[] | string[];
-  // responseState:boolean|null;
-  wbtStatus?: boolean;
+  wbtStatus?: string;
   reason: string;
   rfiId: string;
   parentResponseId: string | null;

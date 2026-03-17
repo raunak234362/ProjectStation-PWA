@@ -60,9 +60,9 @@ const SubmittalResponseModal = ({
       <div className="bg-white p-8 rounded-2xl w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative space-y-8 border border-black/5 animate-in fade-in zoom-in duration-200">
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors group z-10"
+          className="absolute top-6 right-6 px-4 py-1.5 bg-red-50 text-black border border-red-600 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-sm"
         >
-          <X className="w-5 h-5 text-black/40 group-hover:text-black transition-colors" />
+          CLOSE
         </button>
 
         <h2 className="text-2xl font-black text-black uppercase tracking-tight">
