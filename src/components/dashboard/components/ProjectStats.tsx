@@ -58,7 +58,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
         PROJECT STATISTICS
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {projectCards.map((card) => {
           const isClickable = card.clickable && onCardClick;
 
@@ -89,7 +89,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
                   />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs sm:text-sm font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
+                  <span className="text-xs sm:text-sm font-bold text-black uppercase tracking-normal leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
                     {card.label}
                   </span>
                 </div>
