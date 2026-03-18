@@ -88,8 +88,8 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
                     strokeWidth={2}
                   />
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-xs sm:text-sm font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
+                <div className="flex flex-col min-w-0 pr-1">
+                  <span className="text-xs sm:text-sm font-black text-black uppercase tracking-wider leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
                     {card.label}
                   </span>
                 </div>

@@ -85,8 +85,8 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                 <div className="p-2 sm:p-2.5 rounded-full bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black shrink-0">
                   <action.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-xs sm:text-sm font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
+                <div className="flex flex-col min-w-0 pr-1">
+                  <span className="text-xs sm:text-sm font-black text-black uppercase tracking-wider leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
                     {action.title}
                   </span>
                 </div>
