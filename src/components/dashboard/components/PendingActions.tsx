@@ -63,7 +63,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
         PENDING ACTIONS
       </h3>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredActions.map((action) => {
           return (
             <div
@@ -86,7 +86,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
                   <action.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs sm:text-sm font-bold text-black uppercase tracking-normal leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+                  <span className="text-xs sm:text-sm font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
                     {action.title}
                   </span>
                 </div>
