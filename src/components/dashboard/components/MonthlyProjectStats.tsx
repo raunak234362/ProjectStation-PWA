@@ -24,7 +24,7 @@ interface MonthlyProjectStatsProps {
   >;
   handleStatClick: (
     projects: ProjectData[],
-    stage: "IFA" | "IFC" | "COR",
+    stage: "IFA" | "IFC" | "COR" | "ALL",
     status: "ACTIVE" | "ONHOLD" | "COMPLETED" | "TOTAL",
   ) => void;
 }
@@ -60,6 +60,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
       string,
       {
         teamName: string;
+        id: string;
         totalSeconds: number;
         projectCount: number;
         monthlyBreakdown: Record<string, number>;
@@ -74,6 +75,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
     teams.forEach((team) => {
       summary[team.id] = {
         teamName: team.name,
+        id: team.id,
         totalSeconds: 0,
         projectCount: 0,
         monthlyBreakdown: {},
@@ -90,6 +92,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
       if (!summary[teamId]) {
         summary[teamId] = {
           teamName: data.teamName,
+          id: teamId,
           totalSeconds: 0,
           projectCount: 0,
           monthlyBreakdown: {},
@@ -187,13 +190,8 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
-                  const teamId = Object.keys(projectsByTeam).find(
-                    (k) => projectsByTeam[k].teamName === team.teamName,
-                  );
-                  const teamProjects = teamId
-                    ? projectsByTeam[teamId]?.projects || []
-                    : [];
-                  handleStatClick(teamProjects, "IFA", "TOTAL");
+                  const teamProjects = projectsByTeam[team.id]?.projects || [];
+                  handleStatClick(teamProjects, "ALL", "TOTAL");
                 }}
                 className="p-2 bg-gray-50/50 rounded-lg flex flex-col items-center justify-center border border-black/5 hover:bg-white hover:border-black/10 transition-all cursor-pointer group/projects"
               >
@@ -255,13 +253,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                           key={item.key}
                           onClick={() =>
                             handleStatClick(
-                              projectsByTeam[
-                                Object.keys(projectsByTeam).find(
-                                  (k) =>
-                                    projectsByTeam[k].teamName ===
-                                    team.teamName,
-                                ) || ""
-                              ]?.projects || [],
+                              projectsByTeam[team.id]?.projects || [],
                               stage as any,
                               item.status as any,
                             )
@@ -273,10 +265,10 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                           </span>
                           <span
                             className={`text-[10px] font-bold ${item.key === "active"
-                                ? "text-green-600"
-                                : item.key === "onHold"
-                                  ? "text-orange-500"
-                                  : "text-blue-500"
+                              ? "text-green-600"
+                              : item.key === "onHold"
+                                ? "text-orange-500"
+                                : "text-blue-500"
                               }`}
                           >
                             {(team.stats[stage] as any)?.[item.key] || 0}

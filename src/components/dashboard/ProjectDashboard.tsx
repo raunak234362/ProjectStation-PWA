@@ -209,10 +209,10 @@ const ProjectDashboard = () => {
 
   const handleStatClick = (
     projects: ProjectData[],
-    stage: "IFA" | "IFC" | "COR",
+    stage: "IFA" | "IFC" | "COR" | "ALL",
     status: "ACTIVE" | "ONHOLD" | "COMPLETED" | "TOTAL",
   ) => {
-    let filtered = projects.filter((p) => p.stage === stage);
+    let filtered = stage === "ALL" ? projects : projects.filter((p) => p.stage === stage);
     if (status !== "TOTAL") {
       filtered = filtered.filter((p) => p.status === status);
     }
@@ -283,11 +283,10 @@ const ProjectDashboard = () => {
             <div className="hidden md:flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
               <Button
                 onClick={() => setSelectedMonth(null)}
-                className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${
-                  selectedMonth === null
+                className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${selectedMonth === null
                     ? "bg-green-200 text-black border border-black/10"
                     : "bg-gray-50 text-gray-600 border border-transparent hover:bg-green-50"
-                }`}
+                  }`}
               >
                 All Months
               </Button>
@@ -295,11 +294,10 @@ const ProjectDashboard = () => {
                 <Button
                   key={month}
                   onClick={() => setSelectedMonth(index)}
-                  className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${
-                    selectedMonth === index
+                  className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-bold transition-all whitespace-nowrap h-8 ${selectedMonth === index
                       ? "bg-green-200 text-black border border-black/10"
                       : "bg-gray-50 text-gray-600 border border-transparent hover:bg-green-50"
-                  }`}
+                    }`}
                 >
                   {month}
                 </Button>
