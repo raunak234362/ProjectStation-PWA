@@ -11,6 +11,7 @@ import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { toast } from "react-toastify";
+import FileItem from "../ui/FileItem";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 
 interface Props {
@@ -154,16 +155,11 @@ const QuotationResponseDetailsModal = ({
               </h3>
               <div className="space-y-2">
                 {quotation.files.map((file: any, index: number) => (
-                  <a
+                  <FileItem
                     key={index}
-                    href={file.url || file.path}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    <FileText size={16} />
-                    {file.name || `File ${index + 1}`}
-                  </a>
+                    name={file.name || `File ${index + 1}`}
+                    onClick={() => window.open(file.url || file.path, "_blank")}
+                  />
                 ))}
               </div>
             </div>
@@ -193,16 +189,11 @@ const QuotationResponseDetailsModal = ({
                     {reply.files && reply.files.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {reply.files.map((file: any, idx: number) => (
-                          <a
+                          <FileItem
                             key={idx}
-                            href={file.url || file.path}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-xs text-blue-600 hover:underline"
-                          >
-                            <FileText size={12} />
-                            {file.name || `Attachment ${idx + 1}`}
-                          </a>
+                            name={file.name || `Attachment ${idx + 1}`}
+                            onClick={() => window.open(file.url || file.path, "_blank")}
+                          />
                         ))}
                       </div>
                     )}

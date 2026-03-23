@@ -6,6 +6,7 @@ import {
   shareFileSecurely
 } from '../../utils/openFileSecurely'
 import Button from '../fields/Button'
+import FileItem from './FileItem'
 
 interface RenderFilesProps {
   files: any;
@@ -167,29 +168,32 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
               className="border border-gray-100 rounded-xl p-4 space-y-3 bg-white shadow-sm hover:shadow-md transition-shadow"
             >
               {/* Description + Stage */}
-              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-                <div>
-                  <h5
-                    className="text-sm border-l-4 border-black pl-3 sm:text-base  text-gray-800 font-bold uppercase tracking-tight"
-                    dangerouslySetInnerHTML={{ __html: description }}
-                  />
-                  <div className="flex flex-wrap items-center gap-3 mt-1.5 ml-4">
-                    {firstFile?.stage && (
-                      <p className="text-[10px] text-blue-600  bg-blue-50 px-2 py-0.5 rounded-full uppercase">
-                        {firstFile.stage}
-                      </p>
-                    )}
-                    {firstFile?.uploadedAt && (
-                      <p className="text-[10px] text-gray-400 font-medium">
-                        {formatDate ? formatDate(firstFile.uploadedAt) : new Date(firstFile.uploadedAt).toLocaleString()}
-                      </p>
-                    )}
-                    {uploaderName !== 'Unknown User' && (
-                      <p className="text-[10px] text-gray-400">
-                        by <span className="font-semibold text-gray-600">{uploaderName}</span>
-                      </p>
-                    )}
-                  </div>
+              <div className="flex items-center gap-2">
+                <h5
+                  className="text-sm border-l-4 border-black pl-3 sm:text-base  text-gray-800 font-bold uppercase tracking-tight"
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+                <span className="text-xs font-black text-black bg-gray-100 px-2 py-0.5 rounded-full">
+                  {filesArray.length}
+                </span>
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-3 mt-1.5 ml-4">
+                  {firstFile?.stage && (
+                    <p className="text-[10px] text-blue-600  bg-blue-50 px-2 py-0.5 rounded-full uppercase">
+                      {firstFile.stage}
+                    </p>
+                  )}
+                  {firstFile?.uploadedAt && (
+                    <p className="text-[10px] text-gray-400 font-medium">
+                      {formatDate ? formatDate(firstFile.uploadedAt) : new Date(firstFile.uploadedAt).toLocaleString()}
+                    </p>
+                  )}
+                  {uploaderName !== 'Unknown User' && (
+                    <p className="text-[10px] text-gray-400">
+                      by <span className="font-semibold text-gray-600">{uploaderName}</span>
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -200,35 +204,26 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
                     key={file.id || `file-${index}`}
                     className="flex items-center gap-3 p-3 rounded-xl border border-gray-50 bg-gray-50/30 hover:bg-gray-100 hover:border-gray-200 transition-all group"
                   >
-                    <div
-                      onClick={(e) => handleOpen(e, file)}
-                      className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
-                    >
-                      <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100">
-                        <FileText size={18} className="text-black" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-gray-700 text-sm font-medium truncate group-hover:text-black">
-                          {file.originalName || `File ${index + 1}`}
-                        </p>
-                        {file.stage && <p className="text-[10px] text-gray-400 font-medium">{file.stage}</p>}
-                      </div>
-                    </div>
+                    <FileItem
+                      name={file.originalName || `File ${index + 1}`}
+                      onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
+                      className="flex-1 min-w-0"
+                    />
 
-                    <div className="flex items-center gap-1 opacity-1 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1 transition-opacity">
                       <button
                         onClick={(e) => handleShare(e, file)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                        className="p-2 text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all"
                         title="Share Link"
                       >
-                        <Share2 size={16} />
+                        <Share2 size={16} strokeWidth={2.5} />
                       </button>
                       <button
                         onClick={(e) => handleDownload(e, file)}
-                        className="p-2 text-gray-400 hover:text-black hover:bg-gray-100 rounded-lg transition-all"
+                        className="p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-lg transition-all"
                         title="Download"
                       >
-                        <Download size={16} />
+                        <Download size={16} strokeWidth={2.5} />
                       </button>
                     </div>
 
@@ -251,7 +246,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
           )}
         </div>
       )}
-    </div>
+    </div >
   )
 }
 

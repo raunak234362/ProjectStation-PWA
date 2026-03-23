@@ -82,7 +82,7 @@ const AppContent = () => {
     //   try {
     //     const response = await Service.GetAdminMEASAnalyticsTrendline();
     //     console.log(response);
-        
+
     //   } catch (err) {
     //     console.error("Failed to fetch employees:", err);
     //     toast.error("Failed to load employees");
@@ -105,6 +105,15 @@ const AppContent = () => {
         const response = await Service.Notifications();
         const data = response?.data || [];
         dispatch(setNotifications(data));
+
+        // Show welcome toast for unread notifications
+        const unread = data.filter((n: any) => !n.read).length;
+        if (unread > 0) {
+          toast.info(`🔔 You have ${unread} unread notifications`, {
+            position: "top-right",
+            autoClose: 5000,
+          });
+        }
       } catch (err) {
         console.error("Failed to fetch notifications:", err);
         toast.error("Failed to load notifications");

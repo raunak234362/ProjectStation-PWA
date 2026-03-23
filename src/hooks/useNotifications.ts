@@ -4,6 +4,7 @@ import socket from "../socket";
 import { addNotification } from "../store/notificationSlice";
 import type { SocketMessage, User } from "../interface";
 import type { Notification } from "../store/notificationSlice";
+import { toast } from "react-toastify";
 
 const useNotifications = () => {
   const dispatch = useDispatch();
@@ -33,6 +34,14 @@ const useNotifications = () => {
         type: "chat",
       };
       dispatch(addNotification(notification));
+
+      // Show toast notification
+      if (!isChatsPage) {
+        toast.info(`💬 ${msg.content}`, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
 
       // Show browser notification if:
       // 1. Document is hidden (user is in another tab)
@@ -78,6 +87,12 @@ const useNotifications = () => {
         type: data.type || "general",
       };
       dispatch(addNotification(notification));
+
+      // Show toast notification
+      toast.info(`🔔 ${notification.payload.title}: ${notification.payload.message}`, {
+        position: "top-right",
+        autoClose: 4000,
+      });
 
       // Show browser notification if document is hidden
       if (document.hidden) {

@@ -14,6 +14,7 @@ import RenderFiles from "../ui/RenderFiles";
 import QuotationRaise from "../connectionDesigner/QuotationRaise";
 import QuotationResponseModal from "../connectionDesigner/QuotationResponseModal";
 import QuotationResponseDetailsModal from "../connectionDesigner/QuotationResponseDetailsModal";
+import FileItem from "../ui/FileItem";
 import { Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { openFileSecurely } from "../../utils/openFileSecurely";
@@ -650,10 +651,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                       row: any;
                       close: () => void;
                     }) => {
-                      const [loadingFileId, setLoadingFileId] = useState<
-                        string | null
-                      >(null);
-
                       const handleViewFile = async (
                         followupId: string,
                         fileId: string,
@@ -662,7 +659,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                           followupId,
                           fileId,
                         });
-                        setLoadingFileId(fileId);
                         try {
                           await openFileSecurely(
                             "rfqFollowup",
@@ -671,8 +667,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                           );
                         } catch (err) {
                           console.error("[ViewFile] Error:", err);
-                        } finally {
-                          setLoadingFileId(null);
                         }
                       };
 
@@ -693,22 +687,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                               </p>
                               <div className="flex flex-col gap-1.5">
                                 {row.files.map((file: any, i: number) => (
-                                  <button
+                                  <FileItem
                                     key={file.id || i}
-                                    onClick={() =>
-                                      handleViewFile(row.id, file.id)
-                                    }
-                                    disabled={loadingFileId === file.id}
-                                    className="flex items-center gap-2 text-xs text-blue-600 hover:underline text-left disabled:opacity-50"
-                                  >
-                                    <span>📎</span>
-                                    {loadingFileId === file.id
-                                      ? "Opening..."
-                                      : file.fileName ||
-                                      file.originalName ||
-                                      file.name ||
-                                      `File ${i + 1}`}
-                                  </button>
+                                    name={file.fileName || file.originalName || file.name || `File ${i + 1}`}
+                                    onClick={() => handleViewFile(row.id, file.id)}
+                                  />
                                 ))}
                               </div>
                             </div>

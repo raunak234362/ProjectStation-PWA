@@ -77,9 +77,9 @@ const AddProjectNote = ({
                     </h3>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-black"
+                        className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
                     >
-                        <X size={18} />
+                        CLOSE
                     </button>
                 </div>
 
@@ -196,7 +196,7 @@ const AddProjectNote = ({
                         type="submit"
                         form="add-project-note-form"
                         disabled={submitting}
-                        className="px-6 py-2 rounded-xl bg-[#6bbd45] text-white text-sm font-black uppercase tracking-tight hover:bg-[#59a83a] transition-all flex items-center gap-2 disabled:opacity-60"
+                        className="px-6 py-2 rounded-xl bg-[#6bbd45]/50 text-black border border-black text-sm font-black uppercase tracking-tight hover:bg-[#59a83a] transition-all flex items-center gap-2 disabled:opacity-60"
                     >
                         {submitting && <Loader2 size={14} className="animate-spin" />}
                         Save Note

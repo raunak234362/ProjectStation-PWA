@@ -328,8 +328,25 @@ const GetProjectById = ({
     { key: "otherTasks", label: "Other Tasks" },
   ];
 
-  const tabsToShow = isClient ? clientTabs : defaultDesktopTabs;
-  const mobileTabsToShow = isClient ? clientTabs : defaultMobileTabs;
+  const isAuthorizedForNotes = [
+    "admin",
+    "project_manager",
+    "deputy_manager",
+    "client",
+    "client_admin",
+  ].includes(userRole);
+
+  const filterTabsByRole = (tabs: any[]) => {
+    return tabs.filter((tab) => {
+      if (tab.key === "projectNotes") {
+        return isAuthorizedForNotes;
+      }
+      return true;
+    });
+  };
+
+  const tabsToShow = filterTabsByRole(isClient ? clientTabs : defaultDesktopTabs);
+  const mobileTabsToShow = filterTabsByRole(isClient ? clientTabs : defaultMobileTabs);
 
   if (loading)
     return (
@@ -768,7 +785,7 @@ const GetProjectById = ({
                   label="WBT Manager"
                   value={
                     project.manager
-                      ? `${project.manager.firstName} ${project.manager.lastName} (${project.manager.username})`
+                      ? `${project.manager.firstName} ${project.manager.lastName} `
                       : "—"
                   }
                 />

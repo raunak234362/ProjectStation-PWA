@@ -100,7 +100,7 @@ const NotificationPopup = () => {
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute top-2.5 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
+          <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse transition-all"></span>
         )}
       </button>
 
@@ -153,11 +153,10 @@ const NotificationPopup = () => {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${
-                      !notification.read
+                    className={`p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${!notification.read
                         ? "bg-green-50/50 dark:bg-green-900/10"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => handleMarkAsRead(notification.id)}
                   >
                     <div className="flex items-start gap-3">

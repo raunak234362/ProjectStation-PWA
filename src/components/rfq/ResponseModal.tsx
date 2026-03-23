@@ -439,15 +439,12 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
               Add Response
             </h2>
-            <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
-              RFQ Response Protocol
-            </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 px-3 bg-red-50 hover:bg-red-100 text-black rounded-lg border border-red-600 transition-all flex items-center justify-center font-bold text-xs"
+            className="p-1 px-3 bg-red-50 hover:bg-red-100 text-black rounded-lg border border-red-600 border-2 transition-all flex items-center justify-center font-bold text-xs"
           >
-            Close
+            CLOSE
           </button>
         </div>
 
@@ -462,9 +459,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             <div className="bg-gray-50/50 p-4 sm:p-6 rounded-2xl border border-black/5 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                 <div className="flex-1">
-                  <label className="block text-[10px] sm:text-xs font-black text-black/40 uppercase tracking-[0.2em] mb-2">
-                    Select Estimation for Proposal
-                  </label>
+                
                   <Select
                     name="estimationId"
                     options={estimations.map((est) => ({
@@ -475,7 +470,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                     onChange={(_: any, val: any) =>
                       handleEstimationChange(val as string)
                     }
-                    placeholder="Search intelligence..."
+                    placeholder="Select Estimation"
                     className="h-12"
                   />
                 </div>
@@ -574,7 +569,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             {/* Description */}
             <div className="space-y-3">
               <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                Proposal Narrative / Detailed Description *
+                Detailed Description *
               </label>
               <div className="border border-black/10 rounded-2xl overflow-hidden focus-within:border-green-400 transition-all">
                 <Controller
@@ -596,7 +591,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
                 <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                  Lifecycle Status Transition
+                  Select Status
                 </label>
                 <div className="relative">
                   <select
@@ -631,7 +626,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
               </div>
               <div className="space-y-3">
                 <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                  Asset Link (External)
+                 URL/Link
                 </label>
                 <input
                   {...register("link")}
@@ -643,9 +638,6 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 
             {/* Files */}
             <div className="space-y-3">
-              <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                Technical Appendices / Supporting Files
-              </label>
               <div className="p-1 rounded-2xl border-2 border-dashed border-black/10 hover:border-green-400/50 transition-all bg-gray-50/30">
                 <Controller
                   name="files"

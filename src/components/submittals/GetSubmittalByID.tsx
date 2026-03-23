@@ -275,10 +275,6 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
             {/* Single Version File Display */}
             {!hasMultipleVersions && sortedVersions.length === 1 && (
               <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5 mt-6">
-                <h4 className="text-black text-sm p-4 rounded-xl border border-black/5 font-black uppercase tracking-widest flex items-center gap-2 bg-white">
-                  <span className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></span>
-                  Submittal Files
-                </h4>
                 <RenderFiles
                   files={sortedVersions}
                   table="submittals"

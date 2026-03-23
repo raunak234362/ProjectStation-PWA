@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Service from "../../../api/Service";
-import { Loader2, AlertCircle, FileText, Trash2, Edit } from "lucide-react";
+import { Loader2, AlertCircle, Trash2, Edit } from "lucide-react";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
 import EditDesignDrawing from "./EditDesignDrawing";
+import FileItem from "../../ui/FileItem";
 
 interface DesignDrawingDetailsProps {
   id: string;
@@ -95,17 +96,14 @@ const DesignDrawingDetails = ({ id, onUpdate }: DesignDrawingDetailsProps) => {
 
       {drawing.files && drawing.files.length > 0 && (
         <div className="space-y-2">
-          <h5 className="text-sm font-medium text-gray-700">Attachments:</h5>
+          <h5 className="text-sm font-medium text-gray-700">Attachments ({drawing.files.length}):</h5>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {drawing.files.map((file: any) => (
-              <div
+              <FileItem
                 key={file.id}
+                name={file.originalName}
                 onClick={() => openFileSecurely("design-drawings", id, file.id)}
-                className="flex items-center p-2 bg-white border rounded hover:bg-gray-50 cursor-pointer transition-colors"
-              >
-                <FileText className="w-4 h-4 text-green-600 mr-2" />
-                <span className="text-xs truncate">{file.originalName}</span>
-              </div>
+              />
             ))}
           </div>
         </div>

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
     Loader2,
     Calendar,
-    Paperclip,
     Trash2,
     ChevronDown,
     ChevronUp,
@@ -11,6 +10,7 @@ import {
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import AddProjectNote from "./AddProjectNote";
+import FileItem from "../../ui/FileItem";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
 import DataTable from "../../ui/table";
 import NoteResponseModal from "./NoteResponseModal";
@@ -20,8 +20,9 @@ import { formatDateTime } from "../../../utils/dateUtils";
 interface Note {
     id: string;
     content: string;
+    visibility?: "INTERNAL" | "EXTERNAL";
     createdAt?: string;
-    createdBy?: { firstName?: string; lastName?: string };
+    createdBy?: { id: string; firstName?: string; lastName?: string; role?: string };
     files?: { id: string; originalName?: string; fileName?: string }[];
     responses?: any[];
     serialNo?: string;
@@ -112,6 +113,37 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
         );
     }
 
+    const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+    const isAuthorized = [
+        "admin",
+        "project_manager",
+        "deputy_manager",
+        "client",
+        "client_admin",
+    ].includes(userRole);
+
+    if (!isAuthorized) {
+        return null; // Or return a message: <div className="p-4 text-red-500 font-bold">Access Denied</div>
+    }
+
+    const isClient = userRole === "client" || userRole === "client_admin";
+    const currentUserId = sessionStorage.getItem("userId") || "";
+
+    const filteredNotes = notes.filter((note) => {
+        if (!isClient) return true;
+        // Always show if the current user is the creator
+        if (note.createdBy?.id === currentUserId) return true;
+
+        // If it's a client, show only EXTERNAL notes if they were added by the internal team (non-clients)
+        const creatorRole = note.createdBy?.role?.toLowerCase() || "";
+        const isInternalCreator = creatorRole !== "client" && creatorRole !== "client_admin";
+
+        if (isInternalCreator) {
+            return note.visibility === "EXTERNAL";
+        }
+        return true;
+    });
+
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-6">
@@ -129,7 +161,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                 </button>
             </div>
 
-            {notes.length === 0 ? (
+            {filteredNotes.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm">
                     <Inbox className="w-12 h-12 mb-4 text-gray-200" />
                     <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">
@@ -138,7 +170,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4">
-                    {notes.map((note) => {
+                    {filteredNotes.map((note) => {
                         const isExpanded = expandedId === note.id;
                         return (
                             <div
@@ -227,8 +259,9 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                                 </p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {note.files.map((file) => (
-                                                        <button
+                                                        <FileItem
                                                             key={file.id}
+                                                            name={file.originalName || file.fileName || file.id}
                                                             onClick={() =>
                                                                 openFileSecurely(
                                                                     "team-meeting-notes",
@@ -236,11 +269,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                                                     file.id,
                                                                 )
                                                             }
-                                                            className="flex items-center gap-1.5 text-xs bg-white text-black border border-black/10 px-3 py-2 rounded-xl hover:border-[#6bbd45] hover:bg-gray-50 transition-all font-bold shadow-sm"
-                                                        >
-                                                            <Paperclip size={11} className="text-[#6bbd45]" />
-                                                            {file.originalName || file.fileName || file.id}
-                                                        </button>
+                                                        />
                                                     ))}
                                                 </div>
                                             </div>
