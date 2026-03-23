@@ -16,6 +16,7 @@ import DataTable from "../../ui/table";
 import NoteResponseModal from "./NoteResponseModal";
 import NoteResponseDetailsModal from "./NoteResponseDetailsModal";
 import { formatDateTime } from "../../../utils/dateUtils";
+import { truncateWords } from "../../../utils/stringUtils";
 
 interface Note {
     id: string;
@@ -185,12 +186,9 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                     className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-50/50"
                                 >
                                     <div className="flex-1 min-w-0 pr-4">
-                                        <div
-                                            className="text-sm font-black text-black truncate pr-4 uppercase tracking-tight mb-2"
-                                            dangerouslySetInnerHTML={{
-                                                __html: note.content || "Untitled Note",
-                                            }}
-                                        />
+                                        <div className="text-sm font-black text-black truncate pr-4 uppercase tracking-tight mb-2">
+                                            {truncateWords(note.content || "Untitled Note", 10)}
+                                        </div>
                                         <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                             {note.createdBy && (
                                                 <span className="flex items-center gap-1.5 bg-gray-100 px-2 py-0.5 rounded-full text-gray-600">
