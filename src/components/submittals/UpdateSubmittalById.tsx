@@ -53,9 +53,6 @@ const UpdateSubmittalById = ({ submittal, onClose, onSuccess }: any) => {
             <h2 className="text-xl font-black text-black tracking-tight uppercase">
               Update Submittal
             </h2>
-            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mt-0.5">
-              A new version will be created
-            </p>
           </div>
           <button
             onClick={onClose}
