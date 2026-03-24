@@ -236,7 +236,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
           </h2>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-red-50 text-black border border-red-600 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-sm"
+            className="px-4 py-1.5 bg-red-50 text-black border border-red-600 rounded-lg hover:bg-red-100 transition-all font-bold text-sm"
           >
             CLOSE
           </button>
