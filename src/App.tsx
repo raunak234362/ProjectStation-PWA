@@ -12,6 +12,8 @@ import { setProjectData } from "./store/projectSlice";
 import { setNotifications } from "./store/notificationSlice";
 import useNotifications from "./hooks/useNotifications";
 import NotificationReceiver from "./util/NotificationReceiver";
+import DownloadErrorModal from "./components/ui/DownloadErrorModal";
+import { hideFileError } from "./store/uiSlice";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -21,6 +23,8 @@ const AppContent = () => {
   const projects = useSelector(
     (state: any) => state.projectInfo?.projectData || [],
   );
+
+  const fileError = useSelector((state: any) => state.ui?.fileError);
 
   // Fetch current user
   const fetchSignedinUser = async () => {
@@ -176,6 +180,13 @@ const AppContent = () => {
       <NotificationReceiver />
 
       <Layout />
+
+      <DownloadErrorModal
+        isOpen={fileError?.isOpen}
+        onClose={() => dispatch(hideFileError())}
+        reason={fileError?.reason}
+        onRetry={fileError?.retryAction}
+      />
     </>
   );
 };

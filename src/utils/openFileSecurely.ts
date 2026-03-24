@@ -52,7 +52,7 @@ export const openFileSecurely = async (type: string, id: string | number, fileId
     const token = sessionStorage.getItem('token')
     if (!token) {
       toast.error('Authentication token missing')
-      return
+      return { success: false, error: 'Authentication token missing' }
     }
 
     const response = await fetch(downloadUrl, {
@@ -63,15 +63,18 @@ export const openFileSecurely = async (type: string, id: string | number, fileId
     })
 
     if (!response.ok) {
-      throw new Error('Failed to fetch file')
+      const errorMsg = response.status === 404 ? 'File not found' : response.status === 403 ? 'Access denied' : 'Server error'
+      throw new Error(errorMsg)
     }
 
     const blob = await response.blob()
     const fileURL = window.URL.createObjectURL(blob)
     window.open(fileURL, '_blank', 'noopener,noreferrer')
-  } catch (err) {
+    return { success: true }
+  } catch (err: any) {
     console.error('File open failed:', err)
-    toast.error('Unable to open file')
+    // toast.error('Unable to open file')
+    return { success: false, error: err.message || 'Unable to open file' }
   }
 }
 
@@ -81,7 +84,7 @@ export const downloadFileSecurely = async (type: string, id: string | number, fi
     const token = sessionStorage.getItem('token')
     if (!token) {
       toast.error('Authentication token missing')
-      return
+      return { success: false, error: 'Authentication token missing' }
     }
 
     const response = await fetch(downloadUrl, {
@@ -90,7 +93,10 @@ export const downloadFileSecurely = async (type: string, id: string | number, fi
       }
     })
 
-    if (!response.ok) throw new Error('Download failed')
+    if (!response.ok) {
+        const errorMsg = response.status === 404 ? 'File not found' : response.status === 403 ? 'Access denied' : 'Server error'
+        throw new Error(errorMsg)
+    }
 
     const blob = await response.blob()
     const url = window.URL.createObjectURL(blob)
@@ -102,9 +108,11 @@ export const downloadFileSecurely = async (type: string, id: string | number, fi
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
     toast.success('Download started')
-  } catch (error) {
+    return { success: true }
+  } catch (error: any) {
     console.error('Error downloading file:', error)
-    toast.error('Error downloading file')
+    // toast.error('Error downloading file')
+    return { success: false, error: error.message || 'Error downloading file' }
   }
 }
 

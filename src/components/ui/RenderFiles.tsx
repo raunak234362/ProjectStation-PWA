@@ -1,4 +1,5 @@
-import React from 'react'
+import { useDispatch } from "react-redux"
+import { showFileError } from "../../store/uiSlice"
 import { FileText, Share2, Download, ChevronRight, Plus } from 'lucide-react'
 import {
   openFileSecurely,
@@ -27,6 +28,8 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
   versionId,
   hideHeader = false
 }) => {
+  const dispatch = useDispatch();
+
   // Step 1: Normalize and flatten files
   const projectFiles = Array.isArray(files)
     ? files.map((doc: any) => {
@@ -128,13 +131,25 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     e.preventDefault()
     e.stopPropagation()
     const finalTable = file.overrideTable || table;
-    await downloadFileSecurely(finalTable, file.documentID, file.id, file.originalName, file.versionId || versionId)
+    const result = await downloadFileSecurely(finalTable, file.documentID, file.id, file.originalName, file.versionId || versionId)
+    if (result && !result.success) {
+        dispatch(showFileError({
+            reason: result.error || "Unable to download file",
+            retryAction: () => downloadFileSecurely(finalTable, file.documentID, file.id, file.originalName, file.versionId || versionId)
+        }));
+    }
   }
 
-  const handleOpen = (e: React.MouseEvent, file: any) => {
+  const handleOpen = async (e: React.MouseEvent, file: any) => {
     e.preventDefault()
     const finalTable = file.overrideTable || table;
-    openFileSecurely(finalTable, file.documentID, file.id, file.versionId || versionId)
+    const result = await openFileSecurely(finalTable, file.documentID, file.id, file.versionId || versionId)
+    if (result && !result.success) {
+        dispatch(showFileError({
+            reason: result.error || "Unable to open file",
+            retryAction: () => openFileSecurely(finalTable, file.documentID, file.id, file.versionId || versionId)
+        }));
+    }
   }
 
   // Step 3: Render grouped sections

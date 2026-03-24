@@ -2,10 +2,19 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface UIState {
   activeModalCount: number;
+  fileError: {
+    isOpen: boolean;
+    reason: string;
+    retryAction?: any;
+  };
 }
 
 const initialState: UIState = {
   activeModalCount: 0,
+  fileError: {
+    isOpen: false,
+    reason: "",
+  },
 };
 
 const uiSlice = createSlice({
@@ -21,9 +30,24 @@ const uiSlice = createSlice({
     resetModalCount: (state) => {
       state.activeModalCount = 0;
     },
+    showFileError: (state, action) => {
+      state.fileError = {
+        isOpen: true,
+        reason: action.payload.reason,
+        retryAction: action.payload.retryAction,
+      };
+    },
+    hideFileError: (state) => {
+      state.fileError.isOpen = false;
+    },
   },
 });
 
-export const { incrementModalCount, decrementModalCount, resetModalCount } =
-  uiSlice.actions;
+export const { 
+    incrementModalCount, 
+    decrementModalCount, 
+    resetModalCount,
+    showFileError,
+    hideFileError
+} = uiSlice.actions;
 export default uiSlice.reducer;
