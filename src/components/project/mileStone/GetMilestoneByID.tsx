@@ -705,6 +705,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
           <MilestoneResponseDetailsModal
             response={selectedResponse}
             milestoneId={milestone.id}
+            mileStoneVersionId={milestone.currentVersionId}
             onClose={() => setSelectedResponse(null)}
             onSuccess={fetchMilestone}
           />
