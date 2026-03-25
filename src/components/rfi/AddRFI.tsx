@@ -49,7 +49,6 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
       value: String(p.id),
     })) ?? [];
 
-
   const onSubmit = async (data: RFIPayload) => {
     try {
       setLoading(true);
@@ -110,7 +109,6 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* <SectionTitle title="Fabrication & Routing" /> */}
 
-
         <label className="text-sm font-medium text-gray-700">
           Select Recipient
         </label>
@@ -122,16 +120,13 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
             <Select
               placeholder="Recipient *"
               options={pocOptions}
-              value={
-                pocOptions.find((o) => o.value === field.value) ?? null
-              }
+              value={pocOptions.find((o) => o.value === field.value) ?? null}
               onChange={(option) =>
                 field.onChange(option ? option.value : null)
               }
             />
           )}
         />
-
 
         {/* <SectionTitle title="Details" /> */}
 
@@ -157,7 +152,11 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
         <MultipleFileUpload onFilesChange={setFiles} />
 
         <div className="flex justify-center w-full mt-6">
-          <Button type="submit" className="w-full text-black border border-black bg-green-100" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full text-black border border-black bg-green-100"
+            disabled={loading}
+          >
             {loading ? "Submitting RFI..." : "Submit RFI"}
           </Button>
         </div>
