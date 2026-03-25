@@ -66,7 +66,7 @@ const MilestoneResponseModal: React.FC<MilestoneResponseModalProps> = ({
       <div className="bg-white shadow-lg rounded-xl w-full max-w-4xl relative flex flex-col max-h-[90vh]">
         <div className="px-6 py-4 border-b flex justify-between items-center bg-white rounded-t-xl z-10">
           <h2 className="text-xl font-bold text-black">
-            Add Milestone Response
+            Add Milestone Conversation
           </h2>
           <Button
             onClick={onClose}
@@ -163,7 +163,7 @@ const MilestoneResponseModal: React.FC<MilestoneResponseModalProps> = ({
             disabled={loading}
             className="px-4 py-2 bg-green-50 text-black border border-black rounded-lg hover:bg-green-100 transition disabled:opacity-50"
           >
-            {loading ? "Submitting..." : "Submit Response"}
+            {loading ? "Submitting..." : "Submit Conversation"}
           </Button>
         </div>
       </div>
