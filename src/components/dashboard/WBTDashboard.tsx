@@ -47,7 +47,7 @@ const WBTDashboard = () => {
     } else if (userRole === "client" || userRole === "client_admin") {
       navigate("/dashboard/client");
     } else if (userRole === "connection_designer_engineer") {
-      navigate("/dashboard/designer");
+      navigate("/dashboard/connection-designer-dashboard");
     } else if (userRole === "estimation_head") {
       navigate("/dashboard/estimation");
     } else if (userRole === "HUMAN_RESOURCE") {
@@ -293,10 +293,7 @@ const WBTDashboard = () => {
               </div>
             </div>
 
-            {/* Client Specific Section */}
-            {/* <div className="w-full">
-              <ClientProjectDirectory projects={projects} />
-            </div> */}
+         
           </>
         ) : (
           <>

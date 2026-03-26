@@ -150,7 +150,7 @@ export const navItems: NavItem[] = [
     label: "Invoices",
     to: "invoices",
     icon: <Receipt />,
-    roles: ["admin", "project_manager_officer", "client_admin", "pmo", "client"],
+    roles: ["admin", "project_manager_officer", "client_admin", "pmo", "client", "connection_designer_engineer"],
   },
   {
     label: "Tasks",

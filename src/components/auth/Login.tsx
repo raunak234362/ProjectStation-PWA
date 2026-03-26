@@ -41,7 +41,7 @@ const Login = () => {
       } else if (
         userDetail?.role?.toLowerCase() === "connection_designer_engineer"
       ) {
-        navigate("/dashboard/designer");
+        navigate("/dashboard/connection-designer-dashboard");
       } else {
         navigate("/dashboard");
       }

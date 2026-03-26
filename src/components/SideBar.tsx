@@ -95,7 +95,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                           ? "/dashboard/sales"
                           : userRole === "client" || userRole === "client_admin"
                             ? "/dashboard/client"
-                            : to
+                            : userRole === "connection_designer_engineer"
+                              ? "/dashboard/connection-designer-dashboard"
+                              : to
                         : to
                     }
                     end={

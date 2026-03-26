@@ -24,8 +24,8 @@ const SalesDashboard = lazy(() => import("../components/sales/SalesDashboard"));
 const ClientDashboard = lazy(
   () => import("../components/dashboard/ClientDashboard"),
 );
-const DesignerLandingDashboard = lazy(
-  () => import("../components/dashboard/DesignerLandingDashboard"),
+const ConnectionDesignerDashboard = lazy(
+  () => import("../components/dashboard/ConnectionDesignerDashboard"),
 );
 
 const routes = [
@@ -57,7 +57,7 @@ const routes = [
           { path: "rfi", Component: RFIPage },
           { path: "sales", Component: SalesDashboard },
           { path: "client", Component: ClientDashboard },
-          { path: "designer", Component: DesignerLandingDashboard },
+          { path: "connection-designer-dashboard", Component: ConnectionDesignerDashboard },
         ],
       },
     ],
