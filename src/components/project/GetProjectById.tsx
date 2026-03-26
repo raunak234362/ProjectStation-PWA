@@ -281,6 +281,7 @@ const GetProjectById = ({
   };
 
   const isClient = userRole === "client" || userRole === "client_admin";
+  const isConnectionDesigner = userRole === "connection_designer_engineer";
 
   const clientTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
@@ -341,12 +342,18 @@ const GetProjectById = ({
       if (tab.key === "projectNotes") {
         return isAuthorizedForNotes;
       }
+      if (isConnectionDesigner) {
+        const hiddenTabs = ["analytics", "teamsAnalytics", "wbs", "changeOrder"];
+        if (hiddenTabs.includes(tab.key)) return false;
+      }
       return true;
     });
   };
 
   const tabsToShow = filterTabsByRole(isClient ? clientTabs : defaultDesktopTabs);
-  const mobileTabsToShow = filterTabsByRole(isClient ? clientTabs : defaultMobileTabs);
+  const mobileTabsToShow = filterTabsByRole(
+    isClient ? clientTabs : defaultMobileTabs,
+  );
 
   if (loading)
     return (
@@ -443,7 +450,7 @@ const GetProjectById = ({
           {/* ✅ Overview */}
           {activeTab === "overview" && (
             <div className="space-y-6 animate-in fade-in duration-500">
-              {!isClient && (
+              {!isClient && !isConnectionDesigner && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <StatCard
                     icon={<Clock className="text-blue-600" />}
@@ -533,14 +540,16 @@ const GetProjectById = ({
                   description="Total submittals for this project"
                   onClick={() => setActiveTab("submittals")}
                 />
-                <StatCard
-                  icon={<ClipboardList className="text-green-600" />}
-                  label="Change Orders"
-                  value={project.changeOrders?.length || 0}
-                  color="bg-green-50"
-                  description="Total change orders"
-                  onClick={() => setActiveTab("changeOrder")}
-                />
+                {!isConnectionDesigner && (
+                  <StatCard
+                    icon={<ClipboardList className="text-green-600" />}
+                    label="Change Orders"
+                    value={project.changeOrders?.length || 0}
+                    color="bg-green-50"
+                    description="Total change orders"
+                    onClick={() => setActiveTab("changeOrder")}
+                  />
+                )}
                 <StatCard
                   icon={<FolderOpenDot className="text-green-600" />}
                   label="Documents / Files"
@@ -752,12 +761,12 @@ const GetProjectById = ({
           )}
 
           {/* ✅ Analytics Dashboard */}
-          {activeTab === "analytics" && (
+          {activeTab === "analytics" && !isConnectionDesigner && (
             <ProjectAnalyticsDashboard projectId={id} />
           )}
 
           {/* ✅ Teams Analytics */}
-          {activeTab === "teamsAnalytics" && (
+          {activeTab === "teamsAnalytics" && !isConnectionDesigner && (
             <TeamsAnalytics
               projectId={id}
               managerId={project.managerID}
@@ -773,10 +782,12 @@ const GetProjectById = ({
                   label="Estimated Hours"
                   value={project.estimatedHours || 0}
                 /> */}
-                <InfoRow
-                  label="Department"
-                  value={project.department?.name || "—"}
-                />
+                {!isConnectionDesigner && (
+                  <InfoRow
+                    label="Department"
+                    value={project.department?.name || "—"}
+                  />
+                )}
                 <InfoRow
                   label="Team / Tools"
                   value={project.team?.name || "—"}
@@ -789,14 +800,16 @@ const GetProjectById = ({
                       : "—"
                   }
                 />
-                {userRole !== "client" && userRole !== "client_admin" && (
-                  <>
-                    <InfoRow
-                      label="Fabricator"
-                      value={project.fabricator?.fabName || "—"}
-                    />
-                  </>
-                )}
+                {userRole !== "client" &&
+                  userRole !== "client_admin" &&
+                  !isConnectionDesigner && (
+                    <>
+                      <InfoRow
+                        label="Fabricator"
+                        value={project.fabricator?.fabName || "—"}
+                      />
+                    </>
+                  )}
               </div>
 
               <div className="space-y-3">
@@ -918,7 +931,7 @@ const GetProjectById = ({
           {/* ✅ Project Notes (Team Meeting Notes) */}
           {activeTab === "projectNotes" && <AllProjectNotes projectId={id} />}
 
-          {activeTab === "wbs" && (
+          {activeTab === "wbs" && !isConnectionDesigner && (
             <div className="text-gray-700 italic text-center">
               {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
               <WBS id={id} stage={project.stage || ""} />
@@ -1121,7 +1134,7 @@ const GetProjectById = ({
               )}
             </div>
           )}
-          {activeTab === "changeOrder" && (
+          {activeTab === "changeOrder" && !isConnectionDesigner && (
             <div className="space-y-4">
               {/* Sub-tabs for RFI */}
               <div className="flex justify-start border-b border-gray-200 mb-4">
