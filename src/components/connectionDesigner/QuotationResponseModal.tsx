@@ -25,16 +25,13 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
     try {
       setLoading(true);
       const connectionDesignerId = sessionStorage.getItem("connectionDesignerId") || "";
-      const userId = sessionStorage.getItem("userId") || "";
 
       const formData = new FormData();
       formData.append("rfqId", rfqId);
       formData.append("connectionDesignerId", connectionDesignerId);
-      formData.append("userId", userId);
       formData.append("bidprice", data.bidprice);
       formData.append("estimatedHours", data.estimatedHours);
       formData.append("weeks", data.weeks);
-      formData.append("approvalStatus", String(data.approvalStatus || false));
 
       if (data.approvalDate) formData.append("approvalDate", data.approvalDate);
       if (files?.length) files.forEach((file) => formData.append("files", file));
@@ -89,10 +86,10 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-gray-50/50 p-4 rounded-xl border border-black/5">
+          {/* <div className="flex items-center gap-4 bg-gray-50/50 p-4 rounded-xl border border-black/5">
             <input {...register("approvalStatus")} type="checkbox" id="approvalStatus" className="w-6 h-6 text-black border-black/10 rounded-lg cursor-pointer" />
             <label htmlFor="approvalStatus" className="text-xs font-black text-black uppercase tracking-widest cursor-pointer">Verify & Approve Quotation</label>
-          </div>
+          </div> */}
 
           <div className="space-y-4">
             <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Supporting Documentation</label>

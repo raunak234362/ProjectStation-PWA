@@ -489,7 +489,7 @@ class Service {
   // Add Connection Designer Quotation Response
   static async addConnectionDesignerQuotation(formData: FormData) {
     try {
-      const response = await api.post(`rfq/connectionDesignerQuota`, formData, {
+      const response = await api.post(`connectionDesignerQuota/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -501,6 +501,21 @@ class Service {
       throw error;
     }
   }
+
+    static async GetConnectionDesignerQuotaByID(id:string) {
+    try {
+      const response = await api.get(`connectionDesignerQuota/${id}`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      console.log(response)
+      return response.data
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   // Get all quotations for an RFQ
   static async getQuotationsByRFQ(rfqId: string) {

@@ -788,7 +788,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
                       CD Quotation
                     </p>
-                    // Show their quotation if submitted
                     <DataTable
                       columns={quotationColumns}
                       data={rfq?.CDQuotas || []}
