@@ -119,7 +119,7 @@ function MobileCardView({ table, DetailComponent, onRowClick }: any) {
                 <span className="text-black/30 font-black uppercase tracking-widest shrink-0 text-[10px]">
                   {cell.column.columnDef.header as string}
                 </span>
-                <span className="font-black text-black text-right break-words uppercase leading-tight flex-1 min-w-0">
+                <span className="font-black text-black text-right wrap-break-words uppercase leading-tight flex-1 min-w-0">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </span>
               </div>

@@ -20,6 +20,7 @@ import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { openFileSecurely } from "../../utils/openFileSecurely";
 import { useDispatch } from "react-redux";
 import { deleteRFQ, updateRFQ } from "../../store/rfqSlice";
+import { showFileError } from "../../store/uiSlice";
 import { toast } from "react-toastify";
 
 interface GetRfqByIDProps {
@@ -660,11 +661,17 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                           fileId,
                         });
                         try {
-                          await openFileSecurely(
+                          const result = await openFileSecurely(
                             "rfqFollowup",
                             followupId,
                             fileId,
                           );
+                          if (result && !result.success) {
+                            dispatch(showFileError({
+                                reason: result.error || "Unable to open file",
+                                retryAction: () => openFileSecurely("rfqFollowup", followupId, fileId)
+                            }));
+                          }
                         } catch (err) {
                           console.error("[ViewFile] Error:", err);
                         }

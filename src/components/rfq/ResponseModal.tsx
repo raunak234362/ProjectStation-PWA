@@ -442,7 +442,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 px-3 bg-red-50 hover:bg-red-100 text-black rounded-lg border border-red-600 border-2 transition-all flex items-center justify-center font-bold text-xs"
+            className="p-1 px-3 bg-red-50 hover:bg-red-100 text-black rounded-lg border border-red-600 transition-all flex items-center justify-center font-bold text-xs"
           >
             CLOSE
           </button>

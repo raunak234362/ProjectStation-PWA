@@ -627,7 +627,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-widest">
-                  Responses
+                  Communication
                 </h3>
                 <Button
                   onClick={() => setShowResponseModal(true)}
@@ -635,7 +635,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                   className="bg-green-100 border border-black rounded-lg hover:bg-green-200 transition-all font-bold text-sm text-black"
                 >
                   <Plus className="w-4 h-4" />
-                  Add Response
+                  Add Conversation
                 </Button>
               </div>
 
@@ -705,6 +705,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
           <MilestoneResponseDetailsModal
             response={selectedResponse}
             milestoneId={milestone.id}
+            mileStoneVersionId={milestone.currentVersionId}
             onClose={() => setSelectedResponse(null)}
             onSuccess={fetchMilestone}
           />
