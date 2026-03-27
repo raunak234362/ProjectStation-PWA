@@ -71,15 +71,15 @@ const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
         className="bg-white w-11/12 md:w-1/2 rounded-xl shadow-lg p-6 border border-gray-100 relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center border-b pb-3 mb-4">
+        <div className="flex justify-between items-center pb-3 mb-4">
           <h2 className="text-xl font-semibold text-gray-700">
             Add Project Note
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-700"
-          >
-            <X className="w-5 h-5" />
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            >
+           Close
           </button>
         </div>
 
@@ -170,17 +170,11 @@ const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
           </div>
 
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
-            <Button
-              type="button"
-              onClick={onClose}
-              className="w-full sm:w-auto"
-            >
-              Cancel
-            </Button>
+          
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <Loader2 className="w-4 border-2 border-black text-black bg-green-100 h-4 animate-spin mr-2" />
                   Saving...
                 </>
               ) : (

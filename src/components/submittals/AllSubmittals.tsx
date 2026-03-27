@@ -60,34 +60,59 @@ const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
   }, []);
 
   const columns: ColumnDef<any>[] = [
-    { accessorKey: "subject", header: "Subject" },
+    {
+      accessorKey: "subject",
+      header: "Subject",
+      cell: ({ row }) => (
+        <span className="font-bold text-black">{row.original.subject}</span>
+      ),
+    },
 
     {
       accessorKey: "sender",
       header: "Sender",
       cell: ({ row }) => {
         const s = row.original.sender;
-        return s ? `${s.firstName ?? ""} ${s.lastName ?? ""}`.trim() : "—";
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs uppercase">
+              {(s?.firstName?.[0] || "") + (s?.lastName?.[0] || "")}
+            </div>
+            <span className="text-black font-medium">
+              {s ? `${s.firstName ?? ""} ${s.lastName ?? ""}`.trim() : "—"}
+            </span>
+          </div>
+        );
       },
     },
 
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => (
-        <span
-          className="px-3 py-1 text-sm uppercase tracking-wide rounded-lg bg-gray-100 text-black border border-gray-200"
-        >
-          {row.original.status === true ? "Submitted to EOR" : "Pending"}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const isEOR = row.original.status === true;
+        return (
+          <span
+            className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5"
+          >
+            {isEOR ? "Submitted to EOR" : "Pending"}
+          </span>
+        );
+      },
     },
 
     {
       accessorKey: "createdAt",
       header: "Created",
-      cell: ({ row }) =>
-        new Date(row.original.date).toLocaleString(),
+      cell: ({ row }) => (
+        <span className="text-black/60 text-xs font-bold">
+          {new Date(row.original.date).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+          })}
+        </span>
+      ),
     },
   ];
 
@@ -95,29 +120,36 @@ const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center gap-2 py-12 text-gray-700">
-        <Loader2 className="animate-spin w-6 h-6" /> Loading Submittals...
+      <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100">
+        <Loader2 className="w-8 h-8 animate-spin text-green-500 mb-4" />
+        <p className="text-black font-black uppercase tracking-widest text-xs">Accessing intelligence...</p>
       </div>
     );
   }
 
   if (!submittals.length) {
     return (
-      <div className="flex flex-col items-center gap-2 py-16 text-gray-700">
-        <Inbox className="w-10 h-10 text-gray-400" />
-        <p>No Submittals Found</p>
+      <div className="flex flex-col items-center justify-center h-full gap-4 py-40 bg-white rounded-3xl border border-dashed border-gray-100 italic text-gray-400">
+        <Inbox className="w-10 h-10 mb-3 text-gray-200" />
+        <p className="text-black font-black text-lg">No Submittals Available</p>
+        <p className="text-sm">
+          Create your first submittal to get started.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-2 rounded-xl shadow-md">
-      <DataTable
-        columns={columns}
-        data={submittals}
-        onRowClick={(row) => setSelectedSubmittalId(row.id)}
-        pageSizeOptions={[10]}
-      />
+    <div className="bg-white rounded-3xl overflow-hidden flex flex-col">
+      <div className="flex-1 min-h-0">
+        <DataTable
+          columns={columns}
+          data={submittals}
+          onRowClick={(row) => setSelectedSubmittalId(row.id)}
+          pageSizeOptions={[10]}
+          noBorder
+        />
+      </div>
       {selectedSubmittalId && (
         <GetSubmittalByID
           id={selectedSubmittalId}

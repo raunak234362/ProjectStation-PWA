@@ -22,19 +22,13 @@ import { formatSeconds } from "../../utils/timeUtils";
 import { formatDate } from "../../utils/dateUtils";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
-import AllMileStone from "./mileStone/AllMileStone";
+
 import AllDocument from "./projectDocument/AllDocument";
 import { type ProjectData } from "../../interface";
 import WBS from "./wbs/WBS";
 import ProjectAnalyticsDashboard from "./ProjectAnalyticsDashboard";
 
-import AllRFI from "../rfi/AllRfi";
-import AddRFI from "../rfi/AddRFI";
-import AllSubmittals from "../submittals/AllSubmittals";
-import AllNotes from "./notes/AllNotes";
-import AllProjectNotes from "./notes/AllProjectNotes";
 import EditProject from "./EditProject";
-import AddSubmittal from "../submittals/AddSubmittals";
 
 import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
@@ -44,6 +38,9 @@ import AllDocumentsByProjectID from "./designDrawings/AllDocumentsByProjectID";
 import TeamsAnalytics from "./TeamsAnalytics";
 import RfiLayout from "../../layout/RfiLayout";
 import SubmittalLayout from "../../layout/SubmittalLayout";
+import MilestoneLayout from "../../layout/MilestoneLayout";
+import NotesLayout from "../../layout/NotesLayout";
+import ProjectNotesLayout from "../../layout/ProjectNotesLayout";
 
 const GetProjectById = ({
   id,
@@ -59,8 +56,8 @@ const GetProjectById = ({
   const [error, setError] = useState<string | null>(null);
   const [allDocuments, setAllDocuments] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [rfiView, setRfiView] = useState<"list" | "add">("list");
-  const [submittalView, setSubmittalView] = useState<"list" | "add">("list");
+  const [] = useState<"list" | "add">("list");
+  const [] = useState<"list" | "add">("list");
   const [editModel, setEditModel] = useState<ProjectData | null>(null);
   const [changeOrderView, setChangeOrderView] = useState<
     "list" | "add" | "table"
@@ -680,7 +677,7 @@ const GetProjectById = ({
                                     className="flex items-center gap-3 px-5 py-2.5 bg-white hover:bg-slate-50 transition-colors"
                                   >
                                     {/* Avatar */}
-                                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                    <div className="w-7 h-7 rounded-full from-slate-300 to-slate-400 flex items-center justify-center text-[10px] font-black text-white shrink-0">
                                       {initials || "?"}
                                     </div>
 
@@ -913,7 +910,7 @@ const GetProjectById = ({
             </div>
           )}
           {activeTab === "milestones" && (
-            <AllMileStone project={project} onUpdate={fetchProject} />
+            <MilestoneLayout project={project} onUpdate={fetchProject} />
           )}
 
           {/* ✅ Team */}
@@ -941,9 +938,9 @@ const GetProjectById = ({
           )}
 
           {/* ✅ Notes */}
-          {activeTab === "notes" && <AllNotes projectId={id} />}
+          {activeTab === "notes" && <NotesLayout projectId={id} />}
           {/* ✅ Project Notes (Team Meeting Notes) */}
-          {activeTab === "projectNotes" && <AllProjectNotes projectId={id} />}
+          {activeTab === "projectNotes" && <ProjectNotesLayout projectId={id} />}
 
           {activeTab === "wbs" && !isConnectionDesigner && (
             <div className="text-gray-700 italic text-center">
@@ -1046,7 +1043,7 @@ const GetProjectById = ({
       {selectedOtherBundle &&
         createPortal(
           <div
-            className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0  flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
             onClick={() => setSelectedOtherBundle(null)}
           >
             <div
@@ -1132,7 +1129,7 @@ const GetProjectById = ({
                         className="flex items-center gap-4 bg-slate-50 hover:bg-white border border-gray-100 hover:border-gray-200 hover:shadow-sm rounded-2xl px-4 py-3 transition-all"
                       >
                         {/* Avatar */}
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-xs font-black text-white shrink-0 shadow-sm">
+                        <div className="w-9 h-9 rounded-full from-slate-300 to-slate-400 flex items-center justify-center text-xs font-black text-white shrink-0 shadow-sm">
                           {initials || "?"}
                         </div>
 

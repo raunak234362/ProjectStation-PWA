@@ -1,6 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
-import { X, CheckCircle } from "lucide-react";
 import Service from "../../../api/Service";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
@@ -18,7 +17,7 @@ interface AddMileStoneProps {
 const AddMileStone = ({
   projectId,
   fabricatorId,
-  onClose,
+  
   onSuccess,
 }: AddMileStoneProps) => {
   const {
@@ -81,21 +80,7 @@ const AddMileStone = ({
 
   return (
     <div className="flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full w-full overflow-hidden animate-in fade-in zoom-in duration-200">
-        {/* Header */}
-        <div className="flex justify-between items-center p-5 border-b bg-gray-50">
-          <h3 className="text-xl  text-gray-700 flex items-center gap-2">
-            <CheckCircle className="w-6 h-6 text-green-600" />
-            Add New Milestone
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-200 text-gray-700 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+      <div className="bg-zinc-100 rounded-2xl shadow-2xl w-full overflow-hidden animate-in fade-in zoom-in duration-200">
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
           <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -154,16 +139,7 @@ const AddMileStone = ({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* <div>
-              <Input
-                label="Target Date *"
-                type="date"
-                {...register("date", { required: "Required" })}
-              />
-              {errors.date && (
-                <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>
-              )}
-            </div> */}
+         
             <Input
               label="Approval Date"
               type="date"
@@ -212,13 +188,13 @@ const AddMileStone = ({
           </div>
 
           {/* Footer */}
-          <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t mt-2">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 mt-2">
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-green-600 hover:bg-green-700 text-white px-6"
+              className="w-full h-10 text-lg bg-green-100 text-black px-6"
             >
-              {isSubmitting ? "Adding..." : "Add Milestone"}
+              {isSubmitting ? "Adding..." : "ADD MILESTONE"}
             </Button>
           </div>
         </form>

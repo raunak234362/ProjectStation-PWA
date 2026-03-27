@@ -57,7 +57,7 @@ const TeamPage = () => {
         <div className="px-4 sm:px-10 py-4 sm:py-6 bg-white border-b border-black/5 flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
           <button
             onClick={() => setActiveTab("teamDashboard")}
-            className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] transition-all border ${activeTab === "teamDashboard"
+            className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm  sm:tracking-[0.15em] transition-all border ${activeTab === "teamDashboard"
               ? "bg-green-200 text-black border-black shadow-sm"
               : "text-black/60 border-black/10 hover:bg-green-50"
               }`}
@@ -67,7 +67,7 @@ const TeamPage = () => {
 
           <button
             onClick={() => setActiveTab("manageEmployee")}
-            className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] transition-all border ${activeTab === "manageEmployee"
+            className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm  sm:tracking-[0.15em] transition-all border ${activeTab === "manageEmployee"
               ? "bg-green-200 text-black border-black shadow-sm"
               : "text-black/60 border-black/10 hover:bg-green-50"
               }`}
@@ -78,7 +78,7 @@ const TeamPage = () => {
           {(userRole === "ADMIN" || userRole === "HUMAN_RESOURCE") && (
             <button
               onClick={() => setActiveTab("manageDepartment")}
-              className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] transition-all border ${activeTab === "manageDepartment"
+              className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm ] sm:tracking-[0.15em] transition-all border ${activeTab === "manageDepartment"
                 ? "bg-green-200 text-black border-black shadow-sm"
                 : "text-black/60 border-black/10 hover:bg-green-50"
                 }`}
@@ -92,7 +92,7 @@ const TeamPage = () => {
             userRole === "HUMAN_RESOURCE") && (
               <button
                 onClick={() => setActiveTab("manageTeam")}
-                className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.15em] transition-all border ${activeTab === "manageTeam"
+                className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black uppercase text-[10px] sm:text-sm  sm:tracking-[0.15em] transition-all border ${activeTab === "manageTeam"
                   ? "bg-green-200 text-black border-black shadow-sm"
                   : "text-black/60 border-black/10 hover:bg-green-50"
                   }`}

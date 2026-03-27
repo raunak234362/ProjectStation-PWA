@@ -13,25 +13,21 @@ const SubmittalLayout = ({ project, submittalData, onSuccess }: SubmittalLayoutP
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
   const btnClass = (tab: string) =>
-    `px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === tab
-      ? "bg-green-200 text-black shadow-medium"
-      : "text-black hover:bg-green-50"
-    }`;
+    `px-6 py-2 rounded-lg text-sm font-bold transition-all border border-black ${activeTab === tab
+      ? "bg-green-200"
+      : "bg-green-50 hover:bg-green-100"
+    } text-black`;
 
   return (
-    <div className="w-full overflow-y-hidden overflow-x-hidden">
-      <div className="flex flex-col w-full h-full">
-        <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 border-b rounded-t-2xl flex flex-col md:flex-row items-center justify-end gap-4">
-          <div className="flex flex-row gap-3 items-end justify-end">
-            <button onClick={() => setActiveTab("allSubmittals")} className={btnClass("allSubmittals")}>ALL Submittals</button>
-            {userRole !== "client" && userRole !== "client_admin" && (
-              <button onClick={() => setActiveTab("addSubmittal")} className={btnClass("addSubmittal")}>Add Submittal</button>
-            )}
-          </div>
-        </div>
+    <div className="w-full h-full overflow-hidden flex flex-col bg-white">
+      <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
+        <button onClick={() => setActiveTab("allSubmittals")} className={btnClass("allSubmittals")}>All Submittals</button>
+        {userRole !== "client" && userRole !== "client_admin" && (
+          <button onClick={() => setActiveTab("addSubmittal")} className={btnClass("addSubmittal")}>Add Submittal</button>
+        )}
       </div>
-      <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
-        {activeTab === "allSubmittals" && <div><AllSubmittals submittalData={submittalData} /></div>}
+      <div className="flex-1 min-h-0 px-8 pb-8 overflow-y-auto">
+        {activeTab === "allSubmittals" && <AllSubmittals submittalData={submittalData} />}
         {activeTab === "addSubmittal" && (
           <div>
             <AddSubmittal

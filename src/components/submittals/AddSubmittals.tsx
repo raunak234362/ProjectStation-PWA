@@ -131,7 +131,7 @@ const AddSubmittal: React.FC<{
   }, [milestones, initialData?.mileStoneId]);
 
   return (
-    <div className="w-full mx-auto bg-white p-4 rounded-xl shadow">
+    <div className="w-full mx-auto bg-zinc-100 p-4 rounded-xl shadow">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <SectionTitle title="Fabrication & Routing" />
 

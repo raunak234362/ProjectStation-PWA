@@ -311,7 +311,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           </div> */}
 
               <div className="md:col-span-2 space-y-2">
-                <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Layers size={14} className="text-black/40" />
                   Project Name <span className="text-rose-500">*</span>
                 </label>
@@ -341,7 +341,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Globe size={14} className="text-black/40" />
                   Location
                 </label>
@@ -410,7 +410,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 </div>
 
                 <div className="space-y-4">
-                  <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                  <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                     <Percent size={14} className="text-black/40" />
                     Bid Price ({selectedFabricator?.currencyType || "USD"})
                   </label>
@@ -423,7 +423,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                  <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                     <Calendar size={14} className="text-black/40" />
                     Due Date <span className="text-rose-500">*</span>
                   </label>

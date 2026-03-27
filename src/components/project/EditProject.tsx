@@ -236,7 +236,7 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
         <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center">
           <Loader2 className="w-10 h-10 animate-spin text-[#6bbd45] mb-4" />
           <div className="text-center font-bold text-gray-700">
@@ -249,7 +249,7 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={onCancel}
     >
       <div
@@ -259,22 +259,19 @@ const EditProject: React.FC<EditProjectProps> = ({
         <div className="overflow-y-auto p-4 md:p-8 custom-scrollbar">
           <div className="flex justify-between items-center mb-8 border-b border-black/5 pb-5 sticky top-[-32px] bg-white z-20">
             <div>
-              <h2 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight">
-                Edit Project
-              </h2>
             </div>
             <button
               onClick={onCancel}
-              className="p-1 bg-red-50 hover:bg-red-100 text-black border border-red-600 hover:text-red-500 rounded-md transition-all"
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
             >
-              CLOSE
+              Close
             </button>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
             {/* Core Project Info */}
             <div className="space-y-6">
-              <SectionTitle title="Core Project Information" />
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Input
                   label="Project Number"

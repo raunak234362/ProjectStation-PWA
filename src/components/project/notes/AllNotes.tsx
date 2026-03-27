@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Loader2,
-  Plus,
   FileText,
   Calendar,
   User,
@@ -9,7 +8,6 @@ import {
 } from "lucide-react";
 import Service from "../../../api/Service";
 import type { ProjectNote } from "../../../interface";
-import Button from "../../fields/Button";
 import AddNotes from "./AddNotes";
 import { openFileSecurely } from "../../../utils/openFileSecurely";
 import { formatDateTime } from "../../../utils/dateUtils";
@@ -36,19 +34,10 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <Button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" /> Add Note
-        </Button>
-      </div>
-
+    <div className="flex-1 min-h-0">
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-green-600" />
+        <div className="flex justify-center py-24 bg-white rounded-3xl border border-gray-100">
+          <Loader2 className="w-8 h-8 animate-spin text-green-500" />
         </div>
       ) : notes.length > 0 ? (
         <div className="grid gap-4">

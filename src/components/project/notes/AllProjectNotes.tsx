@@ -148,18 +148,6 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h2 className="text-xl font-black text-black uppercase tracking-tight">
-                        Project Notes
-                    </h2>
-
-                </div>
-                <button
-                    onClick={() => setShowAddModal(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-green-100 text-black rounded-xl hover:bg-green-200 transition-all shadow-sm font-black uppercase text-xs tracking-widest border border-black border-2"
-                >
-                    Create Note
-                </button>
             </div>
 
             {filteredNotes.length === 0 ? (
@@ -312,7 +300,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                                                 cell: ({ row }: any) => {
                                                                     const count = row.original.files?.length ?? 0;
                                                                     return count > 0 ? (
-                                                                        <span className="text-black font-medium text-xs font-black">
+                                                                        <span className="text-black font-medium text-xs">
                                                                             {count} file(s)
                                                                         </span>
                                                                     ) : (
@@ -410,7 +398,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
 
             {/* Modals */}
             {showAddModal && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                         <AddProjectNote
                             projectId={projectId}

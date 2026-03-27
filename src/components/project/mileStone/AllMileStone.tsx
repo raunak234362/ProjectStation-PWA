@@ -1,32 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
-import { Clock } from "lucide-react";
-import Button from "../../fields/Button";
-import AddMileStone from "./AddMileStone";
+import { useEffect } from "react";
+import { Inbox } from "lucide-react";
 import Service from "../../../api/Service";
 import DataTable from "../../ui/table";
 import GetMilestoneByID from "./GetMilestoneByID";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "../../../utils/dateUtils";
-
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../../store/milestoneSlice";
 
 interface AllMileStoneProps {
   project: any;
-  onUpdate?: () => void;
+  onUpdate: () => Promise<void>;
 }
 
 const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
-  const [addMileStoneModal, setAddMileStoneModal] = useState(false);
   const dispatch = useDispatch();
   const milestonesByProject = useSelector(
     (state: any) => state.milestoneInfo?.milestonesByProject || {},
   );
   const milestones = milestonesByProject[project.id] || [];
-  console.log(milestones);
-  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
-  const isClient = userRole === "client" || userRole === "client_admin";
 
   const fetchMileStone = async () => {
     try {
@@ -50,63 +43,71 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
     }
   }, [project.id, milestonesByProject, dispatch]);
 
-  const handleOpenAddMileStone = () => setAddMileStoneModal(true);
-  const handleCloseAddMileStone = () => setAddMileStoneModal(false);
-
-  const handleSuccess = () => {
-    fetchMileStone();
-    if (onUpdate) onUpdate();
-  };
-
   const columns: ColumnDef<any>[] = [
-    { accessorKey: "subject", header: "Subject" },
+    {
+      accessorKey: "subject",
+      header: "Subject",
+      cell: ({ row }) => (
+        <span className="font-bold text-black">{row.original.subject}</span>
+      ),
+    },
     {
       accessorKey: "approvalDate",
       header: "Approval Date",
-      cell: ({ row }) => formatDate(row.original.approvalDate),
+      cell: ({ row }) => (
+        <span className="text-black/60 text-xs font-bold">
+          {formatDate(row.original.approvalDate)}
+        </span>
+      ),
     },
-    { accessorKey: "status", header: "Status" },
-    { accessorKey: "stage", header: "Stage" },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
+          {row.original.status || "—"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "stage",
+      header: "Stage",
+      cell: ({ row }) => (
+        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
+          {row.original.stage || "—"}
+        </span>
+      ),
+    },
   ];
+
   const handleRowClick = (row: any) => {
     const milestonesId = (row as any).id ?? (row as any).fabId ?? "";
     console.debug("Selected milestones:", milestonesId);
   };
 
+  const MilestoneDetailWrapper = (props: { row: any; close: () => void }) => (
+    <GetMilestoneByID {...props} onUpdate={onUpdate} />
+  );
+
   return (
-    <div className="p-2">
-      {!isClient && (
-        <div className="flex justify-between items-center mb-4">
-          <Button
-            onClick={handleOpenAddMileStone}
-            className="text-sm py-1 px-3 bg-green-600 text-white"
-          >
-            + Add Milestone
-          </Button>
-        </div>
-      )}
+    <div className="flex-1 min-h-0">
       {milestones && milestones.length > 0 ? (
         <DataTable
           columns={columns}
           data={milestones}
           onRowClick={handleRowClick}
-          detailComponent={GetMilestoneByID}
+          detailComponent={MilestoneDetailWrapper}
           pageSizeOptions={[5, 10, 25]}
+          noBorder
         />
       ) : (
-        <div className="flex flex-col items-center justify-center py-8 text-gray-700">
-          <Clock className="w-8 h-8 mb-2 text-gray-300" />
-          <p>No milestones added yet.</p>
+        <div className="flex flex-col items-center justify-center h-full gap-4 py-40 bg-white rounded-3xl border border-dashed border-gray-100 italic text-gray-400">
+          <div className="p-4 bg-gray-50 rounded-full">
+            <Inbox className="w-8 h-8 text-gray-200" />
+          </div>
+          <p className="text-black font-black text-lg not-italic">No Milestones Available</p>
+          <p className="text-sm">No milestones have been added for this project yet.</p>
         </div>
-      )}
-
-      {addMileStoneModal && (
-        <AddMileStone
-          projectId={project.id}
-          fabricatorId={project.fabricator?.id || ""}
-          onClose={handleCloseAddMileStone}
-          onSuccess={handleSuccess}
-        />
       )}
     </div>
   );

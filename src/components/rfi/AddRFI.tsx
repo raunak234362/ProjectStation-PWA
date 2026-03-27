@@ -120,7 +120,7 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
   }, [userRole, projectOptions, setValue]);
 
   return (
-    <div className="w-full mx-auto bg-white p-2 rounded-xl shadow">
+    <div className="w-full mx-auto bg-zinc-100 p-2 rounded-xl shadow">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* <SectionTitle title="Fabrication & Routing" /> */}
 
