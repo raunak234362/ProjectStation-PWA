@@ -2,7 +2,7 @@ import { Controller, useForm } from "react-hook-form";
 import type { ConnectionDesigner } from "../../../interface";
 import { useEffect, useRef, useState } from "react";
 import Input from "../../fields/input";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import Button from "../../fields/Button";
 import { State, City } from "country-state-city";
 import Select from "react-select";
@@ -246,10 +246,10 @@ const EditConnectionDesigner = ({
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-700 hover:text-gray-700 transition"
+            className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
             aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            Close
           </button>
         </div>
 

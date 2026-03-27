@@ -64,30 +64,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     loadStaff();
   }, []);
 
-  // --- WBT RECIPIENT OPTIONS ---
-  // const recipientOption: SelectOption[] =
-  //   staffData
-  //     ?.filter(
-  //       (u: { role: string }) =>
-  //         u.role === "ADMIN" ||
-  //         u.role === "SALES" ||
-  //         u.role === "SALES_MANAGER",
-  //     )
-  //     .map(
-  //       (u: {
-  //         firstName: string;
-  //         middleName?: string;
-  //         lastName: string;
-  //         id: number;
-  //       }) => ({
-  //         label: `${u.firstName} ${u.middleName ?? ""} ${u.lastName}`,
-  //         value: String(u.id),
-  //       }),
-  //     ) ?? [];
-  // useEffect(() => {
-  //   if (tools !== "OTHER") setValue("otherTool", "");
-  // }, [tools, setValue]);
-
   // --- FABRICATOR OPTIONS ---
   const fabOptions: SelectOption[] =
     fabricators?.map((fab) => ({

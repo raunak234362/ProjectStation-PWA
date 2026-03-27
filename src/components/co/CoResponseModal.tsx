@@ -3,7 +3,6 @@ import { useForm, Controller } from "react-hook-form";
 import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
-import { X } from "lucide-react";
 import type { CoResponsePayload } from "../../interface";
 
 interface Props {
@@ -50,8 +49,8 @@ const CoResponseModal = ({ CoId, onClose, onSuccess }: Props) => {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl relative">
-        <button onClick={onClose} className="absolute top-3 right-3">
-          <X size={18} />
+        <button onClick={onClose} className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm">
+          Close
         </button>
 
         <h2 className="text-xl font-semibold text-black">

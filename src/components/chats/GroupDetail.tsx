@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { X, Search, UserPlus, Trash2 } from "lucide-react";
+import { Search, UserPlus, Trash2 } from "lucide-react";
 import Button from "../fields/Button";
 import { useSelector } from "react-redux";
 import type { User } from "../../interface";
@@ -117,9 +117,9 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
           <h2 className="text-lg  text-gray-700">{group.name}</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-200 rounded-full transition"
+            className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
           >
-            <X size={20} className="text-gray-700" />
+            Close
           </button>
         </div>
 
@@ -127,8 +127,8 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
         <div className="flex border-b">
           <button
             className={`flex-1 py-3 text-sm font-medium transition ${activeTab === "members"
-                ? "text-green-600 border-b-2 border-green-600 bg-green-50"
-                : "text-gray-700 hover:text-gray-700 hover:bg-gray-50"
+              ? "text-green-600 border-b-2 border-green-600 bg-green-50"
+              : "text-gray-700 hover:text-gray-700 hover:bg-gray-50"
               }`}
             onClick={() => setActiveTab("members")}
           >
@@ -136,8 +136,8 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
           </button>
           <button
             className={`flex-1 py-3 text-sm font-medium transition ${activeTab === "add"
-                ? "text-green-600 border-b-2 border-green-600 bg-green-50"
-                : "text-gray-700 hover:text-gray-700 hover:bg-gray-50"
+              ? "text-green-600 border-b-2 border-green-600 bg-green-50"
+              : "text-gray-700 hover:text-gray-700 hover:bg-gray-50"
               }`}
             onClick={() => setActiveTab("add")}
           >
@@ -207,14 +207,14 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
                     key={user.id}
                     onClick={() => toggleUserSelection(user.id)}
                     className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition border ${selectedUsers.includes(user.id)
-                        ? "bg-green-50 border-green-200"
-                        : "hover:bg-gray-50 border-transparent"
+                      ? "bg-green-50 border-green-200"
+                      : "hover:bg-gray-50 border-transparent"
                       }`}
                   >
                     <div
                       className={`w-5 h-5 rounded border flex items-center justify-center ${selectedUsers.includes(user.id)
-                          ? "bg-green-500 border-green-500"
-                          : "border-gray-300"
+                        ? "bg-green-500 border-green-500"
+                        : "border-gray-300"
                         }`}
                     >
                       {selectedUsers.includes(user.id) && (
