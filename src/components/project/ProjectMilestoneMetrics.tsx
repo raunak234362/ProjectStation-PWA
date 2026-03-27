@@ -92,8 +92,8 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
 
       const finalProgress =
         ms.percentage !== undefined &&
-        ms.percentage !== null &&
-        ms.percentage !== ""
+          ms.percentage !== null &&
+          ms.percentage !== ""
           ? Number(ms.percentage)
           : taskProgress;
 
@@ -166,12 +166,11 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                         <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
                           <span>Status:</span>
                           <span
-                            className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${
-                              ms.status === "APPROVED" ||
+                            className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${ms.status === "APPROVED" ||
                               ms.status === "COMPLETED"
-                                ? " text-green-700"
-                                : " text-yellow-700"
-                            }`}
+                              ? " text-green-700"
+                              : " text-yellow-700"
+                              }`}
                           >
                             {ms.status || "PENDING"}
                           </span>
@@ -192,12 +191,11 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                         <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
                           <span>Completion Percentage :</span>
                           <span
-                            className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${
-                              ms.status === "APPROVED" ||
+                            className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${ms.status === "APPROVED" ||
                               ms.status === "COMPLETED"
-                                ? " text-green-700"
-                                : " text-green-900"
-                            }`}
+                              ? " text-green-700"
+                              : " text-green-900"
+                              }`}
                           >
                             {ms.completionPercentage ||
                               ms.taskPercentage ||
@@ -205,7 +203,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                             %
                           </span>
                           {userRole !== "client" &&
-                            userRole !== "client_admin" && (
+                            userRole !== "client_admin" && userRole !== "connection_designer_admin" && userRole !== "connection_designer_engineer" && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -233,7 +231,8 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                           }}
                         ></div>
                       </div>
-                      <div className="border-t border-gray-100 pt-2 mt-2">
+                      <div className="border-t border-gray-100 pt-2 mt-2 space-y-2">
+
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-gray-500 uppercase text-xs font-semibold">
                             Approval Date
@@ -242,6 +241,17 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                             {formatDate(ms.approvalDate)}
                           </span>
                         </div>
+
+                        {userRole !== "client" && userRole !== "client_admin" && userRole !== "connection_designer_admin" && userRole !== "connection_designer_engineer" && (
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-500 uppercase text-xs font-semibold">
+                              CD Approval Date
+                            </span>
+                            <span className="font-bold text-gray-700">
+                              {formatDate(ms.CDApprovalDate)}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

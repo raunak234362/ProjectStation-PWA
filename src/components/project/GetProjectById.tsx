@@ -14,6 +14,7 @@ import {
   TrendingUp,
   Activity,
   MessageSquare,
+  CalendarCheck,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
@@ -41,6 +42,8 @@ import CoTable from "../co/CoTable";
 import ProjectMilestoneMetrics from "./ProjectMilestoneMetrics";
 import AllDocumentsByProjectID from "./designDrawings/AllDocumentsByProjectID";
 import TeamsAnalytics from "./TeamsAnalytics";
+import RfiLayout from "../../layout/RfiLayout";
+import SubmittalLayout from "../../layout/SubmittalLayout";
 
 const GetProjectById = ({
   id,
@@ -81,28 +84,32 @@ const GetProjectById = ({
     (state: any) => state.milestoneInfo?.milestonesByProject || {},
   );
 
-  // Fetch milestones if not available
-  useEffect(() => {
-    const fetchMileStone = async () => {
-      try {
-        const response = await Service.GetProjectMilestoneById(id);
-        if (response && response.data) {
-          dispatch(
-            setMilestonesForProject({
-              projectId: id,
-              milestones: response.data,
-            }),
-          );
-        }
-      } catch (error) {
-        console.log(error);
+  // Fetch milestones if not available or when project is refreshed
+  const fetchMileStone = async () => {
+    try {
+      const response = await Service.GetProjectMilestoneById(id);
+      if (response && response.data) {
+        dispatch(
+          setMilestonesForProject({
+            projectId: id,
+            milestones: response.data,
+          }),
+        );
       }
-    };
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  useEffect(() => {
     if (!milestonesByProject[id]) {
       fetchMileStone();
     }
   }, [id, milestonesByProject, dispatch]);
+
+  const milestoneData = useMemo(() => {
+    return milestonesByProject[id] || [];
+  }, [milestonesByProject, id]);
 
   const changeOrderData = useMemo(() => {
     return project?.changeOrders || [];
@@ -113,6 +120,7 @@ const GetProjectById = ({
       setError(null);
       const response = await Service.GetProjectById(id);
       setProject(response?.data || null);
+      fetchMileStone(); // Keep milestones in sync
     } catch (err) {
       setError("Failed to load project details");
       console.error("Error fetching project:", err);
@@ -306,9 +314,7 @@ const GetProjectById = ({
     { key: "notes", label: "Notes", icon: FolderOpenDot },
     { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
-    { key: "CDrfi", label: "CD RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
-    { key: "CDsubmittals", label: "CD Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
   ];
 
@@ -550,6 +556,14 @@ const GetProjectById = ({
                     onClick={() => setActiveTab("changeOrder")}
                   />
                 )}
+                <StatCard
+                  icon={<CalendarCheck className="text-green-600" />}
+                  label="Total Milestones"
+                  value={milestoneData.length}
+                  color="bg-green-50"
+                  description="Total project milestones"
+                  onClick={() => setActiveTab("milestones")}
+                />
                 <StatCard
                   icon={<FolderOpenDot className="text-green-600" />}
                   label="Documents / Files"
@@ -944,194 +958,16 @@ const GetProjectById = ({
           )}
           {activeTab === "rfi" && (
             <div className="space-y-4">
-              {/* Sub-tabs for RFI */}
-              <div className="flex justify-start border-b border-gray-200 mb-4">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-                  <button
-                    onClick={() => setRfiView("list")}
-                    className={`
-                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
-                      }
-                    `}
-                  >
-                    All RFIs
-                  </button>
-                  {!isClient && (
-                    <button
-                      onClick={() => setRfiView("add")}
-                      className={`
-                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
-                        }
-                    `}
-                    >
-                      Create RFI
-                    </button>
-                  )}
-                </nav>
-              </div>
+            
+            <RfiLayout project={project} rfiData={rfiData} onSuccess={fetchProject} />
 
-              {/* RFI Content */}
-              {rfiView === "list" ? (
-                <AllRFI rfiData={rfiData} />
-              ) : (
-                <AddRFI
-                  project={project}
-                  onSuccess={() => {
-                    fetchProject();
-                    setRfiView("list");
-                  }}
-                />
-              )}
+             
             </div>
           )}
-          {activeTab === "CDrfi" && (
-            <div className="space-y-4">
-              {/* Sub-tabs for RFI */}
-              <div className="flex justify-start border-b border-gray-200 mb-4">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-                  <button
-                    onClick={() => setRfiView("list")}
-                    className={`
-                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${rfiView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
-                      }
-                    `}
-                  >
-                    All RFIs
-                  </button>
-                  {!isClient && (
-                    <button
-                      onClick={() => setRfiView("add")}
-                      className={`
-                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${rfiView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
-                        }
-                    `}
-                    >
-                      Create RFI
-                    </button>
-                  )}
-                </nav>
-              </div>
-
-              {/* RFI Content */}
-              {rfiView === "list" ? (
-                <AllRFI rfiData={rfiData} />
-              ) : (
-                <AddRFI
-                  project={project}
-                  onSuccess={() => {
-                    fetchProject();
-                    setRfiView("list");
-                  }}
-                />
-              )}
-            </div>
-          )}
+         
           {activeTab === "submittals" && (
             <div className="space-y-4">
-              {/* Sub-tabs for RFI */}
-              <div className="flex justify-start border-b border-gray-200 mb-4">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-                  <button
-                    onClick={() => setSubmittalView("list")}
-                    className={`
-                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
-                      }
-                    `}
-                  >
-                    All Submittals
-                  </button>
-                  {!isClient && (
-                    <button
-                      onClick={() => setSubmittalView("add")}
-                      className={`
-                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
-                        }
-                    `}
-                    >
-                      Create Submittal
-                    </button>
-                  )}
-                </nav>
-              </div>
-
-              {/* Submittal Content */}
-              {submittalView === "list" ? (
-                <AllSubmittals submittalData={submittalData} />
-              ) : (
-                <AddSubmittal
-                  project={project}
-                  onSuccess={() => {
-                    fetchProject();
-                    setSubmittalView("list");
-                  }}
-                />
-              )}
-            </div>
-          )}
-          {activeTab === "CDsubmittals" && (
-            <div className="space-y-4">
-              {/* Sub-tabs for RFI */}
-              <div className="flex justify-start border-b border-gray-200 mb-4">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-                  <button
-                    onClick={() => setSubmittalView("list")}
-                    className={`
-                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${submittalView === "list"
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
-                      }
-                    `}
-                  >
-                    All Submittals
-                  </button>
-                  {!isClient && (
-                    <button
-                      onClick={() => setSubmittalView("add")}
-                      className={`
-                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${submittalView === "add"
-                          ? "border-green-500 text-green-600"
-                          : "border-transparent text-gray-700 hover:text-gray-700 hover:border-gray-300"
-                        }
-                    `}
-                    >
-                      Create Submittal
-                    </button>
-                  )}
-                </nav>
-              </div>
-
-              {/* Submittal Content */}
-              {submittalView === "list" ? (
-                <AllSubmittals submittalData={submittalData} />
-              ) : (
-                <AddSubmittal
-                  project={project}
-                  onSuccess={() => {
-                    fetchProject();
-                    setSubmittalView("list");
-                  }}
-                />
-              )}
+              <SubmittalLayout project={project} submittalData={submittalData} onSuccess={fetchProject} />
             </div>
           )}
           {activeTab === "changeOrder" && !isConnectionDesigner && (

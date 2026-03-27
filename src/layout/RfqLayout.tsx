@@ -6,9 +6,9 @@ import { useSelector } from "react-redux";
 // import GetRFQByID from "../components/rfq/GetRFQByID";
 
 const RfqLayout = () => {
-  const [activeTab, setActiveTab] = useState("addRFQ");
+  const [activeTab, setActiveTab] = useState("allRFQ");
   const rfq = useSelector((state: any) => state.RFQInfos.RFQData) || [];
-
+const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   // const stats = {
   //   total: rfq.length,
   //   inReview: rfq.filter((r: any) => r.status === "IN_REVIEW").length,
@@ -21,17 +21,17 @@ const RfqLayout = () => {
       <div className="flex flex-col w-full h-full mb-6">
         <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
-            <button
-              onClick={() => setActiveTab("addRFQ")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${
-                activeTab === "addRFQ"
-                  ? "bg-green-200 text-black shadow-medium"
-                  : "text-black hover:bg-green-50"
-              }`}
-            >
-              Create RFQ
-            </button>
-
+            {userRole !== "connection_designer_engineer" && userRole !== "connection_designer_admin" && (
+              <button
+                onClick={() => setActiveTab("addRFQ")}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all border ${activeTab === "addRFQ"
+                  ? "bg-[#ebf5ea] text-black border-black shadow-sm"
+                  : "bg-white text-gray-500 border-gray-300 hover:border-black hover:bg-gray-50 hover:text-black"
+                  }`}
+              >
+                Create RFQ
+              </button>
+            )}
             <button
               onClick={() => setActiveTab("allRFQ")}
               className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${

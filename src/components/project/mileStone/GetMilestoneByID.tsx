@@ -53,6 +53,7 @@ interface Milestone {
   subject: string;
   description: string;
   approvalDate: string;
+  CDApprovalDate?: string;
   status: string;
   date: string;
   startDate?: string;
@@ -395,6 +396,15 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
               color="text-blue-600"
               bg="bg-blue-50"
             />
+            {userRole?.toLowerCase() !== "client" && userRole?.toLowerCase() !== "client_admin" && (
+              <InfoCard
+                icon={<Calendar className="w-5 h-5" />}
+                label="CD Approval Date"
+                value={formatDate(milestone.CDApprovalDate)}
+                color="text-blue-600"
+                bg="bg-blue-50"
+              />
+            )}
             <InfoCard
               icon={<Clock className="w-5 h-5" />}
               label="Created On"

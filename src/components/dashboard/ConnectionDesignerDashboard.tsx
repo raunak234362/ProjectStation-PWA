@@ -177,7 +177,16 @@ const ConnectionDesignerDashboard = () => {
 
     const fetchUpcomingSubmittals = async () => {
         try {
-            const response = isClientRole ? await Service.GetClientMilestone() : await Service.ClientAdminPendingMilestoneSubmittals();
+            let response;
+            if (userRole === "connection_designer_engineer") {
+                response = await Service.ConnectionDesignerEngineerPendingSubmittals();
+                console.log(response,"===========");
+                
+            } else if (userRole === "client") {
+                response = await Service.GetClientMilestone();
+            } else {
+                response = await Service.ClientAdminPendingMilestoneSubmittals();
+            }
             console.log(response);
 
             setUpcomingSubmittals(response?.data || []);

@@ -39,9 +39,24 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
   const pocOptions: SelectOption[] =
     selectedFabricator?.pointOfContact?.map((p: any) => ({
       label: `${p.firstName} ${p.middleName ?? ""} ${p.lastName}`,
-
       value: String(p.id),
     })) ?? [];
+
+  const loweredRole = userRole?.toLowerCase();
+  const isConnectionDesigner =
+    loweredRole === "connection_designer_admin" ||
+    loweredRole === "connection_designer_engineer";
+
+  const recipientOptions = isConnectionDesigner
+    ? project?.manager
+      ? [
+          {
+            label: `${project.manager.firstName} ${project.manager.middleName ?? ""} ${project.manager.lastName} (Manager)`.trim(),
+            value: String(project.manager.id),
+          },
+        ]
+      : []
+    : [...pocOptions];
 
   const projectOptions: SelectOption[] =
     selectedFabricator?.project?.map((p: any) => ({
@@ -119,8 +134,8 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
           render={({ field }) => (
             <Select
               placeholder="Recipient *"
-              options={pocOptions}
-              value={pocOptions.find((o) => o.value === field.value) ?? null}
+              options={recipientOptions}
+              value={recipientOptions.find((o) => o.value === field.value) ?? null}
               onChange={(option) =>
                 field.onChange(option ? option.value : null)
               }

@@ -688,6 +688,7 @@ export interface ProjectMilestone {
   name?: string;
   date: string;
   approvalDate?: string;
+  CDApprovalDate?: string;
   status: string;
   projectId: string;
   project_id?: string;

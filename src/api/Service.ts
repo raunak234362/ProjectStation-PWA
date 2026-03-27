@@ -1691,6 +1691,21 @@ class Service {
     }
   }
 
+  //Pending Submittals of Connection DesignerEngineer
+  static async ConnectionDesignerEngineerPendingSubmittals() {
+    try {
+      const response = await api.get(`mileStone/pendingSubmittals/connectionDesignerEngineer`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Connection Designer Engineer pending RFIs:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find pending RFIs for Connection Designer Engineer", error);
+    }
+  }
+
   static async RfiSent() {
     try {
       const response = await api.get(`rfi/sents`, {

@@ -408,7 +408,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 <div className="space-y-2">
                   <label className="block text-sm text-black font-black uppercase tracking-widest">
-                    Preferred Modeling Tools{" "}
+                    Tools{" "}
                     <span className="text-rose-500">*</span>
                   </label>
                   <Controller
@@ -449,7 +449,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <div className="space-y-2">
                   <label className="block text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                     <Calendar size={14} className="text-black/40" />
-                    Response Due Date <span className="text-rose-500">*</span>
+                    Due Date <span className="text-rose-500">*</span>
                   </label>
                   <Input
                     type="date"

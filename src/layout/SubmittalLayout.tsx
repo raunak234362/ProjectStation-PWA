@@ -1,15 +1,15 @@
 import { useState } from "react";
-import AddRFI from "../components/rfi/AddRFI";
-import AllRFI from "../components/rfi/AllRfi";
+import AllSubmittals from "../components/submittals/AllSubmittals";
+import AddSubmittal from "../components/submittals/AddSubmittals";
 
-interface RfiLayoutProps {
+interface SubmittalLayoutProps {
   project: any;
-  rfiData: any[];
+  submittalData: any[];
   onSuccess: () => void;
 }
 
-const RfiLayout = ({ project, rfiData, onSuccess }: RfiLayoutProps) => {
-  const [activeTab, setActiveTab] = useState("allRFI");
+const SubmittalLayout = ({ project, submittalData, onSuccess }: SubmittalLayoutProps) => {
+  const [activeTab, setActiveTab] = useState("allSubmittals");
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
   const btnClass = (tab: string) =>
@@ -23,22 +23,22 @@ const RfiLayout = ({ project, rfiData, onSuccess }: RfiLayoutProps) => {
       <div className="flex flex-col w-full h-full">
         <div className="px-3 py-2 backdrop-blur-2xl bg-linear-to-t from-white/60 to-white/80 border-b rounded-t-2xl flex flex-col md:flex-row items-center justify-end gap-4">
           <div className="flex flex-row gap-3 items-end justify-end">
-            <button onClick={() => setActiveTab("allRFI")} className={btnClass("allRFI")}>ALL RFI</button>
+            <button onClick={() => setActiveTab("allSubmittals")} className={btnClass("allSubmittals")}>ALL Submittals</button>
             {userRole !== "client" && userRole !== "client_admin" && (
-              <button onClick={() => setActiveTab("addRFI")} className={btnClass("addRFI")}>Add RFI</button>
+              <button onClick={() => setActiveTab("addSubmittal")} className={btnClass("addSubmittal")}>Add Submittal</button>
             )}
           </div>
         </div>
       </div>
       <div className="flex-1 min-h-0 bg-white p-2 rounded-b-2xl overflow-y-auto">
-        {activeTab === "allRFI" && <div><AllRFI rfiData={rfiData} /></div>}
-        {activeTab === "addRFI" && (
+        {activeTab === "allSubmittals" && <div><AllSubmittals submittalData={submittalData} /></div>}
+        {activeTab === "addSubmittal" && (
           <div>
-            <AddRFI
+            <AddSubmittal
               project={project}
               onSuccess={() => {
                 onSuccess();
-                setActiveTab("allRFI");
+                setActiveTab("allSubmittals");
               }}
             />
           </div>
@@ -48,4 +48,4 @@ const RfiLayout = ({ project, rfiData, onSuccess }: RfiLayoutProps) => {
   );
 };
 
-export default RfiLayout;
+export default SubmittalLayout;

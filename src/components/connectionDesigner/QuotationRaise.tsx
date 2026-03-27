@@ -4,6 +4,7 @@ import Select from "react-select";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { X } from "lucide-react";
+import Input from "../fields/input";
 
 interface ConnectionDesigner {
   id: string;
@@ -93,6 +94,9 @@ const QuotationRaise = ({
       const payload = {
         ConnectionDesignerIds: data.ConnectionDesignerIds?.map((cd: any) => cd.value) || [],
         connectionEngineerIds: data.EngineerIds?.map((eng: any) => eng.value) || [],
+        CDDescription: data.CDDescription,
+        CDDueDate: data.CDDueDate,
+        CDTargetDate: data.CDTargetDate,
       };
       await Service.UpdateRFQById(rfqId, payload);
       toast.success("Quotation raised successfully!");
@@ -191,6 +195,60 @@ const QuotationRaise = ({
               />
             </div>
           )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-black/5">
+            <div className="space-y-2 md:col-span-2">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">
+                Commission Detail Description
+              </label>
+              <Controller
+                name="CDDescription"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="textarea"
+                    placeholder="Provide specific technical requirements or scope details..."
+                    className="border-black/5 text-xs font-bold uppercase tracking-tight"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">
+                Mandatory Due Date
+              </label>
+              <Controller
+                name="CDDueDate"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="date"
+                    className="border-black/5 text-xs font-bold uppercase tracking-tight"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">
+                Internal Target Completion
+              </label>
+              <Controller
+                name="CDTargetDate"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="date"
+                    className="border-black/5 text-xs font-bold uppercase tracking-tight"
+                  />
+                )}
+              />
+            </div>
+          </div>
 
           <div className="flex justify-end pt-6 border-t border-black/5">
             <button type="submit" className="w-full sm:w-auto px-10 py-4 bg-black text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-black/90 transition-all shadow-xl">

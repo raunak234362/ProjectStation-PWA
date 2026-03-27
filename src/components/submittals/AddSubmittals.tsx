@@ -59,6 +59,22 @@ const AddSubmittal: React.FC<{
       value: String(p.id),
     })) ?? [];
 
+  const loweredRole = userDetail?.role?.toLowerCase();
+  const isConnectionDesigner =
+    loweredRole === "connection_designer_admin" ||
+    loweredRole === "connection_designer_engineer";
+
+  const recipientOptions = isConnectionDesigner
+    ? project?.manager
+      ? [
+          {
+            label: `${project.manager.firstName} ${project.manager.middleName ?? ""} ${project.manager.lastName} (Manager)`.trim(),
+            value: String(project.manager.id),
+          },
+        ]
+      : []
+    : [...pocOptions];
+
 
   const mileStoneOptions: SelectOption[] =
     milestones?.map((m: any) => ({
@@ -132,9 +148,9 @@ const AddSubmittal: React.FC<{
           render={({ field }) => (
             <Select<SelectOption>
               placeholder="Recipient *"
-              options={pocOptions}
+              options={recipientOptions}
               value={
-                pocOptions.find((o) => o.value === field.value) ?? null
+                recipientOptions.find((o) => o.value === field.value) ?? null
               }
               onChange={(option) => field.onChange(option?.value || "")}
             />
