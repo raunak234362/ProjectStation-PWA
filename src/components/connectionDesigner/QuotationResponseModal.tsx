@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
-import { X } from "lucide-react";
 import type { Quotation } from "../../interface";
 import { toast } from "react-toastify";
 

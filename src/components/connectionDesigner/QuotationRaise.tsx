@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { X } from "lucide-react";
+
 
 interface ConnectionDesigner {
   id: string;

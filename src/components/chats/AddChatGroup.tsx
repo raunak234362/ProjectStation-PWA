@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { X, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import Input from "../fields/input";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
