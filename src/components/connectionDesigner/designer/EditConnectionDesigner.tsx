@@ -246,10 +246,10 @@ const EditConnectionDesigner = ({
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-700 hover:text-gray-700 transition"
+            className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
             aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            Close
           </button>
         </div>
 

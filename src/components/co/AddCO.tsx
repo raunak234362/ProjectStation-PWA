@@ -121,25 +121,6 @@ const AddCO: React.FC<AddCOProps> = ({ project, onSuccess }) => {
             />
           </div>
 
-          {/* BOX 2: WBT Recipient */}
-          {/* <div>
-            <label className="block text-xs font-black text-black uppercase tracking-widest mb-2">
-              WBT Contact <span className="text-red-500">*</span>
-            </label>
-            <Controller
-              name="recipients"
-              control={control}
-              rules={{ required: "WBT recipient is required" }}
-              render={({ field }) => (
-                <Select<SelectOption, false>
-                  placeholder="Select WBT Contact *"
-                  options={recipientOptions}
-                  value={recipientOptions.find((o) => o.value === field.value) ?? null}
-                  onChange={(option) => field.onChange(option ? option.value : null)}
-                />
-              )}
-            />
-          </div> */}
         </div>
 
         <SectionTitle title="Details" />

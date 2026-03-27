@@ -117,9 +117,9 @@ const GroupDetail: React.FC<Props> = ({ group, onClose }) => {
           <h2 className="text-lg  text-gray-700">{group.name}</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-200 rounded-full transition"
+            className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
           >
-            <X size={20} className="text-gray-700" />
+            Close
           </button>
         </div>
 

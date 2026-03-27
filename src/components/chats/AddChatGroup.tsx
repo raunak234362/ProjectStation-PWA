@@ -46,9 +46,9 @@ const AddChatGroup: React.FC<AddChatGroupProps> = ({ onClose, onCreated }) => {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-700 hover:bg-gray-100 p-1 rounded-full transition"
+            className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
           >
-            <X size={20} />
+            Close
           </button>
         </div>
 

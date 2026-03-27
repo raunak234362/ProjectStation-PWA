@@ -55,8 +55,8 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
             <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">Quotation Response</h2>
             <p className="text-[10px] font-bold text-black/40 uppercase tracking-[0.3em]">Bid & Estimation Protocol</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-rose-50 text-rose-500 rounded-xl transition-all">
-            <X size={24} />
+          <button onClick={onClose} className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm">
+            Close
           </button>
         </div>
 
