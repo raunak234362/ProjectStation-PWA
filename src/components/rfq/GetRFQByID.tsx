@@ -218,6 +218,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
   }
 
   const userRole = sessionStorage.getItem("userRole");
+  const isCDRole =
+    userRole?.toLowerCase() === "connection_designer_engineer" ||
+    userRole?.toLowerCase() === "connection_designer_admin";
 
   const responseColumns: ColumnDef<any>[] = [
     {
@@ -310,7 +313,12 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       accessorKey: "weeks",
       header: "Weeks",
       cell: ({ row }) => (
-        <span className="text-sm text-gray-600">{row.original.weeks} wks</span>
+        <span className="text-sm text-gray-600">
+          {row.original.weeks || "0"} wks
+          {row.original.days && row.original.days !== "0"
+            ? ` ${row.original.days} d`
+            : ""}
+        </span>
       ),
     },
     {
@@ -488,8 +496,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               {/* Description */}
               <div className="space-y-3">
                 <h4 className="text-black text-sm bg-white p-4 rounded-xl border border-black/5 font-black uppercase tracking-widest flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-green-500 rounded-full"></span>
-                  Description
+                  <span
+                    className={`w-1.5 h-6 ${isCDRole ? "bg-blue-500" : "bg-green-500"} rounded-full`}
+                  ></span>
+                  {isCDRole ? "CD Description" : "Description"}
                 </h4>
                 <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden w-full">
                   <style>{`
@@ -521,9 +531,13 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     .rfq-description p { margin-bottom: 1rem !important; }
                   `}</style>
                   <div
-                    className="rfq-description text-gray-800 p-5 text-xs sm:text-sm break-words leading-relaxed"
+                    className="rfq-description text-gray-800 p-5 text-xs sm:text-sm wrap-break-word leading-relaxed"
                     dangerouslySetInnerHTML={{
-                      __html: rfq?.description || "No description provided",
+                      __html:
+                        (isCDRole ? rfq?.CDDescription : rfq?.description) ||
+                        (isCDRole
+                          ? "No CD description provided"
+                          : "No description provided"),
                     }}
                   />
                 </div>
@@ -716,8 +730,8 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
               {/* Files */}
               <RenderFiles
-                files={rfq?.files || []}
-                table="rFQ"
+                files={(isCDRole ? rfq?.CDAttachments : rfq?.files) || []}
+                table={isCDRole ? "rfqCDAttachments" : "rFQ"}
                 parentId={rfq?.id}
                 formatDate={formatDate}
               />

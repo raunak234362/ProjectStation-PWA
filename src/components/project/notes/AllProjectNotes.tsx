@@ -20,6 +20,7 @@ import { truncateWords } from "../../../utils/stringUtils";
 
 interface Note {
     id: string;
+    title?: string;
     content: string;
     visibility?: "INTERNAL" | "EXTERNAL";
     createdAt?: string;
@@ -121,33 +122,55 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
         "deputy_manager",
         "client",
         "client_admin",
+        "project_manager_officer",
+        "operation_executive",
+        "estimation_head",
+        "connection_designer_engineer",
+        "connection_designer_admin",
     ].includes(userRole);
 
     if (!isAuthorized) {
-        return null; // Or return a message: <div className="p-4 text-red-500 font-bold">Access Denied</div>
+        return null;
     }
 
-    const isClient = userRole === "client" || userRole === "client_admin";
     const currentUserId = sessionStorage.getItem("userId") || "";
 
     const filteredNotes = notes.filter((note) => {
-        if (!isClient) return true;
-        // Always show if the current user is the creator
+        // Admin, internal staff, and Client Admins see everything for the project
+        const hasFullAccess = [
+            "admin",
+            "project_manager",
+            "deputy_manager",
+            "project_manager_officer",
+            "operation_executive",
+            "estimation_head",
+            "client_admin",
+            "client",
+            "connection_designer_engineer",
+            "connection_designer_admin",
+        ].includes(userRole);
+
+        if (hasFullAccess) return true;
+
+        // Users always see their own created notes
         if (note.createdBy?.id === currentUserId) return true;
 
-        // If it's a client, show only EXTERNAL notes if they were added by the internal team (non-clients)
-        const creatorRole = note.createdBy?.role?.toLowerCase() || "";
-        const isInternalCreator = creatorRole !== "client" && creatorRole !== "client_admin";
-
-        if (isInternalCreator) {
-            return note.visibility === "EXTERNAL";
-        }
         return true;
     });
 
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-6">
+                <h3 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-2">
+                    <span className="w-2 h-2 bg-[#6bbd45] rounded-full shrink-0"></span>
+                    Project Intel & Notes
+                </h3>
+                <button
+                    onClick={() => setShowAddModal(true)}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-gray-800 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                    + Add New Note
+                </button>
             </div>
 
             {filteredNotes.length === 0 ? (
@@ -174,8 +197,20 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                     className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-50/50"
                                 >
                                     <div className="flex-1 min-w-0 pr-4">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            {note.serialNo && (
+                                                <span className="text-[9px] font-black bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap uppercase">
+                                                    {note.serialNo}
+                                                </span>
+                                            )}
+                                            {note.visibility === "INTERNAL" && (
+                                                <span className="text-[9px] font-black bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap uppercase">
+                                                    Internal
+                                                </span>
+                                            )}
+                                        </div>
                                         <div className="text-sm font-black text-black truncate pr-4 uppercase tracking-tight mb-2">
-                                            {truncateWords(note.content || "Untitled Note", 10)}
+                                            {note.title || truncateWords(note.content?.replace(/<[^>]*>?/gm, "") || "Untitled Note", 10)}
                                         </div>
                                         <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                             {note.createdBy && (
@@ -230,7 +265,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                                 Observation / Discussion
                                             </p>
                                             <div
-                                                className="prose prose-sm max-w-none text-gray-700 bg-gray-50/50 p-4 rounded-xl border border-gray-100 font-medium"
+                                                className="prose prose-sm max-w-none text-gray-700 bg-gray-50/50 p-4 rounded-xl border border-gray-100 font-medium whitespace-pre-wrap"
                                                 dangerouslySetInnerHTML={{
                                                     __html: note.content || "No content.",
                                                 }}

@@ -287,6 +287,8 @@ export interface RFQItem {
   files?: File[] | string[];
   responses?: RfqResponse[];
   CDQuotas?: any[] | undefined;
+  CDDescription?: string;
+  CDAttachments?: any[];
 }
 
 export interface RFQpayload {
@@ -838,6 +840,7 @@ export interface Quotation {
   bidprice: string;
   estimatedHours: string;
   weeks: string;
+  days?: string;
   approvalStatus: boolean;
   approvalDate: string;
 }

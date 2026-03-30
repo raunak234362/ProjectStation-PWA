@@ -105,7 +105,7 @@ const QuotationResponseDetailsModal = ({
             <DetailCard
               icon={<Calendar className="text-purple-600" size={20} />}
               label="Duration"
-              value={`${quotation.weeks || "N/A"} weeks`}
+              value={`${quotation.weeks || "0"} wks${quotation.days && quotation.days !== "0" ? ` ${quotation.days} days` : ""}`}
             />
             <DetailCard
               icon={
