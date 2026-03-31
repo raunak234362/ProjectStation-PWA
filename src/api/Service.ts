@@ -1809,6 +1809,22 @@ class Service {
       console.error("cannot find rfi", error);
     }
   }
+
+  //getrfisentbyproId
+  static async GetRFISentByProId(projectId: string) {
+    try {
+      const response = await api.get(`rfi/sents/${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      console.log(' All rfi fetched by rfi ID:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('cannot find rfi', error)
+    }
+  }
+
   //submitals route ----------------------------------------------
   static async AddSubmittal(formData: FormData) {
     try {
@@ -1927,7 +1943,20 @@ class Service {
       console.error("cannot find sub", error);
     }
   }
-
+// submittalsentbyprojectid:
+static async SubmittalSentByProjectId(projectId: string) {
+  try {
+    const response = await api.get(`submittal/sentByProjectId/${projectId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    console.log(' All submittals fetched by project ID:', response.data)
+    return response.data
+  } catch (error) {
+    console.error('cannot find submittal', error)
+  }
+}
   //submittal by project id :
   static async GetSubmittalByProjectId(projectId: string) {
     try {
