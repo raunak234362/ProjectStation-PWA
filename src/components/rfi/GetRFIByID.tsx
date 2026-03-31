@@ -215,7 +215,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
                   Responses
                 </h2>
 
-                {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
+                {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CONNECTION_DESIGNER_ENGINEER" || userRole === "CONNECTION_DESIGNER_ADMIN") && (
                   <Button
                     onClick={() => setShowModal(true)}
                     className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200 transition-all border border-black shadow-md"
