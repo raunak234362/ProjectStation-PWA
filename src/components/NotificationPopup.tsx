@@ -7,41 +7,129 @@ import { formatDistanceToNow } from "date-fns";
 const NotificationPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
-  const handleNotificationClick = async (notification: any) => {
-    await handleMarkAsRead(notification.id);
-    
-    const type = notification.type?.toUpperCase();
-    const payload = notification.payload || {};
-    
-    // Determine the ID based on the notification type
-    const id = payload.submittalId || 
-               payload.rfiId || 
-               payload.rfqId || 
-               payload.milestoneId || 
-               payload.taskId || 
-               payload.projectId ||
-               payload.changeOrderId ||
-               payload.id;
+  const { notifications, unreadCount, markRead, markAllRead, openDetail } =
+    useNotificationStore();
 
-    if (id) {
-      let viewType: any = null;
-      if (type === "SUBMITTAL") viewType = "SUBMITTAL";
-      else if (type === "RFI") viewType = "RFI";
-      else if (type === "RFQ") viewType = "RFQ";
-      else if (type === "MILESTONE") viewType = "MILESTONE";
-      else if (type === "PROJECT") viewType = "PROJECT";
-      else if (type === "TASK") viewType = "TASK";
-      else if (type === "CHANGE_ORDER") viewType = "CHANGE_ORDER";
-      
-      if (viewType) {
-        openDetail(viewType, id, payload.projectId);
+  // Close popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await Service.MarkNotificationAsRead(id);
+      markRead(id);
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
     }
   };
 
-  const { notifications, unreadCount, markRead, markAllRead, openDetail } =
-    useNotificationStore();
+  const handleMarkAllAsRead = async () => {
+    try {
+      // Mark all unread notifications as read on the backend
+      const unreadNotifications = notifications.filter((n) => !n.read);
+      await Promise.all(
+        unreadNotifications.map((n) => Service.MarkNotificationAsRead(n.id)),
+      );
+      markAllRead();
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+    }
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "chat":
+        return "💬";
+      case "project":
+        return "📁";
+      case "rfi":
+        return "❓";
+      case "submittal":
+        return "📄";
+      case "change_order":
+      case "co":
+        return "🔄";
+      case "milestone":
+        return "🏁";
+      case "task":
+        return "📋";
+      default:
+        return "🔔";
+    }
+  };
+
+  const formatTime = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+    } catch {
+      return "Recently";
+    }
+  };
+
+  const handleNotificationClick = async (notification: any) => {
+    console.log("🔔 Notification clicked raw data:", notification);
+    await handleMarkAsRead(notification.id);
+
+    const type = notification.type;
+    const t = type?.toUpperCase();
+    const payload = notification.payload || {};
+
+    // Check both root and payload for IDs
+    const findId = (key: string) => notification[key] || payload[key];
+
+    // Priority IDs based on type
+    let targetId = null;
+    if (t === "SUBMITTAL" || t === "SUBMITTALS") targetId = findId("submittalId") || findId("submittal_id") || findId("submittalId");
+    else if (t === "RFI") targetId = findId("rfiId") || findId("rfi_id");
+    else if (t === "RFQ") targetId = findId("rfqId") || findId("rfq_id");
+    else if (t === "MILESTONE") targetId = findId("milestoneId") || findId("milestone_id");
+    else if (t === "PROJECT") targetId = findId("projectId") || findId("project_id");
+    else if (t === "TASK") targetId = findId("taskId") || findId("task_id");
+    else if (t === "CHANGE_ORDER" || t === "CO") targetId = findId("changeOrderId") || findId("change_order_id");
+
+    // Fallback ID
+    const anyId = targetId || payload.id || findId("id");
+
+    console.log("🔍 Handled click details:", { t, targetId, anyId, payload });
+
+    if (anyId) {
+      let viewType: any = null;
+      if (t === "SUBMITTAL" || t === "SUBMITTALS") viewType = "SUBMITTAL";
+      else if (t === "RFI") viewType = "RFI";
+      else if (t === "RFQ") viewType = "RFQ";
+      else if (t === "MILESTONE") viewType = "MILESTONE";
+      else if (t === "PROJECT") viewType = "PROJECT";
+      else if (t === "TASK") viewType = "TASK";
+      else if (t === "CHANGE_ORDER" || t === "CO") viewType = "CHANGE_ORDER";
+
+      if (viewType) {
+        const projId = findId("projectId") || findId("project_id");
+        console.log("🚀 Opening detail view:", { viewType, anyId, projId });
+        openDetail(viewType, anyId, projId);
+        setIsOpen(false);
+      } else {
+        console.warn("⚠️ Unknown notification type for detail view:", t);
+      }
+    } else {
+      console.warn("⚠️ No ID found for notification:", notification);
+    }
+  };
 
   return (
     <div className="relative" ref={popupRef}>

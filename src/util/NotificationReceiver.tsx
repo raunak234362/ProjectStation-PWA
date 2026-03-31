@@ -1,25 +1,56 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 import socket from "../socket";
 import { toast } from "react-toastify";
+import { useNotificationStore } from "../hooks/useNotificationStore";
 
 const NotificationReceiver = () => {
-  // Use existing staffData selector or similar if needed
-  // const staffData = useSelector((state: any) => state?.userData?.staffData);
+  const { openDetail } = useNotificationStore();
+
+  const handleNotificationClick = (notification: any) => {
+    console.log("🔔 Toast clicked raw data:", notification);
+    const type = notification.type;
+    const t = type?.toUpperCase();
+    const payload = notification.payload || {};
+
+    // Check both root and payload for IDs
+    const findId = (key: string) => notification[key] || payload[key];
+
+    // Priority IDs based on type
+    let targetId = null;
+    if (t === "SUBMITTAL" || t === "SUBMITTALS") targetId = findId("submittalId") || findId("submittal_id") || findId("submittalId");
+    else if (t === "RFI") targetId = findId("rfiId") || findId("rfi_id");
+    else if (t === "RFQ") targetId = findId("rfqId") || findId("rfq_id");
+    else if (t === "MILESTONE") targetId = findId("milestoneId") || findId("milestone_id");
+    else if (t === "PROJECT") targetId = findId("projectId") || findId("project_id");
+    else if (t === "TASK") targetId = findId("taskId") || findId("task_id");
+    else if (t === "CHANGE_ORDER" || t === "CO") targetId = findId("changeOrderId") || findId("change_order_id");
+
+    // Fallback ID
+    const anyId = targetId || payload.id || findId("id");
+
+    console.log("🔍 Toast click handled details:", { t, targetId, anyId, payload });
+
+    if (anyId) {
+      let viewType: any = null;
+      if (t === "SUBMITTAL" || t === "SUBMITTALS") viewType = "SUBMITTAL";
+      else if (t === "RFI") viewType = "RFI";
+      else if (t === "RFQ") viewType = "RFQ";
+      else if (t === "MILESTONE") viewType = "MILESTONE";
+      else if (t === "PROJECT") viewType = "PROJECT";
+      else if (t === "TASK") viewType = "TASK";
+      else if (t === "CHANGE_ORDER" || t === "CO") viewType = "CHANGE_ORDER";
+
+      if (viewType) {
+        const projId = findId("projectId") || findId("project_id");
+        openDetail(viewType, anyId, projId);
+      }
+    }
+  };
 
   const showBrowserNotification = (title: string, message: string) => {
-    if (!("Notification" in window)) {
-      return;
-    }
-
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          new Notification(title, { body: message });
-        }
-      });
-    } else {
+    // ... existings logic
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") {
       new Notification(title, { body: message });
     }
   };
@@ -32,31 +63,29 @@ const NotificationReceiver = () => {
       const message = payload.message || "You have a new notification.";
 
       showBrowserNotification(title, message);
-      toast.info(message, { position: "top-right" });
+      toast.info(message, { 
+        position: "top-right",
+        onClick: () => handleNotificationClick(payload)
+      });
     });
 
     socket.on("receivePrivateMessage", (msg: any) => {
       console.log("📩 Private message received:", msg);
 
-      const title = "📩 Private Message";
       const message =
         typeof msg === "string" ? msg : msg?.content || "New private message.";
 
-      showBrowserNotification(title, message);
+      showBrowserNotification("📩 Private Message", message);
       toast.info(message, { position: "top-right" });
-      // update your chat UI with this message
     });
 
     socket.on("receiveGroupMessage", (msg: any) => {
       console.log("👥 Group message received:", msg);
 
-      const title = "👥 Group Message";
       const message = msg?.content || "New group message.";
 
-      showBrowserNotification(title, message);
-      // Fixed: toast.toString to toast.info
+      showBrowserNotification("👥 Group Message", message);
       toast.info(message, { position: "top-right" });
-      // update your group chat UI
     });
 
     return () => {
@@ -64,7 +93,7 @@ const NotificationReceiver = () => {
       socket.off("receivePrivateMessage");
       socket.off("receiveGroupMessage");
     };
-  }, []);
+  }, [openDetail]);
 
   return null;
 };

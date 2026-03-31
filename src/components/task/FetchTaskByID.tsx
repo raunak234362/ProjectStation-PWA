@@ -242,7 +242,7 @@ const FetchTaskByID: React.FC<FetchTaskByIDProps> = ({
   const priority = getPriorityLabel(task.priority);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[95vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center">

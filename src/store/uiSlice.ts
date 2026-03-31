@@ -50,6 +50,7 @@ const uiSlice = createSlice({
       state.fileError.isOpen = false;
     },
     openDetailView: (state, action: { payload: { type: UIState["activeDetailView"]["type"], id: string | number, projectId?: string | number } }) => {
+      console.log("dispatching openDetailView", action.payload);
       state.activeDetailView = action.payload;
     },
     closeDetailView: (state) => {

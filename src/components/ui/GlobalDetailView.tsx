@@ -13,7 +13,9 @@ const GlobalDetailView = () => {
   const dispatch = useDispatch();
   const { type, id, projectId } = useSelector((state: any) => state.ui.activeDetailView);
 
-  if (!type || !id) return null;
+  console.log("Rendering GlobalDetailView", { type, id, projectId });
+
+  if (type === null || id === null || id === undefined) return null;
 
   const handleClose = () => {
     dispatch(closeDetailView());
