@@ -336,6 +336,8 @@ const GetProjectById = ({
     "admin",
     "project_manager",
     "deputy_manager",
+    "connection_designer_engineer",
+    "connection_designer_admin",
     "client",
     "client_admin",
   ].includes(userRole);
@@ -346,7 +348,7 @@ const GetProjectById = ({
         return isAuthorizedForNotes;
       }
       if (isConnectionDesigner) {
-        const hiddenTabs = ["analytics", "teamsAnalytics", "wbs", "changeOrder"];
+        const hiddenTabs = ["analytics", "teamsAnalytics", "wbs", "changeOrder","notes"];
         if (hiddenTabs.includes(tab.key)) return false;
       }
       return true;

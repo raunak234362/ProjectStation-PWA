@@ -1110,12 +1110,7 @@ class Service {
         },
       });
       console.log(response);
-      const projectData = response.data;
-      if (projectData) {
-        const submittals = await Service.GetSubmittalByProjectId(id);
-        projectData.submittals = submittals;
-      }
-      return projectData;
+      return response.data;
     } catch (error) {
       console.log(error);
     }
@@ -1836,6 +1831,7 @@ class Service {
       console.error("cannot find submittal's", error);
     }
   }
+
   static async GetSubmittalbyId(Id: string) {
     try {
       const response = await api.get(`submittal/${Id}`, {
