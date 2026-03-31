@@ -1110,11 +1110,17 @@ class Service {
         },
       });
       console.log(response);
-      return response.data;
+      const projectData = response.data;
+      if (projectData) {
+        const submittals = await Service.GetSubmittalByProjectId(id);
+        projectData.submittals = submittals;
+      }
+      return projectData;
     } catch (error) {
       console.log(error);
     }
   }
+
 
   // Get Project Overall Dashboard
   static async GetProjectOverallDashboard(id: string, stage: string) {
@@ -1879,6 +1885,21 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find sub", error);
+    }
+  }
+
+  //submittal by project id :
+  static async GetSubmittalByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`submittal/project/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All submittals fetched by project ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittal", error);
     }
   }
 
@@ -2983,5 +3004,7 @@ static async GetClientDashboardData() {
       throw error
     }
   }
+
+  
 }
 export default Service;
