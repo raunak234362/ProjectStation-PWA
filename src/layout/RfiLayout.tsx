@@ -3,9 +3,9 @@ import AddRFI from "../components/rfi/AddRFI";
 import AllRFI from "../components/rfi/AllRfi";
 
 interface RfiLayoutProps {
-  project: any;
-  rfiData: any[];
-  onSuccess: () => void;
+  project?: any;
+  rfiData?: any[];
+  onSuccess?: () => void;
 }
 
 const RfiLayout = ({ project, rfiData, onSuccess }: RfiLayoutProps) => {
@@ -33,7 +33,7 @@ const RfiLayout = ({ project, rfiData, onSuccess }: RfiLayoutProps) => {
             <AddRFI
               project={project}
               onSuccess={() => {
-                onSuccess();
+                onSuccess?.();
                 setActiveTab("allRFI");
               }}
             />

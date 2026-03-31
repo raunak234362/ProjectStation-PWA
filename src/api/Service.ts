@@ -1748,6 +1748,22 @@ class Service {
       console.error("cannot find rfi", error);
     }
   }
+
+  //get RFI by ProjectId
+  static async GetRFIByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`rfi/project/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All rfi fetched by rfi ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfi", error);
+    }
+  }
+
   static async EditRFIByID(id: string, data: FormData) {
     try {
       const response = await api.put(`rfi/${id}`, data, {
@@ -1777,6 +1793,20 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find rfq", error);
+    }
+  }
+
+  // get rfi received by Project ID
+  static async GetReceivedRFIByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`rfi/received/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfi", error);
     }
   }
   //submitals route ----------------------------------------------
@@ -1829,6 +1859,20 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find submittal's", error);
+    }
+  }
+
+  // get received submittals by ProjectId
+  static async GetReceivedSubmittalByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`submittal/received/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittal", error);
     }
   }
 

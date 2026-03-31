@@ -4,6 +4,7 @@ import Layout from "./layout/DashboardLayout";
 import Service from "./api/Service";
 import { setUserData, showStaff } from "./store/userSlice";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import socket, { connectSocket } from "./socket";
 import PWABadge from "./PWABadge";
 import { loadFabricator } from "./store/fabricatorSlice";
@@ -177,7 +178,7 @@ const AppContent = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={1000} />
+      <ToastContainer position="top-right" autoClose={1000} style={{ zIndex: 99999 }} />
       <NotificationReceiver />
 
       <Layout />

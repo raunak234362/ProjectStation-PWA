@@ -4,9 +4,10 @@ import AddProjectNote from "../components/project/notes/AddProjectNote";
 
 interface ProjectNotesLayoutProps {
   projectId: string;
+  project?: any;
 }
 
-const ProjectNotesLayout = ({ projectId }: ProjectNotesLayoutProps) => {
+const ProjectNotesLayout = ({ projectId, project }: ProjectNotesLayoutProps) => {
   const [activeTab, setActiveTab] = useState("allNotes");
 
   const btnClass = (tab: string) =>
@@ -22,11 +23,12 @@ const ProjectNotesLayout = ({ projectId }: ProjectNotesLayoutProps) => {
         <button onClick={() => setActiveTab("addNote")} className={btnClass("addNote")}>Create Note</button>
       </div>
       <div className="flex-1 min-h-0 px-8 pb-8 overflow-y-auto">
-        {activeTab === "allNotes" && <AllProjectNotes projectId={projectId} />}
+        {activeTab === "allNotes" && <AllProjectNotes projectId={projectId} project={project} />}
         {activeTab === "addNote" && (
           <div className="max-w-4xl mx-auto">
             <AddProjectNote
               projectId={projectId}
+              project={project}
               onClose={() => setActiveTab("allNotes")}
               onSuccess={() => {
                 setActiveTab("allNotes");

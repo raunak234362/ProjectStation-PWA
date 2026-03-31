@@ -116,7 +116,8 @@ const GetProjectById = ({
       setLoading(true);
       setError(null);
       const response = await Service.GetProjectById(id);
-      setProject(response?.data || null);
+      const projData = response?.data || null;
+      setProject(projData);
       fetchMileStone(); // Keep milestones in sync
     } catch (err) {
       setError("Failed to load project details");
@@ -125,6 +126,70 @@ const GetProjectById = ({
       setLoading(false);
     }
   };
+
+  const fetchSubmittalsForProject = async () => {
+    if (!id || !project) return;
+    try {
+      const rolesForReceived = [
+        "client",
+        "client_admin",
+        "connection_designer_engineer",
+        "connection_designer_admin",
+      ];
+      
+      let res;
+      if (rolesForReceived.includes(userRole)) {
+        res = await Service.GetReceivedSubmittalByProjectId(id);
+      } else {
+        res = await Service.GetSubmittalByProjectId(id);
+      }
+
+      if (res) {
+        const submittals = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+        setProject(prev => prev ? { ...prev, submittals } : null);
+      }
+    } catch (error) {
+      console.error("Error fetching project submittals:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "submittals") {
+      fetchSubmittalsForProject();
+    }
+  }, [activeTab, id]);
+
+  const fetchRfiForProject = async () => {
+    if (!id || !project) return;
+    try {
+      const rolesForReceived = [
+        "client",
+        "client_admin",
+        "connection_designer_engineer",
+        "connection_designer_admin",
+      ];
+      
+      let res;
+      if (rolesForReceived.includes(userRole)) {
+        res = await Service.GetReceivedRFIByProjectId(id);
+      } else {
+        res = await Service.GetRFIByProjectId(id);
+      }
+
+      if (res) {
+        const rfi = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+        setProject(prev => prev ? { ...prev, rfi } : null);
+      }
+    } catch (error) {
+      console.error("Error fetching project RFIs:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "rfi" || activeTab === "CDrfi") {
+      fetchRfiForProject();
+    }
+  }, [activeTab, id]);
 
   // Fetch tasks for stats
   useEffect(() => {
@@ -942,7 +1007,7 @@ const GetProjectById = ({
           {/* ✅ Notes */}
           {activeTab === "notes" && <NotesLayout projectId={id} />}
           {/* ✅ Project Notes (Team Meeting Notes) */}
-          {activeTab === "projectNotes" && <ProjectNotesLayout projectId={id} />}
+          {activeTab === "projectNotes" && <ProjectNotesLayout projectId={id} project={project} />}
 
           {activeTab === "wbs" && !isConnectionDesigner && (
             <div className="text-gray-700 italic text-center">

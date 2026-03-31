@@ -8,24 +8,38 @@ import GetSubmittalByID from "./GetSubmittalByID";
 
 interface AllSubmittalProps {
   submittalData?: any[];
+  projectId?: string;
 }
 
-const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
+const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
   const [submittals, setSubmittals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   console.log(submittalData);
 
-  const userRole = sessionStorage.getItem("userRole");
+  const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
 
   const fetchSubmittals = async () => {
     try {
       setLoading(true);
       let result;
 
-      if (userRole === "CLIENT") result = await Service.SubmittalSent();
-      else result = await Service.SubmittalRecieved();
+      const isSpecialRole = [
+        "CLIENT",
+        "CLIENT_ADMIN",
+        "CONNECTION_DESIGNER_ENGINEER",
+        "CONNECTION_DESIGNER_ADMIN",
+      ].includes(userRole || "");
 
-      const data = Array.isArray(result?.data) ? result.data : [];
+      if (projectId && isSpecialRole) {
+        result = await Service.GetReceivedSubmittalByProjectId(projectId);
+      } else if (userRole === "CLIENT" || userRole === "CLIENT_ADMIN") {
+        result = await Service.SubmittalSent();
+      } else {
+        result = await Service.SubmittalRecieved();
+      }
+
+      const data = Array.isArray(result?.data) ? result.data : 
+                   Array.isArray(result) ? result : [];
 
       const normalized = data.map((item: any) => ({
         ...item,
@@ -42,7 +56,8 @@ const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
       }));
 
       setSubmittals(normalized);
-    } catch {
+    } catch (error) {
+      console.error("Error fetching submittals:", error);
       setSubmittals([]);
     } finally {
       setLoading(false);
@@ -56,8 +71,7 @@ const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
     } else {
       fetchSubmittals();
     }
-
-  }, []);
+  }, [projectId, submittalData]);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -81,6 +95,36 @@ const AllSubmittals = ({ submittalData }: AllSubmittalProps) => {
             <span className="text-black font-medium">
               {s ? `${s.firstName ?? ""} ${s.lastName ?? ""}`.trim() : "—"}
             </span>
+          </div>
+        );
+      },
+    },
+
+    {
+      accessorKey: "multipleRecipients",
+      header: "To",
+      cell: ({ row }) => {
+        const recipients = row.original.multipleRecipients || [];
+        const firstRecipient = recipients[0];
+        const remainingCount = recipients.length - 1;
+
+        if (recipients.length === 0) return <span className="text-gray-400">—</span>;
+
+        return (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
+              <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[10px] uppercase">
+                {(firstRecipient?.firstName?.[0] || "") + (firstRecipient?.lastName?.[0] || "")}
+              </div>
+              <span className="text-black font-medium text-xs">
+                {`${firstRecipient?.firstName ?? ""} ${firstRecipient?.lastName ?? ""}`.trim()}
+              </span>
+            </div>
+            {remainingCount > 0 && (
+              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md">
+                +{remainingCount} more
+              </span>
+            )}
           </div>
         );
       },
