@@ -91,9 +91,11 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
       }
 
       const finalProgress =
-        ms.percentage !== undefined &&
-          ms.percentage !== null &&
-          ms.percentage !== ""
+        (ms.completeionPercentage !== undefined && ms.completeionPercentage !== null && ms.completeionPercentage !== "")
+          ? Number(ms.completeionPercentage)
+          : (ms.completionPercentage !== undefined && ms.completionPercentage !== null && ms.completionPercentage !== "")
+          ? Number(ms.completionPercentage)
+          : (ms.percentage !== undefined && ms.percentage !== null && ms.percentage !== "")
           ? Number(ms.percentage)
           : taskProgress;
 
@@ -197,7 +199,8 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                               : " text-green-900"
                               }`}
                           >
-                            {ms.completionPercentage ||
+                            {ms.completeionPercentage ||
+                              ms.completionPercentage ||
                               ms.taskPercentage ||
                               ms.percentage}
                             %
@@ -227,7 +230,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                         <div
                           className="absolute top-0 left-0 h-2 rounded-full bg-teal-500 transition-all duration-500"
                           style={{
-                            width: `${ms.taskPercentage || ms.percentage}%`,
+                            width: `${ms.completeionPercentage || ms.completionPercentage || ms.taskPercentage || ms.percentage || 0}%`,
                           }}
                         ></div>
                       </div>
