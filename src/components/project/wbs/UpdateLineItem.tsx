@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { X, Save, Loader2, Calculator } from "lucide-react";
 import { Button } from "../../ui/button";
 import Service from "../../../api/Service";
+import { toast } from "react-toastify";
 
 interface UpdateLineItemProps {
   isOpen: boolean;
@@ -48,10 +49,12 @@ const UpdateLineItem: React.FC<UpdateLineItemProps> = ({
         checkHr: qtyNo * checkUnitTime,
       };
       await Service.UpdateLineItem(lineItem.id, payload);
+      toast.success("Line item updated successfully!");
       onUpdate();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating line item:", error);
+      toast.error(error?.response?.data?.message || "Failed to update line item");
     } finally {
       setLoading(false);
     }

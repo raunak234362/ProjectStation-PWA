@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Loader2, Paperclip, X, FileText } from "lucide-react";
 import Service from "../../../api/Service";
+import { toast } from "react-toastify";
 
 interface AddProjectNoteProps {
     projectId: string;
@@ -57,17 +58,20 @@ const AddProjectNote = ({
             files.forEach((file) => formData.append("files", file));
 
             await Service.AddTeamMeetingNotes(formData);
+            toast.success("Note added successfully!");
             onSuccess();
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error adding note:", err);
-            setError("Failed to save note. Please try again.");
+            const errorMessage = err?.response?.data?.message || "Failed to save note. Please try again.";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setSubmitting(false);
         }
     };
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
@@ -77,7 +81,7 @@ const AddProjectNote = ({
                     </h3>
                     <button
                         onClick={onClose}
-                        className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
+                        className="px-4 py-1.5 bg-red-50 text-black border-red-700/80 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
                     >
                         CLOSE
                     </button>

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Service from "../../../api/Service";
+import { toast } from "react-toastify";
 import Button from "../../fields/Button";
 import { Loader2, Upload } from "lucide-react";
 
@@ -39,9 +40,11 @@ const EditDesignDrawing = ({
       }
 
       await Service.UpdateDesignDrawing(drawing.id, formData);
+      toast.success("Design drawing updated successfully!");
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating design drawing:", error);
+      toast.error(error?.response?.data?.message || "Failed to update design drawing");
     } finally {
       setLoading(false);
     }

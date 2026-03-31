@@ -7,75 +7,41 @@ import { formatDistanceToNow } from "date-fns";
 const NotificationPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
-  const { notifications, unreadCount, markRead, markAllRead } =
-    useNotificationStore();
+  const handleNotificationClick = async (notification: any) => {
+    await handleMarkAsRead(notification.id);
+    
+    const type = notification.type?.toUpperCase();
+    const payload = notification.payload || {};
+    
+    // Determine the ID based on the notification type
+    const id = payload.submittalId || 
+               payload.rfiId || 
+               payload.rfqId || 
+               payload.milestoneId || 
+               payload.taskId || 
+               payload.projectId ||
+               payload.changeOrderId ||
+               payload.id;
 
-  // Close popup when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
+    if (id) {
+      let viewType: any = null;
+      if (type === "SUBMITTAL") viewType = "SUBMITTAL";
+      else if (type === "RFI") viewType = "RFI";
+      else if (type === "RFQ") viewType = "RFQ";
+      else if (type === "MILESTONE") viewType = "MILESTONE";
+      else if (type === "PROJECT") viewType = "PROJECT";
+      else if (type === "TASK") viewType = "TASK";
+      else if (type === "CHANGE_ORDER") viewType = "CHANGE_ORDER";
+      
+      if (viewType) {
+        openDetail(viewType, id, payload.projectId);
         setIsOpen(false);
       }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
-
-  const handleMarkAsRead = async (id: string) => {
-    try {
-      await Service.MarkNotificationAsRead(id);
-      markRead(id);
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error);
     }
   };
 
-  const handleMarkAllAsRead = async () => {
-    try {
-      // Mark all unread notifications as read on the backend
-      const unreadNotifications = notifications.filter((n) => !n.read);
-      await Promise.all(
-        unreadNotifications.map((n) => Service.MarkNotificationAsRead(n.id)),
-      );
-      markAllRead();
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error);
-    }
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "chat":
-        return "💬";
-      case "project":
-        return "📁";
-      case "rfi":
-        return "❓";
-      case "submittal":
-        return "📄";
-      case "change_order":
-        return "🔄";
-      default:
-        return "🔔";
-    }
-  };
-
-  const formatTime = (dateString: string) => {
-    try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
-    } catch {
-      return "Recently";
-    }
-  };
+  const { notifications, unreadCount, markRead, markAllRead, openDetail } =
+    useNotificationStore();
 
   return (
     <div className="relative" ref={popupRef}>
@@ -157,7 +123,7 @@ const NotificationPopup = () => {
                         ? "bg-green-50/50 dark:bg-green-900/10"
                         : ""
                       }`}
-                    onClick={() => handleMarkAsRead(notification.id)}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex items-start gap-3">
                       {/* Icon */}

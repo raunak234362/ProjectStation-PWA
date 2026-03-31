@@ -14,6 +14,7 @@ import useNotifications from "./hooks/useNotifications";
 import NotificationReceiver from "./util/NotificationReceiver";
 import DownloadErrorModal from "./components/ui/DownloadErrorModal";
 import { hideFileError } from "./store/uiSlice";
+import GlobalDetailView from "./components/ui/GlobalDetailView";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -180,6 +181,7 @@ const AppContent = () => {
       <NotificationReceiver />
 
       <Layout />
+      <GlobalDetailView />
 
       <DownloadErrorModal
         isOpen={fileError?.isOpen}

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Service from "../../../api/Service";
+import { toast } from "react-toastify";
 import Button from "../../fields/Button";
 import { Loader2, Upload } from "lucide-react";
 
@@ -30,11 +31,13 @@ const AddDesignDrawing = ({ projectId, onSuccess }: AddDesignDrawingProps) => {
       }
 
       await Service.CreateDesignDrawing(formData);
+      toast.success("Design drawing created successfully!");
       reset();
       setFiles(null);
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating design drawing:", error);
+      toast.error(error?.response?.data?.message || "Failed to create design drawing");
     } finally {
       setLoading(false);
     }
