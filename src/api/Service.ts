@@ -1946,7 +1946,7 @@ class Service {
 // submittalsentbyprojectid:
 static async SubmittalSentByProjectId(projectId: string) {
   try {
-    const response = await api.get(`submittal/sentByProjectId/${projectId}`, {
+    const response = await api.get(`submittal/sents/${projectId}`, {
       headers: {
         'Content-Type': 'application/json'
       }
