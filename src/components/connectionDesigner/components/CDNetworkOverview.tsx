@@ -30,7 +30,7 @@ const HoverPopover = ({
       className="z-100 bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-2xl border border-black/10 dark:border-slate-700 w-72 pointer-events-none hidden sm:block"
     >
       <div className="flex items-center gap-2 mb-3 pb-3 border-b border-black/10 dark:border-slate-700/50">
-        <div className="w-8 h-8 rounded-xl bg-linear-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+        <div className="w-8 h-8 rounded-xl bg-green-500 flex items-center justify-center shadow-lg">
           <MapPin size={16} className="text-white" />
         </div>
         <div>

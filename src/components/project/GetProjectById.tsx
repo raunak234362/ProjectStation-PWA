@@ -524,36 +524,36 @@ const GetProjectById = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <StatCard
                     icon={<Clock className="text-blue-600" />}
-                    label="Total Estimated Hours"
+                    label="Estimated Hours"
                     value={`${project.estimatedHours || 0}h`}
                     color="bg-blue-50"
-                    description="Total estimated hours for project"
+                    layout="horizontal"
                   />
                   <StatCard
                     icon={<Clock className="text-blue-600" />}
-                    label="Total Estimated Hours for Approval"
+                    label="Estimated Hours for Approval"
                     value={`${(project.estimatedHours ?? 0) * 0.8}h`}
                     color="bg-blue-50"
-                    description="Total estimated hours for project in Approval Stage"
+                    layout="horizontal"
                   />
                   <StatCard
                     icon={<Clock className="text-blue-600" />}
-                    label="Total Estimated Hours for Fabrication"
+                    label="Estimated Hours for Fabrication"
                     value={`${(project.estimatedHours ?? 0) * 0.2}h`}
                     color="bg-blue-50"
-                    description="Total estimated hours for project in Fabrication Stage"
+                    layout="horizontal"
                   />
                   <StatCard
                     icon={<CheckCircle2 className="text-green-600" />}
                     label="Hours Completed"
                     value={formatSeconds(
                       projectStats?.workedSeconds ||
-                      project.workedSeconds ||
-                      project.totalWorkedSeconds ||
-                      0,
+                        project.workedSeconds ||
+                        project.totalWorkedSeconds ||
+                        0,
                     )}
                     color="bg-green-50"
-                    description="Total hours logged by team"
+                    layout="horizontal"
                   />
                   <StatCard
                     icon={
@@ -569,12 +569,12 @@ const GetProjectById = ({
                     value={
                       (projectStats?.isOverrun ?? project.isOverrun)
                         ? formatSeconds(
-                          (projectStats?.workedSeconds ||
-                            project.workedSeconds ||
-                            project.totalWorkedSeconds ||
-                            0) -
-                          (project.estimatedHours || 0) * 3600,
-                        )
+                            (projectStats?.workedSeconds ||
+                              project.workedSeconds ||
+                              project.totalWorkedSeconds ||
+                              0) -
+                              (project.estimatedHours || 0) * 3600,
+                          )
                         : "00:00"
                     }
                     color={
@@ -588,18 +588,19 @@ const GetProjectById = ({
                         : "Project is within estimates"
                     }
                     isAlert={projectStats?.isOverrun ?? project.isOverrun}
+                    layout="horizontal"
                   />
                 </div>
               )}
 
               {/* ✅ New Summary Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-black text-sm ">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-black text-sm ">
                 <StatCard
                   icon={<MessageSquare className="text-green-600" />}
                   label="Total RFIs"
                   value={project.rfi?.length || 0}
                   color="bg-green-50"
-                  description="Total RFIs for this project"
+                  layout="horizontal"
                   onClick={() => setActiveTab("rfi")}
                 />
                 <StatCard
@@ -607,7 +608,7 @@ const GetProjectById = ({
                   label="Total Submittals"
                   value={project.submittals?.length || 0}
                   color="bg-green-50"
-                  description="Total submittals for this project"
+                  layout="horizontal"
                   onClick={() => setActiveTab("submittals")}
                 />
                 {!isConnectionDesigner && (
@@ -616,7 +617,7 @@ const GetProjectById = ({
                     label="Change Orders"
                     value={project.changeOrders?.length || 0}
                     color="bg-green-50"
-                    description="Total change orders"
+                    layout="horizontal"
                     onClick={() => setActiveTab("changeOrder")}
                   />
                 )}
@@ -625,7 +626,7 @@ const GetProjectById = ({
                   label="Total Milestones"
                   value={milestoneData.length}
                   color="bg-green-50"
-                  description="Total project milestones"
+                  layout="horizontal"
                   onClick={() => setActiveTab("milestones")}
                 />
                 <StatCard
@@ -636,7 +637,7 @@ const GetProjectById = ({
                     (allDocuments?.project?.files?.length || 0)
                   }
                   color="bg-green-50"
-                  description="Total project documents & files"
+                  layout="horizontal"
                   onClick={() => setActiveTab("files")}
                 />
               </div>
@@ -1283,6 +1284,7 @@ const StatCard = ({
   description,
   isAlert = false,
   onClick,
+  layout = "vertical",
 }: {
   icon: React.ReactNode;
   label: string;
@@ -1291,30 +1293,64 @@ const StatCard = ({
   description?: string;
   isAlert?: boolean;
   onClick?: () => void;
-}) => (
-  <div
-    onClick={onClick}
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-      } ${onClick ? "cursor-pointer" : ""}`}
-  >
-    <div className="flex items-center gap-3 mb-3">
-      <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
-      <p className="text-sm font-bold text-gray-700 uppercase tracking-widest">
-        {label}
-      </p>
-    </div>
-    <p
-      className={`text-3xl font-black ${isAlert ? "text-red-700" : "text-black"} tracking-tight`}
+  layout?: "vertical" | "horizontal";
+}) => {
+  if (layout === "horizontal") {
+    return (
+      <div
+        onClick={onClick}
+        className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex items-center justify-between transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+          } ${onClick ? "cursor-pointer" : ""}`}
+      >
+        <div className="flex items-center gap-4">
+          <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">{icon}</div>
+          <div className="flex flex-col">
+            <p className="text-sm font-bold text-gray-700 uppercase tracking-widest leading-tight">
+              {label}
+            </p>
+            {description && (
+              <p className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-tighter leading-tight">
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="text-right ml-4 shrink-0">
+          <p
+            className={`text-3xl font-black ${isAlert ? "text-red-700" : "text-black"} tracking-tight`}
+          >
+            {value}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+        } ${onClick ? "cursor-pointer" : ""}`}
     >
-      {value}
-    </p>
-    {description && (
-      <p className="text-sm text-gray-400 mt-2 font-medium uppercase tracking-tighter">
-        {description}
+      <div className="flex items-center gap-3 mb-3">
+        <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
+        <p className="text-sm font-bold text-gray-700 uppercase tracking-widest">
+          {label}
+        </p>
+      </div>
+      <p
+        className={`text-3xl font-black ${isAlert ? "text-red-700" : "text-black"} tracking-tight`}
+      >
+        {value}
       </p>
-    )}
-  </div>
-);
+      {description && (
+        <p className="text-sm text-gray-400 mt-2 font-medium uppercase tracking-tighter">
+          {description}
+        </p>
+      )}
+    </div>
+  );
+};
 
 // ✅ OtherTasksPanel – groups "others" wbsType tasks by projectBundle.bundleKey
 const OtherTasksPanel = ({
