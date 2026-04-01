@@ -181,10 +181,12 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
 
               {/* Basic Info */}
               <Info label="Project" value={rfi.project?.name || "—"} />
-              <Info
-                label="Fabricator"
-                value={rfi?.fabricator?.fabName || "—"}
-              />
+              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+                <Info
+                  label="Fabricator"
+                  value={rfi?.fabricator?.fabName || "—"}
+                />
+              )}
               <Info
                 label="Created On"
                 value={new Date(rfi?.date).toLocaleString()}

@@ -39,6 +39,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
       cell: ({ row }) => (
         <span className="font-bold text-black">{row.original.subject}</span>
       ),
+      size: 400,
     },
 
     {
@@ -57,6 +58,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
           </div>
         );
       },
+      size: 200,
     },
 
     {
@@ -72,6 +74,30 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
           </span>
         );
       },
+      size: 150,
+    },
+
+    {
+      accessorKey: "respondedAt",
+      header: "Responded On",
+      cell: ({ row }) => {
+        const responses = row.original.rfiresponse || [];
+        if (responses.length === 0)
+          return <span className="text-gray-400 font-bold text-xs">—</span>;
+
+        const latestResponded = responses.reduce((latest, current) => {
+          const currentTS = new Date(current.createdAt).getTime();
+          const latestTS = new Date(latest.createdAt).getTime();
+          return currentTS > latestTS ? current : latest;
+        }, responses[0]);
+
+        return (
+          <span className="text-black/60 text-xs font-bold">
+            {formatDate(latestResponded?.createdAt)}
+          </span>
+        );
+      },
+      size: 150,
     },
 
     {
@@ -82,6 +108,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
           {formatDate(row.original.createdAt)}
         </span>
       ),
+      size: 150,
     },
   ];
 

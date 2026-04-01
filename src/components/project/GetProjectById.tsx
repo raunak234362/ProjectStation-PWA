@@ -465,7 +465,7 @@ const GetProjectById = ({
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
       <div className="bg-white dark:bg-slate-900 p-5 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex justify-between items-center border-b pb-3 mb-3">
+        <div className="flex justify-between items-center pb-3 mb-3">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight">
               {project.name}
@@ -502,7 +502,7 @@ const GetProjectById = ({
         </div>
 
         {/* Tabs */}
-        <div className="mb-4 border-b">
+        <div className="mb-4">
           {/* Mobile Dropdown */}
           <div className="block md:hidden mb-2">
             <select
