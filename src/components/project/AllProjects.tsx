@@ -39,10 +39,11 @@ const AllProjects = () => {
   const columns: any[] = [
     {
       accessorKey: "name",
-      header: "Project Name",
+      header: () => <span className="pl-8">Project Name</span>,
       cell: ({ row }: { row: any }) => (
-        <span className="font-bold text-black">{row.original.name}</span>
+        <span className="font-bold text-black pl-8 block">{row.original.name}</span>
       ),
+      size: 550,
       enableColumnFilter: !isClient,
       filterType: "text",
       filterFn: "includesString",
@@ -55,6 +56,7 @@ const AllProjects = () => {
           {row.original.stage || "—"}
         </span>
       ),
+      size: 100,
     },
     {
       accessorKey: "status",
@@ -64,6 +66,7 @@ const AllProjects = () => {
           {row.getValue("status") || "—"}
         </span>
       ),
+      size: 100,
     },
   ];
 

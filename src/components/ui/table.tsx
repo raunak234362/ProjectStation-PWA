@@ -319,7 +319,11 @@ export default function DataTable<T extends object>({
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-6 py-2.5 text-[11px] md:text-sm text-gray-800 font-medium leading-relaxed uppercase">
+                        <td
+                          key={cell.id}
+                          className="px-6 py-2.5 text-[11px] md:text-sm text-gray-800 font-medium leading-relaxed uppercase"
+                          style={{ width: cell.column.getSize() }}
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

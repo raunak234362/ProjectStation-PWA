@@ -175,7 +175,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
                   {rfi.subject}
                 </h1>
                 <span className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gray-100 text-black border border-gray-200">
-                  {rfi.isAproovedByAdmin ? "Approved" : "Pending"}
+                  {rfi.status === true ? "Pending" : "Responded"}
                 </span>
               </div>
 
