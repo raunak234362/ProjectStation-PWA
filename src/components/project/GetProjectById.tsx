@@ -382,14 +382,12 @@ const GetProjectById = ({
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
     { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
-    { key: "details", label: "Details", icon: ClipboardList },
   ];
 
   const defaultDesktopTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
     { key: "analytics", label: "Analytics", icon: TrendingUp },
     { key: "teamsAnalytics", label: "Teams Analytics", icon: Activity },
-    { key: "details", label: "Details", icon: ClipboardList },
     { key: "files", label: "Files", icon: FileText },
     { key: "wbs", label: "WBS", icon: FileText },
     { key: "milestones", label: "Milestones", icon: FileText },
@@ -399,8 +397,7 @@ const GetProjectById = ({
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
   ];
-
-  const defaultMobileTabs = [
+    const defaultMobileTabs = [
     { key: "details", label: "Details" },
     { key: "analytics", label: "Analytics" },
     { key: "teamsAnalytics", label: "Teams Analytics" },
@@ -425,7 +422,7 @@ const GetProjectById = ({
     "connection_designer_admin",
     "client",
     "client_admin",
-  ].includes(userRole);
+  ].includes(userRole || "");
 
   const filterTabsByRole = (tabs: any[]) => {
     return tabs.filter((tab) => {
@@ -433,7 +430,7 @@ const GetProjectById = ({
         return isAuthorizedForNotes;
       }
       if (isConnectionDesigner) {
-        const hiddenTabs = ["analytics", "teamsAnalytics", "wbs", "changeOrder","notes"];
+        const hiddenTabs = ["analytics", "teamsAnalytics", "wbs", "changeOrder", "notes"];
         if (hiddenTabs.includes(tab.key)) return false;
       }
       return true;
@@ -462,10 +459,10 @@ const GetProjectById = ({
     );
 
   return createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
-      <div className="bg-white dark:bg-slate-900 p-5 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex justify-between items-center pb-3 mb-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-3 mb-3">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight">
               {project.name}
@@ -474,11 +471,11 @@ const GetProjectById = ({
               Project No: {project.projectNumber}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-bold bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
               {project.stage}
             </span>
-            <span className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
+            <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-bold bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
               {project.status}
             </span>
             {userRole === "admin" && (
@@ -614,10 +611,10 @@ const GetProjectById = ({
               )}
 
               {/* ✅ New Summary Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-black text-sm ">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 text-black text-sm">
                 <StatCard
                   icon={<MessageSquare className="text-green-600" />}
-                  label="Total RFIs"
+                  label="RFIs"
                   value={project.rfi?.length || 0}
                   color="bg-green-50"
                   layout="horizontal"
@@ -625,7 +622,7 @@ const GetProjectById = ({
                 />
                 <StatCard
                   icon={<FileText className="text-green-600" />}
-                  label="Total Submittals"
+                  label="Submittals"
                   value={project.submittals?.length || 0}
                   color="bg-green-50"
                   layout="horizontal"
@@ -643,7 +640,7 @@ const GetProjectById = ({
                 )}
                 <StatCard
                   icon={<CalendarCheck className="text-green-600" />}
-                  label="Total Milestones"
+                  label="Milestones"
                   value={milestoneData.length}
                   color="bg-green-50"
                   layout="horizontal"
@@ -660,6 +657,88 @@ const GetProjectById = ({
                   layout="horizontal"
                   onClick={() => setActiveTab("files")}
                 />
+              </div>
+
+              {/* ✅ Details (Moved to Overview) */}
+              <div className="bg-slate-50/50 p-6 rounded-[24px] border border-black/5 animate-in fade-in slide-in-from-top-4 duration-700">
+                <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                  <div className="space-y-4">
+                    {!isConnectionDesigner && (
+                      <InfoRow
+                        label="Department"
+                        value={project.department?.name || "—"}
+                      />
+                    )}
+                    <InfoRow
+                      label="Team / Tools"
+                      value={project.team?.name || "—"}
+                    />
+                    <InfoRow
+                      label="WBT Manager"
+                      value={
+                        project.manager
+                          ? `${project.manager.firstName} ${project.manager.lastName} `
+                          : "—"
+                      }
+                    />
+                    {userRole !== "client" &&
+                      userRole !== "client_admin" &&
+                      !isConnectionDesigner && (
+                        <InfoRow
+                          label="Fabricator"
+                          value={project.fabricator?.fabName || "—"}
+                        />
+                      )}
+                    <InfoRow label="Stage" value={project.stage || "—"} />
+                    <InfoRow
+                      label="Start Date"
+                      value={formatDate(project.startDate)}
+                    />
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="p-4 bg-white rounded-2xl border border-black/5 shadow-sm min-h-[140px]">
+                      <h4 className="text-md font-bold text-black mb-4 flex items-center gap-2 uppercase tracking-tight">
+                        <Settings className="w-5 h-5 text-green-600" /> Connection Design Scope
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        <ScopeTag label="Main Design" active={project.connectionDesign} />
+                        <ScopeTag label="Misc Design" active={project.miscDesign} />
+                        <ScopeTag
+                          label={
+                            project.customerDesign
+                              ? "Connection Design by WBT"
+                              : `Connection Design by ${project.fabricator?.fabName ?? ""}`
+                          }
+                          active={project.customerDesign}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-white rounded-2xl border border-black/5 shadow-sm min-h-[140px]">
+                      <h4 className="text-md font-bold text-black mb-4 flex items-center gap-2 uppercase tracking-tight">
+                        <Settings className="w-5 h-4 text-green-600" /> Detailing Scope
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        <ScopeTag label="Detailing Main" active={project.detailingMain} />
+                        <ScopeTag label="Detailing Misc" active={project.detailingMisc} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2 pt-4">
+                    <h4 className="font-black text-black mb-3 text-lg flex items-center gap-2 uppercase tracking-tight">
+                      <FolderOpenDot className="w-5 h-5 text-green-600" />
+                      Project Description
+                    </h4>
+                    <div
+                      className="text-gray-700 bg-white p-5 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: project.description || "No description available.",
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
 
               <ProjectMilestoneMetrics projectId={id} />
@@ -871,123 +950,6 @@ const GetProjectById = ({
               managerId={project.managerID}
               tasks={allTasks}
             />
-          )}
-
-          {/* ✅ Details */}
-          {activeTab === "details" && (
-            <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-              <div className="space-y-3">
-                {/* <InfoRow
-                  label="Estimated Hours"
-                  value={project.estimatedHours || 0}
-                /> */}
-                {!isConnectionDesigner && (
-                  <InfoRow
-                    label="Department"
-                    value={project.department?.name || "—"}
-                  />
-                )}
-                <InfoRow
-                  label="Team / Tools"
-                  value={project.team?.name || "—"}
-                />
-                <InfoRow
-                  label="WBT Manager"
-                  value={
-                    project.manager
-                      ? `${project.manager.firstName} ${project.manager.lastName} `
-                      : "—"
-                  }
-                />
-                {userRole !== "client" &&
-                  userRole !== "client_admin" &&
-                  !isConnectionDesigner && (
-                    <>
-                      <InfoRow
-                        label="Fabricator"
-                        value={project.fabricator?.fabName || "—"}
-                      />
-                    </>
-                  )}
-              </div>
-
-              <div className="space-y-3">
-                <InfoRow label="Stage" value={project.stage || "—"} />
-                <InfoRow
-                  label="Start Date"
-                  value={formatDate(project.startDate)}
-                />
-                {/* <InfoRow
-                  label="Approval Date"
-                  value={formatDate(project.approvalDate)}
-                />
-                <InfoRow
-                  label="Fabrication Date"
-                  value={formatDate(project.fabricationDate)}
-                />
-                <InfoRow label="End Date" value={formatDate(project.endDate)} /> */}
-                {/* <InfoRow label="RFQ ID" value={project.rfqId || "—"} /> */}
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-                <h4 className="text-lg font-semibold text-black mb-3 flex items-center gap-1">
-                  <Settings className="w-5 h-5" /> Connection Design Scope
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <ScopeTag
-                    label="Main Design"
-                    active={project.connectionDesign}
-                  />
-                  <ScopeTag label="Misc Design" active={project.miscDesign} />
-                  <ScopeTag
-                    label={
-                      project.customerDesign
-                        ? "Connection Design by WBT"
-                        : `Connection Design by ${project.fabricator?.fabName ?? ""}`
-                    }
-                    active={project.customerDesign}
-                  />
-                </div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-                <h4 className="text-lg font-semibold text-black mb-3 flex items-center gap-1">
-                  <Settings className="w-5 h-5" /> Detailing Scope
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <ScopeTag
-                    label="Detailing Main"
-                    active={project.detailingMain}
-                  />
-                  <ScopeTag
-                    label="Detailing Misc"
-                    active={project.detailingMisc}
-                  />
-                </div>
-              </div>
-              <div className="md:col-span-2 mt-6">
-                <h4 className="font-semibold text-black mb-2 text-xl flex items-center gap-1">
-                  <FolderOpenDot className="w-4 h-4" />
-                  Project Description / Scope
-                </h4>
-                <div
-                  className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: project.description || "No description available.",
-                  }}
-                />
-              </div>
-              {/* Footer Buttons */}
-              {userRole !== "client" && userRole !== "client_admin" && (
-                <div className="pt-2 flex flex-wrap gap-3">
-                  <Button
-                    className="py-1 px-3 text-sm bg-white text-black border border-black hover:bg-green-50 font-bold rounded-lg"
-                    onClick={() => handleEditModel(project)}
-                  >
-                    Edit Project
-                  </Button>
-                </div>
-              )}
-            </div>
           )}
 
           {/* ✅ Files */}
