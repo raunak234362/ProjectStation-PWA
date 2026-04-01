@@ -137,17 +137,27 @@ const GetProjectById = ({
         "connection_designer_admin",
       ];
       
-      let res;
+      let allSubmittals: any[] = [];
       if (rolesForReceived.includes(userRole)) {
-        res = await Service.GetReceivedSubmittalByProjectId(id);
+        // Fetch both received and sent submittals for these roles
+        const [receivedRes, sentRes] = await Promise.all([
+          Service.GetReceivedSubmittalByProjectId(id),
+          Service.SubmittalSentByProjectId(id)
+        ]);
+
+        const received = Array.isArray(receivedRes?.data) ? receivedRes.data : (Array.isArray(receivedRes) ? receivedRes : []);
+        const sent = Array.isArray(sentRes?.data) ? sentRes.data : (Array.isArray(sentRes) ? sentRes : []);
+        
+        // Combine and remove duplicates
+        const combined = [...received, ...sent];
+        const uniqueSubmittals = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        allSubmittals = uniqueSubmittals;
       } else {
-        res = await Service.GetSubmittalByProjectId(id);
+        const res = await Service.GetSubmittalByProjectId(id);
+        allSubmittals = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
       }
 
-      if (res) {
-        const submittals = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
-        setProject(prev => prev ? { ...prev, submittals } : null);
-      }
+      setProject(prev => prev ? { ...prev, submittals: allSubmittals } : null);
     } catch (error) {
       console.error("Error fetching project submittals:", error);
     }
@@ -169,17 +179,27 @@ const GetProjectById = ({
         "connection_designer_admin",
       ];
       
-      let res;
+      let allRfi: any[] = [];
       if (rolesForReceived.includes(userRole)) {
-        res = await Service.GetReceivedRFIByProjectId(id);
+        // Fetch both received and sent RFIs for these roles
+        const [receivedRes, sentRes] = await Promise.all([
+          Service.GetReceivedRFIByProjectId(id),
+          Service.GetRFISentByProId(id)
+        ]);
+
+        const received = Array.isArray(receivedRes?.data) ? receivedRes.data : (Array.isArray(receivedRes) ? receivedRes : []);
+        const sent = Array.isArray(sentRes?.data) ? sentRes.data : (Array.isArray(sentRes) ? sentRes : []);
+        
+        // Combine and remove duplicates based on RFI ID
+        const combined = [...received, ...sent];
+        const uniqueRfi = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        allRfi = uniqueRfi;
       } else {
-        res = await Service.GetRFIByProjectId(id);
+        const res = await Service.GetRFIByProjectId(id);
+        allRfi = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
       }
 
-      if (res) {
-        const rfi = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
-        setProject(prev => prev ? { ...prev, rfi } : null);
-      }
+      setProject(prev => prev ? { ...prev, rfi: allRfi } : null);
     } catch (error) {
       console.error("Error fetching project RFIs:", error);
     }

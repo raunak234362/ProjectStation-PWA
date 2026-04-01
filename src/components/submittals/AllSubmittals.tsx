@@ -104,11 +104,21 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
       accessorKey: "multipleRecipients",
       header: "To",
       cell: ({ row }) => {
-        const recipients = row.original.multipleRecipients || [];
-        const firstRecipient = recipients[0];
-        const remainingCount = recipients.length - 1;
+        const multiple = row.original.multipleRecipients || [];
+        const single = row.original.recepients || row.original.recipient;
+        
+        let displayRecipients = [];
+        
+        if (multiple.length > 0) {
+          displayRecipients = multiple;
+        } else if (single) {
+          displayRecipients = [single];
+        }
 
-        if (recipients.length === 0) return <span className="text-gray-400">—</span>;
+        if (displayRecipients.length === 0) return <span className="text-gray-400">—</span>;
+
+        const firstRecipient = displayRecipients[0];
+        const remainingCount = displayRecipients.length - 1;
 
         return (
           <div className="flex items-center gap-2">
