@@ -249,7 +249,7 @@ const AllProjectNotes = ({ projectId, project }: { projectId: string; project?: 
                                                 </p>
                                                 <RenderFiles 
                                                     files={note.files}
-                                                    table="team-meeting-notes"
+                                                    table="teamMeetingNotes"
                                                     parentId={note.id}
                                                     hideHeader
                                                     formatDate={formatDateTime}

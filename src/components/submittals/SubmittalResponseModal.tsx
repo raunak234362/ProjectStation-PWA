@@ -105,7 +105,7 @@ const SubmittalResponseModal = ({
           >
             <option value="">Please Select the Status</option>
             <option value="SUBMITTED_TO_EOR">Submitted to EOR</option>
-            <option value="REVISED_RESUBMITTAL">Revised & Resubmittal</option>
+            <option value="REVISED_RESUBMITTAL">Revised & Resubmit For Re-Approval</option>
             <option value="RELEASE_FOR_FABRICATION">Release for Fabrication</option>
             <option value="REVISED_RESUBMIT_FOR_FABRICATION">Revised & Resubmit for Fabrication</option>
           </select>

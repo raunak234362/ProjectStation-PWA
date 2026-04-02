@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Button from "../../fields/Button";
 import type { Fabricator } from "../../../interface";
-import { openFileSecurely } from "../../../utils/openFileSecurely";
+import RenderFiles from "../../ui/RenderFiles";
 import EditFabricator from "./EditFabricator";
 import { formatDateTime } from "../../../utils/dateUtils";
 import AllBranches from "../branches/AllBranches";
@@ -281,28 +281,12 @@ const GetFabricatorByID = ({
                   <Paperclip size={14} className="text-green-500" /> Compliance
                   Documentation
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {(
-                    fabricator.files as { id: string; originalName: string }[]
-                  ).map((file) => (
-                    <div
-                      key={file.id}
-                      className="flex justify-between items-center bg-gray-50/80 dark:bg-slate-800/80 p-4 rounded-xl border border-gray-100 dark:border-slate-700 hover:border-green-200 dark:hover:border-green-900/50 hover:bg-white dark:hover:bg-slate-800 transition-all group"
-                    >
-                      <span className=" text-gray-700 dark:text-slate-300 truncate mr-4">
-                        {file.originalName}
-                      </span>
-                      <button
-                        onClick={() =>
-                          openFileSecurely("fabricator", id, file.id)
-                        }
-                        className="p-2 bg-white dark:bg-slate-700 rounded-lg text-green-600 dark:text-green-400 shadow-sm border border-gray-100 dark:border-slate-600 hover:bg-green-600 dark:hover:bg-green-500 hover:text-white transition-all"
-                      >
-                        <ExternalLink size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                <RenderFiles
+                  files={fabricator.files}
+                  table="fabricator"
+                  parentId={id}
+                  hideHeader
+                />
               </div>
             )}
           </div>

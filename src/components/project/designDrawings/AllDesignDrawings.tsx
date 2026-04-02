@@ -51,7 +51,7 @@ const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-gray-700">
         <Loader2 className="w-6 h-6 animate-spin mb-2" />
-        Loading Design Drawings...
+        Loading Documents...
       </div>
     );
   }
@@ -60,7 +60,7 @@ const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-gray-700">
         <Inbox className="w-10 h-10 mb-3 text-gray-400" />
-        <p className="text-lg font-medium">No Design Drawings Available</p>
+        <p className="text-lg font-medium">No Documents Available</p>
       </div>
     );
   }
@@ -68,7 +68,7 @@ const AllDesignDrawings = ({ projectId }: AllDesignDrawingsProps) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div className="p-4 border-b border-gray-50 bg-gray-50/50">
-        <h3 className=" text-gray-800">Design Drawings</h3>
+        <h3 className=" text-gray-800">Documents</h3>
       </div>
       <div className="p-0 overflow-x-auto">
         <DataTable
