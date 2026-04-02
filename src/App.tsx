@@ -49,7 +49,7 @@ const AppContent = () => {
       dispatch(setUserData(userDetail));
 
       // Connect socket after user is set
-      connectSocket(userDetail.id);
+      connectSocket();
     } catch (err) {
       console.error("User fetch failed:", err);
       toast.error("Failed to load user");

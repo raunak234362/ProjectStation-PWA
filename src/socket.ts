@@ -17,46 +17,48 @@ const socket = io(baseURL, {
 // Re-connect when window/app regains focus (crucial for mobile PWAs)
 if (typeof window !== "undefined") {
   window.addEventListener("focus", () => {
-    const auth = socket.auth; 
+    const auth = socket.auth;
+    const token = sessionStorage.getItem("token");
+    
     if (
+      token &&
       auth &&
       typeof auth !== "function" &&
-      (auth as any).userId &&
       !socket.connected
     ) {
-      console.log("DEBUG: App focused, reconnecting socket...");
+      console.log("DEBUG: App focused, reconnecting socket with token...");
+      socket.auth = { token };
       socket.connect();
     }
   });
 }
 
-// Connect socket with userId
-export function connectSocket(userId: string) {
-  if (!userId) {
-    console.warn("User ID missing — socket not connected");
+// Connect socket with JWT token
+export function connectSocket(token?: string) {
+  const authToken = token || sessionStorage.getItem("token");
+
+  if (!authToken) {
+    console.warn("JWT Token missing — socket not connected");
     return;
   }
 
-  console.log("User ID Passing", userId);
+  console.log("DEBUG: Connecting socket with token");
 
   // Update auth before connecting
-  socket.auth = { userId };
-  console.log(socket);
+  socket.auth = { token: authToken };
 
-  // Avoid multiple connects
-  if (!socket.connected) {
-    socket.connect();
+  // If already connected, disconnect first to force a re-auth with the new token
+  if (socket.connected) {
+    socket.disconnect();
   }
+  
+  socket.connect();
 
-  // Log socket events (optional but very helpful)
+  // Log socket events
   socket.on("connect", () => {
     console.log("✅ Socket connected:", socket.id);
     if (typeof socket.id === "string") {
       sessionStorage.setItem("socketId", socket.id);
-    } else {
-      console.warn(
-        "Socket ID is undefined, could not store socketId in sessionStorage.",
-      );
     }
   });
 

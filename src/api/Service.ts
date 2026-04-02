@@ -502,19 +502,20 @@ class Service {
     }
   }
 
-  static async GetConnectionDesignerQuotaByID(id: string) {
+    static async GetConnectionDesignerQuotaByID(id:string) {
     try {
       const response = await api.get(`connectionDesignerQuota/${id}`, {
         headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response);
-      return response.data;
+          'Content-Type': 'application/json'
+        }
+      })
+      console.log(response)
+      return response.data
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
+
 
   // Get all quotations for an RFQ
   static async getQuotationsByRFQ(rfqId: string) {
@@ -599,6 +600,7 @@ class Service {
       console.error("cannot fetch RFQ file", error);
     }
   }
+
 
   //Add Vendor
   static async AddVendor(data: FormData | any) {
@@ -1113,6 +1115,7 @@ class Service {
       console.log(error);
     }
   }
+
 
   // Get Project Overall Dashboard
   static async GetProjectOverallDashboard(id: string, stage: string) {
@@ -1692,21 +1695,15 @@ class Service {
   //Pending Submittals of Connection DesignerEngineer
   static async ConnectionDesignerEngineerPendingSubmittals() {
     try {
-      const response = await api.get(
-        `mileStone/pendingSubmittals/connectionDesignerEngineer`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const response = await api.get(`mileStone/pendingSubmittals/connectionDesignerEngineer`, {
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+      });
       console.log("Connection Designer Engineer pending RFIs:", response.data);
       return response.data;
     } catch (error) {
-      console.error(
-        "cannot find pending RFIs for Connection Designer Engineer",
-        error,
-      );
+      console.error("cannot find pending RFIs for Connection Designer Engineer", error);
     }
   }
 
@@ -1818,13 +1815,13 @@ class Service {
     try {
       const response = await api.get(`rfi/sents/${projectId}`, {
         headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All rfi fetched by rfi ID:", response.data);
-      return response.data;
+          'Content-Type': 'application/json'
+        }
+      })
+      console.log(' All rfi fetched by rfi ID:', response.data)
+      return response.data
     } catch (error) {
-      console.error("cannot find rfi", error);
+      console.error('cannot find rfi', error)
     }
   }
 
@@ -1913,14 +1910,14 @@ class Service {
     try {
       const response = await api.post(`submittal/${id}/versions`, data, {
         headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("Submittal version updated:", response.data);
-      return response.data;
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      console.log('Submittal version updated:', response.data)
+      return response.data
     } catch (error) {
-      console.error("cannot update submittal version", error);
-      throw error;
+      console.error('cannot update submittal version', error)
+      throw error
     }
   }
 
@@ -1946,20 +1943,20 @@ class Service {
       console.error("cannot find sub", error);
     }
   }
-  // submittalsentbyprojectid:
-  static async SubmittalSentByProjectId(projectId: string) {
-    try {
-      const response = await api.get(`submittal/sents/${projectId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All submittals fetched by project ID:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find submittal", error);
-    }
+// submittalsentbyprojectid:
+static async SubmittalSentByProjectId(projectId: string) {
+  try {
+    const response = await api.get(`submittal/sents/${projectId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    console.log(' All submittals fetched by project ID:', response.data)
+    return response.data
+  } catch (error) {
+    console.error('cannot find submittal', error)
   }
+}
   //submittal by project id :
   static async GetSubmittalByProjectId(projectId: string) {
     try {
@@ -2943,9 +2940,7 @@ class Service {
   }
   static async ViewFileNotesTeamMeeting(noteId: string, fileId: string) {
     try {
-      const response = await api.get(
-        `teamMeetingNotes/viewFile/${noteId}/${fileId}`,
-      );
+      const response = await api.get(`teamMeetingNotes/viewFile/${noteId}/${fileId}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching file notes:", error);
@@ -2955,10 +2950,7 @@ class Service {
   //team meeting respoense routes
   static async AddTeamMeetingResponse(notesId: string, formData: FormData) {
     try {
-      const response = await api.post(
-        `teamMeetingNotes/${notesId}/responses`,
-        formData,
-      );
+      const response = await api.post(`teamMeetingNotes/${notesId}/responses`, formData);
       return response.data;
     } catch (error) {
       console.error("Error fetching team meeting response:", error);
@@ -3002,14 +2994,9 @@ class Service {
       throw error;
     }
   }
-  static async ViewFileNotesTeamMeetingResponse(
-    noteId: string,
-    fileId: string,
-  ) {
+  static async ViewFileNotesTeamMeetingResponse(noteId: string, fileId: string) {
     try {
-      const response = await api.get(
-        `teamMeetingNotes/responses/viewFile/${noteId}/${fileId}`,
-      );
+      const response = await api.get(`teamMeetingNotes/responses/viewFile/${noteId}/${fileId}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching file notes:", error);
@@ -3017,73 +3004,89 @@ class Service {
     }
   }
 
-  //client dashboard routes
 
-  static async GetClientDashboardData() {
+  //client dashboard routes
+  
+static async GetClientDashboardData() {
     try {
-      console.log("Fetching client dashboard data...");
-      const response = await api.get(`/dashBoardData/client`);
-      console.log("Client dashboard data fetched successfully:", response.data);
-      return response.data;
+      console.log('Fetching client dashboard data...');
+      const response = await api.get(`/dashBoardData/client`)
+      console.log('Client dashboard data fetched successfully:', response.data);
+      return response.data
     } catch (error) {
-      console.error("Error fetching client dashboard data:", error);
-      throw error;
+      console.error('Error fetching client dashboard data:', error)
+      throw error
     }
   }
+
+  // get dashboard data for connection designer
+  static async GetConnectionDesignerAdminDashboardData() {
+    try {
+      const response = await api.get(`/dashBoardData/connectionDesignerAdmin`)
+      console.log('Connection designer dashboard data fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching connection designer dashboard data:', error)
+      throw error
+    }
+  }
+
   static async GetClientSubmittals() {
     try {
-      console.log("Fetching client submittals...");
-      const response = await api.get(`/submittal/pending/client`);
-      console.log("Client submittals fetched successfully:", response.data);
-      return response.data;
+      console.log('Fetching client submittals...');
+      const response = await api.get(`/submittal/pending/client`)
+      console.log('Client submittals fetched successfully:', response.data);
+      return response.data
     } catch (error) {
-      console.error("Error fetching client submittals:", error);
-      throw error;
+      console.error('Error fetching client submittals:', error)
+      throw error
     }
   }
   static async GetClientRFI() {
     try {
-      console.log("Fetching client rfi...");
-      const response = await api.get(`/rfi/pending/client`);
-      console.log("Client rfi fetched successfully:", response.data);
-      return response.data;
+      console.log('Fetching client rfi...');
+      const response = await api.get(`/rfi/pending/client`)
+      console.log('Client rfi fetched successfully:', response.data);
+      return response.data
     } catch (error) {
-      console.error("Error fetching client rfi:", error);
-      throw error;
+      console.error('Error fetching client rfi:', error)
+      throw error
     }
   }
   static async GetClientCO() {
     try {
-      console.log("Fetching client co...");
-      const response = await api.get(`/changeOrder/pending/client`);
-      console.log("Client co fetched successfully:", response.data);
-      return response.data;
+      console.log('Fetching client co...');
+      const response = await api.get(`/changeOrder/pending/client`)
+      console.log('Client co fetched successfully:', response.data);
+      return response.data
     } catch (error) {
-      console.error("Error fetching client co:", error);
-      throw error;
+      console.error('Error fetching client co:', error)
+      throw error
     }
   }
   static async GetClientRFQ() {
     try {
-      console.log("Fetching client rfq...");
-      const response = await api.get(`/rfq/pending/client`);
-      console.log("Client rfq fetched successfully:", response.data);
-      return response.data;
+      console.log('Fetching client rfq...');
+      const response = await api.get(`/rfq/pending/client`)
+      console.log('Client rfq fetched successfully:', response.data);
+      return response.data
     } catch (error) {
-      console.error("Error fetching client rfq:", error);
-      throw error;
+      console.error('Error fetching client rfq:', error)
+      throw error
     }
   }
   static async GetClientMilestone() {
     try {
-      console.log("Fetching client milestone...");
-      const response = await api.get(`/milestone/pendingSubmittals/client`);
-      console.log("Client milestone fetched successfully:", response.data);
-      return response.data;
+      console.log('Fetching client milestone...');
+      const response = await api.get(`/milestone/pendingSubmittals/client`)
+      console.log('Client milestone fetched successfully:', response.data);
+      return response.data
     } catch (error) {
-      console.error("Error fetching client milestone:", error);
-      throw error;
+      console.error('Error fetching client milestone:', error)
+      throw error
     }
   }
+
+  
 }
 export default Service;

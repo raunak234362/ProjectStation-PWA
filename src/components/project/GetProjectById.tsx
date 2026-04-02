@@ -40,6 +40,8 @@ import SubmittalLayout from "../../layout/SubmittalLayout";
 import MilestoneLayout from "../../layout/MilestoneLayout";
 import NotesLayout from "../../layout/NotesLayout";
 import ProjectNotesLayout from "../../layout/ProjectNotesLayout";
+import ProjectUpcomingSubmittals from "./ProjectUpcomingSubmittals";
+import GetSubmittalByID from "../submittals/GetSubmittalByID";
 
 const GetProjectById = ({
   id,
@@ -67,6 +69,7 @@ const GetProjectById = ({
     key: string;
     tasks: any[];
   } | null>(null);
+  const [selectedSubmittalToView, setSelectedSubmittalToView] = useState<string | null>(null);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const rfiData = useMemo(() => {
     return project?.rfi || [];
@@ -742,6 +745,12 @@ const GetProjectById = ({
 
               <ProjectMilestoneMetrics projectId={id} />
 
+              <ProjectUpcomingSubmittals 
+                submittals={submittalData} 
+                onViewAll={() => setActiveTab("submittals")}
+                onSubmittalClick={(subId) => setSelectedSubmittalToView(subId)}
+              />
+
               {/* Other Tasks Hours Breakdown (Overview only) */}
               {!isClient && Object.keys(otherTasksByBundle).length > 0 && (
                 <div className="rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
@@ -1224,6 +1233,14 @@ const GetProjectById = ({
               </div>
             </div>
           </div>,
+          document.body,
+        )}
+      {selectedSubmittalToView &&
+        createPortal(
+          <GetSubmittalByID
+            id={selectedSubmittalToView}
+            onClose={() => setSelectedSubmittalToView(null)}
+          />,
           document.body,
         )}
     </div>,

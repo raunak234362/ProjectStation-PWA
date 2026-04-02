@@ -46,7 +46,7 @@ const WBTDashboard = () => {
       navigate("/dashboard/sales");
     } else if (userRole === "client" || userRole === "client_admin") {
       navigate("/dashboard/client");
-    } else if (userRole === "connection_designer_engineer") {
+    } else if (userRole === "connection_designer_engineer" || userRole === "connection_designer_admin") {
       navigate("/dashboard/connection-designer-dashboard");
     } else if (userRole === "estimation_head") {
       navigate("/dashboard/estimation");

@@ -5,6 +5,7 @@ import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
 import { LogOut, X } from "lucide-react";
+import socket from "../socket";
 
 interface SidebarProps {
   isMinimized: boolean;
@@ -27,6 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const fetchLogout = (): void => {
     sessionStorage.clear();
+    socket.disconnect();
     navigate("/");
   };
 
