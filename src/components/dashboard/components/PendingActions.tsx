@@ -55,6 +55,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
     ? actions.filter((action) => filter.includes(action.title as any))
     : actions;
 
+console.log(dashboardStats,"dashboardStats-----------------------------");
 
   return (
     <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">

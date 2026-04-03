@@ -31,7 +31,7 @@ const ConnectionDesignerDashboard = () => {
     const [loading, setLoading] = useState(true);
 
     const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
-    const isClientRole = userRole === "client" || userRole === "connection_designer_engineer";
+    const isClientRole = userRole === "client" || userRole === "connection_designer_engineer" || userRole === "connection_designer_admin";
 
     // Data State
     const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
@@ -172,8 +172,19 @@ const ConnectionDesignerDashboard = () => {
                 : isClientRole
                     ? await Service.GetClientDashboardData()
                     : await Service.DashboardData();
-            console.log("Dashboard client Data", response);
-            setDashboardStats(response?.data || response || null);
+            console.log("Dashboard Data", response);
+            const data = response?.data || response || null;
+            setDashboardStats(data);
+
+            if (userRole === "connection_designer_admin" && data) {
+                setStats(prev => ({
+                    ...prev,
+                    totalProjects: data.totalProjects || 0,
+                    activeProjects: data.totalActiveProjects || 0,
+                    completedProjects: data.totalCompleteProject || 0,
+                    onHoldProjects: data.totalOnHoldProject || 0,
+                }));
+            }
         } catch (error) {
             console.error("Failed to fetch dashboard data", error);
         }
@@ -182,10 +193,9 @@ const ConnectionDesignerDashboard = () => {
     const fetchUpcomingSubmittals = async () => {
         try {
             let response;
-            if (userRole === "connection_designer_engineer") {
-                response = await Service.ConnectionDesignerEngineerPendingSubmittals();
-                console.log(response,"===========");
-                
+            if (userRole === "connection_designer_engineer" || userRole === "connection_designer_admin") {
+                response = await Service.GetClientMilestone();
+                console.log(response, "===========");
             } else if (userRole === "client") {
                 response = await Service.GetClientMilestone();
             } else {

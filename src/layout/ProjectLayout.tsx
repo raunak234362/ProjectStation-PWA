@@ -8,6 +8,7 @@ const ProjectLayout = () => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const [activeTab, setActiveTab] = useState(
     userRole === "connection_designer_engineer" ||
+      userRole === "connection_designer_admin" ||
       userRole === "estimation_head" ||
       userRole === "client_admin" ||
       userRole === "client"
@@ -122,6 +123,7 @@ const ProjectLayout = () => {
 
             {[
               "connection_designer_engineer",
+              "connection_designer_admin",
               "estimation_head",
               "admin",
             ].includes(
