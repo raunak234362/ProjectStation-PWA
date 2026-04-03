@@ -8,7 +8,7 @@ const UpdateSubmittalById = ({ submittal, onClose, onSuccess }: any) => {
   const [description, setDescription] = useState(
     submittal?.description || submittal?.currentVersion?.description || "",
   );
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,8 +25,8 @@ const UpdateSubmittalById = ({ submittal, onClose, onSuccess }: any) => {
       const formData = new FormData();
       formData.append("subject", subject.trim());
       formData.append("description", description);
-      if (file) {
-        formData.append("file", file);
+      if (files) {
+        formData.append("files", files);
       }
 
       await Service.updateSubmittalVersionById(submittal.id, formData);
@@ -109,9 +109,9 @@ const UpdateSubmittalById = ({ submittal, onClose, onSuccess }: any) => {
             <label className="flex items-center gap-3 w-full px-4 py-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#6bbd45] hover:bg-[#6bbd45]/5 transition-all group">
               <Upload className="w-5 h-5 text-gray-400 group-hover:text-[#6bbd45] transition-colors shrink-0" />
               <div className="flex-1 min-w-0">
-                {file ? (
+                {files ? (
                   <span className="text-sm font-semibold text-black truncate block">
-                    {file.name}
+                    {files.name}
                   </span>
                 ) : (
                   <span className="text-sm text-gray-400">
@@ -119,12 +119,12 @@ const UpdateSubmittalById = ({ submittal, onClose, onSuccess }: any) => {
                   </span>
                 )}
               </div>
-              {file && (
+              {files && (
                 <button
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    setFile(null);
+                    setFiles(null);
                   }}
                   className="shrink-0 text-gray-400 hover:text-red-500 transition-colors"
                 >
@@ -134,13 +134,13 @@ const UpdateSubmittalById = ({ submittal, onClose, onSuccess }: any) => {
               <input
                 type="file"
                 className="hidden"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                onChange={(e) => setFiles(e.target.files?.[0] || null)}
               />
             </label>
-            {file && (
+            {files && (
               <p className="text-[10px] text-gray-400 ml-1">
-                {(file.size / 1024).toFixed(1)} KB ·{" "}
-                {file.type || "Unknown type"}
+                {(files.size / 1024).toFixed(1)} KB ·{" "}
+                {files.type || "Unknown type"}
               </p>
             )}
           </div>

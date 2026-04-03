@@ -39,10 +39,30 @@ const AllProjects = () => {
   const columns: any[] = [
     {
       accessorKey: "name",
-      header: "Project Name",
+      header: () => <span className="pl-6">Project Name</span>,
       cell: ({ row }: { row: any }) => (
-        <span className="font-bold text-black">{row.original.name}</span>
+        <div className="flex items-center gap-4 pl-6">
+          <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0 border border-green-100">
+            <svg
+              className="w-5 h-5 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+              />
+            </svg>
+          </div>
+          <span className="font-black text-black group-hover:text-green-700 transition-colors">
+            {row.original.name}
+          </span>
+        </div>
       ),
+      size: 550,
       enableColumnFilter: !isClient,
       filterType: "text",
       filterFn: "includesString",
@@ -55,6 +75,7 @@ const AllProjects = () => {
           {row.original.stage || "—"}
         </span>
       ),
+      size: 100,
     },
     {
       accessorKey: "status",
@@ -64,6 +85,7 @@ const AllProjects = () => {
           {row.getValue("status") || "—"}
         </span>
       ),
+      size: 100,
     },
   ];
 

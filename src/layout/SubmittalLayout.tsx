@@ -22,7 +22,7 @@ const SubmittalLayout = ({ project, submittalData, onSuccess }: SubmittalLayoutP
     <div className="w-full h-full overflow-hidden flex flex-col bg-white">
       <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
         <button onClick={() => setActiveTab("allSubmittals")} className={btnClass("allSubmittals")}>All Submittals</button>
-        {userRole !== "client" && userRole !== "client_admin" && (
+        {userRole !== "client" && userRole !== "client_admin" && userRole !== "connection_designer_engineer" && userRole !== "connection_designer_admin" && (
           <button onClick={() => setActiveTab("addSubmittal")} className={btnClass("addSubmittal")}>Add Submittal</button>
         )}
       </div>

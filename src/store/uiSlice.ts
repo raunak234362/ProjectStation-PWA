@@ -2,6 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface UIState {
   activeModalCount: number;
+  activeDetailView: {
+    type: "SUBMITTAL" | "RFI" | "RFQ" | "MILESTONE" | "PROJECT" | "TASK" | "CHANGE_ORDER" | null;
+    id: string | number | null;
+    projectId?: string | number | null;
+  };
   fileError: {
     isOpen: boolean;
     reason: string;
@@ -11,6 +16,10 @@ interface UIState {
 
 const initialState: UIState = {
   activeModalCount: 0,
+  activeDetailView: {
+    type: null,
+    id: null,
+  },
   fileError: {
     isOpen: false,
     reason: "",
@@ -40,6 +49,13 @@ const uiSlice = createSlice({
     hideFileError: (state) => {
       state.fileError.isOpen = false;
     },
+    openDetailView: (state, action: { payload: { type: UIState["activeDetailView"]["type"], id: string | number, projectId?: string | number } }) => {
+      console.log("dispatching openDetailView", action.payload);
+      state.activeDetailView = action.payload;
+    },
+    closeDetailView: (state) => {
+      state.activeDetailView = { type: null, id: null, projectId: null };
+    },
   },
 });
 
@@ -48,6 +64,8 @@ export const {
     decrementModalCount, 
     resetModalCount,
     showFileError,
-    hideFileError
+    hideFileError,
+    openDetailView,
+    closeDetailView
 } = uiSlice.actions;
 export default uiSlice.reducer;

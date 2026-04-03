@@ -267,16 +267,16 @@ export default function DataTable<T extends object>({
           onRowClick={onRowClick}
         />
       ) : (
-        <div className={`w-full ${noBorder ? "" : "border border-black/10 dark:border-slate-800"} rounded-2xl overflow-hidden shadow-sm`}>
-          <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
-            <table className="min-w-full divide-y dark:divide-slate-800">
-              <thead className="bg-gray-200 sticky top-0 z-10 shadow-sm border-b border-gray-200">
+        <div className={`w-full ${noBorder ? "" : "border border-black/5 dark:border-slate-800"} rounded-lg overflow-hidden bg-white dark:bg-slate-900 shadow-sm transition-all duration-300`}>
+          <div className="max-h-[800px] overflow-y-auto overflow-x-auto custom-scrollbar">
+            <table className="min-w-full table-fixed divide-y divide-black/5 dark:divide-slate-800">
+              <thead className="bg-[#f0f9eb] dark:bg-green-950/20 sticky top-0 z-10 backdrop-blur-sm border-b border-green-100/50">
                 {table.getHeaderGroups().map((hg) => (
                   <tr key={hg.id}>
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-6 py-2.5 text-left text-[11px] md:text-sm font-bold text-gray-900 border-b border-gray-200 tracking-wide uppercase"
+                        className="px-8 py-5 text-left text-sm md:text-base font-black text-black dark:text-slate-100 tracking-tight uppercase transition-colors"
                         onClick={header.column.getToggleSortingHandler()}
                         style={{ width: header.column.getSize() }}
                       >
@@ -286,10 +286,10 @@ export default function DataTable<T extends object>({
                             header.getContext(),
                           )}
                           {header.column.getIsSorted() === "asc" && (
-                            <ChevronUp className="w-4 h-4 text-gray-500" />
+                            <ChevronUp className="w-3 h-3 text-green-600" />
                           )}
                           {header.column.getIsSorted() === "desc" && (
-                            <ChevronDown className="w-4 h-4 text-gray-500" />
+                            <ChevronDown className="w-3 h-3 text-green-600" />
                           )}
                         </div>
 
@@ -303,11 +303,11 @@ export default function DataTable<T extends object>({
                 ))}
               </thead>
 
-              <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
+              <tbody className="bg-white dark:bg-slate-900 divide-y divide-black/5 dark:divide-slate-800">
                 {table.getPaginationRowModel().rows.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr
-                      className={`hover:bg-green-50/60 dark:hover:bg-slate-800/50 cursor-pointer transition-colors ${expandedRowId === row.id ? "bg-green-50 dark:bg-slate-800/50" : ""
+                      className={`group hover:bg-green-50/40 dark:hover:bg-slate-800/40 cursor-pointer transition-all duration-200 ${expandedRowId === row.id ? "bg-green-50/50 dark:bg-slate-800/50" : ""
                         }`}
                       onClick={() => {
                         onRowClick?.(row.original);
@@ -319,7 +319,11 @@ export default function DataTable<T extends object>({
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-6 py-2.5 text-[11px] md:text-sm text-gray-800 font-medium leading-relaxed uppercase">
+                        <td
+                          key={cell.id}
+                          className="px-8 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-bold leading-relaxed uppercase tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400"
+                          style={{ width: cell.column.getSize() }}
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
@@ -328,9 +332,9 @@ export default function DataTable<T extends object>({
                       ))}
                     </tr>
                     {expandedRowId === row.id && DetailComponent && (
-                      <tr className="bg-gray-50/50 dark:bg-slate-800/30">
-                        <td colSpan={columns.length} className="px-4 py-4">
-                          <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-800 shadow-sm p-4 text-gray-800 dark:text-slate-300">
+                      <tr className="bg-slate-50/30 dark:bg-slate-800/20">
+                        <td colSpan={columns.length} className="px-6 py-6 animate-in slide-in-from-top-2 duration-300">
+                          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-black/5 dark:border-slate-800 shadow-xl p-6 text-black dark:text-slate-300 overflow-hidden">
                             <DetailComponent
                               row={row.original}
                               close={() => setExpandedRowId(null)}

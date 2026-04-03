@@ -8,6 +8,7 @@ import Button from "../fields/Button";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login, setUserData } from "../../store/userSlice";
+import { connectSocket } from "../../socket";
 
 const Login = () => {
   const { register, handleSubmit } = useForm<AuthInterface>();
@@ -24,6 +25,7 @@ const Login = () => {
       }
 
       sessionStorage.setItem("token", token);
+      connectSocket(token);
       if (userDetail?.role) {
         sessionStorage.setItem("userRole", userDetail.role);
       }

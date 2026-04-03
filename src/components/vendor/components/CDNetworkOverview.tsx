@@ -33,7 +33,7 @@ const HoverPopover = ({ states, targetRect }: { states: string[], targetRect: DO
       className="z-[100] bg-white p-4 rounded-xl shadow-2xl border border-black/10 w-64 pointer-events-none hidden sm:block"
     >
       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-black/10">
-        <MapPin size={14} className="text-green-500" />
+        <MapPin size={14} className="text-emerald-500" />
         <span className="text-xs font-bold text-black">
           Coverage Area
         </span>
@@ -43,7 +43,7 @@ const HoverPopover = ({ states, targetRect }: { states: string[], targetRect: DO
           states.slice(0, 12).map((s, i) => (
             <span
               key={i}
-              className="text-[10px] bg-green-50 text-black px-2 py-0.5 rounded-md border border-black/10 font-medium"
+              className="text-[10px] bg-emerald-50 text-black px-2 py-0.5 rounded-md border border-black/10 font-medium"
             >
               {s}
             </span>

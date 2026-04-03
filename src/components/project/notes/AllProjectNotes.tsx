@@ -10,8 +10,7 @@ import {
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
 import AddProjectNote from "./AddProjectNote";
-import FileItem from "../../ui/FileItem";
-import { openFileSecurely } from "../../../utils/openFileSecurely";
+import RenderFiles from "../../ui/RenderFiles";
 import DataTable from "../../ui/table";
 import NoteResponseModal from "./NoteResponseModal";
 import NoteResponseDetailsModal from "./NoteResponseDetailsModal";
@@ -22,7 +21,7 @@ interface Note {
     id: string;
     title?: string;
     content: string;
-    visibility?: "INTERNAL" | "EXTERNAL";
+    visibility?: string;
     createdAt?: string;
     createdBy?: { id: string; firstName?: string; lastName?: string; role?: string };
     files?: { id: string; originalName?: string; fileName?: string }[];
@@ -30,7 +29,7 @@ interface Note {
     serialNo?: string;
 }
 
-const AllProjectNotes = ({ projectId }: { projectId: string }) => {
+const AllProjectNotes = ({ projectId, project }: { projectId: string; project?: any }) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -122,39 +121,33 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
         "deputy_manager",
         "client",
         "client_admin",
-        "project_manager_officer",
-        "operation_executive",
-        "estimation_head",
-        "connection_designer_engineer",
-        "connection_designer_admin",
     ].includes(userRole);
 
     if (!isAuthorized) {
-        return null;
+        return null; // Or return a message: <div className="p-4 text-red-500 font-bold">Access Denied</div>
     }
 
+    const isClient = userRole === "client" || userRole === "client_admin";
     const currentUserId = sessionStorage.getItem("userId") || "";
+    const userFirstName = sessionStorage.getItem("firstName") || "";
+    const userLastName = sessionStorage.getItem("lastName") || "";
+    const username = sessionStorage.getItem("username") || "";
+    const fullName = `${userFirstName} ${userLastName}`.trim() || username;
+
+
 
     const filteredNotes = notes.filter((note) => {
-        // Admin, internal staff, and Client Admins see everything for the project
-        const hasFullAccess = [
-            "admin",
-            "project_manager",
-            "deputy_manager",
-            "project_manager_officer",
-            "operation_executive",
-            "estimation_head",
-            "client_admin",
-            "client",
-            "connection_designer_engineer",
-            "connection_designer_admin",
-        ].includes(userRole);
-
-        if (hasFullAccess) return true;
-
-        // Users always see their own created notes
+        if (!isClient) return true;
+        // Always show if the current user is the creator
         if (note.createdBy?.id === currentUserId) return true;
 
+        // If it's a client, show only EXTERNAL notes if they were added by the internal team (non-clients)
+        const creatorRole = note.createdBy?.role?.toLowerCase() || "";
+        const isInternalCreator = creatorRole !== "client" && creatorRole !== "client_admin";
+
+        if (isInternalCreator) {
+            return note.visibility === "EXTERNAL";
+        }
         return true;
     });
 
@@ -210,7 +203,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                             )}
                                         </div>
                                         <div className="text-sm font-black text-black truncate pr-4 uppercase tracking-tight mb-2">
-                                            {note.title || truncateWords(note.content?.replace(/<[^>]*>?/gm, "") || "Untitled Note", 10)}
+                                            {truncateWords(note.content || "Untitled Note", 10)}
                                         </div>
                                         <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                             {note.createdBy && (
@@ -230,6 +223,11 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                                     }).format(new Date(note.createdAt))}
                                                 </span>
                                             )}
+                                            {/* {note.visibility && (
+                                                <span className="flex items-center gap-1.5 bg-blue-50 px-2 py-0.5 rounded-full text-blue-600 truncate max-w-[200px]">
+                                                    To: {note.visibility.startsWith("USER:") ? note.visibility.replace("USER:", "") : note.visibility === "ALL" ? "All Team" : note.visibility}
+                                                </span>
+                                            )} */}
                                         </div>
                                     </div>
 
@@ -278,21 +276,13 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                                     Attached Intelligence
                                                 </p>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {note.files.map((file) => (
-                                                        <FileItem
-                                                            key={file.id}
-                                                            name={file.originalName || file.fileName || file.id}
-                                                            onClick={() =>
-                                                                openFileSecurely(
-                                                                    "team-meeting-notes",
-                                                                    note.id,
-                                                                    file.id,
-                                                                )
-                                                            }
-                                                        />
-                                                    ))}
-                                                </div>
+                                                <RenderFiles 
+                                                    files={note.files}
+                                                    table="teamMeetingNotes"
+                                                    parentId={note.id}
+                                                    hideHeader
+                                                    formatDate={formatDateTime}
+                                                />
                                             </div>
                                         )}
 
@@ -437,6 +427,7 @@ const AllProjectNotes = ({ projectId }: { projectId: string }) => {
                     <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                         <AddProjectNote
                             projectId={projectId}
+                            project={project}
                             onClose={() => setShowAddModal(false)}
                             onSuccess={() => {
                                 setShowAddModal(false);

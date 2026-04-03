@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import type { DepartmentPayload } from "../../../interface";
 import Input from "../../fields/input";
 import Button from "../../fields/Button";
+import { toast } from "react-toastify";
 import Service from "../../../api/Service";
 
 type ManagerOption = {
@@ -92,10 +93,10 @@ const AddDepartment: React.FC = () => {
         managerIds: data.managerIds, // ← array!
       });
       console.log("Department created:", response);
-      // toast.success("Department created!");
+      toast.success("Department created!");
     } catch (err: any) {
       console.error("Error:", err);
-      // toast.error(err?.response?.data?.message || "Failed");
+      toast.error(err?.response?.data?.message || "Failed");
     }
   };
 

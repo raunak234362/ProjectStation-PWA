@@ -14,13 +14,10 @@ import RenderFiles from "../ui/RenderFiles";
 import QuotationRaise from "../connectionDesigner/QuotationRaise";
 import QuotationResponseModal from "../connectionDesigner/QuotationResponseModal";
 import QuotationResponseDetailsModal from "../connectionDesigner/QuotationResponseDetailsModal";
-import FileItem from "../ui/FileItem";
 import { Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
-import { openFileSecurely } from "../../utils/openFileSecurely";
 import { useDispatch } from "react-redux";
 import { deleteRFQ, updateRFQ } from "../../store/rfqSlice";
-import { showFileError } from "../../store/uiSlice";
 import { toast } from "react-toastify";
 
 interface GetRfqByIDProps {
@@ -666,30 +663,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                       row: any;
                       close: () => void;
                     }) => {
-                      const handleViewFile = async (
-                        followupId: string,
-                        fileId: string,
-                      ) => {
-                        console.log("[ViewFile] Opening file:", {
-                          followupId,
-                          fileId,
-                        });
-                        try {
-                          const result = await openFileSecurely(
-                            "rfqFollowup",
-                            followupId,
-                            fileId,
-                          );
-                          if (result && !result.success) {
-                            dispatch(showFileError({
-                                reason: result.error || "Unable to open file",
-                                retryAction: () => openFileSecurely("rfqFollowup", followupId, fileId)
-                            }));
-                          }
-                        } catch (err) {
-                          console.error("[ViewFile] Error:", err);
-                        }
-                      };
 
                       return (
                         <div className="space-y-3 text-sm">
@@ -701,22 +674,17 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                               {row.description || "—"}
                             </p>
                           </div>
-                          {row.files?.length > 0 && (
-                            <div>
-                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                                Attachments
-                              </p>
-                              <div className="flex flex-col gap-1.5">
-                                {row.files.map((file: any, i: number) => (
-                                  <FileItem
-                                    key={file.id || i}
-                                    name={file.fileName || file.originalName || file.name || `File ${i + 1}`}
-                                    onClick={() => handleViewFile(row.id, file.id)}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          )}
+                        {row.files?.length > 0 && (
+                          <div className="pt-2">
+                            <RenderFiles
+                              files={row.files}
+                              table="rfqFollowup"
+                              parentId={row.id}
+                              hideHeader
+                            />
+                          </div>
+                        )}
+
                         </div>
                       );
                     }}

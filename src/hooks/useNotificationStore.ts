@@ -5,23 +5,13 @@ import {
   removeNotification,
   type Notification,
 } from "../store/notificationSlice";
+import {
+  openDetailView,
+  closeDetailView,
+} from "../store/uiSlice";
 
 /**
  * Hook to access and manage notifications from Redux store
- *
- * @example
- * ```tsx
- * const { notifications, unreadCount, markRead, markAllRead, remove } = useNotificationStore();
- *
- * // Display notifications
- * notifications.map(notif => <div key={notif.id}>{notif.message}</div>)
- *
- * // Mark as read
- * markRead(notificationId);
- *
- * // Mark all as read
- * markAllRead();
- * ```
  */
 export const useNotificationStore = () => {
   const dispatch = useDispatch();
@@ -44,11 +34,21 @@ export const useNotificationStore = () => {
     dispatch(removeNotification(id));
   };
 
+  const openDetail = (type: any, id: any, projectId?: any) => {
+    dispatch(openDetailView({ type, id, projectId }));
+  };
+
+  const closeDetail = () => {
+    dispatch(closeDetailView());
+  };
+
   return {
     notifications,
     unreadCount,
     markRead,
     markAllRead,
     remove,
+    openDetail,
+    closeDetail,
   };
 };

@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import Service from "../../../api/Service";
 import { Loader2, AlertCircle, Trash2, Edit } from "lucide-react";
-import { openFileSecurely } from "../../../utils/openFileSecurely";
+import RenderFiles from "../../ui/RenderFiles";
 import EditDesignDrawing from "./EditDesignDrawing";
-import FileItem from "../../ui/FileItem";
 
 interface DesignDrawingDetailsProps {
   id: string;
@@ -96,18 +95,18 @@ const DesignDrawingDetails = ({ id, onUpdate }: DesignDrawingDetailsProps) => {
 
       {drawing.files && drawing.files.length > 0 && (
         <div className="space-y-2">
-          <h5 className="text-sm font-medium text-gray-700">Attachments ({drawing.files.length}):</h5>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {drawing.files.map((file: any) => (
-              <FileItem
-                key={file.id}
-                name={file.originalName}
-                onClick={() => openFileSecurely("design-drawings", id, file.id)}
-              />
-            ))}
-          </div>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+            Attachments ({drawing.files.length})
+          </p>
+          <RenderFiles
+            files={drawing.files}
+            table="designDrawings"
+            parentId={id}
+            hideHeader
+          />
         </div>
       )}
+
     </div>
   );
 };

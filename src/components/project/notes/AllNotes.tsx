@@ -4,13 +4,13 @@ import {
   FileText,
   Calendar,
   User,
-  Paperclip,
 } from "lucide-react";
 import Service from "../../../api/Service";
 import type { ProjectNote } from "../../../interface";
 import AddNotes from "./AddNotes";
-import { openFileSecurely } from "../../../utils/openFileSecurely";
 import { formatDateTime } from "../../../utils/dateUtils";
+import RenderFiles from "../../ui/RenderFiles";
+
 
 const AllNotes = ({ projectId }: { projectId: string }) => {
   const [notes, setNotes] = useState<ProjectNote[]>([]);
@@ -70,20 +70,16 @@ const AllNotes = ({ projectId }: { projectId: string }) => {
               />
 
               {note.files && note.files.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-gray-100">
-                  {note.files.map((file) => (
-                    <button
-                      key={file.id}
-                      onClick={() =>
-                        openFileSecurely("project", projectId, file.id)
-                      }
-                      className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-1 rounded hover:bg-green-100 transition-colors"
-                    >
-                      <Paperclip className="w-3 h-3" /> {file.originalName}
-                    </button>
-                  ))}
+                <div className="mt-3">
+                  <RenderFiles
+                    files={note.files}
+                    table="project"
+                    parentId={projectId}
+                    hideHeader
+                  />
                 </div>
               )}
+
             </div>
           ))}
         </div>

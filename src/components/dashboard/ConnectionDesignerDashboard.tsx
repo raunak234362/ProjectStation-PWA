@@ -167,7 +167,11 @@ const ConnectionDesignerDashboard = () => {
 
     const fetchDashboardData = async () => {
         try {
-            const response = isClientRole ? await Service.GetClientDashboardData() : await Service.DashboardData();
+            const response = userRole === "connection_designer_admin"
+                ? await Service.GetConnectionDesignerAdminDashboardData()
+                : isClientRole
+                    ? await Service.GetClientDashboardData()
+                    : await Service.DashboardData();
             console.log("Dashboard client Data", response);
             setDashboardStats(response?.data || response || null);
         } catch (error) {

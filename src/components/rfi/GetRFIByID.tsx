@@ -175,16 +175,18 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
                   {rfi.subject}
                 </h1>
                 <span className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gray-100 text-black border border-gray-200">
-                  {rfi.isAproovedByAdmin ? "Approved" : "Pending"}
+                  {rfi.status === true ? "Pending" : "Responded"}
                 </span>
               </div>
 
               {/* Basic Info */}
               <Info label="Project" value={rfi.project?.name || "—"} />
-              <Info
-                label="Fabricator"
-                value={rfi?.fabricator?.fabName || "—"}
-              />
+              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+                <Info
+                  label="Fabricator"
+                  value={rfi?.fabricator?.fabName || "—"}
+                />
+              )}
               <Info
                 label="Created On"
                 value={new Date(rfi?.date).toLocaleString()}
@@ -215,7 +217,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
                   Responses
                 </h2>
 
-                {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
+                {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CONNECTION_DESIGNER_ENGINEER" || userRole === "CONNECTION_DESIGNER_ADMIN") && (
                   <Button
                     onClick={() => setShowModal(true)}
                     className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200 transition-all border border-black shadow-md"

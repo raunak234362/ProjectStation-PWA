@@ -4,6 +4,7 @@ import Layout from "./layout/DashboardLayout";
 import Service from "./api/Service";
 import { setUserData, showStaff } from "./store/userSlice";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import socket, { connectSocket } from "./socket";
 import PWABadge from "./PWABadge";
 import { loadFabricator } from "./store/fabricatorSlice";
@@ -14,6 +15,7 @@ import useNotifications from "./hooks/useNotifications";
 import NotificationReceiver from "./util/NotificationReceiver";
 import DownloadErrorModal from "./components/ui/DownloadErrorModal";
 import { hideFileError } from "./store/uiSlice";
+import GlobalDetailView from "./components/ui/GlobalDetailView";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -47,7 +49,7 @@ const AppContent = () => {
       dispatch(setUserData(userDetail));
 
       // Connect socket after user is set
-      connectSocket(userDetail.id);
+      connectSocket();
     } catch (err) {
       console.error("User fetch failed:", err);
       toast.error("Failed to load user");
@@ -176,10 +178,11 @@ const AppContent = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={1000} />
+      <ToastContainer position="top-right" autoClose={1000} style={{ zIndex: 99999 }} />
       <NotificationReceiver />
 
       <Layout />
+      <GlobalDetailView />
 
       <DownloadErrorModal
         isOpen={fileError?.isOpen}

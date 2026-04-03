@@ -62,7 +62,6 @@ const ChatMain: React.FC<Props> = ({
     if (!content || !groupId) return;
 
     const payload = {
-      senderId: userInfo?.id,
       groupId,
       content,
       taggedUserIds: [] as string[],

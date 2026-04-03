@@ -1,28 +1,108 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Loader2, Paperclip, X, FileText } from "lucide-react";
 import Service from "../../../api/Service";
+import { toast } from "react-toastify";
+import RichTextEditor from "../../fields/RichTextEditor";
 
 interface AddProjectNoteProps {
     projectId: string;
+    project?: any;
     onClose: () => void;
     onSuccess: () => void;
 }
 
 const AddProjectNote = ({
     projectId,
+    project,
     onClose,
     onSuccess,
 }: AddProjectNoteProps) => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [visibility, setVisibility] = useState<"INTERNAL" | "EXTERNAL">("INTERNAL");
+    const [visibility, setVisibility] = useState("ALL");
     const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
-    const isClient = userRole === "client" || userRole === "client_admin";
     const [files, setFiles] = useState<File[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [allUsers, setAllUsers] = useState<any[]>([]);
+    
+    useEffect(() => {
+        const fetchAll = async () => {
+            let combined: any[] = [];
+            try {
+                const res: any = await Service.FetchAllEmployee();
+                const d = res?.data?.data || res?.data || res?.users || res || [];
+                combined = [...combined, ...(Array.isArray(d) ? d : [])];
+            } catch(e) { console.error("Error fetching internal users:", e); }
+
+            const cdId = project?.connectionDesignerID || project?.connectionDesigner?.id || project?.connectionDesigner;
+            if (cdId) {
+                try {
+                    const res: any = await Service.FetchConnectionDesignerByID(cdId.id || cdId);
+                    const cde = res?.data?.CDEngineers || res?.CDEngineers || [];
+                    combined = [...combined, ...(Array.isArray(cde) ? cde : [])];
+                } catch(e) { console.error("Error fetching CD engineers:", e); }
+            }
+
+            const fabId = project?.fabricatorID || project?.fabricator?.id || project?.fabricator;
+            if (fabId) {
+                try {
+                    const res = await Service.FetchAllClientsByFabricatorID(fabId.id || fabId);
+                    const c = res?.data?.data || res?.data || res || [];
+                    combined = [...combined, ...(Array.isArray(c) ? c : [])];
+                } catch(e) { console.error("Error fetching clients:", e); }
+            }
+            // Remove duplicates by ID just in case
+            const uniqueUsers: any[] = [];
+            const seen = new Set();
+            for (const u of combined) {
+                const uid = u.id || u._id;
+                if (!uid || !seen.has(uid)) {
+                    if (uid) seen.add(uid);
+                    uniqueUsers.push(u);
+                }
+            }
+            setAllUsers(uniqueUsers);
+        };
+        fetchAll();
+    }, [project]);
+
+    let allowedRoles: string[] = [];
+    if (userRole === "connection_designer_engineer" || userRole === "connection_designer_admin") {
+        allowedRoles = [
+            "admin",
+            "deputy_manager",
+            "department_manager",
+            "project_manager",
+            "operation_executive"
+        ];
+    } else if (userRole === "client" || userRole === "client_admin") {
+        allowedRoles = [
+            "admin",
+            "deputy_manager",
+            "department_manager",
+            "project_manager"
+        ];
+    } else {
+        allowedRoles = [
+            "connection_designer_engineer",
+            "connection_designer_admin",
+            "project_manager",
+            "department_manager",
+            "admin",
+            "deputy_manager",
+            "operation_executive",
+            "client",
+            "client_admin"
+        ];
+    }
+
+    const targetUsers = Array.isArray(allUsers) 
+        ? allUsers.filter(u => u && u.role && allowedRoles.includes(String(u.role).toLowerCase()))
+        : [];
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selected = Array.from(e.target.files || []);
@@ -57,17 +137,20 @@ const AddProjectNote = ({
             files.forEach((file) => formData.append("files", file));
 
             await Service.AddTeamMeetingNotes(formData);
+            toast.success("Note added successfully!");
             onSuccess();
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error adding note:", err);
-            setError("Failed to save note. Please try again.");
+            const errorMessage = err?.response?.data?.message || "Failed to save note. Please try again.";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setSubmitting(false);
         }
     };
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
@@ -77,7 +160,7 @@ const AddProjectNote = ({
                     </h3>
                     <button
                         onClick={onClose}
-                        className="px-4 py-1.5 bg-red-50 text-black border border-red-700/80 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
+                        className="px-4 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight shadow-sm"
                     >
                         CLOSE
                     </button>
@@ -108,31 +191,36 @@ const AddProjectNote = ({
                         <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
                             Content <span className="text-red-500">*</span>
                         </label>
-                        <textarea
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            rows={5}
-                            placeholder="Write note content here..."
-                            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all resize-none"
-                        />
+                        <div className="border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#6bbd45]/40 transition-all">
+                            <RichTextEditor
+                                value={content}
+                                onChange={setContent}
+                                placeholder="Write note content here..."
+                            />
+                        </div>
                     </div>
 
-                    {/* Visibility — hidden for client roles */}
-                    {!isClient && (
-                        <div>
-                            <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
-                                Visibility
+                    {/* Tag User */}
+                    <div>
+                        <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
+                            Tag User
                             </label>
                             <select
                                 value={visibility}
-                                onChange={(e) => setVisibility(e.target.value as "INTERNAL" | "EXTERNAL")}
+                                onChange={(e) => setVisibility(e.target.value)}
                                 className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all bg-white"
                             >
-                                <option value="INTERNAL">Internal (Team Only)</option>
-                                <option value="EXTERNAL">External (Visible to Client)</option>
+                                <option value="ALL">All Team</option>
+                                {targetUsers.map(u => {
+                                    const fullName = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username;
+                                    return (
+                                        <option key={u.id || u._id || Math.random()} value={`USER:${fullName}`}>
+                                            {fullName} ({u.role})
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
-                    )}
 
                     {/* Files */}
                     <div>

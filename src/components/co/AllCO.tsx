@@ -100,7 +100,7 @@ const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
         <p className="text-sm text-gray-400">
           {userRole === "CLIENT"
             ? "You haven’t created any Change Orders yet."
-            : "No Change Orders have been received yet."}
+            : "No Change Orders raised for this project now."}
         </p>
       </div>
     );

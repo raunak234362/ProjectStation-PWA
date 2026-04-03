@@ -11,7 +11,7 @@ import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
 import { toast } from "react-toastify";
-import FileItem from "../ui/FileItem";
+import RenderFiles from "../ui/RenderFiles";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 
 interface Props {
@@ -153,14 +153,13 @@ const QuotationResponseDetailsModal = ({
                 <FileText size={18} />
                 Attachments ({quotation.files.length})
               </h3>
-              <div className="space-y-2">
-                {quotation.files.map((file: any, index: number) => (
-                  <FileItem
-                    key={index}
-                    name={file.name || `File ${index + 1}`}
-                    onClick={() => window.open(file.url || file.path, "_blank")}
-                  />
-                ))}
+              <div className="mt-3">
+                <RenderFiles
+                  files={quotation.files}
+                  table="quotation"
+                  parentId={quotation.id}
+                  hideHeader
+                />
               </div>
             </div>
           )}
@@ -187,15 +186,14 @@ const QuotationResponseDetailsModal = ({
                     </div>
                     <p className="text-sm text-gray-800">{reply.message}</p>
                     {reply.files && reply.files.length > 0 && (
-                      <div className="mt-2 space-y-1">
-                        {reply.files.map((file: any, idx: number) => (
-                          <FileItem
-                            key={idx}
-                            name={file.name || `Attachment ${idx + 1}`}
-                            onClick={() => window.open(file.url || file.path, "_blank")}
+                        <div className="mt-2">
+                          <RenderFiles
+                            files={reply.files}
+                            table="quotationResponse"
+                            parentId={reply.id}
+                            hideHeader
                           />
-                        ))}
-                      </div>
+                        </div>
                     )}
                   </div>
                 ))}

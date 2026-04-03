@@ -21,7 +21,6 @@ import { setMilestonesForProject } from "../../store/milestoneSlice";
 import { formatSeconds } from "../../utils/timeUtils";
 import { formatDate } from "../../utils/dateUtils";
 import Service from "../../api/Service";
-import Button from "../fields/Button";
 
 import AllDocument from "./projectDocument/AllDocument";
 import { type ProjectData } from "../../interface";
@@ -41,6 +40,8 @@ import SubmittalLayout from "../../layout/SubmittalLayout";
 import MilestoneLayout from "../../layout/MilestoneLayout";
 import NotesLayout from "../../layout/NotesLayout";
 import ProjectNotesLayout from "../../layout/ProjectNotesLayout";
+import ProjectUpcomingSubmittals from "./ProjectUpcomingSubmittals";
+import GetSubmittalByID from "../submittals/GetSubmittalByID";
 
 const GetProjectById = ({
   id,
@@ -68,6 +69,7 @@ const GetProjectById = ({
     key: string;
     tasks: any[];
   } | null>(null);
+  const [selectedSubmittalToView, setSelectedSubmittalToView] = useState<string | null>(null);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const rfiData = useMemo(() => {
     return project?.rfi || [];
@@ -116,7 +118,8 @@ const GetProjectById = ({
       setLoading(true);
       setError(null);
       const response = await Service.GetProjectById(id);
-      setProject(response?.data || null);
+      const projData = response?.data || null;
+      setProject(projData);
       fetchMileStone(); // Keep milestones in sync
     } catch (err) {
       setError("Failed to load project details");
@@ -125,6 +128,90 @@ const GetProjectById = ({
       setLoading(false);
     }
   };
+
+  const fetchSubmittalsForProject = async () => {
+    if (!id || !project) return;
+    try {
+      const rolesForReceived = [
+        "client",
+        "client_admin",
+        "connection_designer_engineer",
+        "connection_designer_admin",
+      ];
+      
+      let allSubmittals: any[] = [];
+      if (rolesForReceived.includes(userRole)) {
+        // Fetch both received and sent submittals for these roles
+        const [receivedRes, sentRes] = await Promise.all([
+          Service.GetReceivedSubmittalByProjectId(id),
+          Service.SubmittalSentByProjectId(id)
+        ]);
+
+        const received = Array.isArray(receivedRes?.data) ? receivedRes.data : (Array.isArray(receivedRes) ? receivedRes : []);
+        const sent = Array.isArray(sentRes?.data) ? sentRes.data : (Array.isArray(sentRes) ? sentRes : []);
+        
+        // Combine and remove duplicates
+        const combined = [...received, ...sent];
+        const uniqueSubmittals = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        allSubmittals = uniqueSubmittals;
+      } else {
+        const res = await Service.GetSubmittalByProjectId(id);
+        allSubmittals = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+      }
+
+      setProject(prev => prev ? { ...prev, submittals: allSubmittals } : null);
+    } catch (error) {
+      console.error("Error fetching project submittals:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "submittals") {
+      fetchSubmittalsForProject();
+    }
+  }, [activeTab, id]);
+
+  const fetchRfiForProject = async () => {
+    if (!id || !project) return;
+    try {
+      const rolesForReceived = [
+        "client",
+        "client_admin",
+        "connection_designer_engineer",
+        "connection_designer_admin",
+      ];
+      
+      let allRfi: any[] = [];
+      if (rolesForReceived.includes(userRole)) {
+        // Fetch both received and sent RFIs for these roles
+        const [receivedRes, sentRes] = await Promise.all([
+          Service.GetReceivedRFIByProjectId(id),
+          Service.GetRFISentByProId(id)
+        ]);
+
+        const received = Array.isArray(receivedRes?.data) ? receivedRes.data : (Array.isArray(receivedRes) ? receivedRes : []);
+        const sent = Array.isArray(sentRes?.data) ? sentRes.data : (Array.isArray(sentRes) ? sentRes : []);
+        
+        // Combine and remove duplicates based on RFI ID
+        const combined = [...received, ...sent];
+        const uniqueRfi = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        allRfi = uniqueRfi;
+      } else {
+        const res = await Service.GetRFIByProjectId(id);
+        allRfi = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+      }
+
+      setProject(prev => prev ? { ...prev, rfi: allRfi } : null);
+    } catch (error) {
+      console.error("Error fetching project RFIs:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "rfi" || activeTab === "CDrfi") {
+      fetchRfiForProject();
+    }
+  }, [activeTab, id]);
 
   // Fetch tasks for stats
   useEffect(() => {
@@ -297,14 +384,12 @@ const GetProjectById = ({
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
     { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
-    { key: "details", label: "Details", icon: ClipboardList },
   ];
 
   const defaultDesktopTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
     { key: "analytics", label: "Analytics", icon: TrendingUp },
     { key: "teamsAnalytics", label: "Teams Analytics", icon: Activity },
-    { key: "details", label: "Details", icon: ClipboardList },
     { key: "files", label: "Files", icon: FileText },
     { key: "wbs", label: "WBS", icon: FileText },
     { key: "milestones", label: "Milestones", icon: FileText },
@@ -314,8 +399,7 @@ const GetProjectById = ({
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
   ];
-
-  const defaultMobileTabs = [
+    const defaultMobileTabs = [
     { key: "details", label: "Details" },
     { key: "analytics", label: "Analytics" },
     { key: "teamsAnalytics", label: "Teams Analytics" },
@@ -336,9 +420,11 @@ const GetProjectById = ({
     "admin",
     "project_manager",
     "deputy_manager",
+    "connection_designer_engineer",
+    "connection_designer_admin",
     "client",
     "client_admin",
-  ].includes(userRole);
+  ].includes(userRole || "");
 
   const filterTabsByRole = (tabs: any[]) => {
     return tabs.filter((tab) => {
@@ -346,7 +432,7 @@ const GetProjectById = ({
         return isAuthorizedForNotes;
       }
       if (isConnectionDesigner) {
-        const hiddenTabs = ["analytics", "teamsAnalytics", "wbs", "changeOrder"];
+        const hiddenTabs = ["analytics", "teamsAnalytics", "wbs", "changeOrder", "notes"];
         if (hiddenTabs.includes(tab.key)) return false;
       }
       return true;
@@ -375,10 +461,10 @@ const GetProjectById = ({
     );
 
   return createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
-      <div className="bg-white dark:bg-slate-900 p-5 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex justify-between items-center border-b pb-3 mb-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-3 mb-3">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight">
               {project.name}
@@ -387,11 +473,11 @@ const GetProjectById = ({
               Project No: {project.projectNumber}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-bold bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
               {project.stage}
             </span>
-            <span className="px-3 py-1 rounded-lg text-md md:text-lg bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
+            <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-bold bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
               {project.status}
             </span>
             {userRole === "admin" && (
@@ -415,7 +501,7 @@ const GetProjectById = ({
         </div>
 
         {/* Tabs */}
-        <div className="mb-4 border-b">
+        <div className="mb-4">
           {/* Mobile Dropdown */}
           <div className="block md:hidden mb-2">
             <select
@@ -457,36 +543,36 @@ const GetProjectById = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <StatCard
                     icon={<Clock className="text-blue-600" />}
-                    label="Total Estimated Hours"
+                    label="Estimated Hours"
                     value={`${project.estimatedHours || 0}h`}
                     color="bg-blue-50"
-                    description="Total estimated hours for project"
+                    layout="horizontal"
                   />
                   <StatCard
                     icon={<Clock className="text-blue-600" />}
-                    label="Total Estimated Hours for Approval"
+                    label="Estimated Hours for Approval"
                     value={`${(project.estimatedHours ?? 0) * 0.8}h`}
                     color="bg-blue-50"
-                    description="Total estimated hours for project in Approval Stage"
+                    layout="horizontal"
                   />
                   <StatCard
                     icon={<Clock className="text-blue-600" />}
-                    label="Total Estimated Hours for Fabrication"
+                    label="Estimated Hours for Fabrication"
                     value={`${(project.estimatedHours ?? 0) * 0.2}h`}
                     color="bg-blue-50"
-                    description="Total estimated hours for project in Fabrication Stage"
+                    layout="horizontal"
                   />
                   <StatCard
                     icon={<CheckCircle2 className="text-green-600" />}
                     label="Hours Completed"
                     value={formatSeconds(
                       projectStats?.workedSeconds ||
-                      project.workedSeconds ||
-                      project.totalWorkedSeconds ||
-                      0,
+                        project.workedSeconds ||
+                        project.totalWorkedSeconds ||
+                        0,
                     )}
                     color="bg-green-50"
-                    description="Total hours logged by team"
+                    layout="horizontal"
                   />
                   <StatCard
                     icon={
@@ -502,12 +588,12 @@ const GetProjectById = ({
                     value={
                       (projectStats?.isOverrun ?? project.isOverrun)
                         ? formatSeconds(
-                          (projectStats?.workedSeconds ||
-                            project.workedSeconds ||
-                            project.totalWorkedSeconds ||
-                            0) -
-                          (project.estimatedHours || 0) * 3600,
-                        )
+                            (projectStats?.workedSeconds ||
+                              project.workedSeconds ||
+                              project.totalWorkedSeconds ||
+                              0) -
+                              (project.estimatedHours || 0) * 3600,
+                          )
                         : "00:00"
                     }
                     color={
@@ -521,26 +607,27 @@ const GetProjectById = ({
                         : "Project is within estimates"
                     }
                     isAlert={projectStats?.isOverrun ?? project.isOverrun}
+                    layout="horizontal"
                   />
                 </div>
               )}
 
               {/* ✅ New Summary Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-black text-sm ">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 text-black text-sm">
                 <StatCard
                   icon={<MessageSquare className="text-green-600" />}
-                  label="Total RFIs"
+                  label="RFIs"
                   value={project.rfi?.length || 0}
                   color="bg-green-50"
-                  description="Total RFIs for this project"
+                  layout="horizontal"
                   onClick={() => setActiveTab("rfi")}
                 />
                 <StatCard
                   icon={<FileText className="text-green-600" />}
-                  label="Total Submittals"
+                  label="Submittals"
                   value={project.submittals?.length || 0}
                   color="bg-green-50"
-                  description="Total submittals for this project"
+                  layout="horizontal"
                   onClick={() => setActiveTab("submittals")}
                 />
                 {!isConnectionDesigner && (
@@ -549,16 +636,16 @@ const GetProjectById = ({
                     label="Change Orders"
                     value={project.changeOrders?.length || 0}
                     color="bg-green-50"
-                    description="Total change orders"
+                    layout="horizontal"
                     onClick={() => setActiveTab("changeOrder")}
                   />
                 )}
                 <StatCard
                   icon={<CalendarCheck className="text-green-600" />}
-                  label="Total Milestones"
+                  label="Milestones"
                   value={milestoneData.length}
                   color="bg-green-50"
-                  description="Total project milestones"
+                  layout="horizontal"
                   onClick={() => setActiveTab("milestones")}
                 />
                 <StatCard
@@ -569,12 +656,100 @@ const GetProjectById = ({
                     (allDocuments?.project?.files?.length || 0)
                   }
                   color="bg-green-50"
-                  description="Total project documents & files"
+                  layout="horizontal"
                   onClick={() => setActiveTab("files")}
                 />
               </div>
 
+              {/* ✅ Details (Moved to Overview) */}
+              <div className="bg-slate-50/50 p-6 rounded-[24px] border border-black/5 animate-in fade-in slide-in-from-top-4 duration-700">
+                <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                  <div className="space-y-4">
+                    {!isConnectionDesigner && (
+                      <InfoRow
+                        label="Department"
+                        value={project.department?.name || "—"}
+                      />
+                    )}
+                    <InfoRow
+                      label="Team / Tools"
+                      value={project.team?.name || "—"}
+                    />
+                    <InfoRow
+                      label="WBT Manager"
+                      value={
+                        project.manager
+                          ? `${project.manager.firstName} ${project.manager.lastName} `
+                          : "—"
+                      }
+                    />
+                    {userRole !== "client" &&
+                      userRole !== "client_admin" &&
+                      !isConnectionDesigner && (
+                        <InfoRow
+                          label="Fabricator"
+                          value={project.fabricator?.fabName || "—"}
+                        />
+                      )}
+                    <InfoRow label="Stage" value={project.stage || "—"} />
+                    <InfoRow
+                      label="Start Date"
+                      value={formatDate(project.startDate)}
+                    />
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="p-4 bg-white rounded-2xl border border-black/5 shadow-sm min-h-[140px]">
+                      <h4 className="text-md font-bold text-black mb-4 flex items-center gap-2 uppercase tracking-tight">
+                        <Settings className="w-5 h-5 text-green-600" /> Connection Design Scope
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        <ScopeTag label="Main Design" active={project.connectionDesign} />
+                        <ScopeTag label="Misc Design" active={project.miscDesign} />
+                        <ScopeTag
+                          label={
+                            project.customerDesign
+                              ? "Connection Design by WBT"
+                              : `Connection Design by ${project.fabricator?.fabName ?? ""}`
+                          }
+                          active={project.customerDesign}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-white rounded-2xl border border-black/5 shadow-sm min-h-[140px]">
+                      <h4 className="text-md font-bold text-black mb-4 flex items-center gap-2 uppercase tracking-tight">
+                        <Settings className="w-5 h-4 text-green-600" /> Detailing Scope
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        <ScopeTag label="Detailing Main" active={project.detailingMain} />
+                        <ScopeTag label="Detailing Misc" active={project.detailingMisc} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2 pt-4">
+                    <h4 className="font-black text-black mb-3 text-lg flex items-center gap-2 uppercase tracking-tight">
+                      <FolderOpenDot className="w-5 h-5 text-green-600" />
+                      Project Description
+                    </h4>
+                    <div
+                      className="text-gray-700 bg-white p-5 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: project.description || "No description available.",
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <ProjectMilestoneMetrics projectId={id} />
+
+              <ProjectUpcomingSubmittals 
+                submittals={submittalData} 
+                onViewAll={() => setActiveTab("submittals")}
+                onSubmittalClick={(subId) => setSelectedSubmittalToView(subId)}
+              />
 
               {/* Other Tasks Hours Breakdown (Overview only) */}
               {!isClient && Object.keys(otherTasksByBundle).length > 0 && (
@@ -785,123 +960,6 @@ const GetProjectById = ({
             />
           )}
 
-          {/* ✅ Details */}
-          {activeTab === "details" && (
-            <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-              <div className="space-y-3">
-                {/* <InfoRow
-                  label="Estimated Hours"
-                  value={project.estimatedHours || 0}
-                /> */}
-                {!isConnectionDesigner && (
-                  <InfoRow
-                    label="Department"
-                    value={project.department?.name || "—"}
-                  />
-                )}
-                <InfoRow
-                  label="Team / Tools"
-                  value={project.team?.name || "—"}
-                />
-                <InfoRow
-                  label="WBT Manager"
-                  value={
-                    project.manager
-                      ? `${project.manager.firstName} ${project.manager.lastName} `
-                      : "—"
-                  }
-                />
-                {userRole !== "client" &&
-                  userRole !== "client_admin" &&
-                  !isConnectionDesigner && (
-                    <>
-                      <InfoRow
-                        label="Fabricator"
-                        value={project.fabricator?.fabName || "—"}
-                      />
-                    </>
-                  )}
-              </div>
-
-              <div className="space-y-3">
-                <InfoRow label="Stage" value={project.stage || "—"} />
-                <InfoRow
-                  label="Start Date"
-                  value={formatDate(project.startDate)}
-                />
-                {/* <InfoRow
-                  label="Approval Date"
-                  value={formatDate(project.approvalDate)}
-                />
-                <InfoRow
-                  label="Fabrication Date"
-                  value={formatDate(project.fabricationDate)}
-                />
-                <InfoRow label="End Date" value={formatDate(project.endDate)} /> */}
-                {/* <InfoRow label="RFQ ID" value={project.rfqId || "—"} /> */}
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-                <h4 className="text-lg font-semibold text-black mb-3 flex items-center gap-1">
-                  <Settings className="w-5 h-5" /> Connection Design Scope
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <ScopeTag
-                    label="Main Design"
-                    active={project.connectionDesign}
-                  />
-                  <ScopeTag label="Misc Design" active={project.miscDesign} />
-                  <ScopeTag
-                    label={
-                      project.customerDesign
-                        ? "Connection Design by WBT"
-                        : `Connection Design by ${project.fabricator?.fabName ?? ""}`
-                    }
-                    active={project.customerDesign}
-                  />
-                </div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg border text-sm">
-                <h4 className="text-lg font-semibold text-black mb-3 flex items-center gap-1">
-                  <Settings className="w-5 h-5" /> Detailing Scope
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <ScopeTag
-                    label="Detailing Main"
-                    active={project.detailingMain}
-                  />
-                  <ScopeTag
-                    label="Detailing Misc"
-                    active={project.detailingMisc}
-                  />
-                </div>
-              </div>
-              <div className="md:col-span-2 mt-6">
-                <h4 className="font-semibold text-black mb-2 text-xl flex items-center gap-1">
-                  <FolderOpenDot className="w-4 h-4" />
-                  Project Description / Scope
-                </h4>
-                <div
-                  className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: project.description || "No description available.",
-                  }}
-                />
-              </div>
-              {/* Footer Buttons */}
-              {userRole !== "client" && userRole !== "client_admin" && (
-                <div className="pt-2 flex flex-wrap gap-3">
-                  <Button
-                    className="py-1 px-3 text-sm bg-white text-black border border-black hover:bg-green-50 font-bold rounded-lg"
-                    onClick={() => handleEditModel(project)}
-                  >
-                    Edit Project
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* ✅ Files */}
           {activeTab === "files" && (
             <div className="space-y-4">
@@ -940,7 +998,7 @@ const GetProjectById = ({
           {/* ✅ Notes */}
           {activeTab === "notes" && <NotesLayout projectId={id} />}
           {/* ✅ Project Notes (Team Meeting Notes) */}
-          {activeTab === "projectNotes" && <ProjectNotesLayout projectId={id} />}
+          {activeTab === "projectNotes" && <ProjectNotesLayout projectId={id} project={project} />}
 
           {activeTab === "wbs" && !isConnectionDesigner && (
             <div className="text-gray-700 italic text-center">
@@ -1177,6 +1235,14 @@ const GetProjectById = ({
           </div>,
           document.body,
         )}
+      {selectedSubmittalToView &&
+        createPortal(
+          <GetSubmittalByID
+            id={selectedSubmittalToView}
+            onClose={() => setSelectedSubmittalToView(null)}
+          />,
+          document.body,
+        )}
     </div>,
     document.body,
   );
@@ -1216,6 +1282,7 @@ const StatCard = ({
   description,
   isAlert = false,
   onClick,
+  layout = "vertical",
 }: {
   icon: React.ReactNode;
   label: string;
@@ -1224,30 +1291,64 @@ const StatCard = ({
   description?: string;
   isAlert?: boolean;
   onClick?: () => void;
-}) => (
-  <div
-    onClick={onClick}
-    className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-      } ${onClick ? "cursor-pointer" : ""}`}
-  >
-    <div className="flex items-center gap-3 mb-3">
-      <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
-      <p className="text-sm font-bold text-gray-700 uppercase tracking-widest">
-        {label}
-      </p>
-    </div>
-    <p
-      className={`text-3xl font-black ${isAlert ? "text-red-700" : "text-black"} tracking-tight`}
+  layout?: "vertical" | "horizontal";
+}) => {
+  if (layout === "horizontal") {
+    return (
+      <div
+        onClick={onClick}
+        className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex items-center justify-between transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+          } ${onClick ? "cursor-pointer" : ""}`}
+      >
+        <div className="flex items-center gap-4">
+          <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">{icon}</div>
+          <div className="flex flex-col">
+            <p className="text-sm font-bold text-gray-700 uppercase tracking-widest leading-tight">
+              {label}
+            </p>
+            {description && (
+              <p className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-tighter leading-tight">
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="text-right ml-4 shrink-0">
+          <p
+            className={`text-3xl font-black ${isAlert ? "text-red-700" : "text-black"} tracking-tight`}
+          >
+            {value}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+        } ${onClick ? "cursor-pointer" : ""}`}
     >
-      {value}
-    </p>
-    {description && (
-      <p className="text-sm text-gray-400 mt-2 font-medium uppercase tracking-tighter">
-        {description}
+      <div className="flex items-center gap-3 mb-3">
+        <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
+        <p className="text-sm font-bold text-gray-700 uppercase tracking-widest">
+          {label}
+        </p>
+      </div>
+      <p
+        className={`text-3xl font-black ${isAlert ? "text-red-700" : "text-black"} tracking-tight`}
+      >
+        {value}
       </p>
-    )}
-  </div>
-);
+      {description && (
+        <p className="text-sm text-gray-400 mt-2 font-medium uppercase tracking-tighter">
+          {description}
+        </p>
+      )}
+    </div>
+  );
+};
 
 // ✅ OtherTasksPanel – groups "others" wbsType tasks by projectBundle.bundleKey
 const OtherTasksPanel = ({

@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 const NotificationPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
-  const { notifications, unreadCount, markRead, markAllRead } =
+  const { notifications, unreadCount, markRead, markAllRead, openDetail } =
     useNotificationStore();
 
   // Close popup when clicking outside
@@ -63,7 +63,12 @@ const NotificationPopup = () => {
       case "submittal":
         return "📄";
       case "change_order":
+      case "co":
         return "🔄";
+      case "milestone":
+        return "🏁";
+      case "task":
+        return "📋";
       default:
         return "🔔";
     }
@@ -74,6 +79,55 @@ const NotificationPopup = () => {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true });
     } catch {
       return "Recently";
+    }
+  };
+
+  const handleNotificationClick = async (notification: any) => {
+    console.log("🔔 Notification clicked raw data:", notification);
+    await handleMarkAsRead(notification.id);
+
+    const type = notification.type;
+    const t = type?.toUpperCase();
+    const payload = notification.payload || {};
+
+    // Check both root and payload for IDs
+    const findId = (key: string) => notification[key] || payload[key];
+
+    // Priority IDs based on type
+    let targetId = null;
+    if (t === "SUBMITTAL" || t === "SUBMITTALS") targetId = findId("submittalId") || findId("submittal_id") || findId("submittalId");
+    else if (t === "RFI") targetId = findId("rfiId") || findId("rfi_id");
+    else if (t === "RFQ") targetId = findId("rfqId") || findId("rfq_id");
+    else if (t === "MILESTONE") targetId = findId("milestoneId") || findId("milestone_id");
+    else if (t === "PROJECT") targetId = findId("projectId") || findId("project_id");
+    else if (t === "TASK") targetId = findId("taskId") || findId("task_id");
+    else if (t === "CHANGE_ORDER" || t === "CO") targetId = findId("changeOrderId") || findId("change_order_id");
+
+    // Fallback ID
+    const anyId = targetId || payload.id || findId("id");
+
+    console.log("🔍 Handled click details:", { t, targetId, anyId, payload });
+
+    if (anyId) {
+      let viewType: any = null;
+      if (t === "SUBMITTAL" || t === "SUBMITTALS") viewType = "SUBMITTAL";
+      else if (t === "RFI") viewType = "RFI";
+      else if (t === "RFQ") viewType = "RFQ";
+      else if (t === "MILESTONE") viewType = "MILESTONE";
+      else if (t === "PROJECT") viewType = "PROJECT";
+      else if (t === "TASK") viewType = "TASK";
+      else if (t === "CHANGE_ORDER" || t === "CO") viewType = "CHANGE_ORDER";
+
+      if (viewType) {
+        const projId = findId("projectId") || findId("project_id");
+        console.log("🚀 Opening detail view:", { viewType, anyId, projId });
+        openDetail(viewType, anyId, projId);
+        setIsOpen(false);
+      } else {
+        console.warn("⚠️ Unknown notification type for detail view:", t);
+      }
+    } else {
+      console.warn("⚠️ No ID found for notification:", notification);
     }
   };
 
@@ -157,7 +211,7 @@ const NotificationPopup = () => {
                         ? "bg-green-50/50 dark:bg-green-900/10"
                         : ""
                       }`}
-                    onClick={() => handleMarkAsRead(notification.id)}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex items-start gap-3">
                       {/* Icon */}

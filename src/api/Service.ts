@@ -1116,6 +1116,7 @@ class Service {
     }
   }
 
+
   // Get Project Overall Dashboard
   static async GetProjectOverallDashboard(id: string, stage: string) {
     try {
@@ -1747,6 +1748,22 @@ class Service {
       console.error("cannot find rfi", error);
     }
   }
+
+  //get RFI by ProjectId
+  static async GetRFIByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`rfi/project/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All rfi fetched by rfi ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfi", error);
+    }
+  }
+
   static async EditRFIByID(id: string, data: FormData) {
     try {
       const response = await api.put(`rfi/${id}`, data, {
@@ -1778,6 +1795,36 @@ class Service {
       console.error("cannot find rfq", error);
     }
   }
+
+  // get rfi received by Project ID
+  static async GetReceivedRFIByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`rfi/received/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfi", error);
+    }
+  }
+
+  //getrfisentbyproId
+  static async GetRFISentByProId(projectId: string) {
+    try {
+      const response = await api.get(`rfi/sents/${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      console.log(' All rfi fetched by rfi ID:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('cannot find rfi', error)
+    }
+  }
+
   //submitals route ----------------------------------------------
   static async AddSubmittal(formData: FormData) {
     try {
@@ -1830,6 +1877,21 @@ class Service {
       console.error("cannot find submittal's", error);
     }
   }
+
+  // get received submittals by ProjectId
+  static async GetReceivedSubmittalByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`submittal/received/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittal", error);
+    }
+  }
+
   static async GetSubmittalbyId(Id: string) {
     try {
       const response = await api.get(`submittal/${Id}`, {
@@ -1879,6 +1941,34 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find sub", error);
+    }
+  }
+// submittalsentbyprojectid:
+static async SubmittalSentByProjectId(projectId: string) {
+  try {
+    const response = await api.get(`submittal/sents/${projectId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    console.log(' All submittals fetched by project ID:', response.data)
+    return response.data
+  } catch (error) {
+    console.error('cannot find submittal', error)
+  }
+}
+  //submittal by project id :
+  static async GetSubmittalByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`submittal/project/${projectId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" All submittals fetched by project ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find submittal", error);
     }
   }
 
@@ -2305,7 +2395,7 @@ class Service {
   // Create new Design Drawing
   static async CreateDesignDrawing(data: FormData) {
     try {
-      const response = await api.post(`design-drawings`, data, {
+      const response = await api.post(`designDrawings`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -2318,7 +2408,7 @@ class Service {
   // Update stage / description of a Design Drawing
   static async UpdateDesignDrawing(id: string, data: FormData) {
     try {
-      const response = await api.put(`design-drawings/${id}`, data, {
+      const response = await api.put(`designDrawings/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -2331,7 +2421,7 @@ class Service {
   // Get all Design Drawings (Admin)
   static async GetAllDesignDrawings() {
     try {
-      const response = await api.get(`design-drawings`);
+      const response = await api.get(`designDrawings`);
       return response.data;
     } catch (error) {
       console.error("Error fetching all design drawings:", error);
@@ -2342,7 +2432,7 @@ class Service {
   // Get Design Drawings by Project ID
   static async GetDesignDrawingsByProjectId(projectId: string) {
     try {
-      const response = await api.get(`design-drawings/project/${projectId}`);
+      const response = await api.get(`designDrawings/project/${projectId}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching design drawings by project ID:", error);
@@ -2353,7 +2443,7 @@ class Service {
   // Get a single Design Drawing by ID
   static async GetDesignDrawingById(id: string) {
     try {
-      const response = await api.get(`design-drawings/${id}`);
+      const response = await api.get(`designDrawings/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching design drawing by ID:", error);
@@ -2364,7 +2454,7 @@ class Service {
   // Delete a Design Drawing
   static async DeleteDesignDrawing(id: string) {
     try {
-      const response = await api.delete(`design-drawings/${id}`);
+      const response = await api.delete(`designDrawings/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error deleting design drawing:", error);
@@ -2376,7 +2466,7 @@ class Service {
   static async GetDesignDrawingFileMetadata(designId: string, fileId: string) {
     try {
       const response = await api.get(
-        `design-drawings/${designId}/files/${fileId}`,
+        `designDrawings/${designId}/files/${fileId}`,
       );
       return response.data;
     } catch (error) {
@@ -2389,7 +2479,7 @@ class Service {
   static async ViewDesignDrawingFile(designId: string, fileId: string) {
     try {
       const response = await api.get(
-        `design-drawings/viewFile/${designId}/${fileId}`,
+        `designDrawings/viewFile/${designId}/${fileId}`,
       );
       return response.data;
     } catch (error) {
@@ -2794,7 +2884,7 @@ class Service {
   //team meeting notes
   static async AddTeamMeetingNotes(formData: FormData) {
     try {
-      const response = await api.post(`team-meeting-notes`, formData);
+      const response = await api.post(`teamMeetingNotes`, formData);
       return response.data;
     } catch (error) {
       console.error("Error fetching team meeting notes:", error);
@@ -2804,7 +2894,7 @@ class Service {
 
   static async GetTeamMeetingNotesAll() {
     try {
-      const response = await api.get(`team-meeting-notes`);
+      const response = await api.get(`teamMeetingNotes`);
       return response;
     } catch (error) {
       console.error("Error fetching team meeting notes:", error);
@@ -2814,7 +2904,7 @@ class Service {
 
   static async GetTeamMeetingNotesByProjectId(projectId: string) {
     try {
-      const response = await api.get(`team-meeting-notes/project/${projectId}`);
+      const response = await api.get(`teamMeetingNotes/project/${projectId}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching team meeting notes by projectId:", error);
@@ -2823,7 +2913,7 @@ class Service {
   }
   static async GetTeamMeetingNotesById(id: string) {
     try {
-      const response = await api.get(`team-meeting-notes/${id}`);
+      const response = await api.get(`teamMeetingNotes/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching team meeting notes:", error);
@@ -2832,7 +2922,7 @@ class Service {
   }
   static async UpdateTeamMeetingNotes(id: string, data: any) {
     try {
-      const response = await api.put(`team-meeting-notes/${id}`, data);
+      const response = await api.put(`teamMeetingNotes/${id}`, data);
       return response.data;
     } catch (error) {
       console.error("Error updating team meeting notes:", error);
@@ -2841,7 +2931,7 @@ class Service {
   }
   static async DeleteTeamMeetingNotes(id: string) {
     try {
-      const response = await api.delete(`team-meeting-notes/${id}`);
+      const response = await api.delete(`teamMeetingNotes/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error deleting team meeting notes:", error);
@@ -2850,7 +2940,7 @@ class Service {
   }
   static async ViewFileNotesTeamMeeting(noteId: string, fileId: string) {
     try {
-      const response = await api.get(`team-meeting-notes/viewFile/${noteId}/${fileId}`);
+      const response = await api.get(`teamMeetingNotes/viewFile/${noteId}/${fileId}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching file notes:", error);
@@ -2860,7 +2950,7 @@ class Service {
   //team meeting respoense routes
   static async AddTeamMeetingResponse(notesId: string, formData: FormData) {
     try {
-      const response = await api.post(`team-meeting-notes/${notesId}/responses`, formData);
+      const response = await api.post(`teamMeetingNotes/${notesId}/responses`, formData);
       return response.data;
     } catch (error) {
       console.error("Error fetching team meeting response:", error);
@@ -2870,7 +2960,7 @@ class Service {
 
   static async Getallrepliesforanote(noteId: string) {
     try {
-      const response = await api.get(`team-meeting-notes/${noteId}/responses`);
+      const response = await api.get(`teamMeetingNotes/${noteId}/responses`);
       return response.data;
     } catch (error) {
       console.error("Error fetching response for note:", error);
@@ -2879,7 +2969,7 @@ class Service {
   }
   static async GetallrepliesforanoteByid(id: string) {
     try {
-      const response = await api.get(`team-meeting-notes/responses/${id}`);
+      const response = await api.get(`teamMeetingNotes/responses/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching team meeting response:", error);
@@ -2888,7 +2978,7 @@ class Service {
   }
   static async UpdateTeamMeetingResponse(id: string, data: any) {
     try {
-      const response = await api.put(`team-meeting-notes/responses/${id}`, data);
+      const response = await api.put(`teamMeetingNotes/responses/${id}`, data);
       return response.data;
     } catch (error) {
       console.error("Error updating team meeting response:", error);
@@ -2897,7 +2987,7 @@ class Service {
   }
   static async DeleteTeamMeetingResponse(id: string) {
     try {
-      const response = await api.delete(`team-meeting-notes/responses/${id}`);
+      const response = await api.delete(`teamMeetingNotes/responses/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error deleting team meeting response:", error);
@@ -2906,7 +2996,7 @@ class Service {
   }
   static async ViewFileNotesTeamMeetingResponse(noteId: string, fileId: string) {
     try {
-      const response = await api.get(`team-meeting-notes/responses/viewFile/${noteId}/${fileId}`);
+      const response = await api.get(`teamMeetingNotes/responses/viewFile/${noteId}/${fileId}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching file notes:", error);
@@ -2928,6 +3018,19 @@ static async GetClientDashboardData() {
       throw error
     }
   }
+
+  // get dashboard data for connection designer
+  static async GetConnectionDesignerAdminDashboardData() {
+    try {
+      const response = await api.get(`/dashBoardData/connectionDesignerAdmin`)
+      console.log('Connection designer dashboard data fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching connection designer dashboard data:', error)
+      throw error
+    }
+  }
+
   static async GetClientSubmittals() {
     try {
       console.log('Fetching client submittals...');
@@ -2983,5 +3086,7 @@ static async GetClientDashboardData() {
       throw error
     }
   }
+
+  
 }
 export default Service;

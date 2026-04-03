@@ -119,10 +119,10 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
 
       {/* 2. Design Drawings */}
       {designDrawings.length > 0 && (
-        <Section title="Design Drawings">
+        <Section title="Documents">
           <RenderFiles
             files={designDrawings}
-            table="design-drawings" // Check table name from DesignDrawingDetails usage if possible
+            table="designDrawings" // Check table name from DesignDrawingDetails usage if possible
             parentId={finalId || ""}
             hideHeader={true}
           />

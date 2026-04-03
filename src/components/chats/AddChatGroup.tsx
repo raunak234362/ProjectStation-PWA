@@ -3,6 +3,7 @@ import { Users } from "lucide-react";
 import Input from "../fields/input";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
+import { toast } from "react-toastify";
 
 interface AddGroupFormValues {
   name: string;
@@ -24,10 +25,12 @@ const AddChatGroup: React.FC<AddChatGroupProps> = ({ onClose, onCreated }) => {
     try {
       const response = await Service.AddGroup(data);
       console.log(response);
+      toast.success("Group created successfully!");
       onCreated?.();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      toast.error(error?.response?.data?.message || "Failed to create group");
     }
   };
 

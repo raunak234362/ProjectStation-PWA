@@ -428,7 +428,7 @@ const ProjectDetailsContent = ({
 
         {activeTab === "notes" && <AllNotes projectId={id} />}
 
-        {activeTab === "projectNotes" && <AllProjectNotes projectId={id} />}
+        {activeTab === "projectNotes" && <AllProjectNotes projectId={id} project={project} />}
 
         {activeTab === "rfi" && (
           <div className="space-y-4">
@@ -519,7 +519,7 @@ const ProjectDetailsContent = ({
               </nav>
             </div>
             {submittalView === "list" ? (
-              <AllSubmittals submittalData={project.submittals || []} />
+              <AllSubmittals submittalData={project?.submittals || []} projectId={id} />
             ) : (
               <AddSubmittal
                 project={project}
@@ -553,7 +553,7 @@ const ProjectDetailsContent = ({
               </nav>
             </div>
             {submittalView === "list" ? (
-              <AllSubmittals submittalData={project.submittals || []} />
+              <AllSubmittals submittalData={project?.submittals || []} projectId={id} />
             ) : (
               <AddSubmittal
                 project={project}
