@@ -40,7 +40,6 @@ const getDownloadUrl = (
     case "connection-designer":
       return `${baseURL}/connectionDesign/viewFile/${parentId}/${fileId}`;
     case "designDrawings":
-    case "designDrawings":
       return `${baseURL}/${table}/viewfile/${parentId}/${fileId}`;
     case "teamMeetingNotes":
       return `${baseURL}/teamMeetingNotes/viewFile/${parentId}/${fileId}`;
