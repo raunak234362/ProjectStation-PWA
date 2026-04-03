@@ -23,28 +23,44 @@ const PendingActions: React.FC<PendingActionsProps> = ({
   const actions = [
     {
       title: "RFQ",
-      count: dashboardStats?.pendingRFQ || 0,
+      count:
+        dashboardStats?.pendingRFQ ??
+        (dashboardStats as any)?.totalPendingRFQ ??
+        (dashboardStats as any)?.pending_rfq ??
+        0,
       subcount: dashboardStats?.newRFQ || 0,
       subtitle: "New RFQ",
       icon: Search,
-      // No fills, using standard icon color transition
     },
     {
       title: "RFI",
-      count: dashboardStats?.pendingRFI || 0,
+      count:
+        dashboardStats?.pendingRFI ??
+        (dashboardStats as any)?.totalPendingRFI ??
+        (dashboardStats as any)?.pending_rfi ??
+        0,
       subtitle: "New RFI",
       subcount: dashboardStats?.newRFI || 0,
       icon: FileText,
     },
     {
       title: "Submittals",
-      count: dashboardStats?.pendingSubmittals,
+      count:
+        dashboardStats?.pendingSubmittals ??
+        (dashboardStats as any)?.totalPendingSubmittals ??
+        (dashboardStats as any)?.pending_submittals ??
+        0,
       subtitle: "Response Pending",
       icon: RefreshCw,
     },
     {
       title: "COR",
-      count: dashboardStats?.pendingChangeOrders || 0,
+      count:
+        dashboardStats?.pendingChangeOrders ??
+        (dashboardStats as any)?.pendingCOR ??
+        (dashboardStats as any)?.totalPendingCO ??
+        (dashboardStats as any)?.pending_cor ??
+        0,
       subtitle: "Change Orders",
       subcount: dashboardStats?.newChangeOrders || 0,
       icon: Activity,
@@ -55,7 +71,7 @@ const PendingActions: React.FC<PendingActionsProps> = ({
     ? actions.filter((action) => filter.includes(action.title as any))
     : actions;
 
-console.log(dashboardStats,"dashboardStats-----------------------------");
+console.log(filteredActions,"dashboardStats-----------------------------");
 
   return (
     <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
@@ -88,7 +104,7 @@ console.log(dashboardStats,"dashboardStats-----------------------------");
                 </div>
                 <div className="flex flex-col min-w-0 pr-1">
                   <span className="text-xs sm:text-sm font-black text-black uppercase tracking-wider leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
-                    {action.title}
+                    {action.title} 
                   </span>
                 </div>
               </div>
