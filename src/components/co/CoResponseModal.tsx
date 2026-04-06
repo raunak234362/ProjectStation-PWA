@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { toast } from "react-toastify";
 import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
 import Service from "../../api/Service";
@@ -38,11 +39,13 @@ const CoResponseModal = ({ CoId, onClose, onSuccess }: Props) => {
       }
 
       await Service.addCOResponse(formData, CoId);
+      toast.success("Response added successfully!");
 
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("CO Response error:", error);
+      toast.error(error?.response?.data?.message || "Failed to add response");
     }
   };
 

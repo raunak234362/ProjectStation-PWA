@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import type { ChangeEvent } from "react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
@@ -29,10 +30,15 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
 
     replyFiles.forEach((f) => formData.append("files", f));
 
-    await Service.addCOResponse(formData, response.id);
-
-    onSuccess();
-    onClose();
+    try {
+      await Service.addCOResponse(formData, response.id);
+      toast.success("Reply sent successfully!");
+      onSuccess();
+      onClose();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Failed to send reply");
+    }
   };
 
   return (

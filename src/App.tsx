@@ -178,7 +178,20 @@ const AppContent = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={1000} style={{ zIndex: 99999 }} />
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000} 
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        limit={3}
+        style={{ zIndex: 999999 }} 
+      />
       <NotificationReceiver />
 
       <Layout />

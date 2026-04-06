@@ -135,9 +135,7 @@ const EditMileStone = ({
                 try {
                   setLoading(true);
                   await Service.DeleteMilestoneById(milestoneId);
-                  toast.success("Milestone deleted successfully!", {
-                    position: "bottom-right",
-                  });
+                  toast.success("Milestone deleted successfully!");
                   if (onSuccess) await onSuccess();
                   onClose();
                 } catch (error) {
