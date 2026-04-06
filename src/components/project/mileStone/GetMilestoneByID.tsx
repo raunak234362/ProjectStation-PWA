@@ -103,7 +103,11 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
   const [showTasksModal, setShowTasksModal] = useState(false);
 
   const id = row?.id;
-  const userRole = sessionStorage.getItem("userRole");
+  const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
+  const isClient = userRole === "CLIENT" || userRole === "CLIENT_ADMIN";
+  const isConnectionDesigner =
+    userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+    userRole === "CONNECTION_DESIGNER_ADMIN";
 
   const fetchMilestone = async () => {
     if (!id) return;
@@ -355,7 +359,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
               <Plus className="w-4 h-4" />
               Create Submittal
             </Button>
-            {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+            {!isClient && !isConnectionDesigner && (
               <>
                 <Button
                   variant="ghost"
@@ -396,7 +400,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
               color="text-blue-600"
               bg="bg-blue-50"
             />
-            {userRole?.toLowerCase() !== "client" && userRole?.toLowerCase() !== "client_admin" && (
+            {!isClient && (
               <InfoCard
                 icon={<Calendar className="w-5 h-5" />}
                 label="CD Approval Date"
@@ -603,7 +607,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
               )}
 
               {/* Tasks Button */}
-              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (() => {
+              {!isClient && (() => {
                 const msTasks = milestone.Tasks || milestone.tasks || [];
                 return (
                   msTasks.length > 0 && (

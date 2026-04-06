@@ -38,6 +38,8 @@ const EditMileStone = ({
       status: "ACTIVE",
       percentage: 0,
       approvalDate: "",
+      CDApprovalDate: "",
+      date: "",
       stage: "",
       reason: "",
     },
@@ -102,6 +104,12 @@ const EditMileStone = ({
             data.percentage !== undefined ? Number(data.percentage) : 0,
           approvalDate: data.approvalDate
             ? new Date(data.approvalDate).toISOString().split("T")[0]
+            : "",
+          CDApprovalDate: data.CDApprovalDate
+            ? new Date(data.CDApprovalDate).toISOString().split("T")[0]
+            : "",
+          date: data.date
+            ? new Date(data.date).toISOString().split("T")[0]
             : "",
           stage: data.stage || "",
           reason: data.reason || "",
@@ -172,6 +180,10 @@ const EditMileStone = ({
         approvalDate: data.approvalDate
           ? new Date(data.approvalDate).toISOString()
           : null,
+        CDApprovalDate: data.CDApprovalDate
+          ? new Date(data.CDApprovalDate).toISOString()
+          : null,
+        date: data.date ? new Date(data.date).toISOString() : null,
       };
 
       if (mileStoneVersionId) {
@@ -305,16 +317,8 @@ const EditMileStone = ({
                 </div>
               )}
             />
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label="Approval Date"
-              type="date"
-              {...register("approvalDate")}
-            />
-
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <label className="text-sm font-semibold text-gray-700">
                 Status
               </label>
@@ -343,6 +347,29 @@ const EditMileStone = ({
                 )}
               />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="Date"
+              type="date"
+              {...register("date")}
+            />
+            {/* <Input
+              label="Percentage (%)"
+              type="number"
+              {...register("percentage")}
+            /> */}
+            <Input
+              label="Approval Date"
+              type="date"
+              {...register("approvalDate")}
+            />
+            <Input
+              label="CD Approval Date"
+              type="date"
+              {...register("CDApprovalDate")}
+            />
           </div>
 
           {/* Action Buttons */}
