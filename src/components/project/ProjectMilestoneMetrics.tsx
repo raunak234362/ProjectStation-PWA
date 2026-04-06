@@ -153,7 +153,20 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                   {stage} Milestones
                 </h5>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {mStats.map((ms: any, index: number) => (
+                  {mStats
+                    .filter((ms: any) => {
+                      if (
+                        userRole === "connection_designer_engineer" ||
+                        userRole === "connection_designer_admin"
+                      ) {
+                        return (
+                          (ms.CDApprovalDate && ms.CDApprovalDate !== "") ||
+                          (ms.subject || "").toLowerCase().includes("connection")
+                        );
+                      }
+                      return true;
+                    })
+                    .map((ms: any, index: number) => (
                     <div
                       key={ms.id || index}
                       onClick={() => {
@@ -245,7 +258,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                           </span>
                         </div>
 
-                        {userRole !== "client" && userRole !== "client_admin" && userRole !== "connection_designer_admin" && userRole !== "connection_designer_engineer" && (
+                        {userRole !== "client" && userRole !== "client_admin" && (
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 uppercase text-xs font-semibold">
                               CD Approval Date
