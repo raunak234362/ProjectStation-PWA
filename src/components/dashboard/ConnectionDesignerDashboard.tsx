@@ -203,7 +203,7 @@ const ConnectionDesignerDashboard = () => {
             }
             console.log(response);
 
-            setUpcomingSubmittals(response?.data || []);
+            setUpcomingSubmittals(Array.isArray(response) ? response : response?.data || []);
         } catch (error) {
             console.error("Failed to fetch submittals", error);
         }
@@ -214,7 +214,7 @@ const ConnectionDesignerDashboard = () => {
             const response = isClientRole ? await Service.GetClientSubmittals() : await Service.ClientAdminPendingSubmittals();
             console.log("RFI___________________+++", response);
 
-            setPendingSubmittals(response?.data || []);
+            setPendingSubmittals(Array.isArray(response) ? response : response?.data || []);
         } catch (error) {
             console.error("Failed to fetch submittals", error);
         }
@@ -225,7 +225,7 @@ const ConnectionDesignerDashboard = () => {
             const response = isClientRole ? await Service.GetClientRFI() : await Service.ClientAdminPendingRFIs();
             console.log(response);
 
-            setPendingRFIs(response?.data || []);
+            setPendingRFIs(Array.isArray(response) ? response : response?.data || []);
         } catch (error) {
             console.error("Failed to fetch RFIs", error);
         }
@@ -236,7 +236,7 @@ const ConnectionDesignerDashboard = () => {
             const response = isClientRole ? await Service.GetClientRFQ() : await Service.ClientAdminPendingRFQs();
             console.log(response);
 
-            setPendingRFQs(response?.data || []);
+            setPendingRFQs(Array.isArray(response) ? response : response?.data || []);
         } catch (error) {
             console.error("Failed to fetch RFQs", error);
         }
