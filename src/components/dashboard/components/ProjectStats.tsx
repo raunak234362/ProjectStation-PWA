@@ -56,7 +56,7 @@ console.log(stats);
     <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
       <h2 className="text-xl md:text-2xl font-bold text-black mb-6 flex items-center gap-3 tracking-tight ml-1">
         <Building2 size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
-        PROJECT STATISTICS
+        PROJECT OVERVIEW
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
