@@ -129,9 +129,6 @@ const AllProjectNotes = ({ projectId, project }: { projectId: string; project?: 
 
     const isClient = userRole === "client" || userRole === "client_admin";
     const currentUserId = sessionStorage.getItem("userId") || "";
-    const userFirstName = sessionStorage.getItem("firstName") || "";
-    const userLastName = sessionStorage.getItem("lastName") || "";
-    const username = sessionStorage.getItem("username") || "";
 
 
 
