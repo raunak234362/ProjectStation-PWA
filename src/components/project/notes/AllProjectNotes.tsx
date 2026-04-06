@@ -132,7 +132,6 @@ const AllProjectNotes = ({ projectId, project }: { projectId: string; project?: 
     const userFirstName = sessionStorage.getItem("firstName") || "";
     const userLastName = sessionStorage.getItem("lastName") || "";
     const username = sessionStorage.getItem("username") || "";
-    const fullName = `${userFirstName} ${userLastName}`.trim() || username;
 
 
 
