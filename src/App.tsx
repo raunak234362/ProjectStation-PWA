@@ -139,7 +139,7 @@ const AppContent = () => {
           userType === "ADMIN"
         ) {
           rfqDetail = await Service.getAllRFQ();
-        } else if (userType === "CONNECTION_DESIGNER_ENGINEER") {
+        } else if (userType === "CONNECTION_DESIGNER_ENGINEER" || userType === "CONNECTION_DESIGNER_ADMIN") {
           const designerId = sessionStorage.getItem("connectionDesignerId");
           if (designerId) {
             rfqDetail = await Service.getConnectionEngineerQuotation();

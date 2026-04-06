@@ -516,6 +516,20 @@ class Service {
     }
   }
 
+  //GetAllConnectionDesignerQuata
+  static async GetAllConnectionDesignerQuata() {
+    try {
+      const response = await api.get(`connectionDesignerQuota/all`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("All Connection Designer Quata fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot get all connection designer quata", error);
+    }
+  }
 
   // Get all quotations for an RFQ
   static async getQuotationsByRFQ(rfqId: string) {

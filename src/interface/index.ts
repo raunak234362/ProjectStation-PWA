@@ -287,6 +287,7 @@ export interface RFQItem {
   files?: File[] | string[];
   responses?: RfqResponse[];
   CDQuotas?: any[] | undefined;
+  RFQDueDate?: string;
   CDDescription?: string;
   CDAttachments?: any[];
 }

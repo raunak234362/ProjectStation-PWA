@@ -400,7 +400,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   {/* EDIT RFQ */}
-                  {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+                  {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && userRole !== "CONNECTION_DESIGNER_ENGINEER" && userRole !== "CONNECTION_DESIGNER_ADMIN" && (
                     <>
                       <Button
                         onClick={() => alert("Coming soon: Edit RFQ modal")}
@@ -440,12 +440,18 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 <Info label="Tools" value={rfq?.tools || "N/A"} />
                 <Info
                   label="Due Date"
-                  value={formatDate(rfq?.estimationDate)}
+                  value={formatDate(
+                    isCDRole
+                      ? rfq?.RFQDueDate
+                      : rfq?.estimationDate,
+                  )}
                 />
-                <Info
-                  label="Bid Amount (USD)"
-                  value={rfq?.bidPrice || "----"}
-                />
+                {!isCDRole && (
+                  <Info
+                    label="Bid Amount (USD)"
+                    value={rfq?.bidPrice || "----"}
+                  />
+                )}
               </div>
 
               {/* Scopes */}
@@ -496,7 +502,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   <span
                     className={`w-1.5 h-6 ${isCDRole ? "bg-blue-500" : "bg-green-500"} rounded-full`}
                   ></span>
-                  {isCDRole ? "CD Description" : "Description"}
+                  {isCDRole ? "Description" : "Description"}
                 </h4>
                 <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden w-full">
                   <style>{`
@@ -539,6 +545,14 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   />
                 </div>
               </div>
+
+              {/* Files */}
+              <RenderFiles
+                files={(isCDRole ? rfq?.CDAttachments : rfq?.files) || []}
+                table={isCDRole ? "rfqCDAttachments" : "rFQ"}
+                parentId={rfq?.id}
+                formatDate={formatDate}
+              />
 
               {/* Followups */}
               <div className="space-y-3 border border-grey-400 bg-white rounded-2xl p-4">
@@ -602,6 +616,8 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     </Button>
                   </div>
                 )}
+
+                
 
                 {/* Existing Followups — Table with inline accordion */}
                 {followups.length > 0 ? (
@@ -696,16 +712,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 )}
               </div>
 
-              {/* Files */}
-              <RenderFiles
-                files={(isCDRole ? rfq?.CDAttachments : rfq?.files) || []}
-                table={isCDRole ? "rfqCDAttachments" : "rFQ"}
-                parentId={rfq?.id}
-                formatDate={formatDate}
-              />
               {userRole !== "CLIENT_ADMIN" &&
                 userRole !== "CLIENT" &&
-                userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
+                userRole !== "CONNECTION_DESIGNER_ENGINEER" && userRole !== "CONNECTION_DESIGNER_ADMIN" && (
                   <div className="flex flex-col gap-2 pt-2">
                     <Button
                       onClick={() => setShowEstimationModal(true)}
