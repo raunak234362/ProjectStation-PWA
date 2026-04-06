@@ -373,7 +373,7 @@ const GetProjectById = ({
   };
 
   const isClient = userRole === "client" || userRole === "client_admin";
-  const isConnectionDesigner = userRole === "connection_designer_engineer";
+  const isConnectionDesigner = userRole === "connection_designer_engineer" || userRole === "connection_designer_admin";
 
   const clientTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
