@@ -228,16 +228,18 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
 
               <div>
                 <h4 className="font-semibold text-gray-700 mb-1">Remarks</h4>
-                <p className="bg-gray-50 p-3 rounded-lg border">
-                  {co.remarks || "—"}
-                </p>
+                <div
+                  className="bg-gray-50 p-3 rounded-lg border text-sm text-gray-700 min-h-[50px]"
+                  dangerouslySetInnerHTML={{ __html: co.remarks || "—" }}
+                />
               </div>
 
               <div>
                 <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
-                <p className="bg-gray-50 p-3 rounded-lg border">
-                  {co.description || "—"}
-                </p>
+                <div
+                  className="bg-gray-50 p-3 rounded-lg border text-sm text-gray-700 min-h-[50px]"
+                  dangerouslySetInnerHTML={{ __html: co.description || "—" }}
+                />
               </div>
 
               <RenderFiles

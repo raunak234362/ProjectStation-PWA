@@ -56,7 +56,10 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
           </button>
         </div>
 
-        <p className="bg-gray-100 p-3 rounded border">{response.description}</p>
+        <div
+          className="bg-gray-100 p-3 rounded border text-sm text-gray-700 min-h-[50px]"
+          dangerouslySetInnerHTML={{ __html: response.description || "—" }}
+        />
 
         <RenderFiles
           files={response.files}
