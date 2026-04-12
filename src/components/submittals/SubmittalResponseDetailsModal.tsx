@@ -109,10 +109,10 @@ const SubmittalResponseDetailsModal = ({
                   key={child.id}
                   className="bg-gray-50 p-3 rounded border text-sm"
                 >
-                  <div className="flex justify-between text-xs text-gray-700 mb-1">
+                  <div className="flex justify-between text-sm text-gray-700 mb-1">
                     <span className="font-medium text-gray-700">
                       {child.user?.firstName || "User"}{" "}
-                      {child.user?.lastName || ""} ({child.user?.role || "N/A"})
+                      {child.user?.lastName || ""}
                     </span>
                     <span>{formatDateTime(child.createdAt)}</span>
                   </div>
