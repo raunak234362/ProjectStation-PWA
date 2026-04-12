@@ -55,7 +55,7 @@ const SubmittalResponseDetailsModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 backdrop-blur-sm">
-      <div className="bg-[#fafffb] w-full max-w-lg p-8 rounded-3xl shadow-2xl space-y-5 relative border border-gray-100">
+      <div className="bg-[#fafffb] w-full max-w-4xl p-8 rounded-3xl shadow-2xl space-y-5 relative border border-gray-100">
         {/* Close Button */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-black text-black uppercase tracking-tight">
@@ -68,63 +68,64 @@ const SubmittalResponseDetailsModal = ({
             Close
           </button>
         </div>
+        <div className="overflow-y-auto h-[70vh]">
+          {/* Parent Message */}
+          <div
+            className="bg-gray-100 p-3 rounded-md border prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: response.reason || response.description,
+            }}
+          />
 
-        {/* Parent Message */}
-        <div
-          className="bg-gray-100 p-3 rounded-md border prose prose-sm max-w-none"
-          dangerouslySetInnerHTML={{
-            __html: response.reason || response.description,
-          }}
-        />
+          {/* Parent Files */}
+          <RenderFiles
+            files={response.files}
+            table="submittalsResponse"
+            parentId={response.id}
+          />
 
-        {/* Parent Files */}
-        <RenderFiles
-          files={response.files}
-          table="submittalsResponse"
-          parentId={response.id}
-        />
-
-        {/* Timestamp */}
-        <div className="flex items-center gap-2 text-xs text-gray-700">
-          <CalendarDays size={14} />
-          {formatDateTime(response.createdAt)}
-        </div>
-
-        {/* 🔥 CHILD RESPONSES THREAD */}
-        {response.childResponses?.length > 0 && (
-          <div className="mt-4 space-y-4 border-t pt-4 max-h-60 overflow-y-auto">
-            <h4 className="text-sm font-semibold text-gray-700">History</h4>
-
-            {response.childResponses.map((child: any) => (
-              <div
-                key={child.id}
-                className="bg-gray-50 p-3 rounded border text-sm"
-              >
-                <div className="flex justify-between text-xs text-gray-700 mb-1">
-                  <span className="font-medium text-gray-700">
-                    {child.user?.firstName || "User"}{" "}
-                    {child.user?.lastName || ""} ({child.user?.role || "N/A"})
-                  </span>
-                  <span>{formatDateTime(child.createdAt)}</span>
-                </div>
-
-                <div
-                  className="text-gray-700 mb-2 prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: child.reason || child.description,
-                  }}
-                />
-
-                {/* Child Files */}
-                <RenderFiles
-                  files={child.files}
-                  table="submittalsResponse"
-                  parentId={child.id}
-                />
-              </div>
-            ))}
+          {/* Timestamp */}
+          <div className="flex items-center gap-2 text-xs text-gray-700">
+            <CalendarDays size={14} />
+            {formatDateTime(response.createdAt)}
           </div>
-        )}
+
+          {/* 🔥 CHILD RESPONSES THREAD */}
+          {response.childResponses?.length > 0 && (
+            <div className="mt-4 space-y-4 border-t pt-4 max-h-60 overflow-y-auto">
+              <h4 className="text-sm font-semibold text-gray-700">History</h4>
+
+              {response.childResponses.map((child: any) => (
+                <div
+                  key={child.id}
+                  className="bg-gray-50 p-3 rounded border text-sm"
+                >
+                  <div className="flex justify-between text-xs text-gray-700 mb-1">
+                    <span className="font-medium text-gray-700">
+                      {child.user?.firstName || "User"}{" "}
+                      {child.user?.lastName || ""} ({child.user?.role || "N/A"})
+                    </span>
+                    <span>{formatDateTime(child.createdAt)}</span>
+                  </div>
+
+                  <div
+                    className="text-gray-700 mb-2 prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: child.reason || child.description,
+                    }}
+                  />
+
+                  {/* Child Files */}
+                  <RenderFiles
+                    files={child.files}
+                    table="submittalsResponse"
+                    parentId={child.id}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Reply Button */}
         {canReply && !replyMode && (
@@ -175,7 +176,12 @@ const SubmittalResponseDetailsModal = ({
 
             {/* Actions */}
             <div className="flex justify-end gap-3">
-              <Button onClick={() => setReplyMode(false)} className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200">Cancel</Button>
+              <Button
+                onClick={() => setReplyMode(false)}
+                className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200"
+              >
+                Cancel
+              </Button>
               <Button
                 className="px-6 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
                 onClick={handleReplySubmit}
