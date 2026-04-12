@@ -31,7 +31,7 @@ const SubmittalResponseDetailsModal = ({
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
   const userId = sessionStorage.getItem("userId") || "";
 
-  const canReply = ["ADMIN", "STAFF", "MANAGER"].includes(userRole);
+  const canReply = ["ADMIN", "STAFF", "PROJECT_MANAGER", "CLIENT", "CLIENT_ADMIN"].includes(userRole);
 
   const handleReplySubmit = async () => {
     if (!replyMessage.trim()) return;
@@ -125,8 +125,6 @@ const SubmittalResponseDetailsModal = ({
               ))}
             </div>
           )}
-        </div>
-
         {/* Reply Button */}
         {canReply && !replyMode && (
           <Button
@@ -183,7 +181,7 @@ const SubmittalResponseDetailsModal = ({
                 Cancel
               </Button>
               <Button
-                className="px-6 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md"
+                className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
                 onClick={handleReplySubmit}
               >
                 Send Reply
@@ -191,6 +189,8 @@ const SubmittalResponseDetailsModal = ({
             </div>
           </div>
         )}
+        </div>
+
       </div>
     </div>
   );

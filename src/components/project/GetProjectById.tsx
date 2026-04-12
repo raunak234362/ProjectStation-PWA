@@ -40,8 +40,9 @@ import SubmittalLayout from "../../layout/SubmittalLayout";
 import MilestoneLayout from "../../layout/MilestoneLayout";
 import NotesLayout from "../../layout/NotesLayout";
 import ProjectNotesLayout from "../../layout/ProjectNotesLayout";
-import ProjectUpcomingSubmittals from "./ProjectUpcomingSubmittals";
+import ProjectUpcomingMilestones from "./ProjectUpcomingMilestones";
 import GetSubmittalByID from "../submittals/GetSubmittalByID";
+import GetMilestoneByID from "./mileStone/GetMilestoneByID";
 
 const GetProjectById = ({
   id,
@@ -69,7 +70,12 @@ const GetProjectById = ({
     key: string;
     tasks: any[];
   } | null>(null);
-  const [selectedSubmittalToView, setSelectedSubmittalToView] = useState<string | null>(null);
+  const [selectedSubmittalToView, setSelectedSubmittalToView] = useState<
+    string | null
+  >(null);
+  const [selectedMilestoneToView, setSelectedMilestoneToView] = useState<
+    any | null
+  >(null);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const rfiData = useMemo(() => {
     return project?.rfi || [];
@@ -138,38 +144,54 @@ const GetProjectById = ({
         "connection_designer_engineer",
         "connection_designer_admin",
       ];
-      
+
       let allSubmittals: any[] = [];
       if (rolesForReceived.includes(userRole)) {
         // Fetch both received and sent submittals for these roles
         const [receivedRes, sentRes] = await Promise.all([
           Service.GetReceivedSubmittalByProjectId(id),
-          Service.SubmittalSentByProjectId(id)
+          Service.SubmittalSentByProjectId(id),
         ]);
 
-        const received = Array.isArray(receivedRes?.data) ? receivedRes.data : (Array.isArray(receivedRes) ? receivedRes : []);
-        const sent = Array.isArray(sentRes?.data) ? sentRes.data : (Array.isArray(sentRes) ? sentRes : []);
-        
+        const received = Array.isArray(receivedRes?.data)
+          ? receivedRes.data
+          : Array.isArray(receivedRes)
+            ? receivedRes
+            : [];
+        const sent = Array.isArray(sentRes?.data)
+          ? sentRes.data
+          : Array.isArray(sentRes)
+            ? sentRes
+            : [];
+
         // Combine and remove duplicates
         const combined = [...received, ...sent];
-        const uniqueSubmittals = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        const uniqueSubmittals = Array.from(
+          new Map(combined.map((item) => [item.id, item])).values(),
+        );
         allSubmittals = uniqueSubmittals;
       } else {
         const res = await Service.GetSubmittalByProjectId(id);
-        allSubmittals = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+        allSubmittals = Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res)
+            ? res
+            : [];
       }
 
-      setProject(prev => prev ? { ...prev, submittals: allSubmittals } : null);
+      setProject((prev) =>
+        prev ? { ...prev, submittals: allSubmittals } : null,
+      );
     } catch (error) {
       console.error("Error fetching project submittals:", error);
     }
   };
 
   useEffect(() => {
-    if (activeTab === "submittals") {
+    if (id && project) {
       fetchSubmittalsForProject();
     }
-  }, [activeTab, id]);
+  }, [id, !!project]);
 
   const fetchRfiForProject = async () => {
     if (!id || !project) return;
@@ -180,38 +202,52 @@ const GetProjectById = ({
         "connection_designer_engineer",
         "connection_designer_admin",
       ];
-      
+
       let allRfi: any[] = [];
       if (rolesForReceived.includes(userRole)) {
         // Fetch both received and sent RFIs for these roles
         const [receivedRes, sentRes] = await Promise.all([
           Service.GetReceivedRFIByProjectId(id),
-          Service.GetRFISentByProId(id)
+          Service.GetRFISentByProId(id),
         ]);
 
-        const received = Array.isArray(receivedRes?.data) ? receivedRes.data : (Array.isArray(receivedRes) ? receivedRes : []);
-        const sent = Array.isArray(sentRes?.data) ? sentRes.data : (Array.isArray(sentRes) ? sentRes : []);
-        
+        const received = Array.isArray(receivedRes?.data)
+          ? receivedRes.data
+          : Array.isArray(receivedRes)
+            ? receivedRes
+            : [];
+        const sent = Array.isArray(sentRes?.data)
+          ? sentRes.data
+          : Array.isArray(sentRes)
+            ? sentRes
+            : [];
+
         // Combine and remove duplicates based on RFI ID
         const combined = [...received, ...sent];
-        const uniqueRfi = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        const uniqueRfi = Array.from(
+          new Map(combined.map((item) => [item.id, item])).values(),
+        );
         allRfi = uniqueRfi;
       } else {
         const res = await Service.GetRFIByProjectId(id);
-        allRfi = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+        allRfi = Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res)
+            ? res
+            : [];
       }
 
-      setProject(prev => prev ? { ...prev, rfi: allRfi } : null);
+      setProject((prev) => (prev ? { ...prev, rfi: allRfi } : null));
     } catch (error) {
       console.error("Error fetching project RFIs:", error);
     }
   };
 
   useEffect(() => {
-    if (activeTab === "rfi" || activeTab === "CDrfi") {
+    if (id && project) {
       fetchRfiForProject();
     }
-  }, [activeTab, id]);
+  }, [id, !!project]);
 
   // Fetch tasks for stats
   useEffect(() => {
@@ -327,6 +363,20 @@ const GetProjectById = ({
     return project?.submittals || [];
   }, [project]);
 
+  const milestonesWithoutSubmittals = useMemo(() => {
+    const submittalMsIds = new Set(
+      submittalData.map((s: any) =>
+        String(s.mileStoneId || s.milestoneId || ""),
+      ),
+    );
+    return milestoneData.filter(
+      (ms: any) =>
+        !submittalMsIds.has(String(ms.id)) &&
+        ms.status !== "APPROVED" &&
+        ms.status !== "COMPLETED",
+    );
+  }, [milestoneData, submittalData]);
+
   // const FetchWBSbyProjectId = async () => {
   //   try {
   //     setLoading(true);
@@ -373,7 +423,9 @@ const GetProjectById = ({
   };
 
   const isClient = userRole === "client" || userRole === "client_admin";
-  const isConnectionDesigner = userRole === "connection_designer_engineer" || userRole === "connection_designer_admin";
+  const isConnectionDesigner =
+    userRole === "connection_designer_engineer" ||
+    userRole === "connection_designer_admin";
 
   const clientTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
@@ -399,7 +451,7 @@ const GetProjectById = ({
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
   ];
-    const defaultMobileTabs = [
+  const defaultMobileTabs = [
     { key: "details", label: "Details" },
     { key: "analytics", label: "Analytics" },
     { key: "teamsAnalytics", label: "Teams Analytics" },
@@ -432,14 +484,22 @@ const GetProjectById = ({
         return isAuthorizedForNotes;
       }
       if (isConnectionDesigner) {
-        const hiddenTabs = ["analytics", "teamsAnalytics", "wbs", "changeOrder", "notes"];
+        const hiddenTabs = [
+          "analytics",
+          "teamsAnalytics",
+          "wbs",
+          "changeOrder",
+          "notes",
+        ];
         if (hiddenTabs.includes(tab.key)) return false;
       }
       return true;
     });
   };
 
-  const tabsToShow = filterTabsByRole(isClient ? clientTabs : defaultDesktopTabs);
+  const tabsToShow = filterTabsByRole(
+    isClient ? clientTabs : defaultDesktopTabs,
+  );
   const mobileTabsToShow = filterTabsByRole(
     isClient ? clientTabs : defaultMobileTabs,
   );
@@ -523,10 +583,11 @@ const GetProjectById = ({
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${activeTab === key
-                  ? "bg-green-50 text-black border-[#6bbd45]"
-                  : "bg-white text-black border-black hover:bg-green-50"
-                  }`}
+                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${
+                  activeTab === key
+                    ? "bg-green-50 text-black border-[#6bbd45]"
+                    : "bg-white text-black border-black hover:bg-green-50"
+                }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -542,77 +603,77 @@ const GetProjectById = ({
               {!isClient &&
                 !isConnectionDesigner &&
                 userRole !== "connection_designer_admin" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <StatCard
-                    icon={<Clock className="text-blue-600" />}
-                    label="Estimated Hours"
-                    value={`${project.estimatedHours || 0}h`}
-                    color="bg-blue-50"
-                    layout="horizontal"
-                  />
-                  <StatCard
-                    icon={<Clock className="text-blue-600" />}
-                    label="Estimated Hours for Approval"
-                    value={`${(project.estimatedHours ?? 0) * 0.8}h`}
-                    color="bg-blue-50"
-                    layout="horizontal"
-                  />
-                  <StatCard
-                    icon={<Clock className="text-blue-600" />}
-                    label="Estimated Hours for Fabrication"
-                    value={`${(project.estimatedHours ?? 0) * 0.2}h`}
-                    color="bg-blue-50"
-                    layout="horizontal"
-                  />
-                  <StatCard
-                    icon={<CheckCircle2 className="text-green-600" />}
-                    label="Hours Completed"
-                    value={formatSeconds(
-                      projectStats?.workedSeconds ||
-                        project.workedSeconds ||
-                        project.totalWorkedSeconds ||
-                        0,
-                    )}
-                    color="bg-green-50"
-                    layout="horizontal"
-                  />
-                  <StatCard
-                    icon={
-                      <AlertCircle
-                        className={
-                          (projectStats?.isOverrun ?? project.isOverrun)
-                            ? "text-red-600"
-                            : "text-gray-400"
-                        }
-                      />
-                    }
-                    label="Overrun / Delay"
-                    value={
-                      (projectStats?.isOverrun ?? project.isOverrun)
-                        ? formatSeconds(
-                            (projectStats?.workedSeconds ||
-                              project.workedSeconds ||
-                              project.totalWorkedSeconds ||
-                              0) -
-                              (project.estimatedHours || 0) * 3600,
-                          )
-                        : "00:00"
-                    }
-                    color={
-                      (projectStats?.isOverrun ?? project.isOverrun)
-                        ? "bg-red-50"
-                        : "bg-gray-50"
-                    }
-                    description={
-                      (projectStats?.isOverrun ?? project.isOverrun)
-                        ? "Project is exceeding estimates"
-                        : "Project is within estimates"
-                    }
-                    isAlert={projectStats?.isOverrun ?? project.isOverrun}
-                    layout="horizontal"
-                  />
-                </div>
-              )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <StatCard
+                      icon={<Clock className="text-blue-600" />}
+                      label="Estimated Hours"
+                      value={`${project.estimatedHours || 0}h`}
+                      color="bg-blue-50"
+                      layout="horizontal"
+                    />
+                    <StatCard
+                      icon={<Clock className="text-blue-600" />}
+                      label="Estimated Hours for Approval"
+                      value={`${(project.estimatedHours ?? 0) * 0.8}h`}
+                      color="bg-blue-50"
+                      layout="horizontal"
+                    />
+                    <StatCard
+                      icon={<Clock className="text-blue-600" />}
+                      label="Estimated Hours for Fabrication"
+                      value={`${(project.estimatedHours ?? 0) * 0.2}h`}
+                      color="bg-blue-50"
+                      layout="horizontal"
+                    />
+                    <StatCard
+                      icon={<CheckCircle2 className="text-green-600" />}
+                      label="Hours Completed"
+                      value={formatSeconds(
+                        projectStats?.workedSeconds ||
+                          project.workedSeconds ||
+                          project.totalWorkedSeconds ||
+                          0,
+                      )}
+                      color="bg-green-50"
+                      layout="horizontal"
+                    />
+                    <StatCard
+                      icon={
+                        <AlertCircle
+                          className={
+                            (projectStats?.isOverrun ?? project.isOverrun)
+                              ? "text-red-600"
+                              : "text-gray-400"
+                          }
+                        />
+                      }
+                      label="Overrun / Delay"
+                      value={
+                        (projectStats?.isOverrun ?? project.isOverrun)
+                          ? formatSeconds(
+                              (projectStats?.workedSeconds ||
+                                project.workedSeconds ||
+                                project.totalWorkedSeconds ||
+                                0) -
+                                (project.estimatedHours || 0) * 3600,
+                            )
+                          : "00:00"
+                      }
+                      color={
+                        (projectStats?.isOverrun ?? project.isOverrun)
+                          ? "bg-red-50"
+                          : "bg-gray-50"
+                      }
+                      description={
+                        (projectStats?.isOverrun ?? project.isOverrun)
+                          ? "Project is exceeding estimates"
+                          : "Project is within estimates"
+                      }
+                      isAlert={projectStats?.isOverrun ?? project.isOverrun}
+                      layout="horizontal"
+                    />
+                  </div>
+                )}
 
               {/* ✅ New Summary Stats */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 text-black text-sm">
@@ -648,7 +709,17 @@ const GetProjectById = ({
                   value={milestoneData.length}
                   color="bg-green-50"
                   layout="horizontal"
-                  onClick={() => setActiveTab("milestones")}
+                  onClick={() => {
+                    if (isClient) {
+                      setActiveTab("overview");
+                      setTimeout(() => {
+                        const el = document.getElementById("project-progress");
+                        el?.scrollIntoView({ behavior: "smooth" });
+                      }, 100);
+                    } else {
+                      setActiveTab("milestones");
+                    }
+                  }}
                 />
                 <StatCard
                   icon={<FolderOpenDot className="text-green-600" />}
@@ -703,11 +774,18 @@ const GetProjectById = ({
                   <div className="space-y-6">
                     <div className="p-4 bg-white rounded-2xl border border-black/5 shadow-sm min-h-[140px]">
                       <h4 className="text-md font-bold text-black mb-4 flex items-center gap-2 uppercase tracking-tight">
-                        <Settings className="w-5 h-5 text-green-600" /> Connection Design Scope
+                        <Settings className="w-5 h-5 text-green-600" />{" "}
+                        Connection Design Scope
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        <ScopeTag label="Main Design" active={project.connectionDesign} />
-                        <ScopeTag label="Misc Design" active={project.miscDesign} />
+                        <ScopeTag
+                          label="Main Design"
+                          active={project.connectionDesign}
+                        />
+                        <ScopeTag
+                          label="Misc Design"
+                          active={project.miscDesign}
+                        />
                         <ScopeTag
                           label={
                             project.customerDesign
@@ -721,11 +799,18 @@ const GetProjectById = ({
 
                     <div className="p-4 bg-white rounded-2xl border border-black/5 shadow-sm min-h-[140px]">
                       <h4 className="text-md font-bold text-black mb-4 flex items-center gap-2 uppercase tracking-tight">
-                        <Settings className="w-5 h-4 text-green-600" /> Detailing Scope
+                        <Settings className="w-5 h-4 text-green-600" />{" "}
+                        Detailing Scope
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        <ScopeTag label="Detailing Main" active={project.detailingMain} />
-                        <ScopeTag label="Detailing Misc" active={project.detailingMisc} />
+                        <ScopeTag
+                          label="Detailing Main"
+                          active={project.detailingMain}
+                        />
+                        <ScopeTag
+                          label="Detailing Misc"
+                          active={project.detailingMisc}
+                        />
                       </div>
                     </div>
                   </div>
@@ -738,19 +823,29 @@ const GetProjectById = ({
                     <div
                       className="text-gray-700 bg-white p-5 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none"
                       dangerouslySetInnerHTML={{
-                        __html: project.description || "No description available.",
+                        __html:
+                          project.description || "No description available.",
                       }}
                     />
                   </div>
                 </div>
               </div>
 
-              <ProjectMilestoneMetrics projectId={id} />
+              <div id="project-progress">
+                <ProjectMilestoneMetrics projectId={id} />
+              </div>
 
-              <ProjectUpcomingSubmittals 
-                submittals={submittalData} 
-                onViewAll={() => setActiveTab("submittals")}
-                onSubmittalClick={(subId) => setSelectedSubmittalToView(subId)}
+              <ProjectUpcomingMilestones
+                milestones={milestonesWithoutSubmittals}
+                onViewAll={() => {
+                  if (isClient) {
+                    const el = document.getElementById("project-progress");
+                    el?.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    setActiveTab("milestones");
+                  }
+                }}
+                onMilestoneClick={(ms) => setSelectedMilestoneToView(ms)}
               />
 
               {/* Other Tasks Hours Breakdown (Overview only) */}
@@ -844,7 +939,7 @@ const GetProjectById = ({
 
                                 const sc =
                                   statusMap[
-                                  (task.status || "").toLowerCase()
+                                    (task.status || "").toLowerCase()
                                   ] ||
                                   "bg-gray-100 text-gray-500 border-gray-200";
 
@@ -1000,7 +1095,9 @@ const GetProjectById = ({
           {/* ✅ Notes */}
           {activeTab === "notes" && <NotesLayout projectId={id} />}
           {/* ✅ Project Notes (Team Meeting Notes) */}
-          {activeTab === "projectNotes" && <ProjectNotesLayout projectId={id} project={project} />}
+          {activeTab === "projectNotes" && (
+            <ProjectNotesLayout projectId={id} project={project} />
+          )}
 
           {activeTab === "wbs" && !isConnectionDesigner && (
             <div className="text-gray-700 italic text-center">
@@ -1015,16 +1112,21 @@ const GetProjectById = ({
           )}
           {activeTab === "rfi" && (
             <div className="space-y-4">
-            
-            <RfiLayout project={project} rfiData={rfiData} onSuccess={fetchProject} />
-
-             
+              <RfiLayout
+                project={project}
+                rfiData={rfiData}
+                onSuccess={fetchProject}
+              />
             </div>
           )}
-         
+
           {activeTab === "submittals" && (
             <div className="space-y-4">
-              <SubmittalLayout project={project} submittalData={submittalData} onSuccess={fetchProject} />
+              <SubmittalLayout
+                project={project}
+                submittalData={submittalData}
+                onSuccess={fetchProject}
+              />
             </div>
           )}
           {activeTab === "changeOrder" && !isConnectionDesigner && (
@@ -1036,9 +1138,10 @@ const GetProjectById = ({
                     onClick={() => setChangeOrderView("list")}
                     className={`
                       whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                      ${changeOrderView === "list"
-                        ? "border-[#6bbd45] text-black font-bold"
-                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                      ${
+                        changeOrderView === "list"
+                          ? "border-[#6bbd45] text-black font-bold"
+                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                       }
                     `}
                   >
@@ -1049,9 +1152,10 @@ const GetProjectById = ({
                       onClick={() => setChangeOrderView("add")}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${changeOrderView === "add"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        ${
+                          changeOrderView === "add"
+                            ? "border-[#6bbd45] text-black font-bold"
+                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
                         }
                     `}
                     >
@@ -1245,6 +1349,21 @@ const GetProjectById = ({
           />,
           document.body,
         )}
+      {selectedMilestoneToView &&
+        createPortal(
+          <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="w-full max-w-5xl my-auto animate-in fade-in zoom-in duration-200">
+              <GetMilestoneByID
+                row={selectedMilestoneToView}
+                close={() => {
+                  setSelectedMilestoneToView(null);
+                  fetchMileStone();
+                }}
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>,
     document.body,
   );
@@ -1266,10 +1385,11 @@ const InfoRow = ({
 
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-bold rounded-lg border ${active
-      ? "bg-green-50 text-black border-[#6bbd45]"
-      : "bg-gray-100 text-black border-gray-200"
-      }`}
+    className={`px-3 py-1 text-sm font-bold rounded-lg border ${
+      active
+        ? "bg-green-50 text-black border-[#6bbd45]"
+        : "bg-gray-100 text-black border-gray-200"
+    }`}
   >
     {label}
   </span>
@@ -1299,11 +1419,14 @@ const StatCard = ({
     return (
       <div
         onClick={onClick}
-        className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex items-center justify-between transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-          } ${onClick ? "cursor-pointer" : ""}`}
+        className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex items-center justify-between transition-all hover:scale-[1.02] ${
+          isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+        } ${onClick ? "cursor-pointer" : ""}`}
       >
         <div className="flex items-center gap-4">
-          <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">{icon}</div>
+          <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">
+            {icon}
+          </div>
           <div className="flex flex-col">
             <p className="text-sm font-bold text-gray-700 uppercase tracking-widest leading-tight">
               {label}
@@ -1329,8 +1452,9 @@ const StatCard = ({
   return (
     <div
       onClick={onClick}
-      className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-        } ${onClick ? "cursor-pointer" : ""}`}
+      className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
+        isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+      } ${onClick ? "cursor-pointer" : ""}`}
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
@@ -1407,19 +1531,21 @@ const OtherTasksPanel = ({
             <li key={key}>
               <button
                 onClick={() => setSelectedKey(key)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${selectedKey === key
-                  ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
-                  : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
-                  }`}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${
+                  selectedKey === key
+                    ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
+                    : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
+                }`}
               >
                 <span className="uppercase tracking-tight leading-tight">
                   {key}
                 </span>
                 <span
-                  className={`ml-2 shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedKey === key
-                    ? "bg-[#6bbd45]/20 text-[#3a8a1a]"
-                    : "bg-slate-200 text-slate-500"
-                    }`}
+                  className={`ml-2 shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                    selectedKey === key
+                      ? "bg-[#6bbd45]/20 text-[#3a8a1a]"
+                      : "bg-slate-200 text-slate-500"
+                  }`}
                 >
                   {otherTasksByBundle[key].length}
                 </span>

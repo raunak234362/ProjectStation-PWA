@@ -166,7 +166,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {/* LEFT: RFI Details */}
             <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-5">
               {/* Header */}
