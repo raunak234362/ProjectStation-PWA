@@ -31,7 +31,13 @@ const SubmittalResponseDetailsModal = ({
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
   const userId = sessionStorage.getItem("userId") || "";
 
-  const canReply = ["ADMIN", "STAFF", "PROJECT_MANAGER", "CLIENT", "CLIENT_ADMIN"].includes(userRole);
+  const canReply = [
+    "ADMIN",
+    "STAFF",
+    "PROJECT_MANAGER",
+    "CLIENT",
+    "CLIENT_ADMIN",
+  ].includes(userRole);
 
   const handleReplySubmit = async () => {
     if (!replyMessage.trim()) return;
@@ -42,6 +48,7 @@ const SubmittalResponseDetailsModal = ({
     formData.append("parentResponseId", response.id);
     formData.append("userId", userId);
     formData.append("status", replyStatus);
+    formData.append("submittalVersionId", response.submittalVersionId);
 
     replyFiles.forEach((file) => formData.append("files", file));
 
@@ -78,11 +85,13 @@ const SubmittalResponseDetailsModal = ({
           />
 
           {/* Parent Files */}
-          <RenderFiles
-            files={response.files}
-            table="submittalsResponse"
-            parentId={response.id}
-          />
+          {response.files?.length > 0 && (
+            <RenderFiles
+              files={response.files}
+              table="submittalsResponse"
+              parentId={response.id}
+            />
+          )}
 
           {/* Timestamp */}
           <div className="flex items-center gap-2 text-xs text-gray-700">
@@ -92,7 +101,7 @@ const SubmittalResponseDetailsModal = ({
 
           {/* 🔥 CHILD RESPONSES THREAD */}
           {response.childResponses?.length > 0 && (
-            <div className="mt-4 space-y-4 border-t pt-4 max-h-60 overflow-y-auto">
+            <div className="mt-4 space-y-4 border-t pt-4 h-[70vh] overflow-y-auto">
               <h4 className="text-sm font-semibold text-gray-700">History</h4>
 
               {response.childResponses.map((child: any) => (
@@ -116,81 +125,84 @@ const SubmittalResponseDetailsModal = ({
                   />
 
                   {/* Child Files */}
-                  <RenderFiles
-                    files={child.files}
-                    table="submittalsResponse"
-                    parentId={child.id}
-                  />
+                  {child.files?.length > 0 && (
+                    <RenderFiles
+                      files={child.files}
+                      table="submittalsResponse"
+                      parentId={child.id}
+                    />
+                  )}
                 </div>
               ))}
             </div>
           )}
-        {/* Reply Button */}
-        {canReply && !replyMode && (
-          <Button
-            className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
-            onClick={() => setReplyMode(true)}
-          >
-            Reply
-          </Button>
-        )}
-
-        {/* Reply Form */}
-        {replyMode && (
-          <div className="pt-4 space-y-4 border-t">
-            {/* Message */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">
-                Your Reply
-              </label>
-              <RichTextEditor
-                value={replyMessage}
-                onChange={setReplyMessage}
-                placeholder="Type your reply..."
-              />
-            </div>
-
-            {/* Status */}
-            <select
-              className="w-full border rounded p-2"
-              value={replyStatus}
-              onChange={(e) => setReplyStatus(e.target.value)}
+          {/* Reply Button */}
+          {canReply && !replyMode && (
+            <Button
+              className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
+              onClick={() => setReplyMode(true)}
             >
-              {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+              Reply
+            </Button>
+          )}
 
-            {/* File Upload */}
-            <input
-              type="file"
-              multiple
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setReplyFiles(e.target.files ? Array.from(e.target.files) : [])
-              }
-            />
+          {/* Reply Form */}
+          {replyMode && (
+            <div className="pt-4 space-y-4 border-t">
+              {/* Message */}
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700">
+                  Your Reply
+                </label>
+                <RichTextEditor
+                  value={replyMessage}
+                  onChange={setReplyMessage}
+                  placeholder="Type your reply..."
+                />
+              </div>
 
-            {/* Actions */}
-            <div className="flex justify-end gap-3">
-              <Button
-                onClick={() => setReplyMode(false)}
-                className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200"
+              {/* Status */}
+              <select
+                className="w-full border rounded p-2"
+                value={replyStatus}
+                onChange={(e) => setReplyStatus(e.target.value)}
               >
-                Cancel
-              </Button>
-              <Button
-                className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
-                onClick={handleReplySubmit}
-              >
-                Send Reply
-              </Button>
+                {STATUS_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+
+              {/* File Upload */}
+              <input
+                type="file"
+                multiple
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setReplyFiles(
+                    e.target.files ? Array.from(e.target.files) : [],
+                  )
+                }
+              />
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3">
+                <Button
+                  onClick={() => setReplyMode(false)}
+                  className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
+                  onClick={handleReplySubmit}
+                >
+                  Send Reply
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
         </div>
-
       </div>
     </div>
   );

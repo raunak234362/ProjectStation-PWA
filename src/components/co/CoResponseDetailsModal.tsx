@@ -61,11 +61,13 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
           dangerouslySetInnerHTML={{ __html: response.description || "—" }}
         />
 
-        <RenderFiles
-          files={response.files}
-          table="cOResponse"
-          parentId={response.id}
-        />
+        {response.files?.length > 0 && (
+          <RenderFiles
+            files={response.files}
+            table="cOResponse"
+            parentId={response.id}
+          />
+        )}
 
         {/* Reply */}
         <textarea
@@ -97,7 +99,12 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
         />
 
         <div className="flex justify-end gap-3">
-          <Button onClick={onClose} className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200">Cancel</Button>
+          <Button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200"
+          >
+            Cancel
+          </Button>
           <Button
             className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
             onClick={handleReply}

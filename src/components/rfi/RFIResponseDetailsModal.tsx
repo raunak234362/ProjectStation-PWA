@@ -76,11 +76,13 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
         />
 
         {/* Files */}
-        <RenderFiles
-          files={response.files}
-          table="rFIResponse"
-          parentId={response.id}
-        />
+        {response.files?.length > 0 && (
+          <RenderFiles
+            files={response.files}
+            table="rFIResponse"
+            parentId={response.id}
+          />
+        )}
 
         {/* Timestamp */}
         <div className="flex gap-2 items-center text-gray-700 text-xs">
@@ -109,11 +111,13 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
                 />
 
                 {/* Child Files */}
-                <RenderFiles
-                  files={child.files}
-                  table="rFIResponse"
-                  parentId={child.id}
-                />
+                {child.files?.length > 0 && (
+                  <RenderFiles
+                    files={child.files}
+                    table="rFIResponse"
+                    parentId={child.id}
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -173,7 +177,12 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-3">
-              <Button onClick={() => setReplyMode(false)} className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200">Cancel</Button>
+              <Button
+                onClick={() => setReplyMode(false)}
+                className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200"
+              >
+                Cancel
+              </Button>
               <Button
                 className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
                 onClick={handleReplySubmit}
