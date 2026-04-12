@@ -115,11 +115,14 @@ function MobileCardView({ table, DetailComponent, onRowClick }: any) {
             onClick={() => onRowClick?.(row.original)}
           >
             {row.getVisibleCells().map((cell: any) => (
-              <div key={cell.id} className="flex flex-row justify-between items-start py-2 text-xs border-b border-black/5 last:border-0 gap-3">
+              <div
+                key={cell.id}
+                className="flex flex-row justify-between items-start py-2 text-xs border-b border-black/5 last:border-0 gap-3"
+              >
                 <span className="text-black/30 font-black uppercase tracking-widest shrink-0 text-[10px]">
                   {cell.column.columnDef.header as string}
                 </span>
-                <span className="font-black text-black text-right wrap-break-words uppercase leading-tight flex-1 min-w-0">
+                <span className="font-black text-black text-right wrap-break-words leading-tight flex-1 min-w-0">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </span>
               </div>
@@ -186,7 +189,11 @@ export default function DataTable<T extends object>({
         const index = table
           .getPaginationRowModel()
           .rows.findIndex((r) => r.id === row.id);
-        return <span className="font-black text-black/20">{pageIndex * pageSize + index + 1}</span>;
+        return (
+          <span className="font-black text-black/20">
+            {pageIndex * pageSize + index + 1}
+          </span>
+        );
       },
       enableSorting: false,
       enableColumnFilter: false,
@@ -206,7 +213,7 @@ export default function DataTable<T extends object>({
     },
     initialState: {
       pagination: {
-        pageSize: disablePagination ? 100000 : (pageSizeOptions[0] || 10),
+        pageSize: disablePagination ? 100000 : pageSizeOptions[0] || 10,
       },
     },
     onGlobalFilterChange: setGlobalFilter,
@@ -238,26 +245,23 @@ export default function DataTable<T extends object>({
       {table
         .getAllColumns()
         .some((c) => (c.columnDef as any).enableColumnFilter) && (
-          <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-gray-50 rounded-2xl border border-black/10 shadow-sm">
-            {table
-              .getAllColumns()
-              .filter((c) => (c.columnDef as any).enableColumnFilter)
-              .map((column) => (
-                <div
-                  key={column.id}
-                  className="min-w-[200px] flex-1"
-                >
-                  <ColumnFilter column={column} />
-                </div>
-              ))}
-            <Button
-              onClick={() => table.resetColumnFilters()}
-              className="text-xs text-black border border-black hover:bg-green-100 transition-all h-11 px-8 font-black rounded-xl flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
-            >
-              <X className="w-4 h-4" /> Reset Filters
-            </Button>
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-gray-50 rounded-2xl border border-black/10 shadow-sm">
+          {table
+            .getAllColumns()
+            .filter((c) => (c.columnDef as any).enableColumnFilter)
+            .map((column) => (
+              <div key={column.id} className="min-w-[200px] flex-1">
+                <ColumnFilter column={column} />
+              </div>
+            ))}
+          <Button
+            onClick={() => table.resetColumnFilters()}
+            className="text-xs text-black border border-black hover:bg-green-100 transition-all h-11 px-8 font-black rounded-xl flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
+          >
+            <X className="w-4 h-4" /> Reset Filters
+          </Button>
+        </div>
+      )}
 
       {/* responsive body */}
       {isMobile ? (
@@ -267,7 +271,9 @@ export default function DataTable<T extends object>({
           onRowClick={onRowClick}
         />
       ) : (
-        <div className={`w-full ${noBorder ? "" : "border border-black/5 dark:border-slate-800"} rounded-lg overflow-hidden bg-white dark:bg-slate-900 shadow-sm transition-all duration-300`}>
+        <div
+          className={`w-full ${noBorder ? "" : "border border-black/5 dark:border-slate-800"} rounded-lg overflow-hidden bg-white dark:bg-slate-900 shadow-sm transition-all duration-300`}
+        >
           <div className="max-h-[800px] overflow-y-auto overflow-x-auto custom-scrollbar">
             <table className="min-w-full table-fixed divide-y divide-black/5 dark:divide-slate-800">
               <thead className="bg-[#f0f9eb] dark:bg-green-950/20 sticky top-0 z-10 backdrop-blur-sm border-b border-green-100/50">
@@ -307,8 +313,11 @@ export default function DataTable<T extends object>({
                 {table.getPaginationRowModel().rows.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr
-                      className={`group hover:bg-green-50/40 dark:hover:bg-slate-800/40 cursor-pointer transition-all duration-200 ${expandedRowId === row.id ? "bg-green-50/50 dark:bg-slate-800/50" : ""
-                        }`}
+                      className={`group hover:bg-green-50/40 dark:hover:bg-slate-800/40 cursor-pointer transition-all duration-200 ${
+                        expandedRowId === row.id
+                          ? "bg-green-50/50 dark:bg-slate-800/50"
+                          : ""
+                      }`}
                       onClick={() => {
                         onRowClick?.(row.original);
                         if (DetailComponent) {
@@ -321,7 +330,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="px-8 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-bold leading-relaxed uppercase tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400"
+                          className="px-8 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-bold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400"
                           style={{ width: cell.column.getSize() }}
                         >
                           {flexRender(
@@ -333,7 +342,10 @@ export default function DataTable<T extends object>({
                     </tr>
                     {expandedRowId === row.id && DetailComponent && (
                       <tr className="bg-slate-50/30 dark:bg-slate-800/20">
-                        <td colSpan={columns.length} className="px-6 py-6 animate-in slide-in-from-top-2 duration-300">
+                        <td
+                          colSpan={columns.length}
+                          className="px-6 py-6 animate-in slide-in-from-top-2 duration-300"
+                        >
                           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-black/5 dark:border-slate-800 shadow-xl p-6 text-black dark:text-slate-300 overflow-hidden">
                             <DetailComponent
                               row={row.original}
@@ -402,7 +414,6 @@ export default function DataTable<T extends object>({
           </Button>
         </div>
       </div>
-
     </>
   );
 }

@@ -16,6 +16,7 @@ import SubmittalResponseModal from "./SubmittalResponseModal";
 import SubmittalResponseDetailsModal from "./SubmittalResponseDetailsModal";
 import UpdateSubmittalById from "./UpdateSubmittalById";
 import RenderFiles from "../ui/RenderFiles";
+import { truncateWords } from "../../utils/stringUtils";
 
 const Info = ({ label, value }: any) => (
   <div className="mb-2">
@@ -36,10 +37,11 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
 
   return (
     <div
-      className={`border rounded-xl overflow-hidden transition-all ${isCurrent
-        ? "border-[#6bbd45] bg-[#6bbd45]/5"
-        : "border-gray-200 bg-white"
-        }`}
+      className={`border rounded-xl overflow-hidden transition-all ${
+        isCurrent
+          ? "border-[#6bbd45] bg-[#6bbd45]/5"
+          : "border-gray-200 bg-white"
+      }`}
     >
       {/* Row Header — always visible */}
       <button
@@ -49,10 +51,11 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
         <div className="flex items-center gap-3 min-w-0">
           {/* Version badge */}
           <span
-            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${isCurrent
-              ? "bg-[#6bbd45] text-white"
-              : "bg-gray-100 text-gray-500"
-              }`}
+            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${
+              isCurrent
+                ? "bg-[#6bbd45] text-white"
+                : "bg-gray-100 text-gray-500"
+            }`}
           >
             v{total - index}
             {isCurrent && " · Current"}
@@ -200,12 +203,12 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
       header: "Message",
       cell: ({ row }: any) => (
         <div
-          className="prose prose-sm max-w-none text-gray-700"
+          className="prose prose-sm max-w-[300px] text-gray-700"
           style={{
             marginLeft: row.original.parentResponseId ? "20px" : "0px",
           }}
           dangerouslySetInnerHTML={{
-            __html: row.original.description || "—",
+            __html: truncateWords(row.original.description || "—", 10),
           }}
         />
       ),
@@ -244,7 +247,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1  gap-6">
             {/* LEFT PANEL */}
             <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
               <div className="flex justify-between items-center">
@@ -270,20 +273,19 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 label="Created On"
                 value={new Date(submittal.date).toLocaleString()}
               />
+              {/* Single Version File Display */}
+              {!hasMultipleVersions && sortedVersions.length === 1 && (
+                <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5 mt-6">
+                  <RenderFiles
+                    files={sortedVersions}
+                    table="submittals"
+                    parentId={submittal.id}
+                    versionId={sortedVersions[0]?.id}
+                    hideHeader
+                  />
+                </div>
+              )}
             </div>
-
-            {/* Single Version File Display */}
-            {!hasMultipleVersions && sortedVersions.length === 1 && (
-              <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5 mt-6">
-                <RenderFiles
-                  files={sortedVersions}
-                  table="submittals"
-                  parentId={submittal.id}
-                  versionId={sortedVersions[0]?.id}
-                  hideHeader
-                />
-              </div>
-            )}
 
             {/* RIGHT PANEL */}
             <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
@@ -291,7 +293,10 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 <h2 className="text-xl font-semibold text-[#6bbd45]">
                   Responses
                 </h2>
-                {(userRole === "CLIENT_ADMIN" || userRole === "CLIENT" || userRole === "CONNECTION_DESIGNER_ENGINEER" || userRole === "CONNECTION_DESIGNER_ADMIN") && (
+                {(userRole === "CLIENT_ADMIN" ||
+                  userRole === "CLIENT" ||
+                  userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+                  userRole === "CONNECTION_DESIGNER_ADMIN") && (
                   <Button
                     className="bg-[#6bbd45]/20 text-black border border-black rounded-lg hover:bg-[#6bbd45]/30 font-bold text-sm"
                     onClick={() => setShowResponseModal(true)}
@@ -334,8 +339,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                     index={index}
                     total={sortedVersions.length}
                     isCurrent={
-                      version.id === submittal.currentVersionId ||
-                      index === 0
+                      version.id === submittal.currentVersionId || index === 0
                     }
                   />
                 ))}
