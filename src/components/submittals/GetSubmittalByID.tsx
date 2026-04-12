@@ -273,6 +273,60 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 label="Created On"
                 value={new Date(submittal.date).toLocaleString()}
               />
+
+              {/* Description */}
+              {(submittal.description ||
+                (sortedVersions.length === 1 &&
+                  sortedVersions[0].description)) && (
+                <div className="space-y-3 mt-6">
+                  <h4 className="text-black text-sm bg-white p-4 rounded-xl border border-black/5 font-black uppercase tracking-widest flex items-center gap-2">
+                    <span className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></span>
+                    Description
+                  </h4>
+                  <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden w-full">
+                    <style>{`
+                      .submittal-description * {
+                        max-width: 100% !important;
+                        width: auto !important;
+                        box-sizing: border-box !important;
+                        overflow-x: hidden !important;
+                      }
+                      .submittal-description table {
+                        width: 100% !important;
+                        table-layout: fixed !important;
+                      }
+                      .submittal-description td, .submittal-description th {
+                        word-break: break-word !important;
+                      }
+                      .submittal-description img {
+                        max-width: 100% !important;
+                        height: auto !important;
+                      }
+                      .submittal-description center {
+                        display: block !important;
+                        text-align: left !important;
+                      }
+                      .submittal-description a {
+                        color: #2563eb !important;
+                        word-break: break-all !important;
+                      }
+                      .submittal-description p { margin-bottom: 1rem !important; }
+                      .submittal-description ul { list-style-type: disc !important; padding-left: 1.5rem !important; }
+                      .submittal-description ol { list-style-type: decimal !important; padding-left: 1.5rem !important; }
+                    `}</style>
+                    <div
+                      className="submittal-description text-gray-800 p-5 text-sm wrap-break-word leading-relaxed"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          submittal.description ||
+                          sortedVersions[0]?.description ||
+                          "No description provided",
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Single Version File Display */}
               {!hasMultipleVersions && sortedVersions.length === 1 && (
                 <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5 mt-6">
