@@ -128,7 +128,7 @@ const SubmittalResponseDetailsModal = ({
         {/* Reply Button */}
         {canReply && !replyMode && (
           <Button
-            className="px-6 py-2 bg-black text-white rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 transition-all border border-black shadow-md mt-4"
+            className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
             onClick={() => setReplyMode(true)}
           >
             Reply

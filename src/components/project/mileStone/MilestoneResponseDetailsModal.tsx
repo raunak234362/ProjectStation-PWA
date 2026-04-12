@@ -216,7 +216,7 @@ const MilestoneResponseDetailsModal: React.FC<
                 Cancel
               </Button>
               <Button
-                className="px-8 py-2 bg-green-600 text-white rounded-xl font-bold uppercase tracking-tight hover:bg-green-700 transition-all shadow-md text-xs disabled:opacity-50"
+                className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
                 onClick={handleReplySubmit}
                 disabled={isSubmitting}
               >
