@@ -107,13 +107,19 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                 Attachments
               </p>
-              <RenderFiles
-                files={[version]}
-                table="submittals"
-                parentId={version.submittalId || version.submittalsId}
-                versionId={version.id}
-                hideHeader
-              />
+              {isCurrent ? (
+                <RenderFiles
+                  files={[version]}
+                  table="submittals"
+                  parentId={version.submittalId || version.submittalsId}
+                  versionId={version.id}
+                  hideHeader
+                />
+              ) : (
+                <p className="text-xs text-gray-500 italic">
+                  Attachments are only available for the current version.
+                </p>
+              )}
             </div>
           )}
 
