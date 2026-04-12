@@ -19,6 +19,7 @@ import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { useDispatch } from "react-redux";
 import { deleteRFQ, updateRFQ } from "../../store/rfqSlice";
 import { toast } from "react-toastify";
+import { truncateWords } from "../../utils/stringUtils";
 
 interface GetRfqByIDProps {
   id: string;
@@ -220,36 +221,30 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     userRole?.toLowerCase() === "connection_designer_admin";
 
   const responseColumns: ColumnDef<any>[] = [
-    {
-      accessorKey: "createdByRole",
-      header: "From",
-      cell: ({ row }) => (
-        <span className="font-medium text-sm">
-          {row.original.createdByRole === "CLIENT" ? "Client" : "WBT Team"}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "description",
-      header: "Message",
-      cell: ({ row }) => {
-        const plainText =
-          row.original.description?.replace(/<[^>]*>?/gm, "") || "";
-        return <p className="truncate max-w-[180px]">{plainText}</p>;
-      },
-    },
-    {
-      accessorKey: "files",
-      header: "Files",
-      cell: ({ row }) => {
-        const count = row.original.files?.length ?? 0;
-        return count > 0 ? (
-          <span className="text-black font-medium">{count} file(s)</span>
-        ) : (
-          <span className="text-gray-400">—</span>
-        );
-      },
-    },
+    // {
+    //   accessorKey: "createdByRole",
+    //   header: "From",
+    //   cell: ({ row }) => (
+    //     <span className="font-medium text-sm">
+    //       {row.original.createdByRole === "CLIENT" || "CLIENT_ADMIN"  ? "Client" : "WBT Team"}
+    //     </span>
+    //   ),
+    // },
+     {
+          accessorKey: "description",
+          header: "Message",
+          cell: ({ row }: any) => (
+            <div
+              className="prose prose-sm text-gray-700"
+              style={{
+                marginLeft: row.original.parentResponseId ? "0px" : "0px",
+              }}
+              dangerouslySetInnerHTML={{
+                __html: truncateWords(row.original.description || "—", 10),
+              }}
+            />
+          ),
+        },
     {
       accessorKey: "createdAt",
       header: "Created",

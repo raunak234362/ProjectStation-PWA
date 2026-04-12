@@ -97,7 +97,7 @@ const ResponseDetailsModal = ({
             onClick={onClose}
             className="p-1 px-3 bg-red-50 hover:bg-red-100 text-black rounded-lg border border-red-600 transition-all flex items-center justify-center font-bold text-xs"
           >
-            Close
+            CLOSE
           </button>
         </div>
 
@@ -105,7 +105,7 @@ const ResponseDetailsModal = ({
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-10 space-y-10">
           <div className="space-y-4">
             <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-              Primary Manifest / Narrative
+              Message
             </h3>
             <div
               className="text-black/80 bg-gray-50/50 p-6 rounded-2xl border border-black/10 prose prose-sm max-w-none shadow-inner font-medium"
@@ -115,7 +115,7 @@ const ResponseDetailsModal = ({
 
           <div className="space-y-4">
             <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-              Technical Appendices
+              Message
             </h3>
             <RenderFiles
               files={response.files}
@@ -129,7 +129,7 @@ const ResponseDetailsModal = ({
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <h1 className="text-xs font-black text-black uppercase tracking-[0.2em]">
-                  Initialize Recursive Reply
+                  Reply
                 </h1>
               </div>
 
@@ -185,7 +185,7 @@ const ResponseDetailsModal = ({
                   className="px-8 py-3 bg-black text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-black/90 shadow-xl"
                   onClick={handleReplySubmit}
                 >
-                  Send Reply Vector
+                  Send Reply  
                 </Button>
               </div>
             </div>
@@ -206,9 +206,9 @@ const ResponseDetailsModal = ({
           {!replyMode && userRole === "client" && (
             <Button
               onClick={() => setReplyMode(true)}
-              className="w-full sm:w-auto px-10 py-3 bg-blue-100 text-blue-700 border border-blue-200 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-blue-200 transition-all shadow-sm"
+              className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
             >
-              Initialize Reply
+              Reply
             </Button>
           )}
         </div>
