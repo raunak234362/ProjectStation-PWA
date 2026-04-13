@@ -1,29 +1,36 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Loader2 } from "lucide-react";
 import { formatDateTime } from "../../utils/dateUtils";
 import { useState } from "react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import RenderFiles from "../ui/RenderFiles";
+import { toast } from "react-toastify";
 
 interface ResponseDetailsModalProps {
   response: any;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 const ResponseDetailsModal = ({
   response,
   onClose,
+  onSuccess,
 }: ResponseDetailsModalProps) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
   const [replyStatus, setReplyStatus] = useState("PENDING");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
 
   const handleReplySubmit = async () => {
-    if (!replyMessage.trim()) return;
+    if (!replyMessage.trim()) {
+      toast.warning("Please enter a message before sending.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("description", replyMessage);
@@ -34,13 +41,18 @@ const ResponseDetailsModal = ({
     replyFiles.forEach((file) => formData.append("files", file));
 
     try {
+      setIsSubmitting(true);
       await Service.addResponse(formData, response.rfqId);
+      toast.success("Reply sent successfully!");
       setReplyMode(false);
       setReplyMessage("");
       setReplyFiles([]);
-      onClose();
+      if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Reply failed:", err);
+      toast.error("Failed to send reply. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -50,7 +62,7 @@ const ResponseDetailsModal = ({
         {res.childResponses?.map((child: any) => (
           <div
             key={child.id}
-            className="bg-white p-4 sm:p-5 rounded-2xl border border-black/5 shadow-sm"
+            className="bg-white p-4 sm:p-5 rounded-2xl border border-black/5 shadow-sm animate-in fade-in slide-in-from-left-4 duration-500"
           >
             <div className="flex justify-between items-center mb-3">
               <span className="text-[10px] font-black text-black uppercase tracking-tight">
@@ -185,10 +197,18 @@ const ResponseDetailsModal = ({
                   Cancel
                 </Button>
                 <Button
-                  className="px-8 py-3 bg-green-200/50 text-black border border-black/10 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-green-200/80 shadow-xl"
+                  className="px-8 py-3 bg-green-200/50 text-black border border-black/10 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-green-200/80 shadow-xl disabled:opacity-50"
                   onClick={handleReplySubmit}
+                  disabled={isSubmitting}
                 >
-                  Send Reply  
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 size={14} className="animate-spin" />
+                      Sending...
+                    </div>
+                  ) : (
+                    "Send Reply"
+                  )}
                 </Button>
               </div>
             </div>

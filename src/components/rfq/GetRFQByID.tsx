@@ -93,6 +93,15 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     if (id) fetchRfq();
   }, [id]);
 
+  useEffect(() => {
+    if (selectedResponse && rfq?.responses) {
+      const updated = rfq.responses.find(
+        (r: any) => r.id === selectedResponse.id,
+      );
+      if (updated) setSelectedResponse(updated);
+    }
+  }, [rfq?.responses]);
+
   const handleDelete = async () => {
     console.log(
       "handleDelete called with text:",
@@ -815,6 +824,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
           <ResponseDetailsModal
             response={selectedResponse}
             onClose={() => setSelectedResponse(null)}
+            onSuccess={fetchRfq}
           />
         )}
 
