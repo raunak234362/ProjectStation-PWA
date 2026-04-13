@@ -477,11 +477,17 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                     }
                   }
 
+                  const overallCompletion = 
+                    milestone.completeionPercentage ?? 
+                    milestone.completionPercentage ?? 
+                    milestone.percentage;
+
                   const finalProgress =
-                    milestone.percentage !== undefined &&
-                      milestone.percentage !== null &&
-                      milestone.percentage !== ""
-                      ? Number(milestone.percentage)
+                    (overallCompletion !== undefined &&
+                    overallCompletion !== null &&
+                    overallCompletion !== "" &&
+                    Number(overallCompletion) !== 0)
+                      ? Number(overallCompletion)
                       : taskProgress;
 
                   return (
