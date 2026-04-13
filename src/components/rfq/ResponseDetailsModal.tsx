@@ -172,18 +172,18 @@ const ResponseDetailsModal = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-black/40 uppercase tracking-widest">
-                    Protocol Status
+                    Proposal Status
                   </label>
                   <select
                     value={replyStatus}
                     onChange={(e) => setReplyStatus(e.target.value)}
                     className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-blue-100 outline-none font-black uppercase text-[10px] tracking-widest appearance-none cursor-pointer"
                   >
-                    <option value="PENDING">PENDING - ACTIVE</option>
-                    <option value="APPROVED">APPROVED - VERIFIED</option>
-                    <option value="REJECTED">REJECTED - TERMINATED</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="APPROVED">Awarded</option>
+                    <option value="REJECTED">Rejected</option>
                     <option value="CLARIFICATION_REQUIRED">
-                      CLARIFICATION REQUIRED
+                      Clarification Required
                     </option>
                   </select>
                 </div>
