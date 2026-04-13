@@ -38,6 +38,12 @@ const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
     {
       accessorKey: "changeOrderNumber",
       header: "CO Number",
+      cell: ({ row }) => {
+        const num = row.original.changeOrderNumber;
+        if (!num) return "—";
+        const last3 = num.slice(-3);
+        return <span className="font-bold text-black">COR-{last3}</span>;
+      },
     },
     {
       accessorKey: "remarks",
