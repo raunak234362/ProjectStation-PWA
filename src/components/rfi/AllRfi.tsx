@@ -119,9 +119,9 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
         <Inbox className="w-10 h-10 mb-3 text-gray-200" />
         <p className="text-black font-black text-lg">No RFIs Available</p>
         <p className="text-sm">
-          {userRole === "CLIENT"
-            ? "You haven’t sent any RFIs yet."
-            : "No RFIs have been received yet."}
+          {["CLIENT", "CLIENT_ADMIN"].includes(userRole?.toUpperCase() || "")
+            ? "No RFIs have been received for this project yet."
+            : "You haven’t initiated any RFIs yet."}
         </p>
       </div>
     );
