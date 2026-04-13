@@ -20,7 +20,7 @@ const ResponseDetailsModal = ({
   const [replyStatus, setReplyStatus] = useState("PENDING");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
 
-  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
 
   const handleReplySubmit = async () => {
     if (!replyMessage.trim()) return;
@@ -52,7 +52,10 @@ const ResponseDetailsModal = ({
             key={child.id}
             className="bg-white p-4 sm:p-5 rounded-2xl border border-black/5 shadow-sm"
           >
-            <div className="flex justify-between items-start mb-3">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-[10px] font-black text-black uppercase tracking-tight">
+                {child.user?.firstName} {child.user?.lastName}
+              </span>
               <span className="text-[9px] font-black bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
                 {formatDateTime(child.createdAt)}
               </span>
@@ -84,7 +87,7 @@ const ResponseDetailsModal = ({
         <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
           <div className="flex flex-col">
             <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-              Response
+              Response from {response.user?.firstName} {response.user?.lastName}
             </h2>
             <div className="flex items-center gap-2 mt-1">
               <CalendarDays size={12} className="text-black/30" />
@@ -115,7 +118,7 @@ const ResponseDetailsModal = ({
 
           <div className="space-y-4">
             <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-              Message
+              Files
             </h3>
             <RenderFiles
               files={response.files}
@@ -182,7 +185,7 @@ const ResponseDetailsModal = ({
                   Cancel
                 </Button>
                 <Button
-                  className="px-8 py-3 bg-black text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-black/90 shadow-xl"
+                  className="px-8 py-3 bg-green-200/50 text-black border border-black/10 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-green-200/80 shadow-xl"
                   onClick={handleReplySubmit}
                 >
                   Send Reply  
@@ -203,14 +206,15 @@ const ResponseDetailsModal = ({
 
         {/* Footer */}
         <div className="px-6 py-5 border-t border-black/10 bg-gray-50/50 flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 shrink-0">
-          {!replyMode && userRole === "client" && (
-            <Button
-              onClick={() => setReplyMode(true)}
-              className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
-            >
-              Reply
-            </Button>
-          )}
+          {!replyMode &&
+            ["ADMIN", "STAFF", "CLIENT", "CLIENT_ADMIN"].includes(userRole) && (
+              <Button
+                onClick={() => setReplyMode(true)}
+                className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
+              >
+                Reply
+              </Button>
+            )}
         </div>
       </div>
     </div>
