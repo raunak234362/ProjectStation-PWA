@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { X, Save, Loader2, Calculator } from "lucide-react";
+import { Save, Loader2, Calculator } from "lucide-react";
 import { Button } from "../../ui/button";
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";

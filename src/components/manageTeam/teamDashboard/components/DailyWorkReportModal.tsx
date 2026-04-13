@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { X, FileText, Download, User } from "lucide-react";
+import { FileText, Download, User } from "lucide-react";
 import Button from "../../../fields/Button";
 import { useDispatch } from "react-redux";
 import {

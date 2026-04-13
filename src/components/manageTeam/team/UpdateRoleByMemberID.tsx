@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { X } from "lucide-react";
 import Service from "../../../api/Service";
 import type { UpdateTeamRolePayload } from "../../../interface";
 import Select from "../../fields/Select";

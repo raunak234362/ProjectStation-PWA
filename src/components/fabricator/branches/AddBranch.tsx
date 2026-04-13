@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import { Country, State, City } from "country-state-city";
 import axios from "axios";
-import { X, Plus, Check, Loader2 } from "lucide-react";
+import { Plus, Check, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 
 interface AddBranchProps {

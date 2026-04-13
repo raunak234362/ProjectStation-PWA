@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Lock, Loader2 } from "lucide-react";
+import {Lock, Loader2 } from "lucide-react";
 import Button from "../fields/Button";
 import { toast } from "react-toastify";
 import AuthService from "../../api/auth";

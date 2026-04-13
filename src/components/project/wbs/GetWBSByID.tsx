@@ -6,7 +6,6 @@ import {
   Layers,
   ListChecks,
   Clock,
-  X,
 } from "lucide-react";
 import Service from "../../../api/Service";
 import type { WBSData, LineItem } from "../../../interface";

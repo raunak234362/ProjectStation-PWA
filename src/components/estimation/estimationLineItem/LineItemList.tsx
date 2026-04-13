@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Service from "../../../api/Service";
 import DataTable from "../../ui/table";
-import { X, Clock, Layers, AlignLeft, Edit2, Save, Calculator } from "lucide-react";
+import { Clock, Layers, AlignLeft, Edit2, Save, Calculator } from "lucide-react";
 import RichTextEditor from "../../fields/RichTextEditor";
 
 interface LineItemListProps {

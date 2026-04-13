@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Service from "../../../api/Service";
 import type { EditEmployeePayload, UserData } from "../../../interface";
-import { X, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import Input from "../../fields/input";
 import Select from "../../fields/Select";
 import { useDispatch, useSelector } from "react-redux";

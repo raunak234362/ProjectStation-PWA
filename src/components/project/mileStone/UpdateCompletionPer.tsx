@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { X, CheckCircle, Save } from "lucide-react";
+import { CheckCircle, Save } from "lucide-react";
 
 import Input from "../../fields/input";
 import Button from "../../fields/Button";

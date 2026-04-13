@@ -3,7 +3,6 @@ import {
   XCircle, 
   AlertTriangle, 
   RefreshCcw, 
-  X,
   FileWarning
 } from "lucide-react";
 

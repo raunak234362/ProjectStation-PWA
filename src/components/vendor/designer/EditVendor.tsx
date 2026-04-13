@@ -2,7 +2,7 @@ import { Controller, useForm } from "react-hook-form";
 import type { ConnectionDesigner } from "../../../interface";
 import { useEffect, useRef, useState } from "react";
 import Input from "../../fields/input";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import Button from "../../fields/Button";
 import { State, City } from "country-state-city";
 import Select from "react-select";

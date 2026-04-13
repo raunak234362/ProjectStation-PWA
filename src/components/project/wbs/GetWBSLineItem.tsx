@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, X, ListChecks } from "lucide-react";
+import { Loader2, AlertCircle, ListChecks } from "lucide-react";
 import Service from "../../../api/Service";
 import { Button } from "../../ui/button";
 import DataTable, { type ExtendedColumnDef } from "../../ui/table";

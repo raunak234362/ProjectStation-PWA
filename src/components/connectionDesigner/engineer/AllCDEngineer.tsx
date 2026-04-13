@@ -2,7 +2,6 @@
 import { useEffect, useState, useMemo } from "react";
 import type { ConnectionDesigner, UserData } from "../../../interface";
 import Button from "../../fields/Button";
-import { X } from "lucide-react";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import GetEmployeeByID from "../../manageTeam/employee/GetEmployeeByID";

@@ -4,7 +4,7 @@ import RichTextEditor from "../../fields/RichTextEditor";
 
 import Service from "../../../api/Service";
 import { toast } from "react-toastify";
-import { Loader2, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Input from "../../fields/input";
 
 interface LineItem {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { Loader2, X, Clock, User, FileText, CheckCircle2, AlertCircle, Timer } from "lucide-react";
+import { Loader2, Clock, User, FileText, CheckCircle2, AlertCircle, Timer } from "lucide-react";
 import Service from "../../api/Service";
 
 interface MeasDashboardProps {
