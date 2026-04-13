@@ -747,9 +747,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 {(userRole === "ADMIN" ||
                   userRole === "DEPUTY_MANAGER" ||
                   userRole === "OPERATION_EXECUTIVE" ||
-                  userRole === "USER" ||
-                  userRole === "CLIENT" ||
-                  userRole === "CLIENT_ADMIN") && (
+                  userRole === "USER") && (
                     <Button
                       onClick={() => setShowResponseModal(true)}
                       className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"

@@ -37,6 +37,7 @@ const ResponseDetailsModal = ({
     formData.append("parentResponseId", response.id);
     formData.append("rfqId", response.rfqId);
     formData.append("userId", sessionStorage.getItem("userId") || "");
+    formData.append("status", replyStatus);
 
     replyFiles.forEach((file) => formData.append("files", file));
 
@@ -68,9 +69,16 @@ const ResponseDetailsModal = ({
               <span className="text-[10px] font-black text-black uppercase tracking-tight">
                 {child.user?.firstName} {child.user?.lastName}
               </span>
-              <span className="text-[9px] font-black bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
-                {formatDateTime(child.createdAt)}
-              </span>
+              <div className="flex items-center gap-2">
+                {child.status && (
+                  <span className="text-[9px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
+                    {child.status}
+                  </span>
+                )}
+                <span className="text-[9px] font-black bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                  {formatDateTime(child.createdAt)}
+                </span>
+              </div>
             </div>
             <div
               className="prose prose-sm max-w-none text-black/80 font-medium"
@@ -106,6 +114,11 @@ const ResponseDetailsModal = ({
               <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
                 {formatDateTime(response.createdAt)}
               </span>
+              {response.status && (
+                <span className="ml-2 text-[9px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
+                  {response.status}
+                </span>
+              )}
             </div>
           </div>
           <button
