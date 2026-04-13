@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "../../../utils/dateUtils";
+import { generateInvoiceNumber } from "../../../utils/stringUtils";
 import { useDispatch } from "react-redux";
 import {
   incrementModalCount,
@@ -119,6 +120,11 @@ const SalesDetailModal: React.FC<SalesDetailModalProps> = ({
           {
             accessorKey: "invoiceNumber",
             header: "Invoice #",
+            cell: ({ row }) => {
+              const inv = row.original;
+              const jobName = inv.jobName || inv.projectName || inv.project?.name || "NA";
+              return generateInvoiceNumber(jobName, inv.invoiceDate || new Date());
+            },
           },
           {
             accessorKey: "projectName",

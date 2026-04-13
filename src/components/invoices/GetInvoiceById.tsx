@@ -4,6 +4,7 @@ import Service from "../../api/Service";
 import logo from "../../assets/logo.png";
 import { useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
+import { generateInvoiceNumber } from "../../utils/stringUtils";
 
 const GetInvoiceById = ({
   id,
@@ -86,7 +87,7 @@ const GetInvoiceById = ({
     printWindow.document.write(`
       <html>
         <head>
-          <title>Invoice_${invoice.invoiceNumber}</title>
+          <title>Invoice_${generateInvoiceNumber(invoice.jobName || invoice.projectName || "NA", invoice.invoiceDate)}</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap');
             @page { size: A4; margin: 0; }
@@ -169,7 +170,7 @@ const GetInvoiceById = ({
               <div class="meta-details">
                 <div style="margin-bottom: 10px; font-weight: bold;">Original for Recipient</div>
                 <div class="meta-grid">
-                  <span class="label">Invoice No:</span><span class="value">${invoice.invoiceNumber}</span>
+                  <span class="label">Invoice No:</span><span class="value">${generateInvoiceNumber(invoice.jobName || invoice.projectName || "NA", invoice.invoiceDate)}</span>
                   <span class="label">Invoice Date:</span><span class="value">${formatDateStr(invoice.invoiceDate)}</span>
                   <span class="label">Date of Supply:</span><span class="value">${formatDateStr(invoice.dateOfSupply)}</span>
                   <span class="label">Place of Supply:</span><span class="value">${invoice.placeOfSupply || "USA"}</span>
@@ -455,7 +456,12 @@ const GetInvoiceById = ({
                 </div>
                 <div className="grid grid-cols-[100px_1fr] gap-y-2">
                   <span className="text-black">Invoice No:</span>
-                  <span className="">{invoice.invoiceNumber}</span>
+                  <span className="">
+                    {generateInvoiceNumber(
+                      invoice.jobName || invoice.projectName || "NA",
+                      invoice.invoiceDate,
+                    )}
+                  </span>
 
                   <span className="text-black">Invoice Date:</span>
                   <span className="">{formatDate(invoice.invoiceDate)}</span>

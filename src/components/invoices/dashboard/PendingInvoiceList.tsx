@@ -3,6 +3,7 @@ import DataTable from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
 import { Eye, Send } from "lucide-react";
 import { formatDate } from "../../../utils/dateUtils";
+import { generateInvoiceNumber } from "../../../utils/stringUtils";
 
 interface PendingListProps {
   invoices: any[];
@@ -17,11 +18,16 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
     {
       accessorKey: "invoiceNumber",
       header: "Invoice #",
-      cell: ({ row }) => (
-        <span className="font-medium text-gray-800">
-          {row.getValue("invoiceNumber") || `#${row.index + 1000}`}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const inv = row.original;
+        const jobName = inv.jobName || inv.projectName || inv.project?.name || "NA";
+        const invNum = generateInvoiceNumber(jobName, inv.invoiceDate || new Date());
+        return (
+          <span className="font-medium text-gray-800">
+            {invNum}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "customerName",

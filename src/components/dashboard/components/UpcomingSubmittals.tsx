@@ -237,7 +237,20 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
               >
                 <div className="flex justify-between items-start mb-2 pl-2">
                   <h4 className="text-sm font-bold text-black group-hover:text-black transition-colors">
-                    {invoice.invoiceNumber || "No Number"}
+                    {(() => {
+                      const project =
+                        invoice.jobName ||
+                        invoice.projectName ||
+                        invoice.project?.name ||
+                        "NA";
+                      const words = project.trim().split(/\s+/).filter((w: string) => w.length > 0);
+                      const projectInitial = words.slice(0, 3).map((w: string) => w[0].toUpperCase()).join("");
+                      const date = new Date(invoice.invoiceDate || new Date());
+                      const yy = date.getFullYear().toString().slice(-2);
+                      const mm = String(date.getMonth() + 1).padStart(2, "0");
+                      const dd = String(date.getDate()).padStart(2, "0");
+                      return `INV-${projectInitial}-${mm}-${dd}-${yy}`;
+                    })()}
                   </h4>
                   <span className="text-[10px] font-bold text-black uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded">
                     {formatDate(invoice.invoiceDate)}

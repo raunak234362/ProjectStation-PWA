@@ -1,5 +1,5 @@
-import React from "react";
 import { CheckCircle, Clock, FilePlus } from "lucide-react";
+import { generateInvoiceNumber } from "../../../utils/stringUtils";
 
 interface RecentActivityProps {
     invoices: any[]; // Use this to generate some real looking data if needed, or just mock
@@ -23,18 +23,19 @@ const RecentInvoiceActivity: React.FC<RecentActivityProps> = ({ invoices }) => {
 
                 // Determine type based on status logic
                 let type = "raised";
-                let message = `Invoice #${inv.invoiceNumber} raised for ${inv.customerName}`;
+                const invNum = generateInvoiceNumber(inv.jobName || inv.projectName || "NA", inv.invoiceDate || new Date());
+                let message = `Invoice #${invNum} raised for ${inv.customerName}`;
                 let icon = FilePlus;
                 let color = "bg-blue-100 text-blue-600";
 
                 if (isPaid) {
                     type = 'received';
-                    message = `Payment received for Invoice #${inv.invoiceNumber}`;
+                    message = `Payment received for Invoice #${invNum}`;
                     icon = CheckCircle;
                     color = "bg-green-100 text-green-600";
                 } else if (inv.dueDate && new Date(inv.dueDate) < new Date()) {
                     type = 'overdue';
-                    message = `Invoice #${inv.invoiceNumber} is overdue`;
+                    message = `Invoice #${invNum} is overdue`;
                     icon = Clock;
                     color = "bg-red-100 text-red-600";
                 }
