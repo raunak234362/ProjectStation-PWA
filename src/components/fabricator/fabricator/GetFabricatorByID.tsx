@@ -11,6 +11,10 @@ import {
   Calendar,
   Clock,
   Paperclip,
+  User,
+  Percent,
+  BadgeInfo,
+  CalendarDays,
 } from "lucide-react";
 import Button from "../../fields/Button";
 import type { Fabricator } from "../../../interface";
@@ -221,6 +225,18 @@ const GetFabricatorByID = ({
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
+                <div className="pb-2 border-b border-black/10">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
+                    Network & Identity
+                  </h4>
+                </div>
+                {fabricator.fabStage && (
+                  <InfoRow
+                    label="Engaging Stage"
+                    value={fabricator.fabStage}
+                    icon={<BadgeInfo size={14} className="text-orange-500" />}
+                  />
+                )}
                 {fabricator.website && (
                   <InfoRow
                     label="Digital Hub"
@@ -229,7 +245,7 @@ const GetFabricatorByID = ({
                         href={fabricator.website}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-blue-600 dark:text-blue-400  hover:underline underline-offset-4"
+                        className="text-blue-600 dark:text-blue-400 hover:underline underline-offset-4"
                       >
                         {truncateText(fabricator.website, 30)}
                       </a>
@@ -245,7 +261,7 @@ const GetFabricatorByID = ({
                         href={fabricator.drive}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-green-600 dark:text-green-400  hover:underline underline-offset-4 flex items-center gap-1.5"
+                        className="text-green-600 dark:text-green-400 hover:underline underline-offset-4 flex items-center gap-1.5"
                       >
                         Open Drive <ExternalLink size={12} />
                       </a>
@@ -253,9 +269,84 @@ const GetFabricatorByID = ({
                     icon={<Link size={14} className="text-emerald-500" />}
                   />
                 )}
+
+                <div className="pt-4 pb-2 border-b border-black/10">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
+                    Contacts
+                  </h4>
+                </div>
+                <InfoRow
+                  label="Internal POC"
+                  value={
+                    fabricator.wbtFabricatorPointOfContact &&
+                    fabricator.wbtFabricatorPointOfContact.length > 0 ? (
+                      <div className="space-y-1">
+                        {fabricator.wbtFabricatorPointOfContact.map(
+                          (poc: any) => (
+                            <div key={poc.id || poc._id}>
+                              {poc.firstName} {poc.lastName}{" "}
+                              <span className="text-[9px] text-black/40">
+                                ({poc.role})
+                              </span>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : (
+                      "Not Assigned"
+                    )
+                  }
+                  icon={<User size={14} className="text-indigo-500" />}
+                />
+                <InfoRow
+                  label="External POC"
+                  value={
+                    fabricator.pointOfContact &&
+                    fabricator.pointOfContact.length > 0 ? (
+                      <div className="space-y-1">
+                        {fabricator.pointOfContact.map((client: any) => (
+                          <div key={client.id || client._id}>
+                            {client.firstName} {client.lastName}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      "None Listed"
+                    )
+                  }
+                  icon={<User size={14} className="text-slate-500" />}
+                />
               </div>
 
-              <div className="space-y-6 bg-gray-50/50 dark:bg-slate-800/50 p-6 rounded-2xl border border-gray-100 dark:border-slate-700/50">
+              <div className="space-y-6 bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="pb-2 border-b border-black/10">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
+                    Financial Policy
+                  </h4>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <InfoRow
+                    label="Approval"
+                    value={`${fabricator.approvalPercentage || 0}%`}
+                    icon={<Percent size={14} className="text-green-600" />}
+                  />
+                  <InfoRow
+                    label="Fabrication"
+                    value={`${fabricator.fabricatPercentage || 0}%`}
+                    icon={<Percent size={14} className="text-blue-600" />}
+                  />
+                </div>
+                <InfoRow
+                  label="Settlement Cycle"
+                  value={`${fabricator.paymenTDueDate || 0} Days`}
+                  icon={<CalendarDays size={14} className="text-rose-500" />}
+                />
+
+                <div className="pt-4 pb-2 border-b border-black/10">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
+                    System Intel
+                  </h4>
+                </div>
                 <InfoRow
                   label="Ingested On"
                   value={formatDateTime(fabricator.createdAt)}

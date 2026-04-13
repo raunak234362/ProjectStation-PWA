@@ -158,7 +158,11 @@ const EditFabricator = ({
       website: fabricatorData.website || "",
       drive: fabricatorData.drive || "",
       fabStage: fabricatorData.fabStage,
-      accountId: (fabricatorData as any).accountId || "",
+      accountId:
+        (fabricatorData as any).accountId?.id ||
+        (fabricatorData as any).accountId?._id ||
+        (fabricatorData as any).accountId ||
+        "",
       SAC: fabricatorData.SAC || "",
       fabricatPercentage: fabricatorData.fabricatPercentage || 0,
       approvalPercentage: fabricatorData.approvalPercentage || 0,
@@ -167,8 +171,14 @@ const EditFabricator = ({
       wbtFabricatorPointOfContact: Array.isArray(
         fabricatorData.wbtFabricatorPointOfContact,
       )
-        ? fabricatorData.wbtFabricatorPointOfContact[0] || ""
-        : fabricatorData.wbtFabricatorPointOfContact || "",
+        ? fabricatorData.wbtFabricatorPointOfContact[0]?.id ||
+          fabricatorData.wbtFabricatorPointOfContact[0]?._id ||
+          fabricatorData.wbtFabricatorPointOfContact[0] ||
+          ""
+        : (fabricatorData.wbtFabricatorPointOfContact as any)?.id ||
+          (fabricatorData.wbtFabricatorPointOfContact as any)?._id ||
+          fabricatorData.wbtFabricatorPointOfContact ||
+          "",
       files: null,
     });
     setFilesToKeep((fabricatorData.files as FabricatorFile[]) || []);
@@ -200,15 +210,14 @@ const EditFabricator = ({
       if (data.fabName) formData.append("fabName", data.fabName);
       if (data.website) formData.append("website", data.website);
       if (data.drive) formData.append("drive", data.drive);
-      if (data.wbtFabricatorPointOfContact)
-        formData.append(
-          "wbtFabricatorPointOfContact",
-          JSON.stringify(
-            Array.isArray(data.wbtFabricatorPointOfContact)
-              ? data.wbtFabricatorPointOfContact
-              : [data.wbtFabricatorPointOfContact],
-          ),
+      if (data.wbtFabricatorPointOfContact) {
+        const pocValue = data.wbtFabricatorPointOfContact;
+        const pocArray = Array.isArray(pocValue) ? pocValue : [pocValue];
+        const normalizedPoc = pocArray.map((item: any) =>
+          typeof item === "object" && item !== null ? item.id || item._id : item,
         );
+        formData.append("wbtFabricatorPointOfContact", JSON.stringify(normalizedPoc));
+      }
       if (data.fabStage) formData.append("fabStage", data.fabStage);
       if (data.accountId) formData.append("accountId", data.accountId);
       if (data.SAC) formData.append("SAC", data.SAC);
