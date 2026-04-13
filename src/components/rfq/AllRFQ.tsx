@@ -50,7 +50,7 @@ const AllRFQ = ({ rfq }: any) => {
       ],
       cell: ({ row }) => (
         <span
-          className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+          className="px-3 py-1 text-xs md:text-sm  uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
         >
           {row.original.status?.replace("_", " ")}
         </span>
