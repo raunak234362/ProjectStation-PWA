@@ -68,17 +68,38 @@ const SubmittalResponseDetailsModal = ({
           <h2 className="text-xl font-black text-black uppercase tracking-tight">
             Response Details
           </h2>
+          <div className="flex flex-row gap-2"> 
+ {canReply && !replyMode && (
+            <Button
+              className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
+              onClick={() => setReplyMode(true)}
+            >
+              Reply
+            </Button>
+          )}
           <button
             onClick={onClose}
             className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
             Close
           </button>
+          </div>
         </div>
         <div className="overflow-y-auto h-[70vh]">
-          {/* Parent Message */}
+          {/* Parent Message Header */}
+          <div className="flex justify-between items-center mb-1">
+            <span className="font-black text-black uppercase tracking-tight text-sm">
+              {response.user?.firstName?.trim() || "User"}{" "}
+              {response.user?.lastName?.trim() || ""}
+            </span>
+            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              <CalendarDays size={12} />
+              {formatDateTime(response.createdAt)}
+            </div>
+          </div>
+
           <div
-            className="bg-gray-100 p-3 rounded-md border prose prose-sm max-w-none"
+            className="bg-gray-100 p-3 rounded-md border prose prose-sm max-w-none mb-4"
             dangerouslySetInnerHTML={{
               __html: response.reason || response.description,
             }}
@@ -93,11 +114,7 @@ const SubmittalResponseDetailsModal = ({
             />
           )}
 
-          {/* Timestamp */}
-          <div className="flex items-center gap-2 text-xs text-gray-700">
-            <CalendarDays size={14} />
-            {formatDateTime(response.createdAt)}
-          </div>
+
 
           {/* 🔥 CHILD RESPONSES THREAD */}
           {response.childResponses?.length > 0 && (
@@ -111,8 +128,8 @@ const SubmittalResponseDetailsModal = ({
                 >
                   <div className="flex justify-between text-sm text-gray-700 mb-1">
                     <span className="font-medium text-gray-700">
-                      {child.user?.firstName || "User"}{" "}
-                      {child.user?.lastName || ""}
+                      {child.user?.firstName?.trim() || "User"}{" "}
+                      {child.user?.lastName?.trim() || ""}
                     </span>
                     <span>{formatDateTime(child.createdAt)}</span>
                   </div>
@@ -137,14 +154,7 @@ const SubmittalResponseDetailsModal = ({
             </div>
           )}
           {/* Reply Button */}
-          {canReply && !replyMode && (
-            <Button
-              className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
-              onClick={() => setReplyMode(true)}
-            >
-              Reply
-            </Button>
-          )}
+         
 
           {/* Reply Form */}
           {replyMode && (
