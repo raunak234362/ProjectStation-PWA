@@ -177,7 +177,7 @@ const AllClients = ({ fabricator, onClose }: AllClientProps) => {
             </Button>
             <button
               onClick={onClose}
-              className="p-2 bg-red-100 hover:bg-red-200 text-black px-6 py-2.5 rounded-2xl text-[10px]  uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 border border-black"
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
               aria-label="Close"
             >
               Close

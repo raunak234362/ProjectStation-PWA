@@ -85,7 +85,7 @@ const AddClients: React.FC<AddClientProps> = ({
         </div>
         <button
           onClick={onClose}
-          className="px-4 py-1 bg-red-50  dark:bg-slate-800 shadow-sm border border-red-600 border-2 dark:border-slate-700 rounded-2xl text-black hover:text-black dark:hover:text-black hover:bg-rose-50 dark:hover:bg-rose-900/20"
+          className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
         >
          Close
         </button>

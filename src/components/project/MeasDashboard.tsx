@@ -136,8 +136,8 @@ function TaskDetailPanel({ taskId, onClose }: { taskId: string; onClose: () => v
                             </div>
                         </div>
                     </div>
-                    <button onClick={onClose} style={{ background: "#fee2e2", border: "none", borderRadius: "8px", padding: "6px", cursor: "pointer", display: "flex" }}>
-                        <X size={16} color="#dc2626" />
+                    <button onClick={onClose} className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm">
+                        Close
                     </button>
                 </div>
 

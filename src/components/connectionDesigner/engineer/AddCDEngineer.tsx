@@ -48,7 +48,9 @@ const AddCDEngineer: React.FC<AddClientProps> = ({
 
   return (
     <div className="w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-200">
-      <Button onClick={onClose}>Close</Button>
+      <button onClick={onClose} className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm">
+        Close
+      </button>
       <h2 className="text-xl font-semibold text-gray-700 mb-6">
         Add New Engineer
       </h2>

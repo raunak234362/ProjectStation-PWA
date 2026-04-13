@@ -120,9 +120,9 @@ const AddBranch: React.FC<AddBranchProps> = ({
         </div>
         <button
           onClick={onClose}
-          className="p-3 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 rounded-2xl text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
+          className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
         >
-          <X className="w-6 h-6" />
+          Close
         </button>
       </div>
 
@@ -340,7 +340,7 @@ const AddBranch: React.FC<AddBranchProps> = ({
             onClick={onClose}
             className="px-8 py-3 text-[10px]  uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all active:scale-95"
           >
-            Cancel Initialization
+            Cancel
           </button>
           <Button
             type="submit"

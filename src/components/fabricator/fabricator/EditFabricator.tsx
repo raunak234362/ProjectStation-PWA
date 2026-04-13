@@ -282,15 +282,15 @@ const EditFabricator = ({
               <div className="w-10 h-10 rounded-2xl dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
 
               </div>
-              Edit Engineering Partner
+              Edit
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 bg-red-100  shadow-sm border border-black dark:border-slate-700 rounded-2xl text-slate-400 hover:text-black dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-90"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
             aria-label="Close"
           >
-            close
+            Close
           </button>
         </div>
 

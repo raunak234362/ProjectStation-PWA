@@ -216,9 +216,9 @@ const SalesDetailModal: React.FC<SalesDetailModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all font-bold text-sm uppercase tracking-wider shadow-lg shadow-black/10 active:scale-95"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            Close Window
+            Close
           </button>
         </div>
 

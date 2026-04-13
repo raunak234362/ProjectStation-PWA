@@ -301,9 +301,9 @@ const GetEstimationByID: React.FC<GetEstimationByIDProps> = ({
             </div>
             <button
               onClick={() => setIsHoursOpen(false)}
-              className="p-2 hover:bg-rose-50 text-rose-500 rounded-xl transition-all"
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
             >
-              <X size={20} />
+            Close
             </button>
           </div>
           <LineItemGroup estimationId={estimation?.id} />

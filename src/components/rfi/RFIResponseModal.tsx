@@ -60,9 +60,9 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg relative">
-        <button onClick={onClose} className="absolute top-3 right-3 px-4 py-1.5 bg-red-50 text-black border border-red-600 border-2 rounded-lg hover:bg-red-100 transition-all font-bold text-sm">
+        <button onClick={onClose} className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm">
 
-          CLOSE
+          Close
         </button>
 
         <h2 className="text-xl font-bold text-black uppercase tracking-tight">Add Response</h2>

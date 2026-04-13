@@ -117,7 +117,10 @@ const GetWBSLineItem = ({
       <div className="flex flex-col items-center justify-center py-12 gap-4 text-red-600">
         <AlertCircle className="w-8 h-8" />
         <p className="font-medium">{error}</p>
-        <Button onClick={onClose} variant="outline">
+        <Button
+          onClick={onClose}
+          className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+        >
           Close
         </Button>
       </div>
@@ -136,11 +139,9 @@ const GetWBSLineItem = ({
         </div>
         <Button
           onClick={onClose}
-          variant="ghost"
-          size="icon"
-          className="text-gray-400 hover:text-gray-700"
+          className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
         >
-          <X className="w-5 h-5" />
+          Close
         </Button>
       </div>
 

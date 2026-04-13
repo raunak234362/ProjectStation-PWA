@@ -184,7 +184,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
             {error || "Submittal not found"}
             <button
               onClick={onClose}
-              className="ml-4 px-4 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-bold text-sm"
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
             >
               Close
             </button>

@@ -146,9 +146,9 @@ const EditTask: React.FC<EditTaskProps> = ({ id, onClose, refresh }) => {
         </h2>
         <button
           onClick={onClose}
-          className="p-2 hover:bg-slate-200 rounded-full transition-colors"
+          className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
         >
-          <X className="w-5 h-5 text-slate-500" />
+          Close
         </button>
       </div>
 

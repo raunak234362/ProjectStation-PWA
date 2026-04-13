@@ -226,7 +226,7 @@ const AddEstimationTask: React.FC<AddEstimationTaskProps> = ({
           <Button
             type="button"
             onClick={onClose}
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-8 rounded-xl transition-all"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
             Cancel
           </Button>

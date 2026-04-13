@@ -59,9 +59,9 @@ const DailyWorkReportModal: React.FC<DailyWorkReportModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            <X size={20} className="text-gray-700" />
+            Close
           </button>
         </div>
 

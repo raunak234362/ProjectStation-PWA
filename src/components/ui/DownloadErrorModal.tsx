@@ -29,9 +29,9 @@ const DownloadErrorModal: React.FC<DownloadErrorModalProps> = ({
         <div className="flex justify-end p-4 absolute top-0 right-0">
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
           >
-            <X size={20} />
+            Close
           </button>
         </div>
 

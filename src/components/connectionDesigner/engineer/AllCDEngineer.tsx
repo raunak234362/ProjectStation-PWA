@@ -133,10 +133,10 @@ const AllCDEngineer = ({ onClose, designerData }: AllCDEngineerProps) => {
           </div>
           <button
             onClick={onClose}
-            className="p-3 bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 rounded-2xl transition-all border border-gray-100 dark:border-slate-700 hover:border-red-100 dark:hover:border-red-900/30"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
             aria-label="Close"
           >
-            <X className="w-6 h-6" strokeWidth={2.5} />
+            Close
           </button>
         </div>
 
