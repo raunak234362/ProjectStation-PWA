@@ -189,7 +189,7 @@ const ResponseDetailsModal = ({
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-black/40 uppercase tracking-widest">
-                    Supplemental Assets
+                    Documents
                   </label>
                   <input
                     type="file"
