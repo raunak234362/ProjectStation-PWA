@@ -193,7 +193,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
             <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-5">
               <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-black text-black uppercase tracking-tight">
-                  CO #{co.changeOrderNumber}
+                  COR - {co.changeOrderNumber?.slice(-3)}
                 </h1>
 
                 <span
@@ -219,9 +219,8 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
               <Info
                 label="Recipient"
                 value={
-                  co.recipients
-                    ? `${co.recipients.firstName ?? ""} ${co.recipients.lastName ?? ""
-                    }`
+                  (co as any).Recipients || co.recipients
+                    ? `${((co as any).Recipients || co.recipients).firstName ?? ""} ${((co as any).Recipients || co.recipients).lastName ?? ""}`.trim() || "—"
                     : "—"
                 }
               />

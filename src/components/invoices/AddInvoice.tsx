@@ -6,6 +6,7 @@ import Service from "../../api/Service";
 import { toast } from "react-toastify";
 import { Plus, Trash2 } from "lucide-react";
 import { numberToWords } from "../../utils/numberToWords";
+import { generateInvoiceNumber } from "../../utils/stringUtils";
 
 export interface AccountInfo {
   abaRoutingNumber: string;
@@ -214,6 +215,12 @@ const AddInvoice = ({
     if (project) {
       setValue("jobName", project.name || "");
 
+      // Auto-generate invoice number
+      const currentInvoiceDate = watch("invoiceDate") || new Date();
+      if (project.name) {
+        setValue("invoiceNumber", generateInvoiceNumber(project.name, currentInvoiceDate));
+      }
+
       if (project.rfqId) {
         try {
           const rfqRes = await Service.GetRFQbyId(project.rfqId);
@@ -232,6 +239,18 @@ const AddInvoice = ({
       }
     }
   };
+
+  const watchedInvoiceDate = watch("invoiceDate");
+  const watchedJobName = watch("jobName");
+
+  useEffect(() => {
+    if (watchedJobName && watchedInvoiceDate) {
+      setValue(
+        "invoiceNumber",
+        generateInvoiceNumber(watchedJobName, watchedInvoiceDate),
+      );
+    }
+  }, [watchedInvoiceDate, watchedJobName, setValue]);
 
   useEffect(() => {
     if (fabricators.length > 0 && initialFabricatorId) {

@@ -93,6 +93,15 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     if (id) fetchRfq();
   }, [id]);
 
+  useEffect(() => {
+    if (selectedResponse && rfq?.responses) {
+      const updated = rfq.responses.find(
+        (r: any) => r.id === selectedResponse.id,
+      );
+      if (updated) setSelectedResponse(updated);
+    }
+  }, [rfq?.responses]);
+
   const handleDelete = async () => {
     console.log(
       "handleDelete called with text:",
@@ -230,21 +239,21 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     //     </span>
     //   ),
     // },
-     {
-          accessorKey: "description",
-          header: "Message",
-          cell: ({ row }: any) => (
-            <div
-              className="prose prose-sm text-gray-700"
-              style={{
-                marginLeft: row.original.parentResponseId ? "0px" : "0px",
-              }}
-              dangerouslySetInnerHTML={{
-                __html: truncateWords(row.original.description || "—", 10),
-              }}
-            />
-          ),
-        },
+    {
+      accessorKey: "description",
+      header: "Message",
+      cell: ({ row }: any) => (
+        <div
+          className="prose prose-sm text-gray-700"
+          style={{
+            marginLeft: row.original.parentResponseId ? "0px" : "0px",
+          }}
+          dangerouslySetInnerHTML={{
+            __html: truncateWords(row.original.description || "—", 10),
+          }}
+        />
+      ),
+    },
     {
       accessorKey: "createdAt",
       header: "Created",
@@ -259,10 +268,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${row.original.status === "OPEN"
-            ? "bg-gray-100 text-black border border-gray-200"
-            : "bg-gray-100 text-black border border-gray-200"
-            }`}
+          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${
+            row.original.status === "OPEN"
+              ? "bg-gray-100 text-black border border-gray-200"
+              : "bg-gray-100 text-black border border-gray-200"
+          }`}
         >
           {row.original.status}
         </span>
@@ -318,10 +328,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${row.original.approvalStatus
-            ? "bg-gray-100 text-black border border-gray-200"
-            : "bg-gray-100 text-black border border-gray-200"
-            }`}
+          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${
+            row.original.approvalStatus
+              ? "bg-gray-100 text-black border border-gray-200"
+              : "bg-gray-100 text-black border border-gray-200"
+          }`}
         >
           {row.original.approvalStatus ? "Approved" : "Pending"}
         </span>
@@ -388,30 +399,37 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
                   {/* Status tag */}
                   <span className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-green-100 text-black border border-gray-200">
-                    {rfq?.status}
+                    {((rfq as any)?.wbtStatus &&
+                    (rfq as any)?.wbtStatus !== "RECEIVED"
+                      ? (rfq as any)?.wbtStatus
+                      : rfq?.status
+                    )?.replace("_", " ")}
                   </span>
                 </div>
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   {/* EDIT RFQ */}
-                  {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && userRole !== "CONNECTION_DESIGNER_ENGINEER" && userRole !== "CONNECTION_DESIGNER_ADMIN" && (
-                    <>
-                      <Button
-                        onClick={() => alert("Coming soon: Edit RFQ modal")}
-                        className="flex-1 sm:flex-none px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
-                      >
-                        Edit
-                      </Button>
+                  {userRole !== "CLIENT" &&
+                    userRole !== "CLIENT_ADMIN" &&
+                    userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
+                    userRole !== "CONNECTION_DESIGNER_ADMIN" && (
+                      <>
+                        <Button
+                          onClick={() => alert("Coming soon: Edit RFQ modal")}
+                          className="flex-1 sm:flex-none px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
+                        >
+                          Edit
+                        </Button>
 
-                      <Button
-                        onClick={() => setShowStatusModal(true)}
-                        className="flex-1 sm:flex-none px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
-                      >
-                        Change Status
-                      </Button>
-                    </>
-                  )}
+                        <Button
+                          onClick={() => setShowStatusModal(true)}
+                          className="flex-1 sm:flex-none px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+                        >
+                          Change Status
+                        </Button>
+                      </>
+                    )}
 
                   {/* DELETE RFQ */}
                   {/* <Button
@@ -431,14 +449,21 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Info label="Subject" value={rfq?.subject || ""} />
                 <Info label="Project Number" value={rfq?.projectNumber || ""} />
-                <Info label="Status" value={rfq?.status || ""} />
+                <Info
+                  label="Status"
+                  value={
+                    ((rfq as any)?.wbtStatus &&
+                    (rfq as any)?.wbtStatus !== "RECEIVED"
+                      ? (rfq as any)?.wbtStatus
+                      : rfq?.status
+                    )?.replace("_", " ") || ""
+                  }
+                />
                 <Info label="Tools" value={rfq?.tools || "N/A"} />
                 <Info
                   label="Due Date"
                   value={formatDate(
-                    isCDRole
-                      ? rfq?.RFQDueDate
-                      : rfq?.estimationDate,
+                    isCDRole ? rfq?.RFQDueDate : rfq?.estimationDate,
                   )}
                 />
                 {!isCDRole && (
@@ -612,8 +637,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   </div>
                 )}
 
-                
-
                 {/* Existing Followups — Table with inline accordion */}
                 {followups.length > 0 ? (
                   <DataTable
@@ -674,7 +697,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                       row: any;
                       close: () => void;
                     }) => {
-
                       return (
                         <div className="space-y-3 text-sm">
                           <div>
@@ -685,17 +707,16 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                               {row.description || "—"}
                             </p>
                           </div>
-                        {row.files?.length > 0 && (
-                          <div className="pt-2">
-                            <RenderFiles
-                              files={row.files}
-                              table="rfqFollowup"
-                              parentId={row.id}
-                              hideHeader
-                            />
-                          </div>
-                        )}
-
+                          {row.files?.length > 0 && (
+                            <div className="pt-2">
+                              <RenderFiles
+                                files={row.files}
+                                table="rfqFollowup"
+                                parentId={row.id}
+                                hideHeader
+                              />
+                            </div>
+                          )}
                         </div>
                       );
                     }}
@@ -709,7 +730,8 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
               {userRole !== "CLIENT_ADMIN" &&
                 userRole !== "CLIENT" &&
-                userRole !== "CONNECTION_DESIGNER_ENGINEER" && userRole !== "CONNECTION_DESIGNER_ADMIN" && (
+                userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
+                userRole !== "CONNECTION_DESIGNER_ADMIN" && (
                   <div className="flex flex-col gap-2 pt-2">
                     <Button
                       onClick={() => setShowEstimationModal(true)}
@@ -738,16 +760,14 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 {(userRole === "ADMIN" ||
                   userRole === "DEPUTY_MANAGER" ||
                   userRole === "OPERATION_EXECUTIVE" ||
-                  userRole === "USER" ||
-                  userRole === "CLIENT" ||
-                  userRole === "CLIENT_ADMIN") && (
-                    <Button
-                      onClick={() => setShowResponseModal(true)}
-                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
-                    >
-                      + Add Response
-                    </Button>
-                  )}
+                  userRole === "USER") && (
+                  <Button
+                    onClick={() => setShowResponseModal(true)}
+                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
+                  >
+                    + Add Response
+                  </Button>
+                )}
               </div>
               {showResponseModal && (
                 <ResponseModal
@@ -815,6 +835,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
           <ResponseDetailsModal
             response={selectedResponse}
             onClose={() => setSelectedResponse(null)}
+            onSuccess={fetchRfq}
           />
         )}
 
@@ -899,10 +920,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteConfirmText !== "DELETE" || isDeleting}
-                  className={`flex-1 ${deleteConfirmText === "DELETE"
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-red-300 cursor-not-allowed"
-                    } text-white`}
+                  className={`flex-1 ${
+                    deleteConfirmText === "DELETE"
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-red-300 cursor-not-allowed"
+                  } text-white`}
                 >
                   {isDeleting ? "Deleting..." : "Confirm Delete"}
                 </Button>
@@ -993,10 +1015,11 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${enabled
-      ? "bg-green-100/50 border-green-200 text-black"
-      : "bg-gray-50 border-gray-200 text-gray-500"
-      }`}
+    className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${
+      enabled
+        ? "bg-green-100/50 border-green-200 text-black"
+        : "bg-gray-50 border-gray-200 text-gray-500"
+    }`}
   >
     {label}
   </div>

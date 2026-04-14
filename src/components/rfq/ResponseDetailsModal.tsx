@@ -1,46 +1,59 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Loader2 } from "lucide-react";
 import { formatDateTime } from "../../utils/dateUtils";
 import { useState } from "react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import RenderFiles from "../ui/RenderFiles";
+import { toast } from "react-toastify";
 
 interface ResponseDetailsModalProps {
   response: any;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 const ResponseDetailsModal = ({
   response,
   onClose,
+  onSuccess,
 }: ResponseDetailsModalProps) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
   const [replyStatus, setReplyStatus] = useState("PENDING");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
 
   const handleReplySubmit = async () => {
-    if (!replyMessage.trim()) return;
+    if (!replyMessage.trim()) {
+      toast.warning("Please enter a message before sending.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("description", replyMessage);
     formData.append("parentResponseId", response.id);
     formData.append("rfqId", response.rfqId);
     formData.append("userId", sessionStorage.getItem("userId") || "");
+    formData.append("status", replyStatus);
 
     replyFiles.forEach((file) => formData.append("files", file));
 
     try {
+      setIsSubmitting(true);
       await Service.addResponse(formData, response.rfqId);
+      toast.success("Reply sent successfully!");
       setReplyMode(false);
       setReplyMessage("");
       setReplyFiles([]);
-      onClose();
+      if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Reply failed:", err);
+      toast.error("Failed to send reply. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -50,12 +63,22 @@ const ResponseDetailsModal = ({
         {res.childResponses?.map((child: any) => (
           <div
             key={child.id}
-            className="bg-white p-4 sm:p-5 rounded-2xl border border-black/5 shadow-sm"
+            className="bg-white p-4 sm:p-5 rounded-2xl border border-black/5 shadow-sm animate-in fade-in slide-in-from-left-4 duration-500"
           >
-            <div className="flex justify-between items-start mb-3">
-              <span className="text-[9px] font-black bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
-                {formatDateTime(child.createdAt)}
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-[10px] font-black text-black uppercase tracking-tight">
+                {child.user?.firstName} {child.user?.lastName}
               </span>
+              <div className="flex items-center gap-2">
+                {child.status && (
+                  <span className="text-[9px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
+                    {child.status}
+                  </span>
+                )}
+                <span className="text-[9px] font-black bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                  {formatDateTime(child.createdAt)}
+                </span>
+              </div>
             </div>
             <div
               className="prose prose-sm max-w-none text-black/80 font-medium"
@@ -84,13 +107,18 @@ const ResponseDetailsModal = ({
         <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
           <div className="flex flex-col">
             <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-              Response
+              Response from {response.user?.firstName} {response.user?.lastName}
             </h2>
             <div className="flex items-center gap-2 mt-1">
               <CalendarDays size={12} className="text-black/30" />
               <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
                 {formatDateTime(response.createdAt)}
               </span>
+              {response.status && (
+                <span className="ml-2 text-[9px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
+                  {response.status}
+                </span>
+              )}
             </div>
           </div>
           <button
@@ -115,7 +143,7 @@ const ResponseDetailsModal = ({
 
           <div className="space-y-4">
             <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-              Message
+              Files
             </h3>
             <RenderFiles
               files={response.files}
@@ -144,24 +172,24 @@ const ResponseDetailsModal = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-black/40 uppercase tracking-widest">
-                    Protocol Status
+                    Proposal Status
                   </label>
                   <select
                     value={replyStatus}
                     onChange={(e) => setReplyStatus(e.target.value)}
                     className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-blue-100 outline-none font-black uppercase text-[10px] tracking-widest appearance-none cursor-pointer"
                   >
-                    <option value="PENDING">PENDING - ACTIVE</option>
-                    <option value="APPROVED">APPROVED - VERIFIED</option>
-                    <option value="REJECTED">REJECTED - TERMINATED</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="APPROVED">Awarded</option>
+                    <option value="REJECTED">Rejected</option>
                     <option value="CLARIFICATION_REQUIRED">
-                      CLARIFICATION REQUIRED
+                      Clarification Required
                     </option>
                   </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-black/40 uppercase tracking-widest">
-                    Supplemental Assets
+                    Documents
                   </label>
                   <input
                     type="file"
@@ -182,10 +210,18 @@ const ResponseDetailsModal = ({
                   Cancel
                 </Button>
                 <Button
-                  className="px-8 py-3 bg-black text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-black/90 shadow-xl"
+                  className="px-8 py-3 bg-green-200/50 text-black border border-black/10 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-green-200/80 shadow-xl disabled:opacity-50"
                   onClick={handleReplySubmit}
+                  disabled={isSubmitting}
                 >
-                  Send Reply  
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 size={14} className="animate-spin" />
+                      Sending...
+                    </div>
+                  ) : (
+                    "Send Reply"
+                  )}
                 </Button>
               </div>
             </div>
@@ -203,14 +239,15 @@ const ResponseDetailsModal = ({
 
         {/* Footer */}
         <div className="px-6 py-5 border-t border-black/10 bg-gray-50/50 flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 shrink-0">
-          {!replyMode && userRole === "client" && (
-            <Button
-              onClick={() => setReplyMode(true)}
-              className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
-            >
-              Reply
-            </Button>
-          )}
+          {!replyMode &&
+            ["ADMIN", "STAFF", "CLIENT", "CLIENT_ADMIN"].includes(userRole) && (
+              <Button
+                onClick={() => setReplyMode(true)}
+                className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
+              >
+                Reply
+              </Button>
+            )}
         </div>
       </div>
     </div>

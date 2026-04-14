@@ -144,6 +144,11 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           {
             accessorKey: "changeOrderNumber",
             header: "CO Number",
+            cell: ({ row }) => (
+              <span className="font-bold">
+                COR - {row.original.changeOrderNumber?.slice(-3)}
+              </span>
+            ),
           },
           {
             accessorKey: "remarks",

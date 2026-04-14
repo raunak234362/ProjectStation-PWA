@@ -10,7 +10,7 @@ const CoTablePage = () => {
     return <div className="p-6 text-red-500">No Change Order data found</div>;
   }
 
-  const co = JSON.parse(decodeURIComponent(encodedData));
+  const co = JSON.parse(encodedData);
 
   const rows = co.CoRefersTo || [];
 
@@ -29,7 +29,7 @@ const CoTablePage = () => {
               Change Order Reference Table
             </h1>
             <p className="text-sm text-gray-700">
-              CO #{co.changeOrderNumber}
+              COR - {co.changeOrderNumber?.slice(-3)}
             </p>
           </div>
 

@@ -48,13 +48,18 @@ const AllRFQ = ({ rfq }: any) => {
         { label: "Completed", value: "COMPLETED" },
         { label: "Pending", value: "PENDING" },
       ],
-      cell: ({ row }) => (
-        <span
-          className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
-        >
-          {row.original.status?.replace("_", " ")}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const status = row.original.status;
+        const wbtStatus = (row.original as any).wbtStatus;
+        const displayStatus =
+          wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
+
+        return (
+          <span className="px-3 py-1 text-xs md:text-sm uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
+            {displayStatus?.replace("_", " ")}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "estimationDate",
