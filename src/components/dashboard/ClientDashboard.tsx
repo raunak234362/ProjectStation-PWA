@@ -121,7 +121,7 @@ const ClientDashboard = () => {
           [
             Service.RfqSent(),
             Service.SubmittalRecieved(),
-            Service.InvoiceDashboardData(),
+            Service.GetPendingInvoiceByClientId(),
             isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(), // Updated
           ],
         );

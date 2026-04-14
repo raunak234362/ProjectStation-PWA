@@ -2327,6 +2327,19 @@ static async SubmittalSentByProjectId(projectId: string) {
     }
   }
 
+  //Get pending invoice by client Id
+  static async GetPendingInvoiceByClientId() {
+    try {
+      const response = await api.get(`invoice/pending/client`);
+      console.log("Pending Invoice fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching pending invoice:", error);
+      throw error;
+    }
+  }
+
+
   //get bank accounts
   static async GetBankAccounts() {
     try {

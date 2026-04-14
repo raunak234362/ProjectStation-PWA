@@ -20,7 +20,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
     const fetchInvoices = async () => {
       try {
         const res = isClient
-          ? await Service.InvoiceDashboardData()
+          ? await Service.GetPendingInvoiceByClientId()
           : await Service.GetAllInvoice();
         console.log("Fetched Invoices Data:", res);
         setInvoices(Array.isArray(res) ? res : res?.data || []);
