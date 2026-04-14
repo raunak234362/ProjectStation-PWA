@@ -253,7 +253,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 py-40 bg-white rounded-3xl border border-dashed border-gray-100 italic text-gray-400">
         <Inbox className="w-10 h-10 mb-3 text-gray-200" />
-        <p className="text-black text-lg uppercase tracking-tight">no submittal milestone raised for this project</p>
+        <p className="text-lg uppercase tracking-tight">no submittal milestone raised for this project</p>
       </div>
     );
   }

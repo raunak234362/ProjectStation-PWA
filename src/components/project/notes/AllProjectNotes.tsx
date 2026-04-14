@@ -149,12 +149,12 @@ const AllProjectNotes = ({
           <span className="w-2 h-2 bg-[#6bbd45] rounded-full shrink-0"></span>
           Project Notes
         </h3>
-        <button
+        {/* <button
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 px-6 py-2.5 bg-green-200 border border-black font-semibold text-black rounded-xl text-[10px] uppercase shadow-xl hover:bg-green-400 transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
           + Add New Note
-        </button>
+        </button> */}
       </div>
 
       {notes.length === 0 ? (
