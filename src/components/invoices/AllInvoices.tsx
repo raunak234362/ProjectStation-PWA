@@ -4,7 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import GetInvoiceById from "./GetInvoiceById";
 import { formatDate } from "../../utils/dateUtils";
-import { generateInvoiceNumber } from "../../utils/stringUtils";
+
 
 const AllInvoices = () => {
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -28,11 +28,7 @@ const AllInvoices = () => {
     {
       accessorKey: "invoiceNumber",
       header: "Invoice #",
-      cell: ({ row }) => {
-        const inv = row.original;
-        const jobName = inv.jobName || inv.projectName || inv.project?.name || "NA";
-        return generateInvoiceNumber(jobName, inv.invoiceDate || new Date());
-      },
+      cell: ({ row }) => row.getValue("invoiceNumber") || "—",
     },
     {
       accessorKey: "customerName",

@@ -120,11 +120,7 @@ const SalesDetailModal: React.FC<SalesDetailModalProps> = ({
           {
             accessorKey: "invoiceNumber",
             header: "Invoice #",
-            cell: ({ row }) => {
-              const inv = row.original;
-              const jobName = inv.jobName || inv.projectName || inv.project?.name || "NA";
-              return generateInvoiceNumber(jobName, inv.invoiceDate || new Date());
-            },
+            cell: ({ row }) => row.original.invoiceNumber || "—",
           },
           {
             accessorKey: "projectName",

@@ -20,11 +20,9 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
       header: "Invoice #",
       cell: ({ row }) => {
         const inv = row.original;
-        const jobName = inv.jobName || inv.projectName || inv.project?.name || "NA";
-        const invNum = generateInvoiceNumber(jobName, inv.invoiceDate || new Date());
         return (
           <span className="font-medium text-gray-800">
-            {invNum}
+            {inv.invoiceNumber || "—"}
           </span>
         );
       },
