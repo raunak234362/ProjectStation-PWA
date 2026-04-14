@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "../../../utils/dateUtils";
-import { generateInvoiceNumber } from "../../../utils/stringUtils";
 import { useDispatch } from "react-redux";
 import {
   incrementModalCount,

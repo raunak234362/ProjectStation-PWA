@@ -2,7 +2,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
 import { formatDate } from "../../../utils/dateUtils";
-import { generateInvoiceNumber } from "../../../utils/stringUtils";
 
 interface PendingListProps {
   invoices: any[];
