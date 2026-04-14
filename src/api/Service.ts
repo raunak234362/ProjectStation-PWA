@@ -2327,8 +2327,8 @@ static async SubmittalSentByProjectId(projectId: string) {
     }
   }
 
-  //Get pending invoice by client Id
-  static async GetPendingInvoiceByClientId() {
+  //Get pending invoice by client
+  static async GetPendingInvoiceByClient() {
     try {
       const response = await api.get(`invoice/pending/client`);
       console.log("Pending Invoice fetched:", response.data);

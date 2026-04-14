@@ -122,7 +122,7 @@ const WBTDashboard = () => {
           isClient
             ? Service.DashboardMilestone()
             : Service.GetPendingSubmittal(),
-          isClient ? Service.GetPendingInvoiceByClientId() : Service.GetAllInvoice(),
+          isClient ? Service.GetPendingInvoiceByClient() : Service.GetAllInvoice(),
           Service.PendingSubmittal(),
           Service.pendingRFIs(),
           Service.PendingCo(),
