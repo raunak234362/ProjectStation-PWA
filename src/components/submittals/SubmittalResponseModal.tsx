@@ -58,75 +58,79 @@ const SubmittalResponseModal = ({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
       <div className="bg-white p-8 rounded-2xl h-[90vh] overflow-hidden w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative space-y-8 border border-black/5 animate-in fade-in zoom-in duration-200">
-        <button
-          onClick={onClose}
-          className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
-        >
-          Close
-        </button>
-
-        <h2 className="text-2xl font-black text-black uppercase tracking-tight">
-          Add Submittal Response
-        </h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-black text-black uppercase tracking-tight">
+            Add Submittal Response
+          </h2>
+          <button
+            onClick={onClose}
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+          >
+            Close
+          </button>
+        </div>
 
         {/* REASON */}
         <div className="h-[75vh] overflow-y-auto">
+          <div>
+            <label className="text-sm font-medium">Reason (Optional)</label>
+            <input
+              type="text"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="w-full border rounded-md p-2 mt-1"
+            />
+          </div>
 
-        <div>
-          <label className="text-sm font-medium">Reason (Optional)</label>
-          <input
-            type="text"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            className="w-full border rounded-md p-2 mt-1"
-          />
-        </div>
+          {/* DESCRIPTION */}
+          <div>
+            <label className="text-sm font-medium">Description</label>
+            <RichTextEditor
+              value={description}
+              onChange={setDescription}
+              placeholder="Write your message..."
+            />
+          </div>
 
-        {/* DESCRIPTION */}
-        <div>
-          <label className="text-sm font-medium">Description</label>
-          <RichTextEditor
-            value={description}
-            onChange={setDescription}
-            placeholder="Write your message..."
-          />
-        </div>
+          {/* STATUS ENUM */}
+          <div>
+            <label className="text-sm font-medium">Status</label>
+            <select
+              value={status}
+              onChange={(e) => {
+                setStatus(e.target.value as any);
+                // setWbtStatus(e.target.value as any);
+              }}
+              className="w-full border rounded-md p-2 mt-1"
+            >
+              <option value="">Please Select the Status</option>
+              <option value="SUBMITTED_TO_EOR">Submitted to EOR</option>
+              <option value="REVISED_RESUBMITTAL">
+                Revised & Resubmit For Re-Approval
+              </option>
+              <option value="RELEASE_FOR_FABRICATION">
+                Release for Fabrication
+              </option>
+              <option value="REVISED_RESUBMIT_FOR_FABRICATION">
+                Revised & Resubmit for Fabrication
+              </option>
+            </select>
+            {/* FILE UPLOAD */}
+            <div>
+              <label className="text-sm font-medium">Attachments</label>
+              <MultipleFileUpload onFilesChange={setFiles} />
+            </div>
 
-        {/* STATUS ENUM */}
-        <div>
-          <label className="text-sm font-medium">Status</label>
-          <select
-            value={status}
-            onChange={(e) => {
-              setStatus(e.target.value as any);
-              // setWbtStatus(e.target.value as any);
-            }}
-            className="w-full border rounded-md p-2 mt-1"
-          >
-            <option value="">Please Select the Status</option>
-            <option value="SUBMITTED_TO_EOR">Submitted to EOR</option>
-            <option value="REVISED_RESUBMITTAL">Revised & Resubmit For Re-Approval</option>
-            <option value="RELEASE_FOR_FABRICATION">Release for Fabrication</option>
-            <option value="REVISED_RESUBMIT_FOR_FABRICATION">Revised & Resubmit for Fabrication</option>
-          </select>
-        </div>
-
-        {/* FILE UPLOAD */}
-        <div>
-          <label className="text-sm font-medium">Attachments</label>
-          <MultipleFileUpload onFilesChange={setFiles} />
-        </div>
-
-        {/* ACTIONS */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-black/5">
-        
-          <Button
-            className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
-            onClick={handleSubmit}
-          >
-            Submit Response
-          </Button>
-        </div>
+            {/* ACTIONS */}
+            <div className="flex justify-end gap-3 pt-4 border-t border-black/5">
+              <Button
+                className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
+                onClick={handleSubmit}
+              >
+                Submit Response
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
