@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Calendar, ChevronDown } from "lucide-react";
 import Service from "../../../api/Service";
 import InvoiceStatsCards from "./InvoiceStatsCards";
 import InvoiceAnalytics from "./InvoiceAnalytics";
@@ -14,7 +13,6 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
 }) => {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateFilter, setDateFilter] = useState("This Month");
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
   const isClient = userRole === "client" || userRole === "client_admin";
 
@@ -45,74 +43,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Header & Filter */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4"></div>
 
-        {/* Date Filter Pills */}
-        <div className="flex-1 w-full md:w-auto min-w-0">
-          {/* Mobile Date Filter Dropdown */}
-          <div className="md:hidden relative w-full mb-4">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <select
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 bg-white border border-green-500/20 rounded-xl text-sm font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none appearance-none cursor-pointer hover:bg-green-50 transition-colors w-full"
-            >
-              {[
-                "All Months",
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec",
-              ].map((filter) => (
-                <option key={filter} value={filter}>
-                  {filter}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
-          </div>
-
-          {/* Desktop Date Filter Buttons */}
-          <div className="hidden md:flex  items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
-            {[
-              "All Months",
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ].map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setDateFilter(filter)}
-                className={`px-5 py-2 rounded-full text-md font-semibold transition-all shrink-0 ${dateFilter === filter
-                    ? "bg-[#6bbd45] text-white shadow-[0_4px_12px_rgba(107,189,69,0.3)]"
-                    : "bg-green-50 text-gray-600 hover:bg-green-100 border border-green-500/10"
-                  }`}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {!isClient && (
         <>

@@ -1,7 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
-import { Eye, Send } from "lucide-react";
 import { formatDate } from "../../../utils/dateUtils";
 import { generateInvoiceNumber } from "../../../utils/stringUtils";
 
@@ -92,28 +91,6 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
           <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-600 border border-yellow-100">
             Pending
           </span>
-        );
-      },
-    },
-    {
-      id: "actions",
-      header: "",
-      cell: () => {
-        return (
-          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500"
-              title="View"
-            >
-              <Eye size={16} />
-            </button>
-            <button
-              className="p-1.5 hover:bg-green-50 rounded-md text-green-600"
-              title="Send"
-            >
-              <Send size={16} />
-            </button>
-          </div>
         );
       },
     },
