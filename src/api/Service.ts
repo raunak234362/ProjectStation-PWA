@@ -2303,6 +2303,18 @@ static async SubmittalSentByProjectId(projectId: string) {
     }
   }
 
+  //Get  invoice by client
+  static async GetAllInvoiceClient() {
+    try {
+      const response = await api.get(`invoice/client`);
+      console.log("Pending Invoice fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching pending invoice:", error);
+      throw error;
+    }
+  }
+
   // Get Invoice
   static async GetInvoiceById(id: string) {
     try {

@@ -110,6 +110,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                   strokeWidth={2.5}
                   className="text-[#6bbd45]"
                 />
+                INVOICES
               </>
             )}
           </h3>

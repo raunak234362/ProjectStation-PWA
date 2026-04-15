@@ -19,17 +19,20 @@ const InvoiceLayout = () => {
           >
             Invoice Home
           </button>
+          
+          {["client", "client_admin", "admin", "project_manager_officer", "sales_manager", "operation_executive"].includes(userRole) && (
+            <button
+              onClick={() => setActiveTab("allInvoices")}
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allInvoices"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50"
+                }`}
+            >
+              All Invoices
+            </button>
+          )}
           {userRole === "sales" || userRole === "sales_manager" || userRole === "admin" || userRole === "project_manager_officer" ? (
             <>
-              <button
-                onClick={() => setActiveTab("allInvoices")}
-                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allInvoices"
-                  ? "bg-green-200 text-black shadow-medium"
-                  : "text-black hover:bg-green-50"
-                  }`}
-              >
-                All Invoices
-              </button>
 
               <button
                 onClick={() => setActiveTab("addInvoice")}

@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
-import { Loader2 } from "lucide-react";
+import { Loader2, Banknote, CheckCircle2, AlertCircle } from "lucide-react";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -250,6 +250,12 @@ const ClientDashboard = () => {
     }
   };
 
+  const totalInvoiced = invoices.reduce((acc, inv) => acc + (parseFloat(inv.totalInvoiceValue) || 0), 0);
+  const totalPaid = invoices
+      .filter((inv) => inv.paymentStatus === true || inv.paymentStatus === "Paid")
+      .reduce((acc, inv) => acc + (parseFloat(inv.totalInvoiceValue) || 0), 0);
+  const balanceDue = totalInvoiced - totalPaid;
+
   if (loading) {
     return <DashboardSkeleton />;
   }
@@ -275,6 +281,45 @@ const ClientDashboard = () => {
           </div>
         </div>
 
+        {/* Invoice Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div 
+              onClick={() => navigate("/dashboard/invoices")}
+              className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
+                <div className="flex flex-row items-center justify-center gap-2">
+                  <div className="p-1 bg-blue-50 rounded-xl">
+                      <Banknote className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Invoiced</span>
+                </div>
+                <span className="text-3xl text-gray-800 mt-1">${totalInvoiced.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+
+            <div 
+              onClick={() => navigate("/dashboard/invoices")}
+              className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
+                <div className="flex flex-row items-center justify-center gap-2">
+                  <div className="p-1 bg-green-50 rounded-xl">
+                      <CheckCircle2 className="w-8 h-8 text-green-600" />
+                  </div>
+                  <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Paid</span>
+                </div>
+                <span className="text-3xl text-green-600 mt-1">${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+
+            <div 
+              onClick={() => navigate("/dashboard/invoices")}
+              className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
+                <div className="flex flex-row items-center justify-center gap-2">
+                  <div className="p-1 bg-red-50 rounded-xl">
+                      <AlertCircle className="w-8 h-8 text-red-600" />
+                  </div>
+                  <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Balance Due</span>
+                </div>
+                <span className="text-3xl text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+        </div>
+
         {/* Detailed Info Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
           <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
@@ -295,11 +340,11 @@ const ClientDashboard = () => {
             </div>
           </div>
           <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
-            <div className="p-4 border-b border-green-500/10">
+            {/* <div className="p-4 border-b border-green-500/10">
               <h2 className="text-lg text-gray-800 font-bold">
                 Invoices Received
               </h2>
-            </div>
+            </div> */}
             <div className="p-2">
               <UpcomingSubmittals
                 pendingSubmittals={upcomingSubmittals}

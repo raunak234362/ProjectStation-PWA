@@ -9,11 +9,14 @@ import { formatDate } from "../../utils/dateUtils";
 const AllInvoices = () => {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
 
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const res = await Service.GetAllInvoice();
+        const res = userRole === "client" || userRole === "client_admin" 
+          ? await Service.GetAllInvoiceClient() 
+          : await Service.GetAllInvoice();
         setInvoices(Array.isArray(res) ? res : res?.data || []);
       } catch (error) {
         console.error("Error fetching invoices:", error);
