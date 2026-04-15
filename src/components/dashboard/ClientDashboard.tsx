@@ -282,7 +282,7 @@ const ClientDashboard = () => {
         </div>
 
         {/* Invoice Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div 
               onClick={() => navigate("/dashboard/invoices")}
               className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
@@ -318,7 +318,7 @@ const ClientDashboard = () => {
                 </div>
                 <span className="text-3xl text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
-        </div>
+        </div> */}
 
         {/* Detailed Info Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
