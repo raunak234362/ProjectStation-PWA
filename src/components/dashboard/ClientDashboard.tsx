@@ -282,29 +282,29 @@ const ClientDashboard = () => {
         </div>
 
         {/* Invoice Stats Section */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-3">
             <div 
               onClick={() => navigate("/dashboard/invoices")}
               className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
                 <div className="flex flex-row items-center justify-center gap-2">
-                  <div className="p-1 bg-blue-50 rounded-xl">
-                      <Banknote className="w-8 h-8 text-blue-600" />
+                  <div className="p-1 bg-gray-50 rounded-xl">
+                      <Banknote className="w-5 h-5 text-black" />
                   </div>
-                  <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Invoiced</span>
+                  <span className="text-md font-medium text-black uppercase tracking-wider">Total Invoiced</span>
                 </div>
-                <span className="text-3xl text-gray-800 mt-1">${totalInvoiced.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span className="text-3xl text-black mt-1">${totalInvoiced.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
 
             <div 
               onClick={() => navigate("/dashboard/invoices")}
               className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
                 <div className="flex flex-row items-center justify-center gap-2">
-                  <div className="p-1 bg-green-50 rounded-xl">
-                      <CheckCircle2 className="w-8 h-8 text-green-600" />
+                  <div className="p-1 bg-gray-50 rounded-xl">
+                      <CheckCircle2 className="w-5 h-5 text-black" />
                   </div>
-                  <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Paid</span>
+                  <span className="text-md font-medium text-black uppercase tracking-wider">Total Paid</span>
                 </div>
-                <span className="text-3xl text-green-600 mt-1">${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span className="text-3xl text-black mt-1">${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
 
             <div 
@@ -312,13 +312,13 @@ const ClientDashboard = () => {
               className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
                 <div className="flex flex-row items-center justify-center gap-2">
                   <div className="p-1 bg-red-50 rounded-xl">
-                      <AlertCircle className="w-8 h-8 text-red-600" />
+                      <AlertCircle className="w-5 h-5 text-red-600" />
                   </div>
-                  <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Balance Due</span>
+                  <span className="text-md font-medium text-black uppercase tracking-wider">Balance Due</span>
                 </div>
                 <span className="text-3xl text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
-        </div> */}
+        </div>
 
         {/* Detailed Info Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
