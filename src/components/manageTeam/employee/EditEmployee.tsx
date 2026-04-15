@@ -27,6 +27,10 @@ const EditEmployee = ({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const isClientViewer = ["CLIENT", "CLIENT_ADMIN"].includes(
+    currentUser?.role || ""
+  );
+
   const {
     register,
     handleSubmit,
@@ -203,9 +207,11 @@ const EditEmployee = ({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* ── Basic Info ── */}
-            <div className="space-y-2">
-              <Input label="Username" {...register("username")} className="w-full" />
-            </div>
+            {!isClientViewer && (
+              <div className="space-y-2">
+                <Input label="Username" {...register("username")} className="w-full" />
+              </div>
+            )}
             <div className="space-y-2">
               <Input label="Email" type="email" {...register("email")} className="w-full" />
             </div>
@@ -224,39 +230,45 @@ const EditEmployee = ({
               <div className="space-y-2">
                 <Input label="Phone" {...register("phone")} className="w-full" />
               </div>
-              <div className="space-y-2">
-                <Input label="Extension" {...register("extension")} className="w-full" />
-              </div>
+              {!isClientViewer && (
+                <div className="space-y-2">
+                  <Input label="Extension" {...register("extension")} className="w-full" />
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
               <Input label="Alt Phone" {...register("altPhone")} className="w-full" />
             </div>
-            <div className="space-y-2">
-              <Input label="Designation" {...register("designation")} className="w-full" />
-            </div>
+            {!isClientViewer && (
+              <div className="space-y-2">
+                <Input label="Designation" {...register("designation")} className="w-full" />
+              </div>
+            )}
 
             {/* Role */}
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-black uppercase tracking-[0.15em] ml-1">
-                Role
-              </label>
-              <Select
-                options={roleOptions}
-                {...register("role")}
-                value={selectedRoleOption?.value}
-                onChange={(_, value) =>
-                  setValue("role", value as any, { shouldDirty: true })
-                }
-                placeholder="Select role..."
-                className="mt-1"
-              />
-              {errors.role && (
-                <p className="mt-1 text-[10px] font-black text-red-600 uppercase ml-1">
-                  {errors.role.message}
-                </p>
-              )}
-            </div>
+            {!isClientViewer && (
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black text-black uppercase tracking-[0.15em] ml-1">
+                  Role
+                </label>
+                <Select
+                  options={roleOptions}
+                  {...register("role")}
+                  value={selectedRoleOption?.value}
+                  onChange={(_, value) =>
+                    setValue("role", value as any, { shouldDirty: true })
+                  }
+                  placeholder="Select role..."
+                  className="mt-1"
+                />
+                {errors.role && (
+                  <p className="mt-1 text-[10px] font-black text-red-600 uppercase ml-1">
+                    {errors.role.message}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* ── Address ── */}
             <div className="md:col-span-2 space-y-2">
