@@ -224,45 +224,64 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
         ) : invoiceNeedRaise.length > 0 ? (
           <div className="space-y-3">
             {invoiceNeedRaise.map((invoice, index) => (
-              <div
-                key={invoice.id || index}
-                onClick={() => {
-                  if (onInvoiceClick) {
-                    onInvoiceClick(invoice);
-                  } else {
-                    setSelectedItem(invoice);
-                    setIsModalOpen(true);
-                  }
-                }}
-                className="w-full text-left p-4 rounded-xl border border-black border-l-[6px] border-l-[#6bbd45] bg-white hover:shadow-md transition-all cursor-pointer group relative overflow-hidden"
-              >
-                <div className="flex justify-between items-start mb-2 pl-2">
-                  <h4 className="text-sm font-bold text-black group-hover:text-black transition-colors">
-                    {invoice.invoiceNumber || "—"}
-                  </h4>
-                  <span className="text-[10px] font-bold text-black uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded">
-                    {formatDate(invoice.invoiceDate)}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 pl-2">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-black uppercase font-black tracking-wider">
-                      Customer
-                    </span>
-                    <span className="text-xs font-semibold text-black truncate">
-                      {invoice.customerName || "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] text-black uppercase font-black tracking-wider">
-                      Amount
-                    </span>
-                    <span className="text-sm font-black text-black">
-                      ${invoice.totalInvoiceValue?.toLocaleString() || "0"}
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <div
+  key={invoice.id || index}
+  onClick={() => {
+    if (onInvoiceClick) {
+      onInvoiceClick(invoice);
+    } else {
+      setSelectedItem(invoice);
+      setIsModalOpen(true);
+    }
+  }}
+  className="w-full p-4 rounded-xl border border-gray-200 border-l-4 border-l-green-500 bg-white hover:shadow-lg hover:-translate-y-[1px] transition-all cursor-pointer group"
+>
+  {/* Top Row */}
+  <div className="flex justify-between items-center mb-3">
+    <h4 className="text-sm font-semibold text-gray-900 group-hover:text-green-600 transition">
+      {invoice.invoiceNumber || "—"}
+    </h4>
+    <span className="text-[11px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+      {formatDate(invoice.invoiceDate)}
+    </span>
+  </div>
+
+  {/* Content */}
+  <div className="grid grid-cols-2 gap-4">
+    {/* Left */}
+    <div className="flex flex-col gap-1">
+      <div>
+        <p className="text-[11px] uppercase text-gray-400 font-semibold">
+          Job Name
+        </p>
+        <p className="text-sm font-medium text-gray-800 truncate">
+          {invoice?.jobName || "N/A"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-[11px] uppercase text-gray-400 font-semibold">
+          Customer
+        </p>
+        <p className="text-sm font-medium text-gray-800 truncate">
+          {invoice.customerName || "N/A"}
+        </p>
+      </div>
+    </div>
+
+    {/* Right */}
+    <div className="flex flex-col items-end justify-between">
+      <div>
+        <p className="text-[11px] uppercase text-gray-400 font-semibold text-right">
+          Amount
+        </p>
+        <p className="text-lg font-bold text-gray-900">
+          ${invoice.totalInvoiceValue?.toLocaleString() || "0"}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
             ))}
           </div>
         ) : (
