@@ -22,6 +22,7 @@ const SubmittalListModal = lazy(
 );
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
+const JobFinancialsBar = lazy(() => import("./components/JobFinancialsBar"));
 const GetMilestoneByID = lazy(
   () => import("../project/mileStone/GetMilestoneByID"),
 );
@@ -318,6 +319,54 @@ const ClientDashboard = () => {
                 </div>
                 <span className="text-3xl text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
+        </div>
+
+        {/* Project Financial Progress Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden">
+          <div className="p-4 border-b border-green-500/10 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-black flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></div>
+              FINANCIAL PROGRESS BY JOB
+            </h2>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+              {Object.keys(invoices.reduce((acc: any, inv) => {
+                const job = inv.jobName || "Unknown Job";
+                if (!acc[job]) acc[job] = true;
+                return acc;
+              }, {})).length} JOBS
+            </span>
+          </div>
+          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 max-h-[400px] overflow-y-auto custom-scrollbar">
+            {Object.entries(
+              invoices.reduce((acc: any, inv) => {
+                const job = inv.jobName || "Unknown Job";
+                if (!acc[job]) {
+                  acc[job] = { total: 0, paid: 0, due: 0 };
+                }
+                const amount = parseFloat(inv.totalInvoiceValue) || 0;
+                acc[job].total += amount;
+                if (inv.paymentStatus === true || inv.paymentStatus === "Paid") {
+                  acc[job].paid += amount;
+                } else {
+                  acc[job].due += amount;
+                }
+                return acc;
+              }, {})
+            ).map(([jobName, stats]: [string, any]) => (
+              <JobFinancialsBar
+                key={jobName}
+                jobName={jobName}
+                totalAmount={stats.total}
+                paidAmount={stats.paid}
+                dueAmount={stats.due}
+              />
+            ))}
+            {invoices.length === 0 && (
+              <div className="col-span-2 py-12 text-center text-gray-400 font-medium italic">
+                No financial data available for the current projects.
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Detailed Info Section */}
