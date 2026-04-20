@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
-import { Loader2, Banknote, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -22,7 +22,7 @@ const SubmittalListModal = lazy(
 );
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
-const JobFinancialsBar = lazy(() => import("./components/JobFinancialsBar"));
+
 const InvoiceSummary = lazy(() => import("./components/InvoiceSummary"));
 const GetMilestoneByID = lazy(
   () => import("../project/mileStone/GetMilestoneByID"),
@@ -254,11 +254,7 @@ const ClientDashboard = () => {
     }
   };
 
-  const totalInvoiced = invoices.reduce((acc, inv) => acc + (parseFloat(inv.totalInvoiceValue) || 0), 0);
-  const totalPaid = invoices
-      .filter((inv) => inv.paymentStatus === true || inv.paymentStatus === "Paid")
-      .reduce((acc, inv) => acc + (parseFloat(inv.totalInvoiceValue) || 0), 0);
-  const balanceDue = totalInvoiced - totalPaid;
+
 
   if (loading) {
     return <DashboardSkeleton />;
