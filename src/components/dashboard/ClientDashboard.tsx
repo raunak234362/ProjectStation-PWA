@@ -23,6 +23,7 @@ const SubmittalListModal = lazy(
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
 const JobFinancialsBar = lazy(() => import("./components/JobFinancialsBar"));
+const InvoiceSummary = lazy(() => import("./components/InvoiceSummary"));
 const GetMilestoneByID = lazy(
   () => import("../project/mileStone/GetMilestoneByID"),
 );
@@ -41,6 +42,7 @@ const ClientDashboard = () => {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [pendingSubmittals, setPendingSubmittals] = useState<any[]>([]);
   const [pendingRFQs, setPendingRFQs] = useState<any[]>([]);
+  const [sentRFQs, setSentRFQs] = useState<any[]>([]);
   const [pendingRFIs, setPendingRFIs] = useState<any[]>([]);
   const [pendingCOs, setPendingCOs] = useState<any[]>([]);
   const [upcomingSubmittals, setUpcomingSubmittals] = useState<any[]>([]);
@@ -130,6 +132,7 @@ const ClientDashboard = () => {
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
+        setSentRFQs(Array.isArray(sent) ? sent : sent?.data || []);
         setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 
         const sentCount = sent?.length || 0;
@@ -282,91 +285,13 @@ const ClientDashboard = () => {
           </div>
         </div>
 
-        {/* Invoice Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-3">
-            <div 
-              onClick={() => navigate("/dashboard/invoices")}
-              className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
-                <div className="flex flex-row items-center justify-center gap-2">
-                  <div className="p-1 bg-gray-50 rounded-xl">
-                      <Banknote className="w-5 h-5 text-black" />
-                  </div>
-                  <span className="text-md font-medium text-black uppercase tracking-wider">Total Invoiced</span>
-                </div>
-                <span className="text-3xl text-black mt-1">${totalInvoiced.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            </div>
-
-            <div 
-              onClick={() => navigate("/dashboard/invoices")}
-              className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
-                <div className="flex flex-row items-center justify-center gap-2">
-                  <div className="p-1 bg-gray-50 rounded-xl">
-                      <CheckCircle2 className="w-5 h-5 text-black" />
-                  </div>
-                  <span className="text-md font-medium text-black uppercase tracking-wider">Total Paid</span>
-                </div>
-                <span className="text-3xl text-black mt-1">${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            </div>
-
-            <div 
-              onClick={() => navigate("/dashboard/invoices")}
-              className="flex flex-row justify-between bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] items-center text-center cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1">
-                <div className="flex flex-row items-center justify-center gap-2">
-                  <div className="p-1 bg-red-50 rounded-xl">
-                      <AlertCircle className="w-5 h-5 text-red-600" />
-                  </div>
-                  <span className="text-md font-medium text-black uppercase tracking-wider">Balance Due</span>
-                </div>
-                <span className="text-3xl text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            </div>
-        </div>
-
-        {/* Project Financial Progress Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden">
-          <div className="p-4 border-b border-green-500/10 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-black flex items-center gap-3">
-              <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></div>
-              FINANCIAL PROGRESS BY JOB
-            </h2>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-              {Object.keys(invoices.reduce((acc: any, inv) => {
-                const job = inv.jobName || "Unknown Job";
-                if (!acc[job]) acc[job] = true;
-                return acc;
-              }, {})).length} JOBS
-            </span>
-          </div>
-          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 max-h-[400px] overflow-y-auto custom-scrollbar">
-            {Object.entries(
-              invoices.reduce((acc: any, inv) => {
-                const job = inv.jobName || "Unknown Job";
-                if (!acc[job]) {
-                  acc[job] = { total: 0, paid: 0, due: 0 };
-                }
-                const amount = parseFloat(inv.totalInvoiceValue) || 0;
-                acc[job].total += amount;
-                if (inv.paymentStatus === true || inv.paymentStatus === "Paid") {
-                  acc[job].paid += amount;
-                } else {
-                  acc[job].due += amount;
-                }
-                return acc;
-              }, {})
-            ).map(([jobName, stats]: [string, any]) => (
-              <JobFinancialsBar
-                key={jobName}
-                jobName={jobName}
-                totalAmount={stats.total}
-                paidAmount={stats.paid}
-                dueAmount={stats.due}
-              />
-            ))}
-            {invoices.length === 0 && (
-              <div className="col-span-2 py-12 text-center text-gray-400 font-medium italic">
-                No financial data available for the current projects.
-              </div>
-            )}
-          </div>
+        {/* Invoice Summary Section */}
+        <div className="w-full">
+          <InvoiceSummary 
+            invoices={invoices} 
+            projects={projects} 
+            rfqs={sentRFQs} 
+          />
         </div>
 
         {/* Detailed Info Section */}
