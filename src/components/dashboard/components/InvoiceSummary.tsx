@@ -4,12 +4,14 @@ interface InvoiceSummaryProps {
   invoices: any[];
   projects: any[];
   rfqs: any[];
+  onInvoiceClick?: (invoiceId: string) => void;
 }
 
 const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
   invoices = [],
   projects = [],
   rfqs = [],
+  onInvoiceClick,
 }) => {
   const [selectedYear, setSelectedYear] = useState<string>("2026");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
@@ -97,6 +99,11 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
       tr += job.totalRaised;
       tp += job.paid;
       tpen += job.pending;
+
+      const formatStr = (s: string) => (s.startsWith("#") ? s : `#${s}`);
+      const parts = [...job.invoiceNumbers.map(formatStr)];
+      job.invoiceNumber = parts.join(", ") || "No Invoices";
+
       return job;
     });
 
@@ -206,12 +213,29 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                   <h4 className="text-sm md:text-[15px] font-bold text-gray-800 uppercase tracking-tight leading-snug">
                     {job.jobName}
                   </h4>
-                  <p className="text-[11px] font-bold text-gray-400 mt-2 uppercase tracking-wide">
-                    {[
-                      ...job.invoiceNumbers.map((n: string) => `#${n}`),
-                      job.rfqSerial ? `#${job.rfqSerial}` : null
-                    ].filter(Boolean).join(", ") || "No Invoices or RFQ"}
-                  </p>
+                  <div className="text-[11px] font-bold text-gray-400 mt-2 uppercase tracking-wide flex flex-wrap gap-1">
+                    {job.invoices && job.invoices.length > 0 ? (
+                      job.invoices.map((inv: any, i: number) => {
+                        const invNum = inv.invoiceNumber 
+                          ? (inv.invoiceNumber.startsWith("#") ? inv.invoiceNumber : `#${inv.invoiceNumber}`) 
+                          : `#UNNAMED`;
+                        return (
+                          <span 
+                            key={inv.id || i} 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onInvoiceClick) onInvoiceClick(inv.id);
+                            }}
+                            className="cursor-pointer hover:text-[#6bbd45] transition-colors"
+                          >
+                            {invNum}{i < job.invoices.length - 1 ? "," : ""}
+                          </span>
+                        );
+                      })
+                    ) : (
+                      "No Invoices"
+                    )}
+                  </div>
                 </div>
                 <div className="flex flex-col items-end whitespace-nowrap">
                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">

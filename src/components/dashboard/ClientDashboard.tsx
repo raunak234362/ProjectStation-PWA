@@ -291,6 +291,7 @@ const ClientDashboard = () => {
             invoices={invoices} 
             projects={projects} 
             rfqs={sentRFQs} 
+            onInvoiceClick={(id) => setSelectedInvoiceId(id)}
           />
         </div>
 
