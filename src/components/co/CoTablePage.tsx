@@ -5,14 +5,34 @@ const CoTablePage = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const encodedData = params.get("coData");
+  const id = params.get("id");
 
-  if (!encodedData) {
+  let co: any = null;
+
+  if (encodedData) {
+    try {
+      co = JSON.parse(encodedData);
+    } catch (e) {
+      console.error("Failed to parse coData", e);
+    }
+  }
+
+  if (!co && id) {
+    const sessionData = sessionStorage.getItem(`coTableData_${id}`);
+    if (sessionData) {
+      try {
+        co = JSON.parse(sessionData);
+      } catch (e) {
+        console.error("Failed to parse session data", e);
+      }
+    }
+  }
+
+  if (!co) {
     return <div className="p-6 text-red-500">No Change Order data found</div>;
   }
 
-  const co = JSON.parse(encodedData);
-
-  const rows = co.CoRefersTo || [];
+  const rows = co.CoRefersTo || co.changeOrderTables || [];
 
   const totalQty = rows.reduce((s: number, r: any) => s + (r.QtyNo || 0), 0);
   const totalHours = rows.reduce((s: number, r: any) => s + (r.hours || 0), 0);

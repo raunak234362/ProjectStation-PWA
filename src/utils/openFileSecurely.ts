@@ -32,9 +32,10 @@ const getDownloadUrl = (
     case "rfq/followup":
       return `${baseURL}/rfq/followups/viewFile/${parentId}/${fileId}`;
     case "changeOrders":
+      return `${baseURL}/changeOrder/viewFile/${parentId}/${fileId}`;
     case "changeOrder/response":
     case "cOResponse":
-      return `${baseURL}/changeOrder/viewFile/${parentId}/${fileId}`;
+      return `${baseURL}/changeOrder/viewFile/${parentId}/files/${fileId}`;
     case "projectNotes":
       return `${baseURL}/projectNotes/note/viewfile/${parentId}/${fileId}`;
     case "connection-designer":

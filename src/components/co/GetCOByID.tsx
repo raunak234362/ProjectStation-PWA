@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Service from "../../api/Service";
 import type { ChangeOrderItem } from "../../interface";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, History } from "lucide-react";
 import RenderFiles from "../ui/RenderFiles";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
@@ -37,15 +37,35 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
 
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
+  const [viewingVersionId, setViewingVersionId] = useState<string | null>(null);
 
   const userRole = sessionStorage.getItem("userRole");
   console.log(id);
 
-  /* -------------------- SAFE DERIVED VALUES -------------------- */
-  const encodedCO = useMemo(() => {
-    if (!co) return "";
-    return encodeURIComponent(JSON.stringify(co));
-  }, [co]);
+  const sortedVersions = useMemo(() => {
+    if (!co?.versions) return [];
+    return [...co.versions].sort(
+      (a, b) =>
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
+  }, [co?.versions]);
+
+  const hasMultipleVersions = sortedVersions.length > 1;
+
+  const currentVersion = useMemo(() => {
+    if (!co) return null;
+    const targetId = viewingVersionId || co.currentVersionId;
+    return (
+      co.versions?.find((v) => v.id === targetId) ||
+      sortedVersions[0] ||
+      co
+    );
+  }, [co, sortedVersions, viewingVersionId]);
+
+  const isViewingCurrent = useMemo(() => {
+    return currentVersion?.id === co?.currentVersionId || (!co?.versions?.length);
+  }, [currentVersion, co]);
+
 
   const responses = useMemo(() => {
     try {
@@ -73,6 +93,9 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
       console.log(response);
 
       setCO(response.data);
+      if (response.data?.currentVersionId) {
+        setViewingVersionId(response.data.currentVersionId);
+      }
     } catch (err) {
       console.error(err);
       setError("Failed to load Change Order");
@@ -187,7 +210,35 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white space-y-6">
+          {/* ================= VERSION SWITCHER (TOP) ================= */}
+          {hasMultipleVersions && (
+            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-4">
+              <div className="flex items-center gap-2">
+                <History className="w-5 h-5 text-green-600" />
+                <h2 className="text-lg font-black text-black uppercase tracking-tight">
+                  Versions
+                </h2>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {sortedVersions.map((v, idx) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setViewingVersionId(v.id)}
+                    className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border shadow-sm ${viewingVersionId === v.id
+                      ? "bg-green-600 text-white border-green-600"
+                      : "bg-white text-gray-400 border-gray-200 hover:border-gray-400"
+                      }`}
+                  >
+                    v{v.versionNumber || sortedVersions.length - idx}
+                    {v.id === co.currentVersionId && " (Current)"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* ================= LEFT: CO DETAILS ================= */}
             <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-5">
@@ -229,7 +280,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
                 <h4 className="font-semibold text-gray-700 mb-1">Remarks</h4>
                 <div
                   className="bg-gray-50 p-3 rounded-lg border text-sm text-gray-700 min-h-[50px]"
-                  dangerouslySetInnerHTML={{ __html: co.remarks || "—" }}
+                  dangerouslySetInnerHTML={{ __html: co.currentVersion?.remarks || co.remarks || "—" }}
                 />
               </div>
 
@@ -237,25 +288,39 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
                 <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
                 <div
                   className="bg-gray-50 p-3 rounded-lg border text-sm text-gray-700 min-h-[50px]"
-                  dangerouslySetInnerHTML={{ __html: co.description || "—" }}
+                  dangerouslySetInnerHTML={{ __html: co.currentVersion?.description || co.description || "—" }}
                 />
               </div>
 
               <RenderFiles
-                files={co.files ?? []}
+                files={currentVersion?.files || co.files || []}
                 table="changeOrders"
                 parentId={co.id}
+                versionId={currentVersion?.id || co.currentVersionId}
               />
 
               <div className="pt-4 border-t">
-                <button
-                  onClick={() =>
-                    window.open(`/co-table?coData=${encodedCO}`, "_blank")
-                  }
-                  className="text-black font-bold uppercase tracking-tight underline hover:text-gray-700 transition-all text-sm"
-                >
-                  View Change Order Reference Table
-                </button>
+                {isViewingCurrent ? (
+                  <button
+                    onClick={() => {
+                      const data = {
+                        id: co.id,
+                        changeOrderNumber: co.changeOrderNumber,
+                        serialNo: co.serialNo,
+                        CoRefersTo: currentVersion?.changeOrderTables || currentVersion?.CoRefersTo || co?.CoRefersTo || [],
+                      };
+                      sessionStorage.setItem(`coTableData_${co.id}`, JSON.stringify(data));
+                      window.open(`/co-table?id=${co.id}`, "_blank");
+                    }}
+                    className="text-black font-bold uppercase tracking-tight underline hover:text-gray-700 transition-all text-sm"
+                  >
+                    View Change Order Reference Table
+                  </button>
+                ) : (
+                  <p className="text-xs text-gray-400 italic">
+                    Table view is only available for the current version.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -294,6 +359,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
         {showResponseModal && (
           <CoResponseModal
             CoId={id}
+            currentVersionId={co.currentVersionId}
             onClose={() => setShowResponseModal(false)}
             onSuccess={fetchCO}
           />

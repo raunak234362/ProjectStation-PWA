@@ -10,9 +10,15 @@ interface Props {
   CoId: string;
   onClose: () => void;
   onSuccess: () => void;
+  currentVersionId?: string;
 }
 
-const CoResponseModal = ({ CoId, onClose, onSuccess }: Props) => {
+const CoResponseModal = ({
+  CoId,
+  onClose,
+  onSuccess,
+  currentVersionId,
+}: Props) => {
   const { register, handleSubmit, control } = useForm<CoResponsePayload>();
   console.log(CoId);
 
@@ -31,6 +37,7 @@ const CoResponseModal = ({ CoId, onClose, onSuccess }: Props) => {
       formData.append("userId", userId);
       formData.append("userRole", userRole);
       formData.append("ParentResponseId", data.parentResponseId ?? "");
+      formData.append("changeOrderVersionId", currentVersionId ?? "");
 
       if (files?.length) {
         files.forEach((file) => {

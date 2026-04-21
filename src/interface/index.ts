@@ -762,6 +762,7 @@ export interface changeOrdersPayload {
 export interface ChangeOrderItem {
   original: any;
   id: string;
+  serialNo?: string;
   project?: string;
   senders?: {
     id: string;
@@ -788,6 +789,31 @@ export interface ChangeOrderItem {
   date?: string;
   files?: File[];
   coResponses: string;
+  currentVersionId?: string;
+  changeOrderVersion?: number;
+  currentVersion?: ChangeOrderVersion;
+  versions?: ChangeOrderVersion[];
+  CoRefersTo?: any[];
+  changeOrderTables?: any[];
+}
+
+export interface ChangeOrderVersion {
+  id: string;
+  changeOrderId: string;
+  versionNumber: number;
+  description: string;
+  remarks: string;
+  isActive: boolean;
+  createdAt: string;
+  createdById: string;
+  createdBy?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+  files?: any[];
+  changeOrderTables?: any[];
+  CoRefersTo?: any[];
 }
 export interface COTable {
   description: string;
@@ -807,6 +833,7 @@ export interface CoResponsePayload {
   userId: string;
   parentResponseId?: string | null;
   files?: File[];
+  currentVersionId?: string;
 }
 export interface DesignDrawingPayload {
   projectId: string;
