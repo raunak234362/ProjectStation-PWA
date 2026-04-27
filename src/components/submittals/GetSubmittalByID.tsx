@@ -289,39 +289,39 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                     <span className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></span>
                     Description
                   </h4>
-                  <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden w-full">
+                  <div className="bg-white rounded-2xl border border-black/5 border-l-4 border-[#6bbd45] shadow-sm overflow-hidden w-full">
                     <style>{`
                       .submittal-description * {
                         max-width: 100% !important;
-                        width: auto !important;
                         box-sizing: border-box !important;
-                        overflow-x: hidden !important;
                       }
                       .submittal-description table {
                         width: 100% !important;
                         table-layout: fixed !important;
+                        border-collapse: collapse !important;
                       }
                       .submittal-description td, .submittal-description th {
                         word-break: break-word !important;
+                        padding: 8px !important;
+                        border: 1px solid #f3f4f6 !important;
                       }
                       .submittal-description img {
                         max-width: 100% !important;
                         height: auto !important;
-                      }
-                      .submittal-description center {
-                        display: block !important;
-                        text-align: left !important;
+                        border-radius: 8px !important;
                       }
                       .submittal-description a {
                         color: #2563eb !important;
                         word-break: break-all !important;
+                        text-decoration: underline !important;
                       }
                       .submittal-description p { margin-bottom: 1rem !important; }
-                      .submittal-description ul { list-style-type: disc !important; padding-left: 1.5rem !important; }
-                      .submittal-description ol { list-style-type: decimal !important; padding-left: 1.5rem !important; }
+                      .submittal-description ul { list-style-type: disc !important; padding-left: 1.5rem !important; margin-bottom: 1rem !important; }
+                      .submittal-description ol { list-style-type: decimal !important; padding-left: 1.5rem !important; margin-bottom: 1rem !important; }
+                      .submittal-description li { margin-bottom: 0.5rem !important; }
                     `}</style>
                     <div
-                      className="submittal-description text-gray-800 p-5 text-sm wrap-break-word leading-relaxed"
+                      className="submittal-description text-gray-800 p-6 text-sm break-words leading-relaxed prose prose-sm max-w-none"
                       dangerouslySetInnerHTML={{
                         __html:
                           submittal.description ||
