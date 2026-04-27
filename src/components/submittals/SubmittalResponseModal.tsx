@@ -57,7 +57,7 @@ const SubmittalResponseModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-      <div className="bg-white p-8 rounded-2xl h-[90vh] overflow-hidden w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative space-y-8 border border-black/5 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white p-8 rounded-2xl h-[90vh] overflow-hidden w-full max-w-4xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative space-y-8 border border-black/5 animate-in fade-in zoom-in duration-200">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-black text-black uppercase tracking-tight">
             Add Submittal Response
