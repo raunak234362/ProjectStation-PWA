@@ -37,11 +37,10 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
 
   return (
     <div
-      className={`border rounded-xl overflow-hidden transition-all ${
-        isCurrent
+      className={`border rounded-xl overflow-hidden transition-all ${isCurrent
           ? "border-[#6bbd45] bg-[#6bbd45]/5"
           : "border-gray-200 bg-white"
-      }`}
+        }`}
     >
       {/* Row Header — always visible */}
       <button
@@ -51,11 +50,10 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
         <div className="flex items-center gap-3 min-w-0">
           {/* Version badge */}
           <span
-            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${
-              isCurrent
+            className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${isCurrent
                 ? "bg-[#6bbd45] text-white"
                 : "bg-gray-100 text-gray-500"
-            }`}
+              }`}
           >
             v{total - index}
             {isCurrent && " · Current"}
@@ -209,9 +207,9 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
       header: "Message",
       cell: ({ row }: any) => (
         <div
-          className="prose prose-sm max-w-[300px] text-gray-700"
+          className="prose prose-sm text-gray-700"
           style={{
-            marginLeft: row.original.parentResponseId ? "20px" : "0px",
+            marginLeft: row.original.parentResponseId ? "10px" : "0px",
           }}
           dangerouslySetInnerHTML={{
             __html: truncateWords(row.original.description || "—", 10),
@@ -219,14 +217,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
         />
       ),
     },
-    {
-      accessorKey: "files",
-      header: "Files",
-      cell: ({ row }: any) => {
-        const count = row.original.files?.length ?? 0;
-        return count > 0 ? `${count} file(s)` : "—";
-      },
-    },
+  
     {
       accessorKey: "createdAt",
       header: "Created",
@@ -254,6 +245,35 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
           <div className="grid grid-cols-1  gap-6">
+            {/* RIGHT PANEL */}
+            <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-[#6bbd45]">
+                  Responses
+                </h2>
+                {(userRole === "CLIENT_ADMIN" ||
+                  userRole === "CLIENT" ||
+                  userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+                  userRole === "CONNECTION_DESIGNER_ADMIN") && (
+                    <Button
+                      className="bg-[#6bbd45]/20 text-black border border-black rounded-lg hover:bg-[#6bbd45]/30 font-bold text-sm"
+                      onClick={() => setShowResponseModal(true)}
+                    >
+                      + Add Response
+                    </Button>
+                  )}
+              </div>
+
+              {submittal.submittalsResponse?.length > 0 ? (
+                <DataTable
+                  columns={responseColumns}
+                  data={submittal.submittalsResponse}
+                  onRowClick={(row) => setSelectedResponse(row)}
+                />
+              ) : (
+                <p className="text-gray-700 italic">No responses yet.</p>
+              )}
+            </div>
             {/* LEFT PANEL */}
             <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
               <div className="flex justify-between items-center">
@@ -284,54 +304,54 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
               {(submittal.description ||
                 (sortedVersions.length === 1 &&
                   sortedVersions[0].description)) && (
-                <div className="space-y-3 mt-6">
-                  <h4 className="text-black text-sm bg-white p-4 rounded-xl border border-black/5 font-black uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></span>
-                    Description
-                  </h4>
-                  <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden w-full">
-                    <style>{`
+                  <div className="space-y-3 mt-6">
+                    <h4 className="text-black text-sm bg-white p-4 rounded-xl border border-black/5 font-black uppercase tracking-widest flex items-center gap-2">
+                      <span className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></span>
+                      Description
+                    </h4>
+                    <div className="bg-white rounded-2xl border border-black/5 border-l-4 border-[#6bbd45] shadow-sm overflow-hidden w-full">
+                      <style>{`
                       .submittal-description * {
                         max-width: 100% !important;
-                        width: auto !important;
                         box-sizing: border-box !important;
-                        overflow-x: hidden !important;
                       }
                       .submittal-description table {
                         width: 100% !important;
                         table-layout: fixed !important;
+                        border-collapse: collapse !important;
                       }
                       .submittal-description td, .submittal-description th {
                         word-break: break-word !important;
+                        padding: 8px !important;
+                        border: 1px solid #f3f4f6 !important;
                       }
                       .submittal-description img {
                         max-width: 100% !important;
                         height: auto !important;
-                      }
-                      .submittal-description center {
-                        display: block !important;
-                        text-align: left !important;
+                        border-radius: 8px !important;
                       }
                       .submittal-description a {
                         color: #2563eb !important;
                         word-break: break-all !important;
+                        text-decoration: underline !important;
                       }
                       .submittal-description p { margin-bottom: 1rem !important; }
-                      .submittal-description ul { list-style-type: disc !important; padding-left: 1.5rem !important; }
-                      .submittal-description ol { list-style-type: decimal !important; padding-left: 1.5rem !important; }
+                      .submittal-description ul { list-style-type: disc !important; padding-left: 1.5rem !important; margin-bottom: 1rem !important; }
+                      .submittal-description ol { list-style-type: decimal !important; padding-left: 1.5rem !important; margin-bottom: 1rem !important; }
+                      .submittal-description li { margin-bottom: 0.5rem !important; }
                     `}</style>
-                    <div
-                      className="submittal-description text-gray-800 p-5 text-sm wrap-break-word leading-relaxed"
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          submittal.description ||
-                          sortedVersions[0]?.description ||
-                          "No description provided",
-                      }}
-                    />
+                      <div
+                        className="submittal-description text-gray-800 p-6 text-sm break-words leading-relaxed prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            submittal.description ||
+                            sortedVersions[0]?.description ||
+                            "No description provided",
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Single Version File Display */}
               {!hasMultipleVersions && sortedVersions.length === 1 && (
@@ -347,35 +367,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
               )}
             </div>
 
-            {/* RIGHT PANEL */}
-            <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-[#6bbd45]">
-                  Responses
-                </h2>
-                {(userRole === "CLIENT_ADMIN" ||
-                  userRole === "CLIENT" ||
-                  userRole === "CONNECTION_DESIGNER_ENGINEER" ||
-                  userRole === "CONNECTION_DESIGNER_ADMIN") && (
-                  <Button
-                    className="bg-[#6bbd45]/20 text-black border border-black rounded-lg hover:bg-[#6bbd45]/30 font-bold text-sm"
-                    onClick={() => setShowResponseModal(true)}
-                  >
-                    + Add Response
-                  </Button>
-                )}
-              </div>
 
-              {submittal.submittalsResponse?.length > 0 ? (
-                <DataTable
-                  columns={responseColumns}
-                  data={submittal.submittalsResponse}
-                  onRowClick={(row) => setSelectedResponse(row)}
-                />
-              ) : (
-                <p className="text-gray-700 italic">No responses yet.</p>
-              )}
-            </div>
           </div>
 
           {/* ── VERSION HISTORY (only when > 1 versions) ── */}

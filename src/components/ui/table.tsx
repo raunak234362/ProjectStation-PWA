@@ -282,7 +282,7 @@ export default function DataTable<T extends object>({
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-8 py-5 text-left text-sm md:text-base font-black text-black dark:text-slate-100 tracking-tight uppercase transition-colors"
+                        className="px-4 py-3 text-left text-sm md:text-base font-black text-black tracking-tight uppercase transition-colors"
                         onClick={header.column.getToggleSortingHandler()}
                         style={{ width: header.column.getSize() }}
                       >
