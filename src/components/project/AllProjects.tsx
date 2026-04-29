@@ -53,9 +53,6 @@ const AllProjects = () => {
     setSelectedProjectId(projectUniqueId);
   };
 
-  const userRole = sessionStorage.getItem("userRole");
-  const isClient = userRole === "CLIENT" || userRole === "CLIENT_ADMIN";
-
   const columns: any[] = [
     {
       accessorKey: "name",
@@ -121,7 +118,7 @@ const AllProjects = () => {
       enableColumnFilter: true,
       filterType: "select",
       filterOptions: pmOptions,
-      filterFn: (row: any, id: string, filterValue: string) => {
+      filterFn: (row: any, _id: string, filterValue: string) => {
         const managers = row.original.clientProjectManagers;
         if (!managers) return false;
         if (!filterValue) return true;
