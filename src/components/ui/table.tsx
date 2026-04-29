@@ -53,13 +53,15 @@ function ColumnFilter({ column }: { column: any }) {
   const columnDef = column.columnDef as ExtendedColumnDef<any>;
   const { filterType, filterOptions, header } = columnDef;
 
+  const headerText = typeof header === "string" ? header : (columnDef.id || "Column");
+
   if (filterType === "select") {
     return (
       <Select
         options={filterOptions}
         value={column.getFilterValue() as string}
         onChange={(_, val) => column.setFilterValue(val || undefined)}
-        placeholder={`All ${header as string}`}
+        placeholder={`All ${headerText}`}
         className="h-11! text-xs! font-bold!"
       />
     );
@@ -72,7 +74,7 @@ function ColumnFilter({ column }: { column: any }) {
         value={column.getFilterValue() ?? ""}
         onChange={(e) => column.setFilterValue(e.target.value || undefined)}
         className="pl-11 pr-4 h-full w-full border border-black/10 dark:border-slate-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none transition-all bg-white dark:bg-slate-800 text-black dark:text-slate-200 placeholder:text-black/30 shadow-xs"
-        placeholder={`Search ${header as string}...`}
+        placeholder={`Search ${headerText}...`}
       />
     </div>
   );

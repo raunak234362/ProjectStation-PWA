@@ -20,7 +20,7 @@ export interface ProjectData {
   CDQuataionID?: string;
   connectionDesignerID?: string;
   projectNumber: string;
-  status: "ACTIVE" | "INACTIVE" | "DRAFT" | "ONHOLD" | "COMPLETED";
+  status: "ACTIVE" | "INACTIVE" | "DRAFT" | "ONHOLD" | "COMPLETED" | "COMPLETE";
   stage: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "IFA" | "IFC" | "CO#";
   tools: "TEKLA" | "SDS2" | "BOTH";
   connectionDesign: boolean;

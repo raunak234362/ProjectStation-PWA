@@ -28,6 +28,26 @@ const AllProjects = () => {
     fetchProjects();
   }, []);
 
+  const stageOptions = React.useMemo(() => {
+    const stages = Array.from(new Set(projects.map((p) => p.stage).filter(Boolean)));
+    return stages.map((s) => ({ value: s as string, label: s as string }));
+  }, [projects]);
+
+  const pmOptions = React.useMemo(() => {
+    const pms = new Map();
+    projects.forEach((p) => {
+      if (p.clientProjectManagers) {
+        p.clientProjectManagers.forEach((m: any) => {
+          const fullName = `${m.firstName || ""} ${m.lastName || ""}`.trim();
+          if (fullName) {
+            pms.set(fullName, fullName);
+          }
+        });
+      }
+    });
+    return Array.from(pms.values()).map((name) => ({ value: name, label: name }));
+  }, [projects]);
+
   const handleRowClick = (row: any) => {
     const projectUniqueId = row.id || row._id || "";
     setSelectedProjectId(projectUniqueId);
@@ -63,7 +83,7 @@ const AllProjects = () => {
         </div>
       ),
       size: 550,
-      enableColumnFilter: !isClient,
+      enableColumnFilter: true,
       filterType: "text",
       filterFn: "includesString",
     },
@@ -76,6 +96,41 @@ const AllProjects = () => {
         </span>
       ),
       size: 100,
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: stageOptions,
+      filterFn: "equalsString",
+    },
+    {
+      accessorKey: "clientProjectManagers",
+      header: "Client PM",
+      cell: ({ row }: { row: any }) => {
+        const managers = row.original.clientProjectManagers;
+        if (!managers || managers.length === 0) return <span className="text-gray-400">—</span>;
+        return (
+          <div className="flex flex-col gap-1">
+            {managers.map((m: any, idx: number) => (
+              <span key={idx} className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-700">
+                {m.firstName} {m.lastName}
+              </span>
+            ))}
+          </div>
+        );
+      },
+      size: 150,
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: pmOptions,
+      filterFn: (row: any, id: string, filterValue: string) => {
+        const managers = row.original.clientProjectManagers;
+        if (!managers) return false;
+        if (!filterValue) return true;
+        const search = filterValue.toLowerCase();
+        return managers.some((m: any) => {
+          const fullName = `${m.firstName || ""} ${m.lastName || ""}`.trim().toLowerCase();
+          return fullName === search;
+        });
+      },
     },
     {
       accessorKey: "status",

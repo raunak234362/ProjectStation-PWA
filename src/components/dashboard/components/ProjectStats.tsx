@@ -39,7 +39,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
       label: "COMPLETED",
       value: stats.completedProjects,
       icon: CheckCircle2,
-      status: "COMPLETED",
+      status: "COMPLETE",
       clickable: true,
     },
     {
@@ -50,7 +50,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
       clickable: true,
     },
   ];
-console.log(stats);
+  console.log(stats);
 
   return (
     <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">

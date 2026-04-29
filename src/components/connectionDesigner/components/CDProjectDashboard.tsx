@@ -17,7 +17,7 @@ const CDProjectDashboard: React.FC<CDProjectDashboardProps> = ({
     return {
       totalProjects: projects.length,
       activeProjects: projects.filter((p) => p.status === "ACTIVE").length,
-      completedProjects: projects.filter((p) => p.status === "COMPLETED")
+      completedProjects: projects.filter((p) => p.status === "COMPLETED" || p.status === "COMPLETE")
         .length,
       onHoldProjects: projects.filter((p) => p.status === "ONHOLD").length,
     };

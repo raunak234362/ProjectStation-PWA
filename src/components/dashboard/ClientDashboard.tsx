@@ -143,7 +143,7 @@ const ClientDashboard = () => {
           (p: any) => p.status === "ACTIVE",
         ).length;
         const completedProjects = projects.filter(
-          (p: any) => p.status === "COMPLETED",
+          (p: any) => p.status === "COMPLETED" || p.status === "COMPLETE",
         ).length;
         const onHoldProjects = projects.filter(
           (p: any) => p.status === "ONHOLD",
@@ -236,7 +236,7 @@ const ClientDashboard = () => {
       navigate("/dashboard/projects");
       return;
     }
-    const filtered = projects.filter((p: any) => p.status === status);
+    const filtered = projects.filter((p: any) => p.status === status || (status === "COMPLETE" && p.status === "COMPLETED") || (status === "COMPLETED" && p.status === "COMPLETE"));
     setFilteredProjects(filtered);
     setSelectedStatus(status);
     setIsModalOpen(true);

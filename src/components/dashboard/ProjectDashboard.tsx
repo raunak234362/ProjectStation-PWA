@@ -199,7 +199,7 @@ const ProjectDashboard = () => {
         if (project.status === "ACTIVE") grouped[teamId].stats[s].active += 1;
         else if (project.status === "ONHOLD")
           grouped[teamId].stats[s].onHold += 1;
-        else if (project.status === "COMPLETED")
+        else if (project.status === "COMPLETED" || project.status === "COMPLETE")
           grouped[teamId].stats[s].completed += 1;
       }
     });
@@ -214,7 +214,7 @@ const ProjectDashboard = () => {
   ) => {
     let filtered = stage === "ALL" ? projects : projects.filter((p) => p.stage === stage);
     if (status !== "TOTAL") {
-      filtered = filtered.filter((p) => p.status === status);
+      filtered = filtered.filter((p) => p.status === status || ((status as string) === "COMPLETE" && p.status === "COMPLETED") || (status === "COMPLETED" && p.status === "COMPLETE"));
     }
     setListModalProjects(filtered);
     setListModalStatus(`${stage} - ${status.replace("_", " ")}`);

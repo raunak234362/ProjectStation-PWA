@@ -198,7 +198,6 @@ const GetProjectById = ({
     try {
       const rolesForReceived = [
         "client",
-        "client_admin",
         "connection_designer_engineer",
         "connection_designer_admin",
       ];

@@ -27,7 +27,7 @@ const ProjectLayout = () => {
   const stats = {
     total: projects.length,
     active: projects.filter((p: any) => p.status === "ACTIVE").length,
-    completed: projects.filter((p: any) => p.status === "COMPLETED").length,
+    completed: projects.filter((p: any) => p.status === "COMPLETE").length,
     onHold: projects.filter((p: any) => p.status === "ONHOLD").length,
   };
   // ✅ Fetch Departments only when data is null or empty

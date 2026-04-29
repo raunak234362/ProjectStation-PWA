@@ -81,7 +81,7 @@ const SalesDashboard = () => {
           0,
         onHold: projects.filter((p: any) => p.status === "ONHOLD").length,
         delayed: projects.filter((p: any) => {
-          if (p.status === "COMPLETED") return false;
+          if (p.status === "COMPLETED" || p.status === "COMPLETE") return false;
           if (!p.endDate) return false;
           return new Date(p.endDate) < new Date();
         }).length,
