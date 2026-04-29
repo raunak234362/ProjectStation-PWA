@@ -47,7 +47,9 @@ const Select = ({
 
   // Sync selected option when controlled value changes
   useEffect(() => {
-    if (typeof value !== "undefined") {
+    if (value === undefined) {
+      setSelectedOption(null);
+    } else {
       const match =
         options.find((o) => String(o.value) === String(value)) || null;
       setSelectedOption(match);

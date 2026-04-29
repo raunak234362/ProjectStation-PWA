@@ -56,10 +56,11 @@ function ColumnFilter({ column }: { column: any }) {
   const headerText = typeof header === "string" ? header : (columnDef.id || "Column");
 
   if (filterType === "select") {
+    const optionsWithAll = [{ value: "", label: `All ${headerText}` }, ...(filterOptions || [])];
     return (
       <Select
-        options={filterOptions}
-        value={column.getFilterValue() as string}
+        options={optionsWithAll}
+        value={(column.getFilterValue() as string) || ""}
         onChange={(_, val) => column.setFilterValue(val || undefined)}
         placeholder={`All ${headerText}`}
         className="h-11! text-xs! font-bold!"
