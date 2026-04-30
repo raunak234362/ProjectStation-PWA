@@ -23,7 +23,8 @@ const SubmittalListModal = lazy(
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
 const GetRFQByID = lazy(() => import("../rfq/GetRFQByID"));
-import { Search, Activity, CheckCircle2 } from "lucide-react";
+import { Search, Activity } from "lucide-react";
+
 
 
 
@@ -44,7 +45,7 @@ const ClientDashboard = () => {
   const isClientRole = userRole === "client";
   const isClientAdmin = userRole === "client_admin";
   const isClientEstimator = userRole === "client_estimator";
-  const isClientExecutive = isClientAdmin || isClientEstimator;
+
 
 
   if (userRole === "client_estimator") {
