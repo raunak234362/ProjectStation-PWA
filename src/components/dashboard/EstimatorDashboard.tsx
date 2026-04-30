@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   FileText, 
   Activity, 
@@ -7,34 +7,122 @@ import {
   DollarSign, 
   TrendingUp, 
   Search,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react";
+import Service from "../../api/Service";
+import ActionListModal from "./components/ActionListModal";
+import GetRFQByID from "../rfq/GetRFQByID";
+import GetInvoiceById from "../invoices/GetInvoiceById";
 
 const EstimatorDashboard = () => {
-  // Mock Data for the Estimator/Sales Dashboard
-  const stats = {
-    totalRfqsSent: 124,
-    rfqsAwarded: 45,
-    pendingEstimates: 12,
-    winRate: "36.2%",
-    totalInvoiced: "$450,200",
-    pendingInvoices: "$42,500"
+  const [loading, setLoading] = useState(true);
+  const [allRFQs, setAllRFQs] = useState<any[]>([]);
+  const [allInvoices, setAllInvoices] = useState<any[]>([]);
+  const [recentRFQs, setRecentRFQs] = useState<any[]>([]);
+  const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<any>("ALL_RFQ");
+  const [modalData, setModalData] = useState<any[]>([]);
+  const [selectedRFQId, setSelectedRFQId] = useState<string | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
+  
+  const [stats, setStats] = useState({
+    totalRfqsSent: 0,
+    rfqsAwarded: 0,
+    pendingEstimates: 0,
+    totalInvoiced: "$0",
+    pendingInvoices: "$0"
+  });
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        // Using GetAllRFQFab and GetAllInvoice as requested
+        const [rfqRes, invoiceRes] = await Promise.all([
+          Service.getAllRFQFab(),
+          Service.GetAllInvoice() 
+        ]);
+
+        const rfqs = Array.isArray(rfqRes?.data) ? rfqRes.data : Array.isArray(rfqRes) ? rfqRes : [];
+        const invoices = Array.isArray(invoiceRes?.data) ? invoiceRes.data : Array.isArray(invoiceRes) ? invoiceRes : [];
+
+        setAllRFQs(rfqs);
+        setAllInvoices(invoices);
+
+        setRecentRFQs(rfqs.slice(0, 10)); // Take top 10 recent
+        setRecentInvoices(invoices.slice(0, 10));
+
+        // Calculate Stats
+        const totalRfqsSent = rfqs.length;
+        const rfqsAwarded = rfqs.filter((r: { status: string; wbtStatus: string; }) => r.status === "AWARDED" || r.wbtStatus === "AWARDED").length;
+        const pendingEstimates = rfqs.filter((r: { status: string; wbtStatus: string; }) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED").length;
+        
+        let totalInvoicedAmount = 0;
+        let pendingInvoicesAmount = 0;
+
+        invoices.forEach((inv: any) => {
+          const amt = Number(inv.totalInvoiceValue || inv.totalAmount || inv.amount || 0);
+          totalInvoicedAmount += amt;
+          
+          let statusStr = "pending";
+          if (inv.paymentStatus === true || String(inv.paymentStatus).toLowerCase() === "true" || String(inv.paymentStatus).toLowerCase() === "paid" || String(inv.status).toLowerCase() === "paid" || String(inv.status).toLowerCase() === "completed") {
+            statusStr = "paid";
+          }
+          
+          if (statusStr !== "paid") {
+            pendingInvoicesAmount += amt;
+          }
+        });
+
+        setStats({
+          totalRfqsSent,
+          rfqsAwarded,
+          pendingEstimates,
+          totalInvoiced: `$${totalInvoicedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          pendingInvoices: `$${pendingInvoicesAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        });
+
+      } catch (error) {
+        console.error("Failed to fetch Estimator Dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  const openModal = (type: string) => {
+    setModalType(type);
+    if (type === "ALL_RFQ") {
+      setModalData(allRFQs);
+    } else if (type === "AWARDED_RFQ") {
+      setModalData(allRFQs.filter((r) => r.status === "AWARDED" || r.wbtStatus === "AWARDED"));
+    } else if (type === "PENDING_RFQ") {
+      setModalData(allRFQs.filter((r) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED"));
+    } else if (type === "ALL_INVOICES") {
+      setModalData(allInvoices);
+    } else if (type === "PENDING_INVOICES") {
+      setModalData(allInvoices.filter((i) => {
+        const isPaid = i.paymentStatus === true || String(i.paymentStatus).toLowerCase() === "true" || String(i.paymentStatus).toLowerCase() === "paid" || String(i.status).toLowerCase() === "paid" || String(i.status).toLowerCase() === "completed";
+        return !isPaid;
+      }));
+    }
+    setIsModalOpen(true);
   };
 
-  const recentRFQs = [
-    { id: "RFQ-2026-001", project: "Nexcore West Ashley", date: "Oct 12, 2026", status: "AWARDED" },
-    { id: "RFQ-2026-002", project: "Downtown Highrise", date: "Oct 15, 2026", status: "PENDING" },
-    { id: "RFQ-2026-003", project: "Medical Center Expansion", date: "Oct 18, 2026", status: "REJECTED" },
-    { id: "RFQ-2026-004", project: "Riverfront Condos", date: "Oct 20, 2026", status: "PENDING" },
-    { id: "RFQ-2026-005", project: "Tech Park Campus", date: "Oct 21, 2026", status: "AWARDED" },
-  ];
-
-  const recentInvoices = [
-    { id: "INV-1042", project: "Nexcore West Ashley", amount: "$12,500", date: "Oct 05, 2026", status: "PAID" },
-    { id: "INV-1043", project: "Tech Park Campus", amount: "$8,200", date: "Oct 10, 2026", status: "UNPAID" },
-    { id: "INV-1044", project: "Downtown Highrise", amount: "$15,000", date: "Oct 18, 2026", status: "PAID" },
-    { id: "INV-1045", project: "Riverfront Condos", amount: "$4,500", date: "Oct 22, 2026", status: "UNPAID" },
-  ];
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+        <Loader2 className="w-10 h-10 animate-spin text-green-500 mb-4" />
+        <p className="text-sm font-black text-black uppercase tracking-widest">Loading Intelligence...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 space-y-8 bg-white min-h-full animate-in fade-in duration-500">
@@ -43,18 +131,21 @@ const EstimatorDashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight">
-            Estimator Overview
+            Estimator Dashboard
           </h1>
-         
+
         </div>
-      
+
       </div>
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
         
         {/* Stat Card 1 */}
-        <div className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-default bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md">
+        <div 
+          onClick={() => openModal("ALL_RFQ")}
+          className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+        >
           <div className="flex items-center gap-4 z-10">
             <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
               <FileText size={24} strokeWidth={2.5} />
@@ -73,7 +164,10 @@ const EstimatorDashboard = () => {
         </div>
 
         {/* Stat Card 2 */}
-        <div className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-default bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md">
+        <div 
+          onClick={() => openModal("AWARDED_RFQ")}
+          className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+        >
           <div className="flex items-center gap-4 z-10">
             <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
               <Activity size={24} strokeWidth={2.5} />
@@ -92,7 +186,10 @@ const EstimatorDashboard = () => {
         </div>
 
         {/* Stat Card 3 */}
-        <div className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-default bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md">
+        <div 
+          onClick={() => openModal("PENDING_RFQ")}
+          className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+        >
           <div className="flex items-center gap-4 z-10">
             <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
               <Clock size={24} strokeWidth={2.5} />
@@ -113,7 +210,10 @@ const EstimatorDashboard = () => {
 
 
         {/* Stat Card 5 */}
-        <div className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-default bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md">
+        <div 
+          onClick={() => openModal("ALL_INVOICES")}
+          className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+        >
           <div className="flex items-center gap-4 z-10">
             <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
               <CheckCircle2 size={24} strokeWidth={2.5} />
@@ -132,7 +232,10 @@ const EstimatorDashboard = () => {
         </div>
 
         {/* Stat Card 6 */}
-        <div className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-default bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md">
+        <div 
+          onClick={() => openModal("PENDING_INVOICES")}
+          className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+        >
           <div className="flex items-center gap-4 z-10">
             <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
               <DollarSign size={24} strokeWidth={2.5} />
@@ -170,25 +273,31 @@ const EstimatorDashboard = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                  <th className="px-4 py-3">RFQ ID</th>
-                  <th className="px-4 py-3">Project</th>
+                  <th className="px-4 py-3">Project No.</th>
+                  <th className="px-4 py-3">Project Title</th>
                   <th className="px-4 py-3">Date</th>
                   <th className="px-4 py-3 text-right">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {recentRFQs.map((rfq, idx) => (
-                  <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group cursor-pointer">
-                    <td className="px-4 py-4 text-xs font-black text-black group-hover:text-green-700">{rfq.id}</td>
-                    <td className="px-4 py-4 text-xs font-bold text-gray-600 truncate max-w-[150px]">{rfq.project}</td>
-                    <td className="px-4 py-4 text-xs font-bold text-gray-500">{rfq.date}</td>
+                  <tr 
+                    key={idx} 
+                    onClick={() => setSelectedRFQId(rfq.id || rfq._id)}
+                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                  >
+                    <td className="px-4 py-4 text-xs font-black text-black group-hover:text-green-700">{rfq.projectNumber || rfq.project?.projectNumber || "—"}</td>
+                    <td className="px-4 py-4 text-xs font-bold text-gray-600 truncate max-w-[150px]">{rfq.project?.name || rfq.project?.projectName || rfq.projectName || rfq.project || "—"}</td>
+                    <td className="px-4 py-4 text-xs font-bold text-gray-500">
+                      {rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : rfq.date || "—"}
+                    </td>
                     <td className="px-4 py-4 text-right">
                       <span className={`inline-block px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border ${
-                        rfq.status === 'AWARDED' ? 'bg-green-50 text-green-700 border-green-200' :
-                        rfq.status === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-200' :
+                        (rfq.status || rfq.wbtStatus) === 'AWARDED' ? 'bg-green-50 text-green-700 border-green-200' :
+                        (rfq.status || rfq.wbtStatus) === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-200' :
                         'bg-yellow-50 text-yellow-700 border-yellow-200'
                       }`}>
-                        {rfq.status}
+                        {rfq.status || rfq.wbtStatus || "PENDING"}
                       </span>
                     </td>
                   </tr>
@@ -221,16 +330,22 @@ const EstimatorDashboard = () => {
               </thead>
               <tbody>
                 {recentInvoices.map((inv, idx) => (
-                  <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group cursor-pointer">
-                    <td className="px-4 py-4 text-xs font-black text-black group-hover:text-green-700">{inv.id}</td>
-                    <td className="px-4 py-4 text-xs font-bold text-gray-600 truncate max-w-[150px]">{inv.project}</td>
-                    <td className="px-4 py-4 text-sm font-black text-black">{inv.amount}</td>
+                  <tr 
+                    key={idx} 
+                    onClick={() => setSelectedInvoiceId(inv.id || inv._id)}
+                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                  >
+                    <td className="px-4 py-4 text-xs font-black text-black group-hover:text-green-700">{inv.invoiceNumber || inv.id || "—"}</td>
+                    <td className="px-4 py-4 text-xs font-bold text-gray-600 truncate max-w-[150px]">{inv.project?.name || inv.project?.projectName || inv.projectName || inv.customerName || inv.project || "—"}</td>
+                    <td className="px-4 py-4 text-sm font-black text-black">
+                      ${Number(inv.totalInvoiceValue || inv.totalAmount || inv.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
                     <td className="px-4 py-4 text-right">
                       <span className={`inline-block px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border ${
-                        inv.status === 'PAID' ? 'bg-green-50 text-green-700 border-green-200' :
+                        (inv.paymentStatus === true || String(inv.paymentStatus).toLowerCase() === 'true' || String(inv.paymentStatus).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'completed') ? 'bg-green-50 text-green-700 border-green-200' :
                         'bg-orange-50 text-orange-700 border-orange-200'
                       }`}>
-                        {inv.status}
+                        {(inv.paymentStatus === true || String(inv.paymentStatus).toLowerCase() === 'true' || String(inv.paymentStatus).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'completed') ? 'PAID' : 'PENDING'}
                       </span>
                     </td>
                   </tr>
@@ -241,6 +356,21 @@ const EstimatorDashboard = () => {
         </div>
 
       </div>
+
+      <ActionListModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        type={modalType}
+        data={modalData}
+      />
+
+      {selectedRFQId && (
+        <GetRFQByID id={selectedRFQId} onClose={() => setSelectedRFQId(null)} />
+      )}
+
+      {selectedInvoiceId && (
+        <GetInvoiceById id={selectedInvoiceId} onClose={() => setSelectedInvoiceId(null)} />
+      )}
     </div>
   );
 };

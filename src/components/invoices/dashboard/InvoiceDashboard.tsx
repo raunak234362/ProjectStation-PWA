@@ -4,6 +4,7 @@ import InvoiceStatsCards from "./InvoiceStatsCards";
 import InvoiceAnalytics from "./InvoiceAnalytics";
 import PendingInvoiceList from "./PendingInvoiceList";
 import RecentInvoiceActivity from "./RecentInvoiceActivity";
+import AllInvoiceList from "./AllInvoiceList";
 
 interface InvoiceDashboardProps {
   navigateToCreate: () => void;
@@ -20,7 +21,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
     const fetchInvoices = async () => {
       try {
         const res = isClient
-          ? await Service.GetPendingInvoiceByClient()
+          ? await Service.GetAllInvoiceClient()
           : await Service.GetAllInvoice();
         console.log("Fetched Invoices Data:", res);
         setInvoices(Array.isArray(res) ? res : res?.data || []);
@@ -63,6 +64,11 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
         <div className="xl:col-span-1 h-full">
           <RecentInvoiceActivity invoices={invoices} />
         </div>
+      </div>
+
+      {/* All Invoices */}
+      <div className="w-full mt-6">
+        <AllInvoiceList invoices={invoices} />
       </div>
     </div>
   );

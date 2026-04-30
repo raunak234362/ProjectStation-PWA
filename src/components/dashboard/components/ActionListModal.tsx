@@ -11,6 +11,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import GetRFQByID from "../../rfq/GetRFQByID";
 import GetRFIByID from "../../rfi/GetRFIByID";
 import GetCOByID from "../../co/GetCOByID";
+import GetInvoiceById from "../../invoices/GetInvoiceById";
 import { formatDate } from "../../../utils/dateUtils";
 import { useDispatch } from "react-redux";
 import {
@@ -22,7 +23,7 @@ interface ActionListModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: any[];
-  type: "PENDING_RFQ" | "PENDING_RFI" | "PENDING_COR" | "ALL_RFQ" | "AWARDED_RFQ";
+  type: "PENDING_RFQ" | "PENDING_RFI" | "PENDING_COR" | "ALL_RFQ" | "AWARDED_RFQ" | "ALL_INVOICES" | "PENDING_INVOICES";
 
 }
 
@@ -64,6 +65,10 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         return "All RFQs Overview";
       case "AWARDED_RFQ":
         return "Awarded RFQs List";
+      case "ALL_INVOICES":
+        return "All Invoices Overview";
+      case "PENDING_INVOICES":
+        return "Pending Invoices List";
       default:
         return "Pending Actions";
 
@@ -82,6 +87,9 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         return <Search size={24} />;
       case "AWARDED_RFQ":
         return <Activity size={24} />;
+      case "ALL_INVOICES":
+      case "PENDING_INVOICES":
+        return <FileText size={24} />;
       default:
         return <Files size={24} />;
 
@@ -210,6 +218,47 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 : "—",
           },
         ];
+      case "ALL_INVOICES":
+      case "PENDING_INVOICES":
+        return [
+          {
+            accessorKey: "projectName",
+            header: "Project Name",
+            cell: ({ row }) => row.original.projectName || row.original.project?.name || row.original.project?.projectName || row.original.customerName || "—",
+          },
+          {
+            accessorKey: "invoiceNumber",
+            header: "Invoice #",
+            cell: ({ row }) => row.original.invoiceNumber || row.original.id || "—",
+          },
+          {
+            accessorKey: "amount",
+            header: "Amount",
+            cell: ({ row }) => `$${Number(row.original.totalInvoiceValue || row.original.totalAmount || row.original.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          },
+          {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => {
+              const isPaid = row.original.paymentStatus === true || String(row.original.paymentStatus).toLowerCase() === 'true' || String(row.original.paymentStatus).toLowerCase() === 'paid' || String(row.original.status).toLowerCase() === 'paid' || String(row.original.status).toLowerCase() === 'completed';
+              return (
+                <span
+                  className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+                >
+                  {isPaid ? "PAID" : "PENDING"}
+                </span>
+              );
+            },
+          },
+          {
+            accessorKey: "createdAt",
+            header: "Date",
+            cell: ({ row }) =>
+              row.original.createdAt
+                ? new Date(row.original.createdAt).toLocaleDateString()
+                : "—",
+          },
+        ];
       default:
         return [];
 
@@ -264,6 +313,9 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                   projectId={data.find((d) => d.id === selectedId)?.project}
                   onClose={() => setSelectedId(null)}
                 />
+              )}
+              {selectedId && (type === "ALL_INVOICES" || type === "PENDING_INVOICES") && (
+                <GetInvoiceById id={selectedId} onClose={() => setSelectedId(null)} />
               )}
             </>
           ) : (
