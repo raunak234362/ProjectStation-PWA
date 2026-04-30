@@ -4,9 +4,10 @@ import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RFIItem } from "../../interface";
 import GetRFIByID from "./GetRFIByID";
-import { Inbox } from "lucide-react";
+import { Inbox, Search, Filter } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
 import { Suspense } from "react";
+
 
 interface AllRFIProps {
   rfiData?: RFIItem[];
@@ -16,9 +17,13 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
-  console.log(rfiData);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
 
   const userRole = sessionStorage.getItem("userRole");
+  const userRoleUpper = userRole?.toUpperCase();
+  const isClient = ["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRoleUpper || "");
+
 
   useEffect(() => {
     if (rfiData) {
@@ -44,7 +49,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
 
     {
       accessorKey: "sender",
-      header: "Sender",
+      header: "From",
       cell: ({ row }) => {
         const s = row.original.sender;
         return (
@@ -60,6 +65,26 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
       },
       size: 200,
     },
+
+    {
+      accessorKey: "recepients",
+      header: "To",
+      cell: ({ row }) => {
+        const r = row.original.recepients;
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs uppercase">
+              {(r?.firstName?.[0] || "") + (r?.lastName?.[0] || "")}
+            </div>
+            <span className="text-black font-medium text-xs">
+              {r ? `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() : "—"}
+            </span>
+          </div>
+        );
+      },
+      size: 200,
+    },
+
 
     {
       accessorKey: "status",
@@ -112,6 +137,18 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
     },
   ];
 
+  const filteredRfis = rfis.filter((rfi) => {
+    const searchMatch = rfi.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        rfi.sender?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        rfi.sender?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const isPending = rfi.status === true;
+    const statusText = isPending ? "Pending" : "Responded";
+    const statusMatch = statusFilter === "All" || statusText === statusFilter;
+
+    return searchMatch && statusMatch;
+  });
+
   // ✅ Empty state
   if (!loading && rfis.length === 0) {
     return (
@@ -119,7 +156,7 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
         <Inbox className="w-10 h-10 mb-3 text-gray-200" />
         <p className="text-black font-black text-lg">No RFIs Available</p>
         <p className="text-sm">
-          {["CLIENT", "CLIENT_ADMIN"].includes(userRole?.toUpperCase() || "")
+          {isClient
             ? "No RFIs have been received for this project yet."
             : "You haven’t initiated any RFIs yet."}
         </p>
@@ -129,16 +166,44 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
 
   // ✅ Render DataTable
   return (
-    <div className="bg-white rounded-3xl overflow-hidden flex flex-col">
+    <div className="bg-white rounded-3xl overflow-hidden flex flex-col pt-4">
+      <div className="px-4 mb-4 flex flex-col md:flex-row items-center gap-4">
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input 
+            type="text" 
+            placeholder="Search RFIs..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all"
+          />
+        </div>
+        
+        <div className="relative w-full md:w-auto">
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <select 
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full md:w-auto pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all cursor-pointer appearance-none"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
+          >
+            <option value="All">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Responded">Responded</option>
+          </select>
+        </div>
+      </div>
+
       <div className="flex-1 min-h-0">
         <DataTable
           columns={columns}
-          data={rfis}
+          data={filteredRfis}
           onRowClick={(row) => setSelectedRfiID(row.id)}
           pageSizeOptions={[10]}
           noBorder
         />
       </div>
+
       {selectedRfiID && (
         <Suspense fallback={<div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-md text-white font-black uppercase tracking-widest text-xs">Accessing intelligence...</div>}>
           <GetRFIByID id={selectedRfiID} onClose={() => setSelectedRfiID(null)} />
