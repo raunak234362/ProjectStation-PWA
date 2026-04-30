@@ -265,9 +265,6 @@ const EstimatorDashboard = () => {
               <h2 className="text-lg font-black text-black uppercase tracking-tight">Recent RFQs</h2>
               <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Latest estimation requests</p>
             </div>
-            <button className="p-2 bg-white border border-black rounded-xl hover:bg-green-50 transition-colors">
-              <ArrowRight className="w-4 h-4 text-black" />
-            </button>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             <table className="w-full text-left">
@@ -314,9 +311,6 @@ const EstimatorDashboard = () => {
               <h2 className="text-lg font-black text-black uppercase tracking-tight">Recent Invoices</h2>
               <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Billing and payment status</p>
             </div>
-            <button className="p-2 bg-white border border-black rounded-xl hover:bg-green-50 transition-colors">
-              <ArrowRight className="w-4 h-4 text-black" />
-            </button>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             <table className="w-full text-left">
@@ -336,7 +330,7 @@ const EstimatorDashboard = () => {
                     className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
                   >
                     <td className="px-4 py-4 text-xs font-black text-black group-hover:text-green-700">{inv.invoiceNumber || inv.id || "—"}</td>
-                    <td className="px-4 py-4 text-xs font-bold text-gray-600 truncate max-w-[150px]">{inv.project?.name || inv.project?.projectName || inv.projectName || inv.customerName || inv.project || "—"}</td>
+                    <td className="px-4 py-4 text-xs font-bold text-gray-600 truncate max-w-[150px]">{inv.jobName || inv.project?.name || inv.project?.projectName || inv.projectName || inv.customerName || inv.project || "—"}</td>
                     <td className="px-4 py-4 text-sm font-black text-black">
                       ${Number(inv.totalInvoiceValue || inv.totalAmount || inv.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>

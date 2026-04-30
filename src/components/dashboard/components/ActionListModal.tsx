@@ -224,7 +224,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           {
             accessorKey: "projectName",
             header: "Project Name",
-            cell: ({ row }) => row.original.projectName || row.original.project?.name || row.original.project?.projectName || row.original.customerName || "—",
+            cell: ({ row }) => row.original.jobName || row.original.projectName || row.original.project?.name || row.original.project?.projectName || row.original.customerName || "—",
           },
           {
             accessorKey: "invoiceNumber",
