@@ -3137,6 +3137,238 @@ static async GetClientDashboardData() {
     }
   }
 
+  // Project Progress Report Endpoints
+  static async createProjectProgressReport(data: any) {
+    try {
+      const response = await api.post('projectProgressReport', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating project progress report:', error);
+      throw error;
+    }
+  }
+
+  static async getAllProjectProgressReports() {
+    try {
+      const response = await api.get('projectProgressReport');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all project progress reports:', error);
+      throw error;
+    }
+  }
+
+  static async getProjectProgressReportsByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`projectProgressReport/project/${projectId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching progress reports by project ID:', error);
+      throw error;
+    }
+  }
+
+  static async getProjectProgressReportById(id: string) {
+    try {
+      const response = await api.get(`projectProgressReport/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching project progress report by ID:', error);
+      throw error;
+    }
+  }
+
+  static async updateProjectProgressReport(id: string, data: any) {
+    try {
+      const response = await api.patch(`projectProgressReport/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating project progress report:', error);
+      throw error;
+    }
+  }
+
+  static async deleteProjectProgressReport(id: string) {
+    try {
+      const response = await api.delete(`projectProgressReport/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting project progress report:', error);
+      throw error;
+    }
+  }
+
+  static async createProjectProgressReportResponse(data: any) {
+    try {
+      const response = await api.post('projectProgressReport/response', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating project progress report response:', error);
+      throw error;
+    }
+  }
+
+  static async getProjectProgressReportResponseById(id: string) {
+    try {
+      const response = await api.get(`projectProgressReport/response/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching progress report response by ID:', error);
+      throw error;
+    }
+  }
+
+  static async updateProjectProgressReportResponse(id: string, data: any) {
+    try {
+      const response = await api.patch(`projectProgressReport/response/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating progress report response:', error);
+      throw error;
+    }
+  }
+
+  static async deleteProjectProgressReportResponse(id: string) {
+    try {
+      const response = await api.delete(`projectProgressReport/response/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting progress report response:', error);
+      throw error;
+    }
+  }
+
+  static async getResponsesByReportId(reportId: string) {
+    try {
+      const response = await api.get(`projectProgressReport/report/${reportId}/responses`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching responses by report ID:', error);
+      throw error;
+    }
+  }
+
+  // Coordination Drawing Endpoints
+  static async createCoordinationDrawing(data: any) {
+    try {
+      const response = await api.post('coordinationDrawing', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating coordination drawing:', error);
+      throw error;
+    }
+  }
+
+  static async getAllCoordinationDrawings() {
+    try {
+      const response = await api.get('coordinationDrawing');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all coordination drawings:', error);
+      throw error;
+    }
+  }
+
+  static async getCoordinationDrawingsByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`coordinationDrawing/project/${projectId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching coordination drawings by project ID:', error);
+      throw error;
+    }
+  }
+
+  static async getCoordinationDrawingById(id: string) {
+    try {
+      const response = await api.get(`coordinationDrawing/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching coordination drawing by ID:', error);
+      throw error;
+    }
+  }
+
+  static async updateCoordinationDrawing(id: string, data: any) {
+    try {
+      const response = await api.patch(`coordinationDrawing/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating coordination drawing:', error);
+      throw error;
+    }
+  }
+
+  static async deleteCoordinationDrawing(id: string) {
+    try {
+      const response = await api.delete(`coordinationDrawing/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting coordination drawing:', error);
+      throw error;
+    }
+  }
+
+  static async createCoordinationDrawingResponse(data: any) {
+    try {
+      const response = await api.post('coordinationDrawing/response', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating coordination drawing response:', error);
+      throw error;
+    }
+  }
+
+  static async getCoordinationDrawingResponseById(id: string) {
+    try {
+      const response = await api.get(`coordinationDrawing/response/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching drawing response by ID:', error);
+      throw error;
+    }
+  }
+
+  static async updateCoordinationDrawingResponse(id: string, data: any) {
+    try {
+      const response = await api.patch(`coordinationDrawing/response/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating drawing response:', error);
+      throw error;
+    }
+  }
+
+  static async deleteCoordinationDrawingResponse(id: string) {
+    try {
+      const response = await api.delete(`coordinationDrawing/response/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting drawing response:', error);
+      throw error;
+    }
+  }
+
+  static async getResponsesByDrawingId(drawingId: string) {
+    try {
+      const response = await api.get(`coordinationDrawing/drawing/${drawingId}/responses`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching responses by drawing ID:', error);
+      throw error;
+    }
+  }
+
+
+
   
 }
 export default Service;
