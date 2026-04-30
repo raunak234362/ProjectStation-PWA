@@ -41,10 +41,10 @@ const EstimatorDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        // Using GetAllRFQFab and GetAllInvoice as requested
+        // Using getAllRFQFab and getFabricatorAllInvoice
         const [rfqRes, invoiceRes] = await Promise.all([
           Service.getAllRFQFab(),
-          Service.GetAllInvoice() 
+          Service.getFabricatorAllInvoice() 
         ]);
 
         const rfqs = Array.isArray(rfqRes?.data) ? rfqRes.data : Array.isArray(rfqRes) ? rfqRes : [];

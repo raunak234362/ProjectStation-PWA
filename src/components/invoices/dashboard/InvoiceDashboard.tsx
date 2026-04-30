@@ -15,13 +15,14 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+  const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator";
   const isClient = userRole === "client" || userRole === "client_admin";
 
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const res = isClient
-          ? await Service.GetAllInvoiceClient()
+        const res = isFabricatorRole
+          ? await Service.getFabricatorAllInvoice()
           : await Service.GetAllInvoice();
         console.log("Fetched Invoices Data:", res);
         setInvoices(Array.isArray(res) ? res : res?.data || []);
@@ -32,7 +33,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
       }
     };
     fetchInvoices();
-  }, [isClient]);
+  }, [isFabricatorRole]);
 
   if (loading) {
     return (

@@ -14,8 +14,9 @@ const AllInvoices = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const res = userRole === "client" || userRole === "client_admin" 
-          ? await Service.GetAllInvoiceClient() 
+        const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator";
+        const res = isFabricatorRole
+          ? await Service.getFabricatorAllInvoice() 
           : await Service.GetAllInvoice();
         setInvoices(Array.isArray(res) ? res : res?.data || []);
       } catch (error) {

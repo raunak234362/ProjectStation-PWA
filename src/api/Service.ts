@@ -3366,6 +3366,18 @@ static async GetClientDashboardData() {
       throw error;
     }
   }
+
+  //All invoice for Fabricator :
+
+  static async getFabricatorAllInvoice() {
+    try {
+      const response = await api.get('invoice/fabricators/me');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all invoices for fabricator:', error);
+      throw error;
+    }
+  }
   
 }
 export default Service;
