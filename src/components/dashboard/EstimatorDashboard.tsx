@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+
 import { 
   FileText, 
   Activity, 
   CheckCircle2, 
   Clock, 
   DollarSign, 
-  TrendingUp, 
-  Search,
   ArrowRight,
   Loader2
 } from "lucide-react";
+
 import Service from "../../api/Service";
 import ActionListModal from "./components/ActionListModal";
 import GetRFQByID from "../rfq/GetRFQByID";

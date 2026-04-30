@@ -6,11 +6,13 @@ import Service from '../../../api/Service';
 
 interface AddCoordinationDrawingResponseProps {
   drawingId: string;
+  parentResponseId?: string;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const AddCoordinationDrawingResponse = ({ drawingId, onClose, onSuccess }: AddCoordinationDrawingResponseProps) => {
+const AddCoordinationDrawingResponse = ({ drawingId, parentResponseId, onClose, onSuccess }: AddCoordinationDrawingResponseProps) => {
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [files, setFiles] = useState<File[]>([]);
@@ -24,6 +26,8 @@ const AddCoordinationDrawingResponse = ({ drawingId, onClose, onSuccess }: AddCo
       const data = new FormData();
       data.append('coordinationDrawingId', drawingId);
       data.append('message', message);
+      if (parentResponseId) data.append('parentResponseId', parentResponseId);
+
       
       files.forEach((file) => {
         data.append('files', file);

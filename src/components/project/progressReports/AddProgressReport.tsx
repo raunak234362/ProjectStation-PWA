@@ -27,7 +27,8 @@ const AddProgressReport = ({ projectId, onClose, onSuccess }: AddProgressReportP
       const data = new FormData();
       data.append('projectId', projectId);
       data.append('title', formData.title);
-      data.append('message', formData.message);
+      data.append('description', formData.message);
+
       if (formData.stage) data.append('stage', formData.stage);
       
       files.forEach((file) => {

@@ -2,10 +2,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Plus, Search, Compass, Loader2 } from 'lucide-react';
 import Service from '../../../api/Service';
-import { formatDate } from '../../../utils/dateUtils';
-import AddCoordinationDrawing from './AddCoordinationDrawing';
-import CoordinationDrawingDetails from './CoordinationDrawingDetails';
-import DataTable, { ExtendedColumnDef } from '../../ui/table';
+import AddCoordinationDrawing from './AddCoordinationDrawing.tsx';
+import CoordinationDrawingDetails from './CoordinationDrawingDetails.tsx';
+import DataTable, { type ExtendedColumnDef } from '../../ui/table';
 
 const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
   const [drawings, setDrawings] = useState<any[]>([]);
@@ -30,6 +29,15 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
     if (projectId) fetchDrawings();
   }, [projectId]);
 
+  const formatDateCustom = (dateString: string) => {
+    if (!dateString) return '—';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
+
   const columns = useMemo<ExtendedColumnDef<any>[]>(() => [
     {
       header: 'Drawing Name',
@@ -37,11 +45,11 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
       enableColumnFilter: true,
       cell: ({ row }) => (
         <div className="flex flex-col">
-          <span className="font-black text-black uppercase tracking-tight text-sm">
+          <span className="font-black text-black uppercase tracking-tight text-xs">
             {row.original.title}
           </span>
           {row.original.stage && (
-            <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
+            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
               {row.original.stage}
             </span>
           )}
@@ -60,12 +68,8 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
       ],
       cell: ({ row }) => (
         <div className="flex justify-center">
-          <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-            row.original.status === 'APPROVED' 
-              ? 'bg-green-50 text-green-700 border-green-100' 
-              : 'bg-blue-50 text-blue-700 border-blue-100'
-          }`}>
-            {row.original.status || 'PENDING'}
+          <div className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-black/20 bg-gray-50/50 text-black">
+            {row.original.status || 'IN REVIEW'}
           </div>
         </div>
       ),
@@ -74,22 +78,26 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
       header: 'Date Created',
       accessorKey: 'createdAt',
       cell: ({ row }) => (
-        <div className="text-center text-[11px] text-gray-500 font-bold">
-          {formatDate(row.original.createdAt)}
+        <div className="text-center text-[11px] text-black font-black uppercase tracking-tight">
+          {formatDateCustom(row.original.createdAt)}
         </div>
       ),
     },
     {
-      id: 'actions',
-      header: 'Actions',
-      cell: () => (
-        <div className="text-right">
-          <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">
-            View Details
+      header: 'Created By',
+      accessorKey: 'createdBy.firstName',
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg border border-black/10 bg-gray-50 flex items-center justify-center text-[10px] font-black uppercase text-black shrink-0">
+            {row.original.createdBy?.firstName?.[0] || 'A'}
+          </div>
+          <span className="text-[10px] font-black text-black uppercase tracking-widest truncate max-w-[150px]">
+            {row.original.createdBy?.firstName} {row.original.createdBy?.lastName}
           </span>
         </div>
       ),
     }
+
   ], []);
 
   const filteredDrawings = drawings.filter((drawing) =>
@@ -118,15 +126,18 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
               className="pl-10 pr-4 py-2 bg-white border border-black/5 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all w-64 shadow-sm"
             />
           </div>
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-2 border-2 border-[#6bbd45] text-[#6bbd45] hover:bg-[#6bbd45] hover:text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Add Drawing
-          </button>
+          {!['client', 'client_admin', 'client_estimator'].includes(sessionStorage.getItem('userRole')?.toLowerCase() || '') && (
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center gap-2 px-6 py-2 border-2 border-[#6bbd45] text-[#6bbd45] hover:bg-[#6bbd45] hover:text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Add Drawing
+            </button>
+          )}
         </div>
       </div>
+
 
       {/* DataTable Body */}
       <div className="flex-1">

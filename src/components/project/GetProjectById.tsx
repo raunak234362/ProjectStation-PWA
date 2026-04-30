@@ -846,6 +846,11 @@ const GetProjectById = ({
                 </div>
               </div>
 
+                {/* Project Progress Reports */}
+                <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
+                  <ProjectProgress projectId={id} />
+                </div>
+
               <div id="project-progress">
                 <ProjectMilestoneMetrics projectId={id} />
               </div>
@@ -1055,10 +1060,7 @@ const GetProjectById = ({
                   </p>
                 </div>*/}
 
-                {/* Project Progress Reports */}
-                <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
-                  <ProjectProgress projectId={id} />
-                </div>
+              
               </div>
 
             </div>

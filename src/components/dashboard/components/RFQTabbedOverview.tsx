@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Search, CheckCircle2, ClipboardList } from "lucide-react";
+import { Search, CheckCircle2 } from "lucide-react";
+
 import { cn } from "../../../lib/utils";
 import { formatDate } from "../../../utils/dateUtils";
 

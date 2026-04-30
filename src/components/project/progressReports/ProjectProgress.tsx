@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { Plus, FileText, Clock, ChevronRight, Loader2 } from 'lucide-react';
 import Service from '../../../api/Service';
 import { formatDate } from '../../../utils/dateUtils';
-import AddProgressReport from './AddProgressReport';
-import ProgressReportDetails from './ProgressReportDetails';
+import AddProgressReport from './AddProgressReport.tsx';
+import ProgressReportDetails from './ProgressReportDetails.tsx';
+
 
 interface ProjectProgressProps {
   projectId: string;
@@ -52,14 +53,17 @@ const ProjectProgress = ({ projectId }: ProjectProgressProps) => {
             <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Recent project updates</p>
           </div>
         </div>
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#6bbd45] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-green-500/20 hover:scale-105 transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          Add Report
-        </button>
+        {!['client', 'client_admin', 'client_estimator'].includes(sessionStorage.getItem('userRole')?.toLowerCase() || '') && (
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-[#6bbd45] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-green-500/20 hover:scale-105 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            Add Report
+          </button>
+        )}
       </div>
+
 
       <div className="grid grid-cols-1 gap-3">
         {reports.length === 0 ? (

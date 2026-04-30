@@ -6,11 +6,13 @@ import Service from '../../../api/Service';
 
 interface AddProgressReportResponseProps {
   reportId: string;
+  parentResponseId?: string;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const AddProgressReportResponse = ({ reportId, onClose, onSuccess }: AddProgressReportResponseProps) => {
+const AddProgressReportResponse = ({ reportId, parentResponseId, onClose, onSuccess }: AddProgressReportResponseProps) => {
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [files, setFiles] = useState<File[]>([]);
@@ -22,8 +24,11 @@ const AddProgressReportResponse = ({ reportId, onClose, onSuccess }: AddProgress
     try {
       setLoading(true);
       const data = new FormData();
-      data.append('projectProgressReportId', reportId);
-      data.append('message', message);
+      data.append('reportId', reportId);
+      data.append('description', message);
+      if (parentResponseId) data.append('parentResponseId', parentResponseId);
+
+
       
       files.forEach((file) => {
         data.append('files', file);
