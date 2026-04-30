@@ -6,7 +6,6 @@ import {
   CheckCircle2, 
   Clock, 
   DollarSign, 
-  ArrowRight,
   Loader2
 } from "lucide-react";
 
