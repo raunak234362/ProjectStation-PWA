@@ -205,7 +205,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           <section className="space-y-3 md:space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* FABRICATOR (HIDDEN FOR CLIENTS) */}
-              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && userRole !== "CLIENT_ESTIMATOR" && (
                 <>
                   <div className="space-y-2">
                     <label className="block text-xs text-black font-black uppercase tracking-widest">
@@ -217,7 +217,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                       name="fabricatorId"
                       control={control}
                       disabled={
-                        userRole === "CLIENT" || userRole === "CLIENT_ADMIN"
+                        userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CLIENT_ESTIMATOR"
                       }
                       rules={{ required: "Fabricator is required" }}
                       render={({ field }) => {
@@ -260,7 +260,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                       name="senderId"
                       control={control}
                       disabled={
-                        userRole === "CLIENT" || userRole === "CLIENT_ADMIN"
+                        userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CLIENT_ESTIMATOR"
                       }
                       rules={{ required: "Fabricator contact is required" }}
                       render={({ field }) => (
