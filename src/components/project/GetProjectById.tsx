@@ -528,15 +528,16 @@ const GetProjectById = ({
             <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight">
               {project.name}
             </h2>
-            {project.projectNumber && (
-              <div className="mt-2 inline-block px-6 py-2 bg-[#6bbd45]/20 border-2 border-black rounded-lg">
-                <span className="text-black font-bold text-lg tracking-wide">
+           
+          </div>
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+             {project.projectNumber && (
+              <div className="inline-block px-2 py-1 bg-[#6bbd45]/20 border-2 border-[#6bbd45] rounded-lg">
+                <span className="text-black font-bold text-md tracking-wide">
                   Project No: {project.projectNumber}
                 </span>
               </div>
             )}
-          </div>
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-bold bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
               {project.stage}
             </span>
@@ -1133,40 +1134,39 @@ const GetProjectById = ({
             </div>
           )}
           {activeTab === "changeOrder" && !isConnectionDesigner && (
-            <div className="space-y-4">
-              {/* Sub-tabs for RFI */}
-              <div className="flex justify-start border-b border-gray-200 mb-4">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            <div className="space-y-6">
+              {/* Pill-style Sub-tabs for Change Order */}
+              <div className="flex p-1 rounded-[20px] w-fit mb-6 ">
+                <button
+                  onClick={() => setChangeOrderView("list")}
+                  className={`
+                    px-8 py-2.5 rounded-sm border border-black font-semibold text-sm transition-all duration-300
+                    ${
+                      changeOrderView === "list"
+                        ? "bg-green-200/50 text-black"
+                        : "text-gray-400 hover:text-black bg-transparent"
+                    }
+                  `}
+                >
+                  All Change Orders
+                </button>
+                {!isClient && (
                   <button
-                    onClick={() => setChangeOrderView("list")}
+                    onClick={() => setChangeOrderView("add")}
                     className={`
-                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                      px-8 py-2.5 rounded-sm border border-black font-semibold text-sm transition-all duration-300
                       ${
-                        changeOrderView === "list"
-                          ? "border-[#6bbd45] text-black font-bold"
-                          : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
+                        changeOrderView === "add"
+                          ? "bg-[#6bbd45] text-white shadow-lg shadow-green-500/30"
+                          : "text-gray-400 hover:text-black bg-transparent"
                       }
-                    `}
+                  `}
                   >
-                    All Change Order
+                    Raise Change Order
                   </button>
-                  {!isClient && (
-                    <button
-                      onClick={() => setChangeOrderView("add")}
-                      className={`
-                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                        ${
-                          changeOrderView === "add"
-                            ? "border-[#6bbd45] text-black font-bold"
-                            : "border-transparent text-gray-500 hover:text-black hover:border-gray-200"
-                        }
-                    `}
-                    >
-                      Raise Change Order
-                    </button>
-                  )}
-                </nav>
+                )}
               </div>
+
 
               {/* Change Order Content */}
               {changeOrderView === "list" ? (
