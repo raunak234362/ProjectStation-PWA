@@ -528,9 +528,13 @@ const GetProjectById = ({
             <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight">
               {project.name}
             </h2>
-            <p className="text-gray-700 text-sm">
-              Project No: {project.projectNumber}
-            </p>
+            {project.projectNumber && (
+              <div className="mt-2 inline-block px-6 py-2 bg-[#6bbd45]/20 border-2 border-black rounded-lg">
+                <span className="text-black font-bold text-lg tracking-wide">
+                  Project No: {project.projectNumber}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-bold bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">

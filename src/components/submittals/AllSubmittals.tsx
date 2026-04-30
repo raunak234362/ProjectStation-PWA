@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Loader2, Inbox, FolderKanban } from "lucide-react";
+import { Loader2, Inbox, FolderKanban, Search } from "lucide-react";
 import Service from "../../api/Service";
 import GetSubmittalByID from "./GetSubmittalByID";
 
@@ -15,7 +15,13 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
   const [submittals, setSubmittals] = useState<any[]>([]);
   const [milestones, setMilestones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log(submittalData);
+  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStage, setSelectedStage] = useState<string>("All");
+
+  // Dynamically calculate only the existing stages from the current submittals
+  const existingStages = Array.from(new Set(submittals.map(s => s.stage).filter(Boolean))).sort();
+  const stages = ["All", ...existingStages];
 
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
 
@@ -158,6 +164,16 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
     },
 
     {
+      accessorKey: "stage",
+      header: "Stage",
+      cell: ({ row }) => (
+        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+          {row.original.stage || "—"}
+        </span>
+      ),
+    },
+
+    {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
@@ -258,12 +274,43 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
     );
   }
 
+  const filteredSubmittals = submittals.filter((item) => {
+    const searchMatch = item.subject?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        item.serialNo?.toLowerCase().includes(searchQuery.toLowerCase());
+    const stageMatch = selectedStage === "All" || item.stage === selectedStage;
+    return searchMatch && stageMatch;
+  });
+
   return (
-    <div className="bg-white rounded-3xl overflow-hidden flex flex-col">
+    <div className="bg-white rounded-3xl overflow-hidden flex flex-col pt-4">
+      <div className="mb-4 flex flex-col md:flex-row items-center gap-4">
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input 
+            type="text" 
+            placeholder="Search submittals..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all"
+          />
+        </div>
+        
+        <select 
+          value={selectedStage}
+          onChange={(e) => setSelectedStage(e.target.value)}
+          className="w-full md:w-auto px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all cursor-pointer outline-none appearance-none"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem', paddingRight: '2.5rem' }}
+        >
+          {stages.map((stage) => (
+            <option key={stage} value={stage}>{stage === "All" ? "All Stages" : stage}</option>
+          ))}
+        </select>
+      </div>
+
       <div className="flex-1 min-h-0">
         <DataTable
           columns={columns}
-          data={submittals}
+          data={filteredSubmittals}
           onRowClick={(row) => setSelectedSubmittalId(row.id)}
           pageSizeOptions={[10]}
           noBorder
