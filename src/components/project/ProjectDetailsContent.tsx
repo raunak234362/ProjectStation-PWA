@@ -194,11 +194,15 @@ const ProjectDetailsContent = ({
       </button>
 
       {/* ✅ HEADER */}
-      <div className="px-6 py-4 border-b bg-green-50">
+      <div className="px-6 py-4 border-b bg-green-50 flex flex-col items-start gap-2">
         <h2 className="text-lg font-semibold text-green-700">{project.name}</h2>
-        <p className="text-xs text-gray-500">
-          Project No: {project.projectNumber}
-        </p>
+        {project.projectNumber && (
+          <div className="inline-block px-3 py-1.5 bg-[#6bbd45]/20 border-2 border-black rounded-lg">
+            <span className="text-black font-bold text-sm tracking-wide">
+              Project No: {project.projectNumber}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* ✅ TABS */}

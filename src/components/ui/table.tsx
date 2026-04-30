@@ -193,7 +193,7 @@ export default function DataTable<T extends object>({
           .getPaginationRowModel()
           .rows.findIndex((r) => r.id === row.id);
         return (
-          <span className="font-black text-black/20">
+          <span className="font-black text-black">
             {pageIndex * pageSize + index + 1}
           </span>
         );
@@ -333,7 +333,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="px-8 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-bold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400"
+                          className="px-4 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-bold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400"
                           style={{ width: cell.column.getSize() }}
                         >
                           {flexRender(

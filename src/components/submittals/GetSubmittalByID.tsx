@@ -276,13 +276,15 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
             </div>
             {/* LEFT PANEL */}
             <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
-              <div className="flex justify-between items-center">
-                <h1 className="text-2xl text-black font-semibold">
-                  {submittal.subject}
-                </h1>
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex flex-col gap-2">
+                  <h1 className="text-2xl text-black font-semibold">
+                    {submittal.subject}
+                  </h1>
+                </div>
                 {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
                   <Button
-                    className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30"
+                    className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30 mt-1"
                     onClick={() => setShowUpdateModal(true)}
                   >
                     Update Submittal
@@ -291,6 +293,11 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
               </div>
 
               <Info label="Project" value={submittal.project?.name || "—"} />
+              <Info label="Stage" value={
+                <span className="inline-block px-2 py-1 bg-blue-50 text-blue-700 font-bold uppercase text-[10px] tracking-widest rounded-md border border-blue-200 mt-1">
+                  {submittal.stage || "—"}
+                </span>
+              } />
               <Info
                 label="Submitted By"
                 value={submittal.sender?.firstName || "—"}
