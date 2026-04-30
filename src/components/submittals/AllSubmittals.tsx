@@ -19,7 +19,9 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStage, setSelectedStage] = useState<string>("All");
 
-  const stages = ["All", "IFA", "IFC", "RFI", "BFA", "BFAM", "RIFA", "RBFA", "BFC", "RIFC", "REV", "CO", "COMPLETED"];
+  // Dynamically calculate only the existing stages from the current submittals
+  const existingStages = Array.from(new Set(submittals.map(s => s.stage).filter(Boolean))).sort();
+  const stages = ["All", ...existingStages];
 
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
 
