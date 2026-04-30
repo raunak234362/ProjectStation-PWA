@@ -15,7 +15,9 @@ import {
   Activity,
   MessageSquare,
   CalendarCheck,
+  Compass,
 } from "lucide-react";
+
 import { useDispatch, useSelector } from "react-redux";
 import { setMilestonesForProject } from "../../store/milestoneSlice";
 import { formatSeconds } from "../../utils/timeUtils";
@@ -43,6 +45,9 @@ import ProjectNotesLayout from "../../layout/ProjectNotesLayout";
 import ProjectUpcomingMilestones from "./ProjectUpcomingMilestones";
 import GetSubmittalByID from "../submittals/GetSubmittalByID";
 import GetMilestoneByID from "./mileStone/GetMilestoneByID";
+import ProjectProgress from "./progressReports/ProjectProgress";
+import CoordinationDrawings from "./coordinationDrawings/CoordinationDrawings";
+
 
 const GetProjectById = ({
   id,
@@ -434,8 +439,10 @@ const GetProjectById = ({
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
+    { key: "coordinationDrawings", label: "Coordination Drawings", icon: Compass },
     { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
   ];
+
 
   const defaultDesktopTabs = [
     { key: "overview", label: "Overview", icon: ClipboardList },
@@ -449,7 +456,9 @@ const GetProjectById = ({
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
+    { key: "coordinationDrawings", label: "Coordination Drawings", icon: Compass },
   ];
+
   const defaultMobileTabs = [
     { key: "details", label: "Details" },
     { key: "analytics", label: "Analytics" },
@@ -464,8 +473,10 @@ const GetProjectById = ({
     { key: "rfi", label: "RFI" },
     { key: "submittals", label: "Submittals" },
     { key: "changeOrder", label: "Change Order" },
+    { key: "coordinationDrawings", label: "Coordination Drawings" },
     { key: "otherTasks", label: "Other Tasks" },
   ];
+
 
   const isAuthorizedForNotes = [
     "admin",
@@ -1043,7 +1054,13 @@ const GetProjectById = ({
                     Current Development Phase: {project.stage}
                   </p>
                 </div>*/}
+
+                {/* Project Progress Reports */}
+                <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
+                  <ProjectProgress projectId={id} />
+                </div>
               </div>
+
             </div>
           )}
 
@@ -1133,7 +1150,16 @@ const GetProjectById = ({
               />
             </div>
           )}
+
+
+          {activeTab === "coordinationDrawings" && (
+            <div className="space-y-4 h-full">
+              <CoordinationDrawings projectId={id} />
+            </div>
+          )}
+
           {activeTab === "changeOrder" && !isConnectionDesigner && (
+
             <div className="space-y-6">
               {/* Pill-style Sub-tabs for Change Order */}
               <div className="flex p-1 rounded-[20px] w-fit mb-6 ">
