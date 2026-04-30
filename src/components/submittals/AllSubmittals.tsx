@@ -15,7 +15,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
   const [submittals, setSubmittals] = useState<any[]>([]);
   const [milestones, setMilestones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStage, setSelectedStage] = useState<string>("All");
 
@@ -45,8 +45,8 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
         result = await Service.SubmittalRecieved();
       }
 
-      const data = Array.isArray(result?.data) ? result.data : 
-                   Array.isArray(result) ? result : [];
+      const data = Array.isArray(result?.data) ? result.data :
+        Array.isArray(result) ? result : [];
 
       const normalized = data.map((item: any) => ({
         ...item,
@@ -129,9 +129,9 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
       cell: ({ row }) => {
         const multiple = row.original.multipleRecipients || [];
         const single = row.original.recepients || row.original.recipient;
-        
+
         let displayRecipients = [];
-        
+
         if (multiple.length > 0) {
           displayRecipients = multiple;
         } else if (single) {
@@ -229,10 +229,10 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
               </p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {milestones.map((ms, index) => (
-              <div 
+              <div
                 key={ms.id || index}
                 className="group p-5 bg-gray-50 rounded-[20px] border-2 border-transparent hover:border-green-500/20 hover:bg-white transition-all duration-300 cursor-default"
               >
@@ -240,11 +240,10 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
                   <div className="w-10 h-10 rounded-xl bg-white border border-black/5 flex items-center justify-center text-green-600 font-black text-xs shadow-sm">
                     {index + 1}
                   </div>
-                  <span className={`text-[9px] font-black px-2 py-1 rounded-lg border uppercase tracking-wider ${
-                    ms.status === "APPROVED" || ms.status === "COMPLETED" 
-                      ? "bg-green-50 text-green-700 border-green-200" 
+                  <span className={`text-[9px] font-black px-2 py-1 rounded-lg border uppercase tracking-wider ${ms.status === "APPROVED" || ms.status === "COMPLETED"
+                      ? "bg-green-50 text-green-700 border-green-200"
                       : "bg-yellow-50 text-yellow-700 border-yellow-200"
-                  }`}>
+                    }`}>
                     {ms.status || "PENDING"}
                   </span>
                 </div>
@@ -252,12 +251,12 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
                   {ms.subject}
                 </h5>
                 <div className="mt-4 pt-4 border-t border-black/5 flex justify-between items-center text-[10px] font-bold text-black/40 uppercase tracking-widest">
-                   <span>Target</span>
-                   <span className="text-black">{new Date(ms.approvalDate || ms.ApprovalDate).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                   })}</span>
+                  <span>Target</span>
+                  <span className="text-black">{new Date(ms.approvalDate || ms.ApprovalDate).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}</span>
                 </div>
               </div>
             ))}
@@ -275,8 +274,8 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
   }
 
   const filteredSubmittals = submittals.filter((item) => {
-    const searchMatch = item.subject?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                        item.serialNo?.toLowerCase().includes(searchQuery.toLowerCase());
+    const searchMatch = item.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.serialNo?.toLowerCase().includes(searchQuery.toLowerCase());
     const stageMatch = selectedStage === "All" || item.stage === selectedStage;
     return searchMatch && stageMatch;
   });
@@ -286,16 +285,16 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
       <div className="mb-4 flex flex-col md:flex-row items-center gap-4">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input 
-            type="text" 
-            placeholder="Search submittals..." 
+          <input
+            type="text"
+            placeholder="Search submittals..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all"
           />
         </div>
-        
-        <select 
+
+        <select
           value={selectedStage}
           onChange={(e) => setSelectedStage(e.target.value)}
           className="w-full md:w-auto px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all cursor-pointer outline-none appearance-none"

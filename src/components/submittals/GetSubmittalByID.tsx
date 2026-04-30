@@ -38,8 +38,8 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
   return (
     <div
       className={`border rounded-xl overflow-hidden transition-all ${isCurrent
-          ? "border-[#6bbd45] bg-[#6bbd45]/5"
-          : "border-gray-200 bg-white"
+        ? "border-[#6bbd45] bg-[#6bbd45]/5"
+        : "border-gray-200 bg-white"
         }`}
     >
       {/* Row Header — always visible */}
@@ -51,8 +51,8 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
           {/* Version badge */}
           <span
             className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${isCurrent
-                ? "bg-[#6bbd45] text-white"
-                : "bg-gray-100 text-gray-500"
+              ? "bg-[#6bbd45] text-white"
+              : "bg-gray-100 text-gray-500"
               }`}
           >
             v{total - index}
@@ -217,7 +217,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
         />
       ),
     },
-  
+
     {
       accessorKey: "createdAt",
       header: "Created",

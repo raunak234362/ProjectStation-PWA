@@ -382,7 +382,16 @@ class Service {
     return response.data;
   }
 
-  //get
+  //get all rfq for fabricator
+  static async getAllRFQFab() {
+    try {
+      const response = await api.get(`rfq/fabricators/me`);
+      console.log(" All RFQ fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfqs for fabricator", error);
+    }
+  }
 
   //Fetch All RFQ
   static async getAllRFQ() {

@@ -129,8 +129,9 @@ const AppContent = () => {
     const fetchInboxRFQ = async () => {
       try {
         let rfqDetail;
-        if (userType === "CLIENT" || userType === "CLIENT_ADMIN") {
-          rfqDetail = await Service.RfqSent();
+        if (userType === "CLIENT" || userType === "CLIENT_ADMIN" || userType === "CLIENT_ESTIMATOR") {
+          rfqDetail = await Service.getAllRFQFab();
+
         } else if (
           userType === "OPERATION_EXECUTIVE" ||
           userType === "DEPUTY_MANAGER" ||
@@ -161,7 +162,8 @@ const AppContent = () => {
       }
     };
 
-    if (userType !== "CLIENT" && userType !== "CLIENT_ADMIN") {
+    if (userType !== "CLIENT" && userType !== "CLIENT_ADMIN" && userType !== "CLIENT_ESTIMATOR") {
+
       fetchAllFabricator();
     }
     fetchAllEmployee();

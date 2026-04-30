@@ -40,6 +40,10 @@ const ClientDashboard = () => {
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
   const isClientRole = userRole === "client";
+  const isClientAdmin = userRole === "client_admin";
+  const isClientEstimator = userRole === "client_estimator";
+  const isClientExecutive = isClientAdmin || isClientEstimator;
+
 
   // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
@@ -48,7 +52,8 @@ const ClientDashboard = () => {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [pendingSubmittals, setPendingSubmittals] = useState<any[]>([]);
   const [pendingRFQs, setPendingRFQs] = useState<any[]>([]);
-  const [sentRFQs, setSentRFQs] = useState<any[]>([]);
+  const [allRFQs, setAllRFQs] = useState<any[]>([]);
+
   const [pendingRFIs, setPendingRFIs] = useState<any[]>([]);
   const [pendingCOs, setPendingCOs] = useState<any[]>([]);
   const [upcomingSubmittals, setUpcomingSubmittals] = useState<any[]>([]);
@@ -117,7 +122,9 @@ const ClientDashboard = () => {
     selectedInvoiceId,
     selectedMilestone,
     selectedRfqId,
+    allRFQs,
     dispatch,
+
 
   ]);
 
@@ -137,17 +144,20 @@ const ClientDashboard = () => {
       try {
         const [sent, received, allInvoices, pendingCOsData] = await Promise.all(
           [
-            Service.RfqSent(),
+            Service.getAllRFQFab(),
             Service.SubmittalRecieved(),
             Service.GetPendingInvoiceByClient(),
-            isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(), // Updated
+            isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(),
           ],
         );
+
+
 
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
-        setSentRFQs(Array.isArray(sent) ? sent : sent?.data || []);
+        setAllRFQs(Array.isArray(sent) ? sent : sent?.data || []);
+
         setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 
         const sentCount = sent?.length || 0;
@@ -187,7 +197,7 @@ const ClientDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const response = isClientRole ? await Service.GetClientDashboardData() : await Service.DashboardData();
-     console.log("Dashboard client Data", response);
+      console.log("Dashboard client Data", response);
       setDashboardStats(response?.data || response || null);
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
@@ -229,11 +239,16 @@ const ClientDashboard = () => {
 
   const fetchPendingRFQs = async () => {
     try {
-      const response = isClientRole ? await Service.GetClientRFQ() : await Service.ClientAdminPendingRFQs();
+      const response = await Service.getAllRFQFab();
       console.log(response);
 
-      setPendingRFQs(Array.isArray(response) ? response : response?.data || []);
+      setPendingRFQs(
+        Array.isArray(response)
+          ? response.filter((r: any) => r.status === "PENDING")
+          : (response?.data || []).filter((r: any) => r.status === "PENDING"),
+      );
     } catch (error) {
+
       console.error("Failed to fetch RFQs", error);
     }
   };
@@ -300,8 +315,9 @@ const ClientDashboard = () => {
             </div>
           </div>
         </div>
-        {/* RFQ Stats Cards for Client Admin and Estimator */}
-        {(userRole === "client_admin" || userRole === "client_estimator") && (
+        {/* RFQ Stats Cards for Client Roles */}
+        {(isClientRole || isClientAdmin || isClientEstimator) && (
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {/* All RFQs Card */}
             <div
@@ -323,9 +339,10 @@ const ClientDashboard = () => {
               </div>
               <div className="z-10 text-right">
                 <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {sentRFQs.length}
+                  {allRFQs.length}
                 </span>
               </div>
+
               <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
             </div>
 
@@ -347,25 +364,24 @@ const ClientDashboard = () => {
               </div>
               <div className="z-10 text-right">
                 <span className="text-3xl md:text-4xl font-black text-black tracking-tighter text-black">
-                  {sentRFQs.filter(rfq => rfq.wbtStatus === "AWARDED" || rfq.status === "AWARDED" || rfq.status === "COMPLETED").length}
+                  {allRFQs.filter(rfq => rfq.wbtStatus === "AWARDED" || rfq.status === "AWARDED" || rfq.status === "COMPLETED").length}
                 </span>
               </div>
+
               <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
             </div>
           </div>
         )}
 
-
-
-
         {/* Invoice Summary Section */}
         <div className="w-full">
-          <InvoiceSummary 
-            invoices={invoices} 
-            projects={projects} 
-            rfqs={sentRFQs} 
+          <InvoiceSummary
+            invoices={invoices}
+            projects={projects}
+            rfqs={allRFQs}
             onInvoiceClick={(id) => setSelectedInvoiceId(id)}
           />
+
         </div>
 
         {/* Detailed Info Section */}
@@ -491,15 +507,16 @@ const ClientDashboard = () => {
           isOpen={isAllRfqModalOpen}
           onClose={() => setIsAllRfqModalOpen(false)}
           type="ALL_RFQ"
-          data={sentRFQs}
+          data={allRFQs}
         />
 
         <ActionListModal
           isOpen={isAwardedRfqModalOpen}
           onClose={() => setIsAwardedRfqModalOpen(false)}
           type="AWARDED_RFQ"
-          data={sentRFQs.filter(rfq => rfq.wbtStatus === "AWARDED" || rfq.status === "AWARDED" || rfq.status === "COMPLETED")}
+          data={allRFQs.filter(rfq => rfq.wbtStatus === "AWARDED" || rfq.status === "AWARDED" || rfq.status === "COMPLETED")}
         />
+
 
         <ActionListModal
           isOpen={isRfiModalOpen}

@@ -68,21 +68,21 @@ const SubmittalResponseDetailsModal = ({
           <h2 className="text-xl font-black text-black uppercase tracking-tight">
             Response Details
           </h2>
-          <div className="flex flex-row gap-2"> 
- {canReply && !replyMode && (
-            <Button
-              className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
-              onClick={() => setReplyMode(true)}
+          <div className="flex flex-row gap-2">
+            {canReply && !replyMode && (
+              <Button
+                className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
+                onClick={() => setReplyMode(true)}
+              >
+                Reply
+              </Button>
+            )}
+            <button
+              onClick={onClose}
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
             >
-              Reply
-            </Button>
-          )}
-          <button
-            onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
-          >
-            Close
-          </button>
+              Close
+            </button>
           </div>
         </div>
         <div className="overflow-y-auto h-[70vh]">
@@ -154,7 +154,7 @@ const SubmittalResponseDetailsModal = ({
             </div>
           )}
           {/* Reply Button */}
-         
+
 
           {/* Reply Form */}
           {replyMode && (
