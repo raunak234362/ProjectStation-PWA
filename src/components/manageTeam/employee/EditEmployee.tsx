@@ -62,6 +62,10 @@ const EditEmployee = ({
         label: "Client General Constructor",
         value: "CLIENT_GENERAL_CONSTRUCTOR",
       },
+      {
+        label: "Client Estimator",
+        value: "CLIENT_ESTIMATOR",
+      },
     ]
     : [
       { label: "STAFF", value: "STAFF" },

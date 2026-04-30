@@ -42,6 +42,7 @@ export const navItems: NavItem[] = [
       "system_admin",
       "user",
       "estimator",
+      "client_estimator"
     ],
   },
   {
@@ -102,6 +103,7 @@ export const navItems: NavItem[] = [
       "estimation_head",
       "deputy_manager",
       "client_admin",
+      "client_estimator",
       "client",
       "estimator",
       "sales",
@@ -153,7 +155,7 @@ export const navItems: NavItem[] = [
     label: "Invoices",
     to: "invoices",
     icon: <Receipt />,
-    roles: ["admin", "project_manager_officer", "client_admin", "pmo", "client", "connection_designer_engineer", "connection_designer_admin"],
+    roles: ["admin", "project_manager_officer", "client_admin", "client_estimator", "pmo", "client", "connection_designer_engineer", "connection_designer_admin"],
   },
   {
     label: "Tasks",
@@ -225,10 +227,12 @@ export const navItems: NavItem[] = [
       "connection_designer_engineer",
       "connection_designer_admin",
       "estimator",
+      "client_estimator",
       "sales",
       "sales_manager",
       "dept_manager",
       "client_admin",
+
       "deputy_manager",
       "project_manager",
       "system_admin",

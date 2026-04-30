@@ -22,6 +22,12 @@ const SubmittalListModal = lazy(
 );
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
+const GetRFQByID = lazy(() => import("../rfq/GetRFQByID"));
+import { Search, Activity, CheckCircle2 } from "lucide-react";
+
+
+
+
 
 const InvoiceSummary = lazy(() => import("./components/InvoiceSummary"));
 const GetMilestoneByID = lazy(
@@ -50,6 +56,9 @@ const ClientDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmittalModalOpen, setIsSubmittalModalOpen] = useState(false);
   const [isRfqModalOpen, setIsRfqModalOpen] = useState(false);
+  const [isAllRfqModalOpen, setIsAllRfqModalOpen] = useState(false);
+  const [isAwardedRfqModalOpen, setIsAwardedRfqModalOpen] = useState(false);
+
   const [isRfiModalOpen, setIsRfiModalOpen] = useState(false);
   const [isCoModalOpen, setIsCoModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -59,6 +68,8 @@ const ClientDashboard = () => {
     null,
   );
   const [selectedMilestone, setSelectedMilestone] = useState<any | null>(null);
+  const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
+
 
   // Redux Data
   const employees = useSelector((state: any) => state.userInfo.staffData || []);
@@ -77,12 +88,15 @@ const ClientDashboard = () => {
       isModalOpen ||
       isSubmittalModalOpen ||
       isRfqModalOpen ||
+      isAllRfqModalOpen ||
+      isAwardedRfqModalOpen ||
       isRfiModalOpen ||
       isCoModalOpen ||
       !!selectedProject ||
       !!selectedInvoiceId ||
-      !!selectedInvoiceId ||
-      !!selectedMilestone;
+      !!selectedMilestone ||
+      !!selectedRfqId;
+
 
     if (isAnyModalOpen) {
       dispatch(incrementModalCount());
@@ -101,9 +115,10 @@ const ClientDashboard = () => {
     isCoModalOpen,
     selectedProject,
     selectedInvoiceId,
-    selectedInvoiceId,
     selectedMilestone,
+    selectedRfqId,
     dispatch,
+
   ]);
 
   const [stats, setStats] = useState({
@@ -247,7 +262,12 @@ const ClientDashboard = () => {
       setIsSubmittalModalOpen(true);
     } else if (actionType === "PENDING_RFQ") {
       setIsRfqModalOpen(true);
+    } else if (actionType === "ALL_RFQ") {
+      setIsAllRfqModalOpen(true);
+    } else if (actionType === "AWARDED_RFQ") {
+      setIsAwardedRfqModalOpen(true);
     } else if (actionType === "PENDING_RFI") {
+
       setIsRfiModalOpen(true);
     } else if (actionType === "PENDING_COR") {
       setIsCoModalOpen(true);
@@ -280,6 +300,63 @@ const ClientDashboard = () => {
             </div>
           </div>
         </div>
+        {/* RFQ Stats Cards for Client Admin and Estimator */}
+        {(userRole === "client_admin" || userRole === "client_estimator") && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            {/* All RFQs Card */}
+            <div
+              onClick={() => handleActionClick("ALL_RFQ")}
+              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
+            >
+              <div className="flex items-center gap-4 z-10">
+                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
+                  <Search size={24} strokeWidth={2.5} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-black uppercase tracking-widest">
+                    All RFQs
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
+                    Total Requests
+                  </span>
+                </div>
+              </div>
+              <div className="z-10 text-right">
+                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
+                  {sentRFQs.length}
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
+            </div>
+
+            {/* Awarded RFQs Card */}
+            <div
+              onClick={() => handleActionClick("AWARDED_RFQ")}
+              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
+            >
+              <div className="flex items-center gap-4 z-10">
+                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
+                  <Activity size={24} strokeWidth={2.5} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-black uppercase tracking-widest">
+                    RFQ Awarded
+                  </span>
+
+                </div>
+              </div>
+              <div className="z-10 text-right">
+                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter text-black">
+                  {sentRFQs.filter(rfq => rfq.wbtStatus === "AWARDED" || rfq.status === "AWARDED" || rfq.status === "COMPLETED").length}
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
+            </div>
+          </div>
+        )}
+
+
+
 
         {/* Invoice Summary Section */}
         <div className="w-full">
@@ -362,7 +439,28 @@ const ClientDashboard = () => {
           </div>
         )}
 
+        {/* RFQ Detail Modal */}
+        {selectedRfqId && (
+          <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="w-full max-w-5xl max-h-[95vh] overflow-y-auto">
+              <Suspense
+                fallback={
+                  <div className="flex justify-center p-12 bg-white rounded-xl">
+                    <Loader2 className="animate-spin text-green-600" />
+                  </div>
+                }
+              >
+                <GetRFQByID
+                  id={selectedRfqId}
+                  onClose={() => setSelectedRfqId(null)}
+                />
+              </Suspense>
+            </div>
+          </div>
+        )}
+
         {/* Modals */}
+
         <ProjectListModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -390,7 +488,22 @@ const ClientDashboard = () => {
         />
 
         <ActionListModal
+          isOpen={isAllRfqModalOpen}
+          onClose={() => setIsAllRfqModalOpen(false)}
+          type="ALL_RFQ"
+          data={sentRFQs}
+        />
+
+        <ActionListModal
+          isOpen={isAwardedRfqModalOpen}
+          onClose={() => setIsAwardedRfqModalOpen(false)}
+          type="AWARDED_RFQ"
+          data={sentRFQs.filter(rfq => rfq.wbtStatus === "AWARDED" || rfq.status === "AWARDED" || rfq.status === "COMPLETED")}
+        />
+
+        <ActionListModal
           isOpen={isRfiModalOpen}
+
           onClose={() => setIsRfiModalOpen(false)}
           type="PENDING_RFI"
           data={pendingRFIs}

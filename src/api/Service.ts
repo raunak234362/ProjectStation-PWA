@@ -382,6 +382,8 @@ class Service {
     return response.data;
   }
 
+  //get
+
   //Fetch All RFQ
   static async getAllRFQ() {
     try {

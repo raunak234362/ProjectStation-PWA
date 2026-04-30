@@ -22,7 +22,8 @@ interface ActionListModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: any[];
-  type: "PENDING_RFQ" | "PENDING_RFI" | "PENDING_COR";
+  type: "PENDING_RFQ" | "PENDING_RFI" | "PENDING_COR" | "ALL_RFQ" | "AWARDED_RFQ";
+
 }
 
 const ActionListModal: React.FC<ActionListModalProps> = ({
@@ -59,8 +60,13 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         return "Pending Attention on RFIs";
       case "PENDING_COR":
         return "Pending Attention on Change Orders";
+      case "ALL_RFQ":
+        return "All RFQs Overview";
+      case "AWARDED_RFQ":
+        return "Awarded RFQs List";
       default:
         return "Pending Actions";
+
     }
   };
 
@@ -72,8 +78,13 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         return <FileText size={24} />;
       case "PENDING_COR":
         return <Activity size={24} />;
+      case "ALL_RFQ":
+        return <Search size={24} />;
+      case "AWARDED_RFQ":
+        return <Activity size={24} />;
       default:
         return <Files size={24} />;
+
     }
   };
 
@@ -166,8 +177,42 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             ),
           },
         ];
+      case "ALL_RFQ":
+      case "AWARDED_RFQ":
+        return [
+          {
+            accessorKey: "projectName",
+            header: "Project Name",
+          },
+          {
+            accessorKey: "projectNumber",
+            header: "RFQ #",
+            cell: ({ row }) => row.original.projectNumber || row.original.rfqNumber || "—",
+          },
+
+          {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => (
+              <span
+                className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+              >
+                {row.original.wbtStatus === "AWARDED" ? "AWARDED" : (row.original.status?.replace("_", " ") || "—")}
+              </span>
+            ),
+          },
+          {
+            accessorKey: "estimationDate",
+            header: "Due Date",
+            cell: ({ row }) =>
+              row.original.estimationDate
+                ? formatDate(row.original.estimationDate)
+                : "—",
+          },
+        ];
       default:
         return [];
+
     }
   };
 
@@ -203,11 +248,13 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 columns={getColumns()}
                 data={data}
                 pageSizeOptions={[25]}
-                onRowClick={(row) => setSelectedId(row.id)}
+                onRowClick={(row) => setSelectedId(row.id || row._id)}
+
               />
-              {selectedId && type === "PENDING_RFQ" && (
+              {selectedId && (type === "PENDING_RFQ" || type === "ALL_RFQ" || type === "AWARDED_RFQ") && (
                 <GetRFQByID id={selectedId} onClose={() => setSelectedId(null)} />
               )}
+
               {selectedId && type === "PENDING_RFI" && (
                 <GetRFIByID id={selectedId} onClose={() => setSelectedId(null)} />
               )}
