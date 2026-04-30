@@ -34,12 +34,18 @@ const GetMilestoneByID = lazy(
   () => import("../project/mileStone/GetMilestoneByID"),
 );
 
+import EstimatorDashboard from "./EstimatorDashboard";
+
 const ClientDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
   const isClientRole = userRole === "client";
+
+  if (userRole === "client_estimator") {
+    return <EstimatorDashboard />;
+  }
 
   // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(

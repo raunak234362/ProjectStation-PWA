@@ -95,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       label === "Dashboard"
                         ? userRole === "sales" || userRole === "sales_manager"
                           ? "/dashboard/sales"
-                          : userRole === "client" || userRole === "client_admin"
+                          : userRole === "client" || userRole === "client_admin" || userRole === "client_estimator"
                             ? "/dashboard/client"
                             : userRole === "connection_designer_engineer"
                               ? "/dashboard/connection-designer-dashboard"
@@ -106,6 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       to === "/dashboard" &&
                       userRole !== "client" &&
                       userRole !== "client_admin" &&
+                      userRole !== "client_estimator" &&
                       userRole !== "sales" &&
                       userRole !== "sales_manager"
                     }

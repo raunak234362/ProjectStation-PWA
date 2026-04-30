@@ -610,21 +610,21 @@ const GetProjectById = ({
                     <StatCard
                       icon={<Clock className="text-blue-600" />}
                       label="Estimated Hours"
-                      value={`${project.estimatedHours || 0}h`}
+                      value={`${Number(project.estimatedHours || 0).toFixed(2).replace(/\.00$/, '')}h`}
                       color="bg-blue-50"
                       layout="horizontal"
                     />
                     <StatCard
                       icon={<Clock className="text-blue-600" />}
                       label="Estimated Hours for Approval"
-                      value={`${(project.estimatedHours ?? 0) * 0.8}h`}
+                      value={`${(Number(project.estimatedHours || 0) * 0.8).toFixed(2).replace(/\.00$/, '')}h`}
                       color="bg-blue-50"
                       layout="horizontal"
                     />
                     <StatCard
                       icon={<Clock className="text-blue-600" />}
                       label="Estimated Hours for Fabrication"
-                      value={`${(project.estimatedHours ?? 0) * 0.2}h`}
+                      value={`${(Number(project.estimatedHours || 0) * 0.2).toFixed(2).replace(/\.00$/, '')}h`}
                       color="bg-blue-50"
                       layout="horizontal"
                     />

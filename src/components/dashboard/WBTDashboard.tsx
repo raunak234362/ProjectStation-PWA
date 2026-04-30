@@ -44,7 +44,7 @@ const WBTDashboard = () => {
   useEffect(() => {
     if (userRole === "sales" || userRole === "sales_manager") {
       navigate("/dashboard/sales");
-    } else if (userRole === "client" || userRole === "client_admin") {
+    } else if (userRole === "client" || userRole === "client_admin" || userRole === "client_estimator") {
       navigate("/dashboard/client");
     } else if (userRole === "connection_designer_engineer" || userRole === "connection_designer_admin") {
       navigate("/dashboard/connection-designer-dashboard");
