@@ -113,14 +113,7 @@ const ProjectNoteItem: React.FC<ProjectNoteItemProps> = ({
         className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-50/50"
       >
         <div className="flex-1 min-w-0 pr-4">
-          <div className="flex items-center gap-2 mb-1">
-            {note.serialNo && (
-              <span className="text-[9px] font-black bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap uppercase">
-                {note.serialNo}
-              </span>
-            )}
-            {getPriorityBadge(note.priority)}
-          </div>
+        
           <div className="flex flex-wrap gap-1.5 mb-2">
             {note.flags &&
               note.flags.length > 0 &&
@@ -133,6 +126,7 @@ const ProjectNoteItem: React.FC<ProjectNoteItemProps> = ({
                   {flag}
                 </span>
               ))}
+               {getPriorityBadge(note.priority)}
             {(() => {
               const rawList = [
                 ...(note.taggedUsers || []),
