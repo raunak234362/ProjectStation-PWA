@@ -217,7 +217,7 @@ const EstimatorDashboard = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-black text-black uppercase tracking-widest">
-               All RFQ<span className="text-[10px]">s</span>
+                RFQs Sent
               </span>
             </div>
           </div>
@@ -239,7 +239,7 @@ const EstimatorDashboard = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-black text-black uppercase tracking-widest">
-                RFQ<span className="text-[10px]">s</span> Awarded
+                RFQs Awarded
               </span>
             </div>
           </div>
@@ -327,8 +327,8 @@ const EstimatorDashboard = () => {
         <div className="bg-white rounded-3xl border border-black shadow-sm overflow-hidden flex flex-col h-[400px]">
           <div className="p-6 border-b border-black bg-gray-50 flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-black text-black uppercase tracking-tight">Recent RFQ<span className="text-[10px]">s</span></h2>
-
+              <h2 className="text-lg font-black text-black uppercase tracking-tight">Recent RFQs</h2>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Latest estimation requests</p>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-2">

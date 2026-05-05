@@ -56,21 +56,21 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   const getTitle = () => {
     switch (type) {
       case "PENDING_RFQ":
-        return "Pending Attention on RFQs";
+        return "PENDING ATTENTION ON RFQs";
       case "PENDING_RFI":
-        return "Pending Attention on RFIs";
+        return "PENDING ATTENTION ON RFIs";
       case "PENDING_COR":
-        return "Pending Attention on Change Orders";
+        return "PENDING ATTENTION ON CHANGE ORDERS";
       case "ALL_RFQ":
-        return "All RFQs Overview";
+        return "ALL RFQs OVERVIEW";
       case "AWARDED_RFQ":
-        return "Awarded RFQs List";
+        return "AWARDED RFQs LIST";
       case "ALL_INVOICES":
-        return "All Invoices Overview";
+        return "ALL INVOICES OVERVIEW";
       case "PENDING_INVOICES":
-        return "Pending Invoices List";
+        return "PENDING INVOICES LIST";
       default:
-        return "Pending Actions";
+        return "PENDING ACTIONS";
 
     }
   };
@@ -275,7 +275,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
           <div>
-            <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-tight">
+            <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
               {getIcon()}
               {getTitle()}
             </h3>

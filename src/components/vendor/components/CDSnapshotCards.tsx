@@ -14,28 +14,28 @@ interface CDSnapshotCardsProps {
 const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({ stats }) => {
     const cards = [
         {
-            label: "Total Connection Designers",
+            label: "TOTAL CONNECTION DESIGNERS",
             value: stats.totalCDs,
             subText: "Active vs Inactive", // Placeholder for now
             icon: Users,
             color: "green",
         },
         {
-            label: "Geographic Coverage",
+            label: "GEOGRAPHIC COVERAGE",
             value: `${stats.totalCountries} Countries`,
             subText: `${stats.totalStates} States`,
             icon: Globe,
             color: "blue",
         },
         {
-            label: "Total Engineers",
+            label: "TOTAL ENGINEERS",
             value: stats.totalEngineers,
             subText: "Avg engineers per CD", // Placeholder
             icon: HardHat,
             color: "orange",
         },
         {
-            label: "Active RFQs",
+            label: "ACTIVE RFQs",
             value: stats.activeRFQs,
             subText: "Designers involved",
             icon: FileText,
@@ -51,7 +51,7 @@ const CDSnapshotCards: React.FC<CDSnapshotCardsProps> = ({ stats }) => {
                     className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-black/10 flex items-center justify-between relative overflow-hidden group"
                 >
                     <div className="min-w-0">
-                        <p className="text-[10px] sm:text-xs font-semibold text-black mb-1 uppercase tracking-wider truncate">
+                        <p className="text-[10px] sm:text-xs font-semibold text-black mb-1 tracking-wider truncate">
                             {card.label}
                         </p>
                         <h3 className="text-xl sm:text-2xl font-bold text-black truncate">

@@ -336,8 +336,8 @@ const ClientDashboard = () => {
                   <Search size={24} strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    All RFQs
+                  <span className="text-sm font-black text-black tracking-widest">
+                    ALL RFQs
                   </span>
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
                     Total Requests
@@ -363,8 +363,8 @@ const ClientDashboard = () => {
                   <Activity size={24} strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    RFQ Awarded
+                  <span className="text-sm font-black text-black tracking-widest">
+                    RFQs AWARDED
                   </span>
 
                 </div>

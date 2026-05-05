@@ -46,10 +46,10 @@ const DocumentListModal: React.FC<DocumentListModalProps> = ({
 
     const getTitle = () => {
         switch (type) {
-            case "ALL_RFQ": return "All RFQs";
-            case "ALL_RFI": return "All RFIs";
-            case "ALL_SUBMITTALS": return "All Submittals";
-            case "ALL_COR": return "All Change Orders";
+            case "ALL_RFQ": return "ALL RFQs";
+            case "ALL_RFI": return "ALL RFIs";
+            case "ALL_SUBMITTALS": return "ALL SUBMITTALS";
+            case "ALL_COR": return "ALL CHANGE ORDERS";
         }
     };
 
@@ -186,7 +186,7 @@ const DocumentListModal: React.FC<DocumentListModalProps> = ({
             <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
                 {/* Header */}
                 <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
-                    <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-tight">
+                    <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
                         {getIcon()}
                         {getTitle()}
                     </h3>
