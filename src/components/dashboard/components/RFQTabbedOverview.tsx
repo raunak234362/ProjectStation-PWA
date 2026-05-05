@@ -33,24 +33,24 @@ const RFQTabbedOverview: React.FC<RFQTabbedOverviewProps> = ({
           <button
             onClick={() => setActiveTab("all")}
             className={cn(
-              "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all cursor-pointer",
+              "px-4 py-2 text-xs font-bold tracking-widest rounded-lg transition-all cursor-pointer",
               activeTab === "all"
                 ? "bg-white text-black shadow-sm border border-black"
                 : "text-black hover:bg-gray-200/50"
             )}
           >
-            All RFQs
+            ALL RFQs
           </button>
           <button
             onClick={() => setActiveTab("awarded")}
             className={cn(
-              "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all cursor-pointer",
+              "px-4 py-2 text-xs font-bold tracking-widest rounded-lg transition-all cursor-pointer",
               activeTab === "awarded"
                 ? "bg-white text-black shadow-sm border border-black"
                 : "text-black hover:bg-gray-200/50"
             )}
           >
-            Awarded
+            AWARDED
           </button>
         </div>
         <span className="px-3 py-1 bg-green-50 text-green-700 text-[10px] uppercase font-black rounded-full border border-green-100">

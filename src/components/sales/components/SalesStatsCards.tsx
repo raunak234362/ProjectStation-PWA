@@ -23,7 +23,7 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats, onCardClick })
 
     const cards = [
         {
-            title: "Total RFQs Received",
+            title: "TOTAL RFQs RECEIVED",
             value: stats.totalRfqs,
             change: "+12% from last period",
             icon: FileText,
@@ -31,7 +31,7 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats, onCardClick })
             data: stats.rawRfqs || [],
         },
         {
-            title: "Projects Awarded",
+            title: "PROJECTS AWARDED",
             value: stats.projectsAwarded,
             change: "+8% from last period",
             icon: Trophy,
@@ -39,7 +39,7 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats, onCardClick })
             data: stats.rawProjects?.filter((p: any) => ["ACTIVE", "COMPLETED", "AWARDED"].includes(p.status)) || [],
         },
         {
-            title: "Win Rate",
+            title: "WIN RATE",
             value: `${stats.winRate}%`,
             change: "+2.3% from last period",
             icon: Target,
@@ -47,7 +47,7 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats, onCardClick })
             data: stats.rawRfqs || [],
         },
         {
-            title: "Total Sales Value",
+            title: "TOTAL SALES VALUE",
             value: `$${stats.totalSalesValue.toLocaleString()}`,
             change: "+15% from last period",
             icon: DollarSign,
@@ -76,7 +76,7 @@ const SalesStatsCards: React.FC<SalesStatsCardsProps> = ({ stats, onCardClick })
 
                         <div className="flex justify-between items-start mb-6 relative z-10">
                             <div>
-                                <p className="text-black dark:text-slate-400 text-sm font-bold mb-2 tracking-wide uppercase">{card.title}</p>
+                                <p className="text-black dark:text-slate-400 text-sm font-bold mb-2 tracking-wide">{card.title}</p>
                                 <h3 className="text-3xl font-extrabold text-black dark:text-white tracking-tight">{formatValue(card.value)}</h3>
                             </div>
                             <div className="p-3.5 rounded-2xl bg-green-50 dark:bg-green-950/40 text-black dark:text-green-400 shadow-sm border border-black/10 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">

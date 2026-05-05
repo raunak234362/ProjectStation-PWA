@@ -25,25 +25,25 @@ const DocumentsOverviewCard: React.FC<DocumentsOverviewCardProps> = ({
         type: DocType;
     }[] = [
             {
-                label: "Total RFQs",
+                label: "TOTAL RFQs",
                 value: counts.rfq,
                 icon: Search,
                 type: "ALL_RFQ",
             },
             {
-                label: "Total RFIs",
+                label: "TOTAL RFIs",
                 value: counts.rfi,
                 icon: FileText,
                 type: "ALL_RFI",
             },
             {
-                label: "Submittals",
+                label: "SUBMITTALS",
                 value: counts.submittals,
                 icon: RefreshCw,
                 type: "ALL_SUBMITTALS",
             },
             {
-                label: "Change Orders",
+                label: "CHANGE ORDERS",
                 value: counts.cor,
                 icon: Activity,
                 type: "ALL_COR",
@@ -73,7 +73,7 @@ const DocumentsOverviewCard: React.FC<DocumentsOverviewCardProps> = ({
                                 <card.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
                             </div>
                             <div className="flex flex-col min-w-0">
-                                <span className="text-xs sm:text-sm font-black text-black uppercase tracking-widest leading-tight whitespace-normal break-words">
+                                <span className="text-xs sm:text-sm font-black text-black tracking-widest leading-tight whitespace-normal break-words">
                                     {card.label}
                                 </span>
                             </div>
