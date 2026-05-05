@@ -99,6 +99,7 @@ interface DataTableProps<T extends object> {
   showColumnFiltersInHeader?: boolean;
   showColumnToggle?: boolean;
   initialSorting?: SortingState;
+  initialColumnVisibility?: Record<string, boolean>;
   disablePagination?: boolean;
   noBorder?: boolean;
 }
@@ -173,6 +174,7 @@ export default function DataTable<T extends object>({
   pageSizeOptions = [25, 50],
   showColumnFiltersInHeader = false,
   initialSorting = [],
+  initialColumnVisibility = {},
   disablePagination = false,
   noBorder = false,
 }: DataTableProps<T>) {
@@ -181,6 +183,7 @@ export default function DataTable<T extends object>({
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>(initialSorting);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
 
   const columns = useMemo(() => {
@@ -213,6 +216,7 @@ export default function DataTable<T extends object>({
       globalFilter,
       sorting,
       columnFilters,
+      columnVisibility,
     },
     initialState: {
       pagination: {
@@ -222,6 +226,7 @@ export default function DataTable<T extends object>({
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
     enableColumnFilters: true,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
@@ -6,6 +6,35 @@ import { formatDate } from "../../utils/dateUtils";
 
 const AllRFQ = ({ rfq }: any) => {
   const userRole = sessionStorage.getItem("userRole");
+
+  const yearOptions = useMemo(() => {
+    const years = Array.from(
+      new Set(
+        (rfq || [])
+          .map((item: any) => {
+            const date = new Date(item.estimationDate);
+            return isNaN(date.getTime()) ? null : date.getFullYear().toString();
+          })
+          .filter(Boolean)
+      )
+    ) as string[];
+    return years.sort((a, b) => b.localeCompare(a)).map((y) => ({ label: y, value: y }));
+  }, [rfq]);
+
+  const monthOptions = [
+    { label: "January", value: "0" },
+    { label: "February", value: "1" },
+    { label: "March", value: "2" },
+    { label: "April", value: "3" },
+    { label: "May", value: "4" },
+    { label: "June", value: "5" },
+    { label: "July", value: "6" },
+    { label: "August", value: "7" },
+    { label: "September", value: "8" },
+    { label: "October", value: "9" },
+    { label: "November", value: "10" },
+    { label: "December", value: "11" },
+  ];
 
   const columns: ExtendedColumnDef<RFQItem>[] = [
     {
@@ -15,9 +44,33 @@ const AllRFQ = ({ rfq }: any) => {
       filterType: "text",
       filterFn: "includesString",
     },
+    {
+      id: "month",
+      header: "Month",
+      accessorFn: (row) => {
+        const date = new Date(row.estimationDate);
+        return isNaN(date.getTime()) ? "" : date.getMonth().toString();
+      },
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: monthOptions,
+      filterFn: "equalsString",
+    },
+    {
+      id: "year",
+      header: "Year",
+      accessorFn: (row) => {
+        const date = new Date(row.estimationDate);
+        return isNaN(date.getTime()) ? "" : date.getFullYear().toString();
+      },
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: yearOptions,
+      filterFn: "equalsString",
+    },
   ];
 
-  if (userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN") {
+  if (userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && userRole !== "CLIENT_ESTIMATOR") {
     columns.push({
       accessorKey: "fabricator",
       header: "Fabricator",
@@ -66,6 +119,11 @@ const AllRFQ = ({ rfq }: any) => {
       header: "Due Date",
       cell: ({ row }) => formatDate(row.original.estimationDate),
     },
+    {
+      accessorKey: "estimationDate",
+      header: "WBT Submitted Date",
+      cell: ({ row }) => formatDate(row.original.createdAt),
+    },
   );
 
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
@@ -77,6 +135,10 @@ const AllRFQ = ({ rfq }: any) => {
         data={rfq || []}
         onRowClick={(row: any) => setSelectedRfqId(row.id)}
         pageSizeOptions={[25]}
+        initialColumnVisibility={{
+          month: false,
+          year: false,
+        }}
       />
       {selectedRfqId && (
         <GetRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />

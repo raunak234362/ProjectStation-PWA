@@ -13,6 +13,7 @@ import Service from "../../api/Service";
 import ActionListModal from "./components/ActionListModal";
 import GetRFQByID from "../rfq/GetRFQByID";
 import GetInvoiceById from "../invoices/GetInvoiceById";
+import DataTable, { type ExtendedColumnDef } from "../ui/table";
 
 const EstimatorDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -114,6 +115,82 @@ const EstimatorDashboard = () => {
     setIsModalOpen(true);
   };
 
+  const rfqColumns: ExtendedColumnDef<any>[] = [
+    {
+      accessorKey: "projectNumber",
+      header: "Project No.",
+      cell: ({ row }) => (
+        <span className="font-black text-black group-hover:text-green-700 transition-colors">
+          {row.original.projectNumber || row.original.project?.projectNumber || "—"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "projectName",
+      header: "Project Name",
+      cell: ({ row }) => (
+        <div className="truncate max-w-[200px] font-bold text-gray-600">
+          {row.original.project?.name || row.original.project?.projectName || row.original.projectName || row.original.project || "—"}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }) => (
+        <span className="font-bold text-gray-500">
+          {row.original.createdAt ? new Date(row.original.createdAt).toLocaleDateString() : row.original.date || "—"}
+        </span>
+      ),
+    },
+  ];
+
+  const invoiceColumns: ExtendedColumnDef<any>[] = [
+    {
+      accessorKey: "invoiceNumber",
+      header: "Invoice",
+      cell: ({ row }) => (
+        <span className="font-black text-black group-hover:text-green-700 transition-colors">
+          {row.original.invoiceNumber || row.original.id || "—"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "projectName",
+      header: "Project",
+      cell: ({ row }) => (
+        <div className="truncate max-w-[200px] font-bold text-gray-600">
+          {row.original.jobName || row.original.project?.name || row.original.project?.projectName || row.original.projectName || row.original.customerName || row.original.project || "—"}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "amount",
+      header: "Amount",
+      cell: ({ row }) => (
+        <span className="font-black text-black">
+          ${Number(row.original.totalInvoiceValue || row.original.totalAmount || row.original.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const inv = row.original;
+        const isPaid = inv.paymentStatus === true || String(inv.paymentStatus).toLowerCase() === 'true' || String(inv.paymentStatus).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'completed';
+        return (
+          <span className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-xl border ${
+            isPaid ? 'bg-green-50 text-green-700 border-green-200' :
+            'bg-orange-50 text-orange-700 border-orange-200'
+          }`}>
+            {isPaid ? 'PAID' : 'PENDING'}
+          </span>
+        );
+      },
+    },
+  ];
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
@@ -125,18 +202,7 @@ const EstimatorDashboard = () => {
 
   return (
     <div className="flex flex-col w-full p-4 md:p-6 space-y-8 bg-white min-h-full animate-in fade-in duration-500">
-      
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight">
-            Estimator Dashboard
-          </h1>
-
-        </div>
-
-      </div>
-
+     
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
         
@@ -151,7 +217,7 @@ const EstimatorDashboard = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-black text-black uppercase tracking-widest">
-                RFQs Sent
+               All RFQ<span className="text-[10px]">s</span>
               </span>
             </div>
           </div>
@@ -173,7 +239,7 @@ const EstimatorDashboard = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-black text-black uppercase tracking-widest">
-                RFQs Awarded
+                RFQ<span className="text-[10px]">s</span> Awarded
               </span>
             </div>
           </div>
@@ -195,7 +261,7 @@ const EstimatorDashboard = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-black text-black uppercase tracking-widest">
-                Pending Estimates
+                Pending RFQ<span className="text-[10px]">s</span>
               </span>
             </div>
           </div>
@@ -241,7 +307,7 @@ const EstimatorDashboard = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-black text-black uppercase tracking-widest">
-                Pending Inv.
+                Pending Invoiced
               </span>
             </div>
           </div>
@@ -261,45 +327,18 @@ const EstimatorDashboard = () => {
         <div className="bg-white rounded-3xl border border-black shadow-sm overflow-hidden flex flex-col h-[400px]">
           <div className="p-6 border-b border-black bg-gray-50 flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-black text-black uppercase tracking-tight">Recent RFQs</h2>
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Latest estimation requests</p>
+              <h2 className="text-lg font-black text-black uppercase tracking-tight">Recent RFQ<span className="text-[10px]">s</span></h2>
+
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                  <th className="px-4 py-3">Project No.</th>
-                  <th className="px-4 py-3">Project Title</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentRFQs.map((rfq, idx) => (
-                  <tr 
-                    key={idx} 
-                    onClick={() => setSelectedRFQId(rfq.id || rfq._id)}
-                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
-                  >
-                    <td className="px-4 py-4 text-xs font-black text-black group-hover:text-green-700">{rfq.projectNumber || rfq.project?.projectNumber || "—"}</td>
-                    <td className="px-4 py-4 text-xs font-bold text-gray-600 truncate max-w-[150px]">{rfq.project?.name || rfq.project?.projectName || rfq.projectName || rfq.project || "—"}</td>
-                    <td className="px-4 py-4 text-xs font-bold text-gray-500">
-                      {rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : rfq.date || "—"}
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <span className={`inline-block px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border ${
-                        (rfq.status || rfq.wbtStatus) === 'AWARDED' ? 'bg-green-50 text-green-700 border-green-200' :
-                        (rfq.status || rfq.wbtStatus) === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-200' :
-                        'bg-yellow-50 text-yellow-700 border-yellow-200'
-                      }`}>
-                        {rfq.status || rfq.wbtStatus || "PENDING"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="flex-1 overflow-y-auto p-2">
+            <DataTable 
+              columns={rfqColumns}
+              data={recentRFQs}
+              onRowClick={(row: any) => setSelectedRFQId(row.id || row._id)}
+              disablePagination={true}
+              noBorder={true}
+            />
           </div>
         </div>
 
@@ -311,40 +350,14 @@ const EstimatorDashboard = () => {
               <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Billing and payment status</p>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                  <th className="px-4 py-3">Invoice</th>
-                  <th className="px-4 py-3">Project</th>
-                  <th className="px-4 py-3">Amount</th>
-                  <th className="px-4 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentInvoices.map((inv, idx) => (
-                  <tr 
-                    key={idx} 
-                    onClick={() => setSelectedInvoiceId(inv.id || inv._id)}
-                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group cursor-pointer"
-                  >
-                    <td className="px-4 py-4 text-xs font-black text-black group-hover:text-green-700">{inv.invoiceNumber || inv.id || "—"}</td>
-                    <td className="px-4 py-4 text-xs font-bold text-gray-600 truncate max-w-[150px]">{inv.jobName || inv.project?.name || inv.project?.projectName || inv.projectName || inv.customerName || inv.project || "—"}</td>
-                    <td className="px-4 py-4 text-sm font-black text-black">
-                      ${Number(inv.totalInvoiceValue || inv.totalAmount || inv.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <span className={`inline-block px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border ${
-                        (inv.paymentStatus === true || String(inv.paymentStatus).toLowerCase() === 'true' || String(inv.paymentStatus).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'completed') ? 'bg-green-50 text-green-700 border-green-200' :
-                        'bg-orange-50 text-orange-700 border-orange-200'
-                      }`}>
-                        {(inv.paymentStatus === true || String(inv.paymentStatus).toLowerCase() === 'true' || String(inv.paymentStatus).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'completed') ? 'PAID' : 'PENDING'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="flex-1 overflow-hidden p-2">
+            <DataTable 
+              columns={invoiceColumns}
+              data={recentInvoices}
+              onRowClick={(row: any) => setSelectedInvoiceId(row.id || row._id)}
+              disablePagination={true}
+              noBorder={true}
+            />
           </div>
         </div>
 

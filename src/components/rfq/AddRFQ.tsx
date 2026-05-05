@@ -17,6 +17,39 @@ import RichTextEditor from "../fields/RichTextEditor";
 import { addRFQ } from "../../store/rfqSlice";
 import { motion } from "motion/react";
 
+const STATES: Record<string, string[]> = {
+  "USA": [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", 
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", 
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", 
+    "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ],
+  "US": [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", 
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", 
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", 
+    "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ],
+  "UNITED STATES": [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", 
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", 
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", 
+    "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ],
+  "CANADA": [
+    "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", 
+    "Northwest Territories", "Nunavut", "Yukon"
+  ],
+  "INDIA": [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", 
+    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+  ]
+};
+
 interface AddRFQProps {
   onSuccess?: () => void;
 }
@@ -74,6 +107,18 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   const selectedFabricator = fabricators?.find(
     (fab) => String(fab.id) === String(selectedFabricatorId),
   );
+
+  const fabricatorCountry = selectedFabricator?.branches?.find(b => b.isHeadquarters)?.country || selectedFabricator?.branches?.[0]?.country;
+
+  const stateOptions: SelectOption[] = React.useMemo(() => {
+    if (!fabricatorCountry) return [];
+    const countryKey = fabricatorCountry.toUpperCase();
+    const states = STATES[countryKey];
+    if (states) {
+      return states.map((s) => ({ label: s, value: s }));
+    }
+    return [];
+  }, [fabricatorCountry]);
 
   const clientOptions: SelectOption[] =
     selectedFabricator?.pointOfContact?.map((client) => ({
@@ -345,11 +390,28 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   <Globe size={14} className="text-black/40" />
                   Location
                 </label>
-                <Input
-                  {...register("location")}
-                  placeholder=""
-                  className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black placeholder:text-black/20"
-                />
+                {stateOptions.length > 0 ? (
+                  <Controller
+                    name="location"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        name={field.name}
+                        options={stateOptions}
+                        value={field.value}
+                        placeholder="Select State"
+                        className="border-black rounded-2xl h-14"
+                        onChange={(_, value) => field.onChange(value ?? "")}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Input
+                    {...register("location")}
+                    placeholder=""
+                    className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black placeholder:text-black/20"
+                  />
+                )}
               </div>
             </div>
           </section>
