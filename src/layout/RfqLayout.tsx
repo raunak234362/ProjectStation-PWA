@@ -8,13 +8,7 @@ import { useSelector } from "react-redux";
 const RfqLayout = () => {
   const [activeTab, setActiveTab] = useState("allRFQ");
   const rfq = useSelector((state: any) => state.RFQInfos.RFQData) || [];
-const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
-  // const stats = {
-  //   total: rfq.length,
-  //   inReview: rfq.filter((r: any) => r.status === "IN_REVIEW").length,
-  //   completed: rfq.filter((r: any) => r.status === "COMPLETED").length,
-  //   pending: rfq.filter((r: any) => r.status === "PENDING" || r.status === "SENT").length,
-  // };
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
   return (
     <div className="w-full">
@@ -25,7 +19,7 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
               <button
                 onClick={() => setActiveTab("addRFQ")}
                 className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all border ${activeTab === "addRFQ"
-                  ? "bg-[#ebf5ea] text-black border-black shadow-sm"
+                  ? "bg-green-200 text-black border-black shadow-sm"
                   : "bg-white text-gray-500 border-gray-300 hover:border-black hover:bg-gray-50 hover:text-black"
                   }`}
               >
@@ -34,11 +28,10 @@ const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
             )}
             <button
               onClick={() => setActiveTab("allRFQ")}
-              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${
-                activeTab === "allRFQ"
-                  ? "bg-green-200 text-black shadow-medium"
-                  : "text-black hover:bg-green-50"
-              }`}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all border ${activeTab === "allRFQ"
+                  ? "bg-green-200 text-black border-black shadow-sm"
+                  : "bg-white text-gray-500 border-gray-300 hover:border-black hover:bg-gray-50 hover:text-black"
+                  }`}
             >
               All RFQ
             </button>

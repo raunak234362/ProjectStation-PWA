@@ -387,7 +387,79 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6">
+              {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
+            <div className="bg-gray-100 border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
+              {/* Header + Add Response Button */}
+              <div className="flex justify-between items-center gap-4">
+                <h1 className="text-xl sm:text-2xl text-black uppercase tracking-tight">
+                  Responses
+                </h1>
+
+                {(userRole === "ADMIN" ||
+                  userRole === "DEPUTY_MANAGER" ||
+                  userRole === "OPERATION_EXECUTIVE" ||
+                  userRole === "USER") && (
+                  <Button
+                    onClick={() => setShowResponseModal(true)}
+                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
+                  >
+                    + Add Response
+                  </Button>
+                )}
+              </div>
+              {showResponseModal && (
+                <ResponseModal
+                  rfqId={id}
+                  onClose={() => setShowResponseModal(false)}
+                  onSuccess={fetchRfq}
+                />
+              )}
+              {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
+              {userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
+                (rfq?.responses?.length ? (
+                  <DataTable
+                    columns={responseColumns}
+                    data={rfq.responses} // Ensure rfq.responses is an array
+                    pageSizeOptions={[5, 10]}
+                    onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
+                  />
+                ) : (
+                  <p className="text-gray-700 italic">No responses yet.</p>
+                ))}
+              <div className="mt-4">
+                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                  <>
+                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                      CD Quotation
+                    </p>
+                    <DataTable
+                      columns={quotationColumns}
+                      data={rfq?.CDQuotas || []}
+                      pageSizeOptions={[5]}
+                      onRowClick={(row: any) => setSelectedQuotation(row)}
+                    />
+                  </>
+                ) : (
+                  // Show Submit Button if not submitted
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                    {userRole === "CONNECTION_DESIGNER_ENGINEER" ? (
+                      <>
+                        <p className="text-gray-500 mb-4 text-center">
+                          You haven't submitted a quotation yet.
+                        </p>
+                        <Button
+                          onClick={() => setShowQuotationResponseModal(true)}
+                          className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                        >
+                          Submit Quotation Response
+                        </Button>
+                      </>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+            </div>
             {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
             <div className="border border-green-100/50 p-4 sm:p-6 rounded-3xl bg-gray-100 shadow-sm space-y-5 sm:space-y-6">
               {/* Header */}
@@ -749,78 +821,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 )}
             </div>
 
-            {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-            <div className="bg-gray-100 border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
-              {/* Header + Add Response Button */}
-              <div className="flex justify-between items-center gap-4">
-                <h1 className="text-xl sm:text-2xl text-black uppercase tracking-tight">
-                  Responses
-                </h1>
-
-                {(userRole === "ADMIN" ||
-                  userRole === "DEPUTY_MANAGER" ||
-                  userRole === "OPERATION_EXECUTIVE" ||
-                  userRole === "USER") && (
-                  <Button
-                    onClick={() => setShowResponseModal(true)}
-                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
-                  >
-                    + Add Response
-                  </Button>
-                )}
-              </div>
-              {showResponseModal && (
-                <ResponseModal
-                  rfqId={id}
-                  onClose={() => setShowResponseModal(false)}
-                  onSuccess={fetchRfq}
-                />
-              )}
-              {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
-              {userRole !== "CONNECTION_DESIGNER_ENGINEER" &&
-                (rfq?.responses?.length ? (
-                  <DataTable
-                    columns={responseColumns}
-                    data={rfq.responses} // Ensure rfq.responses is an array
-                    pageSizeOptions={[5, 10]}
-                    onRowClick={(row: any) => setSelectedResponse(row)} // 👈 open modal
-                  />
-                ) : (
-                  <p className="text-gray-700 italic">No responses yet.</p>
-                ))}
-              <div className="mt-4">
-                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                  <>
-                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-                      CD Quotation
-                    </p>
-                    <DataTable
-                      columns={quotationColumns}
-                      data={rfq?.CDQuotas || []}
-                      pageSizeOptions={[5]}
-                      onRowClick={(row: any) => setSelectedQuotation(row)}
-                    />
-                  </>
-                ) : (
-                  // Show Submit Button if not submitted
-                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                    {userRole === "CONNECTION_DESIGNER_ENGINEER" ? (
-                      <>
-                        <p className="text-gray-500 mb-4 text-center">
-                          You haven't submitted a quotation yet.
-                        </p>
-                        <Button
-                          onClick={() => setShowQuotationResponseModal(true)}
-                          className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
-                        >
-                          Submit Quotation Response
-                        </Button>
-                      </>
-                    ) : null}
-                  </div>
-                )}
-              </div>
-            </div>
+         
           </div>
         </div>
         {showCDQuotationModal && (
