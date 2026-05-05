@@ -49,8 +49,8 @@ const ProjectProgress = ({ projectId }: ProjectProgressProps) => {
             <FileText className="w-5 h-5 text-green-600" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-black uppercase tracking-tight">Progress Reports</h3>
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Recent project updates</p>
+            <h3 className="text-lg font-black text-black uppercase tracking-tight">Weekly Progress Reports</h3>
+            <p className="text-xs text-gray-400 font-semibold uppercase tracking-widest">Recent project updates</p>
           </div>
         </div>
         {!['client', 'client_admin', 'client_estimator'].includes(sessionStorage.getItem('userRole')?.toLowerCase() || '') && (
