@@ -171,6 +171,21 @@ const EstimatorDashboard = () => {
         </span>
       ),
     },
+    {
+      header: "MTO Status",
+      cell: ({ row }) => {
+        const hasMTO = row.original.MTOManual || row.original.mtoStickModelEnabled || row.original.MTOStickModel;
+        return (
+          <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+            hasMTO 
+              ? "bg-green-50 text-green-700 border-green-200" 
+              : "bg-gray-50 text-gray-400 border-gray-200"
+          }`}>
+            {hasMTO ? "REQUIRED" : "NOT REQUIRED"}
+          </span>
+        );
+      },
+    },
   ];
 
   const invoiceColumns: ExtendedColumnDef<any>[] = [

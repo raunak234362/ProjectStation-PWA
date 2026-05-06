@@ -151,9 +151,16 @@ const AllRFQ = ({ rfq }: any) => {
       cell: ({ row }) => formatDate(row.original.estimationDate),
     },
     {
-      accessorKey: "estimationDate",
+      accessorKey: "latestResponseDate",
       header: "WBT Submitted Date",
-      cell: ({ row }) => formatDate(row.original.createdAt),
+      cell: ({ row }) => {
+        const responses = row.original.responses || [];
+        if (responses.length === 0) return "—";
+        const latest = [...responses].sort((a: any, b: any) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+        return formatDate(latest.createdAt);
+      },
     },
   );
 
