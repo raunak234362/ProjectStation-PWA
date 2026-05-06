@@ -338,7 +338,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-gray-400 dark:text-slate-500">
               <Files size={48} className="mb-4 opacity-20" />
-              <p>No pending items found.</p>
+              <p>{type.includes("MTO") ? "No MTO available" : "No pending items found."}</p>
             </div>
           )}
         </div>
