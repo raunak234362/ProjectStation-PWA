@@ -196,7 +196,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
       </div>
 
       {/* Jobs List */}
-      <div className="flex flex-col gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="flex flex-col gap-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
         {jobSummaries.map((job) => {
           const blockTotal = Math.max(job.totalRaised, job.bidPrice || 0);
           const paidPercent = blockTotal > 0 ? (job.paid / blockTotal) * 100 : 0;

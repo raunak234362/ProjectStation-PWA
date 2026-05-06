@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Service from "../../api/Service";
-import type { ColumnDef } from "@tanstack/react-table";
-import DataTable from "../ui/table";
+import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import GetInvoiceById from "./GetInvoiceById";
 import { formatDate } from "../../utils/dateUtils";
 
@@ -28,15 +27,17 @@ const AllInvoices = () => {
     fetchInvoices();
   }, []);
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ExtendedColumnDef<any>[] = [
     {
       accessorKey: "invoiceNumber",
       header: "Invoice #",
+      enableColumnFilter: true,
       cell: ({ row }) => row.getValue("invoiceNumber") || "—",
     },
     {
       accessorKey: "customerName",
       header: "Customer",
+      enableColumnFilter: true,
     },
     {
       accessorKey: "jobName",
@@ -62,11 +63,17 @@ const AllInvoices = () => {
     {
       accessorKey: "paymentStatus",
       header: "Status",
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: [
+        { label: "Paid", value: "true" },
+        { label: "Pending", value: "false" },
+      ],
       cell: ({ row }) => {
         const status = row.getValue("paymentStatus");
         return (
           <span
-            className="px-2 py-1 rounded-full text-xs md:text-sm lg:text-base xl:text-lg bg-gray-100 text-black border border-gray-200"
+            className="px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-gray-100 text-black border border-gray-200"
           >
             {status ? "Paid" : "Pending"}
           </span>

@@ -110,15 +110,43 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
   const fabricatorCountry = selectedFabricator?.branches?.find(b => b.isHeadquarters)?.country || selectedFabricator?.branches?.[0]?.country;
 
+  const countryOptions = React.useMemo(() => [
+    { label: "US", value: "US" },
+    { label: "Canada", value: "CANADA" },
+    { label: "India", value: "INDIA" },
+  ], []);
+
+  const selectedCountry = watch("country" as any);
+  const selectedState = watch("state" as any);
+
   const stateOptions: SelectOption[] = React.useMemo(() => {
-    if (!fabricatorCountry) return [];
-    const countryKey = fabricatorCountry.toUpperCase();
+    const countryToUse = selectedCountry || fabricatorCountry;
+    if (!countryToUse) return [];
+    const countryKey = countryToUse.toUpperCase();
     const states = STATES[countryKey];
     if (states) {
       return states.map((s) => ({ label: s, value: s }));
     }
     return [];
-  }, [fabricatorCountry]);
+  }, [selectedCountry, fabricatorCountry]);
+
+  // Sync country from fabricator if available
+  useEffect(() => {
+    if (fabricatorCountry) {
+      setValue("country" as any, fabricatorCountry.toUpperCase());
+    }
+  }, [fabricatorCountry, setValue]);
+
+  // Combine state and country into location
+  useEffect(() => {
+    if (stateOptions.length > 0) {
+      if (selectedCountry && selectedState) {
+        setValue("location", `${selectedState}, ${selectedCountry}`);
+      } else if (selectedCountry) {
+        setValue("location", selectedCountry);
+      }
+    }
+  }, [selectedCountry, selectedState, setValue, stateOptions.length]);
 
   const clientOptions: SelectOption[] =
     selectedFabricator?.pointOfContact?.map((client) => ({
@@ -131,7 +159,25 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
   const userDetail = useSelector((state: any) => state.userInfo.userDetail);
   const userRole = userDetail?.role;
-  const fabricatorId = userDetail?.FabricatorPointOfContacts[0]?.id;
+
+  // Auto-populate form fields for client roles
+  useEffect(() => {
+    if (userDetail && (userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CLIENT_ESTIMATOR")) {
+      if (userDetail.country && !selectedCountry) {
+        setValue("country" as any, userDetail.country.toUpperCase());
+      }
+      
+      const clientFabId = userDetail?.FabricatorPointOfContacts?.[0]?.fabricatorId || userDetail?.FabricatorPointOfContacts?.[0]?.id;
+      if (clientFabId) {
+        setValue("fabricatorId", String(clientFabId));
+      }
+      
+      if (userDetail.id) {
+        setValue("senderId", userDetail.id);
+      }
+    }
+  }, [userDetail, userRole, selectedCountry, setValue]);
+
   console.log(userDetail);
 
   // --- SUBMIT ---
@@ -163,11 +209,11 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
       let payload;
 
-      if (userRole === "CLIENT" || userRole === "CLIENT_ADMIN") {
+      if (userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CLIENT_ESTIMATOR") {
         payload = {
           ...basePayload,
           senderId: userDetail?.id,
-          fabricatorId: fabricatorId,
+          fabricatorId: data.fabricatorId || (userDetail?.FabricatorPointOfContacts?.[0]?.fabricatorId || userDetail?.FabricatorPointOfContacts?.[0]?.id),
           recipientId: data.recipientId || "", // must exist
           salesPersonId: null, // client doesn't assign
         };
@@ -390,28 +436,48 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   <Globe size={14} className="text-black/40" />
                   Location
                 </label>
-                {stateOptions.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Controller
-                    name="location"
+                    name={"country" as any}
                     control={control}
                     render={({ field }) => (
                       <Select
                         name={field.name}
-                        options={stateOptions}
+                        options={countryOptions}
                         value={field.value}
-                        placeholder="Select State"
+                        placeholder="Select Country"
                         className="border-black rounded-2xl h-14"
-                        onChange={(_, value) => field.onChange(value ?? "")}
+                        onChange={(_, value) => {
+                          field.onChange(value ?? "");
+                          setValue("state" as any, ""); // Reset state when country changes
+                        }}
                       />
                     )}
                   />
-                ) : (
-                  <Input
-                    {...register("location")}
-                    placeholder=""
-                    className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black placeholder:text-black/20"
-                  />
-                )}
+                  {stateOptions.length > 0 ? (
+                    <Controller
+                      name={"state" as any}
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          name={field.name}
+                          options={stateOptions}
+                          value={field.value}
+                          placeholder="Select State"
+                          className="border-black rounded-2xl h-14"
+                          disabled={!selectedCountry}
+                          onChange={(_, value) => field.onChange(value ?? "")}
+                        />
+                      )}
+                    />
+                  ) : (
+                    <Input
+                      {...register("location")}
+                      placeholder="Enter Location"
+                      className="w-full bg-white border-black rounded-2xl focus:bg-white h-14 text-sm font-black placeholder:text-black/20"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </section>
@@ -528,6 +594,14 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                   <Toggle label="Main Steel" {...register("detailingMain")} />
                   <Toggle label="Misc Steel" {...register("detailingMisc")} />
+                </div>
+              </div>
+
+              <div className="space-y-3 border border-black p-4 md:p-6">
+                <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                  Material Take off
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                   <Toggle label="MTO - Manual" {...register("MTOManual")} />
                   <Toggle
                     label="MTO - Stick Model"
@@ -535,15 +609,23 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   />
                 </div>
                 {mtoStickModelEnabled && (
-                  <div className="mt-3 space-y-1">
+                  <div className="mt-3 space-y-2">
                     <label className="block text-xs font-black text-black uppercase tracking-widest">
                       MTO Stick Model Details
                     </label>
-                    <input
-                      {...register("MTOStickModel")}
-                      placeholder="Enter MTO Stick Model details..."
-                      className="w-full px-4 py-2.5 border border-black rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all bg-white"
-                    />
+                    <div className="border border-black rounded-xl overflow-hidden min-h-[100px] bg-white">
+                      <Controller
+                        name="MTOStickModel"
+                        control={control}
+                        render={({ field }) => (
+                          <RichTextEditor
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            placeholder="Enter MTO Stick Model details..."
+                          />
+                        )}
+                      />
+                    </div>
                   </div>
                 )}
               </div>

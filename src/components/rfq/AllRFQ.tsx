@@ -79,6 +79,7 @@ const AllRFQ = ({ rfq }: any) => {
   }
 
   columns.push(
+
     {
       accessorKey: "sender",
       header: "Requested By",
@@ -88,6 +89,36 @@ const AllRFQ = ({ rfq }: any) => {
         return sender
           ? `${s.firstName ?? ""} ${s.middleName ?? ""} ${s.lastName ?? ""}`
           : "—";
+      },
+    },
+    {
+      id: "mto",
+      header: "MTO Status",
+      accessorFn: (row: any) =>
+        row.MTOManual || (row.MTOStickModel && row.MTOStickModel !== "")
+          ? "Required"
+          : "Not Required",
+      enableColumnFilter: true,
+      filterType: "select",
+      filterFn: "equalsString",
+      filterOptions: [
+        { label: "Required", value: "Required" },
+        { label: "Not Required", value: "Not Required" },
+      ],
+      cell: ({ row }) => {
+        const r = row.original as any;
+        const isRequired =
+          r.MTOManual || (r.MTOStickModel && r.MTOStickModel !== "");
+        return (
+          <span
+            className={`text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${isRequired
+                ? "bg-green-50 text-green-700 border-green-200"
+                : "bg-gray-50 text-gray-400 border-gray-100"
+              }`}
+          >
+            {isRequired ? "Required" : "Not Required"}
+          </span>
+        );
       },
     },
     {

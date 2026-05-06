@@ -84,8 +84,15 @@ const EditEmployee = ({
       { label: "HUMAN_RESOURCE", value: "HUMAN_RESOURCE" },
     ];
 
+  const countryOptions = [
+    { label: "US", value: "US" },
+    { label: "Canada", value: "Canada" },
+    { label: "India", value: "India" },
+  ];
+
   // Watch current role value (string)
   const selectedRole = watch("role");
+  const selectedCountry = watch("country");
 
   // Find the full option object for display
   const selectedRoleOption =
@@ -285,7 +292,19 @@ const EditEmployee = ({
               <Input label="State" {...register("state")} className="w-full" />
             </div>
             <div className="space-y-2">
-              <Input label="Country" {...register("country")} className="w-full" />
+              <label className="block text-[10px] font-black text-black uppercase tracking-[0.15em] ml-1">
+                Country
+              </label>
+              <Select
+                options={countryOptions}
+                {...register("country")}
+                value={selectedCountry}
+                onChange={(_, value) =>
+                  setValue("country", value as any, { shouldDirty: true })
+                }
+                placeholder="Select country..."
+                className="w-full"
+              />
             </div>
             <div className="space-y-2">
               <Input label="Zip Code" {...register("zipCode")} className="w-full" />

@@ -23,7 +23,7 @@ interface ActionListModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: any[];
-  type: "PENDING_RFQ" | "PENDING_RFI" | "PENDING_COR" | "ALL_RFQ" | "AWARDED_RFQ" | "ALL_INVOICES" | "PENDING_INVOICES";
+  type: "PENDING_RFQ" | "PENDING_RFI" | "PENDING_COR" | "ALL_RFQ" | "AWARDED_RFQ" | "ALL_INVOICES" | "PENDING_INVOICES" | "ALL_MTO" | "PENDING_MTO" | "COMPLETED_MTO";
 
 }
 
@@ -69,6 +69,12 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         return "ALL INVOICES OVERVIEW";
       case "PENDING_INVOICES":
         return "PENDING INVOICES LIST";
+      case "ALL_MTO":
+        return "ALL MTO RFQ OVERVIEW";
+      case "PENDING_MTO":
+        return "PENDING MTO RFQ LIST";
+      case "COMPLETED_MTO":
+        return "COMPLETED MTO RFQ LIST";
       default:
         return "PENDING ACTIONS";
 
@@ -90,6 +96,10 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
       case "ALL_INVOICES":
       case "PENDING_INVOICES":
         return <FileText size={24} />;
+      case "ALL_MTO":
+      case "PENDING_MTO":
+      case "COMPLETED_MTO":
+        return <Search size={24} />;
       default:
         return <Files size={24} />;
 
@@ -187,15 +197,22 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         ];
       case "ALL_RFQ":
       case "AWARDED_RFQ":
+      case "ALL_MTO":
+      case "PENDING_MTO":
+      case "COMPLETED_MTO":
         return [
           {
             accessorKey: "projectName",
             header: "Project Name",
           },
           {
-            accessorKey: "projectNumber",
-            header: "RFQ #",
-            cell: ({ row }) => row.original.projectNumber || row.original.rfqNumber || "—",
+            accessorKey: "subject",
+            header: "Subject",
+            cell: ({ row }) => (
+              <div className="truncate max-w-[300px]" title={row.original.subject}>
+                {row.original.subject || "—"}
+              </div>
+            ),
           },
 
           {
@@ -300,7 +317,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 onRowClick={(row) => setSelectedId(row.id || row._id)}
 
               />
-              {selectedId && (type === "PENDING_RFQ" || type === "ALL_RFQ" || type === "AWARDED_RFQ") && (
+              {selectedId && (type === "PENDING_RFQ" || type === "ALL_RFQ" || type === "AWARDED_RFQ" || type === "ALL_MTO" || type === "PENDING_MTO" || type === "COMPLETED_MTO") && (
                 <GetRFQByID id={selectedId} onClose={() => setSelectedId(null)} />
               )}
 

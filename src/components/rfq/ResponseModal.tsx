@@ -17,12 +17,14 @@ interface ResponseModalProps {
   rfqId: string;
   onClose: () => void;
   onSuccess: () => void; // callback to refresh RFQ after submission
+  parentResponseId?: string;
 }
 
 const ResponseModal: React.FC<ResponseModalProps> = ({
   rfqId,
   onClose,
   onSuccess,
+  parentResponseId,
 }) => {
   const { register, handleSubmit, control, reset, setValue, getValues } =
     useForm<RfqResponsePayload>();
@@ -409,6 +411,10 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
       formData.append("wbtStatus", data.wbtStatus || "OPEN"); // parent rfq status
       formData.append("userRole", userRole ?? "");
       formData.append("userId", userId ?? "");
+      
+      if (parentResponseId) {
+        formData.append("parentResponseId", parentResponseId);
+      }
 
       if (data.link) formData.append("link", data.link);
 

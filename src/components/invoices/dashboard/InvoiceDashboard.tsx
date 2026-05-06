@@ -47,12 +47,8 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
     <div className="space-y-6 pb-10">
 
 
-      {!isClient && (
-        <>
-          {/* 1. Stats Cards */}
-          <InvoiceStatsCards invoices={invoices} />
-        </>
-      )}
+      {/* 1. Stats Cards */}
+      <InvoiceStatsCards invoices={invoices} />
 
       {/* Analytics (Charts) */}
       <InvoiceAnalytics invoices={invoices} />

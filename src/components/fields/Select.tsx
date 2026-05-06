@@ -16,6 +16,7 @@ interface SelectProps {
   showSearch?: boolean;
   menuPortalTarget?: HTMLElement | null;
   styles?: any;
+  disabled?: boolean;
 }
 
 const Select = ({
@@ -27,6 +28,7 @@ const Select = ({
   placeholder,
   value,
   showSearch = true,
+  disabled = false,
 }: SelectProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<SelectOption | null>(
@@ -137,10 +139,11 @@ const Select = ({
   };
 
   return (
-    <div ref={wrapperRef} className="relative w-full">
+    <div ref={wrapperRef} className={`relative w-full ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}>
       {/* Dropdown Trigger */}
       <div
         onClick={() => {
+          if (disabled) return;
           setIsOpen(!isOpen);
           if (showSearch) {
             setTimeout(() => {
@@ -148,7 +151,9 @@ const Select = ({
             }, 100);
           }
         }}
-        className={`flex items-center justify-between p-2 text-sm border font-bold rounded-xl bg-white dark:bg-slate-800 cursor-pointer transition-all ${isOpen ? "border-green-500 ring-2 ring-green-100" : "border-black/10 dark:border-slate-700"
+        className={`flex items-center justify-between p-2 text-sm border font-bold rounded-xl bg-white dark:bg-slate-800 cursor-pointer transition-all ${
+          disabled ? "border-gray-200 bg-gray-50 pointer-events-none" : 
+          isOpen ? "border-green-500 ring-2 ring-green-100" : "border-black/10 dark:border-slate-700"
           } ${className}`}
       >
         <div className="flex-1">

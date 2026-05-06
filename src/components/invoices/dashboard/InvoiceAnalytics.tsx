@@ -80,71 +80,7 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
         .reduce((acc, inv) => acc + (parseFloat(inv.totalInvoiceValue) || 0), 0);
     const balanceDue = totalInvoiced - totalPaid;
 
-    if (isClient) {
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col items-center justify-center text-center">
-                    <div className="p-3 bg-blue-50 rounded-xl mb-3">
-                        <Banknote className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Invoiced</span>
-                    <span className="text-3xl  text-gray-800 mt-1">${totalInvoiced.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                </div>
-
-                <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col items-center justify-center text-center">
-                    <div className="p-3 bg-green-50 rounded-xl mb-3">
-                        <CheckCircle2 className="w-8 h-8 text-green-600" />
-                    </div>
-                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Total Paid</span>
-                    <span className="text-3xl  text-green-600 mt-1">${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                </div>
-
-                <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] flex flex-col items-center justify-center text-center">
-                    <div className="p-3 bg-red-50 rounded-xl mb-3">
-                        <AlertCircle className="w-8 h-8 text-red-600" />
-                    </div>
-                    <span className="text-md font-medium text-gray-500 uppercase tracking-wider">Balance Due</span>
-                    <span className="text-3xl  text-red-600 mt-1">${balanceDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                </div>
-
-                {/* Project Financial Progress Section */}
-                <div className="md:col-span-3 bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden mt-2">
-                    <div className="p-4 border-b border-green-500/10 flex items-center justify-between bg-gray-50/30">
-                        <h2 className="text-lg font-bold text-black flex items-center gap-3">
-                            <div className="w-1 h-5 bg-[#6bbd45] rounded-full"></div>
-                            PROJECT FINANCIAL PROGRESS
-                        </h2>
-                    </div>
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
-                        {Object.entries(
-                            invoices.reduce((acc: any, inv) => {
-                                const job = inv.jobName || "Unknown Job";
-                                if (!acc[job]) {
-                                    acc[job] = { total: 0, paid: 0, due: 0 };
-                                }
-                                const amount = parseFloat(inv.totalInvoiceValue) || 0;
-                                acc[job].total += amount;
-                                if (inv.paymentStatus === true || inv.paymentStatus === "Paid") {
-                                    acc[job].paid += amount;
-                                } else {
-                                    acc[job].due += amount;
-                                }
-                                return acc;
-                            }, {})
-                        ).map(([jobName, stats]: [string, any]) => (
-                            <JobFinancialsBar
-                                key={jobName}
-                                jobName={jobName}
-                                totalAmount={stats.total}
-                                paidAmount={stats.paid}
-                                dueAmount={stats.due}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    // --- End of Data Processing ---
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

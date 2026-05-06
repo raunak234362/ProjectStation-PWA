@@ -253,6 +253,28 @@ const GetProjectById = ({
     }
   }, [id, !!project]);
 
+  const fetchChangeOrderForProject = async () => {
+    if (!id || !project) return;
+    try {
+      const res = await Service.GetChangeOrder(id);
+      const allCO = Array.isArray(res?.data)
+        ? res.data
+        : Array.isArray(res)
+          ? res
+          : [];
+
+      setProject((prev) => (prev ? { ...prev, changeOrders: allCO } : null));
+    } catch (error) {
+      console.error("Error fetching project Change Orders:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id && project) {
+      fetchChangeOrderForProject();
+    }
+  }, [id, !!project]);
+
   // Fetch tasks for stats
   useEffect(() => {
     const fetchTasks = async () => {
@@ -422,7 +444,7 @@ const GetProjectById = ({
     if (coId) {
       setSelectedCoId(coId);
       setChangeOrderView("table");
-      fetchProject(); // Refresh project to get updated CO list
+      fetchChangeOrderForProject(); // Refresh CO list
     }
   };
 

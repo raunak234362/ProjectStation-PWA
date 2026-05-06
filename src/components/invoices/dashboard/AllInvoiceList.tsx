@@ -1,5 +1,4 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import DataTable from "../../ui/table";
+import DataTable, { type ExtendedColumnDef } from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
 import { formatDate } from "../../../utils/dateUtils";
 
@@ -8,14 +7,15 @@ interface AllListProps {
 }
 
 const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
-  const columns: ColumnDef<any>[] = [
+  const columns: ExtendedColumnDef<any>[] = [
     {
       accessorKey: "invoiceNumber",
       header: "Invoice #",
+      enableColumnFilter: true,
       cell: ({ row }) => {
         const inv = row.original;
         return (
-          <span className="font-medium text-gray-800">
+          <span className="font-black text-black">
             {inv.invoiceNumber || "—"}
           </span>
         );
@@ -24,6 +24,7 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
     {
       accessorKey: "customerName",
       header: "Client",
+      enableColumnFilter: true,
     },
     {
       accessorKey: "invoiceDate",
@@ -69,13 +70,19 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
     {
       accessorKey: "paymentStatus",
       header: "Status",
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: [
+        { label: "Paid", value: "true" },
+        { label: "Pending", value: "false" },
+      ],
       cell: ({ row }) => {
         const rawStatus = row.original.paymentStatus || row.original.status || "Pending";
         const status = String(rawStatus).toLowerCase();
         
         if (row.original.paymentStatus === true || status === "paid" || status === "completed" || status === "true") {
           return (
-            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-600 border border-green-100">
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-50 text-green-600 border border-green-100">
               Paid
             </span>
           );
@@ -86,14 +93,14 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
 
         if (isOverdue) {
           return (
-            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-100">
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-50 text-red-600 border border-red-100">
               Overdue
             </span>
           );
         }
 
         return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-600 border border-yellow-100">
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-yellow-50 text-yellow-600 border border-yellow-100">
             Pending
           </span>
         );

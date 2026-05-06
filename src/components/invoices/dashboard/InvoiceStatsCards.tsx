@@ -38,7 +38,7 @@ const InvoiceStatsCards: React.FC<StatsProps> = ({ invoices }) => {
             trendUp: true,
         },
         {
-            title: "Total Amount Received",
+            title: "Total Amount Paid",
             value: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(totalReceived),
             subValue: `${invoices.filter(i => i.paymentStatus).length} Paid Invoices`,
             icon: DollarSign,
