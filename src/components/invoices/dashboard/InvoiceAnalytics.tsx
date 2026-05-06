@@ -1,27 +1,12 @@
 import React from "react";
-import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell,
-    Legend,
-} from "recharts";
-import { Banknote, CheckCircle2, AlertCircle } from "lucide-react";
-import JobFinancialsBar from "../../dashboard/components/JobFinancialsBar";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 interface AnalyticsProps {
     invoices: any[];
 }
 
 const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
-    const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
-    const isClient = userRole === "client" || userRole === "client_admin";
+    // const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
 
     // --- Data Processing for Admin/PMO ---
     const processTrendData = () => {
@@ -72,13 +57,6 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
         { name: "Overdue", value: overdueCount, color: "#ef4444" },
     ].filter(d => d.value > 0);
 
-
-    // --- Data processing for Client ---
-    const totalInvoiced = invoices.reduce((acc, inv) => acc + (parseFloat(inv.totalInvoiceValue) || 0), 0);
-    const totalPaid = invoices
-        .filter((inv) => inv.paymentStatus === true || inv.paymentStatus === "Paid")
-        .reduce((acc, inv) => acc + (parseFloat(inv.totalInvoiceValue) || 0), 0);
-    const balanceDue = totalInvoiced - totalPaid;
 
     // --- End of Data Processing ---
 

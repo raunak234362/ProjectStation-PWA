@@ -20,7 +20,7 @@ import QuotationResponseDetailsModal from "../connectionDesigner/QuotationRespon
 import EditRFQByID from "./EditRFQbyID";
 import { useDispatch } from "react-redux";
 import { updateRFQ, deleteRFQ } from "../../store/rfqSlice";
-import { truncateWords } from "../../utils/stringUtils";
+
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { toast } from "react-toastify";
 
@@ -362,56 +362,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     userRole === "connection_designer_engineer" ||
     userRole === "connection_designer_admin";
 
-  const responseColumns: ColumnDef<any>[] = [
-    // {
-    //   accessorKey: "createdByRole",
-    //   header: "From",
-    //   cell: ({ row }) => (
-    //     <span className="font-medium text-sm">
-    //       {row.original.createdByRole === "CLIENT" || "CLIENT_ADMIN"  ? "Client" : "WBT Team"}
-    //     </span>
-    //   ),
-    // },
-    {
-      accessorKey: "description",
-      header: "Message",
-      cell: ({ row }: any) => (
-        <div
-          className="prose prose-sm text-gray-700"
-          style={{
-            marginLeft: row.original.parentResponseId ? "0px" : "0px",
-          }}
-          dangerouslySetInnerHTML={{
-            __html: truncateWords(row.original.description || "—", 10),
-          }}
-        />
-      ),
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Created",
-      cell: ({ row }) => (
-        <span className="text-gray-700 text-sm">
-          {formatDateTime(row.original.createdAt)}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${
-            row.original.status === "OPEN"
-              ? "bg-gray-100 text-black border border-gray-200"
-              : "bg-gray-100 text-black border border-gray-200"
-          }`}
-        >
-          {row.original.status}
-        </span>
-      ),
-    },
-  ];
+
 
   /* ---------------- QUOTATION COLUMNS ---------------- */
   const quotationColumns: ColumnDef<any>[] = [

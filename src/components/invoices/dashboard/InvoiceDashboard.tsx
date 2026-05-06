@@ -16,7 +16,6 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   const [loading, setLoading] = useState(true);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
   const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator";
-  const isClient = userRole === "client" || userRole === "client_admin";
 
   useEffect(() => {
     const fetchInvoices = async () => {
