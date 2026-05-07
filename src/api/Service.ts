@@ -513,7 +513,7 @@ class Service {
     }
   }
 
-    static async GetConnectionDesignerQuotaByID(id:string) {
+  static async GetConnectionDesignerQuotaByID(id: string) {
     try {
       const response = await api.get(`connectionDesignerQuota/${id}`, {
         headers: {
@@ -1968,20 +1968,20 @@ class Service {
       console.error("cannot find sub", error);
     }
   }
-// submittalsentbyprojectid:
-static async SubmittalSentByProjectId(projectId: string) {
-  try {
-    const response = await api.get(`submittal/sents/${projectId}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    console.log(' All submittals fetched by project ID:', response.data)
-    return response.data
-  } catch (error) {
-    console.error('cannot find submittal', error)
+  // submittalsentbyprojectid:
+  static async SubmittalSentByProjectId(projectId: string) {
+    try {
+      const response = await api.get(`submittal/sents/${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      console.log(' All submittals fetched by project ID:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('cannot find submittal', error)
+    }
   }
-}
   //submittal by project id :
   static async GetSubmittalByProjectId(projectId: string) {
     try {
@@ -3056,8 +3056,8 @@ static async SubmittalSentByProjectId(projectId: string) {
 
 
   //client dashboard routes
-  
-static async GetClientDashboardData() {
+
+  static async GetClientDashboardData() {
     try {
       console.log('Fetching client dashboard data...');
       const response = await api.get(`/dashBoardData/client`)
@@ -3378,6 +3378,6 @@ static async GetClientDashboardData() {
       throw error;
     }
   }
-  
+
 }
 export default Service;
