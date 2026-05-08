@@ -315,6 +315,19 @@ export interface RFQpayload {
   MTOStickModel: string;
   mtoStickModelEnabled?: boolean;
   miscDesign: boolean;
+  mainSteel?: boolean;
+  mainSteelMiscAttachments?: boolean;
+  mainSteelConnections?: boolean;
+  miscSteel?: boolean;
+  miscSteelConnection?: boolean;
+  miscSteelAttachments?: boolean;
+  mto3dModel?: boolean;
+  mtoTeklaSDS2?: boolean;
+  mtoIFC?: boolean;
+  mtoEJE?: boolean;
+  mtoKss?: boolean;
+  mtoBoltList?: boolean;
+  mtoMaterialSummary?: boolean;
   createdById: string;
   files?: File[] | string[];
 }

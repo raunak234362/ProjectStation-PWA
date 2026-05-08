@@ -1,30 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 interface AnalyticsProps {
     invoices: any[];
+    fromMonth: number;
+    toMonth: number;
 }
 
-const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
-    // const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices, fromMonth, toMonth }) => {
 
     // --- Data Processing for Admin/PMO ---
     const processTrendData = () => {
         const months: Record<string, { raised: number; received: number; order: number }> = {};
         const today = new Date();
+        const currentYear = today.getFullYear();
 
-        for (let i = 5; i >= 0; i--) {
-            const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        // Generate months in the range [fromMonth, toMonth]
+        for (let i = fromMonth; i <= toMonth; i++) {
+            const d = new Date(currentYear, i, 1);
             const key = d.toLocaleString('default', { month: 'short' });
             months[key] = { raised: 0, received: 0, order: i };
         }
 
         invoices.forEach(inv => {
-            if (!inv.invoiceDate) return;
-            const d = new Date(inv.invoiceDate);
-            if ((today.getTime() - d.getTime()) > 180 * 24 * 60 * 60 * 1000) return;
+            const dateStr = inv.invoiceDate || inv.createdAt || inv.date;
+            if (!dateStr) return;
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return;
 
             const key = d.toLocaleString('default', { month: 'short' });
+            
             if (months[key]) {
                 const amount = parseFloat(inv.totalInvoiceValue) || 0;
                 months[key].raised += amount;
@@ -35,9 +40,8 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
         });
 
         return Object.entries(months)
-            .sort((a, b) => b[1].order - a[1].order)
-            .map(([name, data]) => ({ name, raised: data.raised, received: data.received }))
-            .reverse();
+            .sort((a, b) => a[1].order - b[1].order)
+            .map(([name, data]) => ({ name, raised: data.raised, received: data.received }));
     };
 
     const lineData = processTrendData();
@@ -65,11 +69,7 @@ const InvoiceAnalytics: React.FC<AnalyticsProps> = ({ invoices }) => {
             {/* 1. Trends Line Chart */}
             <div className="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45]">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg  text-gray-800">Invoices & Payments Trend</h3>
-                    <select className="text-sm border-none bg-gray-50 rounded-lg px-3 py-1 focus:ring-1 focus:ring-green-500 text-gray-600 outline-hidden cursor-pointer">
-                        <option>Last 6 Months</option>
-                        <option>This Year</option>
-                    </select>
+                    <h3 className="text-lg text-gray-800">Invoices & Payments Trend</h3>
                 </div>
                 <div className="h-[200px] sm:h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">

@@ -178,6 +178,63 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     }
   }, [userDetail, userRole, selectedCountry, setValue]);
 
+  // --- REAL-TIME MTO DESCRIPTION SYNC ---
+  const mainSteel = watch("mainSteel");
+  const mainSteelMiscAttachments = watch("mainSteelMiscAttachments");
+  const mainSteelConnections = watch("mainSteelConnections");
+  const miscSteel = watch("miscSteel");
+  const miscSteelConnection = watch("miscSteelConnection");
+  const miscSteelAttachments = watch("miscSteelAttachments");
+  const mto3dModel = watch("mto3dModel");
+  const mtoTeklaSDS2 = watch("mtoTeklaSDS2");
+  const mtoIFC = watch("mtoIFC");
+  const mtoEJE = watch("mtoEJE");
+  const mtoKss = watch("mtoKss");
+  const mtoBoltList = watch("mtoBoltList");
+  const mtoMaterialSummary = watch("mtoMaterialSummary");
+
+  useEffect(() => {
+    if (!mtoStickModelEnabled) return;
+
+    const sections = [];
+
+    const mainSteelList = [];
+    if (mainSteel) mainSteelList.push("Main Steel");
+    if (mainSteelMiscAttachments) mainSteelList.push("Main steel Misc Attachments");
+    if (mainSteelConnections) mainSteelList.push("Main Steel Connections");
+    if (mainSteelList.length > 0) {
+      sections.push(`<p><strong>Main Steel Scope:</strong></p><ul>${mainSteelList.map(item => `<li>${item}</li>`).join("")}</ul>`);
+    }
+
+    const miscSteelList = [];
+    if (miscSteel) miscSteelList.push("Misc steel");
+    if (miscSteelConnection) miscSteelList.push("Misc Steel Connection");
+    if (miscSteelAttachments) miscSteelList.push("Misc steel attachments");
+    if (miscSteelList.length > 0) {
+      sections.push(`<p><strong>Miscellaneous Steel Scope:</strong></p><ul>${miscSteelList.map(item => `<li>${item}</li>`).join("")}</ul>`);
+    }
+
+    const mtoFileList = [];
+    if (mto3dModel) mtoFileList.push("3d Model");
+    if (mtoTeklaSDS2) mtoFileList.push("Tekla/SDS-2");
+    if (mtoIFC) mtoFileList.push("IFC files");
+    if (mtoEJE) mtoFileList.push("EJE files");
+    if (mtoKss) mtoFileList.push("Kss files");
+    if (mtoBoltList) mtoFileList.push("bolt List");
+    if (mtoMaterialSummary) mtoFileList.push("Material Summary Report");
+    if (mtoFileList.length > 0) {
+      sections.push(`<p><strong>MTO Files Requirements:</strong></p><ul>${mtoFileList.map(item => `<li>${item}</li>`).join("")}</ul>`);
+    }
+
+    setValue("MTOStickModel", sections.join(""));
+  }, [
+    mtoStickModelEnabled,
+    mainSteel, mainSteelMiscAttachments, mainSteelConnections,
+    miscSteel, miscSteelConnection, miscSteelAttachments,
+    mto3dModel, mtoTeklaSDS2, mtoIFC, mtoEJE, mtoKss, mtoBoltList, mtoMaterialSummary,
+    setValue
+  ]);
+
   console.log(userDetail);
 
   // --- SUBMIT ---
@@ -203,6 +260,19 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         detailingMisc: data.detailingMisc,
         MTOManual: !!data.MTOManual,
         MTOStickModel: data.mtoStickModelEnabled ? (data.MTOStickModel || "") : "",
+        mainSteel: !!data.mainSteel,
+        mainSteelMiscAttachments: !!data.mainSteelMiscAttachments,
+        mainSteelConnections: !!data.mainSteelConnections,
+        miscSteel: !!data.miscSteel,
+        miscSteelConnection: !!data.miscSteelConnection,
+        miscSteelAttachments: !!data.miscSteelAttachments,
+        mto3dModel: !!data.mto3dModel,
+        mtoTeklaSDS2: !!data.mtoTeklaSDS2,
+        mtoIFC: !!data.mtoIFC,
+        mtoEJE: !!data.mtoEJE,
+        mtoKss: !!data.mtoKss,
+        mtoBoltList: !!data.mtoBoltList,
+        mtoMaterialSummary: !!data.mtoMaterialSummary,
 
         files: data.files ?? [],
       };
@@ -597,6 +667,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 </div>
               </div>
 
+            </div>
               <div className="space-y-3 border border-black p-4 md:p-6">
                 <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                   Material Take off
@@ -609,27 +680,68 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   />
                 </div>
                 {mtoStickModelEnabled && (
-                  <div className="mt-3 space-y-2">
-                    <label className="block text-xs font-black text-black uppercase tracking-widest">
-                      MTO Stick Model Details
-                    </label>
-                    <div className="border border-black rounded-xl overflow-hidden min-h-[100px] bg-white">
-                      <Controller
-                        name="MTOStickModel"
-                        control={control}
-                        render={({ field }) => (
-                          <RichTextEditor
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            placeholder="Enter MTO Stick Model details..."
-                          />
-                        )}
-                      />
+                  <div className="mt-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                    {/* Main Steel Scope */}
+                    <div className="space-y-3 p-4 bg-gray-50 rounded-2xl border border-black/5">
+                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+                        Main Steel Scope
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <Toggle label="Main Steel" {...register("mainSteel")} />
+                        <Toggle label="Main Steel Misc Attachments" {...register("mainSteelMiscAttachments")} />
+                        <Toggle label="Main Steel Connections" {...register("mainSteelConnections")} />
+                      </div>
+                    </div>
+
+                    {/* Miscellaneous Steel Scope */}
+                    <div className="space-y-3 p-4 bg-gray-50 rounded-2xl border border-black/5">
+                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+                        Miscellaneous Steel Scope
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <Toggle label="Misc Steel" {...register("miscSteel")} />
+                        <Toggle label="Misc Steel Connection" {...register("miscSteelConnection")} />
+                        <Toggle label="Misc Steel Attachments" {...register("miscSteelAttachments")} />
+                      </div>
+                    </div>
+
+                    {/* MTO Files Requirements */}
+                    <div className="space-y-3 p-4 bg-gray-50 rounded-2xl border border-black/5">
+                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+                        MTO Files Requirements
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <Toggle label="3d Model" {...register("mto3dModel")} />
+                        <Toggle label="Tekla/SDS-2" {...register("mtoTeklaSDS2")} />
+                        <Toggle label="IFC files" {...register("mtoIFC")} />
+                        <Toggle label="EJE files" {...register("mtoEJE")} />
+                        <Toggle label="Kss files" {...register("mtoKss")} />
+                        <Toggle label="bolt List" {...register("mtoBoltList")} />
+                        <Toggle label="Material Summary Report" {...register("mtoMaterialSummary")} />
+                      </div>
+                    </div>
+
+                    <div className="mt-3 space-y-2">
+                      <label className="block text-xs font-black text-black uppercase tracking-widest">
+                        MTO Stick Model Details (Real-time Preview)
+                      </label>
+                      <div className="border border-black rounded-xl overflow-hidden min-h-[200px] bg-white">
+                        <Controller
+                          name="MTOStickModel"
+                          control={control}
+                          render={({ field }) => (
+                            <RichTextEditor
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              placeholder="MTO details will appear here as you toggle options..."
+                            />
+                          )}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
           </section>
 
           {/* Assets Section */}

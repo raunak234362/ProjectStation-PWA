@@ -37,18 +37,20 @@ const RecentInvoiceActivity: React.FC<RecentActivityProps> = ({ invoices }) => {
         // Determine type based on status logic
         let type = "raised";
         const invNum = inv.invoiceNumber || "—";
-        let message = `Invoice #${invNum} raised for ${inv.customerName}`;
+        const actualProjectName = inv.project?.name || inv.projectName;
+        const projName = actualProjectName ? ` (${actualProjectName})` : "";
+        let message = `Invoice #${invNum} raised for ${inv.customerName}${projName}`;
         let icon = FilePlus;
         let color = "bg-blue-100 text-blue-600";
 
         if (isPaid) {
           type = "received";
-          message = `Payment received for Invoice #${invNum}`;
+          message = `Payment received for Invoice #${invNum}${projName}`;
           icon = CheckCircle;
           color = "bg-green-100 text-green-600";
         } else if (inv.dueDate && new Date(inv.dueDate) < new Date()) {
           type = "overdue";
-          message = `Invoice #${invNum} is overdue`;
+          message = `Invoice #${invNum} is overdue${projName}`;
           icon = Clock;
           color = "bg-red-100 text-red-600";
         }

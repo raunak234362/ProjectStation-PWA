@@ -30,21 +30,25 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
       header: "Client",
     },
     {
+      accessorKey: "projectName",
+      header: "Project",
+      cell: ({ row }) => (
+        <span className="text-gray-600 italic">
+          {row.original.project?.name || row.original.projectName || "—"}
+        </span>
+      ),
+    },
+    {
       accessorKey: "invoiceDate",
       header: "Issued Date",
-      cell: ({ row }) => {
-        const date = row.getValue("invoiceDate") as string;
-        return date ? formatDate(date) : "N/A";
-      },
+      cell: ({ row }) => formatDate(row.getValue("invoiceDate")),
     },
     {
       accessorKey: "dueDate",
       header: "Due Date",
       cell: ({ row }) => {
         const date = row.original.dueDate || row.original.invoiceDate; // Fallback
-        if (!date) return "N/A";
-        // Check overdue
-        const isOverdue = new Date(date) < new Date();
+        const isOverdue = date && new Date(date) < new Date();
         return (
           <span
             className={isOverdue ? "text-red-500 font-medium" : "text-gray-600"}

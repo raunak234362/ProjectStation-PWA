@@ -145,15 +145,6 @@ const EstimatorDashboard = () => {
 
   const rfqColumns: ExtendedColumnDef<any>[] = [
     {
-      accessorKey: "projectNumber",
-      header: "Project No.",
-      cell: ({ row }) => (
-        <span className="font-black text-black group-hover:text-green-700 transition-colors">
-          {row.original.projectNumber || row.original.project?.projectNumber || "—"}
-        </span>
-      ),
-    },
-    {
       accessorKey: "projectName",
       header: "Project Name",
       cell: ({ row }) => (
@@ -172,16 +163,24 @@ const EstimatorDashboard = () => {
       ),
     },
     {
-      header: "MTO Status",
+      header: "RFQ Type",
       cell: ({ row }) => {
-        const hasMTO = row.original.MTOManual || row.original.mtoStickModelEnabled || row.original.MTOStickModel;
+        const r = row.original;
+        const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
+        const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
+        
+        let label = "—";
+        if (isDetailing && isMTO) label = "Detailing | MTO";
+        else if (isDetailing) label = "Detailing";
+        else if (isMTO) label = "MTO";
+
         return (
           <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-            hasMTO 
-              ? "bg-green-50 text-green-700 border-green-200" 
+            label !== "—" 
+              ? "bg-blue-50 text-blue-700 border-blue-200" 
               : "bg-gray-50 text-gray-400 border-gray-200"
           }`}>
-            {hasMTO ? "REQUIRED" : "NOT REQUIRED"}
+            {label}
           </span>
         );
       },
@@ -249,7 +248,7 @@ const EstimatorDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
           <span className="text-lg font-black text-black uppercase tracking-widest">
-            RFQ OVERVIEW
+            DETAILING RFQ OVERVIEW
           </span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
 
@@ -286,7 +285,7 @@ const EstimatorDashboard = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-black uppercase tracking-widest">
-                    RFQ<span className="text-[10px]">s</span> Awarded
+                    Awarded
                   </span>
                 </div>
               </div>
@@ -308,7 +307,7 @@ const EstimatorDashboard = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Pending RFQ<span className="text-[10px]">s</span>
+                    Pending 
                   </span>
                 </div>
               </div>
@@ -322,7 +321,7 @@ const EstimatorDashboard = () => {
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
           <span className="text-lg font-black text-black uppercase tracking-widest">
-            Material Take-off OVERVIEW
+            Material Take-off RFQ OVERVIEW
           </span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
 
@@ -333,7 +332,7 @@ const EstimatorDashboard = () => {
             >
               <div className="flex items-center gap-4 z-10">
                 <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <CheckCircle2 size={24} strokeWidth={2.5} />
+                  <FileText size={24} strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-black uppercase tracking-widest">
@@ -359,7 +358,7 @@ const EstimatorDashboard = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Pending MTO
+                    Pending
                   </span>
                 </div>
               </div>
@@ -380,7 +379,7 @@ const EstimatorDashboard = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Completed MTO
+                    Received 
                   </span>
                 </div>
               </div>
@@ -395,7 +394,6 @@ const EstimatorDashboard = () => {
       </div>
         {userRole === "CLIENT_ESTIMATOR" ? (
           <div>
-
             <InvoiceSummary 
               invoices={allInvoices} 
               projects={allProjects} 

@@ -115,6 +115,29 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Project Name",
           },
           {
+            header: "RFQ Type",
+            cell: ({ row }) => {
+              const r = row.original;
+              const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
+              const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
+              
+              let label = "—";
+              if (isDetailing && isMTO) label = "Detailing | MTO";
+              else if (isDetailing) label = "Detailing";
+              else if (isMTO) label = "MTO";
+
+              return (
+                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                  label !== "—" 
+                    ? "bg-blue-50 text-blue-700 border-blue-200" 
+                    : "bg-gray-50 text-gray-400 border-gray-200"
+                }`}>
+                  {label}
+                </span>
+              );
+            },
+          },
+          {
             accessorKey: "projectNumber",
             header: "RFQ #",
           },
@@ -204,6 +227,29 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           {
             accessorKey: "projectName",
             header: "Project Name",
+          },
+          {
+            header: "RFQ Type",
+            cell: ({ row }) => {
+              const r = row.original;
+              const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
+              const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
+              
+              let label = "—";
+              if (isDetailing && isMTO) label = "Detailing | MTO";
+              else if (isDetailing) label = "Detailing";
+              else if (isMTO) label = "MTO";
+
+              return (
+                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                  label !== "—" 
+                    ? "bg-blue-50 text-blue-700 border-blue-200" 
+                    : "bg-gray-50 text-gray-400 border-gray-200"
+                }`}>
+                  {label}
+                </span>
+              );
+            },
           },
           {
             accessorKey: "subject",

@@ -92,31 +92,34 @@ const AllRFQ = ({ rfq }: any) => {
       },
     },
     {
-      id: "mto",
-      header: "MTO Status",
-      accessorFn: (row: any) =>
-        row.MTOManual || (row.MTOStickModel && row.MTOStickModel !== "")
-          ? "Required"
-          : "Not Required",
+      id: "rfqType",
+      header: "RFQ Type",
+      accessorFn: (row: any) => {
+        const isDetailing = row.detailingMain || row.detailingMisc || row.connectionDesign || row.customerDesign || row.miscDesign;
+        const isMTO = row.MTOManual || row.mtoStickModelEnabled || row.MTOStickModel;
+        if (isDetailing && isMTO) return "Detailing | MTO";
+        if (isDetailing) return "Detailing";
+        if (isMTO) return "MTO";
+        return "—";
+      },
       enableColumnFilter: true,
       filterType: "select",
       filterFn: "equalsString",
       filterOptions: [
-        { label: "Required", value: "Required" },
-        { label: "Not Required", value: "Not Required" },
+        { label: "Detailing", value: "Detailing" },
+        { label: "MTO", value: "MTO" },
+        { label: "Detailing | MTO", value: "Detailing | MTO" },
       ],
       cell: ({ row }) => {
-        const r = row.original as any;
-        const isRequired =
-          r.MTOManual || (r.MTOStickModel && r.MTOStickModel !== "");
+        const label = row.getValue("rfqType") as string;
         return (
           <span
-            className={`text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${isRequired
-                ? "bg-green-50 text-green-700 border-green-200"
+            className={`text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${label !== "—"
+                ? "bg-blue-50 text-blue-700 border-blue-200"
                 : "bg-gray-50 text-gray-400 border-gray-100"
               }`}
           >
-            {isRequired ? "Required" : "Not Required"}
+            {label}
           </span>
         );
       },
