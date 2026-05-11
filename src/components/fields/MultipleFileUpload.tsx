@@ -72,7 +72,7 @@ function MultipleFileUpload({
         type="file"
         multiple
         onChange={handleFileChange}
-        className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
       />
    
       {files.length > 0 && (
@@ -84,7 +84,7 @@ function MultipleFileUpload({
             {files.map((file, index) => (
               <li
                 key={`${file.name}-${file.lastModified}-${index}`} // More robust key
-                className="flex items-center justify-between p-2 border rounded-md bg-gray-50"
+                className="flex items-center justify-between p-2 border rounded-lg bg-gray-50"
               >
                 <div className="flex-1 min-w-0">
                   <span

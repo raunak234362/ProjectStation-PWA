@@ -303,6 +303,8 @@ export interface RFQpayload {
   subject: string;
   description: string;
   location: string;
+  country?: string;
+  state?: string;
   status: boolean;
   tools: string;
   wbtStatus: boolean | any;
@@ -313,6 +315,7 @@ export interface RFQpayload {
   detailingMisc: boolean;
   MTOManual: boolean;
   MTOStickModel: string;
+  MTOManualModel?: string;
   mtoStickModelEnabled?: boolean;
   miscDesign: boolean;
   mainSteel?: boolean;
@@ -328,6 +331,20 @@ export interface RFQpayload {
   mtoKss?: boolean;
   mtoBoltList?: boolean;
   mtoMaterialSummary?: boolean;
+  manualMainSteel?: boolean;
+  manualMainSteelPercentage?: number;
+  manualMainSteelMiscAttachments?: boolean;
+  manualMainSteelMiscAttachmentsPercentage?: number;
+  manualMainSteelConnections?: boolean;
+  manualMainSteelConnectionsPercentage?: number;
+  manualMiscSteel?: boolean;
+  manualMiscSteelPercentage?: number;
+  manualMiscSteelConnection?: boolean;
+  manualMiscSteelConnectionPercentage?: number;
+  manualMiscSteelAttachments?: boolean;
+  manualMiscSteelAttachmentsPercentage?: number;
+  manualMaterialSummary?: boolean;
+  manualMaterialSummaryPercentage?: number;
   createdById: string;
   files?: File[] | string[];
 }
