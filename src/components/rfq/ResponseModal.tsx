@@ -26,8 +26,16 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
   onSuccess,
   parentResponseId,
 }) => {
-  const { register, handleSubmit, control, reset, setValue, getValues } =
+  const { register, handleSubmit, control, reset, setValue, getValues, watch } =
     useForm<RfqResponsePayload>();
+
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const isClientRole = ["client", "client_admin", "client_estimator"].includes(
+    userRole,
+  );
+
+  const currentStatus = watch("wbtStatus");
+  const [closedReason, setClosedReason] = useState("");
 
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
@@ -461,122 +469,153 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             className="space-y-6 sm:space-y-8"
             onSubmit={handleSubmit(onSubmit)}
           >
-            {/* Estimation Selection */}
-            <div className="bg-gray-50/50 p-4 sm:p-6 rounded-2xl border border-black/5 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                <div className="flex-1">
-                
-                  <Select
-                    name="estimationId"
-                    options={estimations.map((est) => ({
-                      label: `${est.estimationNumber} - ${est.projectName}`,
-                      value: est.id,
-                    }))}
-                    value={selectedEstimationId}
-                    onChange={(_: any, val: any) =>
-                      handleEstimationChange(val as string)
-                    }
-                    placeholder="Select Estimation"
-                    className="h-12"
-                  />
-                </div>
-                <Button
-                  type="button"
-                  onClick={handlePrint}
-                  disabled={!selectedEstimationId}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 h-12 bg-white text-black rounded-xl border border-black hover:bg-gray-50 transition-all disabled:opacity-30 shadow-sm font-black uppercase text-xs tracking-widest shrink-0"
-                >
-                  <Printer className="w-4 h-4" />
-                  Print Proposal
-                </Button>
-              </div>
-
-              {/* Pricing Items Selection */}
-              {selectedEstimationId && (
-                <div className="mt-6 pt-6 border-t border-black/5 space-y-6">
-                  <h3 className="text-xs font-black text-black uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                    Quantification Matrix
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    {pricingItems.map((item, index) => (
-                      <div
-                        key={item.label}
-                        className="bg-white p-4 rounded-xl border border-black/10 shadow-sm hover:border-green-400 group transition-all"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <label className="flex items-center gap-3 cursor-pointer flex-1">
-                            <input
-                              type="checkbox"
-                              checked={item.selected}
-                              onChange={(e) =>
-                                handlePricingItemChange(
-                                  index,
-                                  "selected",
-                                  e.target.checked,
-                                )
-                              }
-                              className="w-5 h-5 text-green-600 rounded-lg border-black/20 focus:ring-green-500 cursor-pointer"
-                            />
-                            <span className="text-sm font-black text-black uppercase tracking-tight group-hover:text-green-600 transition-colors">
-                              {item.label}
-                            </span>
-                          </label>
-
-                          {item.selected && (
-                            <div className="flex flex-row gap-2 sm:gap-3 items-center animate-in slide-in-from-right-4 duration-300">
-                              <div className="relative flex-1 sm:w-32">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30 text-[10px] font-black uppercase">
-                                  {selectedEstimation?.fabricators
-                                    ?.currencyType || "USD"}
-                                </span>
-                                <input
-                                  type="number"
-                                  value={item.price}
-                                  onChange={(e) =>
-                                    handlePricingItemChange(
-                                      index,
-                                      "price",
-                                      e.target.value,
-                                    )
-                                  }
-                                  placeholder="0.00"
-                                  className="w-full pl-12 pr-3 h-10 text-sm border border-black/10 rounded-lg focus:ring-1 focus:ring-green-500 outline-none font-black"
-                                />
-                              </div>
-                              <div className="relative flex-1 sm:w-28">
-                                <input
-                                  type="number"
-                                  value={item.weeks}
-                                  onChange={(e) =>
-                                    handlePricingItemChange(
-                                      index,
-                                      "weeks",
-                                      e.target.value,
-                                    )
-                                  }
-                                  placeholder="0"
-                                  className="w-full pl-3 pr-12 h-10 text-sm border border-black/10 rounded-lg focus:ring-1 focus:ring-green-500 outline-none font-black"
-                                />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-black/30 text-[10px] font-black uppercase">
-                                  WKS
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+            {!isClientRole && (
+              <div className="bg-gray-50/50 p-4 sm:p-6 rounded-2xl border border-black/5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+                  <div className="flex-1">
+                    <Select
+                      name="estimationId"
+                      options={estimations.map((est) => ({
+                        label: `${est.estimationNumber} - ${est.projectName}`,
+                        value: est.id,
+                      }))}
+                      value={selectedEstimationId}
+                      onChange={(_: any, val: any) =>
+                        handleEstimationChange(val as string)
+                      }
+                      placeholder="Select Estimation"
+                      className="h-12"
+                    />
                   </div>
+                  <Button
+                    type="button"
+                    onClick={handlePrint}
+                    disabled={!selectedEstimationId}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 h-12 bg-white text-black rounded-xl border border-black hover:bg-gray-50 transition-all disabled:opacity-30 shadow-sm font-black uppercase text-xs tracking-widest shrink-0"
+                  >
+                    <Printer className="w-4 h-4" />
+                    Print Proposal
+                  </Button>
                 </div>
-              )}
-            </div>
+
+                {/* Pricing Items Selection */}
+                {selectedEstimationId && (
+                  <div className="mt-6 pt-6 border-t border-black/5 space-y-6">
+                    <h3 className="text-xs font-black text-black uppercase tracking-widest flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                      Quantification Matrix
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      {pricingItems.map((item, index) => (
+                        <div
+                          key={item.label}
+                          className="bg-white p-4 rounded-xl border border-black/10 shadow-sm hover:border-green-400 group transition-all"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <label className="flex items-center gap-3 cursor-pointer flex-1">
+                              <input
+                                type="checkbox"
+                                checked={item.selected}
+                                onChange={(e) =>
+                                  handlePricingItemChange(
+                                    index,
+                                    "selected",
+                                    e.target.checked,
+                                  )
+                                }
+                                className="w-5 h-5 text-green-600 rounded-lg border-black/20 focus:ring-green-500 cursor-pointer"
+                              />
+                              <span className="text-sm font-black text-black uppercase tracking-tight group-hover:text-green-600 transition-colors">
+                                {item.label}
+                              </span>
+                            </label>
+
+                            {item.selected && (
+                              <div className="flex flex-row gap-2 sm:gap-3 items-center animate-in slide-in-from-right-4 duration-300">
+                                <div className="relative flex-1 sm:w-32">
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30 text-[10px] font-black uppercase">
+                                    {selectedEstimation?.fabricators
+                                      ?.currencyType || "USD"}
+                                  </span>
+                                  <input
+                                    type="number"
+                                    value={item.price}
+                                    onChange={(e) =>
+                                      handlePricingItemChange(
+                                        index,
+                                        "price",
+                                        e.target.value,
+                                      )
+                                    }
+                                    placeholder="0.00"
+                                    className="w-full pl-12 pr-3 h-10 text-sm border border-black/10 rounded-lg focus:ring-1 focus:ring-green-500 outline-none font-black"
+                                  />
+                                </div>
+                                <div className="relative flex-1 sm:w-28">
+                                  <input
+                                    type="number"
+                                    value={item.weeks}
+                                    onChange={(e) =>
+                                      handlePricingItemChange(
+                                        index,
+                                        "weeks",
+                                        e.target.value,
+                                      )
+                                    }
+                                    placeholder="0"
+                                    className="w-full pl-3 pr-12 h-10 text-sm border border-black/10 rounded-lg focus:ring-1 focus:ring-green-500 outline-none font-black"
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-black/30 text-[10px] font-black uppercase">
+                                    WKS
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Description */}
             <div className="space-y-3">
-              <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                Detailed Description *
-              </label>
+              <div className="flex justify-between items-center">
+                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                  Detailed Description *
+                </label>
+
+                {currentStatus === "CLOSED" && (
+                  <div className="flex gap-2 animate-in slide-in-from-right-4 duration-300">
+                    {["Not awarded to us", "Price is high", "Other"].map(
+                      (reason) => (
+                        <button
+                          key={reason}
+                          type="button"
+                          onClick={() => {
+                            setClosedReason(reason);
+                            if (reason !== "Other") {
+                              setValue("description", reason);
+                            } else {
+                              setValue("description", "");
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight transition-all border ${
+                            closedReason === reason
+                              ? "bg-black text-white border-black"
+                              : "bg-white text-black border-black/10 hover:border-black"
+                          }`}
+                        >
+                          {reason}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div className="border border-black/10 rounded-2xl overflow-hidden focus-within:border-green-400 transition-all">
                 <Controller
                   name="description"
@@ -636,7 +675,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                 </label>
                 <input
                   {...register("link")}
-                  placeholder="HTTPS://EXTERNAL.RESOURCE.LINK"
+                  placeholder=""
                   className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-medium text-sm"
                 />
               </div>

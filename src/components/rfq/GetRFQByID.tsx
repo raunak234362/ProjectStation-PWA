@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
-import { 
+import {
   Loader2, AlertCircle, Settings, Settings2, ClipboardList,
   ChevronDown, ChevronUp, MessageSquare, User, Clock, Trash2, X
 } from "lucide-react";
@@ -31,7 +31,7 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
   return (
     <div className="mb-4 border-2 border-black rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
       {/* Header */}
-      <div 
+      <div
         onClick={() => setIsOpen(!isOpen)}
         className={`p-4 flex items-center justify-between cursor-pointer transition-colors ${isOpen ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-50`}
       >
@@ -45,9 +45,9 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
                 {response.user?.firstName ? `${response.user.firstName} ${response.user.lastName}` : response.user?.username || 'Team Member'}
               </span>
               {response.user?.role && (
-                 <span className="px-2 py-0.5 rounded bg-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200">
-                   {response.user.role.replace('_', ' ')}
-                 </span>
+                <span className="px-2 py-0.5 rounded bg-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200">
+                  {response.user.role.replace('_', ' ')}
+                </span>
               )}
             </div>
             <div className="flex items-center gap-2 mt-1">
@@ -58,11 +58,11 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex flex-col items-end mr-2 text-right">
-             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">STATUS</span>
-             <span className="text-xs font-bold text-black uppercase">{response.wbtStatus || response.status || 'SENT'}</span>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">STATUS</span>
+            <span className="text-xs font-bold text-black uppercase">{response.wbtStatus || response.status || 'SENT'}</span>
           </div>
           <Button
             variant="ghost"
@@ -78,51 +78,51 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
       {/* Content */}
       {isOpen && (
         <div className="p-5 border-t border-black bg-white animate-in slide-in-from-top-2 duration-300">
-          <div 
+          <div
             className="prose prose-sm max-w-none text-black font-medium leading-relaxed mb-4"
             dangerouslySetInnerHTML={{ __html: response.description }}
           />
-          
+
           {response.files && response.files.length > 0 && (
-             <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
-                <RenderFiles files={response.files} table="rfqResponse" parentId={response.id} hideHeader />
-             </div>
+            <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
+              <RenderFiles files={response.files} table="rfqResponse" parentId={response.id} hideHeader />
+            </div>
           )}
 
           {/* Child Responses */}
           {hasChildren && (
             <div className="mt-6 space-y-4">
               <div className="flex items-center gap-2 mb-3">
-                 <MessageSquare className="w-4 h-4 text-green-600" />
-                 <span className="text-xs font-black text-black uppercase tracking-widest">Replies ({response.childResponses.length})</span>
+                <MessageSquare className="w-4 h-4 text-green-600" />
+                <span className="text-xs font-black text-black uppercase tracking-widest">Replies ({response.childResponses.length})</span>
               </div>
               <div className="space-y-4 ml-4 sm:ml-8 border-l-2 border-green-100 pl-4 sm:pl-6">
                 {[...response.childResponses].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((child: any) => (
                   <div key={child.id} className="relative">
                     {/* Visual Connector */}
                     <div className="absolute -left-[26px] sm:-left-[34px] top-4 w-4 sm:w-6 h-0.5 bg-green-100" />
-                    
+
                     <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 shadow-sm hover:shadow-md transition-all">
                       <div className="flex items-center justify-between mb-3">
-                         <div className="flex items-center gap-2">
-                           <div className="w-6 h-6 rounded-full bg-green-200 flex items-center justify-center">
-                             <User className="w-3 h-3 text-green-700" />
-                           </div>
-                           <span className="font-bold text-xs text-black uppercase tracking-tight">
-                             {child.user?.firstName ? `${child.user.firstName} ${child.user.lastName}` : child.user?.username || 'Team Member'}
-                           </span>
-                         </div>
-                         <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-                           {formatDateTime(child.createdAt)}
-                         </span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-green-200 flex items-center justify-center">
+                            <User className="w-3 h-3 text-green-700" />
+                          </div>
+                          <span className="font-bold text-xs text-black uppercase tracking-tight">
+                            {child.user?.firstName ? `${child.user.firstName} ${child.user.lastName}` : child.user?.username || 'Team Member'}
+                          </span>
+                        </div>
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                          {formatDateTime(child.createdAt)}
+                        </span>
                       </div>
-                      <div 
+                      <div
                         className="text-sm text-gray-800 leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: child.description }}
                       />
                       {child.files && child.files.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-gray-100">
-                           <RenderFiles files={child.files} table="rfqResponse" parentId={child.id} hideHeader />
+                          <RenderFiles files={child.files} table="rfqResponse" parentId={child.id} hideHeader />
                         </div>
                       )}
                     </div>
@@ -133,12 +133,12 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
           )}
 
           <div className="mt-6 flex justify-end">
-             <Button
-               onClick={() => onReply?.(response)}
-               className="h-8 px-4 rounded-lg bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all"
-             >
-               Reply
-             </Button>
+            <Button
+              onClick={() => onReply?.(response)}
+              className="h-8 px-4 rounded-lg bg-green-200 text-black text-[10px] font-black uppercase tracking-widest hover:bg-green-300 transition-all"
+            >
+              Reply
+            </Button>
           </div>
         </div>
       )}
@@ -412,11 +412,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${
-            row.original.approvalStatus
+          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${row.original.approvalStatus
               ? "bg-gray-100 text-black border border-gray-200"
               : "bg-gray-100 text-black border border-gray-200"
-          }`}
+            }`}
         >
           {row.original.approvalStatus ? "Approved" : "Pending"}
         </span>
@@ -472,7 +471,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
-              {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
+            {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
             <div className="bg-gray-100 border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
               {/* Header + Add Response Button */}
               <div className="flex justify-between items-center gap-4">
@@ -484,16 +483,16 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   userRole === "deputy_manager" ||
                   userRole === "operation_executive" ||
                   userRole === "user") && (
-                  <Button
-                    onClick={() => {
-                      setSelectedParentResponseId(null);
-                      setShowResponseModal(true);
-                    }}
-                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
-                  >
-                    + Add Response
-                  </Button>
-                )}
+                    <Button
+                      onClick={() => {
+                        setSelectedParentResponseId(null);
+                        setShowResponseModal(true);
+                      }}
+                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
+                    >
+                      + Add Response
+                    </Button>
+                  )}
               </div>
               {showResponseModal && (
                 <ResponseModal
@@ -511,9 +510,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 (topLevelResponses.length ? (
                   <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                     {topLevelResponses.map((resp: any) => (
-                      <RFQResponseItem 
-                        key={resp.id} 
-                        response={resp} 
+                      <RFQResponseItem
+                        key={resp.id}
+                        response={resp}
                         onReply={(parent) => {
                           setSelectedParentResponseId(parent.id);
                           setShowResponseModal(true);
@@ -569,7 +568,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   {/* Status tag */}
                   <span className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-green-100 text-black border border-gray-200">
                     {((rfq as any)?.wbtStatus &&
-                    (rfq as any)?.wbtStatus !== "RECEIVED"
+                      (rfq as any)?.wbtStatus !== "RECEIVED"
                       ? (rfq as any)?.wbtStatus
                       : rfq?.status
                     )?.replace("_", " ")}
@@ -586,14 +585,14 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                       <>
                         <Button
                           onClick={() => setShowEditModal(true)}
-                          className="h-9 px-4 rounded-xl border border-black font-black text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-all bg-white"
+                          className="h-9 px-4 rounded-xl border border-black bg-green-200 font-black text-black text-[10px] uppercase tracking-widest hover:bg-bg-green-300  transition-all "
                         >
                           Edit RFQ
                         </Button>
 
                         <Button
                           onClick={() => setShowStatusModal(true)}
-                          className="h-9 px-4 rounded-xl border border-black font-black text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-all bg-white"
+                          className="h-9 px-4 rounded-xl border border-black bg-green-200 font-black text-black text-[10px] uppercase tracking-widest hover:bg-bg-green-300  transition-all "
                         >
                           Change Status
                         </Button>
@@ -622,7 +621,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   label="Status"
                   value={
                     ((rfq as any)?.wbtStatus &&
-                    (rfq as any)?.wbtStatus !== "RECEIVED"
+                      (rfq as any)?.wbtStatus !== "RECEIVED"
                       ? (rfq as any)?.wbtStatus
                       : rfq?.status
                     )?.replace("_", " ") || ""
@@ -938,7 +937,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 )}
             </div>
 
-         
+
           </div>
         </div>
         {showCDQuotationModal && (
@@ -1038,11 +1037,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteConfirmText !== "DELETE" || isDeleting}
-                  className={`flex-1 ${
-                    deleteConfirmText === "DELETE"
+                  className={`flex-1 ${deleteConfirmText === "DELETE"
                       ? "bg-red-600 hover:bg-red-700"
                       : "bg-red-300 cursor-not-allowed"
-                  } text-white`}
+                    } text-white`}
                 >
                   {isDeleting ? "Deleting..." : "Confirm Delete"}
                 </Button>
@@ -1141,11 +1139,10 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
-    className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${
-      enabled
+    className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${enabled
         ? "bg-green-100/50 border-green-200 text-black"
         : "bg-gray-50 border-gray-200 text-gray-500"
-    }`}
+      }`}
   >
     {label}
   </div>
