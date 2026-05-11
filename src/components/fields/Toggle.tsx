@@ -31,13 +31,6 @@ export interface ToggleProps extends Omit<
 const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
   ({ label, className = "", name, onChange, ...props }, ref) => {
     const id = useId();
-    const [checked, setChecked] = useState(false);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.checked;
-      setChecked(newValue);
-      onChange?.(e);
-    };
 
     return (
       <div
@@ -47,11 +40,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         {label && (
           <label
             htmlFor={id}
-            className={`cursor-pointer font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all ${
-              checked
-                ? "text-black opacity-100"
-                : "text-black opacity-80 group-hover:opacity-100"
-            }`}
+            className="cursor-pointer font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all text-black opacity-80 group-hover:opacity-100 peer-checked:opacity-100"
           >
             {label}
           </label>
@@ -63,27 +52,24 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
             type="checkbox"
             id={id}
             name={name}
-            className="w-5 h-5 rounded-md border-2 border-black/10 checked:bg-green-200 checked:border-black transition-all appearance-none cursor-pointer"
-            checked={checked}
-            onChange={handleChange}
+            className="peer w-5 h-5 rounded-md border-2 border-black/10 checked:bg-[#6bbd45] checked:border-black transition-all appearance-none cursor-pointer"
+            onChange={onChange}
             ref={ref}
             {...props}
           />
-          {checked && (
-            <svg
-              className="absolute w-3 h-3 text-black pointer-events-none left-1"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="4"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          )}
+          <svg
+            className="absolute w-3 h-3 text-black pointer-events-none left-1 opacity-0 peer-checked:opacity-100 transition-opacity"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="4"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
         </div>
       </div>
     );

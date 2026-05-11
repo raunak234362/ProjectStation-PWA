@@ -234,7 +234,8 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
         <div className="bg-white rounded-2xl border border-black p-5">
           <h3 className="text-base font-black text-black mb-6 flex items-center gap-3 uppercase tracking-tight">
             <FileText size={18} className="text-cyan-600" />
-            Recent RFQs
+            RFQ<span className="lowercase">s</span>
+
           </h3>
           <div className="space-y-4">
             {rfqs.slice(0, 5).map((rfq) => (

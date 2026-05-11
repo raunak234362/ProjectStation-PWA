@@ -456,7 +456,7 @@ const EstimatorDashboard = () => {
         <div className="bg-white rounded-3xl border border-black shadow-sm overflow-hidden flex flex-col h-[400px]">
           <div className="p-6 border-b border-black bg-gray-50 flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-black text-black uppercase tracking-tight">Recent RFQs</h2>
+              <h2 className="text-lg font-black text-black uppercase tracking-tight">RFQ<span className="lowercase">s</span></h2>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-2">
