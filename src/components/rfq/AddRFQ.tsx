@@ -212,31 +212,31 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     if (mtoStickModelEnabled) {
       sections.push(`<p style="font-size: 16px; margin-bottom: 8px; color: #000;"><strong>STICK MODEL SCOPE:</strong></p>`);
       const stickMain = [];
-      if (mtoFields.mainSteel) stickMain.push("Main Steel");
-      if (mtoFields.mainSteelMiscAttachments) stickMain.push("Main steel Misc Attachments");
-      if (mtoFields.mainSteelConnections) stickMain.push("Main Steel Connections");
+      if (mtoFields.mainSteel) stickMain.push("MAIN STEEL");
+      if (mtoFields.mainSteelMiscAttachments) stickMain.push("MAIN STEEL MISC ATTACHMENTS");
+      if (mtoFields.mainSteelConnections) stickMain.push("MAIN STEEL CONNECTIONS");
       if (stickMain.length > 0) {
-        sections.push(`<p><strong>Main Steel Scope:</strong></p><ul>${stickMain.map(item => `<li>${item}</li>`).join("")}</ul>`);
+        sections.push(`<p><strong>MAIN STEEL SCOPE:</strong></p><ul>${stickMain.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
 
       const stickMisc = [];
-      if (mtoFields.miscSteel) stickMisc.push("Misc steel");
-      if (mtoFields.miscSteelConnection) stickMisc.push("Misc Steel Connection");
-      if (mtoFields.miscSteelAttachments) stickMisc.push("Misc steel attachments");
+      if (mtoFields.miscSteel) stickMisc.push("MISC STEEL");
+      if (mtoFields.miscSteelConnection) stickMisc.push("MISC STEEL CONNECTIONS");
+      if (mtoFields.miscSteelAttachments) stickMisc.push("MISC STEEL ATTACHMENTS");
       if (stickMisc.length > 0) {
-        sections.push(`<p><strong>Miscellaneous Steel Scope:</strong></p><ul>${stickMisc.map(item => `<li>${item}</li>`).join("")}</ul>`);
+        sections.push(`<p><strong>MISCELLANEOUS STEEL SCOPE:</strong></p><ul>${stickMisc.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
 
       const stickFiles = [];
-      if (mtoFields.mto3dModel) stickFiles.push("3d Model");
-      if (mtoFields.mtoTeklaSDS2) stickFiles.push("Tekla/SDS-2");
-      if (mtoFields.mtoIFC) stickFiles.push("IFC files");
-      if (mtoFields.mtoEJE) stickFiles.push("EJE files");
-      if (mtoFields.mtoKss) stickFiles.push("Kss files");
-      if (mtoFields.mtoBoltList) stickFiles.push("bolt List");
-      if (mtoFields.mtoMaterialSummary) stickFiles.push("Material Summary Report");
+      if (mtoFields.mto3dModel) stickFiles.push("3D MODEL");
+      if (mtoFields.mtoTeklaSDS2) stickFiles.push("TEKLA/SDS-2");
+      if (mtoFields.mtoIFC) stickFiles.push("IFC FILES");
+      if (mtoFields.mtoEJE) stickFiles.push("EJE FILES");
+      if (mtoFields.mtoKss) stickFiles.push("KSS FILES");
+      if (mtoFields.mtoBoltList) stickFiles.push("BOLT LIST");
+      if (mtoFields.mtoMaterialSummary) stickFiles.push("MATERIAL SUMMARY REPORT");
       if (stickFiles.length > 0) {
-        sections.push(`<p><strong>MTO Files Requirements:</strong></p><ul>${stickFiles.map(item => `<li>${item}</li>`).join("")}</ul>`);
+        sections.push(`<p><strong>MTO FILES REQUIREMENTS:</strong></p><ul>${stickFiles.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
       sections.push(`<br/>`);
     }
@@ -245,25 +245,25 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     if (mtoManualEnabled) {
       sections.push(`<p style="font-size: 16px; margin-bottom: 8px; color: #000;"><strong>MANUAL MODEL SCOPE:</strong></p>`);
       const manualMain = [];
-      if (mtoFields.manualMainSteel) manualMain.push(`Main Steel - ${mtoFields.manualMainSteelPercentage || 0}%`);
-      if (mtoFields.manualMainSteelMiscAttachments) manualMain.push(`Main steel Misc Attachments - ${mtoFields.manualMainSteelMiscAttachmentsPercentage || 0}%`);
-      if (mtoFields.manualMainSteelConnections) manualMain.push(`Main Steel Connections - ${mtoFields.manualMainSteelConnectionsPercentage || 0}%`);
+      if (mtoFields.manualMainSteel) manualMain.push(`MAIN STEEL - ${mtoFields.manualMainSteelPercentage || 0}%`);
+      if (mtoFields.manualMainSteelMiscAttachments) manualMain.push(`MAIN STEEL MISC ATTACHMENTS - ${mtoFields.manualMainSteelMiscAttachmentsPercentage || 0}%`);
+      if (mtoFields.manualMainSteelConnections) manualMain.push(`MAIN STEEL CONNECTIONS - ${mtoFields.manualMainSteelConnectionsPercentage || 0}%`);
       if (manualMain.length > 0) {
-        sections.push(`<p><strong>Main Steel Scope:</strong></p><ul>${manualMain.map(item => `<li>${item}</li>`).join("")}</ul>`);
+        sections.push(`<p><strong>MAIN STEEL SCOPE:</strong></p><ul>${manualMain.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
 
       const manualMisc = [];
-      if (mtoFields.manualMiscSteel) manualMisc.push(`Misc steel - ${mtoFields.manualMiscSteelPercentage || 0}%`);
-      if (mtoFields.manualMiscSteelConnection) manualMisc.push(`Misc Steel Connection - ${mtoFields.manualMiscSteelConnectionPercentage || 0}%`);
-      if (mtoFields.manualMiscSteelAttachments) manualMisc.push(`Misc steel attachments - ${mtoFields.manualMiscSteelAttachmentsPercentage || 0}%`);
+      if (mtoFields.manualMiscSteel) manualMisc.push(`MISC STEEL - ${mtoFields.manualMiscSteelPercentage || 0}%`);
+      if (mtoFields.manualMiscSteelConnection) manualMisc.push(`MISC STEEL CONNECTIONS - ${mtoFields.manualMiscSteelConnectionPercentage || 0}%`);
+      if (mtoFields.manualMiscSteelAttachments) manualMisc.push(`MISC STEEL ATTACHMENTS - ${mtoFields.manualMiscSteelAttachmentsPercentage || 0}%`);
       if (manualMisc.length > 0) {
-        sections.push(`<p><strong>Miscellaneous Steel Scope:</strong></p><ul>${manualMisc.map(item => `<li>${item}</li>`).join("")}</ul>`);
+        sections.push(`<p><strong>MISCELLANEOUS STEEL SCOPE:</strong></p><ul>${manualMisc.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
 
       const manualFiles = [];
-      if (mtoFields.manualMaterialSummary) manualFiles.push(`Material Summary Report - ${mtoFields.manualMaterialSummaryPercentage || 0}%`);
+      if (mtoFields.manualMaterialSummary) manualFiles.push(`MATERIAL SUMMARY REPORT - ${mtoFields.manualMaterialSummaryPercentage || 0}%`);
       if (manualFiles.length > 0) {
-        sections.push(`<p><strong>MTO Files Requirements:</strong></p><ul>${manualFiles.map(item => `<li>${item}</li>`).join("")}</ul>`);
+        sections.push(`<p><strong>MTO FILES REQUIREMENTS:</strong></p><ul>${manualFiles.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
     }
 

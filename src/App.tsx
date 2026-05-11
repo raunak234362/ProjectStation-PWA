@@ -190,8 +190,9 @@ const AppContent = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
+        theme="light"
         limit={3}
+        toastStyle={{ backgroundColor: 'rgba(107, 189, 69, 0.5)', color: '#000', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontWeight: '900', textTransform: 'uppercase', fontSize: '10px', letterSpacing: '0.1em' }}
         style={{ zIndex: 999999 }} 
       />
       <NotificationReceiver />
