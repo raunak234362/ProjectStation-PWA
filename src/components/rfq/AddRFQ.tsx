@@ -774,10 +774,10 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             <div className="flex items-center gap-4 border-b border-black/5 pb-6">
               <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
               <h3 className="text-xl text-black font-black uppercase tracking-tight">
-                Project Attachments
+                Project / Scope Sheet Attachments
               </h3>
             </div>
-            <div className="bg-gray-50/50 p-6 rounded-lg border border-black/5">
+            <div className="bg-gray-50/50 rounded-lg border border-black/5">
               <Controller
                 name="files"
                 control={control}

@@ -19,7 +19,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const config = useMemo(
     () => ({
       readonly: false,
-      placeholder: placeholder || "",
+      placeholder: "",
+      showPlaceholder: false,
       toolbarAdaptive: false,
       buttons: [
         "bold",
