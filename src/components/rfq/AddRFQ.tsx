@@ -10,7 +10,7 @@ import Service from "../../api/Service";
 import type { Fabricator, SelectOption, RFQpayload } from "../../interface";
 
 import { motion } from "motion/react";
-import { Settings2, Trash2, Check, Loader2, Layers, Globe, Percent, Calendar } from "lucide-react";
+import { Settings2, Loader2, Layers, Globe, Percent, Calendar } from "lucide-react";
 
 import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
@@ -406,8 +406,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     }
   };
 
-  const selectedFabricatorOption =
-    fabOptions.find((opt) => opt.value === selectedFabricatorId) || null;
 
   return (
     <div className="w-full mx-auto">
@@ -429,51 +427,63 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && userRole !== "CLIENT_ESTIMATOR" && (
-                <div className="space-y-2">
-                  <label className="block text-xs text-black font-black uppercase tracking-widest opacity-60">Fabricator Partner</label>
-                  <Controller
-                    name="fabricatorId"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        name={field.name}
-                        options={fabOptions}
-                        value={field.value ? String(field.value) : undefined}
-                        className="border-black rounded-lg h-14"
-                        onChange={(_, value) => field.onChange(value ?? "")}
+              {userRole !== "CLIENT" &&
+                userRole !== "CLIENT_ADMIN" &&
+                userRole !== "CLIENT_ESTIMATOR" && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="block text-xs text-black font-black uppercase tracking-widest opacity-60">
+                        Fabricator Partner
+                      </label>
+                      <Controller
+                        name="fabricatorId"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            name={field.name}
+                            options={fabOptions}
+                            value={
+                              field.value ? String(field.value) : undefined
+                            }
+                            className="border-black rounded-lg h-14"
+                            onChange={(_, value) => field.onChange(value ?? "")}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                  {errors.fabricatorId && (
-                    <p className="text-[10px] text-rose-600 uppercase tracking-widest">
-                      {errors.fabricatorId.message}
-                    </p>
-                  )}
-                </div>
-              )}
+                      {errors.fabricatorId && (
+                        <p className="text-[10px] text-rose-600 uppercase tracking-widest">
+                          {errors.fabricatorId.message}
+                        </p>
+                      )}
+                    </div>
 
-              <div className="space-y-2">
-                <label className="block text-xs text-black font-black uppercase tracking-widest opacity-60">Fabricator Contact</label>
-                <Controller
-                  name="senderId"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      name={field.name}
-                      options={clientOptions}
-                      className="border-black rounded-lg h-14"
-                      value={field.value ? String(field.value) : undefined}
-                      onChange={(_, value) => field.onChange(value ?? "")}
-                    />
-                  )}
-                />
-                {errors.senderId && (
-                  <p className="text-[10px] text-rose-600 uppercase tracking-widest">
-                    {errors.senderId.message}
-                  </p>
+                    <div className="space-y-2">
+                      <label className="block text-xs text-black font-black uppercase tracking-widest opacity-60">
+                        Fabricator Contact
+                      </label>
+                      <Controller
+                        name="senderId"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            name={field.name}
+                            options={clientOptions}
+                            className="border-black rounded-lg h-14"
+                            value={
+                              field.value ? String(field.value) : undefined
+                            }
+                            onChange={(_, value) => field.onChange(value ?? "")}
+                          />
+                        )}
+                      />
+                      {errors.senderId && (
+                        <p className="text-[10px] text-rose-600 uppercase tracking-widest">
+                          {errors.senderId.message}
+                        </p>
+                      )}
+                    </div>
+                  </>
                 )}
-              </div>
               <div className="md:col-span-2 space-y-2">
                 <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Layers size={14} className="text-black/40" />

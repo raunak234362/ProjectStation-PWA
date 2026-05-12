@@ -18,7 +18,6 @@ const MTOSelectionModal: React.FC<MTOSelectionModalProps> = ({
   type,
   register,
   watch,
-  setValue,
 }) => {
   const isManual = type === "MANUAL";
 

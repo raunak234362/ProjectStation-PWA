@@ -1,4 +1,4 @@
-import React, { useId, useState, forwardRef } from "react";
+import React, { useId, forwardRef } from "react";
 
 /* ---------------------------------------------------
    TYPE DEFINITIONS
