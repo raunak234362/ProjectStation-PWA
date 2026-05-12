@@ -20,33 +20,33 @@ import { addRFQ } from "../../store/rfqSlice";
 
 const STATES: Record<string, string[]> = {
   "USA": [
-    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", 
-    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
-    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", 
-    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", 
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
     "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
   ],
   "US": [
-    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", 
-    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
-    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", 
-    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", 
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
     "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
   ],
   "UNITED STATES": [
-    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", 
-    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
-    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", 
-    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", 
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
     "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
   ],
   "CANADA": [
-    "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", 
+    "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan",
     "Northwest Territories", "Nunavut", "Yukon"
   ],
   "INDIA": [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", 
-    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
     "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
   ]
 };
@@ -190,12 +190,12 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       if (userDetail.country && !selectedCountry) {
         setValue("country", userDetail.country.toUpperCase());
       }
-      
+
       const clientFabId = userDetail?.FabricatorPointOfContacts?.[0]?.fabricatorId || userDetail?.FabricatorPointOfContacts?.[0]?.id;
       if (clientFabId) {
         setValue("fabricatorId", String(clientFabId));
       }
-      
+
       if (userDetail.id) {
         setValue("senderId", userDetail.id);
       }
@@ -562,7 +562,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 Technical Specifications
               </h3>
             </div>
-            
+
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="block text-sm text-black font-black uppercase tracking-widest">Subject</label>
@@ -662,9 +662,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <Toggle 
-                  label="MTO - Manual" 
-                  {...register("MTOManual")} 
+                <Toggle
+                  label="MTO - Manual"
+                  {...register("MTOManual")}
                 />
                 <Toggle
                   label="MTO - Stick Model"
@@ -672,110 +672,101 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 />
               </div>
 
-                {mtoStickModelEnabled && (
-                  <div className="p-8 bg-[#6bbd45]/5 rounded-lg border border-[#6bbd45]/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-8">
-                    <div className="flex items-center gap-3 border-b border-[#6bbd45]/20 pb-4">
-                      <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#4a8a2d]">Stick Model Configuration</h4>
-                    </div>
+              {mtoStickModelEnabled && (
+                <div className="p-8 bg-[#6bbd45]/5 rounded-lg border border-[#6bbd45]/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-8">
+                  <div className="flex items-center gap-3 border-b border-[#6bbd45]/20 pb-4">
+                    <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#4a8a2d]">Stick Model Configuration</h4>
+                  </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
-                      <div className="space-y-4">
-                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
-                        <Toggle label="Main Steel" {...register("mainSteel")} />
-                        <Toggle label="Main Steel Misc Attachments" {...register("mainSteelMiscAttachments")} />
-                        <Toggle label="Main Steel Connections" {...register("mainSteelConnections")} />
-                      </div>
-                      <div className="space-y-4">
-                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
-                        <Toggle label="Misc Steel" {...register("miscSteel")} />
-                        <Toggle label="Misc Steel Connections" {...register("miscSteelConnection")} />
-                        <Toggle label="Misc Steel Attachments" {...register("miscSteelAttachments")} />
-                      </div>
-                      <div className="space-y-4">
-                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Requirements</h5>
-                        <div className="grid grid-cols-1 gap-2">
-                          <Toggle label="3d Model" {...register("mto3dModel")} />
-                          <Toggle label="Tekla/SDS-2" {...register("mtoTeklaSDS2")} />
-                          <Toggle label="IFC files" {...register("mtoIFC")} />
-                          <Toggle label="EJE files" {...register("mtoEJE")} />
-                          <Toggle label="Kss files" {...register("mtoKss")} />
-                          <Toggle label="Bolt List" {...register("mtoBoltList")} />
-                          <Toggle label="Material Summary" {...register("mtoMaterialSummary")} />
-                        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
+                    <div className="space-y-4">
+                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
+                      <Toggle label="Main Steel" {...register("mainSteel")} />
+                      <Toggle label="Main Steel Misc Attachments" {...register("mainSteelMiscAttachments")} />
+                      <Toggle label="Main Steel Connections" {...register("mainSteelConnections")} />
+                    </div>
+                    <div className="space-y-4">
+                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
+                      <Toggle label="Misc Steel" {...register("miscSteel")} />
+                      <Toggle label="Misc Steel Connections" {...register("miscSteelConnection")} />
+                      <Toggle label="Misc Steel Attachments" {...register("miscSteelAttachments")} />
+                    </div>
+                    <div className="space-y-4">
+                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Requirements</h5>
+                      <div className="grid grid-cols-1 gap-2">
+                        <Toggle label="3d Model" {...register("mto3dModel")} />
+                        <Toggle label="Tekla/SDS-2" {...register("mtoTeklaSDS2")} />
+                        <Toggle label="IFC files" {...register("mtoIFC")} />
+                        <Toggle label="EJE files" {...register("mtoEJE")} />
+                        <Toggle label="Kss files" {...register("mtoKss")} />
+                        <Toggle label="Bolt List" {...register("mtoBoltList")} />
+                        <Toggle label="Material Summary" {...register("mtoMaterialSummary")} />
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
-                {mtoManualEnabled && (
-                  <div className="p-8 bg-[#6bbd45]/5 rounded-lg border border-[#6bbd45]/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-8">
-                    <div className="flex items-center gap-3 border-b border-[#6bbd45]/20 pb-4">
-                      <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#4a8a2d]">Manual Model Configuration</h4>
+              {mtoManualEnabled && (
+                <div className="p-8 bg-[#6bbd45]/10 rounded-lg border border-[#6bbd45]/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-8">
+                  <div className="flex items-center gap-3 border-b border-[#6bbd45]/20 pb-4">
+                    <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#4a8a2d]">Manual Model Configuration</h4>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
+                    <div className="space-y-4">
+                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
+                      <Toggle label="Main Steel" {...register("manualMainSteel")} />
+                      <Toggle label="Main Steel Misc Attachments" {...register("manualMainSteelMiscAttachments")} />
+                      <Toggle label="Main Steel Connections" {...register("manualMainSteelConnections")} />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
-                      <div className="space-y-6">
-                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
-                        <div className="space-y-2">
-                           <Toggle label="Main Steel" {...register("manualMainSteel")} />
-                        </div>
-                        <div className="space-y-2">
-                           <Toggle label="Misc Attachments" {...register("manualMainSteelMiscAttachments")} />
-                        </div>
-                        <div className="space-y-2">
-                           <Toggle label="Connections" {...register("manualMainSteelConnections")} />
-                        </div>
-                      </div>
-
-                      <div className="space-y-6">
-                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
-                        <div className="space-y-2">
-                           <Toggle label="Misc Steel" {...register("manualMiscSteel")} />
-                        </div>
-                        <div className="space-y-2">
-                           <Toggle label="Connections" {...register("manualMiscSteelConnection")} />
-                           {mtoFields.manualMiscSteelConnection && (
-                             <div className="pl-4 pt-2">
-                               <input type="range" min="0" max="100" {...register("manualMiscSteelConnectionPercentage")} className="w-full h-1 bg-[#6bbd45] rounded-lg accent-black" />
-                               <span className="text-[10px] font-black">{mtoFields.manualMiscSteelConnectionPercentage || 0}%</span>
+                    <div className="space-y-4">
+                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
+                      <Toggle label="Misc Steel" {...register("manualMiscSteel")} />
+                      <div className="space-y-1">
+                         <Toggle label="Misc Steel Connections" {...register("manualMiscSteelConnection")} />
+                         {mtoFields.manualMiscSteelConnection && (
+                           <div className="pl-4 pt-1 flex flex-col gap-1">
+                             <div className="flex justify-between items-center text-[10px] font-black text-[#4a8a2d]">
+                               <span>Percentage</span>
+                               <span>{mtoFields.manualMiscSteelConnectionPercentage || 0}%</span>
                              </div>
-                           )}
-                        </div>
-                        <div className="space-y-2">
-                           <Toggle label="Attachments" {...register("manualMiscSteelAttachments")} />
-                        </div>
+                             <input type="range" min="0" max="100" {...register("manualMiscSteelConnectionPercentage")} className="w-full h-1.5 bg-[#6bbd45]/30 rounded-lg appearance-none cursor-pointer accent-black" />
+                           </div>
+                         )}
                       </div>
+                      <Toggle label="Misc Steel Attachments" {...register("manualMiscSteelAttachments")} />
+                    </div>
 
-                      <div className="space-y-6">
-                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Files</h5>
-                        <div className="space-y-2">
-                           <Toggle label="Material Summary" {...register("manualMaterialSummary")} />
-                        </div>
-                      </div>
+                    <div className="space-y-4">
+                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Requirements</h5>
+                      <Toggle label="Material Summary" {...register("manualMaterialSummary")} />
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
-                {(mtoStickModelEnabled || mtoManualEnabled) && (
-                  <div className="space-y-4 pt-4 border-t border-black/5">
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-[#6bbd45]" />
-                      Live Material Takeoff Generation Preview
-                    </label>
-                    <div className="border border-black rounded-lg overflow-hidden min-h-[300px] bg-white shadow-inner">
-                      <Controller
-                        name="MTOValue"
-                        control={control}
-                        render={({ field }) => (
-                          <RichTextEditor value={field.value || ""} onChange={field.onChange} />
-                        )}
-                      />
-                    </div>
+              {(mtoStickModelEnabled || mtoManualEnabled) && (
+                <div className="space-y-4 pt-4 border-t border-black/5">
+                  <label className="text-[10px] font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-[#6bbd45]" />
+                    Live Material Takeoff Generation Preview
+                  </label>
+                  <div className="border border-black rounded-lg overflow-hidden min-h-[300px] bg-white shadow-inner">
+                    <Controller
+                      name="MTOValue"
+                      control={control}
+                      render={({ field }) => (
+                        <RichTextEditor value={field.value || ""} onChange={field.onChange} />
+                      )}
+                    />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
           </section>
 
           {/* Assets Section */}
@@ -812,7 +803,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               ) : (
                 <>
                   Create RFQ
-                 
+
                 </>
               )}
             </button>
