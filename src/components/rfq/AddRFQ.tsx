@@ -683,8 +683,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     <div className="space-y-4">
                       <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
                       <Toggle label="Main Steel" {...register("mainSteel")} />
-                      <Toggle label="Main Steel Misc Attachments" {...register("mainSteelMiscAttachments")} />
                       <Toggle label="Main Steel Connections" {...register("mainSteelConnections")} />
+                      <Toggle label="Main Steel Misc Attachments" {...register("mainSteelMiscAttachments")} />
                     </div>
                     <div className="space-y-4">
                       <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
@@ -719,8 +719,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     <div className="space-y-4">
                       <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
                       <Toggle label="Main Steel" {...register("manualMainSteel")} />
-                      <Toggle label="Main Steel Misc Attachments" {...register("manualMainSteelMiscAttachments")} />
                       <Toggle label="Main Steel Connections" {...register("manualMainSteelConnections")} />
+                      <Toggle label="Main Steel Misc Attachments" {...register("manualMainSteelMiscAttachments")} />
                     </div>
 
                     <div className="space-y-4">
