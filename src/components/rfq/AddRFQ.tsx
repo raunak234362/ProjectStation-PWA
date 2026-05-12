@@ -243,25 +243,25 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
     // --- Manual Model Processing ---
     if (mtoManualEnabled) {
-      sections.push(`<p style="font-size: 16px; margin-bottom: 8px; color: #000;"><strong>MANUAL MODEL SCOPE:</strong></p>`);
+      sections.push(`<p style="font-size: 16px; margin-bottom: 8px; color: #000;"><strong>MANUAL TAKEOFF SCOPE:</strong></p>`);
       const manualMain = [];
-      if (mtoFields.manualMainSteel) manualMain.push(`MAIN STEEL - ${mtoFields.manualMainSteelPercentage || 0}%`);
-      if (mtoFields.manualMainSteelMiscAttachments) manualMain.push(`MAIN STEEL MISC ATTACHMENTS - ${mtoFields.manualMainSteelMiscAttachmentsPercentage || 0}%`);
-      if (mtoFields.manualMainSteelConnections) manualMain.push(`MAIN STEEL CONNECTIONS - ${mtoFields.manualMainSteelConnectionsPercentage || 0}%`);
+      if (mtoFields.manualMainSteel) manualMain.push(`MAIN STEEL`);
+      if (mtoFields.manualMainSteelMiscAttachments) manualMain.push(`MAIN STEEL MISC ATTACHMENTS`);
+      if (mtoFields.manualMainSteelConnections) manualMain.push(`MAIN STEEL CONNECTIONS`);
       if (manualMain.length > 0) {
         sections.push(`<p><strong>MAIN STEEL SCOPE:</strong></p><ul>${manualMain.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
 
       const manualMisc = [];
-      if (mtoFields.manualMiscSteel) manualMisc.push(`MISC STEEL - ${mtoFields.manualMiscSteelPercentage || 0}%`);
+      if (mtoFields.manualMiscSteel) manualMisc.push(`MISC STEEL`);
       if (mtoFields.manualMiscSteelConnection) manualMisc.push(`MISC STEEL CONNECTIONS - ${mtoFields.manualMiscSteelConnectionPercentage || 0}%`);
-      if (mtoFields.manualMiscSteelAttachments) manualMisc.push(`MISC STEEL ATTACHMENTS - ${mtoFields.manualMiscSteelAttachmentsPercentage || 0}%`);
+      if (mtoFields.manualMiscSteelAttachments) manualMisc.push(`MISC STEEL ATTACHMENTS`);
       if (manualMisc.length > 0) {
         sections.push(`<p><strong>MISCELLANEOUS STEEL SCOPE:</strong></p><ul>${manualMisc.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
 
       const manualFiles = [];
-      if (mtoFields.manualMaterialSummary) manualFiles.push(`MATERIAL SUMMARY REPORT - ${mtoFields.manualMaterialSummaryPercentage || 0}%`);
+      if (mtoFields.manualMaterialSummary) manualFiles.push(`MATERIAL SUMMARY REPORT`);
       if (manualFiles.length > 0) {
         sections.push(`<p><strong>MTO FILES REQUIREMENTS:</strong></p><ul>${manualFiles.map(item => `<li>${item}</li>`).join("")}</ul>`);
       }
@@ -271,9 +271,11 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       const consolidated = sections.join("");
       setValue("MTOStickModel", consolidated);
       setValue("MTOManualModel", consolidated);
+      setValue("MTOValue", consolidated);
     } else {
       setValue("MTOStickModel", "");
       setValue("MTOManualModel", "");
+      setValue("MTOValue", "");
     }
   }, [
     mtoStickModelEnabled,
@@ -281,13 +283,13 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     mtoFields.mainSteel, mtoFields.mainSteelMiscAttachments, mtoFields.mainSteelConnections,
     mtoFields.miscSteel, mtoFields.miscSteelConnection, mtoFields.miscSteelAttachments,
     mtoFields.mto3dModel, mtoFields.mtoTeklaSDS2, mtoFields.mtoIFC, mtoFields.mtoEJE, mtoFields.mtoKss, mtoFields.mtoBoltList, mtoFields.mtoMaterialSummary,
-    mtoFields.manualMainSteel, mtoFields.manualMainSteelPercentage,
-    mtoFields.manualMainSteelMiscAttachments, mtoFields.manualMainSteelMiscAttachmentsPercentage,
-    mtoFields.manualMainSteelConnections, mtoFields.manualMainSteelConnectionsPercentage,
-    mtoFields.manualMiscSteel, mtoFields.manualMiscSteelPercentage,
+    mtoFields.manualMainSteel,
+    mtoFields.manualMainSteelMiscAttachments,
+    mtoFields.manualMainSteelConnections,
+    mtoFields.manualMiscSteel,
     mtoFields.manualMiscSteelConnection, mtoFields.manualMiscSteelConnectionPercentage,
-    mtoFields.manualMiscSteelAttachments, mtoFields.manualMiscSteelAttachmentsPercentage,
-    mtoFields.manualMaterialSummary, mtoFields.manualMaterialSummaryPercentage,
+    mtoFields.manualMiscSteelAttachments,
+    mtoFields.manualMaterialSummary,
     setValue
   ]);
 
@@ -318,6 +320,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         MTOManual: !!data.MTOManual,
         MTOStickModel: data.mtoStickModelEnabled ? (data.MTOStickModel || "") : "",
         MTOManualModel: data.MTOManual ? (data.MTOManualModel || "") : "",
+        MTOValue: data.MTOValue || "",
         mainSteel: !!data.mainSteel,
         mainSteelMiscAttachments: !!data.mainSteelMiscAttachments,
         mainSteelConnections: !!data.mainSteelConnections,
@@ -717,30 +720,12 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                         <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
                         <div className="space-y-2">
                            <Toggle label="Main Steel" {...register("manualMainSteel")} />
-                           {mtoFields.manualMainSteel && (
-                             <div className="pl-4 pt-2">
-                               <input type="range" min="0" max="100" {...register("manualMainSteelPercentage")} className="w-full h-1 bg-[#6bbd45] rounded-lg accent-black" />
-                               <span className="text-[10px] font-black">{mtoFields.manualMainSteelPercentage || 0}%</span>
-                             </div>
-                           )}
                         </div>
                         <div className="space-y-2">
                            <Toggle label="Misc Attachments" {...register("manualMainSteelMiscAttachments")} />
-                           {mtoFields.manualMainSteelMiscAttachments && (
-                             <div className="pl-4 pt-2">
-                               <input type="range" min="0" max="100" {...register("manualMainSteelMiscAttachmentsPercentage")} className="w-full h-1 bg-[#6bbd45] rounded-lg accent-black" />
-                               <span className="text-[10px] font-black">{mtoFields.manualMainSteelMiscAttachmentsPercentage || 0}%</span>
-                             </div>
-                           )}
                         </div>
                         <div className="space-y-2">
                            <Toggle label="Connections" {...register("manualMainSteelConnections")} />
-                           {mtoFields.manualMainSteelConnections && (
-                             <div className="pl-4 pt-2">
-                               <input type="range" min="0" max="100" {...register("manualMainSteelConnectionsPercentage")} className="w-full h-1 bg-[#6bbd45] rounded-lg accent-black" />
-                               <span className="text-[10px] font-black">{mtoFields.manualMainSteelConnectionsPercentage || 0}%</span>
-                             </div>
-                           )}
                         </div>
                       </div>
 
@@ -748,12 +733,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                         <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
                         <div className="space-y-2">
                            <Toggle label="Misc Steel" {...register("manualMiscSteel")} />
-                           {mtoFields.manualMiscSteel && (
-                             <div className="pl-4 pt-2">
-                               <input type="range" min="0" max="100" {...register("manualMiscSteelPercentage")} className="w-full h-1 bg-[#6bbd45] rounded-lg accent-black" />
-                               <span className="text-[10px] font-black">{mtoFields.manualMiscSteelPercentage || 0}%</span>
-                             </div>
-                           )}
                         </div>
                         <div className="space-y-2">
                            <Toggle label="Connections" {...register("manualMiscSteelConnection")} />
@@ -766,12 +745,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                         </div>
                         <div className="space-y-2">
                            <Toggle label="Attachments" {...register("manualMiscSteelAttachments")} />
-                           {mtoFields.manualMiscSteelAttachments && (
-                             <div className="pl-4 pt-2">
-                               <input type="range" min="0" max="100" {...register("manualMiscSteelAttachmentsPercentage")} className="w-full h-1 bg-[#6bbd45] rounded-lg accent-black" />
-                               <span className="text-[10px] font-black">{mtoFields.manualMiscSteelAttachmentsPercentage || 0}%</span>
-                             </div>
-                           )}
                         </div>
                       </div>
 
@@ -779,12 +752,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                         <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Files</h5>
                         <div className="space-y-2">
                            <Toggle label="Material Summary" {...register("manualMaterialSummary")} />
-                           {mtoFields.manualMaterialSummary && (
-                             <div className="pl-4 pt-2">
-                               <input type="range" min="0" max="100" {...register("manualMaterialSummaryPercentage")} className="w-full h-1 bg-[#6bbd45] rounded-lg accent-black" />
-                               <span className="text-[10px] font-black">{mtoFields.manualMaterialSummaryPercentage || 0}%</span>
-                             </div>
-                           )}
                         </div>
                       </div>
                     </div>
@@ -799,7 +766,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     </label>
                     <div className="border border-black rounded-lg overflow-hidden min-h-[300px] bg-white shadow-inner">
                       <Controller
-                        name="MTOStickModel"
+                        name="MTOValue"
                         control={control}
                         render={({ field }) => (
                           <RichTextEditor value={field.value || ""} onChange={field.onChange} />

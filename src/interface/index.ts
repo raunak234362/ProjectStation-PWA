@@ -284,6 +284,7 @@ export interface RFQItem {
   detailingMisc: boolean;
   MTOManual: boolean;
   MTOStickModel: string;
+  MTOValue?: string;
   files?: File[] | string[];
   responses?: RfqResponse[];
   CDQuotas?: any[] | undefined;
@@ -316,6 +317,7 @@ export interface RFQpayload {
   MTOManual: boolean;
   MTOStickModel: string;
   MTOManualModel?: string;
+  MTOValue?: string;
   mtoStickModelEnabled?: boolean;
   miscDesign: boolean;
   mainSteel?: boolean;

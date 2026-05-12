@@ -693,16 +693,16 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     />
                     <Scope
                       label="MTO - Stick Model"
-                      enabled={!!rfq?.MTOStickModel}
+                      enabled={!!(rfq?.MTOStickModel || rfq?.MTOValue)}
                     />
                   </div>
 
-                  {(rfq?.MTOStickModel || (rfq as any)?.MTOManualModel) && (
+                  {(rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || rfq?.MTOValue) && (
                     <div className="mt-4 p-5 bg-white/80 rounded-xl border border-green-100 shadow-sm">
                       <div
                         className="prose prose-sm max-w-none text-xs font-medium text-black leading-relaxed rfq-description"
                         dangerouslySetInnerHTML={{
-                          __html: rfq?.MTOStickModel || (rfq as any)?.MTOManualModel,
+                          __html: rfq?.MTOValue || rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || "",
                         }}
                       />
                     </div>

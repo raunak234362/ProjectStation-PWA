@@ -96,7 +96,7 @@ const AllRFQ = ({ rfq }: any) => {
       header: "RFQ Type",
       accessorFn: (row: any) => {
         const isDetailing = row.detailingMain || row.detailingMisc || row.connectionDesign || row.customerDesign || row.miscDesign;
-        const isMTO = row.MTOManual || row.mtoStickModelEnabled || row.MTOStickModel;
+        const isMTO = row.MTOManual || row.mtoStickModelEnabled || row.MTOStickModel || row.MTOValue;
         if (isDetailing && isMTO) return "Detailing | MTO";
         if (isDetailing) return "Detailing";
         if (isMTO) return "MTO";
