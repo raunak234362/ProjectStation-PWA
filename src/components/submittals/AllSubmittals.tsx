@@ -33,13 +33,17 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
       const isSpecialRole = [
         "CLIENT",
         "CLIENT_ADMIN",
+        "CLIENT_ESTIMATOR",
+        "ADMIN",
+        "DEPUTY_MANAGER",
+        "OPERATION_EXECUTIVE",
         "CONNECTION_DESIGNER_ENGINEER",
         "CONNECTION_DESIGNER_ADMIN",
       ].includes(userRole || "");
 
       if (projectId && isSpecialRole) {
-        result = await Service.GetReceivedSubmittalByProjectId(projectId);
-      } else if (userRole === "CLIENT" || userRole === "CLIENT_ADMIN") {
+        result = await Service.GetSubmittalByProjectId(projectId);
+      } else if (userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CLIENT_ESTIMATOR") {
         result = await Service.SubmittalSent();
       } else {
         result = await Service.SubmittalRecieved();

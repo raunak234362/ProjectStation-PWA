@@ -1,6 +1,7 @@
+import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 import { showFileError } from "../../store/uiSlice"
-import { FileText, Share2, Download, ChevronRight, Plus } from 'lucide-react'
+import { FileText, Share2, Download, ChevronRight, Plus, ChevronDown, FolderOpen } from 'lucide-react'
 import {
   openFileSecurely,
   downloadFileSecurely,
@@ -29,6 +30,14 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
   hideHeader = false
 }) => {
   const dispatch = useDispatch();
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+
+  const toggleSection = (description: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [description]: !prev[description]
+    }));
+  };
 
   // Step 1: Normalize and flatten files
   const projectFiles = Array.isArray(files)
@@ -180,72 +189,91 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
           return (
             <div
               key={description}
-              className="border border-gray-100 rounded-xl p-4 space-y-3 bg-white shadow-sm hover:shadow-md transition-shadow"
+              className={`border border-gray-100 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 ${expandedSections[description] ? 'ring-2 ring-black/5' : ''}`}
             >
-              {/* Description + Stage */}
-              <div className="flex items-center gap-2">
-                <h5
-                  className="text-sm border-l-4 border-black pl-3 sm:text-base  text-gray-800 font-bold uppercase tracking-tight"
-                  dangerouslySetInnerHTML={{ __html: description }}
-                />
-                <span className="text-xs font-black text-black bg-gray-100 px-2 py-0.5 rounded-full">
-                  {filesArray.length}
-                </span>
-              </div>
-              <div>
-                <div className="flex flex-wrap items-center gap-3 mt-1.5 ml-4">
-                  {firstFile?.stage && (
-                    <p className="text-[10px] text-blue-600  bg-blue-50 px-2 py-0.5 rounded-full uppercase">
-                      {firstFile.stage}
-                    </p>
-                  )}
-                  {firstFile?.uploadedAt && (
-                    <p className="text-[10px] text-gray-400 font-medium">
-                      {formatDate ? formatDate(firstFile.uploadedAt) : new Date(firstFile.uploadedAt).toLocaleString()}
-                    </p>
-                  )}
-                  {uploaderName !== 'Unknown User' && (
-                    <p className="text-[10px] text-gray-400">
-                      by <span className="font-semibold text-gray-600">{uploaderName}</span>
-                    </p>
-                  )}
+              {/* Header Section (Toggle Button) */}
+              <div 
+                onClick={() => toggleSection(description)}
+                className="p-4 cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-between group"
+              >
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex items-center gap-3">
+                    <h5
+                      className="text-sm border-l-4 border-[#6bbd45] pl-3 sm:text-base text-gray-800 font-bold uppercase tracking-tight truncate"
+                      dangerouslySetInnerHTML={{ __html: description }}
+                    />
+                    <span className="text-[10px] font-black text-[#4a8a1a] bg-green-50 border border-green-100 px-2 py-0.5 rounded-full shrink-0">
+                      {filesArray.length} file{filesArray.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-3 ml-4">
+                    {firstFile?.stage && (
+                      <p className="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                        {firstFile.stage}
+                      </p>
+                    )}
+                    {firstFile?.uploadedAt && (
+                      <p className="text-[10px] text-gray-400 font-medium">
+                        {formatDate ? formatDate(firstFile.uploadedAt) : new Date(firstFile.uploadedAt).toLocaleString()}
+                      </p>
+                    )}
+                    {uploaderName !== 'Unknown User' && (
+                      <p className="text-[10px] text-gray-400">
+                        by <span className="font-semibold text-gray-600">{uploaderName}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 ml-4">
+                   <div className={`p-2 rounded-lg transition-all ${expandedSections[description] ? 'bg-[#6bbd45] text-white' : 'bg-gray-100 text-gray-400 group-hover:text-black group-hover:bg-gray-200'}`}>
+                      <ChevronDown size={18} className={`transition-transform duration-300 ${expandedSections[description] ? 'rotate-180' : ''}`} />
+                   </div>
                 </div>
               </div>
 
-              {/* File List */}
-              <div className="grid grid-cols-1 gap-2 mt-3">
-                {filesArray.map((file: any, index: number) => (
-                  <div
-                    key={file.id || `file-${index}`}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-gray-50 bg-gray-50/30 hover:bg-gray-100 hover:border-gray-200 transition-all group"
-                  >
-                    <FileItem
-                      name={file.originalName || `File ${index + 1}`}
-                      onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
-                      className="flex-1 min-w-0"
-                    />
-
-                    <div className="flex items-center gap-1 transition-opacity">
-                      <button
-                        onClick={(e) => handleShare(e, file)}
-                        className="p-2 text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all"
-                        title="Share Link"
+              {/* Collapsible File List */}
+              {expandedSections[description] && (
+                <div className="p-4 pt-0 border-t border-gray-50 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="grid grid-cols-1 gap-2 mt-4">
+                    {filesArray.map((file: any, index: number) => (
+                      <div
+                        key={file.id || `file-${index}`}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:bg-gray-50 hover:border-black/10 transition-all group/file"
                       >
-                        <Share2 size={16} strokeWidth={2.5} />
-                      </button>
-                      <button
-                        onClick={(e) => handleDownload(e, file)}
-                        className="p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-lg transition-all"
-                        title="Download"
-                      >
-                        <Download size={16} strokeWidth={2.5} />
-                      </button>
-                    </div>
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 group-hover/file:bg-black group-hover/file:text-white transition-colors">
+                          <FileText size={16} />
+                        </div>
 
-                    <ChevronRight size={16} className="text-gray-300 group-hover:text-black transition-colors" />
+                        <FileItem
+                          name={file.originalName || `File ${index + 1}`}
+                          onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
+                          className="flex-1 min-w-0"
+                        />
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={(e) => handleShare(e, file)}
+                            className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all"
+                            title="Share Link"
+                          >
+                            <Share2 size={16} />
+                          </button>
+                          <button
+                            onClick={(e) => handleDownload(e, file)}
+                            className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all"
+                            title="Download"
+                          >
+                            <Download size={16} />
+                          </button>
+                          <ChevronRight size={16} className="text-gray-300 ml-1" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
           )
         })

@@ -29,19 +29,19 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
   const hasChildren = response.childResponses && response.childResponses.length > 0;
 
   return (
-    <div className="mb-4 border-2 border-black rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
+    <div className="mb-6 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
       {/* Header */}
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`p-4 flex items-center justify-between cursor-pointer transition-colors ${isOpen ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-50`}
+        className={`p-5 flex items-center justify-between cursor-pointer transition-colors ${isOpen ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-50 ${isOpen ? 'border-b border-gray-100' : ''}`}
       >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
-            <User className="w-5 h-5 text-green-700" />
+          <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-100">
+            <User className="w-6 h-6 text-green-600" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-black text-black uppercase tracking-tight">
+              <span className="font-black text-black uppercase tracking-tight text-base">
                 {response.user?.firstName ? `${response.user.firstName} ${response.user.lastName}` : response.user?.username || 'Team Member'}
               </span>
               {response.user?.role && (
@@ -50,78 +50,78 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 mt-1">
-              <Clock className="w-3 h-3 text-gray-400" />
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            <div className="flex items-center gap-2 mt-0.5">
+              <Clock className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
                 {formatDateTime(response.createdAt)}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex flex-col items-end mr-2 text-right">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">STATUS</span>
-            <span className="text-xs font-bold text-black uppercase">{response.wbtStatus || response.status || 'SENT'}</span>
+            <span className="text-xs font-black text-black uppercase tracking-tight">{response.wbtStatus || response.status || 'OPEN'}</span>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center gap-2 h-9 px-4 rounded-xl border border-black font-black text-[10px] uppercase tracking-widest hover:bg-green-300 hover:text-black transition-all"
+            className="flex items-center gap-2 h-10 px-5 rounded-xl border-2 border-gray-200 font-black text-[11px] uppercase tracking-widest hover:bg-green-100 hover:text-black transition-all"
           >
             {isOpen ? 'Close' : 'View'}
-            {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </Button>
         </div>
       </div>
 
       {/* Content */}
       {isOpen && (
-        <div className="p-5 border-t border-black bg-white animate-in slide-in-from-top-2 duration-300">
+        <div className="p-6 bg-white animate-in slide-in-from-top-2 duration-300">
           <div
-            className="prose prose-sm max-w-none text-black font-medium leading-relaxed mb-4"
+            className="prose prose-sm max-w-none text-black font-semibold text-base leading-relaxed mb-6"
             dangerouslySetInnerHTML={{ __html: response.description }}
           />
 
           {response.files && response.files.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
+            <div className="mt-4 pt-4 border-t border-dashed border-gray-100">
               <RenderFiles files={response.files} table="rfqResponse" parentId={response.id} hideHeader />
             </div>
           )}
 
           {/* Child Responses */}
           {hasChildren && (
-            <div className="mt-6 space-y-4">
-              <div className="flex items-center gap-2 mb-3">
-                <MessageSquare className="w-4 h-4 text-green-600" />
-                <span className="text-xs font-black text-black uppercase tracking-widest">Replies ({response.childResponses.length})</span>
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <MessageSquare className="w-5 h-5 text-green-600" />
+                <span className="text-xs font-black text-green-700 uppercase tracking-widest">Replies ({response.childResponses.length})</span>
               </div>
-              <div className="space-y-4 ml-4 sm:ml-8 border-l-2 border-green-100 pl-4 sm:pl-6">
+              <div className="space-y-6 ml-2 sm:ml-4 border-l-4 border-green-100 pl-4 sm:pl-8">
                 {[...response.childResponses].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((child: any) => (
                   <div key={child.id} className="relative">
                     {/* Visual Connector */}
-                    <div className="absolute -left-[26px] sm:-left-[34px] top-4 w-4 sm:w-6 h-0.5 bg-green-100" />
+                    <div className="absolute -left-[20px] sm:-left-[36px] top-6 w-5 sm:w-9 h-1 bg-green-100" />
 
-                    <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 shadow-sm hover:shadow-md transition-all">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-green-200 flex items-center justify-center">
-                            <User className="w-3 h-3 text-green-700" />
+                    <div className="p-6 rounded-2xl bg-gray-50/50 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
+                            <User className="w-4 h-4 text-green-600" />
                           </div>
-                          <span className="font-bold text-xs text-black uppercase tracking-tight">
+                          <span className="font-black text-sm text-black uppercase tracking-tight">
                             {child.user?.firstName ? `${child.user.firstName} ${child.user.lastName}` : child.user?.username || 'Team Member'}
                           </span>
                         </div>
-                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                           {formatDateTime(child.createdAt)}
                         </span>
                       </div>
                       <div
-                        className="text-sm text-gray-800 leading-relaxed"
+                        className="text-sm text-gray-800 font-medium leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: child.description }}
                       />
                       {child.files && child.files.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-gray-100">
+                        <div className="mt-4 pt-4 border-t border-gray-100/50">
                           <RenderFiles files={child.files} table="rfqResponse" parentId={child.id} hideHeader />
                         </div>
                       )}
@@ -132,10 +132,10 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
             </div>
           )}
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-8 flex justify-end">
             <Button
               onClick={() => onReply?.(response)}
-              className="h-8 px-4 rounded-lg bg-green-200 text-black text-[10px] font-black uppercase tracking-widest hover:bg-green-300 transition-all"
+              className="h-9 px-6 rounded-xl bg-green-100 text-black text-[11px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-sm"
             >
               Reply
             </Button>
@@ -145,6 +145,7 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
     </div>
   );
 };
+
 
 interface GetRfqByIDProps {
   id: string;
@@ -463,7 +464,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         <div className="p-6 border-b border-gray-100 flex items-center justify-end bg-white">
           <button
             onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            className="px-8 py-2 bg-white text-red-600 border-2 border-red-600 rounded-lg hover:bg-red-50 transition-all font-black text-sm uppercase tracking-tight shadow-sm"
           >
             Close
           </button>
@@ -472,10 +473,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-            <div className="bg-gray-100 border border-green-100/50 p-4 sm:p-6 rounded-3xl shadow-sm space-y-5 sm:space-y-6">
+            <div className="bg-gray-50 border border-gray-200 p-4 sm:p-8 rounded-[2rem] shadow-sm space-y-6">
               {/* Header + Add Response Button */}
               <div className="flex justify-between items-center gap-4">
-                <h1 className="text-xl sm:text-2xl text-black uppercase tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-tighter">
                   Responses
                 </h1>
 

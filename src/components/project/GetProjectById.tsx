@@ -143,46 +143,12 @@ const GetProjectById = ({
   const fetchSubmittalsForProject = async () => {
     if (!id || !project) return;
     try {
-      const rolesForReceived = [
-        "client",
-        "client_admin",
-        "connection_designer_engineer",
-        "connection_designer_admin",
-      ];
-
-      let allSubmittals: any[] = [];
-      if (rolesForReceived.includes(userRole)) {
-        // Fetch both received and sent submittals for these roles
-        const [receivedRes, sentRes] = await Promise.all([
-          Service.GetReceivedSubmittalByProjectId(id),
-          Service.SubmittalSentByProjectId(id),
-        ]);
-
-        const received = Array.isArray(receivedRes?.data)
-          ? receivedRes.data
-          : Array.isArray(receivedRes)
-            ? receivedRes
-            : [];
-        const sent = Array.isArray(sentRes?.data)
-          ? sentRes.data
-          : Array.isArray(sentRes)
-            ? sentRes
-            : [];
-
-        // Combine and remove duplicates
-        const combined = [...received, ...sent];
-        const uniqueSubmittals = Array.from(
-          new Map(combined.map((item) => [item.id, item])).values(),
-        );
-        allSubmittals = uniqueSubmittals;
-      } else {
-        const res = await Service.GetSubmittalByProjectId(id);
-        allSubmittals = Array.isArray(res?.data)
-          ? res.data
-          : Array.isArray(res)
-            ? res
-            : [];
-      }
+      const res = await Service.GetSubmittalByProjectId(id);
+      const allSubmittals = Array.isArray(res?.data)
+        ? res.data
+        : Array.isArray(res)
+          ? res
+          : [];
 
       setProject((prev) =>
         prev ? { ...prev, submittals: allSubmittals } : null,
@@ -561,26 +527,26 @@ const GetProjectById = ({
             <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight">
               {project.name}
             </h2>
-           
+
           </div>
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-             {project.projectNumber && (
-              <div className="inline-block px-2 py-1 bg-[#6bbd45]/20 border-2 border-[#6bbd45] rounded-lg">
-                <span className="text-black font-bold text-md tracking-wide">
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            {project.projectNumber && (
+              <div className="inline-block px-4 py-1.5 bg-green-50 border-2 border-[#6bbd45] rounded-lg">
+                <span className="text-black font-black text-sm tracking-tight">
                   Project No: {project.projectNumber}
                 </span>
               </div>
             )}
-            <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-bold bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
+            <span className="px-4 py-1.5 rounded-lg text-xs font-black bg-gray-50 text-black border-2 border-gray-100 uppercase tracking-widest">
               {project.stage}
             </span>
-            <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-bold bg-gray-100 text-black border border-gray-200 uppercase tracking-widest">
+            <span className="px-4 py-1.5 rounded-lg text-xs font-black bg-gray-50 text-black border-2 border-gray-100 uppercase tracking-widest">
               {project.status}
             </span>
             {userRole === "admin" && (
               <button
                 onClick={() => handleEditModel(project)}
-                className="px-6 py-1.5 bg-green-50 text-black border-2 border-[#6bbd45] rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm flex items-center gap-2"
+                className="px-6 py-2 bg-green-50 text-black border-2 border-[#6bbd45] rounded-lg hover:bg-green-100 transition-all font-black text-xs uppercase tracking-tight shadow-sm flex items-center gap-2"
               >
                 <Settings className="w-4 h-4" />
                 Edit
@@ -589,7 +555,7 @@ const GetProjectById = ({
             {close && (
               <button
                 onClick={close}
-                className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+                className="px-8 py-2 bg-white text-red-600 border-2 border-red-600 rounded-lg hover:bg-red-50 transition-all font-black text-sm uppercase tracking-tight shadow-sm"
               >
                 Close
               </button>
@@ -615,16 +581,15 @@ const GetProjectById = ({
           </div>
 
           {/* Desktop Tabs */}
-          <div className="hidden md:flex gap-2 overflow-x-auto">
+          <div className="hidden md:flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
             {tabsToShow.map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 text-md rounded-xl font-bold transition-all whitespace-nowrap border ${
-                  activeTab === key
-                    ? "bg-green-50 text-black border-[#6bbd45]"
-                    : "bg-white text-black border-black hover:bg-green-50"
-                }`}
+                className={`flex items-center gap-2.5 px-6 py-2.5 text-xs rounded-xl font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${activeTab === key
+                  ? "bg-green-50 text-black border-[#6bbd45] shadow-sm"
+                  : "bg-white text-black border-gray-800 hover:bg-gray-50"
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
@@ -667,9 +632,9 @@ const GetProjectById = ({
                       label="Hours Completed"
                       value={formatSeconds(
                         projectStats?.workedSeconds ||
-                          project.workedSeconds ||
-                          project.totalWorkedSeconds ||
-                          0,
+                        project.workedSeconds ||
+                        project.totalWorkedSeconds ||
+                        0,
                       )}
                       color="bg-green-50"
                       layout="horizontal"
@@ -688,12 +653,12 @@ const GetProjectById = ({
                       value={
                         (projectStats?.isOverrun ?? project.isOverrun)
                           ? formatSeconds(
-                              (projectStats?.workedSeconds ||
-                                project.workedSeconds ||
-                                project.totalWorkedSeconds ||
-                                0) -
-                                (project.estimatedHours || 0) * 3600,
-                            )
+                            (projectStats?.workedSeconds ||
+                              project.workedSeconds ||
+                              project.totalWorkedSeconds ||
+                              0) -
+                            (project.estimatedHours || 0) * 3600,
+                          )
                           : "00:00"
                       }
                       color={
@@ -868,10 +833,10 @@ const GetProjectById = ({
                 </div>
               </div>
 
-                {/* Project Progress Reports */}
-                <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
-                  <ProjectProgress projectId={id} />
-                </div>
+              {/* Project Progress Reports */}
+              <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
+                <ProjectProgress projectId={id} />
+              </div>
 
               <div id="project-progress">
                 <ProjectMilestoneMetrics projectId={id} />
@@ -981,7 +946,7 @@ const GetProjectById = ({
 
                                 const sc =
                                   statusMap[
-                                    (task.status || "").toLowerCase()
+                                  (task.status || "").toLowerCase()
                                   ] ||
                                   "bg-gray-100 text-gray-500 border-gray-200";
 
@@ -1082,7 +1047,7 @@ const GetProjectById = ({
                   </p>
                 </div>*/}
 
-              
+
               </div>
 
             </div>
@@ -1191,10 +1156,9 @@ const GetProjectById = ({
                   onClick={() => setChangeOrderView("list")}
                   className={`
                     px-8 py-2.5 rounded-sm border border-black font-semibold text-sm transition-all duration-300
-                    ${
-                      changeOrderView === "list"
-                        ? "bg-green-200/50 text-black"
-                        : "text-gray-400 hover:text-black bg-transparent"
+                    ${changeOrderView === "list"
+                      ? "bg-green-200/50 text-black"
+                      : "text-gray-400 hover:text-black bg-transparent"
                     }
                   `}
                 >
@@ -1205,10 +1169,9 @@ const GetProjectById = ({
                     onClick={() => setChangeOrderView("add")}
                     className={`
                       px-8 py-2.5 rounded-sm border border-black font-semibold text-sm transition-all duration-300
-                      ${
-                        changeOrderView === "add"
-                          ? "bg-[#6bbd45] text-white shadow-lg shadow-green-500/30"
-                          : "text-gray-400 hover:text-black bg-transparent"
+                      ${changeOrderView === "add"
+                        ? "bg-[#6bbd45] text-white shadow-lg shadow-green-500/30"
+                        : "text-gray-400 hover:text-black bg-transparent"
                       }
                   `}
                   >
@@ -1438,11 +1401,10 @@ const InfoRow = ({
 
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-bold rounded-lg border ${
-      active
-        ? "bg-green-50 text-black border-[#6bbd45]"
-        : "bg-gray-100 text-black border-gray-200"
-    }`}
+    className={`px-3 py-1 text-sm font-bold rounded-lg border ${active
+      ? "bg-green-50 text-black border-[#6bbd45]"
+      : "bg-gray-100 text-black border-gray-200"
+      }`}
   >
     {label}
   </span>
@@ -1472,9 +1434,8 @@ const StatCard = ({
     return (
       <div
         onClick={onClick}
-        className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex items-center justify-between transition-all hover:scale-[1.02] ${
-          isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-        } ${onClick ? "cursor-pointer" : ""}`}
+        className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex items-center justify-between transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+          } ${onClick ? "cursor-pointer" : ""}`}
       >
         <div className="flex items-center gap-4">
           <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">
@@ -1505,9 +1466,8 @@ const StatCard = ({
   return (
     <div
       onClick={onClick}
-      className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${
-        isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
-      } ${onClick ? "cursor-pointer" : ""}`}
+      className={`${color} p-5 rounded-2xl border border-white/50 shadow-sm flex flex-col transition-all hover:scale-[1.02] ${isAlert ? "ring-2 ring-red-500 ring-offset-2 animate-pulse" : ""
+        } ${onClick ? "cursor-pointer" : ""}`}
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
@@ -1584,21 +1544,19 @@ const OtherTasksPanel = ({
             <li key={key}>
               <button
                 onClick={() => setSelectedKey(key)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${
-                  selectedKey === key
-                    ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
-                    : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
-                }`}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${selectedKey === key
+                  ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
+                  : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
+                  }`}
               >
                 <span className="uppercase tracking-tight leading-tight">
                   {key}
                 </span>
                 <span
-                  className={`ml-2 shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                    selectedKey === key
-                      ? "bg-[#6bbd45]/20 text-[#3a8a1a]"
-                      : "bg-slate-200 text-slate-500"
-                  }`}
+                  className={`ml-2 shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedKey === key
+                    ? "bg-[#6bbd45]/20 text-[#3a8a1a]"
+                    : "bg-slate-200 text-slate-500"
+                    }`}
                 >
                   {otherTasksByBundle[key].length}
                 </span>
