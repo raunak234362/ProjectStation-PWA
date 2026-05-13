@@ -108,6 +108,26 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
 
   const [description, setDescription] = useState("");
+  const [isDetailing, setIsDetailing] = useState(false);
+  const [isMTO, setIsMTO] = useState(false);
+
+  // Sync tools and reset fields when estimation type changes
+  useEffect(() => {
+    if (isMTO && !isDetailing) {
+      setValue("tools", "NO_PREFERENCE");
+    }
+    if (!isMTO) {
+      setValue("MTOManual", false);
+      setValue("mtoStickModelEnabled", false);
+    }
+    if (!isDetailing) {
+      setValue("connectionDesign", false);
+      setValue("miscDesign", false);
+      setValue("customerDesign", false);
+      setValue("detailingMain", false);
+      setValue("detailingMisc", false);
+    }
+  }, [isDetailing, isMTO, setValue]);
 
   // --- FETCH STAFF ONCE ---
   useEffect(() => {
@@ -204,6 +224,15 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
   // --- REAL-TIME MTO DESCRIPTION SYNC ---
   const mtoFields = watch();
+  
+  const isScopeSelected = 
+    mtoFields.connectionDesign || 
+    mtoFields.miscDesign || 
+    mtoFields.customerDesign || 
+    mtoFields.detailingMain || 
+    mtoFields.detailingMisc || 
+    mtoFields.MTOManual || 
+    mtoFields.mtoStickModelEnabled;
 
   useEffect(() => {
     const sections: string[] = [];
@@ -554,220 +583,275 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             </div>
           </section>
 
-          {/* Technical Specs Section */}
+          {/* Estimation Type Selection */}
           <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5">
             <div className="flex items-center gap-4 border-b border-black/5 pb-6">
               <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
               <h3 className="text-xl text-black font-black uppercase tracking-tight">
-                Technical Specifications
+                Select Estimation Type
               </h3>
             </div>
-
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="block text-sm text-black font-black uppercase tracking-widest">Subject</label>
-                <Input
-                  {...register("subject")}
-                  className="w-full bg-white border-black rounded-lg h-14 text-sm font-black"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
-                <div className="border border-black rounded-lg overflow-hidden min-h-[200px] bg-white">
-                  <RichTextEditor value={description} onChange={setDescription} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <button
+                type="button"
+                onClick={() => setIsDetailing(!isDetailing)}
+                className={`p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-4 group ${
+                  isDetailing
+                    ? "bg-[#6bbd45]/10 border-[#6bbd45] text-black"
+                    : "bg-white border-black/10 text-gray-400 hover:border-black/20"
+                }`}
+              >
+                <div className={`p-4 rounded-full transition-colors ${isDetailing ? "bg-[#6bbd45] text-white" : "bg-gray-100 text-gray-400"}`}>
+                  <Layers size={32} />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="space-y-2">
-                  <label className="block text-sm text-black font-black uppercase tracking-widest">Tools <span className="text-rose-500">*</span></label>
-                  <Controller
-                    name="tools"
-                    control={control}
-                    rules={{ required: "Tools selection is required" }}
-                    render={({ field }) => (
-                      <Select
-                        name={field.name}
-                        options={[
-                          { label: "TEKLA", value: "TEKLA" },
-                          { label: "SDS2", value: "SDS2" },
-                          { label: "BOTH", value: "BOTH" },
-                          { label: "NO PREFERENCE", value: "NO_PREFERENCE" },
-                          { label: "OTHER", value: "OTHER" },
-                        ]}
-                        className="border-black rounded-lg h-14"
-                        value={field.value}
-                        onChange={(_, value) => field.onChange(value ?? "")}
-                      />
-                    )}
-                  />
+                <span className="font-black uppercase tracking-widest text-sm">Detailing Estimation</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsMTO(!isMTO)}
+                className={`p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-4 group ${
+                  isMTO
+                    ? "bg-[#6bbd45]/10 border-[#6bbd45] text-black"
+                    : "bg-white border-black/10 text-gray-400 hover:border-black/20"
+                }`}
+              >
+                <div className={`p-4 rounded-full transition-colors ${isMTO ? "bg-[#6bbd45] text-white" : "bg-gray-100 text-gray-400"}`}>
+                  <Settings2 size={32} />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                    <Percent size={14} className="text-black/40" />
-                    Bid Price
-                  </label>
-                  <Input {...register("bidPrice")} type="number" className="w-full border-black rounded-lg h-14 text-sm font-black" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                    <Calendar size={14} className="text-black/40" />
-                    Due Date <span className="text-rose-500">*</span>
-                  </label>
-                  <Input {...register("estimationDate", { required: "Due date is required" })} type="date" className="w-full border-black rounded-lg h-14 text-sm font-black" />
-                </div>
-              </div>
+                <span className="font-black uppercase tracking-widest text-sm">Material Take-off</span>
+              </button>
             </div>
           </section>
 
+
+
           {/* Service Matrix Section */}
-          <section className="space-y-3 md:space-y-4 pt-4 md:pt-5  border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-6 bg-gray-50 p-8 rounded-lg shadow-sm border border-black/5">
-                <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                  <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
-                  Connection Design Scope
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <Toggle
-                    label="Main Design"
-                    {...register("connectionDesign")}
-                  />
-                  <Toggle label="Misc Design" {...register("miscDesign")} />
-                  <Toggle
-                    label="Customer Design"
-                    {...register("customerDesign")}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-6 bg-gray-50 p-8 rounded-lg shadow-sm border border-black/5">
-                <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                  <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
-                  Detailing Scope
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <Toggle label="Main Steel" {...register("detailingMain")} />
-                  <Toggle label="Misc Steel" {...register("detailingMisc")} />
-                </div>
-              </div>
-            </div>
-            <div className="space-y-8 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5">
-              <div className="flex items-center gap-4 border-b border-black/5 pb-6">
-                <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-                <h3 className="text-xl text-black font-black uppercase tracking-tight">
-                  Material Takeoff
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <Toggle
-                  label="MTO - Manual"
-                  {...register("MTOManual")}
-                />
-                <Toggle
-                  label="MTO - Stick Model"
-                  {...register("mtoStickModelEnabled")}
-                />
-              </div>
-
-              {mtoStickModelEnabled && (
-                <div className="p-8 bg-[#6bbd45]/5 rounded-lg border border-[#6bbd45]/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-8">
-                  <div className="flex items-center gap-3 border-b border-[#6bbd45]/20 pb-4">
+          {isDetailing && (
+            <section className="space-y-3 md:space-y-4 pt-4 md:pt-5 border-gray-200 animate-in fade-in zoom-in duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6 bg-gray-50 p-8 rounded-lg shadow-sm border border-black/5">
+                  <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                     <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#4a8a2d]">Stick Model Configuration</h4>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
-                    <div className="space-y-4">
-                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
-                      <Toggle label="Main Steel" {...register("mainSteel")} />
-                      <Toggle label="Main Steel Connections" {...register("mainSteelConnections")} />
-                      <Toggle label="Main Steel Misc Attachments" {...register("mainSteelMiscAttachments")} />
-                    </div>
-                    <div className="space-y-4">
-                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
-                      <Toggle label="Misc Steel" {...register("miscSteel")} />
-                      <Toggle label="Misc Steel Connections" {...register("miscSteelConnection")} />
-                      <Toggle label="Misc Steel Attachments" {...register("miscSteelAttachments")} />
-                    </div>
-                    <div className="space-y-4">
-                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Requirements</h5>
-                      <div className="grid grid-cols-1 gap-2">
-                        <Toggle label="3d Model" {...register("mto3dModel")} />
-                        <Toggle label="Tekla/SDS-2" {...register("mtoTeklaSDS2")} />
-                        <Toggle label="IFC files" {...register("mtoIFC")} />
-                        <Toggle label="EJE files" {...register("mtoEJE")} />
-                        <Toggle label="Kss files" {...register("mtoKss")} />
-                        <Toggle label="Bolt List" {...register("mtoBoltList")} />
-                        <Toggle label="Material Summary" {...register("mtoMaterialSummary")} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {mtoManualEnabled && (
-                <div className="p-8 bg-[#6bbd45]/10 rounded-lg border border-[#6bbd45]/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-8">
-                  <div className="flex items-center gap-3 border-b border-[#6bbd45]/20 pb-4">
-                    <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#4a8a2d]">Manual Model Configuration</h4>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
-                    <div className="space-y-4">
-                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
-                      <Toggle label="Main Steel" {...register("manualMainSteel")} />
-                      <Toggle label="Main Steel Connections" {...register("manualMainSteelConnections")} />
-                      <Toggle label="Main Steel Misc Attachments" {...register("manualMainSteelMiscAttachments")} />
-                    </div>
-
-                    <div className="space-y-4">
-                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
-                      <Toggle label="Misc Steel" {...register("manualMiscSteel")} />
-                      <div className="space-y-1">
-                         <Toggle label="Misc Steel Connections" {...register("manualMiscSteelConnection")} />
-                         {mtoFields.manualMiscSteelConnection && (
-                           <div className="pl-4 pt-1 flex flex-col gap-1">
-                             <div className="flex justify-between items-center text-[10px] font-black text-[#4a8a2d]">
-                               <span>Percentage</span>
-                               <span>{mtoFields.manualMiscSteelConnectionPercentage || 0}%</span>
-                             </div>
-                             <input type="range" min="0" max="100" {...register("manualMiscSteelConnectionPercentage")} className="w-full h-1.5 bg-[#6bbd45]/30 rounded-lg appearance-none cursor-pointer accent-black" />
-                           </div>
-                         )}
-                      </div>
-                      <Toggle label="Misc Steel Attachments" {...register("manualMiscSteelAttachments")} />
-                    </div>
-
-                    <div className="space-y-4">
-                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Requirements</h5>
-                      <Toggle label="Material Summary" {...register("manualMaterialSummary")} />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {(mtoStickModelEnabled || mtoManualEnabled) && (
-                <div className="space-y-4 pt-4 border-t border-black/5">
-                  <label className="text-[10px] font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
-                    <div className="w-1 h-1 rounded-full bg-[#6bbd45]" />
-                    Live Material Takeoff Generation Preview
-                  </label>
-                  <div className="border border-black rounded-lg overflow-hidden min-h-[300px] bg-white shadow-inner">
-                    <Controller
-                      name="MTOValue"
-                      control={control}
-                      render={({ field }) => (
-                        <RichTextEditor value={field.value || ""} onChange={field.onChange} />
-                      )}
+                    Connection Design Scope
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <Toggle
+                      label="Main Design"
+                      {...register("connectionDesign")}
+                    />
+                    <Toggle label="Misc Design" {...register("miscDesign")} />
+                    <Toggle
+                      label="Customer Design"
+                      {...register("customerDesign")}
                     />
                   </div>
                 </div>
-              )}
-            </div>
-          </section>
+
+                <div className="space-y-6 bg-gray-50 p-8 rounded-lg shadow-sm border border-black/5">
+                  <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
+                    Detailing Scope
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <Toggle label="Main Steel" {...register("detailingMain")} />
+                    <Toggle label="Misc Steel" {...register("detailingMisc")} />
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {isMTO && (
+            <section className="bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5 animate-in fade-in zoom-in duration-300">
+              <div className="space-y-8">
+                <div className="flex items-center gap-4 border-b border-black/5 pb-6">
+                  <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
+                  <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                    Material Takeoff
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                  <Toggle
+                    label="MTO - Manual"
+                    {...register("MTOManual")}
+                  />
+                  <Toggle
+                    label="MTO - Stick Model"
+                    {...register("mtoStickModelEnabled")}
+                  />
+                </div>
+
+                {mtoStickModelEnabled && (
+                  <div className="p-8 bg-[#6bbd45]/5 rounded-lg border border-[#6bbd45]/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-8">
+                    <div className="flex items-center gap-3 border-b border-[#6bbd45]/20 pb-4">
+                      <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#4a8a2d]">Stick Model Configuration</h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
+                      <div className="space-y-4">
+                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
+                        <Toggle label="Main Steel" {...register("mainSteel")} />
+                        <Toggle label="Main Steel Connections" {...register("mainSteelConnections")} />
+                        <Toggle label="Main Steel Misc Attachments" {...register("mainSteelMiscAttachments")} />
+                      </div>
+                      <div className="space-y-4">
+                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
+                        <Toggle label="Misc Steel" {...register("miscSteel")} />
+                        <Toggle label="Misc Steel Connections" {...register("miscSteelConnection")} />
+                        <Toggle label="Misc Steel Attachments" {...register("miscSteelAttachments")} />
+                      </div>
+                      <div className="space-y-4">
+                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Requirements</h5>
+                        <div className="grid grid-cols-1 gap-2">
+                          <Toggle label="3d Model" {...register("mto3dModel")} />
+                          <Toggle label="Tekla/SDS-2" {...register("mtoTeklaSDS2")} />
+                          <Toggle label="IFC files" {...register("mtoIFC")} />
+                          <Toggle label="EJE files" {...register("mtoEJE")} />
+                          <Toggle label="Kss files" {...register("mtoKss")} />
+                          <Toggle label="Bolt List" {...register("mtoBoltList")} />
+                          <Toggle label="Material Summary" {...register("mtoMaterialSummary")} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {mtoManualEnabled && (
+                  <div className="p-8 bg-[#6bbd45]/10 rounded-lg border border-[#6bbd45]/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-8">
+                    <div className="flex items-center gap-3 border-b border-[#6bbd45]/20 pb-4">
+                      <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#4a8a2d]">Manual Model Configuration</h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
+                      <div className="space-y-4">
+                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Main Steel</h5>
+                        <Toggle label="Main Steel" {...register("manualMainSteel")} />
+                        <Toggle label="Main Steel Connections" {...register("manualMainSteelConnections")} />
+                        <Toggle label="Main Steel Misc Attachments" {...register("manualMainSteelMiscAttachments")} />
+                      </div>
+
+                      <div className="space-y-4">
+                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Misc Steel</h5>
+                        <Toggle label="Misc Steel" {...register("manualMiscSteel")} />
+                        <div className="space-y-1">
+                           <Toggle label="Misc Steel Connections" {...register("manualMiscSteelConnection")} />
+                           {mtoFields.manualMiscSteelConnection && (
+                             <div className="pl-4 pt-1 flex flex-col gap-1">
+                               <div className="flex justify-between items-center text-[10px] font-black text-[#4a8a2d]">
+                                 <span>Percentage</span>
+                                 <span>{mtoFields.manualMiscSteelConnectionPercentage || 0}%</span>
+                               </div>
+                               <input type="range" min="0" max="100" {...register("manualMiscSteelConnectionPercentage")} className="w-full h-1.5 bg-[#6bbd45]/30 rounded-lg appearance-none cursor-pointer accent-black" />
+                             </div>
+                           )}
+                        </div>
+                        <Toggle label="Misc Steel Attachments" {...register("manualMiscSteelAttachments")} />
+                      </div>
+
+                      <div className="space-y-4">
+                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-40">Requirements</h5>
+                        <Toggle label="Material Summary" {...register("manualMaterialSummary")} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {(mtoStickModelEnabled || mtoManualEnabled) && (
+                  <div className="space-y-4 pt-4 border-t border-black/5">
+                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-[#6bbd45]" />
+                      Live Material Takeoff Generation Preview
+                    </label>
+                    <div className="border border-black rounded-lg overflow-hidden min-h-[300px] bg-white shadow-inner">
+                      <Controller
+                        name="MTOValue"
+                        control={control}
+                        render={({ field }) => (
+                          <RichTextEditor value={field.value || ""} onChange={field.onChange} />
+                        )}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Technical Specs Section - Visible only after scope selection */}
+          {isScopeSelected && (
+            <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5 animate-in fade-in slide-in-from-top-4 duration-500">
+              <div className="flex items-center gap-4 border-b border-black/5 pb-6">
+                <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
+                <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                  Technical Specifications
+                </h3>
+              </div>
+
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="block text-sm text-black font-black uppercase tracking-widest">Subject</label>
+                  <Input
+                    {...register("subject")}
+                    className="w-full bg-white border-black rounded-lg h-14 text-sm font-black"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
+                  <div className="border border-black rounded-lg overflow-hidden min-h-[200px] bg-white">
+                    <RichTextEditor value={description} onChange={setDescription} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {isDetailing && (
+                    <div className="space-y-2 animate-in fade-in duration-300">
+                      <label className="block text-sm text-black font-black uppercase tracking-widest">Tools <span className="text-rose-500">*</span></label>
+                      <Controller
+                        name="tools"
+                        control={control}
+                        rules={{ required: isDetailing ? "Tools selection is required" : false }}
+                        render={({ field }) => (
+                          <Select
+                            name={field.name}
+                            options={[
+                              { label: "TEKLA", value: "TEKLA" },
+                              { label: "SDS2", value: "SDS2" },
+                              { label: "BOTH", value: "BOTH" },
+                              { label: "NO PREFERENCE", value: "NO_PREFERENCE" },
+                              { label: "OTHER", value: "OTHER" },
+                            ]}
+                            className="border-black rounded-lg h-14"
+                            value={field.value}
+                            onChange={(_, value) => field.onChange(value ?? "")}
+                          />
+                        )}
+                      />
+                    </div>
+                  )}
+                  {!isMTO && (
+                    <div className="space-y-2 animate-in fade-in duration-300">
+                      <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                        <Percent size={14} className="text-black/40" />
+                        Bid Price
+                      </label>
+                      <Input {...register("bidPrice")} type="number" className="w-full border-black rounded-lg h-14 text-sm font-black" />
+                    </div>
+                  )}
+                  <div className={`space-y-2 ${(!isDetailing || isMTO) ? "md:col-span-2" : ""}`}>
+                    <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                      <Calendar size={14} className="text-black/40" />
+                      Due Date <span className="text-rose-500">*</span>
+                    </label>
+                    <Input {...register("estimationDate", { required: "Due date is required" })} type="date" className="w-full border-black rounded-lg h-14 text-sm font-black" />
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Assets Section */}
           <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5">
