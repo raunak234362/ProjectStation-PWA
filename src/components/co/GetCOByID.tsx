@@ -148,10 +148,12 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
       ),
     },
     {
-      accessorKey: "reason",
+      id: "message",
       header: "Message",
       cell: ({ row }) => (
-        <p className="truncate max-w-[220px]">{row.original.reason}</p>
+        <p className="truncate max-w-[220px] text-gray-700">
+          {row.original.description || row.original.reason || "—"}
+        </p>
       ),
     },
     {
@@ -171,23 +173,33 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
       header: "Created",
       cell: ({ row }) => (
         <span className="text-gray-700 text-sm">
-          {new Date(row.original.createdAt).toLocaleString()}
+          {row.original.createdAt ? new Date(row.original.createdAt).toLocaleString() : "—"}
         </span>
       ),
     },
     {
-      accessorKey: "status",
+      id: "status",
       header: "Status",
-      cell: ({ row }) => (
-        <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight ${row.original.status === "OPEN"
-            ? "bg-gray-100 text-black border border-gray-200"
-            : "bg-gray-100 text-black border border-gray-200"
+      cell: ({ row }) => {
+        const st = row.original.Status || row.original.status || "—";
+        const colorMap: Record<string, string> = {
+          NOT_REPLIED: "bg-amber-50 text-amber-800 border-amber-200",
+          PENDING: "bg-amber-50 text-amber-800 border-amber-200",
+          APPROVED: "bg-[#6bbd45]/15 text-black border-[#6bbd45]/30 font-black",
+          REJECTED: "bg-red-50 text-red-800 border-red-200",
+          COMPLETED: "bg-[#6bbd45]/15 text-black border-[#6bbd45]/30 font-black",
+        };
+        const stKey = typeof st === "string" ? st.toUpperCase() : "";
+        return (
+          <span
+            className={`px-3 py-1 rounded-lg text-[10px] uppercase font-bold tracking-widest border whitespace-nowrap shadow-2xs ${
+              colorMap[stKey] || "bg-gray-50 text-black border-gray-200"
             }`}
-        >
-          {row.original.status}
-        </span>
-      ),
+          >
+            {typeof st === "string" ? st.replace(/_/g, " ") : "—"}
+          </span>
+        );
+      },
     },
   ];
 
