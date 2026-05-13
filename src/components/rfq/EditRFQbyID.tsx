@@ -155,15 +155,13 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
                 {/* HEADER */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white shrink-0">
                     <div>
-                        <h2 className="text-xl font-black text-black tracking-tight">Edit RFQ</h2>
-                        <p className="text-[10px] font-black text-black uppercase tracking-[0.2em] mt-1">
-                            UPDATE RFQ DETAILS AND STATUS
-                        </p>
+                        <h2 className="text-xl  text-black tracking-tight">EDIT RFQ</h2>
+
                     </div>
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-4 py-2 bg-red-50 border border-red-600 text-black font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-red-100 transition-all"
+                        className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
                     >
                         Close
                     </button>
@@ -329,30 +327,36 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
                                         Detailing Misc
                                     </span>
                                 </label>
-                                <label className="flex items-center gap-3 cursor-pointer select-none group">
-                                    <input
-                                        type="checkbox"
-                                        {...register('MTOManual')}
-                                        className="w-4 h-4 rounded border-gray-300 accent-green-500"
-                                    />
-                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-black transition-colors">
-                                        MTO Manual
-                                    </span>
-                                </label>
-                                <label className="flex items-center gap-3 cursor-pointer select-none group">
-                                    <input
-                                        type="checkbox"
-                                        {...register('mtoStickModelEnabled')}
-                                        className="w-4 h-4 rounded border-gray-300 accent-green-500"
-                                    />
-                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-black transition-colors">
-                                        MTO Stick Model
-                                    </span>
-                                </label>
+                            </div>
+
+                            <div className="pt-2">
+                                <SectionTitle title="Material Takeoff Scope" />
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                                    <label className="flex items-center gap-3 cursor-pointer select-none group">
+                                        <input
+                                            type="checkbox"
+                                            {...register('MTOManual')}
+                                            className="w-4 h-4 rounded border-gray-300 accent-green-500"
+                                        />
+                                        <span className="text-sm font-semibold text-gray-700 group-hover:text-black transition-colors">
+                                            MTO Manual
+                                        </span>
+                                    </label>
+                                    <label className="flex items-center gap-3 cursor-pointer select-none group">
+                                        <input
+                                            type="checkbox"
+                                            {...register('mtoStickModelEnabled')}
+                                            className="w-4 h-4 rounded border-gray-300 accent-green-500"
+                                        />
+                                        <span className="text-sm font-semibold text-gray-700 group-hover:text-black transition-colors">
+                                            MTO Stick Model
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
                             {mtoStickModelEnabled && (
                                 <div className="pt-4 border-t border-gray-50 space-y-2">
-                                    <label className="text-[10px] font-black text-black uppercase tracking-widest">
+                                    <label className="text-xs text-black uppercase tracking-widest">
                                         MTO Stick Model Details
                                     </label>
                                     <Controller
