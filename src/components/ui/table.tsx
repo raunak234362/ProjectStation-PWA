@@ -86,6 +86,7 @@ export type ExtendedColumnDef<T> = ColumnDef<T> & {
   filterType?: "text" | "select" | "multiselect";
   enableColumnFilter?: boolean;
   filterOptions?: SelectOption[];
+  align?: "left" | "center" | "right";
 };
 
 interface DataTableProps<T extends object> {
@@ -290,11 +291,17 @@ export default function DataTable<T extends object>({
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-4 py-3 text-left text-sm md:text-base font-black text-black tracking-tight uppercase transition-colors"
+                        className={`px-4 py-3 text-sm md:text-base font-black text-black tracking-tight uppercase transition-colors ${
+                          (header.column.columnDef.meta as any)?.align === "center" ? "text-center" : 
+                          (header.column.columnDef.meta as any)?.align === "right" ? "text-right" : "text-left"
+                        }`}
                         onClick={header.column.getToggleSortingHandler()}
                         style={{ width: header.column.getSize() }}
                       >
-                        <div className="flex items-center gap-1 cursor-pointer select-none">
+                        <div className={`flex items-center gap-1 cursor-pointer select-none ${
+                          (header.column.columnDef.meta as any)?.align === "center" ? "justify-center" : 
+                          (header.column.columnDef.meta as any)?.align === "right" ? "justify-end" : "justify-start"
+                        }`}>
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
@@ -338,7 +345,10 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="px-4 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-bold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400"
+                          className={`px-4 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-bold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400 ${
+                            (cell.column.columnDef.meta as any)?.align === "center" ? "text-center" : 
+                            (cell.column.columnDef.meta as any)?.align === "right" ? "text-right" : "text-left"
+                          }`}
                           style={{ width: cell.column.getSize() }}
                         >
                           {flexRender(

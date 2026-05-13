@@ -162,9 +162,9 @@ const EstimatorDashboard = () => {
         </span>
       ),
     },
-    {
+    ...(userRole === "CLIENT_ESTIMATOR" ? [] : [{
       header: "RFQ Type",
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         const r = row.original;
         const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
         const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
@@ -184,7 +184,7 @@ const EstimatorDashboard = () => {
           </span>
         );
       },
-    },
+    }]),
   ];
 
   const invoiceColumns: ExtendedColumnDef<any>[] = [
@@ -246,6 +246,78 @@ const EstimatorDashboard = () => {
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
+          <span className="text-lg font-black text-black uppercase tracking-widest">
+            Material Take-off RFQ OVERVIEW
+          </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
+
+            {/* Stat Card 1 */}
+            <div
+              onClick={() => openModal("ALL_MTO")}
+              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+            >
+              <div className="flex items-center gap-4 z-10">
+                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
+                  <FileText size={24} strokeWidth={2.5} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-black uppercase tracking-widest">
+                    Total MTO
+                  </span>
+                </div>
+              </div>
+              <div className="z-10 text-right">
+                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
+                  {stats.totalMTO}
+                </span>
+              </div>
+            </div>
+
+            {/* Stat Card 2 */}
+            <div
+              onClick={() => openModal("PENDING_MTO")}
+              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+            >
+              <div className="flex items-center gap-4 z-10">
+                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
+                  <Clock size={24} strokeWidth={2.5} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-black uppercase tracking-widest">
+                    Pending
+                  </span>
+                </div>
+              </div>
+              <div className="z-10 text-right">
+                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
+                  {stats.pendingMTO}
+                </span>
+              </div>
+            </div>
+            {/* Stat Card 3 */}
+            <div
+              onClick={() => openModal("COMPLETED_MTO")}
+              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+            >
+              <div className="flex items-center gap-4 z-10">
+                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
+                  <CheckCircle2 size={24} strokeWidth={2.5} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-black uppercase tracking-widest">
+                    Received 
+                  </span>
+                </div>
+              </div>
+              <div className="z-10 text-right">
+                <span className="text-3xl font-black text-black tracking-tighter">
+                  {stats.awardedMTO}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
           <span className="text-lg font-black text-black uppercase tracking-widest">
             DETAILING RFQ OVERVIEW
@@ -314,78 +386,6 @@ const EstimatorDashboard = () => {
               <div className="z-10 text-right">
                 <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
                   {stats.pendingEstimates}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
-          <span className="text-lg font-black text-black uppercase tracking-widest">
-            Material Take-off RFQ OVERVIEW
-          </span>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
-
-            {/* Stat Card 1 */}
-            <div
-              onClick={() => openModal("ALL_MTO")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <FileText size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Total MTO
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {stats.totalMTO}
-                </span>
-              </div>
-            </div>
-
-            {/* Stat Card 2 */}
-            <div
-              onClick={() => openModal("PENDING_MTO")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <Clock size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Pending
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {stats.pendingMTO}
-                </span>
-              </div>
-            </div>
-            {/* Stat Card 3 */}
-            <div
-              onClick={() => openModal("COMPLETED_MTO")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <CheckCircle2 size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Received 
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl font-black text-black tracking-tighter">
-                  {stats.awardedMTO}
                 </span>
               </div>
             </div>

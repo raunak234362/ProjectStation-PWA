@@ -176,12 +176,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<any | null>(null);
 
-  // Followup states
-  const [showFollowupForm, setShowFollowupForm] = useState(false);
-  const [followupDescription, setFollowupDescription] = useState("");
-  const [followupFiles, setFollowupFiles] = useState<File[]>([]);
-  const [isSubmittingFollowup, setIsSubmittingFollowup] = useState(false);
-  const [followups, setFollowups] = useState<any[]>([]);
+  // Followups removed
   const [selectedParentResponseId, setSelectedParentResponseId] = useState<string | null>(null);
 
   const dispatch = useDispatch();
@@ -204,10 +199,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         dispatch(updateRFQ(rfqData));
       }
 
-      // followUps are included in the RFQ response directly
-      const rfqFollowUps = rfqData?.followUps ?? [];
-      console.log("[Followups] Setting followups state:", rfqFollowUps);
-      setFollowups(Array.isArray(rfqFollowUps) ? rfqFollowUps : []);
+      // Followups logic removed
     } catch (err) {
       console.error("Error fetching RFQ:", err);
       if (!rfq) setError("Failed to load RFQ");
@@ -268,38 +260,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     }
   };
 
-  const handleAddFollowup = async () => {
-    if (!followupDescription.trim()) {
-      toast.error("Description is required");
-      return;
-    }
-    console.log("[Followup] Submitting followup for RFQ ID:", id);
-    console.log("[Followup] Description:", followupDescription);
-    console.log("[Followup] Files:", followupFiles);
-
-    const formData = new FormData();
-    formData.append("description", followupDescription);
-    followupFiles.forEach((file) => {
-      formData.append("files", file);
-      console.log("[Followup] Appending file:", file.name);
-    });
-
-    try {
-      setIsSubmittingFollowup(true);
-      const res = await Service.addRFQFollowups(formData, id);
-      console.log("[Followup] Response:", res);
-      toast.success("Followup added successfully");
-      setFollowupDescription("");
-      setFollowupFiles([]);
-      setShowFollowupForm(false);
-      fetchRfq();
-    } catch (err) {
-      console.error("[Followup] Error adding followup:", err);
-      toast.error("Failed to add followup");
-    } finally {
-      setIsSubmittingFollowup(false);
-    }
-  };
 
   const handleStatusUpdate = async () => {
     if (!newStatus) {
@@ -461,10 +421,23 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
       <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-end bg-white">
+        <div className="p-6 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4 bg-white sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+              {rfq?.projectName}
+            </h3>
+            {/* Status tag */}
+            <span className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-green-100 text-black border border-gray-200">
+              {((rfq as any)?.wbtStatus &&
+                (rfq as any)?.wbtStatus !== "RECEIVED"
+                ? (rfq as any)?.wbtStatus
+                : rfq?.status
+              )?.replace("_", " ")}
+            </span>
+          </div>
           <button
             onClick={onClose}
-            className="px-8 py-2 bg-white text-red-600 border-2 border-red-600 rounded-lg hover:bg-red-50 transition-all font-black text-sm uppercase tracking-tight shadow-sm"
+            className="px-6 py-1.5 bg-red-50 text-red-700 border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
           >
             Close
           </button>
@@ -472,110 +445,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
-            {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-            <div className="bg-gray-50 border border-gray-200 p-4 sm:p-8 rounded-[2rem] shadow-sm space-y-6">
-              {/* Header + Add Response Button */}
-              <div className="flex justify-between items-center gap-4">
-                <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-tighter">
-                  Responses
-                </h1>
-
-                {(userRole === "admin" ||
-                  userRole === "deputy_manager" ||
-                  userRole === "operation_executive" ||
-                  userRole === "user") && (
-                    <Button
-                      onClick={() => {
-                        setSelectedParentResponseId(null);
-                        setShowResponseModal(true);
-                      }}
-                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
-                    >
-                      + Add Response
-                    </Button>
-                  )}
-              </div>
-              {showResponseModal && (
-                <ResponseModal
-                  rfqId={id}
-                  onClose={() => {
-                    setShowResponseModal(false);
-                    setSelectedParentResponseId(null);
-                  }}
-                  onSuccess={fetchRfq}
-                  parentResponseId={selectedParentResponseId || undefined}
-                />
-              )}
-              {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
-              {userRole !== "connection_designer_engineer" &&
-                (topLevelResponses.length ? (
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    {topLevelResponses.map((resp: any) => (
-                      <RFQResponseItem
-                        key={resp.id}
-                        response={resp}
-                        onReply={(parent) => {
-                          setSelectedParentResponseId(parent.id);
-                          setShowResponseModal(true);
-                        }}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-700 italic">No responses yet.</p>
-                ))}
-              <div className="mt-4">
-                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                  <>
-                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-                      CD Quotation
-                    </p>
-                    <DataTable
-                      columns={quotationColumns}
-                      data={rfq?.CDQuotas || []}
-                      pageSizeOptions={[5]}
-                      onRowClick={(row: any) => setSelectedQuotation(row)}
-                    />
-                  </>
-                ) : (
-                  // Show Submit Button if not submitted
-                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                    {userRole === "connection_designer_engineer" ? (
-                      <>
-                        <p className="text-gray-500 mb-4 text-center">
-                          You haven't submitted a quotation yet.
-                        </p>
-                        <Button
-                          onClick={() => setShowQuotationResponseModal(true)}
-                          className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
-                        >
-                          Submit Quotation Response
-                        </Button>
-                      </>
-                    ) : null}
-                  </div>
-                )}
-              </div>
-            </div>
             {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
             <div className="border border-green-100/50 p-4 sm:p-6 rounded-3xl bg-gray-100 shadow-sm space-y-5 sm:space-y-6">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <h3 className="text-xl sm:text-2xl text-black wrap-break-word max-w-full uppercase tracking-tight">
-                    {rfq?.projectName}
-                  </h3>
-
-                  {/* Status tag */}
-                  <span className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-green-100 text-black border border-gray-200">
-                    {((rfq as any)?.wbtStatus &&
-                      (rfq as any)?.wbtStatus !== "RECEIVED"
-                      ? (rfq as any)?.wbtStatus
-                      : rfq?.status
-                    )?.replace("_", " ")}
-                  </span>
-                </div>
-
+              <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   {/* EDIT RFQ */}
@@ -769,159 +642,91 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 formatDate={formatDate}
               />
 
-              {/* Followups */}
-              <div className="space-y-3 border border-grey-400 bg-white rounded-2xl p-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-black text-black uppercase tracking-tight">
-                    Followups
-                  </h4>
-                  <Button
-                    onClick={() => setShowFollowupForm((v) => !v)}
-                    className="px-3 py-1.5 text-xs bg-green-50 text-black border border-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-100 transition-all"
-                  >
-                    {showFollowupForm ? "Cancel" : "+ Add Followup"}
-                  </Button>
-                </div>
+            {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
+            <div className="bg-gray-50 border border-gray-200 p-4 sm:p-8 rounded-[2rem] shadow-sm space-y-6">
+              {/* Header + Add Response Button */}
+              <div className="flex justify-between items-center gap-4">
+                <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-tighter">
+                  Responses
+                </h1>
 
-                {showFollowupForm && (
-                  <div className="bg-white border border-green-100 rounded-2xl p-4 space-y-3">
-                    <div>
-                      <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">
-                        Description *
-                      </label>
-                      <textarea
-                        value={followupDescription}
-                        onChange={(e) => setFollowupDescription(e.target.value)}
-                        placeholder="Enter followup details..."
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 resize-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">
-                        Files (optional)
-                      </label>
-                      <input
-                        type="file"
-                        multiple
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          console.log(
-                            "[Followup] Files selected:",
-                            files.map((f) => f.name),
-                          );
-                          setFollowupFiles(files);
-                        }}
-                        className="w-full text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-xs file:font-bold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-                      />
-                      {followupFiles.length > 0 && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          {followupFiles.length} file(s) selected
-                        </p>
-                      )}
-                    </div>
+                {(userRole === "admin" ||
+                  userRole === "deputy_manager" ||
+                  userRole === "operation_executive" ||
+                  userRole === "user") && (
                     <Button
-                      onClick={handleAddFollowup}
-                      disabled={isSubmittingFollowup}
-                      className="w-full py-2 bg-green-200 text-black border border-black rounded-lg font-bold uppercase tracking-tight text-sm hover:bg-green-300 transition-all disabled:opacity-60"
+                      onClick={() => {
+                        setSelectedParentResponseId(null);
+                        setShowResponseModal(true);
+                      }}
+                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
                     >
-                      {isSubmittingFollowup
-                        ? "Submitting..."
-                        : "Submit Followup"}
+                      + Add Response
                     </Button>
+                  )}
+              </div>
+              {showResponseModal && (
+                <ResponseModal
+                  rfqId={id}
+                  onClose={() => {
+                    setShowResponseModal(false);
+                    setSelectedParentResponseId(null);
+                  }}
+                  onSuccess={fetchRfq}
+                  parentResponseId={selectedParentResponseId || undefined}
+                />
+              )}
+              {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
+              {userRole !== "connection_designer_engineer" &&
+                (topLevelResponses.length ? (
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                    {topLevelResponses.map((resp: any) => (
+                      <RFQResponseItem
+                        key={resp.id}
+                        response={resp}
+                        onReply={(parent) => {
+                          setSelectedParentResponseId(parent.id);
+                          setShowResponseModal(true);
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-700 italic">No responses yet.</p>
+                ))}
+              <div className="mt-4">
+                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                  <>
+                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                      CD Quotation
+                    </p>
+                    <DataTable
+                      columns={quotationColumns}
+                      data={rfq?.CDQuotas || []}
+                      pageSizeOptions={[5]}
+                      onRowClick={(row: any) => setSelectedQuotation(row)}
+                    />
+                  </>
+                ) : (
+                  // Show Submit Button if not submitted
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                    {userRole === "connection_designer_engineer" ? (
+                      <>
+                        <p className="text-gray-500 mb-4 text-center">
+                          You haven't submitted a quotation yet.
+                        </p>
+                        <Button
+                          onClick={() => setShowQuotationResponseModal(true)}
+                          className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                        >
+                          Submit Quotation Response
+                        </Button>
+                      </>
+                    ) : null}
                   </div>
                 )}
-
-                {/* Existing Followups — Table with inline accordion */}
-                {followups.length > 0 ? (
-                  <DataTable
-                    columns={[
-                      {
-                        accessorKey: "createdBy",
-                        header: "Created By",
-                        cell: ({ row }: any) => {
-                          const cb = row.original.createdBy;
-                          const name = cb
-                            ? `${cb.firstName ?? ""} ${cb.lastName ?? ""}`.trim()
-                            : "—";
-                          return (
-                            <span className="font-medium text-xs sm:text-sm">
-                              {name}
-                            </span>
-                          );
-                        },
-                      },
-                      {
-                        accessorKey: "createdAt",
-                        header: "Created On",
-                        cell: ({ row }: any) => (
-                          <span className="text-gray-700 text-xs">
-                            {formatDateTime(row.original.createdAt)}
-                          </span>
-                        ),
-                      },
-                      {
-                        accessorKey: "description",
-                        header: "Description",
-                        cell: ({ row }: any) => (
-                          <p className="truncate max-w-[160px] text-xs text-gray-800">
-                            {row.original.description || "—"}
-                          </p>
-                        ),
-                      },
-                      {
-                        accessorKey: "files",
-                        header: "Files",
-                        cell: ({ row }: any) => {
-                          const count = row.original.files?.length ?? 0;
-                          return count > 0 ? (
-                            <span className="text-black font-medium text-xs">
-                              {count} file(s)
-                            </span>
-                          ) : (
-                            <span className="text-gray-400 text-xs">—</span>
-                          );
-                        },
-                      },
-                    ]}
-                    data={followups}
-                    pageSizeOptions={[5, 10]}
-                    detailComponent={({
-                      row,
-                    }: {
-                      row: any;
-                      close: () => void;
-                    }) => {
-                      return (
-                        <div className="space-y-3 text-sm">
-                          <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
-                              Description
-                            </p>
-                            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
-                              {row.description || "—"}
-                            </p>
-                          </div>
-                          {row.files?.length > 0 && (
-                            <div className="pt-2">
-                              <RenderFiles
-                                files={row.files}
-                                table="rfqFollowup"
-                                parentId={row.id}
-                                hideHeader
-                              />
-                            </div>
-                          )}
-                        </div>
-                      );
-                    }}
-                  />
-                ) : (
-                  <p className="text-xs text-gray-400 italic">
-                    No followups yet.
-                  </p>
-                )}
               </div>
+            </div>
 
               {userRole !== "client_admin" &&
                 userRole !== "client" &&

@@ -6,14 +6,13 @@ import {
   FileText,
   Activity,
 } from "lucide-react";
-import DataTable from "../../ui/table";
-import type { ColumnDef } from "@tanstack/react-table";
+import DataTable, { ExtendedColumnDef } from "../../ui/table";
 import GetRFQByID from "../../rfq/GetRFQByID";
 import GetRFIByID from "../../rfi/GetRFIByID";
 import GetCOByID from "../../co/GetCOByID";
 import GetInvoiceById from "../../invoices/GetInvoiceById";
 import { formatDate } from "../../../utils/dateUtils";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   incrementModalCount,
   decrementModalCount,
@@ -34,6 +33,8 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   type,
 }) => {
   const dispatch = useDispatch();
+  const userDetail = useSelector((state: any) => state.userInfo?.userDetail);
+  const userRole = userDetail?.role;
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
 
   useEffect(() => {
@@ -106,16 +107,22 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
     }
   };
 
-  const getColumns = (): ColumnDef<any>[] => {
+  const getColumns = (): ExtendedColumnDef<any>[] => {
     switch (type) {
       case "PENDING_RFQ":
-        return [
+        const pendingCols: ExtendedColumnDef<any>[] = [
           {
             accessorKey: "projectName",
             header: "Project Name",
+            size: 400,
           },
-          {
+        ];
+
+        if (userRole !== "CLIENT_ESTIMATOR") {
+          pendingCols.push({
             header: "RFQ Type",
+            meta: { align: "center" },
+            size: 150,
             cell: ({ row }) => {
               const r = row.original;
               const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
@@ -136,14 +143,20 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 </span>
               );
             },
-          },
+          });
+        }
+
+        pendingCols.push(
           {
             accessorKey: "projectNumber",
             header: "RFQ #",
+            size: 150,
           },
           {
             accessorKey: "status",
             header: "Status",
+            meta: { align: "center" },
+            size: 150,
             cell: ({ row }) => (
               <span
                 className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
@@ -155,12 +168,15 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           {
             accessorKey: "estimationDate",
             header: "Due Date",
+            meta: { align: "center" },
+            size: 150,
             cell: ({ row }) =>
               row.original.estimationDate
                 ? formatDate(row.original.estimationDate)
                 : "—",
-          },
-        ];
+          }
+        );
+        return pendingCols;
       case "PENDING_RFI":
         return [
           { accessorKey: "subject", header: "Subject" },
@@ -223,47 +239,68 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
       case "ALL_MTO":
       case "PENDING_MTO":
       case "COMPLETED_MTO":
-        return [
+        const allCols: ExtendedColumnDef<any>[] = [
           {
             accessorKey: "projectName",
             header: "Project Name",
+            size: 400,
           },
-          {
-            header: "RFQ Type",
-            cell: ({ row }) => {
-              const r = row.original;
-              const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
-              const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
-              
-              let label = "—";
-              if (isDetailing && isMTO) label = "Detailing | MTO";
-              else if (isDetailing) label = "Detailing";
-              else if (isMTO) label = "MTO";
+        ];
 
-              return (
-                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                  label !== "—" 
-                    ? "bg-blue-50 text-blue-700 border-blue-200" 
-                    : "bg-gray-50 text-gray-400 border-gray-200"
-                }`}>
-                  {label}
-                </span>
-              );
+        if (userRole !== "CLIENT_ESTIMATOR") {
+          allCols.push(
+            {
+              header: "RFQ Type",
+              meta: { align: "center" },
+              size: 150,
+              cell: ({ row }) => {
+                const r = row.original;
+                const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
+                const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
+                
+                let label = "—";
+                if (isDetailing && isMTO) label = "Detailing | MTO";
+                else if (isDetailing) label = "Detailing";
+                else if (isMTO) label = "MTO";
+
+                return (
+                  <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                    label !== "—" 
+                      ? "bg-blue-50 text-blue-700 border-blue-200" 
+                      : "bg-gray-50 text-gray-400 border-gray-200"
+                  }`}>
+                    {label}
+                  </span>
+                );
+              },
             },
-          },
-          {
-            accessorKey: "subject",
-            header: "Subject",
-            cell: ({ row }) => (
-              <div className="truncate max-w-[300px]" title={row.original.subject}>
-                {row.original.subject || "—"}
-              </div>
-            ),
-          },
+            {
+              accessorKey: "subject",
+              header: "Subject",
+              size: 250,
+              cell: ({ row }) => (
+                <div className="truncate max-w-[300px]" title={row.original.subject}>
+                  {row.original.subject || "—"}
+                </div>
+              ),
+            }
+          );
+        } else {
+          allCols.push({
+            accessorKey: "createdAt",
+            header: "Received Date",
+            meta: { align: "center" },
+            size: 150,
+            cell: ({ row }) => row.original.createdAt ? formatDate(row.original.createdAt) : "—",
+          });
+        }
 
+        allCols.push(
           {
             accessorKey: "status",
             header: "Status",
+            meta: { align: "center" },
+            size: 150,
             cell: ({ row }) => (
               <span
                 className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
@@ -275,12 +312,15 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           {
             accessorKey: "estimationDate",
             header: "Due Date",
+            meta: { align: "center" },
+            size: 150,
             cell: ({ row }) =>
               row.original.estimationDate
                 ? formatDate(row.original.estimationDate)
                 : "—",
-          },
-        ];
+          }
+        );
+        return allCols;
       case "ALL_INVOICES":
       case "PENDING_INVOICES":
         return [
