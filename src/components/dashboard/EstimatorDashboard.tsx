@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -16,6 +16,45 @@ import GetRFQByID from "../rfq/GetRFQByID";
 import GetInvoiceById from "../invoices/GetInvoiceById";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import InvoiceSummary from "./components/InvoiceSummary";
+
+interface StatCardProps {
+  label: string | React.ReactNode;
+  value: string | number;
+  icon: React.ElementType;
+  onClick: () => void;
+  iconPadding?: string;
+  valueSize?: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({
+  label,
+  value,
+  icon: Icon,
+  onClick,
+  iconPadding = "p-3",
+  valueSize = "text-3xl md:text-4xl",
+}) => (
+  <div
+    onClick={onClick}
+    className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+  >
+    <div className="flex items-center gap-4 z-10">
+      <div className={`${iconPadding} rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black`}>
+        <Icon size={24} strokeWidth={2.5} />
+      </div>
+      <div className="flex flex-col">
+        <span className="text-sm font-black text-black uppercase tracking-widest">
+          {label}
+        </span>
+      </div>
+    </div>
+    <div className="z-10 text-right">
+      <span className={`${valueSize} font-black text-black tracking-tighter`}>
+        {value}
+      </span>
+    </div>
+  </div>
+);
 
 const EstimatorDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -67,7 +106,21 @@ const EstimatorDashboard = () => {
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-        setRecentRFQs(rfqs.filter((r: any) => new Date(r.createdAt) >= oneWeekAgo));
+        const upcomingMTOs = rfqs
+          .filter((r: any) => {
+            const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
+            const status = (r.status || "").toUpperCase();
+            const wbtStatus = (r.wbtStatus || "").toUpperCase();
+            const isNotFinal = status !== "AWARDED" && status !== "CLOSED" && wbtStatus !== "AWARDED" && wbtStatus !== "CLOSED";
+            return isMTO && isNotFinal;
+          })
+          .sort((a: any, b: any) => {
+            const dateA = a.estimationDate ? new Date(a.estimationDate).getTime() : Infinity;
+            const dateB = b.estimationDate ? new Date(b.estimationDate).getTime() : Infinity;
+            return dateA - dateB;
+          });
+
+        setRecentRFQs(upcomingMTOs);
         setRecentInvoices(invoices.filter((i: any) => new Date(i.createdAt) >= oneWeekAgo));
 
         // Calculate Stats
@@ -155,12 +208,38 @@ const EstimatorDashboard = () => {
     },
     {
       accessorKey: "createdAt",
-      header: "Date",
+      header: "Sent On",
       cell: ({ row }) => (
         <span className="font-bold text-gray-500">
           {row.original.createdAt ? new Date(row.original.createdAt).toLocaleDateString() : row.original.date || "—"}
         </span>
       ),
+    },
+    {
+      accessorKey: "estimationDate",
+      header: "Due Date",
+      cell: ({ row }) => {
+        const estDate = row.original.estimationDate;
+        if (!estDate) return "—";
+
+        const d = new Date(estDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        d.setHours(0, 0, 0, 0);
+
+        let colorClass = "text-gray-500";
+        if (d < today) {
+          colorClass = "bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-lg";
+        } else if (d.getTime() === today.getTime()) {
+          colorClass = "bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-0.5 rounded-lg";
+        }
+
+        return (
+          <span className={`font-bold ${colorClass}`}>
+            {d.toLocaleDateString()}
+          </span>
+        );
+      },
     },
     ...(userRole === "CLIENT_ESTIMATOR" ? [] : [{
       header: "RFQ Type",
@@ -252,70 +331,30 @@ const EstimatorDashboard = () => {
           </span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
 
-            {/* Stat Card 1 */}
-            <div
+            <StatCard
               onClick={() => openModal("ALL_MTO")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <FileText size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Total MTO
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {stats.totalMTO}
-                </span>
-              </div>
-            </div>
+              icon={FileText}
+              label="Total MTO"
+              value={stats.totalMTO}
+              iconPadding="p-1"
+            />
 
-            {/* Stat Card 2 */}
-            <div
+            <StatCard
               onClick={() => openModal("PENDING_MTO")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <Clock size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Pending
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {stats.pendingMTO}
-                </span>
-              </div>
-            </div>
-            {/* Stat Card 3 */}
-            <div
+              icon={Clock}
+              label="Ongoing"
+              value={stats.pendingMTO}
+              iconPadding="p-1"
+            />
+
+            <StatCard
               onClick={() => openModal("COMPLETED_MTO")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <CheckCircle2 size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Received 
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl font-black text-black tracking-tighter">
-                  {stats.awardedMTO}
-                </span>
-              </div>
-            </div>
+              icon={CheckCircle2}
+              label="Completed"
+              value={stats.awardedMTO}
+              iconPadding="p-1"
+              valueSize="text-3xl"
+            />
           </div>
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
@@ -324,71 +363,26 @@ const EstimatorDashboard = () => {
           </span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
 
-            {/* Stat Card 1 */}
-            <div
+            <StatCard
               onClick={() => openModal("ALL_RFQ")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <FileText size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Total RFQ<span className="text-[10px]">s</span>
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {stats.totalRfqsSent}
-                </span>
-              </div>
-            </div>
+              icon={FileText}
+              label={<>Total RFQ<span className="text-[10px]">s</span></>}
+              value={stats.totalRfqsSent}
+            />
 
-            {/* Stat Card 2 */}
-            <div
+            <StatCard
               onClick={() => openModal("AWARDED_RFQ")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <Activity size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Awarded
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {stats.rfqsAwarded}
-                </span>
-              </div>
-            </div>
+              icon={Activity}
+              label="Awarded"
+              value={stats.rfqsAwarded}
+            />
 
-            {/* Stat Card 3 */}
-            <div
+            <StatCard
               onClick={() => openModal("PENDING_RFQ")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <Clock size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Pending 
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {stats.pendingEstimates}
-                </span>
-              </div>
-            </div>
+              icon={Clock}
+              label="Pending"
+              value={stats.pendingEstimates}
+            />
           </div>
         </div>
       </div>
@@ -403,49 +397,21 @@ const EstimatorDashboard = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            {/* Stat Card 5 */}
-            <div
+            <StatCard
               onClick={() => openModal("ALL_INVOICES")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <CheckCircle2 size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Total Invoiced
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-2xl md:text-3xl font-black text-black tracking-tighter">
-                  {stats.totalInvoiced}
-                </span>
-              </div>
-            </div>
+              icon={CheckCircle2}
+              label="Total Invoiced"
+              value={stats.totalInvoiced}
+              valueSize="text-2xl md:text-3xl"
+            />
 
-            {/* Stat Card 6 */}
-            <div
+            <StatCard
               onClick={() => openModal("PENDING_INVOICES")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <DollarSign size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black uppercase tracking-widest">
-                    Pending Invoiced
-                  </span>
-                </div>
-              </div>
-              <div className="z-10 text-right">
-                <span className="text-2xl md:text-3xl font-black text-black tracking-tighter">
-                  {stats.pendingInvoices}
-                </span>
-              </div>
-            </div>
+              icon={DollarSign}
+              label="Pending Invoiced"
+              value={stats.pendingInvoices}
+              valueSize="text-2xl md:text-3xl"
+            />
           </div>
         )}
 
@@ -456,7 +422,7 @@ const EstimatorDashboard = () => {
         <div className="bg-white rounded-3xl border border-black shadow-sm overflow-hidden flex flex-col h-[400px]">
           <div className="p-6 border-b border-black bg-gray-50 flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-black text-black uppercase tracking-tight">RFQ<span className="lowercase">s</span></h2>
+              <h2 className="text-lg font-semibold text-black uppercase tracking-tight">Upcoming Material Take-off</h2>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-2">
@@ -474,7 +440,7 @@ const EstimatorDashboard = () => {
         <div className="bg-white rounded-3xl border border-black shadow-sm overflow-hidden flex flex-col h-[400px]">
           <div className="p-6 border-b border-black bg-gray-50 flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-black text-black uppercase tracking-tight">Recent Invoices</h2>
+              <h2 className="text-lg font-semibold text-black uppercase tracking-tight">Recent Invoices</h2>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-2">

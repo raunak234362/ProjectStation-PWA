@@ -1,12 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import {
   Files,
   Search,
   FileText,
   Activity,
+  Calendar,
+  X
 } from "lucide-react";
-import DataTable, { ExtendedColumnDef } from "../../ui/table";
+import DataTable, { type ExtendedColumnDef } from "../../ui/table";
 import GetRFQByID from "../../rfq/GetRFQByID";
 import GetRFIByID from "../../rfi/GetRFIByID";
 import GetCOByID from "../../co/GetCOByID";
@@ -35,7 +37,9 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   const dispatch = useDispatch();
   const userDetail = useSelector((state: any) => state.userInfo?.userDetail);
   const userRole = userDetail?.role;
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState("all");
 
   useEffect(() => {
     if (isOpen) {
@@ -52,7 +56,53 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
     dataLength: data?.length,
     data,
   });
-  console.log("===============", data);
+
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+    let result = [...data];
+
+    // Global Search
+    if (searchTerm) {
+      const query = searchTerm.toLowerCase();
+      result = result.filter((item) => {
+        const project = item.projectName || item.project?.name || item.project?.projectName || "";
+        const id = item.projectNumber || item.id || item._id || "";
+        const subject = item.subject || item.remarks || "";
+        const invoice = item.invoiceNumber || item.jobName || "";
+        
+        return (
+          project.toLowerCase().includes(query) ||
+          id.toString().toLowerCase().includes(query) ||
+          subject.toLowerCase().includes(query) ||
+          invoice.toLowerCase().includes(query)
+        );
+      });
+    }
+
+    // Date Filter
+    if (dateFilter !== "all") {
+      const now = new Date();
+      result = result.filter((item) => {
+        const itemDate = new Date(item.createdAt || item.invoiceDate || item.date);
+        if (isNaN(itemDate.getTime())) return true;
+
+        if (dateFilter === "today") {
+          return itemDate.toDateString() === now.toDateString();
+        }
+        if (dateFilter === "week") {
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return itemDate >= weekAgo;
+        }
+        if (dateFilter === "month") {
+          const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+          return itemDate >= monthAgo;
+        }
+        return true;
+      });
+    }
+
+    return result;
+  }, [data, searchTerm, dateFilter]);
 
   const getTitle = () => {
     switch (type) {
@@ -127,18 +177,17 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               const r = row.original;
               const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
               const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
-              
+
               let label = "—";
               if (isDetailing && isMTO) label = "Detailing | MTO";
               else if (isDetailing) label = "Detailing";
               else if (isMTO) label = "MTO";
 
               return (
-                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                  label !== "—" 
-                    ? "bg-blue-50 text-blue-700 border-blue-200" 
+                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${label !== "—"
+                    ? "bg-blue-50 text-blue-700 border-blue-200"
                     : "bg-gray-50 text-gray-400 border-gray-200"
-                }`}>
+                  }`}>
                   {label}
                 </span>
               );
@@ -257,18 +306,17 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 const r = row.original;
                 const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
                 const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
-                
+
                 let label = "—";
                 if (isDetailing && isMTO) label = "Detailing | MTO";
                 else if (isDetailing) label = "Detailing";
                 else if (isMTO) label = "MTO";
 
                 return (
-                  <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                    label !== "—" 
-                      ? "bg-blue-50 text-blue-700 border-blue-200" 
+                  <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${label !== "—"
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
                       : "bg-gray-50 text-gray-400 border-gray-200"
-                  }`}>
+                    }`}>
                     {label}
                   </span>
                 );
@@ -285,17 +333,42 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               ),
             }
           );
-        } else {
-          allCols.push({
-            accessorKey: "createdAt",
-            header: "Received Date",
-            meta: { align: "center" },
-            size: 150,
-            cell: ({ row }) => row.original.createdAt ? formatDate(row.original.createdAt) : "—",
-          });
         }
 
         allCols.push(
+          {
+            accessorKey: "createdAt",
+            header: "Sent On",
+            meta: { align: "center" },
+            size: 150,
+            cell: ({ row }) => row.original.createdAt ? formatDate(row.original.createdAt) : "—",
+          },
+
+          {
+            accessorKey: "estimationDate",
+            header: "Due Date",
+            meta: { align: "center" },
+            size: 150,
+            cell: ({ row }) =>
+              row.original.estimationDate
+                ? formatDate(row.original.estimationDate)
+                : "—",
+          },
+          {
+            accessorKey: "latestResponseDate",
+            header: "Received On",
+            meta: { align: "center" },
+            size: 150,
+            cell: ({ row }) => {
+              const responses = row.original.responses || [];
+              if (responses.length === 0) return "—";
+              const latest = [...responses].sort((a: any, b: any) =>
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              )[0];
+              return latest.createdAt ? formatDate(latest.createdAt) : "—";
+            },
+          },
+
           {
             accessorKey: "status",
             header: "Status",
@@ -308,16 +381,6 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 {row.original.wbtStatus === "AWARDED" ? "AWARDED" : (row.original.status?.replace("_", " ") || "—")}
               </span>
             ),
-          },
-          {
-            accessorKey: "estimationDate",
-            header: "Due Date",
-            meta: { align: "center" },
-            size: 150,
-            cell: ({ row }) =>
-              row.original.estimationDate
-                ? formatDate(row.original.estimationDate)
-                : "—",
           }
         );
         return allCols;
@@ -377,28 +440,83 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
       <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
-          <div>
+          <div className="flex items-center gap-6">
             <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
               {getIcon()}
               {getTitle()}
             </h3>
-
           </div>
-          <button
-            onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-          >
-            Close
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Search Input */}
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-green-600 transition-colors" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 focus:ring-4 focus:ring-green-600/5 transition-all outline-none w-64"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* Date Filter */}
+            <div className="relative">
+              <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <select
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none appearance-none cursor-pointer text-gray-700 min-w-[140px]"
+              >
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+
+            {(searchTerm || dateFilter !== "all") && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setDateFilter("all");
+                }}
+                className="px-3 py-2 text-xs font-black text-red-600 uppercase tracking-widest hover:bg-red-50 rounded-xl transition-all"
+              >
+                Reset
+              </button>
+            )}
+
+            <div className="w-px h-8 bg-gray-100 mx-2" />
+
+            <button
+              onClick={onClose}
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
         </div>
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {data.length > 0 ? (
+          {filteredData.length > 0 ? (
             <>
               <DataTable
                 columns={getColumns()}
-                data={data}
+                data={filteredData}
                 pageSizeOptions={[25]}
                 onRowClick={(row) => setSelectedId(row.id || row._id)}
 

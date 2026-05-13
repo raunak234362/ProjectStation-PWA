@@ -197,7 +197,7 @@ export default function DataTable<T extends object>({
           .getPaginationRowModel()
           .rows.findIndex((r) => r.id === row.id);
         return (
-          <span className="font-black text-black">
+          <span className="font-regular text-black">
             {pageIndex * pageSize + index + 1}
           </span>
         );
@@ -265,7 +265,7 @@ export default function DataTable<T extends object>({
             ))}
           <Button
             onClick={() => table.resetColumnFilters()}
-            className="text-xs text-black border border-black hover:bg-green-100 transition-all h-11 px-8 font-black rounded-xl flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
+            className="text-xs text-black border border-black hover:bg-green-100 transition-all h-11 px-8 font-semibold rounded-xl flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
           >
             <X className="w-4 h-4" /> Reset Filters
           </Button>
@@ -291,7 +291,7 @@ export default function DataTable<T extends object>({
                     {hg.headers.map((header) => (
                       <th
                         key={header.id}
-                        className={`px-4 py-3 text-sm md:text-base font-black text-black tracking-tight uppercase transition-colors ${
+                        className={`px-4 py-3 text-sm md:text-base font-semibold text-black tracking-tight uppercase transition-colors ${
                           (header.column.columnDef.meta as any)?.align === "center" ? "text-center" : 
                           (header.column.columnDef.meta as any)?.align === "right" ? "text-right" : "text-left"
                         }`}
@@ -345,7 +345,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className={`px-4 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-bold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400 ${
+                          className={`px-4 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-semibold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400 ${
                             (cell.column.columnDef.meta as any)?.align === "center" ? "text-center" : 
                             (cell.column.columnDef.meta as any)?.align === "right" ? "text-right" : "text-left"
                           }`}
