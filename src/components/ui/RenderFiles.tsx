@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 import { showFileError } from "../../store/uiSlice"
-import { FileText, Share2, Download, ChevronRight, Plus, ChevronDown, FolderOpen } from 'lucide-react'
+import { FileText, Share2, Download, ChevronRight, Plus, ChevronDown } from 'lucide-react'
 import {
   openFileSecurely,
   downloadFileSecurely,

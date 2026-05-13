@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import Service from "../../../api/Service";
 import RenderFiles from "../../ui/RenderFiles";
-import { Loader2, Inbox, ChevronDown, Filter, FileText, Layers, Search, Calendar, X } from "lucide-react";
+import { Loader2, ChevronDown, Filter, FileText, Layers, Search, Calendar, X } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
