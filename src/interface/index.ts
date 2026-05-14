@@ -257,6 +257,9 @@ export interface RfqResponse {
   createdAt: string;
   status: string;
   wbtStatus?: string;
+  PageNumbers?: string;
+  totalTonnageWithConnection?: string;
+  totalTonnageWithoutConnection?: string;
 }
 
 export interface RFQItem {
@@ -360,6 +363,9 @@ export interface RfqResponsePayload {
   files?: File[] | string[];
   link?: string | null;
   wbtStatus?: string;
+  PageNumbers?: string;
+  totalTonnageWithConnection?: string;
+  totalTonnageWithoutConnection?: string;
 }
 
 export interface Staff {

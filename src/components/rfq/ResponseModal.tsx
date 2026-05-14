@@ -426,6 +426,14 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 
       if (data.link) formData.append("link", data.link);
 
+      if (data.PageNumbers) formData.append("PageNumbers", data.PageNumbers);
+      if (data.totalTonnageWithConnection) {
+        formData.append("totalTonnageWithConnection", data.totalTonnageWithConnection);
+      }
+      if (data.totalTonnageWithoutConnection) {
+        formData.append("totalTonnageWithoutConnection", data.totalTonnageWithoutConnection);
+      }
+
       if (files.length > 0) {
         files.forEach((file) => formData.append("files", file));
       }
@@ -628,6 +636,44 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                       placeholder="Synthesize your response here..."
                     />
                   )}
+                />
+              </div>
+            </div>
+
+            {/* Tonnage & Pages */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                  Tonnage (With Conn)
+                </label>
+                <input
+                  {...register("totalTonnageWithConnection")}
+                  type="number"
+                  step="any"
+                  placeholder="0"
+                  className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-black text-sm"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                  Tonnage (W/O Conn)
+                </label>
+                <input
+                  {...register("totalTonnageWithoutConnection")}
+                  type="number"
+                  step="any"
+                  placeholder="0"
+                  className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-black text-sm"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                  Page Numbers
+                </label>
+                <input
+                  {...register("PageNumbers")}
+                  placeholder="e.g. 3535"
+                  className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-black text-sm"
                 />
               </div>
             </div>

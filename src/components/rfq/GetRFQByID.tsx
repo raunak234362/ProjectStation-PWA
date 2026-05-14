@@ -24,29 +24,42 @@ import { updateRFQ, deleteRFQ } from "../../store/rfqSlice";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { toast } from "react-toastify";
 
-const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (parent: any) => void }) => {
+const RFQResponseItem = ({
+  response,
+  onReply,
+  onSelect,
+}: {
+  response: any;
+  onReply?: (parent: any) => void;
+  onSelect?: (resp: any) => void;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const hasChildren = response.childResponses && response.childResponses.length > 0;
+  const hasChildren =
+    response.childResponses && response.childResponses.length > 0;
 
   return (
     <div className="mb-6 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
       {/* Header */}
       <div
-        onClick={() => setIsOpen(!isOpen)}
-        className={`p-5 flex items-center justify-between cursor-pointer transition-colors ${isOpen ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-50 ${isOpen ? 'border-b border-gray-100' : ''}`}
+        onClick={() => onSelect?.(response)}
+        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer transition-colors ${
+          isOpen ? "bg-gray-50" : "bg-white"
+        } hover:bg-gray-50 ${isOpen ? "border-b border-gray-100" : ""}`}
       >
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-100">
+          <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-100 shrink-0">
             <User className="w-6 h-6 text-green-600" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-black text-black uppercase tracking-tight text-base">
-                {response.user?.firstName ? `${response.user.firstName} ${response.user.lastName}` : response.user?.username || 'Team Member'}
+                {response.user?.firstName
+                  ? `${response.user.firstName} ${response.user.lastName}`
+                  : response.user?.username || "Team Member"}
               </span>
               {response.user?.role && (
                 <span className="px-2 py-0.5 rounded bg-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200">
-                  {response.user.role.replace('_', ' ')}
+                  {response.user.role.replace("_", " ")}
                 </span>
               )}
             </div>
@@ -59,33 +72,108 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">STATUS</span>
-            <span className="text-xs font-black text-black uppercase tracking-tight">{response.wbtStatus || response.status || 'OPEN'}</span>
+        <div className="flex items-center gap-3 shrink-0 justify-end flex-wrap w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
+          <div className="flex items-center gap-2 mr-2">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              STATUS
+            </span>
+            <span className="text-xs font-black text-black uppercase tracking-tight">
+              {response.wbtStatus || response.status || "OPEN"}
+            </span>
           </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect?.(response);
+            }}
+            className="h-9 px-4 rounded-xl border border-black/10 bg-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 hover:text-blue-600 transition-all shadow-2xs"
+          >
+            Popup View
+          </Button>
+
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center gap-2 h-10 px-5 rounded-xl border-2 border-gray-200 font-black text-[11px] uppercase tracking-widest hover:bg-green-100 hover:text-black transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(!isOpen);
+            }}
+            className="flex items-center gap-1 h-9 px-3 rounded-xl border border-gray-200 font-black text-[10px] uppercase tracking-widest hover:bg-green-100 hover:text-black transition-all"
           >
-            {isOpen ? 'Close' : 'View'}
-            {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            {isOpen ? "Close" : "Expand"}
+            {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </Button>
         </div>
       </div>
 
       {/* Content */}
       {isOpen && (
-        <div className="p-6 bg-white animate-in slide-in-from-top-2 duration-300">
-          <div
-            className="prose prose-sm max-w-none text-black font-semibold text-base leading-relaxed mb-6"
-            dangerouslySetInnerHTML={{ __html: response.description }}
-          />
+        <div className="p-6 bg-white animate-in slide-in-from-top-2 duration-300 space-y-6">
+          {/* Main Message Section */}
+          <div>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
+              Message Description
+            </span>
+            <div
+              className="prose prose-sm max-w-none text-black font-semibold text-base leading-relaxed bg-gray-50/50 p-4 rounded-xl border border-gray-100"
+              dangerouslySetInnerHTML={{ __html: response.description }}
+            />
+          </div>
 
+          {/* Quantification & Metrics Header Section */}
+          {(response.totalTonnageWithConnection ||
+            response.totalTonnageWithoutConnection ||
+            response.PageNumbers) && (
+            <div className="bg-green-50/40 p-4 rounded-xl border border-green-100">
+              <span className="text-[10px] font-black text-green-800 uppercase tracking-widest block mb-3">
+                Quantification & Metrics
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Tonnage (With Conn)
+                  </span>
+                  <span className="text-xs font-black text-black">
+                    {response.totalTonnageWithConnection || "—"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Tonnage (W/O Conn)
+                  </span>
+                  <span className="text-xs font-black text-black">
+                    {response.totalTonnageWithoutConnection || "—"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Page Numbers
+                  </span>
+                  <span className="text-xs font-black text-black">
+                    {response.PageNumbers || "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Attachments Section */}
           {response.files && response.files.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-dashed border-gray-100">
-              <RenderFiles files={response.files} table="rfqResponse" parentId={response.id} hideHeader />
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
+                Attached Files
+              </span>
+              <div className="pt-2 border-t border-dashed border-gray-100">
+                <RenderFiles
+                  files={response.files}
+                  table="rfqResponse"
+                  parentId={response.id}
+                  hideHeader
+                />
+              </div>
             </div>
           )}
 
@@ -94,40 +182,57 @@ const RFQResponseItem = ({ response, onReply }: { response: any; onReply?: (pare
             <div className="mt-8 space-y-4">
               <div className="flex items-center gap-2 mb-4">
                 <MessageSquare className="w-5 h-5 text-green-600" />
-                <span className="text-xs font-black text-green-700 uppercase tracking-widest">Replies ({response.childResponses.length})</span>
+                <span className="text-xs font-black text-green-700 uppercase tracking-widest">
+                  Replies ({response.childResponses.length})
+                </span>
               </div>
               <div className="space-y-6 ml-2 sm:ml-4 border-l-4 border-green-100 pl-4 sm:pl-8">
-                {[...response.childResponses].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((child: any) => (
-                  <div key={child.id} className="relative">
-                    {/* Visual Connector */}
-                    <div className="absolute -left-[20px] sm:-left-[36px] top-6 w-5 sm:w-9 h-1 bg-green-100" />
+                {[...response.childResponses]
+                  .sort(
+                    (a: any, b: any) =>
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime(),
+                  )
+                  .map((child: any) => (
+                    <div key={child.id} className="relative">
+                      {/* Visual Connector */}
+                      <div className="absolute -left-[20px] sm:-left-[36px] top-6 w-5 sm:w-9 h-1 bg-green-100" />
 
-                    <div className="p-6 rounded-2xl bg-gray-50/50 border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
-                            <User className="w-4 h-4 text-green-600" />
+                      <div className="p-6 rounded-2xl bg-gray-50/50 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
+                              <User className="w-4 h-4 text-green-600" />
+                            </div>
+                            <span className="font-black text-sm text-black uppercase tracking-tight">
+                              {child.user?.firstName
+                                ? `${child.user.firstName} ${child.user.lastName}`
+                                : child.user?.username || "Team Member"}
+                            </span>
                           </div>
-                          <span className="font-black text-sm text-black uppercase tracking-tight">
-                            {child.user?.firstName ? `${child.user.firstName} ${child.user.lastName}` : child.user?.username || 'Team Member'}
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            {formatDateTime(child.createdAt)}
                           </span>
                         </div>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                          {formatDateTime(child.createdAt)}
-                        </span>
+                        <div
+                          className="text-sm text-gray-800 font-medium leading-relaxed"
+                          dangerouslySetInnerHTML={{
+                            __html: child.description,
+                          }}
+                        />
+                        {child.files && child.files.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-gray-100/50">
+                            <RenderFiles
+                              files={child.files}
+                              table="rfqResponse"
+                              parentId={child.id}
+                              hideHeader
+                            />
+                          </div>
+                        )}
                       </div>
-                      <div
-                        className="text-sm text-gray-800 font-medium leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: child.description }}
-                      />
-                      {child.files && child.files.length > 0 && (
-                        <div className="mt-4 pt-4 border-t border-gray-100/50">
-                          <RenderFiles files={child.files} table="rfqResponse" parentId={child.id} hideHeader />
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}
@@ -435,58 +540,39 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               )?.replace("_", " ")}
             </span>
           </div>
-          <button
-            onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-red-700 border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-          >
-            Close
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {userRole !== "client" &&
+              userRole !== "client_admin" &&
+              userRole !== "connection_designer_engineer" &&
+              userRole !== "connection_designer_admin" && (
+                <>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+                  >
+                    Edit RFQ
+                  </button>
+                  <button
+                    onClick={() => setShowStatusModal(true)}
+                    className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+                  >
+                    Change Status
+                  </button>
+                </>
+              )}
+            <button
+              onClick={onClose}
+              className="px-4 sm:px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
             <div className="border border-green-100/50 p-4 sm:p-6 rounded-3xl bg-gray-100 shadow-sm space-y-5 sm:space-y-6">
-              {/* Header */}
-              <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
-                {/* Action buttons */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  {/* EDIT RFQ */}
-                  {userRole !== "client" &&
-                    userRole !== "client_admin" &&
-                    userRole !== "connection_designer_engineer" &&
-                    userRole !== "connection_designer_admin" && (
-                      <>
-                        <Button
-                          onClick={() => setShowEditModal(true)}
-                          className="h-9 px-4 rounded-xl border border-black bg-green-200 font-black text-black text-[10px] uppercase tracking-widest hover:bg-bg-green-300  transition-all "
-                        >
-                          Edit RFQ
-                        </Button>
-
-                        <Button
-                          onClick={() => setShowStatusModal(true)}
-                          className="h-9 px-4 rounded-xl border border-black bg-green-200 font-black text-black text-[10px] uppercase tracking-widest hover:bg-bg-green-300  transition-all "
-                        >
-                          Change Status
-                        </Button>
-                      </>
-                    )}
-
-                  {/* DELETE RFQ */}
-                  {/* <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDeleteModal(true);
-                  }}
-                  className="flex-1 sm:flex-none px-3 py-1 text-white rounded-md transition text-sm"
-                >
-                  Delete
-                </Button> */}
-                </div>
-              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Info label="Subject" value={rfq?.subject || ""} />
@@ -518,57 +604,80 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
               {/* Scopes */}
               <div className="space-y-3">
+                {/* Connection Design Scope */}
                 <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
                   <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
-                    <Settings className="w-4 h-4" /> Connection Design Scope
+                    <Settings className="w-4 h-4 text-green-600" /> Connection Design Scope
                   </h4>
-                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs tracking-wider">
-                    <Scope
-                      label="Main Design"
-                      enabled={rfq?.connectionDesign || false}
-                    />
-                    <Scope
-                      label="Misc Design"
-                      enabled={rfq?.miscDesign || false}
-                    />
-                    <Scope
-                      label={
-                        rfq?.customerDesign
+                  <div className="flex flex-col gap-2 pl-1 pt-1">
+                    {rfq?.connectionDesign && (
+                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
+                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                        <span>Main Design</span>
+                      </div>
+                    )}
+                    {rfq?.miscDesign && (
+                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
+                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                        <span>Misc Design</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
+                      <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                      <span>
+                        {rfq?.customerDesign
                           ? "Connection Design by WBT"
-                          : `Connection Design by ${rfq?.fabricator?.fabName ?? "Fabricator"}`
-                      }
-                      enabled={true}
-                    />
+                          : `Connection Design by ${rfq?.fabricator?.fabName ?? "Fabricator"}`}
+                      </span>
+                    </div>
                   </div>
                 </div>
+
+                {/* Detailing Scope */}
                 <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
                   <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
-                    <Settings2 className="w-4 h-4" /> Detailing Scope
+                    <Settings2 className="w-4 h-4 text-green-600" /> Detailing Scope
                   </h4>
-                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs tracking-wider">
-                    <Scope
-                      label="Detailing Main"
-                      enabled={rfq?.detailingMain || false}
-                    />
-                    <Scope
-                      label="Detailing Misc"
-                      enabled={rfq?.detailingMisc || false}
-                    />
+                  <div className="flex flex-col gap-2 pl-1 pt-1">
+                    {rfq?.detailingMain && (
+                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
+                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                        <span>Detailing Main</span>
+                      </div>
+                    )}
+                    {rfq?.detailingMisc && (
+                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
+                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                        <span>Detailing Misc</span>
+                      </div>
+                    )}
+                    {!rfq?.detailingMain && !rfq?.detailingMisc && (
+                      <span className="text-gray-400 italic text-xs block py-0.5">None selected</span>
+                    )}
                   </div>
                 </div>
+
+                {/* Material Take-off */}
                 <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
                   <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
-                    <ClipboardList className="w-4 h-4" /> Material Take-off
+                    <ClipboardList className="w-4 h-4 text-green-600" /> Material Take-off
                   </h4>
-                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs tracking-wider">
-                    <Scope
-                      label="MTO - Manual"
-                      enabled={rfq?.MTOManual || false}
-                    />
-                    <Scope
-                      label="MTO - Stick Model"
-                      enabled={!!(rfq?.MTOStickModel || rfq?.MTOValue)}
-                    />
+                  <div className="flex flex-col gap-2 pl-1 pt-1">
+                    {rfq?.MTOManual && (
+                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
+                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                        <span>MTO - Manual</span>
+                      </div>
+                    )}
+                    {!!(rfq?.MTOStickModel || rfq?.MTOValue) && (
+                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
+                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                        <span>MTO - Stick Model</span>
+                      </div>
+                    )}
+                    {!rfq?.MTOManual && !(rfq?.MTOStickModel || rfq?.MTOValue) && (
+                      <span className="text-gray-400 italic text-xs block py-0.5">None selected</span>
+                    )}
                   </div>
 
                   {(rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || rfq?.MTOValue) && (
@@ -684,6 +793,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                         <RFQResponseItem
                           key={resp.id}
                           response={resp}
+                          onSelect={(r) => setSelectedResponse(r)}
                           onReply={(parent) => {
                             setSelectedParentResponseId(parent.id);
                             setShowResponseModal(true);
@@ -950,15 +1060,6 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
   </div>
 );
 
-const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
-  <div
-    className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${enabled
-      ? "bg-green-100/50 border-green-200 text-black"
-      : "bg-gray-50 border-gray-200 text-gray-500"
-      }`}
-  >
-    {label}
-  </div>
-);
+
 
 export default GetRFQByID;

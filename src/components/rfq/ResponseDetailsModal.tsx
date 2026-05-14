@@ -1,4 +1,4 @@
-import { CalendarDays, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { formatDateTime } from "../../utils/dateUtils";
 import { useState } from "react";
 import Service from "../../api/Service";
@@ -105,63 +105,112 @@ const ResponseDetailsModal = ({
       <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] relative flex flex-col border border-black/10 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
-          <div className="flex flex-col">
-            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-              Response from {response.user?.firstName} {response.user?.lastName}
-            </h2>
-            <div className="flex items-center gap-2 mt-1">
-              <CalendarDays size={12} className="text-black/30" />
-              <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
-                {formatDateTime(response.createdAt)}
-              </span>
-              {response.status && (
-                <span className="ml-2 text-[9px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
-                  {response.status}
-                </span>
-              )}
-            </div>
-          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+            Response Details
+          </h2>
           <button
             onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            className="px-4 sm:px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
           >
             Close
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-10 space-y-10">
-          <div className="space-y-4">
-            <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-              Message
-            </h3>
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-6 bg-gray-50/30">
+          {/* Main Message Header info */}
+          <div className="flex flex-wrap justify-between items-center gap-2">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-black text-black uppercase tracking-widest">
+                Main Message
+              </span>
+              {response.status && (
+                <span className="text-[10px] font-black bg-green-100 text-black px-3 py-0.5 rounded-md uppercase tracking-widest border border-gray-200 shadow-2xs">
+                  {response.status}
+                </span>
+              )}
+            </div>
+            {response.user && (
+              <span className="text-sm font-black text-black uppercase tracking-tight">
+                Sent by {response.user.firstName ? `${response.user.firstName} ${response.user.lastName}` : response.user.username}
+              </span>
+            )}
+          </div>
+
+          {/* Subject Box */}
+          {response.subject && (
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs space-y-1.5">
+              <span className="text-xs font-black text-black uppercase tracking-widest block">
+                Subject
+              </span>
+              <p className="text-base font-black text-black">
+                {response.subject}
+              </p>
+            </div>
+          )}
+
+          {/* Message Content Box */}
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
             <div
-              className="text-black/80 bg-gray-50/50 p-6 rounded-2xl border border-black/10 prose prose-sm max-w-none shadow-inner font-medium"
+              className="prose prose-base max-w-none text-black font-bold leading-relaxed"
               dangerouslySetInnerHTML={{ __html: response.description }}
             />
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-              Files
-            </h3>
-            <RenderFiles
-              files={response.files}
-              table="rfqResponse"
-              parentId={response.id}
-            />
+          {/* Tonnage & Pages 3-column Box */}
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+              <div>
+                <span className="text-xs font-black text-black uppercase tracking-widest block mb-1.5">
+                  Tonnage (With Conn)
+                </span>
+                <span className="text-base font-black text-black">
+                  {response.totalTonnageWithConnection || "—"}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-black text-black uppercase tracking-widest block mb-1.5">
+                  Tonnage (W/O Conn)
+                </span>
+                <span className="text-base font-black text-black">
+                  {response.totalTonnageWithoutConnection || "—"}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-black text-black uppercase tracking-widest block mb-1.5">
+                  Page Numbers
+                </span>
+                <span className="text-base font-black text-black">
+                  {response.PageNumbers || "—"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Project Files */}
+          <div className="space-y-2">
+            <span className="text-xs font-black text-black uppercase tracking-widest block">
+              Project Files
+            </span>
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs">
+              <RenderFiles
+                files={response.files}
+                table="rfqResponse"
+                parentId={response.id}
+              />
+            </div>
           </div>
 
           {replyMode && (
-            <div className="mt-8 pt-8 border-t border-black/10 space-y-6 animate-in slide-in-from-bottom-4 duration-300">
+            <div className="mt-8 pt-8 border-t border-black/10 space-y-6 animate-in slide-in-from-bottom-4 duration-300 bg-white p-6 rounded-2xl border border-black/10 shadow-xs">
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <h1 className="text-xs font-black text-black uppercase tracking-[0.2em]">
                   Reply
                 </h1>
               </div>
 
-              <div className="border border-black/10 rounded-2xl overflow-hidden focus-within:border-blue-400 transition-all">
+              <div className="border border-black/10 rounded-2xl overflow-hidden focus-within:border-green-400 transition-all">
                 <RichTextEditor
                   value={replyMessage}
                   onChange={setReplyMessage}
@@ -171,13 +220,13 @@ const ResponseDetailsModal = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-black/40 uppercase tracking-widest">
+                  <label className="text-xs font-black text-black uppercase tracking-widest block">
                     Proposal Status
                   </label>
                   <select
                     value={replyStatus}
                     onChange={(e) => setReplyStatus(e.target.value)}
-                    className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-blue-100 outline-none font-black uppercase text-[10px] tracking-widest appearance-none cursor-pointer"
+                    className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-black uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
                   >
                     <option value="PENDING">Pending</option>
                     <option value="APPROVED">Awarded</option>
@@ -188,7 +237,7 @@ const ResponseDetailsModal = ({
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-black/40 uppercase tracking-widest">
+                  <label className="text-xs font-black text-black uppercase tracking-widest block">
                     Documents
                   </label>
                   <input
@@ -197,7 +246,7 @@ const ResponseDetailsModal = ({
                     onChange={(e) =>
                       setReplyFiles(Array.from(e.target.files || []))
                     }
-                    className="w-full h-12 px-4 py-2.5 border border-black/10 rounded-xl bg-white text-[10px] font-black uppercase"
+                    className="w-full h-12 px-4 py-2.5 border border-black/10 rounded-xl bg-white text-xs font-black uppercase text-black"
                   />
                 </div>
               </div>
@@ -205,12 +254,12 @@ const ResponseDetailsModal = ({
               <div className="flex justify-end gap-3 pt-4">
                 <Button
                   onClick={() => setReplyMode(false)}
-                  className="px-6 py-3 bg-white text-black border border-black/10 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50"
+                  className="px-6 py-3 bg-white text-black border border-black/10 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-gray-50"
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="px-8 py-3 bg-green-200/50 text-black border border-black/10 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-green-200/80 shadow-xl disabled:opacity-50"
+                  className="px-8 py-3 bg-green-200 text-black border-2 border-black rounded-xl font-black uppercase text-xs tracking-widest hover:bg-green-300 shadow-sm disabled:opacity-50"
                   onClick={handleReplySubmit}
                   disabled={isSubmitting}
                 >
@@ -228,8 +277,8 @@ const ResponseDetailsModal = ({
           )}
 
           {response.childResponses?.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+            <div className="space-y-4 pt-4">
+              <h3 className="text-xs font-black text-black uppercase tracking-widest">
                 Threaded Communications ({response.childResponses.length})
               </h3>
               {renderThread(response)}
@@ -238,12 +287,15 @@ const ResponseDetailsModal = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-5 border-t border-black/10 bg-gray-50/50 flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 shrink-0">
+        <div className="px-6 py-5 border-t border-black/10 bg-white flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+          <span className="text-xs text-black font-bold tracking-wide">
+            Submitted on: {formatDateTime(response.createdAt)}
+          </span>
           {!replyMode &&
             ["ADMIN", "STAFF", "CLIENT", "CLIENT_ADMIN"].includes(userRole) && (
               <Button
                 onClick={() => setReplyMode(true)}
-                className="px-8 py-3 bg-green-100/80 border border-black rounded-2xl text-black font-black text-xs uppercase tracking-widest hover:bg-green-200/80 transition-all shadow-sm"
+                className="px-8 py-2.5 bg-green-200 text-black border-2 border-black rounded-xl font-black text-xs uppercase tracking-widest hover:bg-green-300 transition-all shadow-sm cursor-pointer"
               >
                 Reply
               </Button>
