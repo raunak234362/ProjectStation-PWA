@@ -43,15 +43,15 @@ const ResponseDetailsModal = ({
 
     try {
       setIsSubmitting(true);
-      await Service.addResponse(formData, response.rfqId);
-      toast.success("Reply sent successfully!");
+      const res = await Service.addResponse(formData, response.rfqId);
+      toast.success(res?.data?.message || "Reply sent successfully!");
       setReplyMode(false);
       setReplyMessage("");
       setReplyFiles([]);
       if (onSuccess) onSuccess();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Reply failed:", err);
-      toast.error("Failed to send reply. Please try again.");
+      toast.error(err?.response?.data?.message || err?.message || "Failed to send reply. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

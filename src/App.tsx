@@ -194,7 +194,18 @@ const AppContent = () => {
         pauseOnHover
         theme="light"
         limit={3}
-        toastStyle={{ backgroundColor: 'rgba(107, 189, 69, 0.5)', color: '#000', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontWeight: '900', textTransform: 'uppercase', fontSize: '10px', letterSpacing: '0.1em' }}
+        toastStyle={{ 
+          backgroundColor: '#ffffff', 
+          color: '#000000', 
+          borderRadius: '8px', 
+          border: '1px solid rgba(0, 0, 0, 0.05)', 
+          borderLeft: '5px solid #6bbd45',
+          fontWeight: '900', 
+          textTransform: 'uppercase', 
+          fontSize: '11px', 
+          letterSpacing: '0.05em',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+        }}
         style={{ zIndex: 999999 }} 
       />
       <NotificationReceiver />
