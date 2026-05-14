@@ -89,8 +89,19 @@ const EstimatorDashboard = () => {
       try {
         setLoading(true);
         // Using getAllRFQFab, getFabricatorAllInvoice and GetAllProjects
+        const role = sessionStorage.getItem("userRole")?.toUpperCase();
+        
+        let rfqService;
+        if (role === "CLIENT_ESTIMATOR") {
+          rfqService = Service.GetClientEstimatorRFQ();
+        } else if (role === "CLIENT_ADMIN") {
+          rfqService = Service.getAllRFQFab();
+        } else {
+          rfqService = Service.RfqSent();
+        }
+
         const [rfqRes, invoiceRes, projectRes] = await Promise.all([
-          Service.getAllRFQFab(),
+          rfqService,
           Service.getFabricatorAllInvoice(),
           Service.GetAllProjects()
         ]);

@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
-import { Loader2 } from "lucide-react";
+import { Loader2, Activity, FileText, Clock, CheckCircle2 } from "lucide-react";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -23,7 +23,6 @@ const SubmittalListModal = lazy(
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
 const GetRFQByID = lazy(() => import("../rfq/GetRFQByID"));
-import { Search, Activity } from "lucide-react";
 
 
 
@@ -36,6 +35,34 @@ const GetMilestoneByID = lazy(
 );
 
 import EstimatorDashboard from "./EstimatorDashboard";
+
+const StatCard: React.FC<{
+  label: string | React.ReactNode;
+  value: string | number;
+  icon: any;
+  onClick: () => void;
+}> = ({ label, value, icon: Icon, onClick }) => (
+  <div
+    onClick={onClick}
+    className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
+  >
+    <div className="flex items-center gap-4 z-10">
+      <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
+        <Icon size={24} strokeWidth={2.5} />
+      </div>
+      <div className="flex flex-col">
+        <span className="text-[10px] sm:text-xs font-black text-black uppercase tracking-widest">
+          {label}
+        </span>
+      </div>
+    </div>
+    <div className="z-10 text-right">
+      <span className="text-2xl md:text-3xl font-black text-black tracking-tighter">
+        {value}
+      </span>
+    </div>
+  </div>
+);
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
@@ -109,7 +136,6 @@ const ClientDashboard = () => {
       !!selectedMilestone ||
       !!selectedRfqId;
 
-
     if (isAnyModalOpen) {
       dispatch(incrementModalCount());
     }
@@ -123,33 +149,38 @@ const ClientDashboard = () => {
     isModalOpen,
     isSubmittalModalOpen,
     isRfqModalOpen,
+    isAllRfqModalOpen,
+    isAwardedRfqModalOpen,
     isRfiModalOpen,
     isCoModalOpen,
     selectedProject,
     selectedInvoiceId,
     selectedMilestone,
     selectedRfqId,
-    allRFQs,
     dispatch,
-
-
   ]);
 
   const [stats, setStats] = useState({
     employees: 0,
     fabricators: 0,
-    rfqSent: 0,
-    rfqReceived: 0,
     totalProjects: 0,
     activeProjects: 0,
     completedProjects: 0,
     onHoldProjects: 0,
+    // MTO Stats
+    totalMTO: 0,
+    ongoingMTO: 0,
+    completedMTO: 0,
+    // Detailing Stats
+    totalDetailing: 0,
+    awardedDetailing: 0,
+    pendingDetailing: 0,
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sent, received, allInvoices, pendingCOsData] = await Promise.all(
+        const [sent, , allInvoices, pendingCOsData] = await Promise.all(
           [
             isClientEstimator ? Service.GetClientEstimatorRFQ() : (isClientAdmin ? Service.getAllRFQFab() : Service.RfqSent()),
             Service.SubmittalRecieved(),
@@ -163,33 +194,34 @@ const ClientDashboard = () => {
         setInvoices(
           Array.isArray(allInvoices) ? allInvoices : allInvoices?.data || [],
         );
-        setAllRFQs(Array.isArray(sent) ? sent : sent?.data || []);
+        const rfqData = Array.isArray(sent) ? sent : sent?.data || [];
+        setAllRFQs(rfqData);
 
-        setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
-
-        const sentCount = sent?.length || 0;
-        const receivedCount = received?.length || 0;
+        const mtoRfqs = rfqData.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue);
+        const detailingRfqs = rfqData.filter((r: any) => r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign);
 
         const totalProjects = projects.length;
-        const activeProjects = projects.filter(
-          (p: any) => p.status === "ACTIVE",
-        ).length;
-        const completedProjects = projects.filter(
-          (p: any) => p.status === "COMPLETED" || p.status === "COMPLETE",
-        ).length;
-        const onHoldProjects = projects.filter(
-          (p: any) => p.status === "ONHOLD",
-        ).length;
+        const activeProjects = projects.filter((p: any) => p.status === "ACTIVE").length;
+        const completedProjects = projects.filter((p: any) => p.status === "COMPLETED" || p.status === "COMPLETE").length;
+        const onHoldProjects = projects.filter((p: any) => p.status === "ONHOLD").length;
+
+        setPendingCOs(pendingCOsData?.data || pendingCOsData || []);
 
         setStats({
           employees: employees.length,
           fabricators: fabricators.length,
-          rfqSent: sentCount,
-          rfqReceived: receivedCount,
           totalProjects,
           activeProjects,
           completedProjects,
           onHoldProjects,
+          // MTO Stats
+          totalMTO: mtoRfqs.length,
+          ongoingMTO: mtoRfqs.filter((r: any) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED").length,
+          completedMTO: mtoRfqs.filter((r: any) => r.status === "AWARDED" || r.wbtStatus === "AWARDED").length,
+          // Detailing Stats
+          totalDetailing: detailingRfqs.length,
+          awardedDetailing: detailingRfqs.filter((r: any) => r.status === "AWARDED" || r.wbtStatus === "AWARDED").length,
+          pendingDetailing: detailingRfqs.filter((r: any) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED").length,
         });
       } catch (error) {
         console.error("Failed to fetch client dashboard data", error);
@@ -255,18 +287,18 @@ const ClientDashboard = () => {
         response = await Service.RfqSent();
       }
       const data = Array.isArray(response) ? response : response?.data || [];
-      
+
       const pending = data.filter((r: any) => {
         // Original condition: Status is PENDING
         if (r.status === "PENDING") return true;
-        
+
         // New condition: Has responses but at least one response has no childResponses (unanswered)
         const responses = r.responses || [];
         if (responses.length > 0) {
           const hasUnanswered = responses.some((res: any) => !res.childResponses || res.childResponses.length === 0);
           if (hasUnanswered) return true;
         }
-        
+
         return false;
       });
 
@@ -339,60 +371,67 @@ const ClientDashboard = () => {
             </div>
           </div>
         </div>
-        {/* RFQ Stats Cards for Client Roles */}
+        {/* RFQ Overview Sections */}
         {(isClientRole || isClientAdmin || isClientEstimator) && (
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            {/* All RFQs Card */}
-            <div
-              onClick={() => handleActionClick("ALL_RFQ")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <Search size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black tracking-widest">
-                    ALL RFQs
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
-                    Total Requests
-                  </span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+            {/* MTO Overview */}
+            <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
+              <h2 className="text-sm font-black text-black uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                <FileText size={18} className="text-[#6bbd45]" />
+                MATERIAL TAKE-OFF RFQ OVERVIEW
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <StatCard
+                  label="TOTAL MTO"
+                  value={stats.totalMTO}
+                  icon={FileText}
+                  onClick={() => handleActionClick("ALL_RFQ")}
+                />
+                <StatCard
+                  label="ONGOING"
+                  value={stats.ongoingMTO}
+                  icon={Clock}
+                  onClick={() => handleActionClick("PENDING_RFQ")}
+                />
+                <div className="sm:col-span-2">
+                  <StatCard
+                    label="COMPLETED"
+                    value={stats.completedMTO}
+                    icon={CheckCircle2}
+                    onClick={() => handleActionClick("AWARDED_RFQ")}
+                  />
                 </div>
               </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter">
-                  {allRFQs.length}
-                </span>
-              </div>
-
-              <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
             </div>
 
-            {/* Awarded RFQs Card */}
-            <div
-              onClick={() => handleActionClick("AWARDED_RFQ")}
-              className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
-            >
-              <div className="flex items-center gap-4 z-10">
-                <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-                  <Activity size={24} strokeWidth={2.5} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-black text-black tracking-widest">
-                    RFQs AWARDED
-                  </span>
-
+            {/* Detailing Overview */}
+            <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
+              <h2 className="text-sm font-black text-black uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                <Activity size={18} className="text-[#6bbd45]" />
+                DETAILING RFQ OVERVIEW
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <StatCard
+                  label="TOTAL RFQs"
+                  value={stats.totalDetailing}
+                  icon={FileText}
+                  onClick={() => handleActionClick("ALL_RFQ")}
+                />
+                <StatCard
+                  label="AWARDED"
+                  value={stats.awardedDetailing}
+                  icon={Activity}
+                  onClick={() => handleActionClick("AWARDED_RFQ")}
+                />
+                <div className="sm:col-span-2">
+                  <StatCard
+                    label="PENDING"
+                    value={stats.pendingDetailing}
+                    icon={Clock}
+                    onClick={() => handleActionClick("PENDING_RFQ")}
+                  />
                 </div>
               </div>
-              <div className="z-10 text-right">
-                <span className="text-3xl md:text-4xl font-black text-black tracking-tighter text-black">
-                  {allRFQs.filter(rfq => rfq.wbtStatus === "AWARDED" || rfq.status === "AWARDED" || rfq.status === "COMPLETED").length}
-                </span>
-              </div>
-
-              <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
             </div>
           </div>
         )}

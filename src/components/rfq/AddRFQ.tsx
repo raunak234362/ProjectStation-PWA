@@ -10,7 +10,7 @@ import Service from "../../api/Service";
 import type { Fabricator, SelectOption, RFQpayload } from "../../interface";
 
 import { motion } from "motion/react";
-import { Settings2, Loader2, Layers, Globe, Percent, Calendar } from "lucide-react";
+import { Settings2, Loader2, Layers, Percent, Calendar } from "lucide-react";
 
 import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
@@ -103,8 +103,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   });
 
   const selectedFabricatorId = watch("fabricatorId");
-  const mtoStickModelEnabled = watch("mtoStickModelEnabled");
-  const mtoManualEnabled = watch("MTOManual");
+
 
 
   const [description, setDescription] = useState("");
@@ -164,11 +163,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
   const fabricatorCountry = selectedFabricator?.branches?.find(b => b.isHeadquarters)?.country || selectedFabricator?.branches?.[0]?.country;
 
-  const countryOptions = React.useMemo(() => [
-    { label: "US", value: "US" },
-    { label: "Canada", value: "CANADA" },
-    { label: "India", value: "INDIA" },
-  ], []);
+
 
   const selectedCountry = watch("country");
   const selectedState = watch("state");
@@ -233,16 +228,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   }, [userDetail, userRole, selectedCountry, setValue]);
 
   // --- REAL-TIME MTO DESCRIPTION SYNC ---
-  const mtoFields = watch();
   
-  const isScopeSelected = 
-    mtoFields.connectionDesign || 
-    mtoFields.miscDesign || 
-    mtoFields.customerDesign || 
-    mtoFields.detailingMain || 
-    mtoFields.detailingMisc || 
-    mtoFields.MTOManual || 
-    mtoFields.mtoStickModelEnabled;
+
 
 
 
