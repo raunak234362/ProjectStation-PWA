@@ -151,7 +151,7 @@ const ClientDashboard = () => {
       try {
         const [sent, received, allInvoices, pendingCOsData] = await Promise.all(
           [
-            isClientRole ? Service.RfqSent() : Service.getAllRFQFab(),
+            isClientEstimator ? Service.GetClientEstimatorRFQ() : (isClientAdmin ? Service.getAllRFQFab() : Service.RfqSent()),
             Service.SubmittalRecieved(),
             Service.GetPendingInvoiceByClient(),
             isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(),
@@ -246,7 +246,14 @@ const ClientDashboard = () => {
 
   const fetchPendingRFQs = async () => {
     try {
-      const response = isClientRole ? await Service.RfqSent() : await Service.getAllRFQFab();
+      let response;
+      if (isClientEstimator) {
+        response = await Service.GetClientEstimatorRFQ();
+      } else if (isClientAdmin) {
+        response = await Service.getAllRFQFab();
+      } else {
+        response = await Service.RfqSent();
+      }
       const data = Array.isArray(response) ? response : response?.data || [];
       
       const pending = data.filter((r: any) => {
