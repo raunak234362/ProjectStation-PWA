@@ -6,6 +6,7 @@ interface RichTextEditorProps {
   onChange: (content: string) => void;
   placeholder?: string;
   className?: string;
+  height?: number | string;
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -13,6 +14,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   onChange,
   placeholder,
   className = "",
+  height = 300,
 }) => {
   const editor = useRef(null);
 
@@ -48,9 +50,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         "eraser",
         "fullsize",
       ],
-      height: 300,
+      height: height,
     }),
-    [placeholder]
+    [placeholder, height]
   );
 
   return (

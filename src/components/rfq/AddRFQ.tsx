@@ -111,6 +111,19 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   const [isDetailing, setIsDetailing] = useState(false);
   const [isMTO, setIsMTO] = useState(false);
 
+  const dynamicEditorHeight = React.useMemo(() => {
+    let h = 300; // Base height when nothing is selected
+    if (isDetailing || isMTO) h += 150; // Attachments & Requirements offset
+    if (isDetailing) h += 150; // Service Matrix offset
+    if (isMTO) {
+      h += 100; // Material Takeoff base offset
+      if (mtoStickModelEnabled || mtoManualEnabled) {
+        h += 400; // Manual / Stick Config & Live Preview offset
+      }
+    }
+    return h;
+  }, [isDetailing, isMTO, mtoStickModelEnabled, mtoManualEnabled]);
+
   // Sync tools and reset fields when estimation type changes
   useEffect(() => {
     if (isMTO && !isDetailing) {
@@ -536,10 +549,10 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 )}
               </div>
 
-              <div className="md:col-span-2 space-y-2 w-full mt-4">
+              <div className="md:col-span-2 space-y-2 w-full mt-4 h-full flex flex-col">
                 <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
-                <div className="border border-black rounded-lg overflow-hidden min-h-[150px] bg-white">
-                  <RichTextEditor value={description} onChange={setDescription} />
+                <div className="border border-black rounded-lg overflow-hidden bg-white flex-1 transition-all duration-500 ease-in-out">
+                  <RichTextEditor value={description} onChange={setDescription} height={dynamicEditorHeight} />
                 </div>
               </div>
 
