@@ -92,6 +92,72 @@ const AllRFQ = ({ rfq }: any) => {
       },
     },
     {
+      accessorKey: "createdAt",
+      header: "Created Date",
+      cell: ({ row }) => formatDate(row.original.createdAt),
+    },
+    {
+      accessorKey: "estimationDate",
+      header: "Due Date",
+      cell: ({ row }) => formatDate(row.original.estimationDate),
+    },
+    {
+      accessorKey: "latestResponseDate",
+      header: "WBT Submitted Date",
+      cell: ({ row }) => {
+        const responses = row.original.responses || [];
+        if (responses.length === 0) return "—";
+        const latest = [...responses].sort((a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+        return formatDate(latest.createdAt);
+      },
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessorFn: (row: any) => {
+        const status = row.status;
+        const wbtStatus = row.wbtStatus;
+        
+        if (wbtStatus === "AWARDED") return "AWARDED";
+        if (status === "IN_REVIEW") return "IN_REVIEW";
+        
+        return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
+      },
+      enableColumnFilter: true,
+      filterType: "select",
+      filterFn: "equals",
+      filterOptions: [
+        { label: "WBT Reviewing", value: "IN_REVIEW" },
+        { label: "Submitted By WBT", value: "AWARDED" },
+        { label: "Pending", value: "PENDING" },
+        { label: "Received", value: "RECEIVED" },
+        { label: "Completed", value: "COMPLETED" },
+        { label: "Closed", value: "CLOSED" },
+        { label: "Rejected", value: "REJECTED" },
+        { label: "On Hold", value: "ON_HOLD" },
+      ],
+      cell: ({ getValue }) => {
+        const val = getValue() as string;
+        let label = "";
+        
+        if (val === "AWARDED") {
+          label = "Submitted By WBT";
+        } else if (val === "IN_REVIEW") {
+          label = "WBT Reviewing";
+        } else {
+          label = val?.replace("_", " ") || "—";
+        }
+
+        return (
+          <span className="px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-lg bg-gray-50 text-black border border-black/10">
+            {label}
+          </span>
+        );
+      },
+    },
+    {
       id: "rfqType",
       header: "RFQ Type",
       accessorFn: (row: any) => {
@@ -115,8 +181,8 @@ const AllRFQ = ({ rfq }: any) => {
         return (
           <span
             className={`text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${label !== "—"
-                ? "bg-blue-50 text-blue-700 border-blue-200"
-                : "bg-gray-50 text-gray-400 border-gray-100"
+              ? "bg-blue-50 text-blue-700 border-blue-200"
+              : "bg-gray-50 text-gray-400 border-gray-100"
               }`}
           >
             {label}
@@ -124,47 +190,8 @@ const AllRFQ = ({ rfq }: any) => {
         );
       },
     },
-    {
-      accessorKey: "status",
-      header: "Status",
-      enableColumnFilter: true,
-      filterType: "select",
-      filterFn: "equals",
-      filterOptions: [
-        { label: "In Review", value: "IN_REVIEW" },
-        { label: "Completed", value: "COMPLETED" },
-        { label: "Pending", value: "PENDING" },
-      ],
-      cell: ({ row }) => {
-        const status = row.original.status;
-        const wbtStatus = (row.original as any).wbtStatus;
-        const displayStatus =
-          wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
 
-        return (
-          <span className="px-3 py-1 text-xs md:text-sm uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
-            {displayStatus?.replace("_", " ")}
-          </span>
-        );
-      },
-    },
-    {
-      accessorKey: "estimationDate",
-      header: "Due Date",
-      cell: ({ row }) => formatDate(row.original.estimationDate),
-    },
-    {
-      accessorKey: "latestResponseDate",
-      header: "WBT Submitted Date",
-      cell: ({ row }) => {
-        const responses = row.original.responses || [];
-        if (responses.length === 0) return "—";
-        const latest = [...responses].sort((a: any, b: any) => 
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )[0];
-        return formatDate(latest.createdAt);
-      },
-    },
+
   );
 
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
