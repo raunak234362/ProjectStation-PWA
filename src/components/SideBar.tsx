@@ -152,7 +152,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-4 mt-auto border-t border-gray-100">
         {isExpanded && (
           <div className="flex items-center gap-3 mb-6 px-2">
-            <div className="w-9 h-9 shrink-0 rounded-full bg-gray-100 flex items-center justify-center text-black font-bold text-sm">
+            <div className="w-9 h-9 shrink-0 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-black font-black text-sm shadow-2xs">
               {sessionStorage.getItem("username")?.[0] || "U"}
             </div>
             <div className="flex-1 min-w-0">
