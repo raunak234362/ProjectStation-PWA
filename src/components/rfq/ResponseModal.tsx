@@ -438,15 +438,15 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         files.forEach((file) => formData.append("files", file));
       }
 
-      await Service.addResponse(formData, rfqId);
-      toast.success("Response added successfully!");
+      const res = await Service.addResponse(formData, rfqId);
+      toast.success(res?.data?.message || "Response added successfully!");
       reset();
       setFiles([]);
       onSuccess();
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Response submission failed:", err);
-      toast.error("Failed to add response");
+      toast.error(err?.response?.data?.message || err?.message || "Failed to add response");
     } finally {
       setLoading(false);
     }
