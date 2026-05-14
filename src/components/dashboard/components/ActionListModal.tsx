@@ -168,32 +168,6 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           },
         ];
 
-        if (userRole !== "CLIENT_ESTIMATOR") {
-          pendingCols.push({
-            header: "RFQ Type",
-            meta: { align: "center" },
-            size: 150,
-            cell: ({ row }) => {
-              const r = row.original;
-              const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
-              const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
-
-              let label = "—";
-              if (isDetailing && isMTO) label = "Detailing | MTO";
-              else if (isDetailing) label = "Detailing";
-              else if (isMTO) label = "MTO";
-
-              return (
-                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${label !== "—"
-                    ? "bg-blue-50 text-blue-700 border-blue-200"
-                    : "bg-gray-50 text-gray-400 border-gray-200"
-                  }`}>
-                  {label}
-                </span>
-              );
-            },
-          });
-        }
 
         pendingCols.push(
           {
@@ -206,13 +180,27 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Status",
             meta: { align: "center" },
             size: 150,
-            cell: ({ row }) => (
-              <span
-                className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
-              >
-                {row.original.status?.replace("_", " ")}
-              </span>
-            ),
+            cell: ({ row }) => {
+              const status = row.original.status;
+              const wbtStatus = row.original.wbtStatus;
+              let label = "";
+
+              if (wbtStatus === "AWARDED") {
+                label = "Submitted By WBT";
+              } else if (status === "IN_REVIEW") {
+                label = "WBT Reviewing";
+              } else {
+                label = (wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status)?.replace("_", " ") || "—";
+              }
+
+              return (
+                <span
+                  className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-50 text-black border border-black/10 font-black"
+                >
+                  {label}
+                </span>
+              );
+            },
           },
           {
             accessorKey: "estimationDate",
@@ -299,30 +287,6 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         if (userRole !== "CLIENT_ESTIMATOR") {
           allCols.push(
             {
-              header: "RFQ Type",
-              meta: { align: "center" },
-              size: 150,
-              cell: ({ row }) => {
-                const r = row.original;
-                const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
-                const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
-
-                let label = "—";
-                if (isDetailing && isMTO) label = "Detailing | MTO";
-                else if (isDetailing) label = "Detailing";
-                else if (isMTO) label = "MTO";
-
-                return (
-                  <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${label !== "—"
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
-                      : "bg-gray-50 text-gray-400 border-gray-200"
-                    }`}>
-                    {label}
-                  </span>
-                );
-              },
-            },
-            {
               accessorKey: "subject",
               header: "Subject",
               size: 250,
@@ -374,13 +338,27 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Status",
             meta: { align: "center" },
             size: 150,
-            cell: ({ row }) => (
-              <span
-                className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
-              >
-                {row.original.wbtStatus === "AWARDED" ? "AWARDED" : (row.original.status?.replace("_", " ") || "—")}
-              </span>
-            ),
+            cell: ({ row }) => {
+              const status = row.original.status;
+              const wbtStatus = row.original.wbtStatus;
+              let label = "";
+
+              if (wbtStatus === "AWARDED") {
+                label = "Submitted By WBT";
+              } else if (status === "IN_REVIEW") {
+                label = "WBT Reviewing";
+              } else {
+                label = (wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status)?.replace("_", " ") || "—";
+              }
+
+              return (
+                <span
+                  className="px-3 py-1 text-[10px] md:text-xs uppercase tracking-widest rounded-lg bg-gray-50 text-black border border-black/10 font-black"
+                >
+                  {label}
+                </span>
+              );
+            },
           }
         );
         return allCols;

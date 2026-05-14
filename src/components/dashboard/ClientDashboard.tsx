@@ -95,6 +95,7 @@ const ClientDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmittalModalOpen, setIsSubmittalModalOpen] = useState(false);
   const [isRfqModalOpen, setIsRfqModalOpen] = useState(false);
+  const [isOngoingRfqModalOpen, setIsOngoingRfqModalOpen] = useState(false);
   const [isAllRfqModalOpen, setIsAllRfqModalOpen] = useState(false);
   const [isAwardedRfqModalOpen, setIsAwardedRfqModalOpen] = useState(false);
 
@@ -108,6 +109,7 @@ const ClientDashboard = () => {
   );
   const [selectedMilestone, setSelectedMilestone] = useState<any | null>(null);
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
+  const [rfqFilter, setRfqFilter] = useState<"ALL" | "MTO" | "DETAILING">("ALL");
 
 
   // Redux Data
@@ -127,6 +129,7 @@ const ClientDashboard = () => {
       isModalOpen ||
       isSubmittalModalOpen ||
       isRfqModalOpen ||
+      isOngoingRfqModalOpen ||
       isAllRfqModalOpen ||
       isAwardedRfqModalOpen ||
       isRfiModalOpen ||
@@ -149,6 +152,7 @@ const ClientDashboard = () => {
     isModalOpen,
     isSubmittalModalOpen,
     isRfqModalOpen,
+    isOngoingRfqModalOpen,
     isAllRfqModalOpen,
     isAwardedRfqModalOpen,
     isRfiModalOpen,
@@ -328,17 +332,19 @@ const ClientDashboard = () => {
     setIsModalOpen(true);
   };
 
-  const handleActionClick = (actionType: string) => {
+  const handleActionClick = (actionType: string, filter: "ALL" | "MTO" | "DETAILING" = "ALL") => {
+    setRfqFilter(filter);
     if (actionType === "PENDING_SUBMITTALS") {
       setIsSubmittalModalOpen(true);
     } else if (actionType === "PENDING_RFQ") {
       setIsRfqModalOpen(true);
+    } else if (actionType === "ONGOING_RFQ") {
+      setIsOngoingRfqModalOpen(true);
     } else if (actionType === "ALL_RFQ") {
       setIsAllRfqModalOpen(true);
     } else if (actionType === "AWARDED_RFQ") {
       setIsAwardedRfqModalOpen(true);
     } else if (actionType === "PENDING_RFI") {
-
       setIsRfiModalOpen(true);
     } else if (actionType === "PENDING_COR") {
       setIsCoModalOpen(true);
@@ -376,7 +382,7 @@ const ClientDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* MTO Overview */}
             <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
-              <h2 className="text-sm font-black text-black uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+              <h2 className="text-lg font-black text-black uppercase mb-6 flex items-center gap-2">
                 <FileText size={18} className="text-[#6bbd45]" />
                 MATERIAL TAKE-OFF RFQ OVERVIEW
               </h2>
@@ -385,20 +391,20 @@ const ClientDashboard = () => {
                   label="TOTAL MTO"
                   value={stats.totalMTO}
                   icon={FileText}
-                  onClick={() => handleActionClick("ALL_RFQ")}
+                  onClick={() => handleActionClick("ALL_RFQ", "MTO")}
                 />
                 <StatCard
                   label="ONGOING"
                   value={stats.ongoingMTO}
                   icon={Clock}
-                  onClick={() => handleActionClick("PENDING_RFQ")}
+                  onClick={() => handleActionClick("ONGOING_RFQ", "MTO")}
                 />
                 <div className="sm:col-span-2">
                   <StatCard
                     label="COMPLETED"
                     value={stats.completedMTO}
                     icon={CheckCircle2}
-                    onClick={() => handleActionClick("AWARDED_RFQ")}
+                    onClick={() => handleActionClick("AWARDED_RFQ", "MTO")}
                   />
                 </div>
               </div>
@@ -415,20 +421,20 @@ const ClientDashboard = () => {
                   label="TOTAL RFQs"
                   value={stats.totalDetailing}
                   icon={FileText}
-                  onClick={() => handleActionClick("ALL_RFQ")}
+                  onClick={() => handleActionClick("ALL_RFQ", "DETAILING")}
                 />
                 <StatCard
                   label="AWARDED"
                   value={stats.awardedDetailing}
                   icon={Activity}
-                  onClick={() => handleActionClick("AWARDED_RFQ")}
+                  onClick={() => handleActionClick("AWARDED_RFQ", "DETAILING")}
                 />
                 <div className="sm:col-span-2">
                   <StatCard
                     label="PENDING"
                     value={stats.pendingDetailing}
                     icon={Clock}
-                    onClick={() => handleActionClick("PENDING_RFQ")}
+                    onClick={() => handleActionClick("ONGOING_RFQ", "DETAILING")}
                   />
                 </div>
               </div>
@@ -560,24 +566,47 @@ const ClientDashboard = () => {
         />
 
         <ActionListModal
+          isOpen={isOngoingRfqModalOpen}
+          onClose={() => setIsOngoingRfqModalOpen(false)}
+          type="ALL_RFQ"
+          data={allRFQs.filter(r => r.wbtStatus !== "AWARDED" && r.status !== "AWARDED").filter((r: any) => {
+            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue;
+            if (rfqFilter === "DETAILING") return r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
+            return true;
+          })}
+        />
+
+        <ActionListModal
           isOpen={isRfqModalOpen}
           onClose={() => setIsRfqModalOpen(false)}
           type="PENDING_RFQ"
-          data={pendingRFQs}
+          data={pendingRFQs.filter((r: any) => {
+            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue;
+            if (rfqFilter === "DETAILING") return r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
+            return true;
+          })}
         />
 
         <ActionListModal
           isOpen={isAllRfqModalOpen}
           onClose={() => setIsAllRfqModalOpen(false)}
           type="ALL_RFQ"
-          data={allRFQs}
+          data={allRFQs.filter((r: any) => {
+            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue;
+            if (rfqFilter === "DETAILING") return r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
+            return true;
+          })}
         />
 
         <ActionListModal
           isOpen={isAwardedRfqModalOpen}
           onClose={() => setIsAwardedRfqModalOpen(false)}
           type="AWARDED_RFQ"
-          data={allRFQs.filter(rfq => rfq.wbtStatus === "AWARDED" || rfq.status === "AWARDED" || rfq.status === "COMPLETED")}
+          data={allRFQs.filter(r => r.wbtStatus === "AWARDED" || r.status === "AWARDED" || r.status === "COMPLETED").filter((r: any) => {
+            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue;
+            if (rfqFilter === "DETAILING") return r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
+            return true;
+          })}
         />
 
 

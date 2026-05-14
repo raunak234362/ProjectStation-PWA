@@ -758,6 +758,14 @@ const GetProjectById = ({
                           : "—"
                       }
                     />
+                    <InfoRow
+                      label="Project Manager"
+                      value={
+                        project.clientProjectManagers && project.clientProjectManagers.length > 0
+                          ? project.clientProjectManagers.map((pm: any) => `${pm.firstName.trim()} ${pm.lastName.trim()}`).join(", ")
+                          : "—"
+                      }
+                    />
                     {userRole !== "client" &&
                       userRole !== "client_admin" &&
                       !isConnectionDesigner && (

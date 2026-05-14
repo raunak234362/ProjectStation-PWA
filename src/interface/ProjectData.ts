@@ -51,4 +51,11 @@ export interface ProjectData {
   workedSeconds?: number;
   totalWorkedSeconds?: number;
   isOverrun?: boolean;
+  clientProjectManagers?: {
+    id: string;
+    firstName: string;
+    middleName?: string | null;
+    lastName: string;
+    username?: string;
+  }[];
 }
