@@ -402,7 +402,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       const response = await Service.addRFQ(formData);
       const createdRFQ = response.data || response.rfq || response;
 
-      if (createdRFQ) {
+      if (createdRFQ && !createdRFQ.error) {
         // Enrich with form data for immediate display in the table
         const selectedFab = fabricators?.find(
           (f) => String(f.id) === String(data.fabricatorId),
@@ -427,11 +427,13 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             : userDetail,
         };
         dispatch(addRFQ(enrichedRFQ));
+        toast.success("RFQ Created Successfully");
+        setDescription("");
+        reset();
+        onSuccess?.();
+      } else {
+        toast.error(createdRFQ?.error || "Failed to create RFQ");
       }
-      toast.success("RFQ Created Successfully");
-      setDescription("");
-      reset();
-      onSuccess?.();
     } catch (err) {
       console.error(err);
       toast.error("Failed to create RFQ");

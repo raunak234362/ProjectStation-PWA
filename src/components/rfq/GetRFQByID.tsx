@@ -178,6 +178,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
   // Followups removed
   const [selectedParentResponseId, setSelectedParentResponseId] = useState<string | null>(null);
+  const [showDescription, setShowDescription] = useState(false);
 
   const dispatch = useDispatch();
 
