@@ -6,6 +6,7 @@ import { formatDate } from "../../utils/dateUtils";
 
 const AllRFQ = ({ rfq }: any) => {
   const userRole = sessionStorage.getItem("userRole");
+console.log(rfq,"..................");
 
   const yearOptions = useMemo(() => {
     const years = Array.from(

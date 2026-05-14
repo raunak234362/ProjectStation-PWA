@@ -247,18 +247,28 @@ const ClientDashboard = () => {
   const fetchPendingRFQs = async () => {
     try {
       const response = isClientRole ? await Service.RfqSent() : await Service.getAllRFQFab();
-      console.log(response);
+      const data = Array.isArray(response) ? response : response?.data || [];
+      
+      const pending = data.filter((r: any) => {
+        // Original condition: Status is PENDING
+        if (r.status === "PENDING") return true;
+        
+        // New condition: Has responses but at least one response has no childResponses (unanswered)
+        const responses = r.responses || [];
+        if (responses.length > 0) {
+          const hasUnanswered = responses.some((res: any) => !res.childResponses || res.childResponses.length === 0);
+          if (hasUnanswered) return true;
+        }
+        
+        return false;
+      });
 
-      setPendingRFQs(
-        Array.isArray(response)
-          ? response.filter((r: any) => r.status === "PENDING")
-          : (response?.data || []).filter((r: any) => r.status === "PENDING"),
-      );
+      setPendingRFQs(pending);
     } catch (error) {
-
       console.error("Failed to fetch RFQs", error);
     }
   };
+  console.log("response________", pendingRFQs);
 
   useEffect(() => {
     fetchPendingRFQs();

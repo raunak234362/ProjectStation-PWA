@@ -128,14 +128,13 @@ const AppContent = () => {
 
     const fetchInboxRFQ = async () => {
       try {
-        let rfqDetail;
-        if (userType === "CLIENT" || userType === "CLIENT_ADMIN" || userType === "CLIENT_ESTIMATOR") {
+         let rfqDetail;
+        if ( userType === "CLIENT_ADMIN" || userType === "CLIENT_ESTIMATOR") {
           rfqDetail = await Service.getAllRFQFab();
 
         } else if (
           userType === "OPERATION_EXECUTIVE" ||
           userType === "DEPUTY_MANAGER" ||
-          userType === "CLIENT" ||
           userType === "ESTIMATION_HEAD" ||
           userType === "ADMIN"
         ) {
