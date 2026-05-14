@@ -450,17 +450,19 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       >
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="p-4 sm:p-5 md:p-6 space-y-4 md:space-y-6"
+          className="p-4 sm:p-5 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12"
         >
-          {/* Identity Section */}
-          <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5">
-            <div className="flex items-center gap-4 border-b border-black/5 pb-6">
-              <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-              <h3 className="text-xl text-black font-black uppercase tracking-tight">
-                Project Identity
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Column */}
+          <div className="space-y-8">
+            {/* Identity Section */}
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 border-b border-black/10 pb-4">
+                <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
+                <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                  Project Details
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {userRole !== "CLIENT" &&
                 userRole !== "CLIENT_ADMIN" &&
                 userRole !== "CLIENT_ESTIMATOR" && (
@@ -479,7 +481,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                             value={
                               field.value ? String(field.value) : undefined
                             }
-                            className="border-black rounded-lg h-14"
+                            className="border-black rounded-lg h-14 bg-white"
                             onChange={(_, value) => field.onChange(value ?? "")}
                           />
                         )}
@@ -502,7 +504,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                           <Select
                             name={field.name}
                             options={clientOptions}
-                            className="border-black rounded-lg h-14"
+                            className="border-black rounded-lg h-14 bg-white"
                             value={
                               field.value ? String(field.value) : undefined
                             }
@@ -532,68 +534,24 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     {errors.projectName.message}
                   </p>
                 )}
-              <div className="space-y-2 w-full">
+              </div>
+
+              <div className="md:col-span-2 space-y-2 w-full mt-4">
                 <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
-                <div className="border border-black rounded-lg overflow-hidden min-h-[200px] bg-white">
+                <div className="border border-black rounded-lg overflow-hidden min-h-[150px] bg-white">
                   <RichTextEditor value={description} onChange={setDescription} />
                 </div>
               </div>
-              </div>
 
-              {/* <div className="space-y-2">
-                <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                  <Settings2 size={14} className="text-black/40" />
-                  Project Number
-                </label>
-                <Input
-                  {...register("projectNumber")}
-                  className="w-full bg-white border-black rounded-lg h-14 text-sm font-black"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                  <Globe size={14} className="text-black/40" />
-                  Location
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <Controller
-                    name="country"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        name={field.name}
-                        options={countryOptions}
-                        value={field.value}
-                        className="border-black rounded-lg h-14"
-                        onChange={(_, value) => {
-                          field.onChange(value ?? "");
-                          setValue("state", "");
-                        }}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="state"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        name={field.name}
-                        options={stateOptions}
-                        value={field.value}
-                        className="border-black rounded-lg h-14"
-                        onChange={(_, value) => field.onChange(value ?? "")}
-                      />
-                    )}
-                  />
-                </div>
-              </div> */}
             </div>
           </section>
+          </div>
 
-          {/* Estimation Type Selection */}
-          <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5">
-            <div className="flex items-center gap-4 border-b border-black/5 pb-6">
+          {/* Right Column */}
+          <div className="space-y-8">
+            {/* Estimation Type Selection */}
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 border-b border-black/10 pb-4">
               <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
               <h3 className="text-xl text-black font-black uppercase tracking-tight">
                 Select Estimation Type
@@ -635,32 +593,26 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
           {/* Service Matrix Section */}
           {isDetailing && (
-            <section className="space-y-3 md:space-y-4 pt-4 md:pt-5 border-gray-200 animate-in fade-in zoom-in duration-300">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-6 bg-gray-50 p-8 rounded-lg shadow-sm border border-black/5">
+            <section className="space-y-6 animate-in fade-in zoom-in duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
                   <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                     <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
                     Connection Design Scope
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <Toggle
-                      label="Main Design"
-                      {...register("connectionDesign")}
-                    />
+                  <div className="grid grid-cols-1 gap-4">
+                    <Toggle label="Main Design" {...register("connectionDesign")} />
                     <Toggle label="Misc Design" {...register("miscDesign")} />
-                    <Toggle
-                      label="Customer Design"
-                      {...register("customerDesign")}
-                    />
+                    <Toggle label="Customer Design" {...register("customerDesign")} />
                   </div>
                 </div>
 
-                <div className="space-y-6 bg-gray-50 p-8 rounded-lg shadow-sm border border-black/5">
+                <div className="space-y-4">
                   <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
                     <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
                     Detailing Scope
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-4">
                     <Toggle label="Main Steel" {...register("detailingMain")} />
                     <Toggle label="Misc Steel" {...register("detailingMisc")} />
                   </div>
@@ -670,9 +622,9 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           )}
 
           {isMTO && (
-            <section className="bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5 animate-in fade-in zoom-in duration-300">
-              <div className="space-y-8">
-                <div className="flex items-center gap-4 border-b border-black/5 pb-6">
+            <section className="space-y-6 animate-in fade-in zoom-in duration-300">
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 border-b border-black/10 pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                   <h3 className="text-xl text-black font-black uppercase tracking-tight">
                     Material Takeoff
@@ -788,80 +740,67 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             </section>
           )}
 
-          {/* Technical Specs Section - Visible only after estimation type selection */}
+
+
+          {/* Project Requirements & Assets - Visible only after estimation type selection */}
           {(isDetailing || isMTO) && (
-            <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5 animate-in fade-in slide-in-from-top-4 duration-500">
-              <div className="flex items-center gap-4 border-b border-black/5 pb-6">
-                <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-                <h3 className="text-xl text-black font-black uppercase tracking-tight">
-                  Technical Specifications
-                </h3>
-              </div>
-
-              <div className="space-y-6">
-                {/* <div className="space-y-2">
-                  <label className="block text-sm text-black font-black uppercase tracking-widest">Subject</label>
-                  <Input
-                    {...register("subject")}
-                    className="w-full bg-white border-black rounded-lg h-14 text-sm font-black"
-                  />
-                </div> */}
-
-                
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {isDetailing && (
-                    <div className="space-y-2 animate-in fade-in duration-300">
-                      <label className="block text-sm text-black font-black uppercase tracking-widest">Tools <span className="text-rose-500">*</span></label>
-                      <Controller
-                        name="tools"
-                        control={control}
-                        rules={{ required: isDetailing ? "Tools selection is required" : false }}
-                        render={({ field }) => (
-                          <Select
-                            name={field.name}
-                            options={[
-                              { label: "TEKLA", value: "TEKLA" },
-                              { label: "SDS2", value: "SDS2" },
-                              { label: "BOTH", value: "BOTH" },
-                              { label: "NO PREFERENCE", value: "NO_PREFERENCE" },
-                              { label: "OTHER", value: "OTHER" },
-                            ]}
-                            className="border-black rounded-lg h-14"
-                            value={field.value}
-                            onChange={(_, value) => field.onChange(value ?? "")}
-                          />
-                        )}
-                      />
-                    </div>
-                  )}
-                  {!isMTO && (
-                    <div className="space-y-2 animate-in fade-in duration-300">
-                      <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                        <Percent size={14} className="text-black/40" />
-                        Bid Price
-                      </label>
-                      <Input {...register("bidPrice")} type="number" className="w-full border-black rounded-lg h-14 text-sm font-black" />
-                    </div>
-                  )}
-                  <div className={`space-y-2 ${(!isDetailing || isMTO) ? "md:col-span-2" : ""}`}>
+            <>
+              {/* Project Requirements Section */}
+              <section className="space-y-6 animate-in fade-in zoom-in duration-300">
+                <div className="flex items-center gap-4 border-b border-black/10 pb-4">
+                  <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
+                  <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                    Project Requirements
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
                     <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                       <Calendar size={14} className="text-black/40" />
                       Due Date <span className="text-rose-500">*</span>
                     </label>
-                    <Input {...register("estimationDate", { required: "Due date is required" })} type="date" className="w-full border-black rounded-lg h-14 text-sm font-black" />
+                    <Input {...register("estimationDate", { required: "Due date is required" })} type="date" className="w-full bg-white border-black rounded-lg h-14 text-sm font-black" />
                   </div>
+                  {isDetailing && (
+                    <>
+                      <div className="space-y-2 animate-in fade-in duration-300">
+                        <label className="block text-sm text-black font-black uppercase tracking-widest">Tools <span className="text-rose-500">*</span></label>
+                        <Controller
+                          name="tools"
+                          control={control}
+                          rules={{ required: isDetailing ? "Tools selection is required" : false }}
+                          render={({ field }) => (
+                            <Select
+                              name={field.name}
+                              options={[
+                                { label: "TEKLA", value: "TEKLA" },
+                                { label: "SDS2", value: "SDS2" },
+                                { label: "BOTH", value: "BOTH" },
+                                { label: "NO PREFERENCE", value: "NO_PREFERENCE" },
+                                { label: "OTHER", value: "OTHER" },
+                              ]}
+                              className="border-black rounded-lg h-14 bg-white"
+                              value={field.value}
+                              onChange={(_, value) => field.onChange(value ?? "")}
+                            />
+                          )}
+                        />
+                      </div>
+                      <div className="space-y-2 animate-in fade-in duration-300">
+                        <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                          <Percent size={14} className="text-black/40" />
+                          Bid Price
+                        </label>
+                        <Input {...register("bidPrice")} type="number" className="w-full bg-white border-black rounded-lg h-14 text-sm font-black" />
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
-            </section>
-          )}
+              </section>
 
-          {/* Assets & Footer - Visible only after estimation type selection */}
-          {(isDetailing || isMTO) && (
-            <>
               {/* Assets Section */}
-              <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5 animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="flex items-center gap-4 border-b border-black/5 pb-6">
+              <section className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="flex items-center gap-4 border-b border-black/10 pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                   <h3 className="text-xl text-black font-black uppercase tracking-tight">
                     Project / Scope Sheet Attachments
@@ -878,26 +817,30 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 </div>
               </section>
 
-              {/* Action Footer */}
-              <div className="pt-10 flex justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="group relative px-22 py-4 bg-[#6bbd45]/50 text-black border-2 border-black rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:opacity-90 transition-all duration-500 shadow-2xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 size={20} className="animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      Create RFQ
-                    </>
-                  )}
-                </button>
-              </div>
             </>
+          )}
+          </div>
+
+          {/* Full Width Action Footer */}
+          {(isDetailing || isMTO) && (
+            <div className="lg:col-span-2 pt-6 flex justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="group relative px-22 py-4 w-full justify-center bg-[#6bbd45]/50 text-black border-2 border-black rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:opacity-90 transition-all duration-500 shadow-2xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Create RFQ
+                  </>
+                )}
+              </button>
+            </div>
           )}
         </form>
       </motion.div>

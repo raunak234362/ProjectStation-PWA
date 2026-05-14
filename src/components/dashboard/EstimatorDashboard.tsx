@@ -368,6 +368,7 @@ const EstimatorDashboard = () => {
               icon={FileText}
               label={<>Total RFQ<span className="text-[10px]">s</span></>}
               value={stats.totalRfqsSent}
+              iconPadding="p-1"
             />
 
             <StatCard
@@ -375,6 +376,7 @@ const EstimatorDashboard = () => {
               icon={Activity}
               label="Awarded"
               value={stats.rfqsAwarded}
+              iconPadding="p-1"
             />
 
             <StatCard
@@ -382,6 +384,8 @@ const EstimatorDashboard = () => {
               icon={Clock}
               label="Pending"
               value={stats.pendingEstimates}
+              iconPadding="p-1"
+              valueSize="text-3xl"
             />
           </div>
         </div>
