@@ -532,9 +532,15 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     {errors.projectName.message}
                   </p>
                 )}
+              <div className="space-y-2 w-full">
+                <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
+                <div className="border border-black rounded-lg overflow-hidden min-h-[200px] bg-white">
+                  <RichTextEditor value={description} onChange={setDescription} />
+                </div>
+              </div>
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
                   <Settings2 size={14} className="text-black/40" />
                   Project Number
@@ -581,7 +587,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     )}
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           </section>
 
@@ -782,8 +788,8 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             </section>
           )}
 
-          {/* Technical Specs Section - Visible only after scope selection */}
-          {isScopeSelected && (
+          {/* Technical Specs Section - Visible only after estimation type selection */}
+          {(isDetailing || isMTO) && (
             <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5 animate-in fade-in slide-in-from-top-4 duration-500">
               <div className="flex items-center gap-4 border-b border-black/5 pb-6">
                 <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
@@ -793,20 +799,15 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               </div>
 
               <div className="space-y-6">
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <label className="block text-sm text-black font-black uppercase tracking-widest">Subject</label>
                   <Input
                     {...register("subject")}
                     className="w-full bg-white border-black rounded-lg h-14 text-sm font-black"
                   />
-                </div>
+                </div> */}
 
-                <div className="space-y-2">
-                  <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
-                  <div className="border border-black rounded-lg overflow-hidden min-h-[200px] bg-white">
-                    <RichTextEditor value={description} onChange={setDescription} />
-                  </div>
-                </div>
+                
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {isDetailing && (
@@ -855,45 +856,49 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             </section>
           )}
 
-          {/* Assets Section */}
-          <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5">
-            <div className="flex items-center gap-4 border-b border-black/5 pb-6">
-              <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-              <h3 className="text-xl text-black font-black uppercase tracking-tight">
-                Project / Scope Sheet Attachments
-              </h3>
-            </div>
-            <div className="bg-gray-50/50 rounded-lg border border-black/5">
-              <Controller
-                name="files"
-                control={control}
-                render={({ field }) => (
-                  <MultipleFileUpload onFilesChange={field.onChange} />
-                )}
-              />
-            </div>
-          </section>
+          {/* Assets & Footer - Visible only after estimation type selection */}
+          {(isDetailing || isMTO) && (
+            <>
+              {/* Assets Section */}
+              <section className="space-y-6 bg-gray-50 p-8 md:p-10 rounded-lg shadow-sm border border-black/5 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="flex items-center gap-4 border-b border-black/5 pb-6">
+                  <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
+                  <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                    Project / Scope Sheet Attachments
+                  </h3>
+                </div>
+                <div className="bg-gray-50/50 rounded-lg border border-black/5">
+                  <Controller
+                    name="files"
+                    control={control}
+                    render={({ field }) => (
+                      <MultipleFileUpload onFilesChange={field.onChange} />
+                    )}
+                  />
+                </div>
+              </section>
 
-          {/* Action Footer */}
-          <div className="pt-10 flex justify-center">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group relative px-22 py-4 bg-[#6bbd45]/50 text-black border-2 border-black rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:opacity-90 transition-all duration-500 shadow-2xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 size={20} className="animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  Create RFQ
-
-                </>
-              )}
-            </button>
-          </div>
+              {/* Action Footer */}
+              <div className="pt-10 flex justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="group relative px-22 py-4 bg-[#6bbd45]/50 text-black border-2 border-black rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:opacity-90 transition-all duration-500 shadow-2xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      Create RFQ
+                    </>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
         </form>
       </motion.div>
     </div>

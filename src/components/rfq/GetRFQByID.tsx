@@ -178,7 +178,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
   // Followups removed
   const [selectedParentResponseId, setSelectedParentResponseId] = useState<string | null>(null);
-  const [showDescription, setShowDescription] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -375,8 +374,8 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       cell: ({ row }) => (
         <span
           className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${row.original.approvalStatus
-              ? "bg-gray-100 text-black border border-gray-200"
-              : "bg-gray-100 text-black border border-gray-200"
+            ? "bg-gray-100 text-black border border-gray-200"
+            : "bg-gray-100 text-black border border-gray-200"
             }`}
         >
           {row.original.approvalStatus ? "Approved" : "Pending"}
@@ -643,91 +642,91 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 formatDate={formatDate}
               />
 
-            {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-            <div className="bg-gray-50 border border-gray-200 p-4 sm:p-8 rounded-[2rem] shadow-sm space-y-6">
-              {/* Header + Add Response Button */}
-              <div className="flex justify-between items-center gap-4">
-                <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-tighter">
-                  Responses
-                </h1>
+              {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
+              <div className="bg-gray-50 border border-gray-200 p-4 sm:p-8 rounded-[2rem] shadow-sm space-y-6">
+                {/* Header + Add Response Button */}
+                <div className="flex justify-between items-center gap-4">
+                  <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-tighter">
+                    Responses
+                  </h1>
 
-                {(userRole === "admin" ||
-                  userRole === "deputy_manager" ||
-                  userRole === "operation_executive" ||
-                  userRole === "user") && (
-                    <Button
-                      onClick={() => {
-                        setSelectedParentResponseId(null);
-                        setShowResponseModal(true);
-                      }}
-                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
-                    >
-                      + Add Response
-                    </Button>
-                  )}
-              </div>
-              {showResponseModal && (
-                <ResponseModal
-                  rfqId={id}
-                  onClose={() => {
-                    setShowResponseModal(false);
-                    setSelectedParentResponseId(null);
-                  }}
-                  onSuccess={fetchRfq}
-                  parentResponseId={selectedParentResponseId || undefined}
-                />
-              )}
-              {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
-              {userRole !== "connection_designer_engineer" &&
-                (topLevelResponses.length ? (
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    {topLevelResponses.map((resp: any) => (
-                      <RFQResponseItem
-                        key={resp.id}
-                        response={resp}
-                        onReply={(parent) => {
-                          setSelectedParentResponseId(parent.id);
+                  {(userRole === "admin" ||
+                    userRole === "deputy_manager" ||
+                    userRole === "operation_executive" ||
+                    userRole === "user") && (
+                      <Button
+                        onClick={() => {
+                          setSelectedParentResponseId(null);
                           setShowResponseModal(true);
                         }}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-700 italic">No responses yet.</p>
-                ))}
-              <div className="mt-4">
-                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                  <>
-                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-                      CD Quotation
-                    </p>
-                    <DataTable
-                      columns={quotationColumns}
-                      data={rfq?.CDQuotas || []}
-                      pageSizeOptions={[5]}
-                      onRowClick={(row: any) => setSelectedQuotation(row)}
-                    />
-                  </>
-                ) : (
-                  // Show Submit Button if not submitted
-                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                    {userRole === "connection_designer_engineer" ? (
-                      <>
-                        <p className="text-gray-500 mb-4 text-center">
-                          You haven't submitted a quotation yet.
-                        </p>
-                        <Button
-                          onClick={() => setShowQuotationResponseModal(true)}
-                          className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
-                        >
-                          Submit Quotation Response
-                        </Button>
-                      </>
-                    ) : null}
-                  </div>
+                        className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
+                      >
+                        + Add Response
+                      </Button>
+                    )}
+                </div>
+                {showResponseModal && (
+                  <ResponseModal
+                    rfqId={id}
+                    onClose={() => {
+                      setShowResponseModal(false);
+                      setSelectedParentResponseId(null);
+                    }}
+                    onSuccess={fetchRfq}
+                    parentResponseId={selectedParentResponseId || undefined}
+                  />
                 )}
+                {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
+                {userRole !== "connection_designer_engineer" &&
+                  (topLevelResponses.length ? (
+                    <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                      {topLevelResponses.map((resp: any) => (
+                        <RFQResponseItem
+                          key={resp.id}
+                          response={resp}
+                          onReply={(parent) => {
+                            setSelectedParentResponseId(parent.id);
+                            setShowResponseModal(true);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-700 italic">No responses yet.</p>
+                  ))}
+                <div className="mt-4">
+                  {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                    <>
+                      <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                        CD Quotation
+                      </p>
+                      <DataTable
+                        columns={quotationColumns}
+                        data={rfq?.CDQuotas || []}
+                        pageSizeOptions={[5]}
+                        onRowClick={(row: any) => setSelectedQuotation(row)}
+                      />
+                    </>
+                  ) : (
+                    // Show Submit Button if not submitted
+                    <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                      {userRole === "connection_designer_engineer" ? (
+                        <>
+                          <p className="text-gray-500 mb-4 text-center">
+                            You haven't submitted a quotation yet.
+                          </p>
+                          <Button
+                            onClick={() => setShowQuotationResponseModal(true)}
+                            className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                          >
+                            Submit Quotation Response
+                          </Button>
+                        </>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
               {userRole !== "client_admin" &&
                 userRole !== "client" &&
@@ -852,8 +851,8 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   onClick={handleDelete}
                   disabled={deleteConfirmText !== "DELETE" || isDeleting}
                   className={`flex-1 ${deleteConfirmText === "DELETE"
-                      ? "bg-red-600 hover:bg-red-700"
-                      : "bg-red-300 cursor-not-allowed"
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-red-300 cursor-not-allowed"
                     } text-white`}
                 >
                   {isDeleting ? "Deleting..." : "Confirm Delete"}
@@ -954,8 +953,8 @@ const Info = ({ label, value }: { label: string; value: string | number }) => (
 const Scope = ({ label, enabled }: { label: string; enabled: boolean }) => (
   <div
     className={`px-3 py-2 rounded-lg border font-bold uppercase tracking-tighter ${enabled
-        ? "bg-green-100/50 border-green-200 text-black"
-        : "bg-gray-50 border-gray-200 text-gray-500"
+      ? "bg-green-100/50 border-green-200 text-black"
+      : "bg-gray-50 border-gray-200 text-gray-500"
       }`}
   >
     {label}
