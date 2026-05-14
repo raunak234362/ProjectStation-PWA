@@ -459,8 +459,20 @@ class Service {
       console.error("cannot find rfqs for Client Admin", error);
     }
   }
-  //getting rfqbyID
 
+  //get All RFQ FOR Client estimator
+  static async GetClientEstimatorRFQ(){
+
+    try {
+      const response = await api.get(`rfq/all/clientEstimator`);
+      console.log(" All RFQ fetched by Client Estimator:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfqs for Client Estimator", error);
+    }
+  }
+
+  //getting rfqbyID
   static async GetRFQbyId(rfqId: string) {
     try {
       const response = await api.get(`rfq/getById/${rfqId}`);
