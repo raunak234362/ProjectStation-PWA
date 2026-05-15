@@ -119,7 +119,45 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         );
       },
     },
-  {
+
+    {
+      accessorKey: "createdAt",
+      header: "Created Date",
+      cell: ({ row }) => (
+        <span className="text-sm font-semibold text-gray-600">
+          {row.original.createdAt ? formatDate(row.original.createdAt) : "—"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "estimationDate",
+      header: "Due Date",
+      cell: ({ row }) => (
+        <span className="text-sm font-bold text-gray-600">
+          {row.original.estimationDate ? formatDate(row.original.estimationDate) : "—"}
+        </span>
+      ),
+    },
+    {
+      id: "responseDate",
+      header: "WBT Submitted Date",
+      cell: ({ row }) => {
+        const responses = row.original.responses || [];
+        if (responses.length === 0) return <span className="text-gray-400">—</span>;
+        
+        // Find latest response date
+        const latestResponse = [...responses].sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+
+        return (
+          <span className="text-sm font-semibold text-primary">
+            {formatDate(latestResponse.createdAt)}
+          </span>
+        );
+      }
+    },
+      {
       id: "status",
       header: "Status",
       accessorFn: (row: any) => {
@@ -162,15 +200,6 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
           </span>
         );
       },
-    },
-    {
-      accessorKey: "estimationDate",
-      header: "Due Date",
-      cell: ({ row }) => (
-        <span className="text-sm font-bold text-gray-600">
-          {row.original.estimationDate ? formatDate(row.original.estimationDate) : "—"}
-        </span>
-      ),
     },
   );
 
