@@ -533,11 +533,18 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
             </h3>
             {/* Status tag */}
             <span className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-green-100 text-black border border-gray-200">
-              {((rfq as any)?.wbtStatus &&
-                (rfq as any)?.wbtStatus !== "RECEIVED"
-                ? (rfq as any)?.wbtStatus
-                : rfq?.status
-              )?.replace("_", " ")}
+              {(() => {
+                const wbtStatus = (rfq as any)?.wbtStatus;
+                const status = rfq?.status;
+                const currentStatus = (wbtStatus && wbtStatus !== "RECEIVED") ? wbtStatus : status;
+                
+                if (currentStatus === "AWARDED") {
+                  const isMTO = !!(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.mtoStickModelEnabled);
+                  return isMTO ? "SUBMITTED" : "AWARDED";
+                }
+                
+                return currentStatus?.replace("_", " ");
+              })()}
             </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -577,16 +584,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Info label="Subject" value={rfq?.subject || ""} />
                 <Info label="Project Number" value={rfq?.projectNumber || ""} />
-                <Info
-                  label="Status"
-                  value={
-                    ((rfq as any)?.wbtStatus &&
-                      (rfq as any)?.wbtStatus !== "RECEIVED"
-                      ? (rfq as any)?.wbtStatus
-                      : rfq?.status
-                    )?.replace("_", " ") || ""
-                  }
-                />
                 <Info label="Tools" value={rfq?.tools || "N/A"} />
                 <Info
                   label="Due Date"

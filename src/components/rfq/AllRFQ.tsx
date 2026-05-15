@@ -180,12 +180,14 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         { label: "Awarded", value: "AWARDED" },
         { label: "Closed", value: "CLOSED" },
       ],
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const val = getValue() as string;
         let label = "";
 
         if (val === "AWARDED") {
-          label = "Awarded";
+          const r = row.original as any;
+          const isMTO = !!(r.MTOManual || r.MTOStickModel || r.MTOValue || r.mtoStickModelEnabled);
+          label = isMTO ? "Submitted" : "Awarded";
         } else if (val === "WBT_SUBMITTED") {
           label = "WBT Submitted";
         } else if (val === "IN_REVIEW") {

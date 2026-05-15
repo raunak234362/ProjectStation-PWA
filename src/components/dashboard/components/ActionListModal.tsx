@@ -186,7 +186,8 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               let label = "";
 
               if (wbtStatus === "AWARDED") {
-                label = "Awarded";
+                const isMTO = !!(row.original.MTOManual || row.original.MTOStickModel || row.original.MTOValue || row.original.mtoStickModelEnabled);
+                label = isMTO ? "Submitted" : "Awarded";
               } else if (status === "IN_REVIEW") {
                 label = "Estimation In Progress";
               } else {
@@ -344,7 +345,8 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               let label = "";
 
               if (wbtStatus === "AWARDED") {
-                label = "Awarded";
+                const isMTO = !!(row.original.MTOManual || row.original.MTOStickModel || row.original.MTOValue || row.original.mtoStickModelEnabled);
+                label = isMTO ? "Submitted" : "Awarded";
               } else if (status === "IN_REVIEW") {
                 label = "Estimation In Progress";
               } else {
