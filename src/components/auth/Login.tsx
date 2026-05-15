@@ -59,7 +59,7 @@ const Login = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" style={{ textTransform: 'none' }}>
       {/* Background blur */}
       <img
         src={Background}
