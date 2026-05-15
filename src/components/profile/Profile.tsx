@@ -169,10 +169,24 @@ const Profile = () => {
           </div>
         </div>
         <div className="border-t border-gray-200 pt-6">
-          <div className="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
-            <Edit2 className="w-5 h-5 text-green-600" /> Update Detail{" "}
-            <Button onClick={() => setIsEditModalOpen(true)}>Update </Button>
-            <Button onClick={() => setIsChangePasswordModalOpen(true)}>Change Password </Button>
+          <div className="flex flex-col gap-4">
+            <div className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+              <Edit2 className="w-5 h-5 text-green-600" /> Update Detail
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <button 
+                onClick={() => setIsEditModalOpen(true)}
+                className="px-8 py-3 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 bg-green-50 text-black border-green-700/80 shadow-sm hover:bg-green-100"
+              >
+                Update
+              </button>
+              <button 
+                onClick={() => setIsChangePasswordModalOpen(true)}
+                className="px-8 py-3 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 bg-green-50 text-black border-green-700/80 shadow-sm hover:bg-green-100"
+              >
+                Change Password
+              </button>
+            </div>
           </div>
         </div>
 

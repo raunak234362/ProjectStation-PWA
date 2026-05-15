@@ -6,6 +6,7 @@ import {
   AlertCircle,
   FileText,
   Settings,
+  Settings2,
   FolderOpenDot,
   Users,
   Clock,
@@ -537,16 +538,16 @@ const GetProjectById = ({
                 </span>
               </div>
             )}
-            <span className="px-4 py-1.5 rounded-lg text-xs font-black bg-gray-50 text-black border-2 border-gray-100 uppercase tracking-widest">
+            <span className="px-4 py-1.5 rounded-lg text-xs font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
               {project.stage}
             </span>
-            <span className="px-4 py-1.5 rounded-lg text-xs font-black bg-gray-50 text-black border-2 border-gray-100 uppercase tracking-widest">
+            <span className="px-4 py-1.5 rounded-lg text-xs font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
               {project.status}
             </span>
             {userRole === "admin" && (
               <button
                 onClick={() => handleEditModel(project)}
-                className="px-6 py-2 bg-green-50 text-black border-2 border-[#6bbd45] rounded-lg hover:bg-green-100 transition-all font-black text-xs uppercase tracking-tight shadow-sm flex items-center gap-2"
+                className="px-8 py-3 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm flex items-center gap-2"
               >
                 <Settings className="w-4 h-4" />
                 Edit
@@ -555,7 +556,7 @@ const GetProjectById = ({
             {close && (
               <button
                 onClick={close}
-                className="px-8 py-2 bg-white text-red-600 border-2 border-red-600 rounded-lg hover:bg-red-50 transition-all font-black text-sm uppercase tracking-tight shadow-sm"
+                className="px-8 py-3 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
               >
                 Close
               </button>
@@ -586,9 +587,9 @@ const GetProjectById = ({
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2.5 px-6 py-2.5 text-xs rounded-xl font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${activeTab === key
-                  ? "bg-green-50 text-black border-[#6bbd45] shadow-sm"
-                  : "bg-white text-black border-gray-800 hover:bg-gray-50"
+                className={`flex items-center gap-2.5 px-8 py-3 text-sm rounded-lg font-bold uppercase tracking-tight transition-all whitespace-nowrap border-2 active:scale-95 ${activeTab === key
+                  ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+                  : "bg-gray-100 text-black border-black/10 hover:border-black/20"
                   }`}
               >
                 <Icon className="w-4 h-4" />
@@ -737,9 +738,10 @@ const GetProjectById = ({
               </div>
 
               {/* ✅ Details (Moved to Overview) */}
-              <div className="bg-slate-50/50 p-6 rounded-[24px] border border-black/5 animate-in fade-in slide-in-from-top-4 duration-700">
-                <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-8 text-sm">
-                  <div className="space-y-4">
+              <div className="bg-slate-50/50 p-6 sm:p-8 rounded-[32px] border border-black/5 animate-in fade-in slide-in-from-top-4 duration-700 space-y-8">
+                {/* Main Project Info Grid */}
+                <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-3 text-sm">
+                  <div className="space-y-3.5">
                     {!isConnectionDesigner && (
                       <InfoRow
                         label="Department"
@@ -766,6 +768,8 @@ const GetProjectById = ({
                           : "—"
                       }
                     />
+                  </div>
+                  <div className="space-y-3.5">
                     {userRole !== "client" &&
                       userRole !== "client_admin" &&
                       !isConnectionDesigner && (
@@ -780,64 +784,66 @@ const GetProjectById = ({
                       value={formatDate(project.startDate)}
                     />
                   </div>
+                </div>
 
-                  <div className="space-y-6">
-                    <div className="p-4 bg-white rounded-2xl border border-black/5 shadow-sm min-h-[140px]">
-                      <h4 className="text-md font-bold text-black mb-4 flex items-center gap-2 uppercase tracking-tight">
-                        <Settings className="w-5 h-5 text-green-600" />{" "}
-                        Connection Design Scope
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        <ScopeTag
-                          label="Main Design"
-                          active={project.connectionDesign}
-                        />
-                        <ScopeTag
-                          label="Misc Design"
-                          active={project.miscDesign}
-                        />
-                        <ScopeTag
-                          label={
-                            project.customerDesign
-                              ? "Connection Design by WBT"
-                              : `Connection Design by ${project.fabricator?.fabName ?? ""}`
-                          }
-                          active={project.customerDesign}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-white rounded-2xl border border-black/5 shadow-sm min-h-[140px]">
-                      <h4 className="text-md font-bold text-black mb-4 flex items-center gap-2 uppercase tracking-tight">
-                        <Settings className="w-5 h-4 text-green-600" />{" "}
-                        Detailing Scope
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        <ScopeTag
-                          label="Detailing Main"
-                          active={project.detailingMain}
-                        />
-                        <ScopeTag
-                          label="Detailing Misc"
-                          active={project.detailingMisc}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="md:col-span-2 pt-4">
-                    <h4 className="font-black text-black mb-3 text-lg flex items-center gap-2 uppercase tracking-tight">
-                      <FolderOpenDot className="w-5 h-5 text-green-600" />
-                      Project Description
+                {/* Scopes - Full Width Sections */}
+                <div className="space-y-4">
+                  {/* Connection Design Scope */}
+                  <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm transition-all hover:shadow-md">
+                    <h4 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                      <Settings className="w-5 h-5 text-green-600" /> Connection Design Scope
                     </h4>
-                    <div
-                      className="text-gray-700 bg-white p-5 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          project.description || "No description available.",
-                      }}
-                    />
+                    <div className="flex flex-wrap gap-3">
+                      <ScopeTag
+                        label="Main Design"
+                        active={project.connectionDesign}
+                      />
+                      <ScopeTag
+                        label="Misc Design"
+                        active={project.miscDesign}
+                      />
+                      <ScopeTag
+                        label={
+                          project.customerDesign
+                            ? "Connection Design by WBT"
+                            : `Connection Design by ${project.fabricator?.fabName ?? ""}`
+                        }
+                        active={project.customerDesign}
+                      />
+                    </div>
                   </div>
+
+                  {/* Detailing Scope */}
+                  <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm transition-all hover:shadow-md">
+                    <h4 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                      <Settings2 className="w-5 h-5 text-green-600" /> Detailing Scope
+                    </h4>
+                    <div className="flex flex-wrap gap-3">
+                      <ScopeTag
+                        label="Detailing Main"
+                        active={project.detailingMain}
+                      />
+                      <ScopeTag
+                        label="Detailing Misc"
+                        active={project.detailingMisc}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Project Description */}
+                <div className="pt-4 border-t border-black/5">
+                  <h4 className="font-bold text-black mb-4 text-base flex items-center gap-2 uppercase tracking-tight">
+                    <FolderOpenDot className="w-5 h-5 text-green-600" />
+                    Project Description
+                  </h4>
+                  <div
+                    className="text-gray-700 bg-white p-6 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none leading-relaxed"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        project.description || "No description available.",
+                    }}
+                  />
                 </div>
               </div>
 
@@ -869,10 +875,10 @@ const GetProjectById = ({
                   {/* Section header */}
                   <div className="px-5 py-3 bg-slate-50 border-b border-gray-200 flex items-center gap-2">
                     <ClipboardList className="w-4 h-4 text-slate-500" />
-                    <h4 className="text-sm font-black uppercase tracking-widest text-slate-700">
+                    <h4 className="text-sm font-black uppercase tracking-tight text-slate-700">
                       Other Tasks &mdash; Logged Time
                     </h4>
-                    <span className="ml-auto text-[10px] text-slate-400 font-semibold uppercase tracking-widest">
+                    <span className="ml-auto text-[10px] text-slate-400 font-semibold uppercase tracking-tight">
                       {Object.values(otherTasksByBundle).reduce(
                         (s, t) => s + t.length,
                         0,
@@ -915,7 +921,7 @@ const GetProjectById = ({
                             {/* Bundle key header */}
                             <div className="flex items-center gap-3 px-5 py-2 bg-slate-50/70 border-b border-gray-100">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#6bbd45] shrink-0" />
-                              <span className="flex-1 text-xs font-black uppercase tracking-widest text-slate-600">
+                              <span className="flex-1 text-xs font-black uppercase tracking-tight text-slate-600">
                                 {bundleKey}
                               </span>
                               <span className="text-xs font-bold text-slate-500">
@@ -1047,7 +1053,7 @@ const GetProjectById = ({
                     <Activity size={32} className="text-green-500" />
                   </div>
                   <h4 className=" text-slate-800 mb-1">Project Status</h4>
-                  <div className="mt-2 px-6 py-2 rounded-lg text-md border border-gray-200 bg-gray-100 text-black uppercase tracking-widest">
+                  <div className="mt-2 px-6 py-2 rounded-lg text-md border border-gray-200 bg-gray-100 text-black uppercase tracking-tight">
                     {project.status}
                   </div>
                   <p className="text-xs text-slate-400 mt-3 font-medium uppercase tracking-tighter">
@@ -1159,14 +1165,14 @@ const GetProjectById = ({
 
             <div className="space-y-6">
               {/* Pill-style Sub-tabs for Change Order */}
-              <div className="flex p-1 rounded-[20px] w-fit mb-6 ">
+              <div className="flex p-1.5 bg-gray-100/30 rounded-2xl w-fit mb-6 border border-gray-200/50 gap-2">
                 <button
                   onClick={() => setChangeOrderView("list")}
                   className={`
-                    px-8 py-2.5 rounded-sm border border-black font-semibold text-sm transition-all duration-300
+                    px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
                     ${changeOrderView === "list"
-                      ? "bg-green-200/50 text-black"
-                      : "text-gray-400 hover:text-black bg-transparent"
+                      ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+                      : "bg-gray-100 text-black border-black/10 hover:border-black/20"
                     }
                   `}
                 >
@@ -1176,10 +1182,10 @@ const GetProjectById = ({
                   <button
                     onClick={() => setChangeOrderView("add")}
                     className={`
-                      px-8 py-2.5 rounded-sm border border-black font-semibold text-sm transition-all duration-300
+                      px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
                       ${changeOrderView === "add"
-                        ? "bg-[#6bbd45] text-white shadow-lg shadow-green-500/30"
-                        : "text-gray-400 hover:text-black bg-transparent"
+                        ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+                        : "bg-gray-100 text-black border-black/10 hover:border-black/20"
                       }
                   `}
                   >
@@ -1202,7 +1208,7 @@ const GetProjectById = ({
                     </h4>
                     <button
                       onClick={() => setChangeOrderView("list")}
-                      className="text-sm text-green-600 hover:text-green-700 font-medium"
+                      className="px-4 py-2 bg-gray-100 text-black border-2 border-black/10 rounded-lg hover:border-black/20 transition-all font-bold text-xs uppercase tracking-tight flex items-center gap-2"
                     >
                       &larr; Back to List
                     </button>
@@ -1245,7 +1251,7 @@ const GetProjectById = ({
                   <h3 className="text-base font-black uppercase tracking-tight text-gray-900 truncate">
                     {selectedOtherBundle.key}
                   </h3>
-                  <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-tight font-semibold">
                     {selectedOtherBundle.tasks.length} task
                     {selectedOtherBundle.tasks.length !== 1 ? "s" : ""}{" "}
                     &nbsp;·&nbsp;
@@ -1266,7 +1272,7 @@ const GetProjectById = ({
                 </div>
                 <button
                   onClick={() => setSelectedOtherBundle(null)}
-                  className="ml-auto p-2 rounded-xl hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                  className="ml-auto p-2 w-10 h-10 rounded-xl bg-gray-100 border-2 border-black/5 hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all flex items-center justify-center text-gray-500"
                   aria-label="Close"
                 >
                   ✕
@@ -1352,7 +1358,7 @@ const GetProjectById = ({
                               )}
                             </span>
                           </div>
-                          <span className="text-[9px] text-gray-400 uppercase tracking-widest">
+                          <span className="text-[9px] text-gray-400 uppercase tracking-tight">
                             logged
                           </span>
                         </div>
@@ -1409,9 +1415,9 @@ const InfoRow = ({
 
 const ScopeTag = ({ label, active }: { label: string; active: boolean }) => (
   <span
-    className={`px-3 py-1 text-sm font-bold rounded-lg border ${active
-      ? "bg-green-50 text-black border-[#6bbd45]"
-      : "bg-gray-100 text-black border-gray-200"
+    className={`px-3 py-1.5 text-sm font-bold rounded-lg border-2 uppercase tracking-tight transition-all ${active
+      ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+      : "bg-gray-100 text-black border-black/10 hover:border-black/20"
       }`}
   >
     {label}
@@ -1450,7 +1456,7 @@ const StatCard = ({
             {icon}
           </div>
           <div className="flex flex-col">
-            <p className="text-sm font-bold text-gray-700 uppercase tracking-widest leading-tight">
+            <p className="text-sm font-bold text-gray-700 uppercase tracking-tight leading-tight">
               {label}
             </p>
             {description && (
@@ -1479,7 +1485,7 @@ const StatCard = ({
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="p-2 bg-white rounded-lg shadow-sm">{icon}</div>
-        <p className="text-sm font-bold text-gray-700 uppercase tracking-widest">
+        <p className="text-sm font-bold text-gray-700 uppercase tracking-tight">
           {label}
         </p>
       </div>
@@ -1517,7 +1523,7 @@ const OtherTasksPanel = ({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-3">
         <ClipboardList className="w-10 h-10 text-gray-300" />
-        <p className="text-sm font-medium uppercase tracking-widest">
+        <p className="text-sm font-medium uppercase tracking-tight">
           No "Others" tasks found for this project
         </p>
       </div>
@@ -1543,7 +1549,7 @@ const OtherTasksPanel = ({
       {/* Left sidebar – bundle key list */}
       <div className="w-64 shrink-0 bg-slate-50 border-r border-gray-200 overflow-y-auto">
         <div className="px-4 pt-4 pb-2">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-[10px] font-bold uppercase tracking-tight text-slate-400">
             Bundle Categories
           </p>
         </div>
@@ -1552,9 +1558,9 @@ const OtherTasksPanel = ({
             <li key={key}>
               <button
                 onClick={() => setSelectedKey(key)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm font-semibold transition-all ${selectedKey === key
-                  ? "bg-white border border-[#6bbd45]/60 text-black shadow-sm"
-                  : "text-slate-600 hover:bg-white hover:text-black hover:shadow-sm"
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left text-sm font-bold transition-all border-2 active:scale-95 ${selectedKey === key
+                  ? "bg-green-50 border-green-700/80 text-black shadow-sm"
+                  : "bg-white border-black/5 text-slate-600 hover:border-black/20 hover:text-black hover:shadow-sm"
                   }`}
               >
                 <span className="uppercase tracking-tight leading-tight">

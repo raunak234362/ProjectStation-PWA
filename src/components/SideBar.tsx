@@ -168,22 +168,22 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <div className="space-y-3">
           <button
-            className={`w-full flex items-center gap-3 py-2 rounded-full transition-all text-black bg-transparent border border-black/20 text-xs font-black uppercase tracking-widest hover:bg-gray-50
+            className={`w-full flex items-center gap-3 py-3 rounded-lg transition-all text-black bg-gray-100 border-2 border-black/10 text-sm font-bold uppercase tracking-tight hover:border-black/20 hover:bg-gray-200 shadow-sm
               ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
             onClick={() => window.location.reload()}
           >
             <div className={`transition-transform duration-700 ${!isExpanded ? "" : "group-hover:rotate-180"}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></svg>
             </div>
             {isExpanded && <span>Refresh</span>}
           </button>
 
           <button
-            className={`w-full flex items-center gap-3 py-2 rounded-full transition-all text-black bg-white border border-black/20 text-xs font-black uppercase tracking-widest hover:bg-gray-50
+            className={`w-full flex items-center gap-3 py-3 rounded-lg transition-all text-black bg-gray-100 border-2 border-black/10 text-sm font-bold uppercase tracking-tight hover:border-black/20 hover:bg-gray-200 shadow-sm
               ${isExpanded ? "justify-start px-6" : "justify-center px-0"}`}
             onClick={fetchLogout}
           >
-            <LogOut size={14} strokeWidth={3} />
+            <LogOut size={16} strokeWidth={3} />
             {isExpanded && <span>Logout</span>}
           </button>
         </div>
