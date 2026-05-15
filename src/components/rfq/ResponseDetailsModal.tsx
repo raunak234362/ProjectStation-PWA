@@ -81,7 +81,7 @@ const ResponseDetailsModal = ({
               </div>
             </div>
             <div
-              className="prose prose-sm max-w-none text-black/80 font-medium rich-text-content"
+              className="prose prose-sm max-w-none text-black/80 font-medium"
               dangerouslySetInnerHTML={{ __html: child.description }}
             />
             {child.files?.length > 0 && (
@@ -140,12 +140,12 @@ const ResponseDetailsModal = ({
           {/* Subject Box */}
           {response.subject && (
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs space-y-1.5">
-              <span className="text-xs font-semibold text-black uppercase tracking-widest block">
-                Subject
+              <span className="text-sm font-semibold text-black uppercase tracking-widest block">
+                Subject :  <span className="text-base font-semibold text-black">
+                  {response.subject}
+                </span>
               </span>
-              <p className="text-base font-semibold text-black">
-                {response.subject}
-              </p>
+
             </div>
           )}
 
