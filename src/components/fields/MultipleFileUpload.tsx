@@ -49,10 +49,6 @@ function MultipleFileUpload({
       }
     };
 
-    const handleDropGlobal = () => {
-      dragCounter.current = 0;
-      setIsDraggingGlobal(false);
-    };
 
     window.addEventListener("dragenter", handleDragEnter);
     window.addEventListener("dragleave", handleDragLeave);
