@@ -381,9 +381,6 @@ const EstimatorDashboard = () => {
               value={stats.totalRfqsSent}
               iconPadding="p-1"
             />
-
-           
-
             <StatCard
               onClick={() => openModal("PENDING_RFQ")}
               icon={Clock}
