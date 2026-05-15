@@ -11,6 +11,37 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<"ALL" | "MTO" | "DETAILING" | "BOTH">("ALL");
   const [activeTab, setActiveTab] = useState<"all" | "awarded">("all");
+  const [selectedMonth, setSelectedMonth] = useState<string>("ALL");
+  const [selectedYear, setSelectedYear] = useState<string>("ALL");
+
+  const yearOptions = useMemo(() => {
+    const years = Array.from(
+      new Set(
+        (rfq || [])
+          .map((item: any) => {
+            const date = new Date(item.estimationDate);
+            return isNaN(date.getTime()) ? null : date.getFullYear().toString();
+          })
+          .filter(Boolean)
+      )
+    ) as string[];
+    return years.sort((a, b) => b.localeCompare(a));
+  }, [rfq]);
+
+  const monthOptions = [
+    { label: "January", value: "0" },
+    { label: "February", value: "1" },
+    { label: "March", value: "2" },
+    { label: "April", value: "3" },
+    { label: "May", value: "4" },
+    { label: "June", value: "5" },
+    { label: "July", value: "6" },
+    { label: "August", value: "7" },
+    { label: "September", value: "8" },
+    { label: "October", value: "9" },
+    { label: "November", value: "10" },
+    { label: "December", value: "11" },
+  ];
 
   const isTrue = (val: any) => val === true || val === "true";
 
@@ -161,8 +192,24 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       data = data.filter((item: any) => item.wbtStatus === "AWARDED" || item.status === "AWARDED");
     }
 
+    // 4. Month filter
+    if (selectedMonth !== "ALL") {
+      data = data.filter(item => {
+        const date = new Date(item.estimationDate);
+        return !isNaN(date.getTime()) && date.getMonth().toString() === selectedMonth;
+      });
+    }
+
+    // 5. Year filter
+    if (selectedYear !== "ALL") {
+      data = data.filter(item => {
+        const date = new Date(item.estimationDate);
+        return !isNaN(date.getTime()) && date.getFullYear().toString() === selectedYear;
+      });
+    }
+
     return data;
-  }, [rfq, searchQuery, selectedType, activeTab]);
+  }, [rfq, searchQuery, selectedType, activeTab, selectedMonth, selectedYear]);
 
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
 
@@ -194,53 +241,75 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
             </div>
           </div>
 
-          <div className="flex gap-2">
-          {/* Type Toggle */}
-          <div className="flex items-center bg-gray-50 px-3 py-1 border-2 rounded-xl border-black/5 shadow-sm">
-            {['ALL', 'MTO', 'DETAILING', 'BOTH'].map((type) => (
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Month Select */}
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
+            >
+              <option value="ALL">All Months</option>
+              {monthOptions.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+
+            {/* Year Select */}
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
+            >
+              <option value="ALL">All Years</option>
+              {yearOptions.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+
+            {/* Type Toggle */}
+            <div className="flex items-center bg-gray-50 px-3 py-1 border-2 rounded-xl border-black/5 shadow-sm">
+              {['ALL', 'MTO', 'DETAILING', 'BOTH'].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedType(type as any)}
+                  className={`px-6 py-2 rounded-xl text-sm font-semibold uppercase tracking-[0.2em] transition-all duration-300 active:scale-95 ${
+                    selectedType === type
+                      ? 'bg-green-200 text-black shadow-md border border-black/5'
+                      : 'text-black hover:text-black/60'
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+
+            {/* Status Tabs */}
+            <div className="flex items-center gap-2 p-1.5 bg-gray-100/30 rounded-2xl w-fit border border-gray-200/50">
               <button
-                key={type}
-                onClick={() => setSelectedType(type as any)}
-                className={`px-6 py-2 rounded-xl text-sm font-semibold uppercase tracking-[0.2em] transition-all duration-300 active:scale-95 ${
-                  selectedType === type
-                    ? 'bg-green-200 text-black shadow-md border border-black/5'
-                    : 'text-black hover:text-black/60'
+                onClick={() => setActiveTab("all")}
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${
+                  activeTab === "all"
+                    ? 'bg-green-200 text-black shadow-sm border border-black/5'
+                    : 'text-gray-400 hover:text-black'
                 }`}
               >
-                {type}
+                <List size={14} />
+                All RFQs
               </button>
-            ))}
-          </div>
-          {/* Status Tabs */}
-        <div className="flex items-center gap-2 p-1.5 bg-gray-100/30 rounded-2xl w-fit border border-gray-200/50">
-          <button
-            onClick={() => setActiveTab("all")}
-            className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${
-              activeTab === "all"
-                ? 'bg-green-200 text-black shadow-sm border border-black/5'
-                : 'text-gray-400 hover:text-black'
-            }`}
-          >
-            <List size={14} />
-            All RFQs
-          </button>
-          <button
-            onClick={() => setActiveTab("awarded")}
-            className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${
-              activeTab === "awarded"
-                ? 'bg-green-100 text-black shadow-sm border border-black/5'
-                : 'text-gray-400 hover:text-black'
-            }`}
-          >
-            <CheckCircle2 size={14} />
-            Awarded
-          </button>
-        </div>
-
+              <button
+                onClick={() => setActiveTab("awarded")}
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${
+                  activeTab === "awarded"
+                    ? 'bg-green-100 text-black shadow-sm border border-black/5'
+                    : 'text-gray-400 hover:text-black'
+                }`}
+              >
+                <CheckCircle2 size={14} />
+                Awarded
+              </button>
+            </div>
           </div>
         </div>
-
-        
       </div>
 
       <DataTable
