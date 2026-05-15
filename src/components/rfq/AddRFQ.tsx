@@ -227,6 +227,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     }
   }, [userDetail, userRole, selectedCountry, setValue]);
 
+
   // --- REAL-TIME MTO DESCRIPTION SYNC ---
   
 
@@ -242,7 +243,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       const basePayload = {
         projectNumber: data.projectNumber || "",
         projectName: data.projectName,
-        subject: data.subject || "",
+        subject: data.subject || data.projectName,
         description,
         tools: data.tools,
         location: data.location,
@@ -447,6 +448,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 )}
               </div>
 
+
               <div className="md:col-span-2 space-y-2 w-full mt-4 h-full flex flex-col">
                 <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
                 <div className="border border-black rounded-lg overflow-hidden bg-white flex-1 transition-all duration-500 ease-in-out">
@@ -626,7 +628,10 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     name="files"
                     control={control}
                     render={({ field }) => (
-                      <MultipleFileUpload onFilesChange={field.onChange} />
+                      <MultipleFileUpload 
+                        onFilesChange={field.onChange} 
+                        initialFiles={field.value as File[]} 
+                      />
                     )}
                   />
                 </div>
