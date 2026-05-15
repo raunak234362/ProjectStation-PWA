@@ -628,7 +628,10 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     name="files"
                     control={control}
                     render={({ field }) => (
-                      <MultipleFileUpload onFilesChange={field.onChange} />
+                      <MultipleFileUpload 
+                        onFilesChange={field.onChange} 
+                        initialFiles={field.value as File[]} 
+                      />
                     )}
                   />
                 </div>

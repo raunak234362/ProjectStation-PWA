@@ -59,37 +59,37 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         </div>
       )
     },
-    {
-      id: "rfqType",
-      header: "RFQ Type",
-      cell: ({ row }) => {
-        const r = row.original as any;
-        const types = [];
-        const isMTO = isTrue(r.MTOManual) || (r.MTOStickModel && r.MTOStickModel !== "" && r.MTOStickModel !== "false") || (r.MTOValue && r.MTOValue !== "" && r.MTOValue !== "false") || isTrue(r.mtoStickModelEnabled);
-        const isDetailing = isTrue(r.detailingMain) || isTrue(r.detailingMisc) || isTrue(r.miscDesign) || isTrue(r.customerDesign) || isTrue(r.connectionDesign);
+    // {
+    //   id: "rfqType",
+    //   header: "RFQ Type",
+    //   cell: ({ row }) => {
+    //     const r = row.original as any;
+    //     const types = [];
+    //     const isMTO = isTrue(r.MTOManual) || (r.MTOStickModel && r.MTOStickModel !== "" && r.MTOStickModel !== "false") || (r.MTOValue && r.MTOValue !== "" && r.MTOValue !== "false") || isTrue(r.mtoStickModelEnabled);
+    //     const isDetailing = isTrue(r.detailingMain) || isTrue(r.detailingMisc) || isTrue(r.miscDesign) || isTrue(r.customerDesign) || isTrue(r.connectionDesign);
 
-        if (isMTO) types.push("MTO");
-        if (isDetailing) types.push("Detailing");
+    //     if (isMTO) types.push("MTO");
+    //     if (isDetailing) types.push("Detailing");
 
-        return (
-          <div className="flex gap-1 flex-wrap">
-            {types.map(t => (
-              <span
-                key={t}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border ${
-                  t === 'MTO'
-                    ? 'bg-purple-50 text-purple-700 border-purple-100'
-                    : 'bg-indigo-50 text-indigo-700 border-indigo-100'
-                }`}
-              >
-                {t}
-              </span>
-            ))}
-            {types.length === 0 && <span className="text-gray-300 font-bold tracking-widest text-[10px]">N/A</span>}
-          </div>
-        );
-      }
-    },
+    //     return (
+    //       <div className="flex gap-1 flex-wrap">
+    //         {types.map(t => (
+    //           <span
+    //             key={t}
+    //             className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border ${
+    //               t === 'MTO'
+    //                 ? 'bg-purple-50 text-purple-700 border-purple-100'
+    //                 : 'bg-indigo-50 text-indigo-700 border-indigo-100'
+    //             }`}
+    //           >
+    //             {t}
+    //           </span>
+    //         ))}
+    //         {types.length === 0 && <span className="text-gray-300 font-bold tracking-widest text-[10px]">N/A</span>}
+    //       </div>
+    //     );
+    //   }
+    // },
   ];
 
   if (userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && userRole !== "CLIENT_ESTIMATOR") {
@@ -268,7 +268,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
 
             {/* Type Toggle */}
             <div className="flex items-center bg-gray-50 px-3 py-1 border-2 rounded-xl border-black/5 shadow-sm">
-              {['ALL', 'MTO', 'DETAILING', 'BOTH'].map((type) => (
+              {['ALL', 'MTO', 'DETAILING'].map((type) => (
                 <button
                   key={type}
                   onClick={() => setSelectedType(type as any)}
