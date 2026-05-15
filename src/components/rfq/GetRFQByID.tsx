@@ -42,9 +42,8 @@ const RFQResponseItem = ({
       {/* Header */}
       <div
         onClick={() => onSelect?.(response)}
-        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer transition-colors ${
-          isOpen ? "bg-gray-50" : "bg-white"
-        } hover:bg-gray-50 ${isOpen ? "border-b border-gray-100" : ""}`}
+        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer transition-colors ${isOpen ? "bg-gray-50" : "bg-white"
+          } hover:bg-gray-50 ${isOpen ? "border-b border-gray-100" : ""}`}
       >
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-100 shrink-0">
@@ -127,38 +126,39 @@ const RFQResponseItem = ({
           {(response.totalTonnageWithConnection ||
             response.totalTonnageWithoutConnection ||
             response.PageNumbers) && (
-            <div className="bg-green-50/40 p-4 rounded-xl border border-green-100">
-              <span className="text-[10px] font-black text-green-800 uppercase tracking-widest block mb-3">
-                Quantification & Metrics
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
-                    Tonnage (With Conn)
-                  </span>
-                  <span className="text-xs font-black text-black">
-                    {response.totalTonnageWithConnection || "—"}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
-                    Tonnage (W/O Conn)
-                  </span>
-                  <span className="text-xs font-black text-black">
-                    {response.totalTonnageWithoutConnection || "—"}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
-                    Page Numbers
-                  </span>
-                  <span className="text-xs font-black text-black">
-                    {response.PageNumbers || "—"}
-                  </span>
+              <div className="bg-green-50/40 p-4 rounded-xl border border-green-100">
+                <span className="text-[10px] font-black text-green-800 uppercase tracking-widest block mb-3">
+                  Quantification & Metrics
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                      Tonnage (With Conn)
+                    </span>
+                    <span className="text-xs font-black text-black">
+                      {response.totalTonnageWithConnection || "—"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                      Tonnage (W/O Conn)
+                    </span>
+                    <span className="text-xs font-black text-black">
+                      {response.totalTonnageWithoutConnection || "—"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                      Page Numbers
+                    </span>
+                    <div
+                      className="text-xs font-black text-black"
+                      dangerouslySetInnerHTML={{ __html: response.PageNumbers || "—" }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Attachments Section */}
           {response.files && response.files.length > 0 && (
@@ -604,93 +604,91 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
               {/* Scopes */}
               <div className="space-y-3">
-                {/* Connection Design Scope */}
-                <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
-                    <Settings className="w-4 h-4 text-green-600" /> Connection Design Scope
-                  </h4>
-                  <div className="flex flex-col gap-2 pl-1 pt-1">
-                    {rfq?.connectionDesign && (
-                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
-                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
-                        <span>Main Design</span>
-                      </div>
-                    )}
-                    {rfq?.miscDesign && (
-                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
-                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
-                        <span>Misc Design</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
-                      <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
-                      <span>
-                        {rfq?.customerDesign
-                          ? "Connection Design by WBT"
-                          : `Connection Design by ${rfq?.fabricator?.fabName ?? "Fabricator"}`}
-                      </span>
+                {/* Connection Design Scope - Only shown if at least one option is selected */}
+                {(rfq?.connectionDesign || rfq?.miscDesign || rfq?.customerDesign) && (
+                  <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
+                    <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-widest">
+                      <Settings className="w-4 h-4 text-green-600" /> Connection Design Scope
+                    </h4>
+                    <div className="flex flex-col gap-2 pl-1 pt-1">
+                      {rfq?.connectionDesign && (
+                        <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
+                          <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                          <span>Main Design</span>
+                        </div>
+                      )}
+                      {rfq?.miscDesign && (
+                        <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
+                          <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                          <span>Misc Design</span>
+                        </div>
+                      )}
+                      {rfq?.customerDesign && (
+                        <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
+                          <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                          <span>Connection Design by WBT</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
+                )}
 
-                {/* Detailing Scope */}
-                <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
-                    <Settings2 className="w-4 h-4 text-green-600" /> Detailing Scope
-                  </h4>
-                  <div className="flex flex-col gap-2 pl-1 pt-1">
-                    {rfq?.detailingMain && (
-                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
-                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
-                        <span>Detailing Main</span>
-                      </div>
-                    )}
-                    {rfq?.detailingMisc && (
-                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
-                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
-                        <span>Detailing Misc</span>
-                      </div>
-                    )}
-                    {!rfq?.detailingMain && !rfq?.detailingMisc && (
-                      <span className="text-gray-400 italic text-xs block py-0.5">None selected</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Material Take-off */}
-                <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                  <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-wider">
-                    <ClipboardList className="w-4 h-4 text-green-600" /> Material Take-off
-                  </h4>
-                  <div className="flex flex-col gap-2 pl-1 pt-1">
-                    {rfq?.MTOManual && (
-                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
-                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
-                        <span>MTO - Manual</span>
-                      </div>
-                    )}
-                    {!!(rfq?.MTOStickModel || rfq?.MTOValue) && (
-                      <div className="flex items-center gap-2.5 text-xs font-bold text-gray-800 uppercase tracking-wider">
-                        <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
-                        <span>MTO - Stick Model</span>
-                      </div>
-                    )}
-                    {!rfq?.MTOManual && !(rfq?.MTOStickModel || rfq?.MTOValue) && (
-                      <span className="text-gray-400 italic text-xs block py-0.5">None selected</span>
-                    )}
-                  </div>
-
-                  {(rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || rfq?.MTOValue) && (
-                    <div className="mt-4 p-5 bg-white/80 rounded-xl border border-green-100 shadow-sm">
-                      <div
-                        className="prose prose-sm max-w-none text-xs font-medium text-black leading-relaxed rfq-description"
-                        dangerouslySetInnerHTML={{
-                          __html: rfq?.MTOValue || rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || "",
-                        }}
-                      />
+                {/* Detailing Scope - Only shown if at least one option is selected */}
+                {(rfq?.detailingMain || rfq?.detailingMisc) && (
+                  <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
+                    <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-widest">
+                      <Settings2 className="w-4 h-4 text-green-600" /> Detailing Scope
+                    </h4>
+                    <div className="flex flex-col gap-2 pl-1 pt-1">
+                      {rfq?.detailingMain && (
+                        <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
+                          <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                          <span>Detailing Main</span>
+                        </div>
+                      )}
+                      {rfq?.detailingMisc && (
+                        <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
+                          <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                          <span>Detailing Misc</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {/* Material Take-off - Only shown if at least one option is selected */}
+                {(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.MTOManualModel) && (
+                  <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
+                    <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-widest">
+                      <ClipboardList className="w-4 h-4 text-green-600" /> Material Take-off
+                    </h4>
+                    <div className="flex flex-col gap-2 pl-1 pt-1">
+                      {rfq?.MTOManual && (
+                        <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
+                          <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                          <span>MTO - Manual</span>
+                        </div>
+                      )}
+                      {!!(rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.MTOManualModel) && (
+                        <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
+                          <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+                          <span>MTO - Stick Model</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {(rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || rfq?.MTOValue) && (
+                      <div className="mt-4 p-5 bg-white/80 rounded-xl border border-green-100 shadow-sm">
+                        <div
+                          className="prose prose-sm max-w-none text-xs font-medium text-black leading-relaxed rfq-description"
+                          dangerouslySetInnerHTML={{
+                            __html: rfq?.MTOValue || rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || "",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Description */}
@@ -1051,14 +1049,17 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
   );
 };
 
-const Info = ({ label, value }: { label: string; value: string | number }) => (
-  <div className="space-y-0.5 sm:space-y-1">
-    <p className="text-gray-500 text-md sm:text-md uppercase font-medium tracking-wider">
-      {label}
-    </p>
-    <p className=" text-gray-800 text-sm sm:text-base">{value}</p>
-  </div>
-);
+const Info = ({ label, value }: { label: string; value: string | number }) => {
+  if (!value || value === "----" || value === "N/A") return null;
+  return (
+    <div className="space-y-0.5 sm:space-y-1">
+      <p className="text-gray-500 text-sm uppercase font-bold tracking-widest">
+        {label}
+      </p>
+      <p className="text-black text-sm font-semibold">{value}</p>
+    </div>
+  );
+};
 
 
 

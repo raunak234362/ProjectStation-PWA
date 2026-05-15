@@ -134,10 +134,13 @@ const EstimatorDashboard = () => {
         setRecentRFQs(upcomingMTOs);
         setRecentInvoices(invoices.filter((i: any) => new Date(i.createdAt) >= oneWeekAgo));
 
-        // Calculate Stats
-        const totalRfqsSent = rfqs.length;
-        const rfqsAwarded = rfqs.filter((r: { status: string; wbtStatus: string; }) => r.status === "AWARDED" || r.wbtStatus === "AWARDED").length;
-        const pendingEstimates = rfqs.filter((r: { status: string; wbtStatus: string; }) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED").length;
+        // Calculate Detailing Stats (Based on specific design/detailing flags)
+        const detailingRfqs = rfqs.filter((r: any) => 
+          r.connectionDesign || r.customerDesign || r.detailingMain || r.detailingMisc || r.miscDesign
+        );
+        const totalRfqsSent = detailingRfqs.length;
+        const rfqsAwarded = detailingRfqs.filter((r: any) => r.status === "AWARDED" || r.wbtStatus === "AWARDED").length;
+        const pendingEstimates = detailingRfqs.filter((r: any) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED").length;
 
         let totalInvoicedAmount = 0;
         let pendingInvoicesAmount = 0;
@@ -185,11 +188,11 @@ const EstimatorDashboard = () => {
   const openModal = (type: string) => {
     setModalType(type);
     if (type === "ALL_RFQ") {
-      setModalData(allRFQs);
+      setModalData(allRFQs.filter((r: any) => r.connectionDesign || r.customerDesign || r.detailingMain || r.detailingMisc || r.miscDesign));
     } else if (type === "AWARDED_RFQ") {
-      setModalData(allRFQs.filter((r) => r.status === "AWARDED" || r.wbtStatus === "AWARDED"));
+      setModalData(allRFQs.filter((r) => (r.connectionDesign || r.customerDesign || r.detailingMain || r.detailingMisc || r.miscDesign) && (r.status === "AWARDED" || r.wbtStatus === "AWARDED")));
     } else if (type === "PENDING_RFQ") {
-      setModalData(allRFQs.filter((r) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED"));
+      setModalData(allRFQs.filter((r) => (r.connectionDesign || r.customerDesign || r.detailingMain || r.detailingMisc || r.miscDesign) && r.status !== "AWARDED" && r.wbtStatus !== "AWARDED"));
     } else if (type === "ALL_INVOICES") {
       setModalData(allInvoices);
     } else if (type === "PENDING_INVOICES") {

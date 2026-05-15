@@ -274,3 +274,43 @@
   font-weight: 700 !important;
   color: black !important;
 }
+
+/* Table and Content Styling for Rich Text */
+.prose table, 
+.rich-text-content table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 1.5rem 0 !important;
+  border: 1px solid #e5e7eb !important;
+  background-color: white !important;
+}
+
+.prose th,
+.prose td,
+.rich-text-content th,
+.rich-text-content td {
+  border: 1px solid #e5e7eb !important;
+  padding: 0.75rem 1rem !important;
+  text-align: left !important;
+  text-transform: none !important; /* Prevent global uppercase from affecting data */
+}
+
+.prose th,
+.rich-text-content th {
+  background-color: #f9fafb !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+}
+
+.prose hr,
+.rich-text-content hr {
+  border: 0 !important;
+  border-top: 1px solid #e5e7eb !important;
+  margin: 1.5rem 0 !important;
+}
+
+/* Ensure font-bold doesn't hide table borders or make them look messy */
+.prose.font-bold th,
+.prose.font-bold td {
+  font-weight: 600 !important;
+}

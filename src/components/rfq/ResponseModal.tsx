@@ -639,45 +639,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                 />
               </div>
             </div>
-
-            {/* Tonnage & Pages */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-              <div className="space-y-3">
-                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                  Tonnage (With Conn)
-                </label>
-                <input
-                  {...register("totalTonnageWithConnection")}
-                  type="number"
-                  step="any"
-                  placeholder="0"
-                  className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-black text-sm"
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                  Tonnage (W/O Conn)
-                </label>
-                <input
-                  {...register("totalTonnageWithoutConnection")}
-                  type="number"
-                  step="any"
-                  placeholder="0"
-                  className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-black text-sm"
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                  Page Numbers
-                </label>
-                <input
-                  {...register("PageNumbers")}
-                  placeholder="e.g. 3535"
-                  className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-black text-sm"
-                />
-              </div>
-            </div>
-
+        
             {/* Optional Link & Status */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
@@ -690,41 +652,14 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                     className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-black uppercase text-xs tracking-widest appearance-none cursor-pointer"
                     defaultValue="OPEN"
                   >
-                    <option value="OPEN">OPEN - ACTIVE</option>
-                    <option value="IN_PROGRESS">
-                      IN PROGRESS - SYNTHESIZING
-                    </option>
-                    <option value="CLOSED">CLOSED - TERMINATED</option>
-                    <option value="AWARDED">AWARDED - SUCCESS</option>
-                    <option value="RE_APPROVED">RE-APPROVED - REITERATE</option>
+                    <option value="OPEN">ACTIVE</option>
+                    <option value="CLOSED">CLOSED</option>
+                    <option value="AWARDED">AWARDED</option>
+                    <option value="RE_APPROVED">REVISE</option>
                   </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-black/20">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
                 </div>
               </div>
-              <div className="space-y-3">
-                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
-                 URL/Link
-                </label>
-                <input
-                  {...register("link")}
-                  placeholder=""
-                  className="w-full h-12 px-4 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-medium text-sm"
-                />
-              </div>
+            
             </div>
 
             {/* Files */}

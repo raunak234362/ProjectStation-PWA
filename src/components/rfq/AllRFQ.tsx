@@ -163,8 +163,10 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       accessorFn: (row: any) => {
         const status = row.status;
         const wbtStatus = row.wbtStatus;
+        const responses = row.responses || [];
 
         if (wbtStatus === "AWARDED") return "AWARDED";
+        if (responses.length > 0) return "WBT_SUBMITTED";
         if (status === "IN_REVIEW") return "IN_REVIEW";
 
         return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
@@ -173,23 +175,21 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       filterType: "select",
       filterFn: "equals",
       filterOptions: [
-        { label: "WBT Reviewing", value: "IN_REVIEW" },
-        { label: "Submitted By WBT", value: "AWARDED" },
-        { label: "Pending", value: "PENDING" },
-        { label: "Received", value: "RECEIVED" },
-        { label: "Completed", value: "COMPLETED" },
+        { label: "Estimation In Progress", value: "IN_REVIEW" },
+        { label: "WBT Submitted", value: "WBT_SUBMITTED" },
+        { label: "Awarded", value: "AWARDED" },
         { label: "Closed", value: "CLOSED" },
-        { label: "Rejected", value: "REJECTED" },
-        { label: "On Hold", value: "ON_HOLD" },
       ],
       cell: ({ getValue }) => {
         const val = getValue() as string;
         let label = "";
 
         if (val === "AWARDED") {
-          label = "Submitted By WBT";
+          label = "Awarded";
+        } else if (val === "WBT_SUBMITTED") {
+          label = "WBT Submitted";
         } else if (val === "IN_REVIEW") {
-          label = "WBT Reviewing";
+          label = "Estimation In Progress";
         } else {
           label = val?.replace("_", " ") || "—";
         }

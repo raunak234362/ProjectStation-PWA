@@ -66,22 +66,22 @@ const ResponseDetailsModal = ({
             className="bg-white p-4 sm:p-5 rounded-2xl border border-black/5 shadow-sm animate-in fade-in slide-in-from-left-4 duration-500"
           >
             <div className="flex justify-between items-center mb-3">
-              <span className="text-[10px] font-black text-black uppercase tracking-tight">
+              <span className="text-[10px] font-semibold text-black uppercase tracking-tight">
                 {child.user?.firstName} {child.user?.lastName}
               </span>
               <div className="flex items-center gap-2">
                 {child.status && (
-                  <span className="text-[9px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
+                  <span className="text-[9px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
                     {child.status}
                   </span>
                 )}
-                <span className="text-[9px] font-black bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                <span className="text-[9px] font-semibold bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
                   {formatDateTime(child.createdAt)}
                 </span>
               </div>
             </div>
             <div
-              className="prose prose-sm max-w-none text-black/80 font-medium"
+              className="prose prose-sm max-w-none text-black/80 font-medium rich-text-content"
               dangerouslySetInnerHTML={{ __html: child.description }}
             />
             {child.files?.length > 0 && (
@@ -105,7 +105,7 @@ const ResponseDetailsModal = ({
       <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] relative flex flex-col border border-black/10 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
-          <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-semibold text-black uppercase tracking-tight">
             Response Details
           </h2>
           <button
@@ -121,17 +121,17 @@ const ResponseDetailsModal = ({
           {/* Main Message Header info */}
           <div className="flex flex-wrap justify-between items-center gap-2">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-black text-black uppercase tracking-widest">
+              <span className="text-xs font-semibold text-black uppercase tracking-widest">
                 Main Message
               </span>
               {response.status && (
-                <span className="text-[10px] font-black bg-green-100 text-black px-3 py-0.5 rounded-md uppercase tracking-widest border border-gray-200 shadow-2xs">
+                <span className="text-[10px] font-semibold bg-green-100 text-black px-3 py-0.5 rounded-md uppercase tracking-widest border border-gray-200 shadow-2xs">
                   {response.status}
                 </span>
               )}
             </div>
             {response.user && (
-              <span className="text-sm font-black text-black uppercase tracking-tight">
+              <span className="text-sm font-semibold text-black uppercase tracking-tight">
                 Sent by {response.user.firstName ? `${response.user.firstName} ${response.user.lastName}` : response.user.username}
               </span>
             )}
@@ -140,10 +140,10 @@ const ResponseDetailsModal = ({
           {/* Subject Box */}
           {response.subject && (
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs space-y-1.5">
-              <span className="text-xs font-black text-black uppercase tracking-widest block">
+              <span className="text-xs font-semibold text-black uppercase tracking-widest block">
                 Subject
               </span>
-              <p className="text-base font-black text-black">
+              <p className="text-base font-semibold text-black">
                 {response.subject}
               </p>
             </div>
@@ -152,44 +152,45 @@ const ResponseDetailsModal = ({
           {/* Message Content Box */}
           <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
             <div
-              className="prose prose-base max-w-none text-black font-bold leading-relaxed"
+              className="prose prose-base max-w-none text-black font-semibold leading-relaxed rich-text-content"
               dangerouslySetInnerHTML={{ __html: response.description }}
             />
           </div>
 
           {/* Tonnage & Pages 3-column Box */}
           <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
               <div>
-                <span className="text-xs font-black text-black uppercase tracking-widest block mb-1.5">
-                  Tonnage (With Conn)
+                <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
+                  Tonnage (With Conn) :  <span className="text-base font-semibold text-black">
+                    {response.totalTonnageWithConnection || "—"}
+                  </span>
                 </span>
-                <span className="text-base font-black text-black">
-                  {response.totalTonnageWithConnection || "—"}
-                </span>
+
               </div>
               <div>
-                <span className="text-xs font-black text-black uppercase tracking-widest block mb-1.5">
-                  Tonnage (W/O Conn)
+                <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
+                  Tonnage (W/O Conn) : <span className="text-base font-semibold text-black">
+                    {response.totalTonnageWithoutConnection || "—"}
+                  </span>
                 </span>
-                <span className="text-base font-black text-black">
-                  {response.totalTonnageWithoutConnection || "—"}
-                </span>
+
               </div>
-              <div>
-                <span className="text-xs font-black text-black uppercase tracking-widest block mb-1.5">
-                  Page Numbers
+              <div className="sm:col-span-2">
+                <span className="text-sm font-semibold text-black uppercase tracking-widest block mb-1.5">
+                  Page Numbers :
                 </span>
-                <span className="text-base font-black text-black">
-                  {response.PageNumbers || "—"}
-                </span>
+                <div
+                  className="text-sm text-black rich-text-content"
+                  dangerouslySetInnerHTML={{ __html: response.PageNumbers || "—" }}
+                />
               </div>
             </div>
           </div>
 
           {/* Project Files */}
           <div className="space-y-2">
-            <span className="text-xs font-black text-black uppercase tracking-widest block">
+            <span className="text-xs font-semibold text-black uppercase tracking-widest block">
               Project Files
             </span>
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs">
@@ -205,7 +206,7 @@ const ResponseDetailsModal = ({
             <div className="mt-8 pt-8 border-t border-black/10 space-y-6 animate-in slide-in-from-bottom-4 duration-300 bg-white p-6 rounded-2xl border border-black/10 shadow-xs">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <h1 className="text-xs font-black text-black uppercase tracking-[0.2em]">
+                <h1 className="text-xs font-semibold text-black uppercase tracking-[0.2em]">
                   Reply
                 </h1>
               </div>
@@ -220,13 +221,13 @@ const ResponseDetailsModal = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-black uppercase tracking-widest block">
+                  <label className="text-xs font-semibold text-black uppercase tracking-widest block">
                     Proposal Status
                   </label>
                   <select
                     value={replyStatus}
                     onChange={(e) => setReplyStatus(e.target.value)}
-                    className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-black uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
+                    className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-semibold uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
                   >
                     <option value="PENDING">Pending</option>
                     <option value="APPROVED">Awarded</option>
@@ -237,7 +238,7 @@ const ResponseDetailsModal = ({
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-black uppercase tracking-widest block">
+                  <label className="text-xs font-semibold text-black uppercase tracking-widest block">
                     Documents
                   </label>
                   <input
@@ -246,7 +247,7 @@ const ResponseDetailsModal = ({
                     onChange={(e) =>
                       setReplyFiles(Array.from(e.target.files || []))
                     }
-                    className="w-full h-12 px-4 py-2.5 border border-black/10 rounded-xl bg-white text-xs font-black uppercase text-black"
+                    className="w-full h-12 px-4 py-2.5 border border-black/10 rounded-xl bg-white text-xs font-semibold uppercase text-black"
                   />
                 </div>
               </div>
@@ -254,12 +255,12 @@ const ResponseDetailsModal = ({
               <div className="flex justify-end gap-3 pt-4">
                 <Button
                   onClick={() => setReplyMode(false)}
-                  className="px-6 py-3 bg-white text-black border border-black/10 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-gray-50"
+                  className="px-6 py-3 bg-white text-black border border-black/10 rounded-xl font-semibold uppercase text-xs tracking-widest hover:bg-gray-50"
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="px-8 py-3 bg-green-200 text-black border-2 border-black rounded-xl font-black uppercase text-xs tracking-widest hover:bg-green-300 shadow-sm disabled:opacity-50"
+                  className="px-8 py-3 bg-green-200 text-black border-2 border-black rounded-xl font-semibold uppercase text-xs tracking-widest hover:bg-green-300 shadow-sm disabled:opacity-50"
                   onClick={handleReplySubmit}
                   disabled={isSubmitting}
                 >
@@ -278,7 +279,7 @@ const ResponseDetailsModal = ({
 
           {response.childResponses?.length > 0 && (
             <div className="space-y-4 pt-4">
-              <h3 className="text-xs font-black text-black uppercase tracking-widest">
+              <h3 className="text-xs font-semibold text-black uppercase tracking-widest">
                 Threaded Communications ({response.childResponses.length})
               </h3>
               {renderThread(response)}
@@ -295,7 +296,7 @@ const ResponseDetailsModal = ({
             ["ADMIN", "STAFF", "CLIENT", "CLIENT_ADMIN"].includes(userRole) && (
               <Button
                 onClick={() => setReplyMode(true)}
-                className="px-8 py-2.5 bg-green-200 text-black border-2 border-black rounded-xl font-black text-xs uppercase tracking-widest hover:bg-green-300 transition-all shadow-sm cursor-pointer"
+                className="px-8 py-2.5 bg-green-200 text-black border-2 border-black rounded-xl font-semibold text-xs uppercase tracking-widest hover:bg-green-300 transition-all shadow-sm cursor-pointer"
               >
                 Reply
               </Button>
