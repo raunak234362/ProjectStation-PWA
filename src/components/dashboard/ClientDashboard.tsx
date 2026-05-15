@@ -412,7 +412,7 @@ const ClientDashboard = () => {
 
             {/* Detailing Overview */}
             <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
-              <h2 className="text-sm font-black text-black uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+              <h2 className="text-lg font-black text-black uppercase mb-6 flex items-center gap-2">
                 <Activity size={18} className="text-[#6bbd45]" />
                 DETAILING RFQ OVERVIEW
               </h2>
@@ -423,19 +423,19 @@ const ClientDashboard = () => {
                   icon={FileText}
                   onClick={() => handleActionClick("ALL_RFQ", "DETAILING")}
                 />
-                <StatCard
-                  label="AWARDED"
-                  value={stats.awardedDetailing}
-                  icon={Activity}
-                  onClick={() => handleActionClick("AWARDED_RFQ", "DETAILING")}
-                />
-                <div className="sm:col-span-2">
                   <StatCard
                     label="PENDING"
                     value={stats.pendingDetailing}
                     icon={Clock}
                     onClick={() => handleActionClick("ONGOING_RFQ", "DETAILING")}
                   />
+                <div className="sm:col-span-2">
+                <StatCard
+                  label="AWARDED"
+                  value={stats.awardedDetailing}
+                  icon={Activity}
+                  onClick={() => handleActionClick("AWARDED_RFQ", "DETAILING")}
+                />
                 </div>
               </div>
             </div>

@@ -75,7 +75,7 @@ console.log(filteredActions,"dashboardStats-----------------------------");
 
   return (
     <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
-      <h3 className="text-xl md:text-2xl font-bold text-black mb-6 flex items-center gap-3 tracking-tight ml-1">
+      <h3 className="text-xl font-bold text-black mb-6 flex items-center gap-3 ml-1">
         <ClipboardList size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
         PENDING ACTIONS
       </h3>

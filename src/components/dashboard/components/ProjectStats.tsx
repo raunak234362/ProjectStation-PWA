@@ -54,7 +54,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
 
   return (
     <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
-      <h2 className="text-xl md:text-2xl font-bold text-black mb-6 flex items-center gap-3 tracking-tight ml-1">
+      <h2 className="text-xl font-bold text-black mb-6 flex items-center gap-3 ml-1">
         <Building2 size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
         PROJECT OVERVIEW
       </h2>

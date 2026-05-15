@@ -377,18 +377,12 @@ const EstimatorDashboard = () => {
             <StatCard
               onClick={() => openModal("ALL_RFQ")}
               icon={FileText}
-              label={<>Total RFQ<span className="text-[10px]">s</span></>}
+              label={<>Total RFQS</>}
               value={stats.totalRfqsSent}
               iconPadding="p-1"
             />
 
-            <StatCard
-              onClick={() => openModal("AWARDED_RFQ")}
-              icon={Activity}
-              label="Awarded"
-              value={stats.rfqsAwarded}
-              iconPadding="p-1"
-            />
+           
 
             <StatCard
               onClick={() => openModal("PENDING_RFQ")}
@@ -397,6 +391,13 @@ const EstimatorDashboard = () => {
               value={stats.pendingEstimates}
               iconPadding="p-1"
               valueSize="text-3xl"
+            />
+             <StatCard
+              onClick={() => openModal("AWARDED_RFQ")}
+              icon={Activity}
+              label="Awarded"
+              value={stats.rfqsAwarded}
+              iconPadding="p-1"
             />
           </div>
         </div>
