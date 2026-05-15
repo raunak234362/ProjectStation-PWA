@@ -186,9 +186,9 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               let label = "";
 
               if (wbtStatus === "AWARDED") {
-                label = "Submitted By WBT";
+                label = "Awarded";
               } else if (status === "IN_REVIEW") {
-                label = "WBT Reviewing";
+                label = "Estimation In Progress";
               } else {
                 label = (wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status)?.replace("_", " ") || "—";
               }
@@ -344,9 +344,9 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               let label = "";
 
               if (wbtStatus === "AWARDED") {
-                label = "Submitted By WBT";
+                label = "Awarded";
               } else if (status === "IN_REVIEW") {
-                label = "WBT Reviewing";
+                label = "Estimation In Progress";
               } else {
                 label = (wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status)?.replace("_", " ") || "—";
               }
