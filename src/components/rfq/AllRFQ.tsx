@@ -53,9 +53,9 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       cell: ({ row }) => (
         <div className="flex flex-col">
           <span className="font-semibold text-gray-900">{row.original.projectName}</span>
-          <span className="text-[10px] text-primary font-semibold uppercase tracking-widest mt-0.5">
+          {/* <span className="text-[10px] text-primary font-semibold uppercase tracking-widest mt-0.5">
             RFQ #{row.original.projectNumber || 'N/A'}
-          </span>
+          </span> */}
         </div>
       )
     },
@@ -114,37 +114,50 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         return (
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-gray-700">{name}</span>
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{sender?.userType || 'N/A'}</span>
+            
           </div>
         );
       },
     },
-    {
-      accessorKey: "wbtStatus",
+  {
+      id: "status",
       header: "Status",
-      cell: ({ row }) => {
-        const r = row.original as any;
-        const status = r.wbtStatus || r.status || 'PENDING';
-        const colors: Record<string, string> = {
-          IN_REVIEW: 'bg-orange-100 text-black shadow-sm border border-black',
-          COMPLETED: 'bg-green-100 text-black shadow-sm border border-black',
-          PENDING: 'bg-gray-100 text-black/40 shadow-sm border border-black',
-          RECEIVED: 'bg-blue-100 text-black shadow-sm border border-black',
-          SENT: 'bg-green-100 text-black shadow-sm border border-black',
-          AWARDED: 'bg-green-200 text-black shadow-sm border border-black',
-          OPEN: 'bg-blue-50 text-blue-800 shadow-sm border border-black',
-          CLOSED: 'bg-red-100 text-red-800 shadow-sm border border-black',
-          RE_APPROVAL: 'bg-yellow-100 text-yellow-800 shadow-sm border border-black',
-          REJECTED: 'bg-red-200 text-red-900 shadow-sm border border-black',
-        };
-        
-        let label = status;
-        if (status === "AWARDED") label = "Submitted By WBT";
-        else if (status === "IN_REVIEW") label = "WBT Reviewing";
-        else label = status.replace("_", " ");
+      accessorFn: (row: any) => {
+        const status = row.status;
+        const wbtStatus = row.wbtStatus;
+
+        if (wbtStatus === "AWARDED") return "AWARDED";
+        if (status === "IN_REVIEW") return "IN_REVIEW";
+
+        return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
+      },
+      enableColumnFilter: true,
+      filterType: "select",
+      filterFn: "equals",
+      filterOptions: [
+        { label: "WBT Reviewing", value: "IN_REVIEW" },
+        { label: "Submitted By WBT", value: "AWARDED" },
+        { label: "Pending", value: "PENDING" },
+        { label: "Received", value: "RECEIVED" },
+        { label: "Completed", value: "COMPLETED" },
+        { label: "Closed", value: "CLOSED" },
+        { label: "Rejected", value: "REJECTED" },
+        { label: "On Hold", value: "ON_HOLD" },
+      ],
+      cell: ({ getValue }) => {
+        const val = getValue() as string;
+        let label = "";
+
+        if (val === "AWARDED") {
+          label = "Submitted By WBT";
+        } else if (val === "IN_REVIEW") {
+          label = "WBT Reviewing";
+        } else {
+          label = val?.replace("_", " ") || "—";
+        }
 
         return (
-          <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-widest ${colors[status] || colors.PENDING}`}>
+          <span className="px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-lg bg-gray-50 text-black border border-black/10">
             {label}
           </span>
         );
