@@ -167,36 +167,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 gap-6">
-            {/* RIGHT: Responses */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
-              {/* Header + Add Response Button */}
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-black text-black uppercase tracking-tight">
-                  Responses
-                </h2>
 
-                {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CONNECTION_DESIGNER_ENGINEER" || userRole === "CONNECTION_DESIGNER_ADMIN") && (
-                  <Button
-                    onClick={() => setShowModal(true)}
-                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200 transition-all border border-black shadow-md"
-                  >
-                    + Add Response
-                  </Button>
-                )}
-              </div>
-
-              {/* Table */}
-              {rfi.rfiresponse?.length > 0 ? (
-                <DataTable
-                  columns={responseColumns}
-                  data={rfi.rfiresponse}
-                  pageSizeOptions={[5, 10]}
-                  onRowClick={(row) => setSelectedResponse(row)}
-                />
-              ) : (
-                <p className="text-gray-700 italic">No responses yet.</p>
-              )}
-            </div>
             {/* LEFT: RFI Details */}
             <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-5">
               {/* Header */}
@@ -237,6 +208,35 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
 
               {/* Files */}
               <RenderFiles files={rfi.files} table="rFI" parentId={rfi.id} />
+            </div>
+
+            {/* RESPONSES SECTION */}
+            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-black text-black uppercase tracking-tight">
+                  Responses
+                </h2>
+
+                {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN" || userRole === "CONNECTION_DESIGNER_ENGINEER" || userRole === "CONNECTION_DESIGNER_ADMIN") && (
+                  <Button
+                    onClick={() => setShowModal(true)}
+                    className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200 transition-all border border-black shadow-md"
+                  >
+                    + Add Response
+                  </Button>
+                )}
+              </div>
+
+              {rfi.rfiresponse?.length > 0 ? (
+                <DataTable
+                  columns={responseColumns}
+                  data={rfi.rfiresponse}
+                  pageSizeOptions={[5, 10]}
+                  onRowClick={(row) => setSelectedResponse(row)}
+                />
+              ) : (
+                <p className="text-gray-700 italic">No responses yet.</p>
+              )}
             </div>
 
 

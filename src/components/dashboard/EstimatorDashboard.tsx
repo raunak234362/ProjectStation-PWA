@@ -340,8 +340,7 @@ const EstimatorDashboard = () => {
           <span className="text-lg font-black text-black uppercase tracking-widest">
             Material Take-off RFQ OVERVIEW
           </span>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
-
+          <div className="flex flex-col gap-6 w-full mt-4">
             <StatCard
               onClick={() => openModal("ALL_MTO")}
               icon={FileText}
@@ -349,31 +348,30 @@ const EstimatorDashboard = () => {
               value={stats.totalMTO}
               iconPadding="p-1"
             />
-
-            <StatCard
-              onClick={() => openModal("PENDING_MTO")}
-              icon={Clock}
-              label="Ongoing"
-              value={stats.pendingMTO}
-              iconPadding="p-1"
-            />
-
-            <StatCard
-              onClick={() => openModal("COMPLETED_MTO")}
-              icon={CheckCircle2}
-              label="Completed"
-              value={stats.awardedMTO}
-              iconPadding="p-1"
-              valueSize="text-3xl"
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <StatCard
+                onClick={() => openModal("COMPLETED_MTO")}
+                icon={CheckCircle2}
+                label="Completed"
+                value={stats.awardedMTO}
+                iconPadding="p-1"
+                valueSize="text-3xl"
+              />
+              <StatCard
+                onClick={() => openModal("PENDING_MTO")}
+                icon={Clock}
+                label="Ongoing"
+                value={stats.pendingMTO}
+                iconPadding="p-1"
+              />
+            </div>
           </div>
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
           <span className="text-lg font-black text-black uppercase tracking-widest">
             DETAILING RFQ OVERVIEW
           </span>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
-
+          <div className="flex flex-col gap-6 w-full mt-4">
             <StatCard
               onClick={() => openModal("ALL_RFQ")}
               icon={FileText}
@@ -381,21 +379,23 @@ const EstimatorDashboard = () => {
               value={stats.totalRfqsSent}
               iconPadding="p-1"
             />
-            <StatCard
-              onClick={() => openModal("PENDING_RFQ")}
-              icon={Clock}
-              label="Pending"
-              value={stats.pendingEstimates}
-              iconPadding="p-1"
-              valueSize="text-3xl"
-            />
-             <StatCard
-              onClick={() => openModal("AWARDED_RFQ")}
-              icon={Activity}
-              label="Awarded"
-              value={stats.rfqsAwarded}
-              iconPadding="p-1"
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <StatCard
+                onClick={() => openModal("AWARDED_RFQ")}
+                icon={Activity}
+                label="Awarded"
+                value={stats.rfqsAwarded}
+                iconPadding="p-1"
+              />
+              <StatCard
+                onClick={() => openModal("PENDING_RFQ")}
+                icon={Clock}
+                label="Pending"
+                value={stats.pendingEstimates}
+                iconPadding="p-1"
+                valueSize="text-3xl"
+              />
+            </div>
           </div>
         </div>
       </div>

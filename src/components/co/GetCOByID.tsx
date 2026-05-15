@@ -336,34 +336,36 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
               </div>
             </div>
 
-            {/* ================= RIGHT: RESPONSES ================= */}
-            <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-black text-black uppercase tracking-tight">
-                  Responses
-                </h2>
 
-                {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
-                  <Button
-                    className="px-4 py-2 bg-green-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200 transition-all border border-black shadow-md"
-                    onClick={() => setShowResponseModal(true)}
-                  >
-                    + Add Response
-                  </Button>
-                )}
-              </div>
+          </div>
 
-              {responses.length > 0 ? (
-                <DataTable
-                  columns={responseColumns}
-                  data={responses}
-                  pageSizeOptions={[5, 10]}
-                  onRowClick={(row) => setSelectedResponse(row)}
-                />
-              ) : (
-                <p className="text-gray-700 italic">No responses yet.</p>
+          {/* RESPONSES SECTION */}
+          <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-black text-black uppercase tracking-tight">
+                Responses
+              </h2>
+
+              {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
+                <Button
+                  className="px-4 py-2 bg-green-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200 transition-all border border-black shadow-md"
+                  onClick={() => setShowResponseModal(true)}
+                >
+                  + Add Response
+                </Button>
               )}
             </div>
+
+            {responses.length > 0 ? (
+              <DataTable
+                columns={responseColumns}
+                data={responses}
+                pageSizeOptions={[5, 10]}
+                onRowClick={(row) => setSelectedResponse(row)}
+              />
+            ) : (
+              <p className="text-gray-700 italic">No responses yet.</p>
+            )}
           </div>
         </div>
 

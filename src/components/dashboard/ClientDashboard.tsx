@@ -386,25 +386,25 @@ const ClientDashboard = () => {
                 <FileText size={18} className="text-[#6bbd45]" />
                 MATERIAL TAKE-OFF RFQ OVERVIEW
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <StatCard
                   label="TOTAL MTO"
                   value={stats.totalMTO}
                   icon={FileText}
                   onClick={() => handleActionClick("ALL_RFQ", "MTO")}
                 />
-                <StatCard
-                  label="ONGOING"
-                  value={stats.ongoingMTO}
-                  icon={Clock}
-                  onClick={() => handleActionClick("ONGOING_RFQ", "MTO")}
-                />
-                <div className="sm:col-span-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <StatCard
                     label="COMPLETED"
                     value={stats.completedMTO}
                     icon={CheckCircle2}
                     onClick={() => handleActionClick("AWARDED_RFQ", "MTO")}
+                  />
+                  <StatCard
+                    label="ONGOING"
+                    value={stats.ongoingMTO}
+                    icon={Clock}
+                    onClick={() => handleActionClick("ONGOING_RFQ", "MTO")}
                   />
                 </div>
               </div>
@@ -416,26 +416,26 @@ const ClientDashboard = () => {
                 <Activity size={18} className="text-[#6bbd45]" />
                 DETAILING RFQ OVERVIEW
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <StatCard
                   label="TOTAL RFQs"
                   value={stats.totalDetailing}
                   icon={FileText}
                   onClick={() => handleActionClick("ALL_RFQ", "DETAILING")}
                 />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <StatCard
+                    label="AWARDED"
+                    value={stats.awardedDetailing}
+                    icon={Activity}
+                    onClick={() => handleActionClick("AWARDED_RFQ", "DETAILING")}
+                  />
                   <StatCard
                     label="PENDING"
                     value={stats.pendingDetailing}
                     icon={Clock}
                     onClick={() => handleActionClick("ONGOING_RFQ", "DETAILING")}
                   />
-                <div className="sm:col-span-2">
-                <StatCard
-                  label="AWARDED"
-                  value={stats.awardedDetailing}
-                  icon={Activity}
-                  onClick={() => handleActionClick("AWARDED_RFQ", "DETAILING")}
-                />
                 </div>
               </div>
             </div>

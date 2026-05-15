@@ -367,7 +367,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           <div className="space-y-8">
             {/* Identity Section */}
             <section className="space-y-6">
-              <div className="flex items-center gap-4 border-b border-black pb-4">
+              <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
                 <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                 <h3 className="text-xl text-black font-black uppercase tracking-tight">
                   Project Details
@@ -462,7 +462,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           <div className="space-y-8">
             {/* Estimation Type Selection */}
             <section className="space-y-6">
-              <div className="flex items-center gap-4 border-b border-black pb-4">
+              <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
               <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
               <h3 className="text-xl text-black font-black uppercase tracking-tight">
                 Select Estimation Type
@@ -535,7 +535,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           {isMTO && (
             <section className="space-y-6 animate-in fade-in zoom-in duration-300">
               <div className="space-y-6">
-                <div className="flex items-center gap-4 border-b border-black pb-4">
+                <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                   <h3 className="text-xl text-black font-black uppercase tracking-tight">
                     Material Takeoff
@@ -563,7 +563,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             <>
               {/* Project Requirements Section */}
               <section className="space-y-6 animate-in fade-in zoom-in duration-300">
-                <div className="flex items-center gap-4 border-b border-black pb-4">
+                <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                   <h3 className="text-xl text-black font-black uppercase tracking-tight">
                     Project Requirements
@@ -615,7 +615,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
               {/* Assets Section */}
               <section className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="flex items-center gap-4 border-b border-black pb-4">
+                <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                   <h3 className="text-xl text-black font-black uppercase tracking-tight">
                     Design Drawings / Scope Sheet Attachments
@@ -642,7 +642,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group relative px-22 py-4 w-full justify-center bg-[#6bbd45] text-black border-2 border-black rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:opacity-90 transition-all duration-500 shadow-2xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
+                className="group relative px-22 py-4 w-full justify-center bg-green-50 text-black border-2 border-green-700/80 rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:bg-green-100 transition-all duration-500 shadow-xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
