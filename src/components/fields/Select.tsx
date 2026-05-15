@@ -153,7 +153,7 @@ const Select = ({
         }}
         className={`flex items-center justify-between p-2 text-sm border font-bold rounded-xl bg-white dark:bg-slate-800 cursor-pointer transition-all ${
           disabled ? "border-gray-200 bg-gray-50 pointer-events-none" : 
-          isOpen ? "border-green-500 ring-2 ring-green-100" : "border-black/10 dark:border-slate-700"
+          isOpen ? "border-green-500 ring-2 ring-green-100" : "border-black dark:border-slate-700"
           } ${className}`}
       >
         <div className="flex-1">
@@ -172,7 +172,7 @@ const Select = ({
             </div>
           ) : (
             <span
-              className={selectedOption ? "text-black dark:text-white" : "text-black/40 dark:text-slate-400"}
+              className={selectedOption ? "text-black dark:text-white" : "text-black dark:text-slate-400"}
             >
               {selectedOption
                 ? selectedOption.label
@@ -201,7 +201,7 @@ const Select = ({
           <div
             ref={menuRef}
             style={menuStyles}
-            className="text-sm bg-white dark:bg-slate-800 border border-black/10 dark:border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
+            className="text-sm bg-white dark:bg-slate-800 border border-black dark:border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
           >
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (

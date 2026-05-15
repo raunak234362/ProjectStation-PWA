@@ -367,7 +367,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           <div className="space-y-8">
             {/* Identity Section */}
             <section className="space-y-6">
-              <div className="flex items-center gap-4 border-b border-black/10 pb-4">
+              <div className="flex items-center gap-4 border-b border-black pb-4">
                 <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                 <h3 className="text-xl text-black font-black uppercase tracking-tight">
                   Project Details
@@ -379,7 +379,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 userRole !== "CLIENT_ESTIMATOR" && (
                   <>
                     <div className="space-y-2">
-                      <label className="block text-xs text-black font-black uppercase tracking-widest opacity-60">
+                      <label className="block text-xs text-black font-black uppercase tracking-widest">
                         Fabricator Partner
                       </label>
                       <Controller
@@ -405,7 +405,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-xs text-black font-black uppercase tracking-widest opacity-60">
+                      <label className="block text-xs text-black font-black uppercase tracking-widest">
                         Fabricator Contact
                       </label>
                       <Controller
@@ -433,7 +433,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 )}
               <div className="md:col-span-2 space-y-2">
                 <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                  <Layers size={14} className="text-black/40" />
+                  <Layers size={14} className="text-black" />
                   Project Name <span className="text-rose-500">*</span>
                 </label>
                 <Input
@@ -462,7 +462,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           <div className="space-y-8">
             {/* Estimation Type Selection */}
             <section className="space-y-6">
-              <div className="flex items-center gap-4 border-b border-black/10 pb-4">
+              <div className="flex items-center gap-4 border-b border-black pb-4">
               <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
               <h3 className="text-xl text-black font-black uppercase tracking-tight">
                 Select Estimation Type
@@ -472,13 +472,13 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <button
                 type="button"
                 onClick={() => setIsDetailing(!isDetailing)}
-                className={`p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-4 group ${
+                className={`p-6 rounded-xl border transition-all flex flex-col items-center gap-4 group ${
                   isDetailing
                     ? "bg-[#6bbd45]/10 border-[#6bbd45] text-black"
-                    : "bg-white border-black/10 text-gray-400 hover:border-black/20"
+                    : "bg-white border-black text-black hover:border-black/70"
                 }`}
               >
-                <div className={`p-4 rounded-full transition-colors ${isDetailing ? "bg-[#6bbd45] text-white" : "bg-gray-100 text-gray-400"}`}>
+                <div className={`p-4 rounded-full transition-colors ${isDetailing ? "bg-[#6bbd45] text-white" : "bg-white border border-black text-black"}`}>
                   <Layers size={32} />
                 </div>
                 <span className="font-black uppercase tracking-widest text-sm">Detailing Estimation</span>
@@ -486,13 +486,13 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <button
                 type="button"
                 onClick={() => setIsMTO(!isMTO)}
-                className={`p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-4 group ${
+                className={`p-6 rounded-xl border transition-all flex flex-col items-center gap-4 group ${
                   isMTO
                     ? "bg-[#6bbd45]/10 border-[#6bbd45] text-black"
-                    : "bg-white border-black/10 text-gray-400 hover:border-black/20"
+                    : "bg-white border-black text-black hover:border-black/70"
                 }`}
               >
-                <div className={`p-4 rounded-full transition-colors ${isMTO ? "bg-[#6bbd45] text-white" : "bg-gray-100 text-gray-400"}`}>
+                <div className={`p-4 rounded-full transition-colors ${isMTO ? "bg-[#6bbd45] text-white" : "bg-white border border-black text-black"}`}>
                   <Settings2 size={32} />
                 </div>
                 <span className="font-black uppercase tracking-widest text-sm">Material Take-off</span>
@@ -535,7 +535,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           {isMTO && (
             <section className="space-y-6 animate-in fade-in zoom-in duration-300">
               <div className="space-y-6">
-                <div className="flex items-center gap-4 border-b border-black/10 pb-4">
+                <div className="flex items-center gap-4 border-b border-black pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                   <h3 className="text-xl text-black font-black uppercase tracking-tight">
                     Material Takeoff
@@ -563,7 +563,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             <>
               {/* Project Requirements Section */}
               <section className="space-y-6 animate-in fade-in zoom-in duration-300">
-                <div className="flex items-center gap-4 border-b border-black/10 pb-4">
+                <div className="flex items-center gap-4 border-b border-black pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                   <h3 className="text-xl text-black font-black uppercase tracking-tight">
                     Project Requirements
@@ -572,57 +572,56 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                      <Calendar size={14} className="text-black/40" />
+                      <Calendar size={14} className="text-black" />
                       Due Date <span className="text-rose-500">*</span>
                     </label>
                     <Input {...register("estimationDate", { required: "Due date is required" })} type="date" className="w-full bg-white border-black rounded-lg h-14 text-sm font-black" />
                   </div>
+                  {(isDetailing || watch("mtoStickModelEnabled")) && (
+                    <div className="space-y-2 animate-in fade-in duration-300">
+                      <label className="block text-sm text-black font-black uppercase tracking-widest">Tools <span className="text-rose-500">*</span></label>
+                      <Controller
+                        name="tools"
+                        control={control}
+                        rules={{ required: (isDetailing || watch("mtoStickModelEnabled")) ? "Tools selection is required" : false }}
+                        render={({ field }) => (
+                          <Select
+                            name={field.name}
+                            options={[
+                              { label: "TEKLA", value: "TEKLA" },
+                              { label: "SDS2", value: "SDS2" },
+                              { label: "NO PREFERENCE", value: "NO_PREFERENCE" },
+                              { label: "OTHER", value: "OTHER" },
+                            ]}
+                            className="border-black rounded-lg h-14 bg-white"
+                            value={field.value}
+                            onChange={(_, value) => field.onChange(value ?? "")}
+                          />
+                        )}
+                      />
+                    </div>
+                  )}
                   {isDetailing && (
-                    <>
-                      <div className="space-y-2 animate-in fade-in duration-300">
-                        <label className="block text-sm text-black font-black uppercase tracking-widest">Tools <span className="text-rose-500">*</span></label>
-                        <Controller
-                          name="tools"
-                          control={control}
-                          rules={{ required: isDetailing ? "Tools selection is required" : false }}
-                          render={({ field }) => (
-                            <Select
-                              name={field.name}
-                              options={[
-                                { label: "TEKLA", value: "TEKLA" },
-                                { label: "SDS2", value: "SDS2" },
-                                { label: "BOTH", value: "BOTH" },
-                                { label: "NO PREFERENCE", value: "NO_PREFERENCE" },
-                                { label: "OTHER", value: "OTHER" },
-                              ]}
-                              className="border-black rounded-lg h-14 bg-white"
-                              value={field.value}
-                              onChange={(_, value) => field.onChange(value ?? "")}
-                            />
-                          )}
-                        />
-                      </div>
-                      <div className="space-y-2 animate-in fade-in duration-300">
-                        <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                          <Percent size={14} className="text-black/40" />
-                          Bid Price
-                        </label>
-                        <Input {...register("bidPrice")} type="number" className="w-full bg-white border-black rounded-lg h-14 text-sm font-black" />
-                      </div>
-                    </>
+                    <div className="space-y-2 animate-in fade-in duration-300">
+                      <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                        <Percent size={14} className="text-black" />
+                        Bid Price
+                      </label>
+                      <Input {...register("bidPrice")} type="number" className="w-full bg-white border-black rounded-lg h-14 text-sm font-black" />
+                    </div>
                   )}
                 </div>
               </section>
 
               {/* Assets Section */}
               <section className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="flex items-center gap-4 border-b border-black/10 pb-4">
+                <div className="flex items-center gap-4 border-b border-black pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
                   <h3 className="text-xl text-black font-black uppercase tracking-tight">
-                    Project / Scope Sheet Attachments
+                    Design Drawings / Scope Sheet Attachments
                   </h3>
                 </div>
-                <div className="bg-gray-50/50 rounded-lg border border-black/5">
+                <div className="bg-gray-50/50 rounded-lg border border-black">
                   <Controller
                     name="files"
                     control={control}
@@ -643,7 +642,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group relative px-22 py-4 w-full justify-center bg-[#6bbd45]/50 text-black border-2 border-black rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:opacity-90 transition-all duration-500 shadow-2xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
+                className="group relative px-22 py-4 w-full justify-center bg-[#6bbd45] text-black border-2 border-black rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:opacity-90 transition-all duration-500 shadow-2xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

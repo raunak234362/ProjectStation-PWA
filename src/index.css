@@ -155,14 +155,13 @@
     /* prevent page-level scroll; app manages its own scroll */
   }
 
-  * {
+  *:not(input):not(textarea):not(select):not(.jodit-wysiwyg) {
     @apply border-border outline-ring/50;
     text-transform: uppercase;
   }
 
   body {
     @apply bg-white text-foreground tracking-wider;
-    text-transform: uppercase;
   }
 }
 

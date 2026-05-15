@@ -40,7 +40,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         {label && (
           <label
             htmlFor={id}
-            className="cursor-pointer font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all text-black opacity-80 group-hover:opacity-100 peer-checked:opacity-100"
+            className="cursor-pointer font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all text-black group-hover:text-black peer-checked:text-black"
           >
             {label}
           </label>
@@ -52,7 +52,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
             type="checkbox"
             id={id}
             name={name}
-            className="peer w-5 h-5 rounded-md border-2 border-black/10 checked:bg-[#6bbd45] checked:border-black transition-all appearance-none cursor-pointer"
+            className="peer w-5 h-5 rounded-md border-2 border-black checked:bg-[#6bbd45] checked:border-black transition-all appearance-none cursor-pointer"
             onChange={onChange}
             ref={ref}
             {...props}
