@@ -10,7 +10,7 @@ import Service from "../../api/Service";
 import type { Fabricator, SelectOption, RFQpayload } from "../../interface";
 
 import { motion } from "motion/react";
-import { Settings2, Loader2, Layers, Percent, Calendar, FileText } from "lucide-react";
+import { Settings2, Loader2, Layers, Percent, Calendar } from "lucide-react";
 
 import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
@@ -227,12 +227,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
     }
   }, [userDetail, userRole, selectedCountry, setValue]);
 
-  const projectName = watch("projectName");
-  useEffect(() => {
-    if (projectName) {
-      setValue("subject", projectName);
-    }
-  }, [projectName, setValue]);
 
   // --- REAL-TIME MTO DESCRIPTION SYNC ---
   
@@ -454,16 +448,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 )}
               </div>
 
-              <div className="md:col-span-2 space-y-2">
-                <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
-                  <FileText size={14} className="text-black" />
-                  Subject
-                </label>
-                <Input
-                  {...register("subject")}
-                  className="w-full bg-white border-black rounded-lg h-14 text-sm font-black"
-                />
-              </div>
 
               <div className="md:col-span-2 space-y-2 w-full mt-4 h-full flex flex-col">
                 <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
