@@ -292,7 +292,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search RFQs by project name or number..."
+                placeholder="SEARCH RFQ BY PROJECT NAME"
                 className="flex-1 px-4 py-2 bg-transparent text-gray-800 placeholder-gray-400 focus:outline-none font-medium"
               />
               {searchQuery && (
