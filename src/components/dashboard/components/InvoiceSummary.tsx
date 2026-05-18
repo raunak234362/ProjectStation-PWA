@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface InvoiceSummaryProps {
   invoices: any[];
@@ -216,20 +217,32 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                   <div className="text-sm font-semibold text-gray-700 mt-2 uppercase tracking-wide flex flex-wrap gap-1">
                     {job.invoices && job.invoices.length > 0 ? (
                       job.invoices.map((inv: any, i: number) => {
-                        const invNum = inv.invoiceNumber 
-                          ? (inv.invoiceNumber.startsWith("#") ? inv.invoiceNumber : `#${inv.invoiceNumber}`) 
+                        const invNum = inv.invoiceNumber
+                          ? (inv.invoiceNumber.startsWith("#") ? inv.invoiceNumber : `#${inv.invoiceNumber}`)
                           : `#UNNAMED`;
+
+                        const invoiceDate = inv.invoiceDate || inv.createdAt;
+                        let dueDateStr = "";
+                        if (invoiceDate) {
+                          const date = new Date(invoiceDate);
+                          const paymenTDueDate = inv.paymenTDueDate ?? inv.fabricator?.paymenTDueDate;
+                          const days = typeof paymenTDueDate === 'number' ? paymenTDueDate : parseInt(String(paymenTDueDate).replace(/[^0-9]/g, "")) || 0;
+                          date.setDate(date.getDate() + days);
+                          dueDateStr = ` (Due: ${formatDate(date)})`;
+                        }
+
                         return (
-                          <span 
-                            key={inv.id || i} 
+                          <div
+                            key={inv.id || i}
                             onClick={(e) => {
                               e.stopPropagation();
                               if (onInvoiceClick) onInvoiceClick(inv.id);
                             }}
-                            className="cursor-pointer hover:text-[#6bbd45] transition-colors"
+                            className="cursor-pointer flex flex-row justify-between items-center hover:text-[#6bbd45] transition-colors w-full"
                           >
-                            {invNum}{i < job.invoices.length - 1 ? "," : ""}
-                          </span>
+                            <span>{invNum}</span>
+                            <span>{dueDateStr}{i < job.invoices.length - 1 ? "," : ""}</span>
+                          </div>
                         );
                       })
                     ) : (
@@ -252,7 +265,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                 <div className="flex justify-between items-end mb-2">
                   <span className="text-sm font-black text-[#5da63c] uppercase tracking-wide">
                     PAID: ${job.paid.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}{" "}
-                 
+
                   </span>
                   <span className="text-sm font-black text-red-500 uppercase tracking-wide">
                     PENDING: ${job.pending.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}

@@ -7,7 +7,7 @@ import { Search, X, CheckCircle2, List } from "lucide-react";
 
 const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
   const userRole = sessionStorage.getItem("userRole");
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<"ALL" | "MTO" | "DETAILING" | "BOTH">("ALL");
   const [activeTab, setActiveTab] = useState<"all" | "awarded">("all");
@@ -26,6 +26,32 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       )
     ) as string[];
     return years.sort((a, b) => b.localeCompare(a));
+  }, [rfq]);
+
+  const statusOptions = useMemo(() => {
+    const statuses = new Set<string>();
+    (rfq || []).forEach((item: any) => {
+      const status = item.status;
+      const wbtStatus = item.wbtStatus;
+      const responses = item.responses || [];
+
+      let calculatedStatus = "";
+      if (wbtStatus === "AWARDED") calculatedStatus = "AWARDED";
+      else if (responses.length > 0) calculatedStatus = "WBT_SUBMITTED";
+      else if (status === "IN_REVIEW") calculatedStatus = "IN_REVIEW";
+      else calculatedStatus = wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
+
+      if (calculatedStatus) statuses.add(calculatedStatus);
+    });
+
+    return Array.from(statuses).map(status => {
+      let label = status;
+      if (status === "AWARDED") label = "Awarded";
+      else if (status === "WBT_SUBMITTED") label = "WBT Submitted";
+      else if (status === "IN_REVIEW") label = "Estimation In Progress";
+      else label = status.replace("_", " ");
+      return { label, value: status };
+    });
   }, [rfq]);
 
   const monthOptions = [
@@ -114,7 +140,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         return (
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-gray-700">{name}</span>
-            
+
           </div>
         );
       },
@@ -144,9 +170,9 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       cell: ({ row }) => {
         const responses = row.original.responses || [];
         if (responses.length === 0) return <span className="text-gray-400">—</span>;
-        
+
         // Find latest response date
-        const latestResponse = [...responses].sort((a, b) => 
+        const latestResponse = [...responses].sort((a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )[0];
 
@@ -157,7 +183,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         );
       }
     },
-      {
+    {
       id: "status",
       header: "Status",
       accessorFn: (row: any) => {
@@ -174,12 +200,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       enableColumnFilter: true,
       filterType: "select",
       filterFn: "equals",
-      filterOptions: [
-        { label: "Estimation In Progress", value: "IN_REVIEW" },
-        { label: "WBT Submitted", value: "WBT_SUBMITTED" },
-        { label: "Awarded", value: "AWARDED" },
-        { label: "Closed", value: "CLOSED" },
-      ],
+      filterOptions: statusOptions,
       cell: ({ getValue, row }) => {
         const val = getValue() as string;
         let label = "";
@@ -187,7 +208,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         if (val === "AWARDED") {
           const r = row.original as any;
           const isMTO = !!(r.MTOManual || r.MTOStickModel || r.MTOValue || r.mtoStickModelEnabled);
-          label = isMTO ? "Submitted" : "Awarded";
+          label = isMTO ? "WBT Submitted" : "Awarded";
         } else if (val === "WBT_SUBMITTED") {
           label = "WBT Submitted";
         } else if (val === "IN_REVIEW") {
@@ -197,7 +218,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         }
 
         return (
-          <span className="px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-lg bg-gray-50 text-black border border-black/10">
+          <span className="px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-lg text-black">
             {label}
           </span>
         );
@@ -211,7 +232,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     // 1. Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      data = data.filter(item => 
+      data = data.filter(item =>
         item.projectName?.toLowerCase().includes(query) ||
         item.projectNumber?.toLowerCase().includes(query)
       );
@@ -316,11 +337,10 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
                 <button
                   key={type}
                   onClick={() => setSelectedType(type as any)}
-                  className={`flex items-center justify-center px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${
-                    selectedType === type
-                      ? 'bg-green-50 text-black border-green-700/80 shadow-sm'
-                      : 'bg-gray-100 text-black border-black/10 hover:border-black/20'
-                  }`}
+                  className={`px-6 py-2 rounded-xl text-sm font-semibold uppercase tracking-[0.2em] transition-all duration-300 active:scale-95 ${selectedType === type
+                      ? 'bg-green-200 text-black shadow-md border border-black/5'
+                      : 'text-black hover:text-black/60'
+                    }`}
                 >
                   {type}
                 </button>
@@ -331,22 +351,20 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab("all")}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${
-                  activeTab === "all"
-                    ? 'bg-green-50 text-black border-green-700/80 shadow-sm'
-                    : 'bg-gray-100 text-black border-black/10 hover:border-black/20'
-                }`}
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${activeTab === "all"
+                    ? 'bg-green-200 text-black shadow-sm border border-black/5'
+                    : 'text-gray-400 hover:text-black'
+                  }`}
               >
                 <List size={14} />
                 All RFQs
               </button>
               <button
                 onClick={() => setActiveTab("awarded")}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${
-                  activeTab === "awarded"
-                    ? 'bg-green-50 text-black border-green-700/80 shadow-sm'
-                    : 'bg-gray-100 text-black border-black/10 hover:border-black/20'
-                }`}
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${activeTab === "awarded"
+                    ? 'bg-green-100 text-black shadow-sm border border-black/5'
+                    : 'text-gray-400 hover:text-black'
+                  }`}
               >
                 <CheckCircle2 size={14} />
                 Awarded
@@ -362,7 +380,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         onRowClick={(row: any) => setSelectedRfqId(row.id || row._id)}
         pageSizeOptions={[25]}
       />
-      
+
       {selectedRfqId && (
         <GetRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
       )}
