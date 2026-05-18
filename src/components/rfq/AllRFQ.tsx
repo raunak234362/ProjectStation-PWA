@@ -311,15 +311,15 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
             </select>
 
             {/* Type Toggle */}
-            <div className="flex items-center bg-gray-50 px-3 py-1 border-2 rounded-xl border-black/5 shadow-sm">
+            <div className="flex items-center gap-2">
               {['ALL', 'MTO', 'DETAILING'].map((type) => (
                 <button
                   key={type}
                   onClick={() => setSelectedType(type as any)}
-                  className={`px-6 py-2 rounded-xl text-sm font-semibold uppercase tracking-[0.2em] transition-all duration-300 active:scale-95 ${
+                  className={`flex items-center justify-center px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${
                     selectedType === type
-                      ? 'bg-green-200 text-black shadow-md border border-black/5'
-                      : 'text-black hover:text-black/60'
+                      ? 'bg-green-50 text-black border-green-700/80 shadow-sm'
+                      : 'bg-gray-100 text-black border-black/10 hover:border-black/20'
                   }`}
                 >
                   {type}
@@ -328,13 +328,13 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
             </div>
 
             {/* Status Tabs */}
-            <div className="flex items-center gap-2 p-1.5 bg-gray-100/30 rounded-2xl w-fit border border-gray-200/50">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab("all")}
-                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${
                   activeTab === "all"
-                    ? 'bg-green-200 text-black shadow-sm border border-black/5'
-                    : 'text-gray-400 hover:text-black'
+                    ? 'bg-green-50 text-black border-green-700/80 shadow-sm'
+                    : 'bg-gray-100 text-black border-black/10 hover:border-black/20'
                 }`}
               >
                 <List size={14} />
@@ -342,10 +342,10 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
               </button>
               <button
                 onClick={() => setActiveTab("awarded")}
-                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${
                   activeTab === "awarded"
-                    ? 'bg-green-100 text-black shadow-sm border border-black/5'
-                    : 'text-gray-400 hover:text-black'
+                    ? 'bg-green-50 text-black border-green-700/80 shadow-sm'
+                    : 'bg-gray-100 text-black border-black/10 hover:border-black/20'
                 }`}
               >
                 <CheckCircle2 size={14} />

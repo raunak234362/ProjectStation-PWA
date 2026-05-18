@@ -790,7 +790,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                         setSelectedParentResponseId(null);
                         setShowResponseModal(true);
                       }}
-                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200/90 hover:text-black transition-all border border-black shadow-md"
+                      className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
                     >
                       + Add Response
                     </Button>

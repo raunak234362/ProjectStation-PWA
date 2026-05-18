@@ -696,21 +696,12 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
           </form>
         </div>
 
-        {/* Fixed Footer */}
-        <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-black/10 bg-gray-50/50 rounded-b-2xl md:rounded-b-3xl flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 shrink-0">
-          <Button
-            type="button"
-            onClick={onClose}
-            className="w-full sm:w-auto px-6 py-3 text-black border border-black/20 bg-white rounded-xl hover:bg-gray-50 font-black uppercase text-xs tracking-widest transition-all"
-          >
-            Cancel
-          </Button>
-
+        <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-black/10 bg-gray-50/50 rounded-b-2xl md:rounded-b-3xl flex justify-end shrink-0">
           <Button
             type="submit"
             form="response-form"
             disabled={loading}
-            className="w-full sm:w-auto px-10 py-3 bg-green-200 text-black rounded-xl border border-black hover:bg-green-300 transition-all disabled:opacity-50 font-black uppercase text-xs tracking-[0.2em] shadow-sm"
+            className="w-full sm:w-auto px-8 py-2.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer disabled:opacity-50"
           >
             {loading ? "Transmitting..." : "Submit"}
           </Button>
