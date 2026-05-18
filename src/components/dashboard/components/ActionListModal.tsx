@@ -41,6 +41,10 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [startMonth, setStartMonth] = useState("");
+  const [endMonth, setEndMonth] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -98,6 +102,30 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
           return itemDate >= monthAgo;
         }
+        if (dateFilter === "custom") {
+          const start = startDate ? new Date(startDate) : null;
+          const end = endDate ? new Date(endDate) : null;
+          if (end) end.setHours(23, 59, 59, 999);
+          
+          if (start && end) return itemDate >= start && itemDate <= end;
+          if (start) return itemDate >= start;
+          if (end) return itemDate <= end;
+          return true;
+        }
+        if (dateFilter === "month_range") {
+          const start = startMonth ? new Date(startMonth) : null;
+          const end = endMonth ? new Date(endMonth) : null;
+          if (end) {
+            end.setMonth(end.getMonth() + 1);
+            end.setDate(0);
+            end.setHours(23, 59, 59, 999);
+          }
+          
+          if (start && end) return itemDate >= start && itemDate <= end;
+          if (start) return itemDate >= start;
+          if (end) return itemDate <= end;
+          return true;
+        }
         return true;
       });
     }
@@ -105,112 +133,75 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
     return result;
   }, [data, searchTerm, dateFilter]);
 
-  const handleGeneratePDF = () => {
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
 
-    // Group by project
-    const groupedByProject = filteredData.reduce((acc: any, item: any) => {
-      const project = item.projectName || item.project?.name || item.project?.projectName || "N/A";
-      if (!acc[project]) acc[project] = [];
-      acc[project].push(item);
-      return acc;
-    }, {});
 
-    const html = `
-      <html>
-        <head>
-          <title>MTO Report</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-            h1 { color: #6bbd45; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-            th { background-color: #f5f5f5; }
-            .section { margin-top: 20px; }
-            .section-title { font-weight: bold; color: #6bbd45; }
-            .project-section { page-break-after: always; }
-            .project-section:last-child { page-break-after: auto; }
-          </style>
-        </head>
-        <body>
-          <h1>MTO Report - ${dateFilter === "all" ? "All Time" : dateFilter.toUpperCase()}</h1>
-          <p>Total MTOs Raised: ${filteredData.length}</p>
-          
-          ${Object.keys(groupedByProject).map((projectName) => `
-            <div class="project-section">
-              <h2 style="color: #6bbd45; border-bottom: 2px solid #6bbd45; padding-bottom: 5px; margin-top: 30px;">Project: ${projectName}</h2>
-              
-              ${groupedByProject[projectName].map((item: any, index: number) => `
-                <div class="section" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-                  <h3 class="section-title">#${index + 1} ${item.subject || "No Subject"}</h3>
-                  <table>
-                    <tr>
-                      <th>Sent On</th>
-                      <td>${item.createdAt ? formatDate(item.createdAt) : "N/A"}</td>
-                    </tr>
-                    <tr>
-                      <th>Due Date</th>
-                      <td>${item.estimationDate ? formatDate(item.estimationDate) : "N/A"}</td>
-                    </tr>
-                    <tr>
-                      <th>Received On</th>
-                      <td>${item.latestResponseDate ? formatDate(item.latestResponseDate) : "N/A"}</td>
-                    </tr>
-                    <tr>
-                      <th>Status</th>
-                      <td>${item.status || "N/A"}</td>
-                    </tr>
-                    <tr>
-                      <th>Description</th>
-                      <td>${item.description || "N/A"}</td>
-                    </tr>
-                    <tr>
-                      <th>Attachments</th>
-                      <td>${(item.files || []).map((f: any) => f.name || f).join(", ") || "None"}</td>
-                    </tr>
-                  </table>
-                  
-                  ${item.responses && item.responses.length > 0 ? `
-                    <h4>Responses</h4>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Responder</th>
-                          <th>Message</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        ${item.responses.map((r: any) => `
-                          <tr>
-                            <td>${formatDate(r.createdAt)}</td>
-                            <td>${r.userRole || "N/A"}</td>
-                            <td>${r.description || "N/A"}</td>
-                          </tr>
-                        `).join("")}
-                      </tbody>
-                    </table>
-                  ` : ""}
-                </div>
-              `).join("")}
-            </div>
-          `).join("")}
-          
-          <script>
-            window.onload = () => {
-              setTimeout(() => {
-                window.print();
-                window.close();
-              }, 500);
-            };
-          </script>
-        </body>
-      </html>
-    `;
+  const handleDownloadCSV = () => {
+    const columns = getColumns();
+    const headers = columns.map(col => col.header as string).join(",");
+    
+    const rows = filteredData.map(item => {
+      return columns.map(col => {
+        const key = 'accessorKey' in col ? (col as any).accessorKey : undefined;
+        let val = "";
+        
+        if (col.header === "Project Name") {
+          val = item.jobName || item.projectName || item.project?.name || item.project?.projectName || item.customerName || "—";
+        } else if (col.header === "Status") {
+          const status = item.status;
+          const wbtStatus = item.wbtStatus;
+          if (wbtStatus === "AWARDED") {
+            const isMTO = !!(item.MTOManual || item.MTOStickModel || item.MTOValue || item.mtoStickModelEnabled);
+            val = isMTO ? "Submitted" : "Awarded";
+          } else if (status === "IN_REVIEW") {
+            val = "Estimation In Progress";
+          } else {
+            val = (wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status)?.replace("_", " ") || "—";
+          }
+        } else if (col.header === "Sender" && type === "PENDING_RFI") {
+          const s = item.sender;
+          if (!s) val = "—";
+          else {
+            const fullName = [s.firstName, s.middleName, s.lastName].filter(Boolean).join(" ");
+            val = fullName || s.username || s.email || "—";
+          }
+        } else if (col.header === "CO Number" && type === "PENDING_COR") {
+          val = `COR - ${item.changeOrderNumber?.slice(-3)}`;
+        } else if (col.header === "Received On") {
+          const responses = item.responses || [];
+          if (responses.length === 0) val = "—";
+          else {
+            const latest = [...responses].sort((a: any, b: any) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            )[0];
+            val = latest.createdAt ? `="${formatDate(latest.createdAt)}"` : "—";
+          }
+        } else if (col.header === "Amount") {
+          val = `$${Number(item.totalInvoiceValue || item.totalAmount || item.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        } else if (key) {
+          const rawVal = item[key];
+          if (key === "createdAt" || key === "estimationDate" || key === "date") {
+            val = rawVal ? `="${formatDate(rawVal)}"` : "—";
+          } else {
+            val = rawVal || "—";
+          }
+        } else {
+          val = "—";
+        }
+        
+        return `"${String(val).replace(/"/g, '""')}"`;
+      }).join(",");
+    }).join("\n");
 
-    printWindow.document.write(html);
-    printWindow.document.close();
+    const csvContent = `${headers}\n${rows}`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${getTitle().replace(/\s+/g, "_")}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const getTitle = () => {
@@ -568,6 +559,8 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 <option value="today">TODAY</option>
                 <option value="week">THIS WEEK</option>
                 <option value="month">THIS MONTH</option>
+                <option value="custom">DATE RANGE</option>
+                <option value="month_range">MONTH RANGE</option>
               </select>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -575,22 +568,60 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 </svg>
               </div>
             </div>
-
-            {(type === "ALL_MTO" || type === "PENDING_MTO" || type === "COMPLETED_MTO" || type === "ALL_RFQ" || type === "PENDING_RFQ" || type === "AWARDED_RFQ") && (
-              <button
-                onClick={handleGeneratePDF}
-                className="px-4 py-2 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer flex items-center gap-2"
-              >
-                <Download size={14} />
-                Download PDF
-              </button>
+            
+            {dateFilter === "custom" && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none"
+                />
+                <span className="text-gray-500 font-bold">TO</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none"
+                />
+              </div>
             )}
+            
+            {dateFilter === "month_range" && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="month"
+                  value={startMonth}
+                  onChange={(e) => setStartMonth(e.target.value)}
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none"
+                />
+                <span className="text-gray-500 font-bold">TO</span>
+                <input
+                  type="month"
+                  value={endMonth}
+                  onChange={(e) => setEndMonth(e.target.value)}
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none"
+                />
+              </div>
+            )}
+
+            <button
+              onClick={handleDownloadCSV}
+              className="px-4 py-2 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer flex items-center gap-2"
+            >
+              <Download size={14} />
+              Download CSV
+            </button>
 
             {(searchTerm || dateFilter !== "all") && (
               <button
                 onClick={() => {
                   setSearchTerm("");
                   setDateFilter("all");
+                  setStartDate("");
+                  setEndDate("");
+                  setStartMonth("");
+                  setEndMonth("");
                 }}
                 className="px-3 py-2 text-xs font-black text-red-600 uppercase tracking-widest hover:bg-red-50 rounded-xl transition-all"
               >
