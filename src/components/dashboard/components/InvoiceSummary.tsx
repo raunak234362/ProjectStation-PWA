@@ -238,9 +238,9 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                               e.stopPropagation();
                               if (onInvoiceClick) onInvoiceClick(inv.id);
                             }}
-                            className="cursor-pointer flex flex-row justify-between items-center hover:text-[#6bbd45] transition-colors w-full"
+                            className="cursor-pointer flex flex-row gap-5 items-center hover:text-[#6bbd45] transition-colors w-full"
                           >
-                            <span>{invNum}</span>
+                            <span>{invNum}</span> : 
                             <span>{dueDateStr}{i < job.invoices.length - 1 ? "," : ""}</span>
                           </div>
                         );

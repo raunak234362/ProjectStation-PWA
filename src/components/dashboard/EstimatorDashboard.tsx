@@ -32,7 +32,7 @@ const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   onClick,
   iconPadding = "p-3",
-  valueSize = "text-3xl",
+  valueSize = "text-2xl",
 }) => (
   <div
     onClick={onClick}
@@ -43,13 +43,13 @@ const StatCard: React.FC<StatCardProps> = ({
         <Icon size={24} strokeWidth={2.5} />
       </div>
       <div className="flex flex-col">
-        <span className="text-md font-black text-black uppercase tracking-widest">
+        <span className="font-bold text-black uppercase tracking-widest">
           {label}
         </span>
       </div>
     </div>
     <div className="z-10 text-right">
-      <span className={`${valueSize} font-black text-black tracking-tighter`}>
+      <span className={`${valueSize} font-semibold text-black tracking-tighter`}>
         {value}
       </span>
     </div>
@@ -322,7 +322,6 @@ const EstimatorDashboard = () => {
                 label="Completed"
                 value={stats.awardedMTO}
                 iconPadding="p-1"
-                valueSize="text-3xl"
               />
               <StatCard
                 onClick={() => openModal("PENDING_MTO")}
@@ -360,7 +359,6 @@ const EstimatorDashboard = () => {
                 label="Pending"
                 value={stats.pendingEstimates}
                 iconPadding="p-1"
-                valueSize="text-3xl"
               />
             </div>
           </div>
