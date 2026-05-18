@@ -441,20 +441,8 @@ const ClientDashboard = () => {
             </div>
           </div>
         )}
-
-        {/* Invoice Summary Section */}
-        <div className="w-full">
-          <InvoiceSummary
-            invoices={invoices}
-            projects={projects}
-            rfqs={allRFQs}
-            onInvoiceClick={(id) => setSelectedInvoiceId(id)}
-          />
-
-        </div>
-
         {/* Detailed Info Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+        <div className="grid grid-cols-1 gap-6 w-full">
           <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
             <div className="p-2">
               <UpcomingSubmittals
@@ -472,28 +460,19 @@ const ClientDashboard = () => {
               />
             </div>
           </div>
-          <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
-            {/* <div className="p-4 border-b border-green-500/10">
-              <h2 className="text-lg text-gray-800 font-bold">
-                Invoices Received
-              </h2>
-            </div> */}
-            <div className="p-2">
-              <UpcomingSubmittals
-                pendingSubmittals={upcomingSubmittals}
-                invoices={invoices}
-                initialTab="invoices"
-                hideTabs={true}
-                onInvoiceClick={(invoice: any) => {
-                  console.log("Clicked invoice:", invoice);
-                  if (invoice?.id) {
-                    setSelectedInvoiceId(invoice.id);
-                  }
-                }}
-              />
-            </div>
-          </div>
         </div>
+        {/* Invoice Summary Section */}
+        <div className="w-full">
+          <InvoiceSummary
+            invoices={invoices}
+            projects={projects}
+            rfqs={allRFQs}
+            onInvoiceClick={(id) => setSelectedInvoiceId(id)}
+          />
+
+        </div>
+
+
 
         {selectedInvoiceId && (
           <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0">
