@@ -111,6 +111,18 @@ const RFQResponseItem = ({
       {/* Content */}
       {isOpen && (
         <div className="p-6 bg-white animate-in slide-in-from-top-2 duration-300 space-y-6">
+          {/* Subject Section */}
+          {response.subject && (
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
+                Subject
+              </span>
+              <div className="text-sm font-bold text-black uppercase tracking-tight bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                {response.subject}
+              </div>
+            </div>
+          )}
+
           {/* Main Message Section */}
           <div>
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
@@ -758,7 +770,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   {(userRole === "admin" ||
                     userRole === "deputy_manager" ||
                     userRole === "operation_executive" ||
-                    userRole === "user") && (
+                    userRole === "user" ||
+                    userRole === "client" ||
+                    userRole === "client_admin" ||
+                    userRole === "client_estimator") && (
                       <Button
                         onClick={() => {
                           setSelectedParentResponseId(null);

@@ -424,6 +424,8 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         formData.append("parentResponseId", parentResponseId);
       }
 
+      if (data.subject) formData.append("subject", data.subject);
+
       if (data.link) formData.append("link", data.link);
 
       if (data.PageNumbers) formData.append("PageNumbers", data.PageNumbers);
@@ -588,10 +590,25 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
               </div>
             )}
 
+            {/* Subject */}
+            <div className="space-y-3">
+              <label className="block text-sm font-black text-black/40 uppercase tracking-[0.2em]">
+                Subject
+              </label>
+              <div className="relative border border-black/10 rounded-xl overflow-hidden focus-within:border-green-400 transition-all">
+                <input
+                  type="text"
+                  {...register("subject")}
+                  placeholder="Enter subject..."
+                  className="w-full h-12 px-4 bg-white outline-none font-black text-sm text-black"
+                />
+              </div>
+            </div>
+
             {/* Description */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                <label className="block text-sm font-black text-black/40 uppercase tracking-[0.2em]">
                   Detailed Description *
                 </label>
 
@@ -643,7 +660,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             {/* Optional Link & Status */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em]">
+                <label className="block text-sm font-black text-black/40 uppercase tracking-[0.2em]">
                   Select Status
                 </label>
                 <div className="relative">
