@@ -101,19 +101,30 @@ const ResponseDetailsModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] relative flex flex-col border border-black/10 overflow-hidden">
+    <>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-200">
+        <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] relative flex flex-col border border-black/10 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
           <h2 className="text-xl sm:text-2xl font-semibold text-black uppercase tracking-tight">
             Response Details
           </h2>
-          <button
-            onClick={onClose}
-            className="px-4 sm:px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-          >
-            Close
-          </button>
+          <div className="flex items-center gap-3">
+            {["ADMIN", "STAFF", "CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRole) && (
+              <button
+                onClick={() => setReplyMode(true)}
+                className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+              >
+                Reply
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="px-4 sm:px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -204,81 +215,6 @@ const ResponseDetailsModal = ({
             </div>
           </div>
 
-          {replyMode && (
-            <div className="mt-8 pt-8 border-t border-black/10 space-y-6 animate-in slide-in-from-bottom-4 duration-300 bg-white p-6 rounded-2xl border border-black/10 shadow-xs">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <h1 className="text-xs font-semibold text-black uppercase tracking-[0.2em]">
-                  Reply
-                </h1>
-              </div>
-
-              <div className="border border-black/10 rounded-2xl overflow-hidden focus-within:border-green-400 transition-all">
-                <RichTextEditor
-                  value={replyMessage}
-                  onChange={setReplyMessage}
-                  placeholder="Draft your engineering response..."
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-black uppercase tracking-widest block">
-                    Proposal Status
-                  </label>
-                  <select
-                    value={replyStatus}
-                    onChange={(e) => setReplyStatus(e.target.value)}
-                    className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-semibold uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
-                  >
-                    <option value="PENDING">Pending</option>
-                    <option value="APPROVED">Awarded</option>
-                    <option value="REJECTED">Rejected</option>
-                    <option value="CLARIFICATION_REQUIRED">
-                      Clarification Required
-                    </option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-black uppercase tracking-widest block">
-                    Documents
-                  </label>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) =>
-                      setReplyFiles(Array.from(e.target.files || []))
-                    }
-                    className="w-full h-12 px-4 py-2.5 border border-black/10 rounded-xl bg-white text-xs font-semibold uppercase text-black"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4">
-                <Button
-                  onClick={() => setReplyMode(false)}
-                  className="px-6 py-3 bg-white text-black border border-black/10 rounded-xl font-semibold uppercase text-xs tracking-widest hover:bg-gray-50"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="px-8 py-3 bg-green-200 text-black border-2 border-black rounded-xl font-semibold uppercase text-xs tracking-widest hover:bg-green-300 shadow-sm disabled:opacity-50"
-                  onClick={handleReplySubmit}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 size={14} className="animate-spin" />
-                      Sending...
-                    </div>
-                  ) : (
-                    "Send Reply"
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
-
           {response.childResponses?.length > 0 && (
             <div className="space-y-4 pt-4">
               <h3 className="text-xs font-semibold text-black uppercase tracking-widest">
@@ -290,22 +226,93 @@ const ResponseDetailsModal = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-5 border-t border-black/10 bg-white flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+        <div className="px-6 py-5 border-t border-black/10 bg-white flex items-center shrink-0">
           <span className="text-xs text-black font-bold tracking-wide">
             Submitted on: {formatDateTime(response.createdAt)}
           </span>
-          {!replyMode &&
-            ["ADMIN", "STAFF", "CLIENT", "CLIENT_ADMIN"].includes(userRole) && (
-              <Button
-                onClick={() => setReplyMode(true)}
-                className="px-8 py-2.5 bg-green-200 text-black border-2 border-black rounded-xl font-semibold text-xs uppercase tracking-widest hover:bg-green-300 transition-all shadow-sm cursor-pointer"
-              >
-                Reply
-              </Button>
-            )}
+        </div>
         </div>
       </div>
-    </div>
+
+      {/* Reply Popup Modal */}
+      {replyMode && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col border border-black/10 overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Reply Modal Header */}
+            <div className="px-6 py-4 border-b border-black/10 flex justify-between items-center bg-white">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <h2 className="text-base font-black text-black uppercase tracking-widest">Reply</h2>
+              </div>
+              <button
+                onClick={() => setReplyMode(false)}
+                className="px-4 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {/* Reply Modal Body */}
+            <div className="p-6 space-y-5">
+              <div className="border border-black/10 rounded-xl overflow-hidden focus-within:border-green-400 transition-all">
+                <RichTextEditor
+                  value={replyMessage}
+                  onChange={setReplyMessage}
+                  placeholder="Draft your reply..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-black uppercase tracking-widest block">
+                    Proposal Status
+                  </label>
+                  <select
+                    value={replyStatus}
+                    onChange={(e) => setReplyStatus(e.target.value)}
+                    className="w-full h-11 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-semibold uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
+                  >
+                    <option value="PENDING">Pending</option>
+                    <option value="APPROVED">Awarded</option>
+                    <option value="REJECTED">Rejected</option>
+                    <option value="CLARIFICATION_REQUIRED">Clarification Required</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-black uppercase tracking-widest block">
+                    Documents
+                  </label>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) => setReplyFiles(Array.from(e.target.files || []))}
+                    className="w-full h-11 px-4 py-2.5 border border-black/10 rounded-xl bg-white text-xs font-semibold uppercase text-black"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Reply Modal Footer */}
+            <div className="px-6 py-4 border-t border-black/10 bg-gray-50/50 flex justify-end">
+              <Button
+                className="px-8 py-2.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg font-bold text-xs uppercase tracking-tight hover:bg-green-100 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+                onClick={handleReplySubmit}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 size={14} className="animate-spin" />
+                    Sending...
+                  </div>
+                ) : (
+                  "Send Reply"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
