@@ -350,17 +350,17 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsAddSubmittalOpen(true)}
-              className="text-black border border-black bg-[#6bbd45]/10 hover:bg-[#6bbd45]/20 flex items-center gap-2 h-9"
-            >
-              <Plus className="w-4 h-4" />
-              Create Submittal
-            </Button>
             {!isClient && !isConnectionDesigner && (
               <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsAddSubmittalOpen(true)}
+                  className="text-black border border-black bg-[#6bbd45]/10 hover:bg-[#6bbd45]/20 flex items-center gap-2 h-9"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Submittal
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -477,16 +477,16 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                     }
                   }
 
-                  const overallCompletion = 
-                    milestone.completeionPercentage ?? 
-                    milestone.completionPercentage ?? 
+                  const overallCompletion =
+                    milestone.completeionPercentage ??
+                    milestone.completionPercentage ??
                     milestone.percentage;
 
                   const finalProgress =
                     (overallCompletion !== undefined &&
-                    overallCompletion !== null &&
-                    overallCompletion !== "" &&
-                    Number(overallCompletion) !== 0)
+                      overallCompletion !== null &&
+                      overallCompletion !== "" &&
+                      Number(overallCompletion) !== 0)
                       ? Number(overallCompletion)
                       : taskProgress;
 

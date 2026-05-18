@@ -533,15 +533,15 @@ const GetProjectById = ({
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
             {project.projectNumber && (
               <div className="inline-block px-4 py-1.5 bg-green-50 border-2 border-[#6bbd45] rounded-lg">
-                <span className="text-black font-black text-sm tracking-tight">
+                <span className="text-black font-bold text-sm tracking-tight">
                   Project No: {project.projectNumber}
                 </span>
               </div>
             )}
-            <span className="px-4 py-1.5 rounded-lg text-xs font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
+            <span className="px-4 py-1.5 rounded-lg text-sm font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
               {project.stage}
             </span>
-            <span className="px-4 py-1.5 rounded-lg text-xs font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
+            <span className="px-4 py-1.5 rounded-lg text-sm font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
               {project.status}
             </span>
             {userRole === "admin" && (
@@ -556,7 +556,7 @@ const GetProjectById = ({
             {close && (
               <button
                 onClick={close}
-                className="px-8 py-3 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+                className="px-4 py-2 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
               >
                 Close
               </button>
