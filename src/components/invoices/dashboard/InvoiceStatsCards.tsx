@@ -25,7 +25,15 @@ const InvoiceStatsCards: React.FC<StatsProps> = ({ invoices }) => {
 
     // Simple Overdue Logic: If pending and dueDate (or invoiceDate fallback) < now
     const overdueInvoices = pendingInvoices.filter((inv) => {
-        const date = inv.dueDate || inv.invoiceDate || inv.createdAt;
+        let date = inv.dueDate;
+        if (!date && inv.invoiceDate && inv.paymenTDueDate) {
+            const invDate = new Date(inv.invoiceDate);
+            invDate.setDate(invDate.getDate() + Number(inv.paymenTDueDate));
+            date = invDate;
+        } else if (!date) {
+            date = inv.invoiceDate || inv.createdAt;
+        }
+
         if (!date) return false;
 
         const dueDateObj = new Date(date);

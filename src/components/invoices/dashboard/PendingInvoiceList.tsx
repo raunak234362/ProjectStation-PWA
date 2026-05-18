@@ -47,8 +47,23 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
       accessorKey: "dueDate",
       header: "Due Date",
       cell: ({ row }) => {
-        const date = row.original.dueDate || row.original.invoiceDate; // Fallback
+        let date = row.original.dueDate;
+        const terms = row.original.paymenTDueDate ?? row.original.fabricator?.paymenTDueDate;
+        if (!date && row.original.invoiceDate && terms !== undefined && terms !== null) {
+          const invDate = new Date(row.original.invoiceDate);
+          const days = parseInt(terms);
+          if (!isNaN(days)) {
+            invDate.setDate(invDate.getDate() + days);
+            date = invDate;
+          } else {
+            date = row.original.invoiceDate;
+          }
+        } else if (!date) {
+          date = row.original.invoiceDate;
+        }
+
         const isOverdue = date && new Date(date) < new Date();
+
         return (
           <span
             className={isOverdue ? "text-red-500 font-medium" : "text-gray-600"}
@@ -56,6 +71,41 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
             {formatDate(date)}
           </span>
         );
+      },
+    },
+    {
+      id: "overdueDays",
+      header: "Overdue",
+      cell: ({ row }) => {
+        let date = row.original.dueDate;
+        const terms = row.original.paymenTDueDate ?? row.original.fabricator?.paymenTDueDate;
+        if (!date && row.original.invoiceDate && terms !== undefined && terms !== null) {
+          const invDate = new Date(row.original.invoiceDate);
+          const days = parseInt(terms);
+          if (!isNaN(days)) {
+            invDate.setDate(invDate.getDate() + days);
+            date = invDate;
+          } else {
+            date = row.original.invoiceDate;
+          }
+        } else if (!date) {
+          date = row.original.invoiceDate;
+        }
+
+        const isOverdue = date && new Date(date) < new Date();
+        
+        if (isOverdue && date) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const dueDateObj = new Date(date);
+          dueDateObj.setHours(0, 0, 0, 0);
+          const diffTime = today.getTime() - dueDateObj.getTime();
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          if (diffDays > 0) {
+            return <span className="text-red-500 font-medium">{diffDays} Days</span>;
+          }
+        }
+        return <span className="text-gray-400">—</span>;
       },
     },
     {
@@ -79,7 +129,21 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
       header: "Status",
       cell: ({ row }) => {
         // Logic for overdue based on date if status is pending
-        const date = row.original.dueDate || row.original.invoiceDate;
+        let date = row.original.dueDate;
+        const terms = row.original.paymenTDueDate ?? row.original.fabricator?.paymenTDueDate;
+        if (!date && row.original.invoiceDate && terms !== undefined && terms !== null) {
+          const invDate = new Date(row.original.invoiceDate);
+          const days = parseInt(terms);
+          if (!isNaN(days)) {
+            invDate.setDate(invDate.getDate() + days);
+            date = invDate;
+          } else {
+            date = row.original.invoiceDate;
+          }
+        } else if (!date) {
+          date = row.original.invoiceDate;
+        }
+        
         const isOverdue = date && new Date(date) < new Date();
 
         if (isOverdue) {

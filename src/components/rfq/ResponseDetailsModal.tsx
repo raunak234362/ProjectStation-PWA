@@ -140,8 +140,8 @@ const ResponseDetailsModal = ({
           {/* Subject Box */}
           {response.subject && (
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs space-y-1.5">
-              <span className="text-sm font-semibold text-black uppercase tracking-widest block">
-                Subject :  <span className="text-base font-semibold text-black">
+              <span className="text-base text-black uppercase tracking-widest block">
+                Subject :  <span className="text-base text-black">
                   {response.subject}
                 </span>
               </span>
@@ -152,7 +152,7 @@ const ResponseDetailsModal = ({
           {/* Message Content Box */}
           <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
             <div
-              className="prose prose-base max-w-none text-black font-semibold leading-relaxed rich-text-content"
+              className="prose prose-base max-w-none text-black leading-relaxed rich-text-content"
               dangerouslySetInnerHTML={{ __html: response.description }}
             />
           </div>
@@ -162,7 +162,7 @@ const ResponseDetailsModal = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
               <div>
                 <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
-                  Tonnage (With Conn) :  <span className="text-base font-semibold text-black">
+                  Tonnage (With Connections) :  <span className="text-base font-semibold text-black">
                     {response.totalTonnageWithConnection || "—"}
                   </span>
                 </span>
@@ -170,7 +170,7 @@ const ResponseDetailsModal = ({
               </div>
               <div>
                 <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
-                  Tonnage (W/O Conn) : <span className="text-base font-semibold text-black">
+                  Tonnage (W/O Connections) : <span className="text-base font-semibold text-black">
                     {response.totalTonnageWithoutConnection || "—"}
                   </span>
                 </span>

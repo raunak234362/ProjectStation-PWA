@@ -85,7 +85,7 @@ const RFQResponseItem = ({
             </span>
           </div>
 
-          <Button
+          {/* <Button
             variant="outline"
             size="sm"
             onClick={(e) => {
@@ -96,19 +96,8 @@ const RFQResponseItem = ({
           >
             Popup View
           </Button>
+ */}
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(!isOpen);
-            }}
-            className="flex items-center gap-1 h-9 px-3 rounded-xl border border-gray-200 font-black text-[10px] uppercase tracking-widest hover:bg-green-100 hover:text-black transition-all"
-          >
-            {isOpen ? "Close" : "Expand"}
-            {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </Button>
         </div>
       </div>
 
@@ -139,7 +128,7 @@ const RFQResponseItem = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
-                      Tonnage (With Conn)
+                      Tonnage (With Connections)
                     </span>
                     <span className="text-xs font-black text-black">
                       {response.totalTonnageWithConnection || "—"}
@@ -586,12 +575,12 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
-            <div className="bg-green-50 border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-8">
+            <div className="bg-zinc-50 border border-zinc-200/50 p-6 rounded-3xl shadow-sm space-y-8">
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Info label="Subject" value={rfq?.subject || ""} />
                 <Info label="Project Number" value={rfq?.projectNumber || ""} />
-                <Info label="Tools" value={rfq?.tools || "N/A"} />
+                {/* <Info label="Tools" value={rfq?.tools || "N/A"} /> */}
                 <Info
                   label="Due Date"
                   value={formatDate(
@@ -782,10 +771,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
             </div>
 
             {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-            <div className="bg-green-50 border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
+            <div className="bg-zinc-50 border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
               {/* Header + Add Response Button */}
               <div className="flex justify-between items-center gap-4">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                <h1 className="text-xl font-semibold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
                   Responses
                 </h1>
 

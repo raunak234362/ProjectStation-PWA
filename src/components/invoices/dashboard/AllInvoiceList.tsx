@@ -41,8 +41,24 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
       accessorKey: "dueDate",
       header: "Invoice Due",
       cell: ({ row }) => {
-        const date = row.original.dueDate || row.original.invoiceDate; // Fallback
-        const isOverdue = date && new Date(date) < new Date() && row.original.paymentStatus !== "Paid";
+        let date = row.original.dueDate;
+        const terms = row.original.paymenTDueDate ?? row.original.fabricator?.paymenTDueDate;
+        if (!date && row.original.invoiceDate && terms !== undefined && terms !== null) {
+          const invDate = new Date(row.original.invoiceDate);
+          const days = parseInt(terms);
+          if (!isNaN(days)) {
+            invDate.setDate(invDate.getDate() + days);
+            date = invDate;
+          } else {
+            date = row.original.invoiceDate;
+          }
+        } else if (!date) {
+          date = row.original.invoiceDate;
+        }
+
+        const isPaid = row.original.paymentStatus === true || String(row.original.paymentStatus).toLowerCase() === "true" || String(row.original.paymentStatus).toLowerCase() === "paid" || String(row.original.status).toLowerCase() === "paid" || String(row.original.status).toLowerCase() === "completed";
+        const isOverdue = date && new Date(date) < new Date() && !isPaid;
+
         return (
           <span
             className={isOverdue ? "text-red-500 font-medium" : "text-gray-600"}
@@ -50,6 +66,42 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
             {formatDate(date)}
           </span>
         );
+      },
+    },
+    {
+      id: "overdueDays",
+      header: "Due By",
+      cell: ({ row }) => {
+        let date = row.original.dueDate;
+        const terms = row.original.paymenTDueDate ?? row.original.fabricator?.paymenTDueDate;
+        if (!date && row.original.invoiceDate && terms !== undefined && terms !== null) {
+          const invDate = new Date(row.original.invoiceDate);
+          const days = parseInt(terms);
+          if (!isNaN(days)) {
+            invDate.setDate(invDate.getDate() + days);
+            date = invDate;
+          } else {
+            date = row.original.invoiceDate;
+          }
+        } else if (!date) {
+          date = row.original.invoiceDate;
+        }
+
+        const isPaid = row.original.paymentStatus === true || String(row.original.paymentStatus).toLowerCase() === "true" || String(row.original.paymentStatus).toLowerCase() === "paid" || String(row.original.status).toLowerCase() === "paid" || String(row.original.status).toLowerCase() === "completed";
+        const isOverdue = date && new Date(date) < new Date() && !isPaid;
+        
+        if (isOverdue && date) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const dueDateObj = new Date(date);
+          dueDateObj.setHours(0, 0, 0, 0);
+          const diffTime = today.getTime() - dueDateObj.getTime();
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          if (diffDays > 0) {
+            return <span className="text-red-500 font-medium">{diffDays} Days</span>;
+          }
+        }
+        return <span className="text-gray-400">—</span>;
       },
     },
     {
@@ -83,13 +135,26 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
 
         if (row.original.paymentStatus === true || status === "paid" || status === "completed" || status === "true") {
           return (
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-50 text-green-600 border border-green-100">
+            <span className="px-2.5 py-0.5 rounded-full text-sm font-semibold uppercase tracking-widest bg-green-50 text-green-600 border border-green-100">
               Paid
             </span>
           );
         }
 
-        const date = row.original.dueDate || row.original.invoiceDate;
+        let date = row.original.dueDate;
+        const terms = row.original.paymenTDueDate ?? row.original.fabricator?.paymenTDueDate;
+        if (!date && row.original.invoiceDate && terms !== undefined && terms !== null) {
+          const invDate = new Date(row.original.invoiceDate);
+          const days = parseInt(terms);
+          if (!isNaN(days)) {
+            invDate.setDate(invDate.getDate() + days);
+            date = invDate;
+          } else {
+            date = row.original.invoiceDate;
+          }
+        } else if (!date) {
+          date = row.original.invoiceDate;
+        }
         const isOverdue = date && new Date(date) < new Date();
 
         if (isOverdue) {
