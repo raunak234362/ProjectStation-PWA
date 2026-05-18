@@ -70,7 +70,7 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
     },
     {
       id: "overdueDays",
-      header: "Due By",
+      header: "Due FOR",
       cell: ({ row }) => {
         let date = row.original.dueDate;
         const terms = row.original.paymenTDueDate ?? row.original.fabricator?.paymenTDueDate;
@@ -181,7 +181,7 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
       </div>
 
       {/* Table Container */}
-      <div className="group">
+      <div className="group text-sm">
         <DataTable
           columns={columns}
           data={invoices}

@@ -243,7 +243,9 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
 
                         const invoiceDate = inv.invoiceDate || inv.createdAt;
                         let dueDateStr = "";
+                        let createdDateStr = "";
                         if (invoiceDate) {
+                          createdDateStr = `INVOICE DATE ${formatDate(new Date(inv.createdAt || invoiceDate))}`;
                           const date = new Date(invoiceDate);
                           const paymenTDueDate = inv.paymenTDueDate ?? inv.fabricator?.paymenTDueDate;
                           const days = typeof paymenTDueDate === 'number' ? paymenTDueDate : parseInt(String(paymenTDueDate).replace(/[^0-9]/g, "")) || 0;
@@ -261,7 +263,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                             className="cursor-pointer flex flex-row gap-5 items-center hover:text-[#6bbd45] transition-colors w-full"
                           >
                             <span>{invNum}</span> : 
-                            <span>{dueDateStr}{i < job.invoices.length - 1 ? "," : ""}</span>
+                            <span>({createdDateStr}{i < job.invoices.length - 1 ? "," : ""})</span>
                           </div>
                         );
                       })
