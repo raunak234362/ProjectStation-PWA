@@ -443,13 +443,19 @@ const ClientDashboard = () => {
         )}
         {/* Detailed Info Section */}
         <div className="grid grid-cols-1 gap-6 w-full">
-          <div className="w-full bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden min-h-[400px]">
-            <div className="p-2">
+          <div className="bg-white rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-auto min-h-[110px]">
+            <div className="p-3 px-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
+              <div>
+                <h2 className="text-lg font-semibold text-black uppercase tracking-widest">Upcoming Submittals</h2>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2">
               <UpcomingSubmittals
                 pendingSubmittals={upcomingSubmittals}
                 invoices={invoices}
                 initialTab="submittals"
                 hideTabs={true}
+                hideHeader={true}
                 hideFabricator={true}
                 onSubmittalClick={(submittal) => {
                   console.log("Clicked submittal:", submittal);

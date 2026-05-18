@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { ClipboardList, AlertCircle, X, FileText } from "lucide-react";
+import { ClipboardList, AlertCircle, X, FileText, Clock } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
 import GetMilestoneByID from "../../project/mileStone/GetMilestoneByID";
@@ -10,6 +10,7 @@ interface UpcomingSubmittalsProps {
   invoices?: any[];
   initialTab?: "submittals" | "invoices";
   hideTabs?: boolean;
+  hideHeader?: boolean;
   hideFabricator?: boolean;
   onSubmittalClick?: (submittal: any) => void;
   onInvoiceClick?: (invoice: any) => void;
@@ -20,6 +21,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
   invoices = [],
   initialTab = "submittals",
   hideTabs = false,
+  hideHeader = false,
   hideFabricator = false,
   onSubmittalClick,
   onInvoiceClick,
@@ -58,7 +60,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
 
   return (
     <div className="flex flex-col h-full p-2 transition-all duration-300">
-      {!hideTabs && (
+      {!hideHeader && !hideTabs && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 shrink-0">
           <div className="flex gap-2 p-1 rounded-xl self-start sm:self-auto bg-gray-100/50">
             <button
@@ -91,7 +93,7 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
           </span>
         </div>
       )}
-      {hideTabs && (
+      {!hideHeader && hideTabs && (
         <div className="flex items-center justify-between mb-6 shrink-0 ml-1">
           <h3 className="text-lg font-black text-black flex items-center gap-3 tracking-tight">
             {activeTab === "submittals" ? (
@@ -216,9 +218,13 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
               </div>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center h-40 text-gray-400 border-2 border-dashed border-gray-100 rounded-xl">
-              <ClipboardList size={24} className="mb-2 opacity-20" />
-              <p className="text-xs font-medium">No upcoming submittals</p>
+            <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center border border-green-100 mb-1.5 animate-pulse">
+                <Clock className="w-4.5 h-4.5 text-green-600" />
+              </div>
+              <h3 className="text-xs font-black text-gray-800 uppercase tracking-widest">
+                No Upcoming Submittals
+              </h3>
             </div>
           )
         ) : invoiceNeedRaise.length > 0 ? (
@@ -285,13 +291,15 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-40 text-gray-400 border-2 border-dashed border-gray-100 rounded-xl">
-            <ClipboardList size={24} className="mb-2 opacity-20" />
-            <p className="text-xs font-medium">
+          <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+            <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center border border-green-100 mb-1.5 animate-pulse">
+              <Clock className="w-4.5 h-4.5 text-green-600" />
+            </div>
+            <h3 className="text-xs font-black text-gray-800 uppercase tracking-widest">
               {userRole === "client"
                 ? "No invoices received"
                 : "No active invoices"}
-            </p>
+            </h3>
           </div>
         )}
       </div>
