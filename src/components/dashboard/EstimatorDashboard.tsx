@@ -47,7 +47,7 @@ const StatCard: React.FC<StatCardProps> = ({
       </div>
     </div>
     <div className="z-10 text-right">
-      <span className="text-2xl font-black text-black tracking-tighter">
+      <span className="text-4xl font-black text-black tracking-tighter">
         {value}
       </span>
     </div>
