@@ -135,7 +135,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-lg font-black text-black uppercase tracking-wider mb-4">
+          <h2 className="text-lg font-semibold text-black uppercase tracking-widest mb-4">
             INVOICE SUMMARY
           </h2>
           <div className="flex flex-wrap items-center gap-x-8 gap-y-4">

@@ -48,11 +48,22 @@ const RecentInvoiceActivity: React.FC<RecentActivityProps> = ({ invoices }) => {
           message = `Payment received for Invoice #${invNum}${projName}`;
           icon = CheckCircle;
           color = "bg-green-100 text-green-600";
-        } else if (inv.dueDate && new Date(inv.dueDate) < new Date()) {
-          type = "overdue";
-          message = `Invoice #${invNum} is overdue${projName}`;
-          icon = Clock;
-          color = "bg-red-100 text-red-600";
+        } else {
+          let dueDate = inv.dueDate;
+          if (!dueDate && inv.invoiceDate && inv.paymenTDueDate) {
+            const invDate = new Date(inv.invoiceDate);
+            invDate.setDate(invDate.getDate() + Number(inv.paymenTDueDate));
+            dueDate = invDate;
+          } else if (!dueDate) {
+            dueDate = inv.invoiceDate;
+          }
+
+          if (dueDate && new Date(dueDate) < new Date()) {
+            type = "overdue";
+            message = `Invoice #${invNum} is overdue${projName}`;
+            icon = Clock;
+            color = "bg-red-100 text-red-600";
+          }
         }
 
         // Format "Time Ago"

@@ -23,6 +23,7 @@ interface StatCardProps {
   icon: React.ElementType;
   onClick: () => void;
   iconPadding?: string;
+  valueSize?: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -31,6 +32,7 @@ const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   onClick,
   iconPadding = "p-3",
+  valueSize = "text-3xl",
 }) => (
   <div
     onClick={onClick}
@@ -41,13 +43,13 @@ const StatCard: React.FC<StatCardProps> = ({
         <Icon size={24} strokeWidth={2.5} />
       </div>
       <div className="flex flex-col">
-        <span className="text-sm font-black text-black uppercase tracking-widest">
+        <span className="text-md font-black text-black uppercase tracking-widest">
           {label}
         </span>
       </div>
     </div>
     <div className="z-10 text-right">
-      <span className="text-4xl font-black text-black tracking-tighter">
+      <span className={`${valueSize} font-black text-black tracking-tighter`}>
         {value}
       </span>
     </div>
@@ -213,7 +215,7 @@ const EstimatorDashboard = () => {
       accessorKey: "projectName",
       header: "PROJECT NAME",
       cell: ({ row }) => (
-        <div className="truncate max-w-[200px] font-bold text-gray-600 uppercase">
+        <div className="truncate max-w-[200px] font-bold uppercase">
           {row.original.project?.name || row.original.project?.projectName || row.original.projectName || row.original.project || "—"}
         </div>
       ),
@@ -221,11 +223,15 @@ const EstimatorDashboard = () => {
     {
       id: "requestedBy",
       header: "REQUESTED BY",
-      cell: ({ row }) => (
-        <span className="font-bold text-gray-500 uppercase">
-          {row.original.customerName || row.original.requestedBy?.name || row.original.requestedBy || row.original.clientName || "—"}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const sender = row.original.sender;
+        const senderName = sender ? `${sender.firstName || ""} ${sender.lastName || ""}`.trim() || sender.username : null;
+        return (
+          <span className="font-bold uppercase">
+            {senderName || row.original.customerName || row.original.requestedBy?.name || row.original.requestedBy || row.original.clientName || "—"}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "createdAt",
@@ -342,7 +348,7 @@ const EstimatorDashboard = () => {
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
-          <span className="text-lg font-black text-black uppercase tracking-widest">
+          <span className="text-lg font-semibold text-black uppercase tracking-widest">
             Material Take-off RFQ OVERVIEW
           </span>
           <div className="flex flex-col gap-6 w-full mt-4">
@@ -360,6 +366,7 @@ const EstimatorDashboard = () => {
                 label="Completed"
                 value={stats.awardedMTO}
                 iconPadding="p-1"
+                valueSize="text-3xl"
               />
               <StatCard
                 onClick={() => openModal("PENDING_MTO")}
@@ -372,7 +379,7 @@ const EstimatorDashboard = () => {
           </div>
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
-          <span className="text-lg font-black text-black uppercase tracking-widest">
+          <span className="text-lg font-semibold text-black uppercase tracking-widest">
             DETAILING RFQ OVERVIEW
           </span>
           <div className="flex flex-col gap-6 w-full mt-4">
@@ -397,39 +404,56 @@ const EstimatorDashboard = () => {
                 label="Pending"
                 value={stats.pendingEstimates}
                 iconPadding="p-1"
+                valueSize="text-3xl"
               />
             </div>
           </div>
         </div>
       </div>
-        {userRole === "CLIENT_ESTIMATOR" ? (
+      <div className="bg-white rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-[400px]">
+        <div className="p-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
           <div>
-            <InvoiceSummary 
-              invoices={allInvoices} 
-              projects={allProjects} 
-              rfqs={allRFQs} 
-              onInvoiceClick={(id) => setSelectedInvoiceId(id)}
-            />
+            <h2 className="text-lg font-semibold text-black uppercase tracking-widest">Upcoming Material Take-off</h2>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            <StatCard
-              onClick={() => openModal("ALL_INVOICES")}
-              icon={CheckCircle2}
-              label="Total Invoiced"
-              value={stats.totalInvoiced}
-              valueSize="text-2xl md:text-3xl"
-            />
+        </div>
+        <div className="flex-1 overflow-y-auto p-2">
+          <DataTable
+            columns={rfqColumns}
+            data={recentRFQs}
+            onRowClick={(row: any) => setSelectedRFQId(row.id || row._id)}
+            disablePagination={true}
+            noBorder={true}
+          />
+        </div>
+      </div>
+      {userRole === "CLIENT_ESTIMATOR" ? (
+        <div>
+          <InvoiceSummary
+            invoices={allInvoices}
+            projects={allProjects}
+            rfqs={allRFQs}
+            onInvoiceClick={(id) => setSelectedInvoiceId(id)}
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <StatCard
+            onClick={() => openModal("ALL_INVOICES")}
+            icon={CheckCircle2}
+            label="Total Invoiced"
+            value={stats.totalInvoiced}
+            valueSize="text-2xl md:text-3xl"
+          />
 
-            <StatCard
-              onClick={() => openModal("PENDING_INVOICES")}
-              icon={DollarSign}
-              label="Pending Invoiced"
-              value={stats.pendingInvoices}
-              valueSize="text-2xl md:text-3xl"
-            />
-          </div>
-        )}
+          <StatCard
+            onClick={() => openModal("PENDING_INVOICES")}
+            icon={DollarSign}
+            label="Pending Invoiced"
+            value={stats.pendingInvoices}
+            valueSize="text-2xl md:text-3xl"
+          />
+        </div>
+      )}
 
       <ActionListModal
         isOpen={isModalOpen}

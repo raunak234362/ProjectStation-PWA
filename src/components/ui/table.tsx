@@ -345,7 +345,7 @@ export default function DataTable<T extends object>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className={`px-4 py-5 text-[11px] md:text-sm text-black dark:text-slate-300 font-semibold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400 ${
+                          className={`px-4 py-5 text-sm text-black dark:text-slate-300 font-semibold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400 ${
                             (cell.column.columnDef.meta as any)?.align === "center" ? "text-center" : 
                             (cell.column.columnDef.meta as any)?.align === "right" ? "text-right" : "text-left"
                           }`}
