@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Loader2, AlertCircle, X, Download } from "lucide-react";
+import { Loader2, AlertCircle, Download } from "lucide-react";
 import Service from "../../api/Service";
 import logo from "../../assets/logo.png";
 import { useDispatch } from "react-redux";
