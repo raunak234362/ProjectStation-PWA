@@ -8,21 +8,36 @@ interface StatsProps {
 const InvoiceStatsCards: React.FC<StatsProps> = ({ invoices }) => {
     // Calculate Stats
     const totalInvoices = invoices.length;
-    const totalReceived = invoices
-        .filter((inv) => inv.paymentStatus === "Paid" || inv.paymentStatus === true) // Assuming 'Paid' or true based on legacy
-        .reduce((sum, inv) => sum + (parseFloat(inv.totalInvoiceValue) || 0), 0);
 
-    const pendingInvoices = invoices.filter((inv) => !inv.paymentStatus || inv.paymentStatus === "Pending");
-    const pendingAmount = pendingInvoices.reduce((sum, inv) => sum + (parseFloat(inv.totalInvoiceValue) || 0), 0);
+    const isInvPaid = (inv: any) => {
+        return inv.paymentStatus === true ||
+            String(inv.paymentStatus).toLowerCase() === "true" ||
+            String(inv.paymentStatus).toLowerCase() === "paid" ||
+            String(inv.status).toLowerCase() === "paid" ||
+            String(inv.status).toLowerCase() === "completed";
+    };
 
-    // Simple Overdue Logic: If pending and dueDate < now
+    const paidInvoices = invoices.filter(isInvPaid);
+    const pendingInvoices = invoices.filter((inv) => !isInvPaid(inv));
+
+    const totalReceived = paidInvoices.reduce((sum, inv) => sum + (parseFloat(inv.totalInvoiceValue || inv.totalAmount || inv.amount) || 0), 0);
+    const pendingAmount = pendingInvoices.reduce((sum, inv) => sum + (parseFloat(inv.totalInvoiceValue || inv.totalAmount || inv.amount) || 0), 0);
+
+    // Simple Overdue Logic: If pending and dueDate (or invoiceDate fallback) < now
     const overdueInvoices = pendingInvoices.filter((inv) => {
-        if (!inv.dueDate) return false;
-        return new Date(inv.dueDate) < new Date();
+        const date = inv.dueDate || inv.invoiceDate || inv.createdAt;
+        if (!date) return false;
+
+        const dueDateObj = new Date(date);
+        dueDateObj.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return dueDateObj < today;
     });
 
     const overdueCount = overdueInvoices.length;
-    const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + (parseFloat(inv.totalInvoiceValue) || 0), 0);
+    const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + (parseFloat(inv.totalInvoiceValue || inv.totalAmount || inv.amount) || 0), 0);
 
     const stats = [
         {

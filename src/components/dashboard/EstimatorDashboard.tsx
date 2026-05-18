@@ -90,7 +90,7 @@ const EstimatorDashboard = () => {
         setLoading(true);
         // Using getAllRFQFab, getFabricatorAllInvoice and GetAllProjects
         const role = sessionStorage.getItem("userRole")?.toUpperCase();
-        
+
         let rfqService;
         if (role === "CLIENT_ESTIMATOR") {
           rfqService = Service.GetClientEstimatorRFQ();
@@ -135,7 +135,7 @@ const EstimatorDashboard = () => {
         setRecentInvoices(invoices.filter((i: any) => new Date(i.createdAt) >= oneWeekAgo));
 
         // Calculate Detailing Stats (Based on specific design/detailing flags)
-        const detailingRfqs = rfqs.filter((r: any) => 
+        const detailingRfqs = rfqs.filter((r: any) =>
           r.connectionDesign || r.customerDesign || r.detailingMain || r.detailingMisc || r.miscDesign
         );
         const totalRfqsSent = detailingRfqs.length;
@@ -213,28 +213,37 @@ const EstimatorDashboard = () => {
   const rfqColumns: ExtendedColumnDef<any>[] = [
     {
       accessorKey: "projectName",
-      header: "Project Name",
+      header: "PROJECT NAME",
       cell: ({ row }) => (
-        <div className="truncate max-w-[200px] font-bold text-gray-600">
+        <div className="truncate max-w-[200px] font-bold text-gray-600 uppercase">
           {row.original.project?.name || row.original.project?.projectName || row.original.projectName || row.original.project || "—"}
         </div>
       ),
     },
     {
-      accessorKey: "createdAt",
-      header: "Sent On",
+      id: "requestedBy",
+      header: "REQUESTED BY",
       cell: ({ row }) => (
-        <span className="font-bold text-gray-500">
+        <span className="font-bold text-gray-500 uppercase">
+          {row.original.customerName || row.original.requestedBy?.name || row.original.requestedBy || row.original.clientName || "—"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "CREATED DATE",
+      cell: ({ row }) => (
+        <span className="font-bold text-gray-500 uppercase">
           {row.original.createdAt ? new Date(row.original.createdAt).toLocaleDateString() : row.original.date || "—"}
         </span>
       ),
     },
     {
       accessorKey: "estimationDate",
-      header: "Due Date",
+      header: "DUE DATE",
       cell: ({ row }) => {
         const estDate = row.original.estimationDate;
-        if (!estDate) return "—";
+        if (!estDate) return <span className="font-bold text-gray-500 uppercase">—</span>;
 
         const d = new Date(estDate);
         const today = new Date();
@@ -249,35 +258,30 @@ const EstimatorDashboard = () => {
         }
 
         return (
-          <span className={`font-bold ${colorClass}`}>
+          <span className={`font-bold uppercase ${colorClass}`}>
             {d.toLocaleDateString()}
           </span>
         );
       },
     },
-    ...(userRole === "CLIENT_ESTIMATOR" ? [] : [{
-      header: "RFQ Type",
-      cell: ({ row }: any) => {
-        const r = row.original;
-        const isDetailing = r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
-        const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
-        
-        let label = "—";
-        if (isDetailing && isMTO) label = "Detailing | MTO";
-        else if (isDetailing) label = "Detailing";
-        else if (isMTO) label = "MTO";
+    {
+      accessorKey: "status",
+      header: "STATUS",
+      cell: ({ row }) => {
+        const status = (row.original.status || row.original.wbtStatus || "PENDING").toString().toUpperCase();
+        let bg = "bg-gray-50 text-gray-700 border-gray-200";
+        if (status === "AWARDED") bg = "bg-green-50 text-green-700 border-green-200";
+        else if (status === "PENDING" || status === "ESTIMATION IN PROGRESS" || status === "IN_REVIEW") bg = "bg-yellow-50 text-yellow-700 border-yellow-200";
+        else if (status === "CLOSED" || status === "NOT SELECTED") bg = "bg-red-50 text-red-700 border-red-200";
 
+        const displayStatus = status === "IN_REVIEW" ? "ESTIMATION IN PROGRESS" : status.replace("_", " ");
         return (
-          <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-            label !== "—" 
-              ? "bg-blue-50 text-blue-700 border-blue-200" 
-              : "bg-gray-50 text-gray-400 border-gray-200"
-          }`}>
-            {label}
+          <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${bg}`}>
+            {displayStatus}
           </span>
         );
-      },
-    }]),
+      }
+    }
   ];
 
   const invoiceColumns: ExtendedColumnDef<any>[] = [
@@ -402,75 +406,50 @@ const EstimatorDashboard = () => {
           </div>
         </div>
       </div>
-        {userRole === "CLIENT_ESTIMATOR" ? (
+      <div className="bg-white rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-[400px]">
+        <div className="p-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
           <div>
-            <InvoiceSummary 
-              invoices={allInvoices} 
-              projects={allProjects} 
-              rfqs={allRFQs} 
-              onInvoiceClick={(id) => setSelectedInvoiceId(id)}
-            />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            <StatCard
-              onClick={() => openModal("ALL_INVOICES")}
-              icon={CheckCircle2}
-              label="Total Invoiced"
-              value={stats.totalInvoiced}
-              valueSize="text-2xl md:text-3xl"
-            />
-
-            <StatCard
-              onClick={() => openModal("PENDING_INVOICES")}
-              icon={DollarSign}
-              label="Pending Invoiced"
-              value={stats.pendingInvoices}
-              valueSize="text-2xl md:text-3xl"
-            />
-          </div>
-        )}
-
-      {/* Tables Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full mt-8">
-
-        {/* RFQs Table */}
-        <div className="bg-white rounded-3xl border border-black shadow-sm overflow-hidden flex flex-col h-[400px]">
-          <div className="p-6 border-b border-black bg-gray-50 flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-semibold text-black uppercase tracking-tight">Upcoming Material Take-off</h2>
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto p-2">
-            <DataTable
-              columns={rfqColumns}
-              data={recentRFQs}
-              onRowClick={(row: any) => setSelectedRFQId(row.id || row._id)}
-              disablePagination={true}
-              noBorder={true}
-            />
+            <h2 className="text-lg font-semibold text-black uppercase tracking-tight">Upcoming Material Take-off</h2>
           </div>
         </div>
-
-        {/* Invoices Table */}
-        <div className="bg-white rounded-3xl border border-black shadow-sm overflow-hidden flex flex-col h-[400px]">
-          <div className="p-6 border-b border-black bg-gray-50 flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-semibold text-black uppercase tracking-tight">Recent Invoices</h2>
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto p-2">
-            <DataTable
-              columns={invoiceColumns}
-              data={recentInvoices}
-              onRowClick={(row: any) => setSelectedInvoiceId(row.id || row._id)}
-              disablePagination={true}
-              noBorder={true}
-            />
-          </div>
+        <div className="flex-1 overflow-y-auto p-2">
+          <DataTable
+            columns={rfqColumns}
+            data={recentRFQs}
+            onRowClick={(row: any) => setSelectedRFQId(row.id || row._id)}
+            disablePagination={true}
+            noBorder={true}
+          />
         </div>
-
       </div>
+      {userRole === "CLIENT_ESTIMATOR" ? (
+        <div>
+          <InvoiceSummary
+            invoices={allInvoices}
+            projects={allProjects}
+            rfqs={allRFQs}
+            onInvoiceClick={(id) => setSelectedInvoiceId(id)}
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <StatCard
+            onClick={() => openModal("ALL_INVOICES")}
+            icon={CheckCircle2}
+            label="Total Invoiced"
+            value={stats.totalInvoiced}
+            valueSize="text-2xl md:text-3xl"
+          />
+
+          <StatCard
+            onClick={() => openModal("PENDING_INVOICES")}
+            icon={DollarSign}
+            label="Pending Invoiced"
+            value={stats.pendingInvoices}
+            valueSize="text-2xl md:text-3xl"
+          />
+        </div>
+      )}
 
       <ActionListModal
         isOpen={isModalOpen}

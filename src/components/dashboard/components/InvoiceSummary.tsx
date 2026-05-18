@@ -131,11 +131,11 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col p-6 w-full mt-2">
+    <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden flex flex-col p-6 w-full mt-2">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-lg font-black text-gray-600 uppercase tracking-[0.15em] mb-4">
+          <h2 className="text-lg font-black text-black uppercase tracking-wider mb-4">
             INVOICE SUMMARY
           </h2>
           <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
@@ -196,11 +196,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
       </div>
 
       {/* Jobs List */}
-<<<<<<< HEAD
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-=======
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
->>>>>>> bb0a3d3abc9ba397999a6230381edcb678a1082a
         {jobSummaries.map((job) => {
           const blockTotal = Math.max(job.totalRaised, job.bidPrice || 0);
           const paidPercent = blockTotal > 0 ? (job.paid / blockTotal) * 100 : 0;
@@ -210,18 +206,14 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           return (
             <div
               key={job.jobName}
-              className="bg-gray-50/60 p-5 rounded-2xl border border-gray-100 flex flex-col gap-4 hover:shadow-md transition-shadow hover:bg-white justify-between"
+              className="bg-gray-50 p-5 rounded-2xl border border-black flex flex-col gap-4 hover:shadow-md transition-shadow hover:bg-white justify-between"
             >
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1">
-<<<<<<< HEAD
-                  <h4 className="text-md text-gray-800 uppercase tracking-tight leading-snug">
-=======
                   <h4 className="text-base font-bold text-gray-800 uppercase tracking-tight leading-snug">
->>>>>>> bb0a3d3abc9ba397999a6230381edcb678a1082a
                     {job.jobName}
                   </h4>
-                  <div className="text-sm font-bold text-gray-400 mt-2 uppercase tracking-wide flex flex-wrap gap-1">
+                  <div className="text-sm font-semibold text-gray-700 mt-2 uppercase tracking-wide flex flex-wrap gap-1">
                     {job.invoices && job.invoices.length > 0 ? (
                       job.invoices.map((inv: any, i: number) => {
                         const invNum = inv.invoiceNumber 
@@ -245,51 +237,27 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                     )}
                   </div>
                 </div>
-<<<<<<< HEAD
-                <div className="flex flex-col items-end whitespace-nowrap">
-                  <span className="text-sm text-gray-800 uppercase tracking-widest">
-                    TOTAL RAISED / BID PRICE
-                  </span>
-                  <span className="text-md md:text-md font-bold text-gray-900 mt-1">
-=======
                 <div className="flex flex-col items-end whitespace-nowrap text-right">
-                  <span className="text-sm font-black text-gray-400 uppercase tracking-widest">
+                  <span className="text-sm font-semibold text-gray-700 uppercase tracking-widest">
                     TOTAL RAISED / BID PRICE
                   </span>
-                  <span className="text-base font-black text-gray-900 mt-1">
->>>>>>> bb0a3d3abc9ba397999a6230381edcb678a1082a
+                  <span className="text-base font-bold text-gray-900 mt-1">
                     ${job.totalRaised.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / $
                     {(job.bidPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
               </div>
 
-<<<<<<< HEAD
-              <div className="flex justify-between items-end mt-2">
-                <span className="text-xs font-black text-[#5da63c] uppercase tracking-wide">
-                  PAID: ${job.paid.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}{" "}
-                  {/* <span className="text-gray-400 font-bold ml-1 text-[10px]">
-                    ({job.invoices.length} INVOICES)
-                  </span> */}
-                </span>
-                <span className="text-xs font-black text-red-500 uppercase tracking-wide">
-                  PENDING: ${job.pending.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                </span>
-              </div>
-=======
               <div className="mt-auto pt-2">
                 <div className="flex justify-between items-end mb-2">
                   <span className="text-sm font-black text-[#5da63c] uppercase tracking-wide">
                     PAID: ${job.paid.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}{" "}
-                    <span className="text-gray-400 font-bold ml-1 text-sm">
-                      ({job.invoices.length} INVOICES)
-                    </span>
+                 
                   </span>
                   <span className="text-sm font-black text-red-500 uppercase tracking-wide">
                     PENDING: ${job.pending.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </span>
                 </div>
->>>>>>> bb0a3d3abc9ba397999a6230381edcb678a1082a
 
                 <div className="w-full h-3 bg-gray-200/80 rounded-full overflow-hidden flex shadow-inner">
                   <div

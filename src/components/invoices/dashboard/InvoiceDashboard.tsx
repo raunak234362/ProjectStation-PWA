@@ -150,21 +150,21 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
       <InvoiceStatsCards invoices={filteredInvoices} />
 
       {/* Analytics (Charts) */}
-      <InvoiceAnalytics 
+      {/* <InvoiceAnalytics 
         invoices={filteredInvoices} 
         fromMonth={fromMonth}
         toMonth={toMonth}
-      />
+      /> */}
 
       {/* Bottom Section: List + Activity */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+      {/* <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
         <div className="xl:col-span-2 h-full">
           <PendingInvoiceList invoices={filteredInvoices} />
         </div>
         <div className="xl:col-span-1 h-full">
           <RecentInvoiceActivity invoices={filteredInvoices} />
         </div>
-      </div>
+      </div> */}
 
       {/* All Invoices */}
       <div className="w-full mt-6">

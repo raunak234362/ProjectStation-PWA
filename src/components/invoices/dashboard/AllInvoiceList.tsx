@@ -21,29 +21,25 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
         );
       },
     },
+    // {
+    //   accessorKey: "customerName",
+    //   header: "Client",
+    //   enableColumnFilter: true,
+    // },
     {
-      accessorKey: "customerName",
-      header: "Client",
-      enableColumnFilter: true,
-    },
-    {
-      accessorKey: "projectName",
+      accessorKey: "jobName",
       header: "Project",
       enableColumnFilter: true,
-      cell: ({ row }) => (
-        <span className="text-gray-600 italic">
-          {row.original.project?.name || row.original.projectName || "—"}
-        </span>
-      ),
+      cell: ({ row }) => row.original.jobName || "—",
     },
     {
       accessorKey: "invoiceDate",
-      header: "Issued Date",
+      header: "Invoice Date",
       cell: ({ row }) => formatDate(row.getValue("invoiceDate")),
     },
     {
       accessorKey: "dueDate",
-      header: "Due Date",
+      header: "Invoice Due",
       cell: ({ row }) => {
         const date = row.original.dueDate || row.original.invoiceDate; // Fallback
         const isOverdue = date && new Date(date) < new Date() && row.original.paymentStatus !== "Paid";
@@ -84,7 +80,7 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
       cell: ({ row }) => {
         const rawStatus = row.original.paymentStatus || row.original.status || "Pending";
         const status = String(rawStatus).toLowerCase();
-        
+
         if (row.original.paymentStatus === true || status === "paid" || status === "completed" || status === "true") {
           return (
             <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-50 text-green-600 border border-green-100">

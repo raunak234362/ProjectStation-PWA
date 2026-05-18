@@ -10,7 +10,9 @@ const InvoiceLayout = () => {
     <div className="w-full overflow-y-hidden overflow-x-hidden">
       <div className="flex flex-col w-full h-full">
         <div className="px-3 py-2 flex flex-wrap items-center justify-center md:justify-end gap-3">
-          <button
+          
+          {["client", "client_admin", "admin", "project_manager_officer", "sales_manager", "operation_executive"].includes(userRole) && (
+        <>  <button
             onClick={() => setActiveTab("dashboard")}
             className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "dashboard"
               ? "bg-green-200 text-black shadow-medium"
@@ -19,8 +21,6 @@ const InvoiceLayout = () => {
           >
             Invoice Home
           </button>
-          
-          {["client", "client_admin", "admin", "project_manager_officer", "sales_manager", "operation_executive"].includes(userRole) && (
             <button
               onClick={() => setActiveTab("allInvoices")}
               className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allInvoices"
@@ -29,7 +29,7 @@ const InvoiceLayout = () => {
                 }`}
             >
               All Invoices
-            </button>
+            </button></>
           )}
           {userRole === "sales" || userRole === "sales_manager" || userRole === "admin" || userRole === "project_manager_officer" ? (
             <>
