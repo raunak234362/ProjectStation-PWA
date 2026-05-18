@@ -44,20 +44,20 @@ const StatCard: React.FC<{
 }> = ({ label, value, icon: Icon, onClick }) => (
   <div
     onClick={onClick}
-    className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
+    className="p-6 text-md rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
   >
     <div className="flex items-center gap-4 z-10">
       <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-        <Icon size={24} strokeWidth={2.5} />
+        <Icon size={18} strokeWidth={2.5} />
       </div>
       <div className="flex flex-col">
-        <span className="text-sm font-black text-black uppercase tracking-widest">
+        <span className="font-bold text-black uppercase tracking-wide">
           {label}
         </span>
       </div>
     </div>
     <div className="z-10 text-right">
-      <span className="text-4xl font-black text-black tracking-tighter">
+      <span className="font-bold text-black tracking-tighter">
         {value}
       </span>
     </div>
