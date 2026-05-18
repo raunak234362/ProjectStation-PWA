@@ -256,7 +256,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
           {/* Search Bar */}
           <div className="relative group max-w-xl flex-1 min-w-[300px]">
             <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
-            <div className="relative bg-white border border-gray-100 rounded-xl p-1 flex items-center shadow-sm hover:border-green-200 transition-colors">
+            <div className="relative bg-white border border-gray-100 rounded-xl flex items-center shadow-sm hover:border-green-200 transition-colors">
               <Search className="ml-3 w-5 h-5 text-gray-400" />
               <input
                 type="text"
@@ -283,7 +283,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
             >
-              <option value="ALL">All Months</option>
+              <option value="ALL">ALL MONTHS</option>
               {monthOptions.map((m) => (
                 <option key={m.value} value={m.value}>{m.label}</option>
               ))}
@@ -295,7 +295,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
               onChange={(e) => setSelectedYear(e.target.value)}
               className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
             >
-              <option value="ALL">All Years</option>
+              <option value="ALL">ALL YEARS</option>
               {yearOptions.map((y) => (
                 <option key={y} value={y}>{y}</option>
               ))}
