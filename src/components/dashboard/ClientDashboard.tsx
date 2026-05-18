@@ -51,13 +51,13 @@ const StatCard: React.FC<{
         <Icon size={24} strokeWidth={2.5} />
       </div>
       <div className="flex flex-col">
-        <span className="text-[10px] sm:text-xs font-black text-black uppercase tracking-widest">
+        <span className="text-sm font-black text-black uppercase tracking-widest">
           {label}
         </span>
       </div>
     </div>
     <div className="z-10 text-right">
-      <span className="text-2xl md:text-3xl font-black text-black tracking-tighter">
+      <span className="text-base font-black text-black tracking-tighter">
         {value}
       </span>
     </div>
@@ -382,7 +382,7 @@ const ClientDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* MTO Overview */}
             <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
-              <h2 className="text-lg font-black text-black uppercase mb-6 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-black uppercase mb-6 flex items-center gap-2">
                 <FileText size={18} className="text-[#6bbd45]" />
                 MATERIAL TAKE-OFF RFQ OVERVIEW
               </h2>
@@ -412,7 +412,7 @@ const ClientDashboard = () => {
 
             {/* Detailing Overview */}
             <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
-              <h2 className="text-lg font-black text-black uppercase mb-6 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-black uppercase mb-6 flex items-center gap-2">
                 <Activity size={18} className="text-[#6bbd45]" />
                 DETAILING RFQ OVERVIEW
               </h2>
