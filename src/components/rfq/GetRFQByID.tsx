@@ -813,24 +813,20 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                         onRowClick={(row: any) => setSelectedQuotation(row)}
                       />
                     </>
-                  ) : (
+                  ) : userRole === "connection_designer_engineer" ? (
                     // Show Submit Button if not submitted
                     <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                      {userRole === "connection_designer_engineer" ? (
-                        <>
-                          <p className="text-gray-500 mb-4 text-center">
-                            You haven't submitted a quotation yet.
-                          </p>
-                          <Button
-                            onClick={() => setShowQuotationResponseModal(true)}
-                            className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
-                          >
-                            Submit Quotation Response
-                          </Button>
-                        </>
-                      ) : null}
+                      <p className="text-gray-500 mb-4 text-center">
+                        You haven't submitted a quotation yet.
+                      </p>
+                      <Button
+                        onClick={() => setShowQuotationResponseModal(true)}
+                        className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                      >
+                        Submit Quotation Response
+                      </Button>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
@@ -971,27 +967,27 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         {/* Status Change Modal */}
         {showStatusModal && (
           <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl  text-blue-600 flex items-center gap-2">
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200 border border-black/10">
+              <div className="flex justify-between items-center mb-6 pb-4 border-b border-black/10">
+                <h3 className="text-xl sm:text-2xl font-black text-green-600 uppercase tracking-tight flex items-center gap-2">
                   Change RFQ Status
                 </h3>
                 <button
                   onClick={() => setShowStatusModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="px-4 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
                 >
-                  <X size={20} />
+                  Close
                 </button>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2">
                     New Status
                   </label>
                   <select
                     value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    className="w-full px-4 py-3 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-black uppercase text-xs tracking-widest cursor-pointer bg-white"
                   >
                     <option value="">Select Status</option>
                     <option value="CLOSED">CLOSED</option>
@@ -1000,7 +996,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2">
                     Reason for Change {(newStatus === "CLOSED" || newStatus === "RE_APPROVED") && "*"}
                   </label>
                   <textarea
@@ -1008,22 +1004,16 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     onChange={(e) => setStatusReason(e.target.value)}
                     placeholder="Enter reason..."
                     rows={3}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
+                    className="w-full px-4 py-3 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-black text-sm transition-all resize-none"
                   />
                 </div>
               </div>
-              <div className="flex gap-3 mt-6">
-                <Button
-                  onClick={() => setShowStatusModal(false)}
-                  className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
-                >
-                  Cancel
-                </Button>
+              <div className="flex mt-8 pt-4 border-t border-black/10">
                 <Button
                   type="button"
                   onClick={handleStatusUpdate}
                   disabled={isUpdatingStatus}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black uppercase text-xs tracking-[0.2em] shadow-sm transition-all"
                 >
                   {isUpdatingStatus ? "Updating..." : "Update Status"}
                 </Button>
