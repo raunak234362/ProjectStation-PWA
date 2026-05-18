@@ -198,6 +198,8 @@ const ResponseDetailsModal = ({
                 files={response.files}
                 table="rfqResponse"
                 parentId={response.id}
+                hideHeader={true}
+                noAccordion={true}
               />
             </div>
           </div>

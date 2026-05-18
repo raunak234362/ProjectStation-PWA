@@ -18,6 +18,7 @@ interface RenderFilesProps {
   parentId: string | number;
   versionId?: string | number;
   hideHeader?: boolean;
+  noAccordion?: boolean;
 }
 
 const RenderFiles: React.FC<RenderFilesProps> = ({
@@ -27,7 +28,8 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
   table,
   parentId,
   versionId,
-  hideHeader = false
+  hideHeader = false,
+  noAccordion = false
 }) => {
   const dispatch = useDispatch();
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -185,6 +187,47 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
             ? `${firstFile.user.firstName || firstFile.user.f_name || ''} ${firstFile.user.lastName || firstFile.user.l_name || ''
             }`
             : 'Unknown User'
+
+          if (noAccordion) {
+            return (
+              <div key={description} className="grid grid-cols-1 gap-2">
+                {filesArray.map((file: any, index: number) => (
+                  <div
+                    key={file.id || `file-${index}`}
+                    className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:bg-gray-50 hover:border-black/10 transition-all group/file shadow-sm"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 group-hover/file:bg-black group-hover/file:text-white transition-colors">
+                      <FileText size={16} />
+                    </div>
+
+                    <FileItem
+                      name={file.originalName || `File ${index + 1}`}
+                      onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
+                      className="flex-1 min-w-0"
+                    />
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={(e) => handleShare(e, file)}
+                        className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all"
+                        title="Share Link"
+                      >
+                        <Share2 size={16} />
+                      </button>
+                      <button
+                        onClick={(e) => handleDownload(e, file)}
+                        className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all"
+                        title="Download"
+                      >
+                        <Download size={16} />
+                      </button>
+                      <ChevronRight size={16} className="text-gray-300 ml-1" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          }
 
           return (
             <div

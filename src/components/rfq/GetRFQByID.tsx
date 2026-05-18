@@ -550,6 +550,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
           <div className="flex items-center gap-2 sm:gap-3">
             {userRole !== "client" &&
               userRole !== "client_admin" &&
+              userRole !== "client_estimator" &&
               userRole !== "connection_designer_engineer" &&
               userRole !== "connection_designer_admin" && (
                 <>
@@ -747,10 +748,10 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               />
 
               {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-              <div className="bg-gray-50 border border-gray-200 p-4 sm:p-8 rounded-[2rem] shadow-sm space-y-6">
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-md shadow-sm space-y-3">
                 {/* Header + Add Response Button */}
                 <div className="flex justify-between items-center gap-4">
-                  <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-tighter">
+                  <h1 className="text-xl font-semibold text-black uppercase tracking-tighter">
                     Responses
                   </h1>
 
