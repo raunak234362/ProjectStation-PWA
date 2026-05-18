@@ -196,10 +196,6 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
                     key={file.id || `file-${index}`}
                     className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:bg-gray-50 hover:border-black/10 transition-all group/file shadow-sm"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 group-hover/file:bg-black group-hover/file:text-white transition-colors">
-                      <FileText size={16} />
-                    </div>
-
                     <FileItem
                       name={file.originalName || `File ${index + 1}`}
                       onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
@@ -285,10 +281,6 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
                         key={file.id || `file-${index}`}
                         className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:bg-gray-50 hover:border-black/10 transition-all group/file"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 group-hover/file:bg-black group-hover/file:text-white transition-colors">
-                          <FileText size={16} />
-                        </div>
-
                         <FileItem
                           name={file.originalName || `File ${index + 1}`}
                           onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
