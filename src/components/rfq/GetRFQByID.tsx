@@ -111,6 +111,18 @@ const RFQResponseItem = ({
       {/* Content */}
       {isOpen && (
         <div className="p-6 bg-white animate-in slide-in-from-top-2 duration-300 space-y-6">
+          {/* Subject Section */}
+          {response.subject && (
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
+                Subject
+              </span>
+              <div className="text-sm font-bold text-black uppercase tracking-tight bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                {response.subject}
+              </div>
+            </div>
+          )}
+
           {/* Main Message Section */}
           <div>
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
@@ -783,79 +795,101 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   Responses
                 </h1>
 
-                {(userRole === "admin" ||
-                  userRole === "deputy_manager" ||
-                  userRole === "operation_executive" ||
-                  userRole === "user") && (
-                    <Button
-                      onClick={() => {
-                        setSelectedParentResponseId(null);
-                        setShowResponseModal(true);
-                      }}
-                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
-                    >
-                      + Add Response
-                    </Button>
-                  )}
-              </div>
-              {showResponseModal && (
-                <ResponseModal
-                  rfqId={id}
-                  onClose={() => {
-                    setShowResponseModal(false);
-                    setSelectedParentResponseId(null);
-                  }}
-                  onSuccess={fetchRfq}
-                  parentResponseId={selectedParentResponseId || undefined}
-                />
-              )}
-              {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
-              {userRole !== "connection_designer_engineer" &&
-                (topLevelResponses.length ? (
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    {topLevelResponses.map((resp: any) => (
-                      <RFQResponseItem
-                        key={resp.id}
-                        response={resp}
-                        onSelect={(r) => setSelectedResponse(r)}
-                        onReply={(parent) => {
-                          setSelectedParentResponseId(parent.id);
+                  {(userRole === "admin" ||
+                    userRole === "deputy_manager" ||
+                    userRole === "operation_executive" ||
+                    userRole === "user") && (
+                      <Button
+                        onClick={() => {
+                          setSelectedParentResponseId(null);
                           setShowResponseModal(true);
                         }}
+                        className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
+                      >
+                        + Add Response
+                      </Button>
+                    )}
+                </div>
+                {showResponseModal && (
+                  <ResponseModal
+                    rfqId={id}
+                    onClose={() => {
+                      setShowResponseModal(false);
+                      setSelectedParentResponseId(null);
+                    }}
+                    onSuccess={fetchRfq}
+                    parentResponseId={selectedParentResponseId || undefined}
+                  />
+                )}
+                {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
+                {userRole !== "connection_designer_engineer" &&
+                  (topLevelResponses.length ? (
+                    <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                      {topLevelResponses.map((resp: any) => (
+                        <RFQResponseItem
+                          key={resp.id}
+                          response={resp}
+                          onSelect={(r) => setSelectedResponse(r)}
+                          onReply={(parent) => {
+                            setSelectedParentResponseId(parent.id);
+                            setShowResponseModal(true);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-700 italic">No responses yet.</p>
+                  ))}
+                <div className="mt-4">
+                  {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                    <>
+                      <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                        CD Quotation
+                      </p>
+                      <DataTable
+                        columns={quotationColumns}
+                        data={rfq?.CDQuotas || []}
+                        pageSizeOptions={[5]}
+                        onRowClick={(row: any) => setSelectedQuotation(row)}
                       />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-700 italic">No responses yet.</p>
-                ))}
-              <div className="mt-4">
-                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                  <>
-                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-                      CD Quotation
-                    </p>
-                    <DataTable
-                      columns={quotationColumns}
-                      data={rfq?.CDQuotas || []}
-                      pageSizeOptions={[5]}
-                      onRowClick={(row: any) => setSelectedQuotation(row)}
-                    />
-                  </>
-                ) : userRole === "connection_designer_engineer" ? (
-                  // Show Submit Button if not submitted
-                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                    <p className="text-gray-500 mb-4 text-center">
-                      You haven't submitted a quotation yet.
-                    </p>
+                    </>
+                  ) : userRole === "connection_designer_engineer" ? (
+                    // Show Submit Button if not submitted
+                    <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                      <p className="text-gray-500 mb-4 text-center">
+                        You haven't submitted a quotation yet.
+                      </p>
+                      <Button
+                        onClick={() => setShowQuotationResponseModal(true)}
+                        className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                      >
+                        Submit Quotation Response
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              {userRole !== "client_admin" &&
+                userRole !== "client" &&
+                userRole !== "client_estimator" &&
+                userRole !== "connection_designer_engineer" &&
+                userRole !== "connection_designer_admin" && (
+                  <div className="flex flex-col gap-2 pt-2">
                     <Button
-                      onClick={() => setShowQuotationResponseModal(true)}
-                      className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                      onClick={() => setShowEstimationModal(true)}
+                      className="w-full sm:w-auto h-auto py-2.5 px-4 text-sm  bg-green-200 text-black border border-black shadow-xs"
                     >
-                      Submit Quotation Response
+                      Raise For Estimation
+                    </Button>
+                    <Button
+                      onClick={() => handleCDQuotationModal()}
+                      className="w-full sm:w-auto h-auto py-2.5 px-4 text-[11px] sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 whitespace-normal leading-tight "
+                    >
+                      Raise for Connection Designer Quotation
                     </Button>
                   </div>
-                ) : null}
-              </div>
+                )}
             </div>
 
 

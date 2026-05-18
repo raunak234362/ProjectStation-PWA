@@ -359,6 +359,7 @@ export interface RfqResponsePayload {
   rfqId: string;
   userId: string;
   parentResponseId: string | null;
+  subject?: string;
   description: string;
   files?: File[] | string[];
   link?: string | null;
