@@ -50,8 +50,13 @@ const RFQResponseItem = ({
             <User className="w-6 h-6 text-green-600" />
           </div>
           <div>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap mb-1">
               <span className="font-black text-black uppercase tracking-tight text-base">
+                {response.subject || "No Subject"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap text-gray-500 text-[11px]">
+              <span className="font-bold text-gray-700 uppercase tracking-widest">
                 {response.user?.firstName
                   ? `${response.user.firstName} ${response.user.lastName}`
                   : response.user?.username || "Team Member"}
@@ -61,10 +66,9 @@ const RFQResponseItem = ({
                   {response.user.role.replace("_", " ")}
                 </span>
               )}
-            </div>
-            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-gray-300">|</span>
               <Clock className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+              <span className="font-bold text-gray-400 uppercase tracking-widest">
                 {formatDateTime(response.createdAt)}
               </span>
             </div>
@@ -111,17 +115,7 @@ const RFQResponseItem = ({
       {/* Content */}
       {isOpen && (
         <div className="p-6 bg-white animate-in slide-in-from-top-2 duration-300 space-y-6">
-          {/* Subject Section */}
-          {response.subject && (
-            <div>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
-                Subject
-              </span>
-              <div className="text-sm font-bold text-black uppercase tracking-tight bg-gray-50/50 p-4 rounded-xl border border-gray-100">
-                {response.subject}
-              </div>
-            </div>
-          )}
+
 
           {/* Main Message Section */}
           <div>
