@@ -174,7 +174,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
             onChange={(e) => setSelectedYear(e.target.value)}
             className="py-2 px-4 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] font-bold text-gray-700 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all"
           >
-            <option value="all">All Years</option>
+            <option value="all">All YEARS</option>
             <option value="2024">2024</option>
             <option value="2025">2025</option>
             <option value="2026">2026</option>
@@ -185,7 +185,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
             onChange={(e) => setSelectedMonth(e.target.value)}
             className="py-2 px-4 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] font-bold text-gray-700 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all"
           >
-            <option value="all">All Months</option>
+            <option value="all">ALL MONTHS</option>
             {months.map((m) => (
               <option key={m.value} value={m.value}>
                 {m.label}
@@ -196,7 +196,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
       </div>
 
       {/* Jobs List */}
-      <div className="flex flex-col gap-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
         {jobSummaries.map((job) => {
           const blockTotal = Math.max(job.totalRaised, job.bidPrice || 0);
           const paidPercent = blockTotal > 0 ? (job.paid / blockTotal) * 100 : 0;
@@ -210,10 +210,10 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
             >
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1">
-                  <h4 className="text-sm md:text-[15px] font-bold text-gray-800 uppercase tracking-tight leading-snug">
+                  <h4 className="text-md text-gray-800 uppercase tracking-tight leading-snug">
                     {job.jobName}
                   </h4>
-                  <div className="text-[11px] font-bold text-gray-400 mt-2 uppercase tracking-wide flex flex-wrap gap-1">
+                  <div className="text-sm font-bold text-gray-400 mt-2 uppercase tracking-wide flex flex-wrap gap-1">
                     {job.invoices && job.invoices.length > 0 ? (
                       job.invoices.map((inv: any, i: number) => {
                         const invNum = inv.invoiceNumber 
@@ -238,10 +238,10 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                   </div>
                 </div>
                 <div className="flex flex-col items-end whitespace-nowrap">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  <span className="text-sm text-gray-800 uppercase tracking-widest">
                     TOTAL RAISED / BID PRICE
                   </span>
-                  <span className="text-sm md:text-[15px] font-black text-gray-900 mt-1">
+                  <span className="text-md md:text-md font-bold text-gray-900 mt-1">
                     ${job.totalRaised.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / $
                     {(job.bidPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
@@ -251,9 +251,9 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
               <div className="flex justify-between items-end mt-2">
                 <span className="text-xs font-black text-[#5da63c] uppercase tracking-wide">
                   PAID: ${job.paid.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}{" "}
-                  <span className="text-gray-400 font-bold ml-1 text-[10px]">
+                  {/* <span className="text-gray-400 font-bold ml-1 text-[10px]">
                     ({job.invoices.length} INVOICES)
-                  </span>
+                  </span> */}
                 </span>
                 <span className="text-xs font-black text-red-500 uppercase tracking-wide">
                   PENDING: ${job.pending.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -275,7 +275,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
         })}
 
         {jobSummaries.length === 0 && (
-          <div className="text-center py-10 text-gray-400 font-medium italic text-sm">
+          <div className="col-span-full text-center py-10 text-gray-400 font-medium italic text-sm">
             No invoice data found for the selected period.
           </div>
         )}
