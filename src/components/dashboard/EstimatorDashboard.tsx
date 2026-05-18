@@ -23,7 +23,6 @@ interface StatCardProps {
   icon: React.ElementType;
   onClick: () => void;
   iconPadding?: string;
-  valueSize?: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -32,7 +31,6 @@ const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   onClick,
   iconPadding = "p-3",
-  valueSize = "text-3xl md:text-4xl",
 }) => (
   <div
     onClick={onClick}
@@ -49,7 +47,7 @@ const StatCard: React.FC<StatCardProps> = ({
       </div>
     </div>
     <div className="z-10 text-right">
-      <span className={`${valueSize} font-black text-black tracking-tighter`}>
+      <span className="text-4xl font-black text-black tracking-tighter">
         {value}
       </span>
     </div>
@@ -362,7 +360,6 @@ const EstimatorDashboard = () => {
                 label="Completed"
                 value={stats.awardedMTO}
                 iconPadding="p-1"
-                valueSize="text-3xl"
               />
               <StatCard
                 onClick={() => openModal("PENDING_MTO")}
@@ -400,56 +397,39 @@ const EstimatorDashboard = () => {
                 label="Pending"
                 value={stats.pendingEstimates}
                 iconPadding="p-1"
-                valueSize="text-3xl"
               />
             </div>
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-[400px]">
-        <div className="p-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
+        {userRole === "CLIENT_ESTIMATOR" ? (
           <div>
-            <h2 className="text-lg font-semibold text-black uppercase tracking-tight">Upcoming Material Take-off</h2>
+            <InvoiceSummary 
+              invoices={allInvoices} 
+              projects={allProjects} 
+              rfqs={allRFQs} 
+              onInvoiceClick={(id) => setSelectedInvoiceId(id)}
+            />
           </div>
-        </div>
-        <div className="flex-1 overflow-y-auto p-2">
-          <DataTable
-            columns={rfqColumns}
-            data={recentRFQs}
-            onRowClick={(row: any) => setSelectedRFQId(row.id || row._id)}
-            disablePagination={true}
-            noBorder={true}
-          />
-        </div>
-      </div>
-      {userRole === "CLIENT_ESTIMATOR" ? (
-        <div>
-          <InvoiceSummary
-            invoices={allInvoices}
-            projects={allProjects}
-            rfqs={allRFQs}
-            onInvoiceClick={(id) => setSelectedInvoiceId(id)}
-          />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-          <StatCard
-            onClick={() => openModal("ALL_INVOICES")}
-            icon={CheckCircle2}
-            label="Total Invoiced"
-            value={stats.totalInvoiced}
-            valueSize="text-2xl md:text-3xl"
-          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            <StatCard
+              onClick={() => openModal("ALL_INVOICES")}
+              icon={CheckCircle2}
+              label="Total Invoiced"
+              value={stats.totalInvoiced}
+              valueSize="text-2xl md:text-3xl"
+            />
 
-          <StatCard
-            onClick={() => openModal("PENDING_INVOICES")}
-            icon={DollarSign}
-            label="Pending Invoiced"
-            value={stats.pendingInvoices}
-            valueSize="text-2xl md:text-3xl"
-          />
-        </div>
-      )}
+            <StatCard
+              onClick={() => openModal("PENDING_INVOICES")}
+              icon={DollarSign}
+              label="Pending Invoiced"
+              value={stats.pendingInvoices}
+              valueSize="text-2xl md:text-3xl"
+            />
+          </div>
+        )}
 
       <ActionListModal
         isOpen={isModalOpen}

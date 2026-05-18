@@ -179,7 +179,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
           <div className="bg-green-100/50 p-2 sm:p-3 text-center border-b border-black/5">
             <div className="flex items-center justify-center gap-2">
               <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black/60" />
-              <h3 className="text-sm sm:text-base font-bold text-black uppercase tracking-widest truncate">
+              <h3 className="text-base font-bold text-black uppercase tracking-widest truncate">
                 {team.teamName}
               </h3>
             </div>
@@ -195,22 +195,22 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                 }}
                 className="p-2 bg-gray-50/50 rounded-lg flex flex-col items-center justify-center border border-black/5 hover:bg-white hover:border-black/10 transition-all cursor-pointer group/projects"
               >
-                <span className="text-[10px] text-gray-400 uppercase tracking-widest mb-0.5 group-hover/projects:text-gray-600">
+                <span className="text-sm text-gray-400 uppercase tracking-widest mb-0.5 group-hover/projects:text-gray-600">
                   Projects
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm sm:text-base font-bold text-gray-800">
+                  <span className="text-base font-bold text-gray-800">
                     {team.projectCount}
                   </span>
                   <Briefcase className="w-3.5 h-3.5 text-gray-400 group-hover/projects:text-gray-600" />
                 </div>
               </button>
               <div className="p-2 bg-green-50/50 rounded-lg flex flex-col items-center justify-center border border-black/5">
-                <span className="text-[10px] text-black/40 uppercase tracking-widest mb-0.5">
+                <span className="text-sm text-black/40 uppercase tracking-widest mb-0.5">
                   Work Done
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm sm:text-base font-bold text-black">
+                  <span className="text-base font-bold text-black">
                     {formatSeconds(team.totalSeconds)}
                   </span>
                   <Clock className="w-3.5 h-3.5 text-green-500/50" />
@@ -224,7 +224,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                 {["IFA", "IFC", "COR"].map((stage) => (
                   <div key={stage} className="flex flex-col">
                     {/* Header */}
-                    <div className="bg-gray-50/80 border-b border-black/5 py-1 text-center text-[10px] font-bold tracking-widest text-black/60 uppercase">
+                    <div className="bg-gray-50/80 border-b border-black/5 py-1 text-center text-sm font-bold tracking-widest text-black/60 uppercase">
                       {stage}
                     </div>
                     {/* Content */}
@@ -260,11 +260,11 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                           }
                           className={`w-full flex items-center justify-between px-1.5 py-0.5 rounded-md hover:bg-gray-50 transition-all cursor-pointer group/btn`}
                         >
-                          <span className="text-[9px] font-medium text-gray-500 uppercase truncate">
+                          <span className="text-sm font-medium text-gray-500 uppercase truncate">
                             {item.label}
                           </span>
                           <span
-                            className={`text-[10px] font-bold ${item.key === "active"
+                            className={`text-sm font-bold ${item.key === "active"
                               ? "text-green-600"
                               : item.key === "onHold"
                                 ? "text-orange-500"
@@ -284,7 +284,7 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
             {/* Monthly Breakdown Section (Only when filtered) */}
             {isFiltered && (
               <div className="space-y-1.5 pt-2 border-t border-black/5">
-                <h4 className="text-[9px] font-bold text-black/40 uppercase tracking-widest px-1">
+                <h4 className="text-sm font-bold text-black/40 uppercase tracking-widest px-1">
                   Monthly Breakdown
                 </h4>
                 <div className="space-y-1 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
@@ -301,16 +301,16 @@ const MonthlyProjectStats: React.FC<MonthlyProjectStatsProps> = ({
                         key={monthYear}
                         className="flex items-center justify-between py-0.5 px-1.5 rounded-md hover:bg-gray-50 transition-colors"
                       >
-                        <span className="text-[10px] font-medium text-gray-600">
+                        <span className="text-sm font-medium text-gray-600">
                           {monthYear}
                         </span>
-                        <span className="text-[10px] font-bold text-black">
+                        <span className="text-sm font-bold text-black">
                           {formatSeconds(seconds)}
                         </span>
                       </div>
                     ))}
                   {Object.keys(team.monthlyBreakdown).length === 0 && (
-                    <p className="text-[9px] text-gray-400 italic text-center py-1">
+                    <p className="text-sm text-gray-400 italic text-center py-1">
                       No task data
                     </p>
                   )}

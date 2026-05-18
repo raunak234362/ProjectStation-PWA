@@ -75,7 +75,7 @@ console.log(filteredActions,"dashboardStats-----------------------------");
 
   return (
     <div className="flex flex-col justify-start h-full p-2 transition-all duration-300 relative overflow-hidden">
-      <h3 className="text-xl font-bold text-black mb-6 flex items-center gap-3 ml-1">
+      <h3 className="text-lg font-bold text-black mb-6 flex items-center gap-3 ml-1">
         <ClipboardList size={24} strokeWidth={2.5} className="text-[#6bbd45]" />
         PENDING ACTIONS
       </h3>
@@ -103,14 +103,14 @@ console.log(filteredActions,"dashboardStats-----------------------------");
                   <action.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
                 </div>
                 <div className="flex flex-col min-w-0 pr-1">
-                  <span className="text-xs sm:text-sm font-black text-black uppercase tracking-wider leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+                  <span className="text-sm font-black text-black uppercase tracking-wider leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
                     {action.title} 
                   </span>
                 </div>
               </div>
 
               <div className="z-10 text-right ml-3 shrink-0">
-                <span className="text-lg sm:text-2xl md:text-3xl font-black text-black tracking-tight">
+                <span className="text-base font-black text-black tracking-tight">
                   {action.count}
                 </span>
               </div>

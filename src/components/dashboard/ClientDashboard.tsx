@@ -57,7 +57,7 @@ const StatCard: React.FC<{
       </div>
     </div>
     <div className="z-10 text-right">
-      <span className="text-base font-black text-black tracking-tighter">
+      <span className="text-4xl font-black text-black tracking-tighter">
         {value}
       </span>
     </div>
