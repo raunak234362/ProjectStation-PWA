@@ -779,6 +779,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 </h1>
 
                 {(userRole === "admin" ||
+                  userRole === "client" ||
+                  userRole === "client_admin" ||
+                  userRole === "client_estimator" ||
                   userRole === "deputy_manager" ||
                   userRole === "operation_executive" ||
                   userRole === "user") && (
@@ -787,7 +790,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                         setSelectedParentResponseId(null);
                         setShowResponseModal(true);
                       }}
-                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
+                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-green-200/90 hover:text-black transition-all border border-black shadow-md"
                     >
                       + Add Response
                     </Button>
