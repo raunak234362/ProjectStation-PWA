@@ -110,7 +110,7 @@ console.log(filteredActions,"dashboardStats-----------------------------");
               </div>
 
               <div className="z-10 text-right ml-3 shrink-0">
-                <span className="text-base font-black text-black tracking-tight">
+                <span className="text-SM font-black text-black tracking-tight">
                   {action.count}
                 </span>
               </div>

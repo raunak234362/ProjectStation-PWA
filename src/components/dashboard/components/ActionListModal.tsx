@@ -6,7 +6,8 @@ import {
   FileText,
   Activity,
   Calendar,
-  X
+  X,
+  Download
 } from "lucide-react";
 import DataTable, { type ExtendedColumnDef } from "../../ui/table";
 import GetRFQByID from "../../rfq/GetRFQByID";
@@ -69,7 +70,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         const id = item.projectNumber || item.id || item._id || "";
         const subject = item.subject || item.remarks || "";
         const invoice = item.invoiceNumber || item.jobName || "";
-        
+
         return (
           project.toLowerCase().includes(query) ||
           id.toString().toLowerCase().includes(query) ||
@@ -103,6 +104,114 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
 
     return result;
   }, [data, searchTerm, dateFilter]);
+
+  const handleGeneratePDF = () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    // Group by project
+    const groupedByProject = filteredData.reduce((acc: any, item: any) => {
+      const project = item.projectName || item.project?.name || item.project?.projectName || "N/A";
+      if (!acc[project]) acc[project] = [];
+      acc[project].push(item);
+      return acc;
+    }, {});
+
+    const html = `
+      <html>
+        <head>
+          <title>MTO Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+            h1 { color: #6bbd45; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+            th { background-color: #f5f5f5; }
+            .section { margin-top: 20px; }
+            .section-title { font-weight: bold; color: #6bbd45; }
+            .project-section { page-break-after: always; }
+            .project-section:last-child { page-break-after: auto; }
+          </style>
+        </head>
+        <body>
+          <h1>MTO Report - ${dateFilter === "all" ? "All Time" : dateFilter.toUpperCase()}</h1>
+          <p>Total MTOs Raised: ${filteredData.length}</p>
+          
+          ${Object.keys(groupedByProject).map((projectName) => `
+            <div class="project-section">
+              <h2 style="color: #6bbd45; border-bottom: 2px solid #6bbd45; padding-bottom: 5px; margin-top: 30px;">Project: ${projectName}</h2>
+              
+              ${groupedByProject[projectName].map((item: any, index: number) => `
+                <div class="section" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                  <h3 class="section-title">#${index + 1} ${item.subject || "No Subject"}</h3>
+                  <table>
+                    <tr>
+                      <th>Sent On</th>
+                      <td>${item.createdAt ? formatDate(item.createdAt) : "N/A"}</td>
+                    </tr>
+                    <tr>
+                      <th>Due Date</th>
+                      <td>${item.estimationDate ? formatDate(item.estimationDate) : "N/A"}</td>
+                    </tr>
+                    <tr>
+                      <th>Received On</th>
+                      <td>${item.latestResponseDate ? formatDate(item.latestResponseDate) : "N/A"}</td>
+                    </tr>
+                    <tr>
+                      <th>Status</th>
+                      <td>${item.status || "N/A"}</td>
+                    </tr>
+                    <tr>
+                      <th>Description</th>
+                      <td>${item.description || "N/A"}</td>
+                    </tr>
+                    <tr>
+                      <th>Attachments</th>
+                      <td>${(item.files || []).map((f: any) => f.name || f).join(", ") || "None"}</td>
+                    </tr>
+                  </table>
+                  
+                  ${item.responses && item.responses.length > 0 ? `
+                    <h4>Responses</h4>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Responder</th>
+                          <th>Message</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${item.responses.map((r: any) => `
+                          <tr>
+                            <td>${formatDate(r.createdAt)}</td>
+                            <td>${r.userRole || "N/A"}</td>
+                            <td>${r.description || "N/A"}</td>
+                          </tr>
+                        `).join("")}
+                      </tbody>
+                    </table>
+                  ` : ""}
+                </div>
+              `).join("")}
+            </div>
+          `).join("")}
+          
+          <script>
+            window.onload = () => {
+              setTimeout(() => {
+                window.print();
+                window.close();
+              }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
 
   const getTitle = () => {
     switch (type) {
@@ -435,7 +544,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 focus:ring-4 focus:ring-green-600/5 transition-all outline-none w-64"
+                className="pl-10 pr-10 py-2 uppercase bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 focus:ring-4 focus:ring-green-600/5 transition-all outline-none w-64"
               />
               {searchTerm && (
                 <button
@@ -455,10 +564,10 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none appearance-none cursor-pointer text-gray-700 min-w-[140px]"
               >
-                <option value="all">All Time</option>
-                <option value="today">Today</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
+                <option value="all">ALL TIME</option>
+                <option value="today">TODAY</option>
+                <option value="week">THIS WEEK</option>
+                <option value="month">THIS MONTH</option>
               </select>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -466,6 +575,16 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                 </svg>
               </div>
             </div>
+
+            {(type === "ALL_MTO" || type === "PENDING_MTO" || type === "COMPLETED_MTO" || type === "ALL_RFQ" || type === "PENDING_RFQ" || type === "AWARDED_RFQ") && (
+              <button
+                onClick={handleGeneratePDF}
+                className="px-4 py-2 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer flex items-center gap-2"
+              >
+                <Download size={14} />
+                Download PDF
+              </button>
+            )}
 
             {(searchTerm || dateFilter !== "all") && (
               <button
