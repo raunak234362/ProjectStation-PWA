@@ -364,20 +364,31 @@ const EstimatorDashboard = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-[400px]">
-        <div className="p-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
+      <div className="bg-white rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-auto min-h-[110px]">
+        <div className="p-3 px-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
           <div>
             <h2 className="text-lg font-semibold text-black uppercase tracking-widest">Upcoming Material Take-off</h2>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto p-2">
-          <DataTable
-            columns={rfqColumns}
-            data={recentRFQs}
-            onRowClick={(row: any) => setSelectedRFQId(row.id || row._id)}
-            disablePagination={true}
-            noBorder={true}
-          />
+          {recentRFQs.length > 0 ? (
+            <DataTable
+              columns={rfqColumns}
+              data={recentRFQs}
+              onRowClick={(row: any) => setSelectedRFQId(row.id || row._id)}
+              disablePagination={true}
+              noBorder={true}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center border border-green-100 mb-1.5 animate-pulse">
+                <Clock className="w-4.5 h-4.5 text-green-600" />
+              </div>
+              <h3 className="text-xs font-black text-gray-800 uppercase tracking-widest">
+                No Upcoming MTOs
+              </h3>
+            </div>
+          )}
         </div>
       </div>
       {userRole === "CLIENT_ESTIMATOR" ? (

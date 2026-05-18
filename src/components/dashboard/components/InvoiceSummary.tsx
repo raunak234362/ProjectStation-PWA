@@ -35,9 +35,17 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
 
     filteredInvoices.forEach((inv) => {
       const job = inv.jobName || "Unknown Job";
+      const normalizeString = (s: string) => {
+        if (!s) return "";
+        return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+      };
+      const jobNorm = normalizeString(job);
+
       if (!jobMap[job]) {
         const project = projects.find(
-          (p) => p.name === job || p.projectNumber === job,
+          (p) =>
+            normalizeString(p.name) === jobNorm ||
+            normalizeString(p.projectNumber) === jobNorm,
         );
         let bidPrice = 0;
         let rfqSerial = "";
@@ -48,14 +56,18 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           matchedRfq = rfqs.find((r) => r.id === project.rfqId);
         }
         if (!matchedRfq) {
-          matchedRfq = rfqs.find(
-            (r) =>
-              r.projectName?.toLowerCase() === job.toLowerCase() ||
-              r.projectNumber === job ||
-              (project && r.projectNumber === project.projectNumber),
-          );
+          matchedRfq = rfqs.find((r) => {
+            const rProjName = normalizeString(r.projectName);
+            const rProjNum = normalizeString(r.projectNumber);
+            return (
+              (rProjName && (rProjName === jobNorm || rProjName.includes(jobNorm) || jobNorm.includes(rProjName))) ||
+              (rProjNum && (rProjNum === jobNorm || rProjNum.includes(jobNorm) || jobNorm.includes(rProjNum))) ||
+              (project && r.projectNumber === project.projectNumber)
+            );
+          });
         }
 
+        let isMto = false;
         if (matchedRfq) {
           if (matchedRfq.bidPrice) {
             bidPrice =
@@ -64,6 +76,13 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           if (matchedRfq.serialNo) {
             rfqSerial = matchedRfq.serialNo;
           }
+          isMto = !!(
+            matchedRfq.MTOManual ||
+            matchedRfq.mtoStickModelEnabled ||
+            matchedRfq.MTOStickModel ||
+            matchedRfq.MTOValue ||
+            (matchedRfq as any).MTOManualModel
+          );
         }
 
         jobMap[job] = {
@@ -76,6 +95,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           bidPrice: bidPrice,
           invoices: [],
           invoiceNumbers: [],
+          isMto: isMto,
         };
       }
 
@@ -252,11 +272,17 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                 </div>
                 <div className="flex flex-col items-end whitespace-nowrap text-right">
                   <span className="text-sm font-semibold text-gray-700 uppercase tracking-widest">
-                    TOTAL RAISED / BID PRICE
+                    {job.isMto ? "TOTAL RAISED" : "TOTAL RAISED / BID PRICE"}
                   </span>
                   <span className="text-base font-bold text-gray-900 mt-1">
-                    ${job.totalRaised.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / $
-                    {(job.bidPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${job.totalRaised.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {!job.isMto && (
+                      <>
+                        {" "}
+                        / $
+                        {(job.bidPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
