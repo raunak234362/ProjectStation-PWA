@@ -774,9 +774,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
             <div className="bg-zinc-50 border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
               {/* Header + Add Response Button */}
               <div className="flex justify-between items-center gap-4">
-                <h1 className="text-xl font-semibold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
                   Responses
-                </h1>
+                </h4>
 
                 {(userRole === "admin" ||
                   userRole === "client" ||
@@ -1043,11 +1043,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 const Info = ({ label, value }: { label: string; value: string | number }) => {
   if (!value || value === "----" || value === "N/A") return null;
   return (
-    <div className="space-y-0.5 sm:space-y-1">
-      <p className="text-gray-500 text-sm uppercase font-bold tracking-widest">
+    <div className="space-y-1.5">
+      <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
         {label}
-      </p>
-      <p className="text-black text-sm font-semibold">{value}</p>
+      </h4>
+      <p className="text-sm font-semibold text-gray-700 pl-4">{value}</p>
     </div>
   );
 };
