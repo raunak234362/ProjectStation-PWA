@@ -4,8 +4,8 @@ import { createPortal } from "react-dom";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
 import {
-  Loader2, AlertCircle, Settings, Settings2, ClipboardList,
-  ChevronDown, ChevronUp, MessageSquare, User, Clock, Trash2, X
+  Loader2, AlertCircle,
+  MessageSquare, User, Clock, Trash2, X
 } from "lucide-react";
 import ResponseModal from "./ResponseModal";
 import DataTable from "../ui/table";
@@ -33,7 +33,7 @@ const RFQResponseItem = ({
   onReply?: (parent: any) => void;
   onSelect?: (resp: any) => void;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = false;
   const hasChildren =
     response.childResponses && response.childResponses.length > 0;
 

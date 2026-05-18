@@ -1,9 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import Service from "../../../api/Service";
 import InvoiceStatsCards from "./InvoiceStatsCards";
-import InvoiceAnalytics from "./InvoiceAnalytics";
-import PendingInvoiceList from "./PendingInvoiceList";
-import RecentInvoiceActivity from "./RecentInvoiceActivity";
+
 import AllInvoiceList from "./AllInvoiceList";
 import { Calendar, Filter, ChevronDown } from "lucide-react";
 

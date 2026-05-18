@@ -62,7 +62,7 @@ const EstimatorDashboard = () => {
   const [allInvoices, setAllInvoices] = useState<any[]>([]);
   const [allProjects, setAllProjects] = useState<any[]>([]);
   const [recentRFQs, setRecentRFQs] = useState<any[]>([]);
-  const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
+
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -132,7 +132,6 @@ const EstimatorDashboard = () => {
           });
 
         setRecentRFQs(upcomingMTOs);
-        setRecentInvoices(invoices.filter((i: any) => new Date(i.createdAt) >= oneWeekAgo));
 
         // Calculate Detailing Stats (Based on specific design/detailing flags)
         const detailingRfqs = rfqs.filter((r: any) =>
@@ -288,50 +287,7 @@ const EstimatorDashboard = () => {
     }
   ];
 
-  const invoiceColumns: ExtendedColumnDef<any>[] = [
-    {
-      accessorKey: "invoiceNumber",
-      header: "Invoice",
-      cell: ({ row }) => (
-        <span className="font-black text-black group-hover:text-green-700 transition-colors">
-          {row.original.invoiceNumber || row.original.id || "—"}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "projectName",
-      header: "Project",
-      cell: ({ row }) => (
-        <div className="truncate max-w-[200px] font-bold text-gray-600">
-          {row.original.jobName || row.original.project?.name || row.original.project?.projectName || row.original.projectName || row.original.customerName || row.original.project || "—"}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "amount",
-      header: "Amount",
-      cell: ({ row }) => (
-        <span className="font-black text-black">
-          ${Number(row.original.totalInvoiceValue || row.original.totalAmount || row.original.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const inv = row.original;
-        const isPaid = inv.paymentStatus === true || String(inv.paymentStatus).toLowerCase() === 'true' || String(inv.paymentStatus).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'paid' || String(inv.status).toLowerCase() === 'completed';
-        return (
-          <span className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-xl border ${isPaid ? 'bg-green-50 text-green-700 border-green-200' :
-            'bg-orange-50 text-orange-700 border-orange-200'
-            }`}>
-            {isPaid ? 'PAID' : 'PENDING'}
-          </span>
-        );
-      },
-    },
-  ];
+
 
   if (loading) {
     return (
