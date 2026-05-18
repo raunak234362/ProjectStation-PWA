@@ -23,7 +23,6 @@ interface StatCardProps {
   icon: React.ElementType;
   onClick: () => void;
   iconPadding?: string;
-  valueSize?: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -32,7 +31,6 @@ const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   onClick,
   iconPadding = "p-3",
-  valueSize = "text-3xl md:text-4xl",
 }) => (
   <div
     onClick={onClick}
@@ -49,7 +47,7 @@ const StatCard: React.FC<StatCardProps> = ({
       </div>
     </div>
     <div className="z-10 text-right">
-      <span className={`${valueSize} font-black text-black tracking-tighter`}>
+      <span className="text-2xl font-black text-black tracking-tighter">
         {value}
       </span>
     </div>
@@ -358,7 +356,6 @@ const EstimatorDashboard = () => {
                 label="Completed"
                 value={stats.awardedMTO}
                 iconPadding="p-1"
-                valueSize="text-3xl"
               />
               <StatCard
                 onClick={() => openModal("PENDING_MTO")}
@@ -396,7 +393,6 @@ const EstimatorDashboard = () => {
                 label="Pending"
                 value={stats.pendingEstimates}
                 iconPadding="p-1"
-                valueSize="text-3xl"
               />
             </div>
           </div>
@@ -418,7 +414,6 @@ const EstimatorDashboard = () => {
               icon={CheckCircle2}
               label="Total Invoiced"
               value={stats.totalInvoiced}
-              valueSize="text-2xl md:text-3xl"
             />
 
             <StatCard
@@ -426,7 +421,6 @@ const EstimatorDashboard = () => {
               icon={DollarSign}
               label="Pending Invoiced"
               value={stats.pendingInvoices}
-              valueSize="text-2xl md:text-3xl"
             />
           </div>
         )}
