@@ -28,32 +28,6 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     return years.sort((a, b) => b.localeCompare(a));
   }, [rfq]);
 
-  const statusOptions = useMemo(() => {
-    const statuses = new Set<string>();
-    (rfq || []).forEach((item: any) => {
-      const status = item.status;
-      const wbtStatus = item.wbtStatus;
-      const responses = item.responses || [];
-
-      let calculatedStatus = "";
-      if (wbtStatus === "AWARDED") calculatedStatus = "AWARDED";
-      else if (responses.length > 0) calculatedStatus = "WBT_SUBMITTED";
-      else if (status === "IN_REVIEW") calculatedStatus = "IN_REVIEW";
-      else calculatedStatus = wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
-
-      if (calculatedStatus) statuses.add(calculatedStatus);
-    });
-
-    return Array.from(statuses).map(status => {
-      let label = status;
-      if (status === "AWARDED") label = "Awarded";
-      else if (status === "WBT_SUBMITTED") label = "WBT Submitted";
-      else if (status === "IN_REVIEW") label = "Estimation In Progress";
-      else label = status.replace("_", " ");
-      return { label, value: status };
-    });
-  }, [rfq]);
-
   const monthOptions = [
     { label: "January", value: "0" },
     { label: "February", value: "1" },
@@ -197,10 +171,6 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
 
         return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
       },
-      enableColumnFilter: true,
-      filterType: "select",
-      filterFn: "equals",
-      filterOptions: statusOptions,
       cell: ({ getValue, row }) => {
         const val = getValue() as string;
         let label = "";
