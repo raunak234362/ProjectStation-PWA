@@ -580,7 +580,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-0 sm:p-6 bg-white">
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
-            <div className="border border-green-100/50 p-4 sm:p-6 rounded-3xl bg-gray-100 shadow-sm space-y-5 sm:space-y-6">
+            <div className="bg-green-50 border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-8">
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Info label="Subject" value={rfq?.subject || ""} />
@@ -604,11 +604,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               <div className="space-y-3">
                 {/* Connection Design Scope - Only shown if at least one option is selected */}
                 {(rfq?.connectionDesign || rfq?.miscDesign || rfq?.customerDesign) && (
-                  <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                    <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-widest">
-                      <Settings className="w-4 h-4 text-green-600" /> Connection Design Scope
+                  <div className="space-y-4">
+                    <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                      Connection Design Scope
                     </h4>
-                    <div className="flex flex-col gap-2 pl-1 pt-1">
+                    <div className="flex flex-col gap-2 pl-4">
                       {rfq?.connectionDesign && (
                         <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
                           <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
@@ -633,11 +633,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
                 {/* Detailing Scope - Only shown if at least one option is selected */}
                 {(rfq?.detailingMain || rfq?.detailingMisc) && (
-                  <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                    <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-widest">
-                      <Settings2 className="w-4 h-4 text-green-600" /> Detailing Scope
+                  <div className="space-y-4">
+                    <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                      Detailing Scope
                     </h4>
-                    <div className="flex flex-col gap-2 pl-1 pt-1">
+                    <div className="flex flex-col gap-2 pl-4">
                       {rfq?.detailingMain && (
                         <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
                           <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
@@ -656,11 +656,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
                 {/* Material Take-off - Only shown if at least one option is selected */}
                 {(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.MTOManualModel) && (
-                  <div className="p-4 bg-white/60 rounded-2xl border border-green-100/50 text-sm">
-                    <h4 className="text-sm font-black text-black mb-3 flex items-center gap-1 uppercase tracking-widest">
-                      <ClipboardList className="w-4 h-4 text-green-600" /> Material Take-off
+                  <div className="space-y-4">
+                    <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                      Material Take-off
                     </h4>
-                    <div className="flex flex-col gap-2 pl-1 pt-1">
+                    <div className="flex flex-col gap-2 pl-4">
                       {rfq?.MTOManual && (
                         <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
                           <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
@@ -676,9 +676,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     </div>
 
                     {(rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || rfq?.MTOValue) && (
-                      <div className="mt-4 p-5 bg-white/80 rounded-xl border border-green-100 shadow-sm">
+                      <div className="mt-4 pl-4">
                         <div
-                          className="prose prose-sm max-w-none text-xs font-medium text-black leading-relaxed rfq-description"
+                          className="prose prose-sm max-w-none text-sm font-medium text-gray-800 leading-relaxed rfq-description"
                           dangerouslySetInnerHTML={{
                             __html: rfq?.MTOValue || rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || "",
                           }}
@@ -690,14 +690,11 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               </div>
 
               {/* Description */}
-              <div className="space-y-3">
-                <h4 className="text-black text-sm bg-white p-4 rounded-xl border border-black/5 font-black uppercase tracking-widest flex items-center gap-2">
-                  <span
-                    className={`w-1.5 h-6 ${isCDRole ? "bg-blue-500" : "bg-green-500"} rounded-full`}
-                  ></span>
+              <div className="space-y-4">
+                <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
                   {isCDRole ? "Description" : "Description"}
                 </h4>
-                <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden w-full">
+                <div className="pl-4">
                   <style>{`
                     .rfq-description * {
                       max-width: 100% !important;
@@ -727,7 +724,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     .rfq-description p { margin-bottom: 1rem !important; }
                   `}</style>
                   <div
-                    className="rfq-description text-gray-800 p-5 text-xs sm:text-sm wrap-break-word leading-relaxed"
+                    className="rfq-description text-gray-800 text-sm font-medium wrap-break-word leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
                         (isCDRole ? rfq?.CDDescription : rfq?.description) ||
@@ -740,93 +737,19 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               </div>
 
               {/* Files */}
-              <RenderFiles
-                files={(isCDRole ? rfq?.CDAttachments : rfq?.files) || []}
-                table={isCDRole ? "rfqCDAttachments" : "rFQ"}
-                parentId={rfq?.id}
-                formatDate={formatDate}
-              />
-
-              {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
-              <div className="bg-gray-50 border border-gray-200 p-4 rounded-md shadow-sm space-y-3">
-                {/* Header + Add Response Button */}
-                <div className="flex justify-between items-center gap-4">
-                  <h1 className="text-xl font-semibold text-black uppercase tracking-tighter">
-                    Responses
-                  </h1>
-
-                  {(userRole === "admin" ||
-                    userRole === "deputy_manager" ||
-                    userRole === "operation_executive" ||
-                    userRole === "user") && (
-                      <Button
-                        onClick={() => {
-                          setSelectedParentResponseId(null);
-                          setShowResponseModal(true);
-                        }}
-                        className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
-                      >
-                        + Add Response
-                      </Button>
-                    )}
-                </div>
-                {showResponseModal && (
-                  <ResponseModal
-                    rfqId={id}
-                    onClose={() => {
-                      setShowResponseModal(false);
-                      setSelectedParentResponseId(null);
-                    }}
-                    onSuccess={fetchRfq}
-                    parentResponseId={selectedParentResponseId || undefined}
+              <div className="space-y-4">
+                <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                  Attachments
+                </h4>
+                <div className="pl-4">
+                  <RenderFiles
+                    files={(isCDRole ? rfq?.CDAttachments : rfq?.files) || []}
+                    table={isCDRole ? "rfqCDAttachments" : "rFQ"}
+                    parentId={rfq?.id}
+                    formatDate={formatDate}
+                    hideHeader
+                    noAccordion
                   />
-                )}
-                {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
-                {userRole !== "connection_designer_engineer" &&
-                  (topLevelResponses.length ? (
-                    <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                      {topLevelResponses.map((resp: any) => (
-                        <RFQResponseItem
-                          key={resp.id}
-                          response={resp}
-                          onSelect={(r) => setSelectedResponse(r)}
-                          onReply={(parent) => {
-                            setSelectedParentResponseId(parent.id);
-                            setShowResponseModal(true);
-                          }}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-700 italic">No responses yet.</p>
-                  ))}
-                <div className="mt-4">
-                  {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                    <>
-                      <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-                        CD Quotation
-                      </p>
-                      <DataTable
-                        columns={quotationColumns}
-                        data={rfq?.CDQuotas || []}
-                        pageSizeOptions={[5]}
-                        onRowClick={(row: any) => setSelectedQuotation(row)}
-                      />
-                    </>
-                  ) : userRole === "connection_designer_engineer" ? (
-                    // Show Submit Button if not submitted
-                    <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                      <p className="text-gray-500 mb-4 text-center">
-                        You haven't submitted a quotation yet.
-                      </p>
-                      <Button
-                        onClick={() => setShowQuotationResponseModal(true)}
-                        className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
-                      >
-                        Submit Quotation Response
-                      </Button>
-                    </div>
-                  ) : null}
                 </div>
               </div>
 
@@ -850,6 +773,89 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                     </Button>
                   </div>
                 )}
+            </div>
+
+            {/* ---------------- RIGHT COLUMN — RESPONSES ---------------- */}
+            <div className="bg-green-50 border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-6">
+              {/* Header + Add Response Button */}
+              <div className="flex justify-between items-center gap-4">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                  Responses
+                </h1>
+
+                {(userRole === "admin" ||
+                  userRole === "deputy_manager" ||
+                  userRole === "operation_executive" ||
+                  userRole === "user") && (
+                    <Button
+                      onClick={() => {
+                        setSelectedParentResponseId(null);
+                        setShowResponseModal(true);
+                      }}
+                      className="px-4 py-2 bg-green-50 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-black/90 hover:text-white transition-all border border-black shadow-md"
+                    >
+                      + Add Response
+                    </Button>
+                  )}
+              </div>
+              {showResponseModal && (
+                <ResponseModal
+                  rfqId={id}
+                  onClose={() => {
+                    setShowResponseModal(false);
+                    setSelectedParentResponseId(null);
+                  }}
+                  onSuccess={fetchRfq}
+                  parentResponseId={selectedParentResponseId || undefined}
+                />
+              )}
+              {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
+              {userRole !== "connection_designer_engineer" &&
+                (topLevelResponses.length ? (
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                    {topLevelResponses.map((resp: any) => (
+                      <RFQResponseItem
+                        key={resp.id}
+                        response={resp}
+                        onSelect={(r) => setSelectedResponse(r)}
+                        onReply={(parent) => {
+                          setSelectedParentResponseId(parent.id);
+                          setShowResponseModal(true);
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-700 italic">No responses yet.</p>
+                ))}
+              <div className="mt-4">
+                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                  <>
+                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                      CD Quotation
+                    </p>
+                    <DataTable
+                      columns={quotationColumns}
+                      data={rfq?.CDQuotas || []}
+                      pageSizeOptions={[5]}
+                      onRowClick={(row: any) => setSelectedQuotation(row)}
+                    />
+                  </>
+                ) : userRole === "connection_designer_engineer" ? (
+                  // Show Submit Button if not submitted
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                    <p className="text-gray-500 mb-4 text-center">
+                      You haven't submitted a quotation yet.
+                    </p>
+                    <Button
+                      onClick={() => setShowQuotationResponseModal(true)}
+                      className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                    >
+                      Submit Quotation Response
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
             </div>
 
 
