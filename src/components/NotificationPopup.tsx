@@ -222,7 +222,7 @@ const NotificationPopup = () => {
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                          <h4 className="text-sm text-gray-900 dark:text-white truncate">
                             {notification.payload?.title || "Notification"}
                           </h4>
                           {!notification.read && (
