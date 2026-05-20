@@ -102,7 +102,7 @@ const EstimatorDashboard = () => {
 
         const [rfqRes, invoiceRes, projectRes] = await Promise.all([
           rfqService,
-          Service.getFabricatorAllInvoice(),
+          role === "CLIENT_ESTIMATOR" ? Service.GetAllInvoiceByClient() : Service.getFabricatorAllInvoice(),
           Service.GetAllProjects()
         ]);
 

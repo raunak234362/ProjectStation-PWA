@@ -99,8 +99,15 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
         };
       }
 
-      if (inv.invoiceType === "MTO" || inv.invoiceType === "mto") {
+      const invType = (inv.type || inv.invoiceType || "").toUpperCase();
+      if (invType === "MTO") {
         jobMap[job].isMto = true;
+      } else if (invType && invType !== "MTO") {
+        // Only mark as Detailing explicitly if type is set and is not MTO
+        // (don't override a true isMto from RFQ match)
+        if (!jobMap[job].isMto) {
+          jobMap[job].isMto = false;
+        }
       }
 
       const amount = parseFloat(inv.totalInvoiceValue) || 0;

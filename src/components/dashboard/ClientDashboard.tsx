@@ -191,7 +191,7 @@ const ClientDashboard = () => {
           [
             isClientEstimator ? Service.GetClientEstimatorRFQ() : (isClientAdmin ? Service.getAllRFQFab() : Service.RfqSent()),
             Service.SubmittalRecieved(),
-            isClientAdmin ? Service.getFabricatorAllInvoice() : Service.GetAllInvoiceClient(),
+            isClientAdmin ? Service.getFabricatorAllInvoice() : Service.GetAllInvoiceByClient(),
             isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(),
           ],
         );

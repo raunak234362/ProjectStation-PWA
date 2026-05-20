@@ -33,9 +33,9 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const res = isFabricatorRole
-          ? await Service.getFabricatorAllInvoice()
-          : await Service.GetAllInvoice();
+        const res = (userRole === "client" || userRole === "client_estimator")
+          ? await Service.GetAllInvoiceByClient()
+          : (isFabricatorRole ? await Service.getFabricatorAllInvoice() : await Service.GetAllInvoice());
         console.log("Fetched Invoices Data:", res);
         setInvoices(Array.isArray(res) ? res : res?.data || []);
       } catch (error) {

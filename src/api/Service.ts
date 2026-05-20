@@ -2338,6 +2338,18 @@ class Service {
     }
   }
 
+  // gET aLL cLIENT iNVOICE
+  static async GetAllInvoiceByClient() {
+    try {
+      const response = await api.get(`invoice/client/all`);
+      console.log("All Client Invoice fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching All Client Invoice:", error);
+      throw error;
+    }
+  }
+
   // Get Invoice
   static async GetInvoiceById(id: string) {
     try {

@@ -14,9 +14,9 @@ const AllInvoices = () => {
     const fetchInvoices = async () => {
       try {
         const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant";
-        const res = isFabricatorRole
-          ? await Service.getFabricatorAllInvoice() 
-          : await Service.GetAllInvoice();
+        const res = (userRole === "client" || userRole === "client_estimator")
+          ? await Service.GetAllInvoiceByClient()
+          : (isFabricatorRole ? await Service.getFabricatorAllInvoice() : await Service.GetAllInvoice());
         setInvoices(Array.isArray(res) ? res : res?.data || []);
       } catch (error) {
         console.error("Error fetching invoices:", error);
