@@ -121,7 +121,7 @@ const ConnectionDesignerDashboard = () => {
                     [
                         Service.RfqSent(),
                         Service.SubmittalRecieved(),
-                        Service.GetPendingInvoiceByClient(),
+                        Service.GetAllInvoiceClient(),
                         isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(), // Updated
                     ],
                 );

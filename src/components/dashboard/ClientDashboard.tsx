@@ -191,7 +191,7 @@ const ClientDashboard = () => {
           [
             isClientEstimator ? Service.GetClientEstimatorRFQ() : (isClientAdmin ? Service.getAllRFQFab() : Service.RfqSent()),
             Service.SubmittalRecieved(),
-            Service.GetPendingInvoiceByClient(),
+            isClientAdmin ? Service.getFabricatorAllInvoice() : Service.GetAllInvoiceClient(),
             isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(),
           ],
         );
@@ -381,7 +381,7 @@ const ClientDashboard = () => {
           </div>
         </div>
         {/* RFQ Overview Sections */}
-        {(isClientRole || isClientAdmin || isClientEstimator) && (
+        {isClientAdmin && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* MTO Overview */}
             <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
@@ -471,15 +471,16 @@ const ClientDashboard = () => {
           </div>
         </div>
         {/* Invoice Summary Section */}
-        <div className="w-full">
-          <InvoiceSummary
-            invoices={invoices}
-            projects={projects}
-            rfqs={allRFQs}
-            onInvoiceClick={(id) => setSelectedInvoiceId(id)}
-          />
-
-        </div>
+        {isClientAdmin && (
+          <div className="w-full">
+            <InvoiceSummary
+              invoices={invoices}
+              projects={projects}
+              rfqs={allRFQs}
+              onInvoiceClick={(id) => setSelectedInvoiceId(id)}
+            />
+          </div>
+        )}
 
 
 

@@ -99,6 +99,10 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
         };
       }
 
+      if (inv.invoiceType === "MTO" || inv.invoiceType === "mto") {
+        jobMap[job].isMto = true;
+      }
+
       const amount = parseFloat(inv.totalInvoiceValue) || 0;
       jobMap[job].totalRaised += amount;
       if (inv.paymentStatus === true || inv.paymentStatus === "Paid") {
