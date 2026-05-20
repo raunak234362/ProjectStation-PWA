@@ -126,15 +126,13 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
               className="pl-10 pr-4 py-2 bg-white border border-black/5 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all w-64 shadow-sm"
             />
           </div>
-          {!['client', 'client_admin', 'client_estimator'].includes(sessionStorage.getItem('userRole')?.toLowerCase() || '') && (
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-2 border-2 border-[#6bbd45] text-[#6bbd45] hover:bg-[#6bbd45] hover:text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Add Drawing
-            </button>
-          )}
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-2 px-6 py-2 border-2 border-[#6bbd45] text-black bg-green-200/50 hover:bg-green-200/50 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Add Coordination Drawing
+          </button>
         </div>
       </div>
 

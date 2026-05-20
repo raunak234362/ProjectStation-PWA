@@ -20,16 +20,9 @@ const ProjectLayout = () => {
     (state: any) => state?.userInfo?.departmentData,
   );
   const teamDatas = useSelector((state: any) => state?.userInfo?.teamData);
-  const projects = useSelector(
-    (state: any) => state?.projectInfo?.projectData || [],
-  );
 
-  const stats = {
-    total: projects.length,
-    active: projects.filter((p: any) => p.status === "ACTIVE").length,
-    completed: projects.filter((p: any) => p.status === "COMPLETE").length,
-    onHold: projects.filter((p: any) => p.status === "ONHOLD").length,
-  };
+
+
   // ✅ Fetch Departments only when data is null or empty
   const fetchDepartment = async () => {
     try {
@@ -66,38 +59,7 @@ const ProjectLayout = () => {
       <div className="flex flex-col w-full h-full">
         <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4">
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
-              <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
-                Total -
-              </span>
-              <span className="text-sm md:text-xl animate-in font-black text-black">
-                {stats.total}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
-              <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
-                Active -
-              </span>
-              <span className="text-sm md:text-xl animate-in font-black text-black">
-                {stats.active}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
-              <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
-                Completed -
-              </span>
-              <span className="text-sm md:text-xl animate-in font-black text-black">
-                {stats.completed}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-gray-50 rounded-lg border border-black/10">
-              <span className="text-sm md:text-xl animate-in font-black text-black uppercase tracking-wider">
-                On Hold -
-              </span>
-              <span className="text-sm md:text-xl animate-in font-black text-black">
-                {stats.onHold}
-              </span>
-            </div>
+            {/* Stats moved to AllProjects for filtering */}
           </div>
           <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">
             {[

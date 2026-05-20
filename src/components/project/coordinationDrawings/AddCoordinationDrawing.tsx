@@ -84,13 +84,17 @@ const AddCoordinationDrawing = ({ projectId, onClose, onSuccess }: AddCoordinati
 
             <div className="group">
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1 group-focus-within:text-green-600 transition-colors">Project Stage</label>
-              <input
-                type="text"
+              <select
                 value={formData.stage}
                 onChange={(e) => setFormData({ ...formData, stage: e.target.value })}
-                placeholder="E.g., IFA, IFC, COORDINATION"
-                className="w-full px-5 py-4 bg-gray-50 border border-black/5 rounded-2xl text-sm font-bold placeholder:font-medium focus:outline-none focus:ring-4 focus:ring-green-500/10 focus:bg-white focus:border-green-500/30 transition-all"
-              />
+                className="w-full px-5 py-4 bg-gray-50 border border-black/5 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-green-500/10 focus:bg-white focus:border-green-500/30 transition-all appearance-none cursor-pointer"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1.25rem center', backgroundSize: '1.2rem' }}
+              >
+                <option value="" disabled>Select a stage</option>
+                <option value="IFA">IFA</option>
+                <option value="IFC">IFC</option>
+                <option value="COORDINATION">COORDINATION</option>
+              </select>
             </div>
 
             <div className="group">

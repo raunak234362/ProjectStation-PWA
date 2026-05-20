@@ -70,15 +70,26 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
       accessorKey: "recepients",
       header: "To",
       cell: ({ row }) => {
-        const r = row.original.recepients;
+        const original = row.original as any;
+        const multipleRecipients = Array.isArray(original.multipleRecipients) ? original.multipleRecipients : [];
+        const r = multipleRecipients.length > 0 ? multipleRecipients[0] : original.recepients;
+        const additionalCount = multipleRecipients.length > 1 ? multipleRecipients.length - 1 : 0;
+        
         return (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs uppercase">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs uppercase shrink-0">
               {(r?.firstName?.[0] || "") + (r?.lastName?.[0] || "")}
             </div>
-            <span className="text-black font-medium text-xs">
-              {r ? `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() : "—"}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-black font-medium text-xs truncate max-w-[120px]">
+                {r ? `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() : "—"}
+              </span>
+              {additionalCount > 0 && (
+                <span className="text-[10px] font-bold text-gray-500">
+                  +{additionalCount} more
+                </span>
+              )}
+            </div>
           </div>
         );
       },

@@ -89,8 +89,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
     });
   }, [pendingSubmittals, searchQuery, statusFilter]);
 
-  // Grouped submittals (after filtering)
-  const groupedSubmittals = useMemo(() => {
+  // Grouped and sorted submittals (after filtering)
+  const sortedProjectGroups = useMemo(() => {
     const groups: { [key: string]: any[] } = {};
     filteredSubmittals.forEach((submittal) => {
       const projectName =
@@ -100,7 +100,25 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
       }
       groups[projectName].push(submittal);
     });
-    return groups;
+
+    // Sort items within each group by latest date (descending)
+    const entries = Object.entries(groups).map(([projectName, items]) => {
+      const sortedItems = [...items].sort((a, b) => {
+        const dateA = a.approvalDate ? new Date(a.approvalDate).getTime() : 0;
+        const dateB = b.approvalDate ? new Date(b.approvalDate).getTime() : 0;
+        return dateB - dateA; // latest date on top
+      });
+      return { projectName, items: sortedItems };
+    });
+
+    // Sort the projects by the latest submittal date among their items
+    entries.sort((a, b) => {
+      const dateA = a.items[0]?.approvalDate ? new Date(a.items[0].approvalDate).getTime() : 0;
+      const dateB = b.items[0]?.approvalDate ? new Date(b.items[0].approvalDate).getTime() : 0;
+      return dateB - dateA; // project with latest submittals on top
+    });
+
+    return entries;
   }, [filteredSubmittals]);
 
   // Filtered invoices based on search
@@ -331,8 +349,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                   exit={{ opacity: 0 }}
                   className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                 >
-                  {Object.entries(groupedSubmittals).map(
-                    ([projectName, items]) => {
+                  {sortedProjectGroups.map(
+                    ({ projectName, items }) => {
                       const overdueInGroup = items.filter((s) =>
                         isOverdue(s.approvalDate),
                       ).length;
@@ -466,8 +484,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                   exit={{ opacity: 0 }}
                   className="space-y-4"
                 >
-                  {Object.entries(groupedSubmittals).map(
-                    ([projectName, items]) => (
+                  {sortedProjectGroups.map(
+                    ({ projectName, items }) => (
                       <motion.div
                         key={projectName}
                         variants={itemVariants}

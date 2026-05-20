@@ -109,7 +109,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
                   }`}
                 >
                   {tab === "DETAILING" ? "Detailing" : tab}
-                  <span className={`text-SM px-1.5 py-0.5 rounded-md font-black ${
+                  <span className={`text-sm px-1.5 py-0.5 rounded-md font-black ${
                     typeFilter === tab ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
                   }`}>
                     {count}
@@ -176,7 +176,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
                 setFromMonth(0);
                 setToMonth(new Date().getMonth());
               }}
-              className="px-4 py-2 text-xs font-black text-red-600 uppercase tracking-widest hover:bg-red-50 rounded-xl transition-all"
+              className="px-4 py-2 text-xs font-black border border-red-600 bg-red-200/50 text-red-600 uppercase tracking-widest hover:bg-red-50 rounded-xl transition-all"
             >
               Reset
             </button>

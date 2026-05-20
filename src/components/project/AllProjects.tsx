@@ -11,6 +11,19 @@ const AllProjects = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "ACTIVE" | "COMPLETE" | "ONHOLD">("ALL");
+
+  const stats = React.useMemo(() => ({
+    total: projects.length,
+    active: projects.filter((p: any) => p.status === "ACTIVE").length,
+    completed: projects.filter((p: any) => p.status === "COMPLETE").length,
+    onHold: projects.filter((p: any) => p.status === "ONHOLD").length,
+  }), [projects]);
+
+  const filteredProjects = React.useMemo(() => {
+    if (statusFilter === "ALL") return projects;
+    return projects.filter(p => p.status === statusFilter);
+  }, [projects, statusFilter]);
 
   const fetchProjects = async () => {
     try {
@@ -56,6 +69,7 @@ const AllProjects = () => {
   const columns: any[] = [
     {
       accessorKey: "name",
+      id: "Project",
       header: () => <span className="pl-6">Project Name</span>,
       cell: ({ row }: { row: any }) => (
         <div className="flex items-center gap-4 pl-6">
@@ -151,21 +165,91 @@ const AllProjects = () => {
   }
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden flex flex-col border border-black/5 shadow-sm">
-      <div className="flex-1 min-h-0">
-        <DataTable
-          columns={columns}
-          data={projects}
-          onRowClick={handleRowClick}
-          pageSizeOptions={[25, 50, 100]}
-          noBorder
-        />
+    <div className="space-y-4">
+      <div className="flex flex-col md:flex-row items-center justify-start gap-4 mb-2 px-2">
+        <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 overflow-x-auto max-w-full">
+          <button
+            onClick={() => setStatusFilter("ALL")}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 whitespace-nowrap ${
+              statusFilter === "ALL"
+                ? "bg-green-200/50 text-black shadow-sm border border-green-300"
+                : "text-gray-500 hover:text-gray-800 hover:bg-white"
+            }`}
+          >
+            Total
+            <span className={`text-xs px-1.5 py-0.5 rounded-md font-black ${
+              statusFilter === "ALL" ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
+            }`}>
+              {stats.total}
+            </span>
+          </button>
+          
+          <button
+            onClick={() => setStatusFilter("ACTIVE")}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 whitespace-nowrap ${
+              statusFilter === "ACTIVE"
+                ? "bg-green-200/50 text-black shadow-sm border border-green-300"
+                : "text-gray-500 hover:text-gray-800 hover:bg-white"
+            }`}
+          >
+            Active
+            <span className={`text-xs px-1.5 py-0.5 rounded-md font-black ${
+              statusFilter === "ACTIVE" ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
+            }`}>
+              {stats.active}
+            </span>
+          </button>
+          
+          <button
+            onClick={() => setStatusFilter("COMPLETE")}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 whitespace-nowrap ${
+              statusFilter === "COMPLETE"
+                ? "bg-green-200/50 text-black shadow-sm border border-green-300"
+                : "text-gray-500 hover:text-gray-800 hover:bg-white"
+            }`}
+          >
+            Completed
+            <span className={`text-xs px-1.5 py-0.5 rounded-md font-black ${
+              statusFilter === "COMPLETE" ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
+            }`}>
+              {stats.completed}
+            </span>
+          </button>
+          
+          <button
+            onClick={() => setStatusFilter("ONHOLD")}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 whitespace-nowrap ${
+              statusFilter === "ONHOLD"
+                ? "bg-green-200/50 text-black shadow-sm border border-green-300"
+                : "text-gray-500 hover:text-gray-800 hover:bg-white"
+            }`}
+          >
+            On Hold
+            <span className={`text-xs px-1.5 py-0.5 rounded-md font-black ${
+              statusFilter === "ONHOLD" ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
+            }`}>
+              {stats.onHold}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl overflow-hidden flex flex-col border border-black/5 shadow-sm">
+        <div className="flex-1 min-h-0">
+          <DataTable
+            columns={columns}
+            data={filteredProjects}
+            onRowClick={handleRowClick}
+            pageSizeOptions={[25, 50, 100]}
+            noBorder
+          />
       </div>
       {selectedProjectId && (
         <Suspense fallback={<div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-md text-white font-black uppercase tracking-widest text-xs">Accessing intelligence...</div>}>
           <GetProjectById id={selectedProjectId} close={() => setSelectedProjectId(null)} />
         </Suspense>
       )}
+      </div>
     </div>
   );
 };
