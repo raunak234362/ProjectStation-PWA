@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Loader2, Paperclip, X, FileText } from "lucide-react";
 import Service from "../../../api/Service";
@@ -14,95 +14,16 @@ interface AddProjectNoteProps {
 
 const AddProjectNote = ({
     projectId,
-    project,
     onClose,
     onSuccess,
 }: AddProjectNoteProps) => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [visibility, setVisibility] = useState("ALL");
-    const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+    const visibility = "ALL";
     const [files, setFiles] = useState<File[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const [allUsers, setAllUsers] = useState<any[]>([]);
-    
-    useEffect(() => {
-        const fetchAll = async () => {
-            let combined: any[] = [];
-            try {
-                const res: any = await Service.FetchAllEmployee();
-                const d = res?.data?.data || res?.data || res?.users || res || [];
-                combined = [...combined, ...(Array.isArray(d) ? d : [])];
-            } catch(e) { console.error("Error fetching internal users:", e); }
-
-            const cdId = project?.connectionDesignerID || project?.connectionDesigner?.id || project?.connectionDesigner;
-            if (cdId) {
-                try {
-                    const res: any = await Service.FetchConnectionDesignerByID(cdId.id || cdId);
-                    const cde = res?.data?.CDEngineers || res?.CDEngineers || [];
-                    combined = [...combined, ...(Array.isArray(cde) ? cde : [])];
-                } catch(e) { console.error("Error fetching CD engineers:", e); }
-            }
-
-            const fabId = project?.fabricatorID || project?.fabricator?.id || project?.fabricator;
-            if (fabId) {
-                try {
-                    const res = await Service.FetchAllClientsByFabricatorID(fabId.id || fabId);
-                    const c = res?.data?.data || res?.data || res || [];
-                    combined = [...combined, ...(Array.isArray(c) ? c : [])];
-                } catch(e) { console.error("Error fetching clients:", e); }
-            }
-            // Remove duplicates by ID just in case
-            const uniqueUsers: any[] = [];
-            const seen = new Set();
-            for (const u of combined) {
-                const uid = u.id || u._id;
-                if (!uid || !seen.has(uid)) {
-                    if (uid) seen.add(uid);
-                    uniqueUsers.push(u);
-                }
-            }
-            setAllUsers(uniqueUsers);
-        };
-        fetchAll();
-    }, [project]);
-
-    let allowedRoles: string[] = [];
-    if (userRole === "connection_designer_engineer" || userRole === "connection_designer_admin") {
-        allowedRoles = [
-            "admin",
-            "deputy_manager",
-            "department_manager",
-            "project_manager",
-            "operation_executive"
-        ];
-    } else if (userRole === "client" || userRole === "client_admin") {
-        allowedRoles = [
-            "admin",
-            "deputy_manager",
-            "department_manager",
-            "project_manager"
-        ];
-    } else {
-        allowedRoles = [
-            "connection_designer_engineer",
-            "connection_designer_admin",
-            "project_manager",
-            "department_manager",
-            "admin",
-            "deputy_manager",
-            "operation_executive",
-            "client",
-            "client_admin"
-        ];
-    }
-
-    // const targetUsers = Array.isArray(allUsers) 
-    //     ? allUsers.filter(u => u && u.role && allowedRoles.includes(String(u.role).toLowerCase()))
-    //     : [];
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selected = Array.from(e.target.files || []);
