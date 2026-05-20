@@ -12,6 +12,7 @@ import {
   UserCircle,
   DollarSign,
   Factory,
+  ArrowLeftRight,
 } from "lucide-react";
 import type { JSX } from "react";
 
@@ -42,7 +43,8 @@ export const navItems: NavItem[] = [
       "system_admin",
       "user",
       "estimator",
-      "client_estimator"
+      "client_estimator",
+      "client_accountant"
     ],
   },
   {
@@ -155,7 +157,7 @@ export const navItems: NavItem[] = [
     label: "Invoices",
     to: "invoices",
     icon: <Receipt />,
-    roles: ["admin", "project_manager_officer", "client_admin", "client_estimator", "pmo", "client", "connection_designer_engineer", "connection_designer_admin"],
+    roles: ["admin", "project_manager_officer", "client_admin", "client_estimator", "client_accountant", "pmo", "client", "connection_designer_engineer", "connection_designer_admin"],
   },
   {
     label: "Tasks",
@@ -237,7 +239,14 @@ export const navItems: NavItem[] = [
       "project_manager",
       "system_admin",
       "human_resource",
+      "client_accountant",
     ],
+  },
+  {
+    label: "Wire Transfer",
+    to: "wire-transfer",
+    icon: <ArrowLeftRight />,
+    roles: ["client_accountant", "admin"],
   },
 
 ];

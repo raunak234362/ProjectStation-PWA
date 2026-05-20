@@ -27,6 +27,7 @@ const ClientDashboard = lazy(
 const ConnectionDesignerDashboard = lazy(
   () => import("../components/dashboard/ConnectionDesignerDashboard"),
 );
+const WireTransferPage = lazy(() => import("../pages/WireTransferPage"));
 
 const routes = [
   { path: "/", Component: Login },
@@ -58,6 +59,7 @@ const routes = [
           { path: "sales", Component: SalesDashboard },
           { path: "client", Component: ClientDashboard },
           { path: "connection-designer-dashboard", Component: ConnectionDesignerDashboard },
+          { path: "wire-transfer", Component: WireTransferPage },
         ],
       },
     ],

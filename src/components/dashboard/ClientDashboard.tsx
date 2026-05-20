@@ -35,6 +35,7 @@ const GetMilestoneByID = lazy(
 );
 
 import EstimatorDashboard from "./EstimatorDashboard";
+import AccountantDashboard from "./AccountantDashboard";
 
 const StatCard: React.FC<{
   label: string | React.ReactNode;
@@ -73,10 +74,12 @@ const ClientDashboard = () => {
   const isClientAdmin = userRole === "client_admin";
   const isClientEstimator = userRole === "client_estimator";
 
-
-
   if (userRole === "client_estimator") {
     return <EstimatorDashboard />;
+  }
+
+  if (userRole === "client_accountant") {
+    return <AccountantDashboard />;
   }
 
   // Data State

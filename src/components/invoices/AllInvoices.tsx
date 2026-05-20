@@ -13,7 +13,7 @@ const AllInvoices = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator";
+        const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant";
         const res = isFabricatorRole
           ? await Service.getFabricatorAllInvoice() 
           : await Service.GetAllInvoice();

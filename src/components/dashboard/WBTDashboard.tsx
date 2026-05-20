@@ -39,12 +39,12 @@ import DashboardSkeleton from "./components/DashboardSkeleton";
 const WBTDashboard = () => {
   const navigate = useNavigate();
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
-  const isClient = userRole === "client" || userRole === "client_admin";
+  const isClient = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant";
 
   useEffect(() => {
     if (userRole === "sales" || userRole === "sales_manager") {
       navigate("/dashboard/sales");
-    } else if (userRole === "client" || userRole === "client_admin" || userRole === "client_estimator") {
+    } else if (userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant") {
       navigate("/dashboard/client");
     } else if (userRole === "connection_designer_engineer" || userRole === "connection_designer_admin") {
       navigate("/dashboard/connection-designer-dashboard");

@@ -18,7 +18,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   const [toMonth, setToMonth] = useState<number>(new Date().getMonth()); // Current month
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
-  const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator";
+  const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant";
 
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();

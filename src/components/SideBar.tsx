@@ -86,16 +86,21 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Navigation */}
       <div className="flex-1 py-2 flex flex-col overflow-y-auto sidebar-scrollbar px-2 space-y-1">
         <nav className="flex flex-col gap-0.5 w-full">
-          {navItems.map(
-            ({ label, to, roles, icon }) =>
-              canView(roles) && (
+          {(() => {
+            let items = navItems.filter(({ roles }) => canView(roles));
+            if (userRole === "client_accountant") {
+              const order = ["Dashboard", "Wire Transfer", "Invoices", "Profile"];
+              items = [...items].sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
+            }
+            return items.map(
+              ({ label, to, icon }) => (
                 <div key={label} className="relative group">
                   <NavLink
                     to={
                       label === "Dashboard"
                         ? userRole === "sales" || userRole === "sales_manager"
                           ? "/dashboard/sales"
-                          : userRole === "client" || userRole === "client_admin" || userRole === "client_estimator"
+                          : userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant"
                             ? "/dashboard/client"
                             : userRole === "connection_designer_engineer"
                               ? "/dashboard/connection-designer-dashboard"
@@ -107,6 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       userRole !== "client" &&
                       userRole !== "client_admin" &&
                       userRole !== "client_estimator" &&
+                      userRole !== "client_accountant" &&
                       userRole !== "sales" &&
                       userRole !== "sales_manager"
                     }
@@ -143,8 +149,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </div>
                   )}
                 </div>
-              ),
-          )}
+              )
+            );
+          })()}
         </nav>
       </div>
 
