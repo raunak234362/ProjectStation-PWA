@@ -100,9 +100,9 @@ const AddProjectNote = ({
         ];
     }
 
-    const targetUsers = Array.isArray(allUsers) 
-        ? allUsers.filter(u => u && u.role && allowedRoles.includes(String(u.role).toLowerCase()))
-        : [];
+    // const targetUsers = Array.isArray(allUsers) 
+    //     ? allUsers.filter(u => u && u.role && allowedRoles.includes(String(u.role).toLowerCase()))
+    //     : [];
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selected = Array.from(e.target.files || []);
