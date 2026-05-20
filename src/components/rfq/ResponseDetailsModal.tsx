@@ -1,6 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { formatDateTime } from "../../utils/dateUtils";
-import { useState } from "react";
+import React, { useState } from "react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
@@ -13,11 +13,11 @@ interface ResponseDetailsModalProps {
   onSuccess?: () => void;
 }
 
-const ResponseDetailsModal = ({
+const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
   response,
   onClose,
   onSuccess,
-}: ResponseDetailsModalProps) => {
+}) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
   const [replyStatus, setReplyStatus] = useState("PENDING");
@@ -38,6 +38,7 @@ const ResponseDetailsModal = ({
     formData.append("rfqId", response.rfqId);
     formData.append("userId", sessionStorage.getItem("userId") || "");
     formData.append("status", replyStatus);
+    formData.append("wbtStatus", replyStatus);
 
     replyFiles.forEach((file) => formData.append("files", file));
 
@@ -273,7 +274,7 @@ const ResponseDetailsModal = ({
                     className="w-full h-11 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-semibold uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
                   >
                     <option value="PENDING">Pending</option>
-                    <option value="APPROVED">Awarded</option>
+                    <option value="AWAREDED">Awarded</option>
                     <option value="REJECTED">Rejected</option>
                     <option value="CLARIFICATION_REQUIRED">Clarification Required</option>
                   </select>

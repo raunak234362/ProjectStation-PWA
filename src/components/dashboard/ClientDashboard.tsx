@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
-import { Loader2, Activity, FileText, Clock, CheckCircle2 } from "lucide-react";
+import { Loader2, FileText, Clock, CheckCircle2 } from "lucide-react";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -45,7 +45,7 @@ const StatCard: React.FC<{
 }> = ({ label, value, icon: Icon, onClick }) => (
   <div
     onClick={onClick}
-    className="p-6 text-md rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
+    className="p-4 text-md rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
   >
     <div className="flex items-center gap-4 z-10">
       <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
@@ -382,7 +382,7 @@ const ClientDashboard = () => {
         </div>
         {/* RFQ Overview Sections */}
         {isClientAdmin && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+          <div className="grid grid-cols-1 gap-6 w-full">
             {/* MTO Overview */}
             <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
               <h2 className="text-lg font-bold text-black uppercase mb-6 flex items-center gap-2">
@@ -414,7 +414,7 @@ const ClientDashboard = () => {
             </div>
 
             {/* Detailing Overview */}
-            <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
+           {/* <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
               <h2 className="text-lg font-bold text-black uppercase mb-6 flex items-center gap-2">
                 <Activity size={18} className="text-[#6bbd45]" />
                 DETAILING RFQ OVERVIEW
@@ -441,7 +441,7 @@ const ClientDashboard = () => {
                   />
                 </div>
               </div>
-            </div>
+            </div>*/}
           </div>
         )}
         {/* Detailed Info Section */}

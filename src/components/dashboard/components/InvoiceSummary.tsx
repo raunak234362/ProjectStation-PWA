@@ -235,9 +235,18 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
             >
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1">
-                  <h4 className="text-base font-bold text-gray-800 uppercase tracking-tight leading-snug">
-                    {job.jobName}
-                  </h4>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-base font-bold text-gray-800 uppercase tracking-tight leading-snug">
+                      {job.jobName}
+                    </h4>
+                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md border ${
+                      job.isMto
+                        ? "bg-blue-50 text-blue-700 border-blue-200"
+                        : "bg-purple-50 text-purple-700 border-purple-200"
+                    }`}>
+                      {job.isMto ? "MTO" : "Detailing"}
+                    </span>
+                  </div>
                   <div className="text-sm font-semibold text-gray-700 mt-2 uppercase tracking-wide flex flex-wrap gap-1">
                     {job.invoices && job.invoices.length > 0 ? (
                       job.invoices.map((inv: any, i: number) => {
