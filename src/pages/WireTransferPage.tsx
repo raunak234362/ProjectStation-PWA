@@ -350,9 +350,9 @@ interface AddWireTransferModalProps {
   onSuccess: () => void;
 }
 
-const AddWireTransferModal = ({ projects, onClose, onSuccess }: AddWireTransferModalProps) => {
+const AddWireTransferModal = ({ /* projects, */ onClose, onSuccess }: AddWireTransferModalProps) => {
   const [subject, setSubject] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [selectedProjectId /*, setSelectedProjectId */] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
