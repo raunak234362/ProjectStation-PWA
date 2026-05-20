@@ -33,6 +33,24 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
       cell: ({ row }) => row.original.jobName || "—",
     },
     {
+      id: "type",
+      header: "Type",
+      cell: ({ row }) => {
+        const t = (row.original.type || row.original.invoiceType || "").toUpperCase();
+        const isMto = t === "MTO";
+        if (!t) return <span className="text-gray-400 text-xs font-bold">—</span>;
+        return (
+          <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest border ${
+            isMto
+              ? "bg-blue-50 text-blue-700 border-blue-200"
+              : "bg-purple-50 text-purple-700 border-purple-200"
+          }`}>
+            {isMto ? "MTO" : "Detailing"}
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: "invoiceDate",
       header: "Invoice Date",
       cell: ({ row }) => formatDate(row.getValue("invoiceDate")),

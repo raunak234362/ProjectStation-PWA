@@ -16,6 +16,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   const [selectedYear, setSelectedYear] = useState<number | null>(new Date().getFullYear());
   const [fromMonth, setFromMonth] = useState<number>(0); // Jan
   const [toMonth, setToMonth] = useState<number>(new Date().getMonth()); // Current month
+  const [typeFilter, setTypeFilter] = useState<"ALL" | "MTO" | "DETAILING">("ALL");
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
   const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant";
@@ -47,7 +48,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
     fetchInvoices();
   }, [isFabricatorRole]);
 
-  const filteredInvoices = useMemo(() => {
+  const dateFilteredInvoices = useMemo(() => {
     return invoices.filter((invoice) => {
       const dateStr = invoice.createdAt || invoice.invoiceDate || invoice.date;
       if (!dateStr) return true;
@@ -63,6 +64,19 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
     });
   }, [invoices, selectedYear, fromMonth, toMonth]);
 
+  const filteredInvoices = useMemo(() => {
+    if (typeFilter === "ALL") return dateFilteredInvoices;
+    return dateFilteredInvoices.filter((inv) => {
+      const t = (inv.type || inv.invoiceType || "").toUpperCase();
+      if (typeFilter === "MTO") return t === "MTO";
+      if (typeFilter === "DETAILING") return t !== "MTO" && t !== "";
+      return true;
+    });
+  }, [dateFilteredInvoices, typeFilter]);
+
+  const mtoCount = useMemo(() => dateFilteredInvoices.filter((inv) => (inv.type || inv.invoiceType || "").toUpperCase() === "MTO").length, [dateFilteredInvoices]);
+  const detailingCount = useMemo(() => dateFilteredInvoices.filter((inv) => { const t = (inv.type || inv.invoiceType || "").toUpperCase(); return t !== "MTO" && t !== ""; }).length, [dateFilteredInvoices]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -75,9 +89,35 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
     <div className="space-y-6 pb-10">
       {/* Filters Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-black/5 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Filter className="w-5 h-5 text-green-600" />
-          <h2 className="text-sm font-black text-black uppercase tracking-widest">Filter Invoices</h2>
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Filter className="w-5 h-5 text-green-600" />
+            <h2 className="text-sm font-black text-black uppercase tracking-widest">Filter Invoices</h2>
+          </div>
+          {/* Type Filter Tabs */}
+          <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+            {(["ALL", "MTO", "DETAILING"] as const).map((tab) => {
+              const count = tab === "ALL" ? dateFilteredInvoices.length : tab === "MTO" ? mtoCount : detailingCount;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setTypeFilter(tab)}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 ${
+                    typeFilter === tab
+                      ? "bg-green-200/50 text-black shadow-sm border border-green-300"
+                      : "text-gray-500 hover:text-gray-800 hover:bg-white"
+                  }`}
+                >
+                  {tab === "DETAILING" ? "Detailing" : tab}
+                  <span className={`text-SM px-1.5 py-0.5 rounded-md font-black ${
+                    typeFilter === tab ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
