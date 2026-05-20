@@ -447,7 +447,7 @@ const AddWireTransferModal = ({ projects, onClose, onSuccess }: AddWireTransferM
           </div>
 
           {/* Project dropdown */}
-          <div>
+          {/* <div>
             <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
               Select Project <span className="text-red-500">*</span>
             </label>
@@ -464,7 +464,7 @@ const AddWireTransferModal = ({ projects, onClose, onSuccess }: AddWireTransferM
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* Description - Jodit Editor */}
           <div>
