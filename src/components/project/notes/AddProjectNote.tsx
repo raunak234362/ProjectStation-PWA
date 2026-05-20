@@ -151,7 +151,7 @@ const AddProjectNote = ({
 
     return createPortal(
         <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+            <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
                     <h3 className="text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
@@ -200,27 +200,7 @@ const AddProjectNote = ({
                         </div>
                     </div>
 
-                    {/* Tag User */}
-                    <div>
-                        <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
-                            Tag User
-                            </label>
-                            <select
-                                value={visibility}
-                                onChange={(e) => setVisibility(e.target.value)}
-                                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all bg-white"
-                            >
-                                <option value="ALL">All Team</option>
-                                {targetUsers.map(u => {
-                                    const fullName = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username;
-                                    return (
-                                        <option key={u.id || u._id || Math.random()} value={`USER:${fullName}`}>
-                                            {fullName} ({u.role})
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
+            
 
                     {/* Files */}
                     <div>

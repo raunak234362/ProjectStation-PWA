@@ -410,7 +410,7 @@ const AddWireTransferModal = ({ projects, onClose, onSuccess }: AddWireTransferM
 
   return createPortal(
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+      <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white bg-slate-50/50">
           <h3 className="text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
@@ -447,7 +447,7 @@ const AddWireTransferModal = ({ projects, onClose, onSuccess }: AddWireTransferM
           </div>
 
           {/* Project dropdown */}
-          <div>
+          {/* <div>
             <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
               Select Project <span className="text-red-500">*</span>
             </label>
@@ -464,7 +464,7 @@ const AddWireTransferModal = ({ projects, onClose, onSuccess }: AddWireTransferM
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* Description - Jodit Editor */}
           <div>
