@@ -41,6 +41,8 @@ const AllInvoices = () => {
   const mtoCount = useMemo(() => invoices.filter((inv) => (inv.type || inv.invoiceType || "").toUpperCase() === "MTO").length, [invoices]);
   const detailingCount = useMemo(() => invoices.filter((inv) => { const t = (inv.type || inv.invoiceType || "").toUpperCase(); return t !== "MTO" && t !== ""; }).length, [invoices]);
 
+  const showPM = userRole === "client_admin" || userRole === "client_estimator";
+
   const columns: ExtendedColumnDef<any>[] = [
     {
       accessorKey: "invoiceNumber",
@@ -57,6 +59,19 @@ const AllInvoices = () => {
       accessorKey: "jobName",
       header: "Job Name",
     },
+    ...(showPM ? [{
+      id: "pm",
+      header: "PM",
+      cell: ({ row }: any) => {
+        const poc = row.original.pointOfContact;
+        if (Array.isArray(poc) && poc.length > 0 && poc[0]) {
+          const pm = poc[0];
+          const name = `${pm.firstName || ""} ${pm.lastName || ""}`.trim();
+          return name || "—";
+        }
+        return "—";
+      },
+    }] : []),
     {
       id: "type",
       header: "Type",

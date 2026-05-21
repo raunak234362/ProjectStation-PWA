@@ -79,6 +79,19 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
       cell: ({ row }) => row.original.jobName || "—",
     },
     {
+      id: "pm",
+      header: "PM",
+      cell: ({ row }) => {
+        const poc = row.original.pointOfContact;
+        if (Array.isArray(poc) && poc.length > 0 && poc[0]) {
+          const pm = poc[0];
+          const name = `${pm.firstName || ""} ${pm.lastName || ""}`.trim();
+          return name || "—";
+        }
+        return "—";
+      },
+    },
+    {
       id: "type",
       header: "Type",
       cell: ({ row }) => {

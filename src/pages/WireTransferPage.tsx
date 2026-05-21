@@ -21,68 +21,39 @@ import NoteResponseModal from "../components/project/notes/NoteResponseModal";
 import NoteResponseDetailsModal from "../components/project/notes/NoteResponseDetailsModal";
 import { formatDateTime } from "../utils/dateUtils";
 
-interface Note {
+interface WireTransfer {
   id: string;
-  title?: string;
-  content: string;
-  visibility?: string;
+  _id?: string;
+  subject?: string;
+  description?: string;
+  date?: string;
   createdAt?: string;
   createdBy?: {
     id: string;
     firstName?: string;
     lastName?: string;
-    role?: string;
   };
   files?: { id: string; originalName?: string; fileName?: string }[];
-  responses?: any[];
-  projectName?: string;
-  projectId?: string;
+  invoices?: any[];
 }
 
 const WireTransferPage = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes] = useState<WireTransfer[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [showResponseModal, setShowResponseModal] = useState<string | null>(null);
-  const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
-  const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
 
   const fetchWireTransfers = async () => {
     try {
       setLoading(true);
-      const projRes = await Service.GetAllProjects();
-      const projList = Array.isArray(projRes?.data) ? projRes.data : Array.isArray(projRes) ? projRes : [];
-
-
-      const allNotesPromises = projList.map(async (p: any) => {
-        try {
-          const notesRes = await Service.GetTeamMeetingNotesByProjectId(p.id || p._id);
-          const notesList = Array.isArray(notesRes?.data) ? notesRes.data : Array.isArray(notesRes) ? notesRes : [];
-          return notesList.map((n: any) => ({
-            ...n,
-            projectName: p.name || p.projectName || p.projectNumber,
-            projectId: p.id || p._id,
-          }));
-        } catch (e) {
-          console.error(`Error fetching notes for project ${p.id}:`, e);
-          return [];
-        }
-      });
-
-      const allNotesResults = await Promise.all(allNotesPromises);
-      const flattenedNotes = allNotesResults.flat();
-
-      // Filter notes that start with [WIRE TRANSFER]
-      const wireNotes = flattenedNotes.filter(
-        (n: any) => n.title && n.title.toUpperCase().startsWith("[WIRE TRANSFER]")
-      );
+      const res = await Service.GetAllInvoiceWireTransfers();
+      const data = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
 
       // Sort by date descending
-      wireNotes.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+      data.sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
-      setNotes(wireNotes);
+      setNotes(data);
     } catch (err) {
       console.error("Error loading wire transfers:", err);
       toast.error("Failed to load wire transfers");
@@ -95,24 +66,11 @@ const WireTransferPage = () => {
     fetchWireTransfers();
   }, []);
 
-  const fetchResponsesForNote = async (noteId: string) => {
-    try {
-      const res = await Service.Getallrepliesforanote(noteId);
-      const responses = res?.data ?? res ?? [];
-      setNotes((prev: Note[]) =>
-        prev.map((n: Note) => (n.id === noteId ? { ...n, responses } : n))
-      );
-    } catch (err) {
-      console.error("Error fetching responses for note:", err, noteId);
-    }
-  };
-
   const handleExpandNote = (id: string) => {
     if (expandedId === id) {
       setExpandedId(null);
     } else {
       setExpandedId(id);
-      fetchResponsesForNote(id);
     }
   };
 
@@ -120,7 +78,7 @@ const WireTransferPage = () => {
     if (!window.confirm("Are you sure you want to delete this wire transfer notification?")) return;
     try {
       setDeletingId(id);
-      await Service.DeleteTeamMeetingNotes(id);
+      await Service.DeleteWireTransfer(id);
       toast.success("Wire transfer notification deleted successfully");
       fetchWireTransfers();
     } catch (err) {
@@ -128,18 +86,6 @@ const WireTransferPage = () => {
       toast.error("Failed to delete notification");
     } finally {
       setDeletingId(null);
-    }
-  };
-
-  const handleDeleteResponse = async (id: string, noteId: string) => {
-    if (!window.confirm("Are you sure you want to delete this response?")) return;
-    try {
-      await Service.DeleteTeamMeetingResponse(id);
-      toast.success("Response deleted successfully");
-      fetchResponsesForNote(noteId);
-    } catch (err) {
-      console.error("Delete response failed:", err);
-      toast.error("Failed to delete response");
     }
   };
 
@@ -178,13 +124,14 @@ const WireTransferPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-          {notes.map((note: Note) => {
-            const displayTitle = note.title ? note.title.replace(/^\[WIRE TRANSFER\]\s*/i, "") : "Untitled Wire Transfer";
-            const isExpanded = expandedId === note.id;
+          {notes.map((note: WireTransfer) => {
+            const displayId = note.id || note._id || "";
+            const displaySubject = note.subject || "Untitled Wire Transfer";
+            const isExpanded = expandedId === displayId;
 
             return (
               <div
-                key={note.id}
+                key={displayId}
                 className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${isExpanded ? "shadow-md scale-[1.01]" : "hover:border-gray-200 shadow-sm"
                   }`}
                 style={{
@@ -194,17 +141,23 @@ const WireTransferPage = () => {
                 }}
               >
                 <button
-                  onClick={() => handleExpandNote(note.id)}
+                  onClick={() => handleExpandNote(displayId)}
                   className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-50/50"
                 >
                   <div className="flex-1 min-w-0 pr-4">
                     <div className="flex flex-wrap gap-2 mb-2">
-                      <span className="text-[10px] font-black bg-green-50 text-green-700 px-2 py-0.5 rounded tracking-widest whitespace-nowrap uppercase border border-green-200">
-                        Project: {note.projectName || "Unknown"}
-                      </span>
+                      {note.date && (
+                        <span className="text-[10px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded tracking-widest whitespace-nowrap uppercase border border-blue-200">
+                          Transfer Date: {new Intl.DateTimeFormat("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          }).format(new Date(note.date))}
+                        </span>
+                      )}
                     </div>
                     <div className="text-sm font-black text-black truncate pr-4 uppercase tracking-tight mb-2">
-                      {displayTitle}
+                      {displaySubject}
                     </div>
                     <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                       {note.createdBy && (
@@ -231,13 +184,13 @@ const WireTransferPage = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDelete(note.id);
+                        handleDelete(displayId);
                       }}
-                      disabled={deletingId === note.id}
+                      disabled={deletingId === displayId}
                       className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
                       title="Delete notification"
                     >
-                      {deletingId === note.id ? (
+                      {deletingId === displayId ? (
                         <Loader2 size={14} className="animate-spin" />
                       ) : (
                         <Trash2 size={14} />
@@ -261,7 +214,7 @@ const WireTransferPage = () => {
                       <div
                         className="text-gray-700 bg-gray-50/50 p-4 rounded-xl border border-gray-100 font-medium text-sm rich-text-content"
                         dangerouslySetInnerHTML={{
-                          __html: note.content || "No details provided.",
+                          __html: note.description || "No details provided.",
                         }}
                       />
                     </div>
@@ -274,25 +227,13 @@ const WireTransferPage = () => {
                         </p>
                         <RenderFiles
                           files={note.files}
-                          table="teamMeetingNotes"
-                          parentId={note.id}
+                          table="invoiceWireTransfer"
+                          parentId={displayId}
                           hideHeader
                           formatDate={formatDateTime}
                         />
                       </div>
                     )}
-
-                    {/* Responses Section */}
-                    <ProjectNoteResponses
-                      noteId={note.id}
-                      responses={note.responses || []}
-                      onShowResponseModal={(id) => setShowResponseModal(id)}
-                      onDeleteResponse={handleDeleteResponse}
-                      onSelectResponse={(resp, noteId) => {
-                        setSelectedResponse(resp);
-                        setActiveNoteId(noteId);
-                      }}
-                    />
                   </div>
                 )}
               </div>
@@ -312,30 +253,7 @@ const WireTransferPage = () => {
         />
       )}
 
-      {/* Response/Reply Modals */}
-      {showResponseModal && (
-        <NoteResponseModal
-          noteId={showResponseModal}
-          onClose={() => setShowResponseModal(null)}
-          onSuccess={() => {
-            fetchResponsesForNote(showResponseModal);
-          }}
-        />
-      )}
 
-      {selectedResponse && activeNoteId && (
-        <NoteResponseDetailsModal
-          noteId={activeNoteId}
-          response={selectedResponse}
-          onClose={() => {
-            setSelectedResponse(null);
-            setActiveNoteId(null);
-          }}
-          onSuccess={() => {
-            fetchResponsesForNote(activeNoteId);
-          }}
-        />
-      )}
     </div>
   );
 };
