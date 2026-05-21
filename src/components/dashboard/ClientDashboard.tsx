@@ -471,7 +471,7 @@ const ClientDashboard = () => {
           </div>
         </div>
         {/* Invoice Summary Section */}
-        {isClientAdmin && (
+        {(isClientAdmin || isClientRole) && (
           <div className="w-full">
             <InvoiceSummary
               invoices={invoices}
