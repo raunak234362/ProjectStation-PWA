@@ -41,7 +41,6 @@ interface Note {
 
 const WireTransferPage = () => {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -55,7 +54,7 @@ const WireTransferPage = () => {
       setLoading(true);
       const projRes = await Service.GetAllProjects();
       const projList = Array.isArray(projRes?.data) ? projRes.data : Array.isArray(projRes) ? projRes : [];
-      setProjects(projList);
+
 
       const allNotesPromises = projList.map(async (p: any) => {
         try {
@@ -186,9 +185,8 @@ const WireTransferPage = () => {
             return (
               <div
                 key={note.id}
-                className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
-                  isExpanded ? "shadow-md scale-[1.01]" : "hover:border-gray-200 shadow-sm"
-                }`}
+                className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${isExpanded ? "shadow-md scale-[1.01]" : "hover:border-gray-200 shadow-sm"
+                  }`}
                 style={{
                   borderLeftWidth: "6px",
                   borderLeftColor: isExpanded ? "#6bbd45" : "#e5e7eb",
@@ -306,7 +304,6 @@ const WireTransferPage = () => {
       {/* Add Modal */}
       {showAddModal && (
         <AddWireTransferModal
-          projects={projects}
           onClose={() => setShowAddModal(false)}
           onSuccess={() => {
             setShowAddModal(false);
@@ -343,17 +340,15 @@ const WireTransferPage = () => {
   );
 };
 
-/* Internal Modal component for creating a wire transfer notification */
 interface AddWireTransferModalProps {
-  projects: any[];
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const AddWireTransferModal = ({ /* projects, */ onClose, onSuccess }: AddWireTransferModalProps) => {
+const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps) => {
   const [subject, setSubject] = useState("");
-  const [selectedProjectId /*, setSelectedProjectId */] = useState("");
-  const [content, setContent] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -371,31 +366,23 @@ const AddWireTransferModal = ({ /* projects, */ onClose, onSuccess }: AddWireTra
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!subject.trim()) {
-      setError("Subject is required.");
-      return;
-    }
-    if (!selectedProjectId) {
-      setError("Please select a project.");
-      return;
-    }
-    if (!content.trim()) {
-      setError("Description/details are required.");
-      return;
-    }
+    if (!subject.trim()) return setError("Subject is required");
+    if (!description.trim()) return setError("Description is required");
+    // Removed invoice requirement since it is now optional
 
     setError(null);
     setSubmitting(true);
 
     try {
       const formData = new FormData();
-      formData.append("title", `[WIRE TRANSFER] ${subject.trim()}`);
-      formData.append("content", content.trim());
-      formData.append("projectId", selectedProjectId);
-      formData.append("visibility", "ALL");
+      formData.append("subject", subject.trim());
+      formData.append("description", description.trim());
+      formData.append("date", date);
+      
       files.forEach((file) => formData.append("files", file));
 
-      await Service.AddTeamMeetingNotes(formData);
+      // Use the actual wire transfer service here
+      await Service.CreateInvoiceWireTransfer(formData);
       toast.success("Wire transfer notification added successfully!");
       onSuccess();
     } catch (err: any) {
@@ -409,10 +396,10 @@ const AddWireTransferModal = ({ /* projects, */ onClose, onSuccess }: AddWireTra
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white bg-slate-50/50">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
           <h3 className="text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
             <FileText size={18} className="text-[#6bbd45]" />
             Add Wire Transfer Notification
@@ -431,7 +418,6 @@ const AddWireTransferModal = ({ /* projects, */ onClose, onSuccess }: AddWireTra
           onSubmit={handleSubmit}
           className="flex-1 overflow-y-auto p-6 space-y-5"
         >
-          {/* Subject */}
           <div>
             <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
               Subject <span className="text-red-500">*</span>
@@ -441,41 +427,35 @@ const AddWireTransferModal = ({ /* projects, */ onClose, onSuccess }: AddWireTra
               required
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="e.g. Wire Transfer for Invoice #WBLLC/2026/07412"
+              placeholder="e.g. Wire Transfer for Project X"
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all font-bold"
             />
           </div>
 
-          {/* Project dropdown */}
-          {/* <div>
-            <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
-              Select Project <span className="text-red-500">*</span>
-            </label>
-            <select
-              required
-              value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all bg-white font-bold cursor-pointer"
-            >
-              <option value="">-- Choose a Project --</option>
-              {projects.map((p: any) => (
-                <option key={p.id || p._id} value={p.id || p._id}>
-                  {p.name || p.projectName || p.projectNumber}
-                </option>
-              ))}
-            </select>
-          </div> */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
+                Transfer Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                required
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all font-bold"
+              />
+            </div>
+          </div>
 
-          {/* Description - Jodit Editor */}
           <div>
             <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
-              Description / Transfer Details <span className="text-red-500">*</span>
+              Description <span className="text-red-500">*</span>
             </label>
             <div className="border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#6bbd45]/40 transition-all">
               <RichTextEditor
-                value={content}
-                onChange={setContent}
-                placeholder="Detail transaction references, amount, transfer date, and status..."
+                value={description}
+                onChange={setDescription}
+                placeholder="Enter detailed description..."
               />
             </div>
           </div>

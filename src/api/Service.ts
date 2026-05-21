@@ -461,7 +461,7 @@ class Service {
   }
 
   //get All RFQ FOR Client estimator
-  static async GetClientEstimatorRFQ(){
+  static async GetClientEstimatorRFQ() {
 
     try {
       const response = await api.get(`rfq/all/clientEstimator`);
@@ -3399,6 +3399,100 @@ class Service {
       return response.data;
     } catch (error) {
       console.error('Error fetching all invoices for fabricator:', error);
+      throw error;
+    }
+  }
+ // Invoice Wire Transfers Services
+  // Create a new wire transfer
+  static async CreateInvoiceWireTransfer(data: any) {
+    try {
+      const isFormData = data instanceof FormData;
+      const response = await api.post(`invoiceWireTransfer/create`, data, {
+        headers: {
+          'Content-Type': isFormData ? 'multipart/form-data' : 'application/json'
+        }
+      });
+      console.log('Wire transfer created:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating wire transfer:', error);
+      throw error;
+    }
+  }
+
+  // Get all wire transfers
+  static async GetAllInvoiceWireTransfers() {
+    try {
+      const response = await api.get(`invoiceWireTransfer/all`);
+      console.log('Wire transfers fetched:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching wire transfers:', error);
+      throw error;
+    }
+  }
+
+  // Get wire transfers by invoice ID
+  static async GetWireTransfersByInvoiceId(invoiceId: string) {
+    try {
+      const response = await api.get(`invoiceWireTransfer/byInvoiceId/${invoiceId}`);
+      console.log('Wire transfers by invoice ID fetched:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching wire transfers by invoice ID:', error);
+      throw error;
+    }
+  }
+
+  // Get all wire transfers created by the logged-in user
+  static async GetMyWireTransfers() {
+    try {
+      const response = await api.get(`invoiceWireTransfer/my-transfers`);
+      console.log('My wire transfers fetched:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching my wire transfers:', error);
+      throw error;
+    }
+  }
+
+  // Get wire transfer by ID
+  static async GetWireTransferById(id: string) {
+    try {
+      const response = await api.get(`invoiceWireTransfer/byId/${id}`);
+      console.log('Wire transfer by ID fetched:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching wire transfer by ID:', error);
+      throw error;
+    }
+  }
+
+  // Update wire transfer
+  static async UpdateWireTransfer(id: string, data: any) {
+    try {
+      const isFormData = data instanceof FormData;
+      const response = await api.patch(`invoiceWireTransfer/${id}`, data, {
+        headers: {
+          'Content-Type': isFormData ? 'multipart/form-data' : 'application/json'
+        }
+      });
+      console.log('Wire transfer updated:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating wire transfer:', error);
+      throw error;
+    }
+  }
+
+  // Delete wire transfer
+  static async DeleteWireTransfer(id: string) {
+    try {
+      const response = await api.delete(`invoiceWireTransfer/${id}`);
+      console.log('Wire transfer deleted:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting wire transfer:', error);
       throw error;
     }
   }
