@@ -16,9 +16,7 @@ import { toast } from "react-toastify";
 import Service from "../api/Service";
 import RichTextEditor from "../components/fields/RichTextEditor";
 import RenderFiles from "../components/ui/RenderFiles";
-import ProjectNoteResponses from "../components/project/notes/ProjectNoteResponses";
-import NoteResponseModal from "../components/project/notes/NoteResponseModal";
-import NoteResponseDetailsModal from "../components/project/notes/NoteResponseDetailsModal";
+
 import { formatDateTime } from "../utils/dateUtils";
 
 interface WireTransfer {

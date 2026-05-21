@@ -53,6 +53,9 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
     return invoices.filter(inv => getInvoiceStatus(inv) === statusFilter);
   }, [invoices, statusFilter]);
 
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+  const showPM = userRole === "client_admin" || userRole === "client_estimator";
+
   const columns: ExtendedColumnDef<any>[] = [
     {
       accessorKey: "invoiceNumber",
@@ -78,10 +81,10 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
       enableColumnFilter: true,
       cell: ({ row }) => row.original.jobName || "—",
     },
-    {
+    ...(showPM ? [{
       id: "pm",
       header: "PM",
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         const poc = row.original.pointOfContact;
         if (Array.isArray(poc) && poc.length > 0 && poc[0]) {
           const pm = poc[0];
@@ -90,7 +93,7 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
         }
         return "—";
       },
-    },
+    }] : []),
     {
       id: "type",
       header: "Type",
