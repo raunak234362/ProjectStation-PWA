@@ -251,7 +251,8 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full uppercase pl-10 pr-10 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#6bbd45] transition-all bg-gray-50/50 hover:bg-gray-50/80"
+            className="w-full uppercase
+             pl-10 pr-10 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#6bbd45] transition-all bg-gray-50/50 hover:bg-gray-50/80"
           />
           {searchQuery && (
             <button

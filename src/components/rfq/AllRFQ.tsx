@@ -28,7 +28,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
 
   const statusOptions = [
-    { label: "ALL STATUSES", value: "ALL" },
+    { label: "ALL STATUS", value: "ALL" },
     { label: "AWARDED", value: "AWARDED" },
     { label: "REJECTED", value: "REJECTED" },
     { label: "IN REVIEW / ESTIMATION IN PROGRESS", value: "IN_REVIEW" },
