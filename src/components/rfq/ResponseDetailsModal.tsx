@@ -273,13 +273,10 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                     onChange={(e) => setReplyStatus(e.target.value)}
                     className="w-full h-11 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-semibold uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
                   >
-                    <option value="PENDING">Pending</option>
                     <option value="AWARDED">Awarded</option>
                     <option value="REJECTED">Rejected</option>
                     <option value="IN_REVIEW">In Review</option>
                     <option value="RE_ESTIMATION_REQUESTED">Re-Estimation Required</option>
-                    <option value="WBT_SUBMITTED">WBT Submitted</option>
-                    <option value="CLARIFICATION_REQUIRED">Clarification Required</option>
                   </select>
                 </div>
                 <div className="space-y-2">

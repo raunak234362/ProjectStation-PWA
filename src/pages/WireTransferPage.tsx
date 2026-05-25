@@ -93,7 +93,7 @@ const WireTransferPage = () => {
           className="flex items-center justify-center gap-2 px-6 py-2.5 bg-[#6bbd45]/50 border border-black font-black text-black rounded-xl text-xs uppercase shadow-md hover:bg-[#59a83a] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
         >
           <Upload className="w-4 h-4" />
-          Upload Wire Transfer Report information
+          Upload Wire Transfer information
         </button>
       </div>
 
