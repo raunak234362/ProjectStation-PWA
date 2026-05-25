@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
-import { Loader2, FileText, Clock, CheckCircle2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -23,12 +23,6 @@ const SubmittalListModal = lazy(
 const ActionListModal = lazy(() => import("./components/ActionListModal"));
 const GetInvoiceById = lazy(() => import("../invoices/GetInvoiceById"));
 const GetRFQByID = lazy(() => import("../rfq/GetRFQByID"));
-
-
-
-
-
-
 const InvoiceSummary = lazy(() => import("./components/InvoiceSummary"));
 const GetMilestoneByID = lazy(
   () => import("../project/mileStone/GetMilestoneByID"),
@@ -36,34 +30,6 @@ const GetMilestoneByID = lazy(
 
 import EstimatorDashboard from "./EstimatorDashboard";
 import AccountantDashboard from "./AccountantDashboard";
-
-const StatCard: React.FC<{
-  label: string | React.ReactNode;
-  value: string | number;
-  icon: any;
-  onClick: () => void;
-}> = ({ label, value, icon: Icon, onClick }) => (
-  <div
-    onClick={onClick}
-    className="p-4 text-md rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
-  >
-    <div className="flex items-center gap-4 z-10">
-      <div className="p-1 rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black">
-        <Icon size={18} strokeWidth={2.5} />
-      </div>
-      <div className="flex flex-col">
-        <span className="font-bold text-black uppercase tracking-wide">
-          {label}
-        </span>
-      </div>
-    </div>
-    <div className="z-10 text-right">
-      <span className="font-bold text-black tracking-tighter">
-        {value}
-      </span>
-    </div>
-  </div>
-);
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
@@ -314,8 +280,14 @@ const ClientDashboard = () => {
         const hasMTO = !!(r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue);
         const hasDetailing = !!(r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign);
 
+        // and if MTO STATUS WBT_SUBMITTED That means it's completed so no need to show in Pending
+        const isWbtSubmittedOrAwarded = r.wbtStatus === "AWARDED" || (r.responses && r.responses.length > 0);
+        if (hasMTO && isWbtSubmittedOrAwarded) {
+          return false;
+        }
+
         // if MTO is there then don't show in RFQ pending action show only in MTO Ongoing, but if both MTO Or Detailing is there then show
-        if (hasMTO && !hasDetailing) {
+        if (!isClientAdmin && hasMTO && !hasDetailing) {
           return false;
         }
 
@@ -400,70 +372,7 @@ const ClientDashboard = () => {
             </div>
           </div>
         </div>
-        {/* RFQ Overview Sections */}
-        {isClientAdmin && (
-          <div className="grid grid-cols-1 gap-6 w-full">
-            {/* MTO Overview */}
-            <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
-              <h2 className="text-lg font-bold text-black uppercase mb-6 flex items-center gap-2">
-                <FileText size={18} className="text-[#6bbd45]" />
-                MATERIAL TAKE-OFF RFQ OVERVIEW
-              </h2>
-              <div className="flex flex-col gap-4">
-                <StatCard
-                  label="TOTAL MTO"
-                  value={stats.totalMTO}
-                  icon={FileText}
-                  onClick={() => handleActionClick("ALL_RFQ", "MTO")}
-                />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <StatCard
-                    label="COMPLETED"
-                    value={stats.completedMTO}
-                    icon={CheckCircle2}
-                    onClick={() => handleActionClick("AWARDED_RFQ", "MTO")}
-                  />
-                  <StatCard
-                    label="ONGOING"
-                    value={stats.ongoingMTO}
-                    icon={Clock}
-                    onClick={() => handleActionClick("ONGOING_RFQ", "MTO")}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Detailing Overview */}
-           {/* <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-4">
-              <h2 className="text-lg font-bold text-black uppercase mb-6 flex items-center gap-2">
-                <Activity size={18} className="text-[#6bbd45]" />
-                DETAILING RFQ OVERVIEW
-              </h2>
-              <div className="flex flex-col gap-4">
-                <StatCard
-                  label="TOTAL RFQs"
-                  value={stats.totalDetailing}
-                  icon={FileText}
-                  onClick={() => handleActionClick("ALL_RFQ", "DETAILING")}
-                />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <StatCard
-                    label="AWARDED"
-                    value={stats.awardedDetailing}
-                    icon={Activity}
-                    onClick={() => handleActionClick("AWARDED_RFQ", "DETAILING")}
-                  />
-                  <StatCard
-                    label="PENDING"
-                    value={stats.pendingDetailing}
-                    icon={Clock}
-                    onClick={() => handleActionClick("ONGOING_RFQ", "DETAILING")}
-                  />
-                </div>
-              </div>
-            </div>*/}
-          </div>
-        )}
+        
         {/* Detailed Info Section */}
         <div className="grid grid-cols-1 gap-6 w-full">
           <div className="bg-white rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-auto min-h-[110px]">

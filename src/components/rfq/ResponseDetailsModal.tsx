@@ -20,7 +20,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
 }) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
-  const [replyStatus, setReplyStatus] = useState("");
+  const [replyStatus, setReplyStatus] = useState("AWARDED");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -277,6 +277,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                     <option value="REJECTED">Rejected</option>
                     <option value="IN_REVIEW">In Review</option>
                     <option value="RE_ESTIMATION_REQUESTED">Re-Estimation Required</option>
+                    <option value="WBT_SUBMITTED">WBT Submitted</option>
                   </select>
                 </div>
                 <div className="space-y-2">

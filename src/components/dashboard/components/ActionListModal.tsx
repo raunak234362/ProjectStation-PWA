@@ -38,6 +38,9 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   const dispatch = useDispatch();
   const userDetail = useSelector((state: any) => state.userInfo?.userDetail);
   const userRole = userDetail?.role;
+  const rawRole = sessionStorage.getItem("userRole") || userRole || "";
+  const isClientAdmin = ["client_admin", "clientadmin"].includes(rawRole.toLowerCase());
+  const [rfqSubTab, setRfqSubTab] = useState<"MTO" | "DETAILING">("MTO");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
@@ -65,6 +68,20 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   const filteredData = useMemo(() => {
     if (!data) return [];
     let result = [...data];
+
+    // Filter by RFQ Sub-tab (MTO vs Detailing) for Client Admin in PENDING_RFQ
+    if (type === "PENDING_RFQ" && isClientAdmin) {
+      result = result.filter((item) => {
+        const hasMTO = !!(item.MTOManual || item.mtoStickModelEnabled || item.MTOStickModel || item.MTOValue);
+        const hasDetailing = !!(item.detailingMain || item.detailingMisc || item.connectionDesign || item.customerDesign || item.miscDesign);
+
+        if (rfqSubTab === "MTO") {
+          return hasMTO;
+        } else {
+          return hasDetailing;
+        }
+      });
+    }
 
     // Global Search
     if (searchTerm) {
@@ -131,7 +148,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
     }
 
     return result;
-  }, [data, searchTerm, dateFilter]);
+  }, [data, searchTerm, dateFilter, rfqSubTab, isClientAdmin, type]);
 
 
 
@@ -519,12 +536,39 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
     <div className="fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
       <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
-          <div className="flex items-center gap-6">
+        <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between bg-white gap-4">
+          <div className="flex flex-wrap items-center gap-6">
             <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
               {getIcon()}
               {getTitle()}
             </h3>
+            {/* Tabs for client admin inside PENDING_RFQ */}
+            {type === "PENDING_RFQ" && isClientAdmin && (
+              <div className="flex bg-gray-100 p-1 rounded-xl border border-black/10">
+                <button
+                  type="button"
+                  onClick={() => setRfqSubTab("MTO")}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                    rfqSubTab === "MTO"
+                      ? "bg-white text-black shadow-sm"
+                      : "text-gray-500 hover:text-black"
+                  }`}
+                >
+                  MTO
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRfqSubTab("DETAILING")}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                    rfqSubTab === "DETAILING"
+                      ? "bg-white text-black shadow-sm"
+                      : "text-gray-500 hover:text-black"
+                  }`}
+                >
+                  Detailing
+                </button>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3">
             {/* Search Input */}
