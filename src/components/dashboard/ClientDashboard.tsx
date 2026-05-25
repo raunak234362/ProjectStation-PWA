@@ -297,16 +297,29 @@ const ClientDashboard = () => {
 
       const pending = data.filter((r: any) => {
         // Original condition: Status is PENDING
-        if (r.status === "PENDING") return true;
-
-        // New condition: Has responses but at least one response has no childResponses (unanswered)
-        const responses = r.responses || [];
-        if (responses.length > 0) {
-          const hasUnanswered = responses.some((res: any) => !res.childResponses || res.childResponses.length === 0);
-          if (hasUnanswered) return true;
+        let isPending = false;
+        if (r.status === "PENDING") {
+          isPending = true;
+        } else {
+          // New condition: Has responses but at least one response has no childResponses (unanswered)
+          const responses = r.responses || [];
+          if (responses.length > 0) {
+            const hasUnanswered = responses.some((res: any) => !res.childResponses || res.childResponses.length === 0);
+            if (hasUnanswered) isPending = true;
+          }
         }
 
-        return false;
+        if (!isPending) return false;
+
+        const hasMTO = !!(r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue);
+        const hasDetailing = !!(r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign);
+
+        // if MTO is there then don't show in RFQ pending action show only in MTO Ongoing, but if both MTO Or Detailing is there then show
+        if (hasMTO && !hasDetailing) {
+          return false;
+        }
+
+        return true;
       });
 
       setPendingRFQs(pending);
@@ -373,7 +386,14 @@ const ClientDashboard = () => {
           <div className="w-full">
             <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 h-full">
               <PendingActions
-                dashboardStats={dashboardStats}
+                dashboardStats={
+                  dashboardStats
+                    ? {
+                        ...dashboardStats,
+                        pendingRFQ: pendingRFQs.length,
+                      }
+                    : null
+                }
                 onActionClick={handleActionClick}
                 filter={["RFQ", "RFI", "COR", "Submittals"]}
               />

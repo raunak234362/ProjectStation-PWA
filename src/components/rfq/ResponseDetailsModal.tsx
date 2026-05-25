@@ -20,7 +20,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
 }) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
-  const [replyStatus, setReplyStatus] = useState("PENDING");
+  const [replyStatus, setReplyStatus] = useState("");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -111,7 +111,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
             Response Details
           </h2>
           <div className="flex items-center gap-3">
-            {["ADMIN", "STAFF", "CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRole) && (
+            {["ADMIN", "CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRole) && (
               <button
                 onClick={() => setReplyMode(true)}
                 className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
@@ -274,8 +274,11 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                     className="w-full h-11 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-semibold uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
                   >
                     <option value="PENDING">Pending</option>
-                    <option value="AWAREDED">Awarded</option>
+                    <option value="AWARDED">Awarded</option>
                     <option value="REJECTED">Rejected</option>
+                    <option value="IN_REVIEW">In Review</option>
+                    <option value="RE_ESTIMATION_REQUESTED">Re-Estimation Required</option>
+                    <option value="WBT_SUBMITTED">WBT Submitted</option>
                     <option value="CLARIFICATION_REQUIRED">Clarification Required</option>
                   </select>
                 </div>

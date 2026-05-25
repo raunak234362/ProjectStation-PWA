@@ -2,20 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   Loader2,
-  Inbox,
   Calendar,
   Trash2,
   ChevronDown,
   ChevronUp,
   Paperclip,
   X,
-  FileText,
-  ArrowLeftRight,
   Upload,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Service from "../api/Service";
-import RichTextEditor from "../components/fields/RichTextEditor";
 import RenderFiles from "../components/ui/RenderFiles";
 
 import { formatDateTime } from "../utils/dateUtils";
