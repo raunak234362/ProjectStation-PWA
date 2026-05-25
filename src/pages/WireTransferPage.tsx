@@ -11,6 +11,7 @@ import {
   X,
   FileText,
   ArrowLeftRight,
+  Upload,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Service from "../api/Service";
@@ -90,21 +91,13 @@ const WireTransferPage = () => {
   return (
     <div className="flex flex-col w-full p-4 md:p-6 space-y-8 bg-white min-h-full animate-in fade-in duration-500 overflow-y-auto">
       {/* Page Title & Actions */}
-      <div className="border-b border-black/5 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-black uppercase tracking-widest flex items-center gap-3">
-            <ArrowLeftRight className="w-7 h-7 text-[#6bbd45]" />
-            Wire Transfer Notifications
-          </h1>
-          <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">
-            Notify and track wire transfers made against project invoices
-          </p>
-        </div>
+      <div className="border-b border-black/5 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4"> 
         <button
           onClick={() => setShowAddModal(true)}
           className="flex items-center justify-center gap-2 px-6 py-2.5 bg-[#6bbd45]/50 border border-black font-black text-black rounded-xl text-xs uppercase shadow-md hover:bg-[#59a83a] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
         >
-          + Add Wire Transfer
+          <Upload className="w-4 h-4" />
+          Upload Wire Transfer Report information
         </button>
       </div>
 
@@ -114,12 +107,7 @@ const WireTransferPage = () => {
           <p className="text-sm font-black text-black uppercase tracking-widest">Loading Wire Transfers...</p>
         </div>
       ) : notes.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-3xl border border-gray-100 shadow-sm">
-          <Inbox className="w-16 h-16 mb-4 text-gray-300" />
-          <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">
-            No Wire Transfer Notifications Found
-          </p>
-        </div>
+       null
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {notes.map((note: WireTransfer) => {
@@ -262,8 +250,6 @@ interface AddWireTransferModalProps {
 }
 
 const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps) => {
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -282,8 +268,6 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!subject.trim()) return setError("Subject is required");
-    if (!description.trim()) return setError("Description is required");
     // Removed invoice requirement since it is now optional
 
     setError(null);
@@ -291,8 +275,6 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
 
     try {
       const formData = new FormData();
-      formData.append("subject", subject.trim());
-      formData.append("description", description.trim());
       formData.append("date", date);
       
       files.forEach((file) => formData.append("files", file));
@@ -318,7 +300,7 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
           <h3 className="text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
             <FileText size={18} className="text-[#6bbd45]" />
-            Add Wire Transfer Notification
+            Upload Wire Transfer
           </h3>
           <button
             onClick={onClose}
@@ -334,20 +316,6 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
           onSubmit={handleSubmit}
           className="flex-1 overflow-y-auto p-6 space-y-5"
         >
-          <div>
-            <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
-              Subject <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              placeholder="e.g. Wire Transfer for Project X"
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all font-bold"
-            />
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
@@ -359,19 +327,6 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all font-bold"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
-              Description <span className="text-red-500">*</span>
-            </label>
-            <div className="border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#6bbd45]/40 transition-all">
-              <RichTextEditor
-                value={description}
-                onChange={setDescription}
-                placeholder="Enter detailed description..."
               />
             </div>
           </div>
@@ -425,21 +380,13 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-white">
           <button
-            type="button"
-            onClick={onClose}
-            disabled={submitting}
-            className="px-5 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
             type="submit"
             form="add-wire-transfer-form"
             disabled={submitting}
             className="px-6 py-2 rounded-xl bg-[#6bbd45]/50 text-black border border-black text-sm font-black uppercase tracking-tight hover:bg-[#59a83a] transition-all flex items-center gap-2 disabled:opacity-60 cursor-pointer"
           >
             {submitting && <Loader2 size={14} className="animate-spin" />}
-            Save Wire Transfer
+            Upload Wire Transfer
           </button>
         </div>
       </div>

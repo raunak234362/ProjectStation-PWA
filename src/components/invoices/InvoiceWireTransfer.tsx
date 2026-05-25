@@ -144,7 +144,7 @@ const InvoiceWireTransfer: React.FC<InvoiceWireTransferProps> = ({ invoiceId }) 
       formData.append("bankName", formBankName.trim());
       formData.append("transferDate", formTransferDate);
       formData.append("notes", formNotes.trim());
-      
+
       formFiles.forEach((file) => {
         formData.append("files", file);
       });
@@ -216,15 +216,7 @@ const InvoiceWireTransfer: React.FC<InvoiceWireTransferProps> = ({ invoiceId }) 
       {/* Header section (only if global view, inside layout) */}
       {!invoiceId && (
         <div className="border-b border-black/5 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-black text-black uppercase tracking-widest flex items-center gap-3">
-              <ArrowLeftRight className="w-6 h-6 text-[#6bbd45]" />
-              Wire Transfer Workstation
-            </h1>
-            <p className="text-[10px] text-gray-500 uppercase font-semibold mt-1 tracking-wider">
-              Track and confirm bank wire transfers against invoices
-            </p>
-          </div>
+
           <button
             onClick={() => {
               handleResetForm();
@@ -317,9 +309,8 @@ const InvoiceWireTransfer: React.FC<InvoiceWireTransferProps> = ({ invoiceId }) 
                       <tr
                         key={idVal}
                         onClick={() => setSelectedTransfer(item)}
-                        className={`hover:bg-gray-50 cursor-pointer transition-colors ${
-                          isSelected ? "bg-green-50/40 font-semibold" : ""
-                        }`}
+                        className={`hover:bg-gray-50 cursor-pointer transition-colors ${isSelected ? "bg-green-50/40 font-semibold" : ""
+                          }`}
                       >
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="font-bold text-gray-900">{item.transactionId}</div>
@@ -531,17 +522,17 @@ const InvoiceWireTransfer: React.FC<InvoiceWireTransferProps> = ({ invoiceId }) 
                     Select Invoice (Optional)
                   </label>
                   <select
-                     value={formInvoiceId}
-                     onChange={(e) => setFormInvoiceId(e.target.value)}
-                     className="w-full p-2.5 border border-black/10 rounded-xl bg-gray-50 text-xs font-semibold focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none hover:bg-gray-100 transition-all cursor-pointer"
-                   >
-                     <option value="">-- No linked invoice --</option>
-                     {invoices.map((inv) => (
-                       <option key={inv.id || inv._id} value={inv.id || inv._id}>
-                         {inv.customerName || "Customer"} - {inv.jobName} (Inv #{inv.invoiceNumber}) [${inv.totalInvoiceValue}]
-                       </option>
-                     ))}
-                   </select>
+                    value={formInvoiceId}
+                    onChange={(e) => setFormInvoiceId(e.target.value)}
+                    className="w-full p-2.5 border border-black/10 rounded-xl bg-gray-50 text-xs font-semibold focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none hover:bg-gray-100 transition-all cursor-pointer"
+                  >
+                    <option value="">-- No linked invoice --</option>
+                    {invoices.map((inv) => (
+                      <option key={inv.id || inv._id} value={inv.id || inv._id}>
+                        {inv.customerName || "Customer"} - {inv.jobName} (Inv #{inv.invoiceNumber}) [${inv.totalInvoiceValue}]
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
 

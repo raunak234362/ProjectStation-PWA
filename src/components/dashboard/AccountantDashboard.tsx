@@ -475,7 +475,7 @@ const AccountantDashboard = () => {
         {/* Material Takeoff Invoice Summary */}
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
           <span className="text-lg font-semibold text-black uppercase tracking-widest">
-            Material Takeoff Invoice summary
+            Material Takeoff(MTO) Invoice summary
           </span>
           <div className="flex flex-col gap-6 w-full mt-4">
             <StatCard
