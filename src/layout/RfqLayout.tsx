@@ -29,9 +29,9 @@ const RfqLayout = () => {
             <button
               onClick={() => setActiveTab("allRFQ")}
               className={`flex items-center gap-2 px-8 py-3 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${activeTab === "allRFQ"
-                  ? "bg-green-50 text-black border-green-700/80 shadow-sm"
-                  : "bg-gray-100 text-black border-black/10 hover:border-black/20"
-                  }`}
+                ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+                : "bg-gray-100 text-black border-black/10 hover:border-black/20"
+                }`}
             >
               All RFQ
             </button>

@@ -3,16 +3,39 @@ import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
 import { formatDate } from "../../utils/dateUtils";
-import { Search, X, CheckCircle2, List } from "lucide-react";
+import { Search, X } from "lucide-react";
+
+const getRFQStatus = (row: any) => {
+  const status = row.status;
+  const wbtStatus = row.wbtStatus;
+  const responses = row.responses || [];
+
+  if (wbtStatus === "AWARDED") return "AWARDED";
+  if (responses.length > 0) return "WBT_SUBMITTED";
+  if (status === "IN_REVIEW") return "IN_REVIEW";
+
+  return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
+};
 
 const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
   const userRole = sessionStorage.getItem("userRole");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<"ALL" | "MTO" | "DETAILING" | "BOTH">("ALL");
-  const [activeTab, setActiveTab] = useState<"all" | "awarded">("all");
+  const [activeTab] = useState<"all" | "awarded">("all");
   const [selectedMonth, setSelectedMonth] = useState<string>("ALL");
   const [selectedYear, setSelectedYear] = useState<string>("ALL");
+  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
+
+  const statusOptions = [
+    { label: "ALL STATUS", value: "ALL" },
+    { label: "AWARDED", value: "AWARDED" },
+    { label: "REJECTED", value: "REJECTED" },
+    { label: "IN REVIEW / ESTIMATION IN PROGRESS", value: "IN_REVIEW" },
+    { label: "RE-ESTIMATION REQUIRED", value: "RE_ESTIMATION_REQUESTED" },
+    { label: "WBT SUBMITTED", value: "WBT_SUBMITTED" },
+    { label: "CLARIFICATION REQUIRED", value: "CLARIFICATION_REQUIRED" },
+  ];
 
   const yearOptions = useMemo(() => {
     const years = Array.from(
@@ -160,17 +183,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     {
       id: "status",
       header: "Status",
-      accessorFn: (row: any) => {
-        const status = row.status;
-        const wbtStatus = row.wbtStatus;
-        const responses = row.responses || [];
-
-        if (wbtStatus === "AWARDED") return "AWARDED";
-        if (responses.length > 0) return "WBT_SUBMITTED";
-        if (status === "IN_REVIEW") return "IN_REVIEW";
-
-        return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
-      },
+      accessorFn: getRFQStatus,
       cell: ({ getValue, row }) => {
         const val = getValue() as string;
         let label = "";
@@ -243,8 +256,13 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       });
     }
 
+    // 6. Status filter
+    if (selectedStatus !== "ALL") {
+      data = data.filter(item => getRFQStatus(item) === selectedStatus);
+    }
+
     return data;
-  }, [rfq, searchQuery, selectedType, activeTab, selectedMonth, selectedYear]);
+  }, [rfq, searchQuery, selectedType, activeTab, selectedMonth, selectedYear, selectedStatus]);
 
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
 
@@ -301,6 +319,19 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
               ))}
             </select>
 
+            {/* Status Select */}
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 uppercase"
+            >
+              {statusOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+
             {/* Type Toggle */}
             <div className="flex items-center gap-2">
               {['ALL', 'MTO', 'DETAILING'].map((type) => (
@@ -319,7 +350,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
             </div>
 
             {/* Status Tabs */}
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab("all")}
                 className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${
@@ -342,7 +373,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
                 <CheckCircle2 size={14} />
                 Awarded
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -673,6 +673,12 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                     <option value="CLOSED">CLOSED</option>
                     <option value="AWARDED">AWARDED</option>
                     <option value="RE_APPROVED">REVISE</option>
+                    <option value="PENDING">PENDING</option>
+                    <option value="REJECTED">REJECTED</option>
+                    <option value="IN_REVIEW">IN_REVIEW</option>
+                    <option value="RE_ESTIMATION_REQUESTED">RE_ESTIMATION REQUIRED</option>
+                    <option value="WBT_SUBMITTED">WBT SUBMITTED</option>
+                    <option value="CLARIFICATION_REQUIRED">CLARIFICATION REQUIRED</option>
                   </select>
                 </div>
               </div>

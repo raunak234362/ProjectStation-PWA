@@ -12,7 +12,7 @@ import {
   UserCircle,
   DollarSign,
   Factory,
-  ArrowLeftRight,
+  Upload,
 } from "lucide-react";
 import type { JSX } from "react";
 
@@ -245,7 +245,7 @@ export const navItems: NavItem[] = [
   {
     label: "Wire Transfer",
     to: "wire-transfer",
-    icon: <ArrowLeftRight />,
+    icon: <Upload />,
     roles: ["client_accountant", "admin"],
   },
 
