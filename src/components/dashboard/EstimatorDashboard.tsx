@@ -31,24 +31,24 @@ const StatCard: React.FC<StatCardProps> = ({
   value,
   icon: Icon,
   onClick,
-  iconPadding = "p-3",
-  valueSize = "text-2xl",
+  iconPadding = "p-2 sm:p-3",
+  valueSize = "text-lg sm:text-2xl",
 }) => (
   <div
     onClick={onClick}
-    className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+    className="p-4 sm:p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] sm:border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
   >
-    <div className="flex items-center gap-4 z-10">
-      <div className={`${iconPadding} rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black`}>
-        <Icon size={24} strokeWidth={2.5} />
+    <div className="flex items-center gap-2 sm:gap-4 z-10 min-w-0">
+      <div className={`${iconPadding} rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black shrink-0`}>
+        <Icon size={18} className="sm:w-6 sm:h-6 text-black block" strokeWidth={2.5} />
       </div>
-      <div className="flex flex-col">
-        <span className="font-bold text-black uppercase tracking-widest">
+      <div className="flex flex-col min-w-0">
+        <span className="font-bold text-black uppercase text-xs sm:text-sm tracking-wider sm:tracking-widest truncate">
           {label}
         </span>
       </div>
     </div>
-    <div className="z-10 text-right">
+    <div className="z-10 text-right shrink-0 pl-2">
       <span className={`${valueSize} font-semibold text-black tracking-tighter`}>
         {value}
       </span>
@@ -302,7 +302,7 @@ const EstimatorDashboard = () => {
     <div className="flex flex-col w-full p-4 md:p-6 space-y-8 bg-white min-h-full animate-in fade-in duration-500">
 
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
           <span className="text-lg font-semibold text-black uppercase tracking-widest">
             Material Take-off RFQ OVERVIEW
@@ -315,7 +315,7 @@ const EstimatorDashboard = () => {
               value={stats.totalMTO}
               iconPadding="p-1"
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
               <StatCard
                 onClick={() => openModal("COMPLETED_MTO")}
                 icon={CheckCircle2}
@@ -345,7 +345,7 @@ const EstimatorDashboard = () => {
               value={stats.totalRfqsSent}
               iconPadding="p-1"
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
               <StatCard
                 onClick={() => openModal("AWARDED_RFQ")}
                 icon={Activity}
@@ -401,13 +401,13 @@ const EstimatorDashboard = () => {
           />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 w-full">
           <StatCard
             onClick={() => openModal("ALL_INVOICES")}
             icon={CheckCircle2}
             label="Total Invoiced"
             value={stats.totalInvoiced}
-            valueSize="text-2xl md:text-3xl"
+            valueSize="text-xl md:text-3xl"
           />
 
           <StatCard
@@ -415,7 +415,7 @@ const EstimatorDashboard = () => {
             icon={DollarSign}
             label="Pending Invoiced"
             value={stats.pendingInvoices}
-            valueSize="text-2xl md:text-3xl"
+            valueSize="text-xl md:text-3xl"
           />
         </div>
       )}
