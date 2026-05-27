@@ -1,0 +1,282 @@
+/* Navigation Container - Fixed height to avoid pushing content down */
+.project-insight-nav-container {
+  width: 100%;
+  max-width: 320px;
+  position: relative;
+  height: 60px;
+  z-index: 40;
+  box-sizing: border-box;
+}
+
+/* Floating Dropdown using absolute positioning */
+.project-insight-nav {
+  display: block;
+  height: 60px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  will-change: height;
+  z-index: 40;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.project-insight-nav.open {
+  border-color: #1b4332;
+  box-shadow: 0 10px 30px rgba(27, 67, 50, 0.18);
+}
+
+/* Dark Mode Dropdown styles */
+.dark .project-insight-nav {
+  background-color: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+.dark .project-insight-nav.open {
+  border-color: #6bbd45;
+  box-shadow: 0 10px 30px rgba(107, 189, 69, 0.25);
+}
+
+.insight-nav-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  z-index: 2;
+  cursor: pointer;
+  user-select: none;
+}
+
+.insight-nav-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.insight-nav-title-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #1b4332;
+}
+
+.dark .insight-nav-title-icon {
+  color: #6bbd45;
+}
+
+.insight-nav-title {
+  font-weight: 900;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+}
+
+.dark .insight-nav-title {
+  color: #f1f5f9;
+}
+
+.insight-nav-separator {
+  color: rgba(15, 23, 42, 0.2);
+  font-weight: 500;
+}
+
+.dark .insight-nav-separator {
+  color: rgba(241, 245, 249, 0.2);
+}
+
+.insight-nav-active-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: #1b4332;
+}
+
+.dark .insight-nav-active-label {
+  color: #6bbd45;
+}
+
+.insight-nav-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: rgba(27, 67, 50, 0.08);
+  transition: background-color 0.2s ease;
+}
+
+.dark .insight-nav-toggle-btn {
+  background-color: rgba(107, 189, 69, 0.08);
+}
+
+.insight-nav-header:hover .insight-nav-toggle-btn {
+  background-color: rgba(27, 67, 50, 0.15);
+}
+
+.dark .insight-nav-header:hover .insight-nav-toggle-btn {
+  background-color: rgba(107, 189, 69, 0.15);
+}
+
+.insight-nav-arrow {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: #1b4332;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .insight-nav-arrow {
+  color: #6bbd45;
+}
+
+.insight-nav-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Vertical List Content - Green Background */
+.insight-nav-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 60px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 1;
+  background-color: #1b4332; /* Rich Forest Green */
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .insight-nav-content {
+  background-color: #0b251a; /* Deeper Green for Dark Mode */
+}
+
+.project-insight-nav.open .insight-nav-content {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Navigation Items styling - White and shades of green */
+.insight-nav-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.insight-nav-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.insight-nav-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.insight-nav-item-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: #74c69d; /* Sage green icon */
+  transition: color 0.2s ease;
+}
+
+.insight-nav-item-label {
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #f8fafc; /* White text */
+  transition: color 0.2s ease;
+}
+
+.insight-nav-item-arrow {
+  width: 1rem;
+  height: 1rem;
+  color: rgba(255, 255, 255, 0.45);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover state - Translucent white/green overlay */
+.insight-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+}
+
+.insight-nav-item:hover .insight-nav-item-icon {
+  color: #ffffff;
+}
+
+.insight-nav-item:hover .insight-nav-item-arrow {
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+/* Active item - Solid white background with dark green text */
+.insight-nav-item.active {
+  background-color: #ffffff !important;
+}
+
+.insight-nav-item.active .insight-nav-item-icon {
+  color: #1b4332;
+}
+
+.dark .insight-nav-item.active .insight-nav-item-icon {
+  color: #0b251a;
+}
+
+.insight-nav-item.active .insight-nav-item-label {
+  font-weight: 900;
+  color: #1b4332;
+}
+
+.dark .insight-nav-item.active .insight-nav-item-label {
+  color: #0b251a;
+}
+
+.insight-nav-item.active .insight-nav-item-arrow {
+  color: #1b4332;
+}
+
+.dark .insight-nav-item.active .insight-nav-item-arrow {
+  color: #0b251a;
+}
+
+/* Backdrop Overlay - Completely Transparent (No Blur, No Tint) */
+.insight-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: transparent;
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.dark .insight-nav-backdrop {
+  background-color: transparent;
+}

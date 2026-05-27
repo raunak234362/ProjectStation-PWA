@@ -496,12 +496,13 @@ const GetProjectById = ({
     });
   };
 
-  const tabsToShow = filterTabsByRole(
-    isClient ? clientTabs : defaultDesktopTabs,
-  );
-  const mobileTabsToShow = filterTabsByRole(
-    isClient ? clientTabs : defaultMobileTabs,
-  );
+  const tabsToShow = useMemo(() => {
+    return filterTabsByRole(isClient ? clientTabs : defaultDesktopTabs);
+  }, [isClient, userRole]);
+
+  const mobileTabsToShow = useMemo(() => {
+    return filterTabsByRole(isClient ? clientTabs : defaultMobileTabs);
+  }, [isClient, userRole]);
 
   if (loading)
     return (
@@ -547,16 +548,15 @@ const GetProjectById = ({
             {userRole === "admin" && (
               <button
                 onClick={() => handleEditModel(project)}
-                className="px-8 py-3 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm flex items-center gap-2"
+                className="px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
               >
-                <Settings className="w-4 h-4" />
                 Edit
               </button>
             )}
             {close && (
               <button
                 onClick={close}
-                className="px-4 py-2 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+                className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
               >
                 Close
               </button>
@@ -564,14 +564,39 @@ const GetProjectById = ({
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-4">
-          {/* Mobile Dropdown */}
-          <div className="block md:hidden mb-2">
+        {/* Main Body (Flex Row Layout) */}
+        <div className="flex flex-1 flex-col md:flex-row min-h-0 overflow-hidden gap-4">
+          {/* Desktop Left Sidebar */}
+          <aside className="hidden md:flex md:w-64 border-r border-gray-100 dark:border-slate-800 flex-col overflow-y-auto py-2 pr-4 space-y-1 shrink-0">
+            <nav className="flex flex-col gap-1.5 w-full">
+              {tabsToShow.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = tab.key === activeTab;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-lg transition-all duration-200 relative w-full text-left
+                      ${isActive
+                        ? "bg-gray-50 dark:bg-slate-800 text-black dark:text-white border border-black/10 dark:border-white/10 border-l-[4px] border-l-[#6bbd45]"
+                        : "text-black dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-black dark:hover:text-white hover:border-y hover:border-r hover:border-black/10 hover:border-l-[4px] hover:border-l-[#6bbd45] border border-transparent border-l-[4px] border-l-transparent"
+                      }`}
+                  >
+                    <Icon className={`w-4 h-4 transition-colors duration-200 ${isActive ? "text-[#6bbd45]" : "text-gray-500 dark:text-gray-400"}`} />
+                    <span className="truncate tracking-wide">{tab.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </aside>
+
+          {/* Mobile Dropdown Selector */}
+          <div className="block md:hidden shrink-0">
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md bg-primary text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md bg-[#6bbd45] text-white focus:outline-none focus:ring-2 focus:ring-green-500 font-bold uppercase tracking-tight text-sm"
             >
               {mobileTabsToShow.map((tab) => (
                 <option key={tab.key} value={tab.key}>
@@ -581,25 +606,8 @@ const GetProjectById = ({
             </select>
           </div>
 
-          {/* Desktop Tabs */}
-          <div className="hidden md:flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
-            {tabsToShow.map(({ key, label, icon: Icon }) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-2.5 px-8 py-3 text-sm rounded-lg font-bold uppercase tracking-tight transition-all whitespace-nowrap border-2 active:scale-95 ${activeTab === key
-                  ? "bg-green-50 text-black border-green-700/80 shadow-sm"
-                  : "bg-gray-100 text-black border-black/10 hover:border-black/20"
-                  }`}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-        {/* Tab Content */}
-        <div className="p-2 flex-1 overflow-y-auto min-h-0 custom-scrollbar">
+          {/* Tab Content */}
+          <div className="flex-1 p-2 md:p-4 overflow-y-auto min-h-0 custom-scrollbar">
           {/* ✅ Overview */}
           {activeTab === "overview" && (
             <div className="space-y-6 animate-in fade-in duration-500">
@@ -1218,6 +1226,7 @@ const GetProjectById = ({
               )}
             </div>
           )}
+        </div>
         </div>
       </div>
       {editModel &&

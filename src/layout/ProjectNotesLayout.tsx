@@ -11,10 +11,10 @@ const ProjectNotesLayout = ({ projectId, project }: ProjectNotesLayoutProps) => 
   const [activeTab, setActiveTab] = useState("allNotes");
 
   const btnClass = (tab: string) =>
-    `px-6 py-2 rounded-lg text-sm font-bold transition-all border border-black ${activeTab === tab
-      ? "bg-green-300"
-      : "bg-green-50 hover:bg-green-100"
-    } text-black`;
+    `px-6 py-1.5 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all shadow-sm ${activeTab === tab
+      ? "bg-green-50 text-black border-green-700/80 hover:bg-green-100"
+      : "bg-white text-black border-black/10 hover:bg-gray-50 hover:border-black/20"
+    }`;
 
   return (
     <div className="w-full h-full overflow-hidden flex flex-col bg-white">

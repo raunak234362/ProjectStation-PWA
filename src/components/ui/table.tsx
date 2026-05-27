@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,6 +17,7 @@ import { Search, ChevronDown, ChevronUp, X } from "lucide-react";
 import { Button } from "./button";
 import Select from "../fields/Select";
 import type { SelectOption } from "../../interface";
+import { motion, useInView } from "motion/react";
 
 /* -------------------- screen hook -------------------- */
 function useScreen() {
@@ -103,6 +104,26 @@ interface DataTableProps<T extends object> {
   initialColumnVisibility?: Record<string, boolean>;
   disablePagination?: boolean;
   noBorder?: boolean;
+  animateColumns?: boolean;
+}
+
+/* -------------------- animated cell view -------------------- */
+function AnimatedCell({ children, index, className, style }: any) {
+  const ref = useRef<HTMLTableCellElement>(null);
+  const inView = useInView(ref, { amount: 0.05, once: false });
+
+  return (
+    <motion.td
+      ref={ref}
+      initial={{ scale: 0.95, opacity: 0 }}
+      animate={inView ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.03 }}
+      className={className}
+      style={style}
+    >
+      {children}
+    </motion.td>
+  );
 }
 
 /* -------------------- mobile card view -------------------- */
@@ -178,6 +199,7 @@ export default function DataTable<T extends object>({
   initialColumnVisibility = {},
   disablePagination = false,
   noBorder = false,
+  animateColumns = true,
 }: DataTableProps<T>) {
   const { isMobile } = useScreen();
 
@@ -342,21 +364,39 @@ export default function DataTable<T extends object>({
                         }
                       }}
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className={`px-4 py-5 text-sm text-black dark:text-slate-300 font-semibold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400 ${
-                            (cell.column.columnDef.meta as any)?.align === "center" ? "text-center" : 
-                            (cell.column.columnDef.meta as any)?.align === "right" ? "text-right" : "text-left"
-                          }`}
-                          style={{ width: cell.column.getSize() }}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </td>
-                      ))}
+                      {row.getVisibleCells().map((cell, cellIdx) => {
+                        const alignClass = (cell.column.columnDef.meta as any)?.align === "center" ? "text-center" : 
+                                           (cell.column.columnDef.meta as any)?.align === "right" ? "text-right" : "text-left";
+                        const className = `px-4 py-5 text-sm text-black dark:text-slate-300 font-semibold leading-relaxed tracking-wide transition-colors group-hover:text-green-900 dark:group-hover:text-green-400 ${alignClass}`;
+                        const style = { width: cell.column.getSize() };
+                        const cellContent = flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        );
+
+                        if (animateColumns) {
+                          return (
+                            <AnimatedCell
+                              key={cell.id}
+                              index={cellIdx}
+                              className={className}
+                              style={style}
+                            >
+                              {cellContent}
+                            </AnimatedCell>
+                          );
+                        }
+
+                        return (
+                          <td
+                            key={cell.id}
+                            className={className}
+                            style={style}
+                          >
+                            {cellContent}
+                          </td>
+                        );
+                      })}
                     </tr>
                     {expandedRowId === row.id && DetailComponent && (
                       <tr className="bg-slate-50/30 dark:bg-slate-800/20">
