@@ -36,7 +36,44 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
 
-  const columns: ColumnDef<any>[] = [
+  const projectOptions = React.useMemo(() => {
+    const names = new Set<string>();
+    data.forEach((item: any) => {
+      const name = item.project?.name;
+      if (name) names.add(name);
+    });
+    return Array.from(names).map(name => ({ value: name, label: name }));
+  }, [data]);
+
+  const recipientOptions = React.useMemo(() => {
+    const names = new Set<string>();
+    data.forEach((item: any) => {
+      const multiple = item.multipleRecipients || [];
+      const single = item.recepients || item.recipient;
+      let displayRecipients = [];
+      if (multiple.length > 0) {
+        displayRecipients = multiple;
+      } else if (single) {
+        displayRecipients = [single];
+      }
+      displayRecipients.forEach((r: any) => {
+        const fullName = `${r?.firstName || ""} ${r?.lastName || ""}`.trim();
+        if (fullName) names.add(fullName);
+      });
+    });
+    return Array.from(names).map(name => ({ value: name, label: name }));
+  }, [data]);
+
+  const stageOptions = React.useMemo(() => {
+    const stages = new Set<string>();
+    data.forEach((item: any) => {
+      const stage = item.stage;
+      if (stage) stages.add(stage);
+    });
+    return Array.from(stages).map(stage => ({ value: stage, label: stage }));
+  }, [data]);
+
+  const columns: any[] = [
     {
       accessorKey: "project.name",
       header: "Project Name",
@@ -45,6 +82,10 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
           {row.original.project?.name || "N/A"}
         </span>
       ),
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: projectOptions,
+      filterFn: "equalsString",
     },
     {
       accessorKey: "fabricator.fabName",
@@ -61,6 +102,69 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
       cell: ({ row }: any) => (
         <span className="text-gray-700">{row.original.subject || "N/A"}</span>
       ),
+      enableColumnFilter: true,
+      filterType: "text",
+      filterFn: "includesString",
+    },
+    {
+      accessorKey: "multipleRecipients",
+      header: "Recipients",
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: recipientOptions,
+      filterFn: (row: any, columnId: string, filterValue: string) => {
+        if (!filterValue) return true;
+        const multiple = row.original.multipleRecipients || [];
+        const single = row.original.recepients || row.original.recipient;
+
+        let displayRecipients = [];
+
+        if (multiple.length > 0) {
+          displayRecipients = multiple;
+        } else if (single) {
+          displayRecipients = [single];
+        }
+
+        return displayRecipients.some((r: any) => {
+          const fullName = `${r?.firstName || ""} ${r?.lastName || ""}`.trim().toLowerCase();
+          return fullName === filterValue.toLowerCase();
+        });
+      },
+      cell: ({ row }: any) => {
+        const multiple = row.original.multipleRecipients || [];
+        const single = row.original.recepients || row.original.recipient;
+
+        let displayRecipients = [];
+
+        if (multiple.length > 0) {
+          displayRecipients = multiple;
+        } else if (single) {
+          displayRecipients = [single];
+        }
+
+        if (displayRecipients.length === 0) return <span className="text-gray-400">—</span>;
+
+        const firstRecipient = displayRecipients[0];
+        const remainingCount = displayRecipients.length - 1;
+
+        return (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
+              <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[10px] uppercase">
+                {(firstRecipient?.firstName?.[0] || "") + (firstRecipient?.lastName?.[0] || "")}
+              </div>
+              <span className="text-gray-700 font-medium text-xs">
+                {`${firstRecipient?.firstName ?? ""} ${firstRecipient?.lastName ?? ""}`.trim()}
+              </span>
+            </div>
+            {remainingCount > 0 && (
+              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md">
+                +{remainingCount} more
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "date",
@@ -77,6 +181,10 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
           {row.original.stage || "N/A"}
         </span>
       ),
+      enableColumnFilter: true,
+      filterType: "select",
+      filterOptions: stageOptions,
+      filterFn: "equalsString",
     },
     // {
     //   accessorKey: "status",
@@ -103,7 +211,12 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
     return true;
   });
 
-
+  const filteredData = React.useMemo(() => {
+    if (userRole === "client_admin") {
+      return data.filter((item: any) => item.clientResponseStatus?.toUpperCase() === "PENDING");
+    }
+    return data;
+  }, [data, userRole]);
 
   if (!isOpen) return null;
 
@@ -128,11 +241,11 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {data.length > 0 ? (
+          {filteredData.length > 0 ? (
             <>
               <DataTable
                 columns={columns}
-                data={data}
+                data={filteredData}
                 pageSizeOptions={[10, 25, 50]}
                 onRowClick={(row) => setSelectedId(row.id)}
               />
