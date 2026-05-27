@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Files } from "lucide-react";
 import DataTable from "../../ui/table";
-import type { ColumnDef } from "@tanstack/react-table";
 import GetSubmittalByID from "../../submittals/GetSubmittalByID";
 import { formatDate } from "../../../utils/dateUtils";
 import { useDispatch } from "react-redux";
@@ -112,7 +111,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
       enableColumnFilter: true,
       filterType: "select",
       filterOptions: recipientOptions,
-      filterFn: (row: any, columnId: string, filterValue: string) => {
+      filterFn: (row: any, _columnId: string, filterValue: string) => {
         if (!filterValue) return true;
         const multiple = row.original.multipleRecipients || [];
         const single = row.original.recepients || row.original.recipient;

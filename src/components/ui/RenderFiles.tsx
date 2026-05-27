@@ -112,8 +112,8 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
           id: f.id, // Ensure we preserve the file id for nested too
           uploadedAt: curr.uploadedAt || curr.createdAt || curr.date,
           user: curr.user || curr.sender,
-          documentID: table === 'submittals' && parentId ? parentId : curr.id,
-          versionId: table === 'submittals' ? curr.id : (f.versionId || versionId),
+          documentID: (table === 'submittals' || table === 'bfa') && parentId ? parentId : curr.id,
+          versionId: (table === 'submittals' || table === 'bfa') ? curr.id : (f.versionId || versionId),
           stage: curr.stage
         })
       })

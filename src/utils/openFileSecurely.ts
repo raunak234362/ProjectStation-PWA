@@ -9,6 +9,8 @@ const getDownloadUrl = (
 ) => {
   const baseURL = import.meta.env.VITE_BASE_URL?.replace(/\/$/, "");
   switch (table) {
+    case "bfa":
+      return `${baseURL}/bfa/viewFile/${parentId}/${fileId}`;
     case "project":
       return `${baseURL}/project/viewFile/${parentId}/${fileId}`;
     case "estimation":
@@ -160,7 +162,18 @@ export const shareFileSecurely = async (
             String(versionId),
             String(fileId),
           )
-        : await Service.createShareLink(type, String(id), String(fileId));
+        : type === "bfa"
+          ? await Service.createShareLink(
+              "bfa",
+              String(id),
+              String(fileId),
+            )
+          : await Service.createShareLink(
+              type,
+              String(id),
+              String(fileId),
+              versionId ? String(versionId) : undefined,
+            );
     if (response?.shareUrl) {
       await navigator.clipboard.writeText(response.shareUrl);
       toast.success("Link copied to clipboard!");

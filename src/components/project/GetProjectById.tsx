@@ -607,7 +607,7 @@ const GetProjectById = ({
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 p-2 md:p-4 overflow-y-auto min-h-0 custom-scrollbar">
+          <div className="flex-1 p-2 overflow-y-auto min-h-0 custom-scrollbar">
           {/* ✅ Overview */}
           {activeTab === "overview" && (
             <div className="space-y-6 animate-in fade-in duration-500">
