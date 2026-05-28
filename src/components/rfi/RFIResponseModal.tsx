@@ -108,10 +108,6 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
                   <option value="">Select Status</option>
                   <option value="PARTIAL">Partial</option>
                   <option value="COMPLETE">Complete</option>
-                  <option value="OPEN">Open</option>
-                  <option value="SENT">Sent</option>
-                  <option value="RECEIVED">Received</option>
-                  <option value="IN_REVIEW">In Review</option>
                 </select>
               </div>
             )}

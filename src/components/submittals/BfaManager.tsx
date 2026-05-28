@@ -367,7 +367,7 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
       ) : (
         <div className="text-center py-8 border border-dashed border-gray-300 rounded-xl bg-white flex flex-col items-center justify-center">
           <FileText className="w-10 h-10 text-gray-300 mb-2" />
-          <p className="text-sm text-gray-500 italic">No Bid for Approval (BFA) associated with this submittal yet.</p>
+          <p className="text-sm text-gray-500 italic">No Back from Approval (BFA) associated with this submittal yet.</p>
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}

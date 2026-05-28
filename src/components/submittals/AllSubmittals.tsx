@@ -178,15 +178,54 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
     },
 
     {
-      accessorKey: "status",
+      accessorKey: "wbtStatus",
       header: "Status",
       cell: ({ row }) => {
-        const isEOR = row.original.status === true;
+        const STATUS_LABELS: Record<string, string> = {
+          WAITING_FOR_BFA:                    "Waiting for BFA",
+          BFA_RECEIVED:                       "Back From Approval – Received",
+          BFA_SENT:                           "Back From Approval – Sent",
+          SUBMITTED_TO_EOR:                   "Submitted to EOR",
+          RELEASE_FOR_FABRICATION:            "Release for Fabrication",
+          NOT_APPROVED:                       "Not Approved",
+          REVISED_RESUBMITTAL:                "Revised & Resubmitted",
+          REVISED_RESUBMIT_FOR_FABRICATION:   "Revised & Resubmit for Fabrication",
+          PENDING:                            "Pending",
+        };
+
+        const getStatusStyles = (k: string) => {
+          switch (k) {
+            case "WAITING_FOR_BFA":
+              return "bg-purple-100 text-purple-700 border-purple-200";
+            case "BFA_RECEIVED":
+              return "bg-teal-100 text-teal-700 border-teal-200";
+            case "BFA_SENT":
+              return "bg-indigo-100 text-indigo-700 border-indigo-200";
+            case "SUBMITTED_TO_EOR":
+              return "bg-blue-100 text-blue-700 border-blue-200";
+            case "RELEASE_FOR_FABRICATION":
+              return "bg-green-100 text-green-700 border-green-200";
+            case "NOT_APPROVED":
+              return "bg-red-100 text-red-700 border-red-200";
+            case "REVISED_RESUBMITTAL":
+            case "REVISED_RESUBMIT_FOR_FABRICATION":
+              return "bg-orange-100 text-orange-700 border-orange-200";
+            case "PENDING":
+              return "bg-yellow-100 text-yellow-700 border-yellow-200";
+            default:
+              return "bg-gray-100 text-gray-600 border-gray-200";
+          }
+        };
+
+        const raw = row.original.wbtStatus || row.original.status || "PENDING";
+        const key = String(raw).replace(/\s+/g, "_").toUpperCase();
+        const label = STATUS_LABELS[key] ?? String(raw).replace(/_/g, " ");
+
         return (
           <span
-            className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5"
+            className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${getStatusStyles(key)}`}
           >
-            {isEOR ? "Submitted to EOR" : "Pending"}
+            {label}
           </span>
         );
       },

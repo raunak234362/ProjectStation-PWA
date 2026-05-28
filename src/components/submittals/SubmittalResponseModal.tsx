@@ -22,7 +22,6 @@ const SubmittalResponseModal = ({
 
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("SUBMITTED_TO_EOR");
 
   // ENUMS
 
@@ -36,7 +35,7 @@ const SubmittalResponseModal = ({
     formData.append("submittalVersionId", submittal.currentVersion.id);
 
     formData.append("submittalsId", submittal.id);
-    formData.append("status", status);
+    // formData.append("status", status);
     // formData.append("wbtStatus", wbtStatus);
 
     if (parentResponseId) {
@@ -94,12 +93,12 @@ const SubmittalResponseModal = ({
 
           {/* STATUS ENUM */}
           <div>
-            <label className="text-sm font-medium">Status</label>
+            {/* <label className="text-sm font-medium">Status</label>
             <select
               value={status}
               onChange={(e) => {
                 setStatus(e.target.value as any);
-                // setWbtStatus(e.target.value as any);
+                setWbtStatus(e.target.value as any);
               }}
               className="w-full border rounded-md p-2 mt-1"
             >
@@ -114,7 +113,7 @@ const SubmittalResponseModal = ({
               <option value="REVISED_RESUBMIT_FOR_FABRICATION">
                 Revised & Resubmit for Fabrication
               </option>
-            </select>
+            </select> */}
             {/* FILE UPLOAD */}
             <div>
               <label className="text-sm font-medium">Attachments</label>
