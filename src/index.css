@@ -275,6 +275,32 @@
   color: black !important;
 }
 
+/* Ensure bullet points, numbers, list items, and markers are black and highly visible */
+.prose ul,
+.prose ol,
+.prose li,
+.prose li::marker,
+.rich-text-content ul,
+.rich-text-content ol,
+.rich-text-content li,
+.rich-text-content li::marker,
+.submittal-description ul,
+.submittal-description ol,
+.submittal-description li,
+.submittal-description li::marker {
+  color: #111827 !important;
+}
+
+/* Highlight selection colour in the editor and anywhere in the app */
+::selection,
+.jodit-wysiwyg ::selection,
+.jodit-wysiwyg *::selection,
+.prose ::selection,
+.rich-text-content ::selection {
+  background-color: rgba(107, 189, 69, 0.25) !important; /* Semi-transparent brand green selection highlight */
+  color: #111827 !important; /* Ensure selected text color is black */
+}
+
 /* Table and Content Styling for Rich Text */
 .prose table, 
 .rich-text-content table {
@@ -313,4 +339,19 @@
 .prose.font-bold th,
 .prose.font-bold td {
   font-weight: 600 !important;
+}
+
+/* Remove all roundness in Project components */
+.project-component-container,
+.project-component-container *,
+.project-component-container [class*="rounded"] {
+  border-radius: 0px !important;
+  --radius: 0px !important;
+  --radius-sm: 0px !important;
+  --radius-md: 0px !important;
+  --radius-lg: 0px !important;
+  --radius-xl: 0px !important;
+  --radius-2xl: 0px !important;
+  --radius-3xl: 0px !important;
+  --radius-full: 0px !important;
 }

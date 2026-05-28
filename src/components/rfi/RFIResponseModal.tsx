@@ -58,7 +58,7 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
+    <div className="project-component-container fixed inset-0 flex items-center justify-center z-50 bg-black/40">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg relative">
         <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-black uppercase tracking-tight">Add Response</h2>

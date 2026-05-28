@@ -12,6 +12,13 @@ const SubmittalLayout = ({ project, submittalData, onSuccess }: SubmittalLayoutP
   const [activeTab, setActiveTab] = useState("allSubmittals");
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
+  const showAddButton =
+    userRole !== "client" &&
+    userRole !== "client_admin" &&
+    userRole !== "client_estimator" &&
+    userRole !== "connection_designer_engineer" &&
+    userRole !== "connection_designer_admin";
+
   const btnClass = (tab: string) =>
     `px-6 py-1.5 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all shadow-sm ${activeTab === tab
       ? "bg-green-50 text-black border-green-700/80 hover:bg-green-100"
@@ -19,16 +26,16 @@ const SubmittalLayout = ({ project, submittalData, onSuccess }: SubmittalLayoutP
     }`;
 
   return (
-    <div className="w-full h-full overflow-hidden flex flex-col bg-white">
-      <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
-        <button onClick={() => setActiveTab("allSubmittals")} className={btnClass("allSubmittals")}>All Submittals</button>
-        {userRole !== "client" && userRole !== "client_admin" && userRole !== "connection_designer_engineer" && userRole !== "connection_designer_admin" && (
+    <div className="w-full h-full overflow-hidden flex flex-col bg-white project-component-container">
+      {showAddButton && (
+        <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
+          <button onClick={() => setActiveTab("allSubmittals")} className={btnClass("allSubmittals")}>All Submittals</button>
           <button onClick={() => setActiveTab("addSubmittal")} className={btnClass("addSubmittal")}>Add Submittal</button>
-        )}
-      </div>
-      <div className="flex-1 min-h-0 px-8 pb-8 overflow-y-auto">
+        </div>
+      )}
+      <div className={`flex-1 min-h-0 px-8 pb-8 overflow-y-auto ${!showAddButton ? "pt-8" : ""}`}>
         {activeTab === "allSubmittals" && <AllSubmittals submittalData={submittalData} />}
-        {activeTab === "addSubmittal" && (
+        {showAddButton && activeTab === "addSubmittal" && (
           <div>
             <AddSubmittal
               project={project}

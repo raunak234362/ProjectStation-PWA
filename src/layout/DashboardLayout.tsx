@@ -41,6 +41,7 @@ const Layout = () => {
         flex h-screen w-screen overflow-hidden
         bg-white
         transition-colors duration-300
+        project-component-container
       "
     >
       {/* Desktop Sidebar */}

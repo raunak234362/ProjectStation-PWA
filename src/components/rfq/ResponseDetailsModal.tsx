@@ -103,7 +103,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-200">
+      <div className="project-component-container fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-200">
         <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] relative flex flex-col border border-black/10 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
@@ -237,7 +237,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
 
       {/* Reply Popup Modal */}
       {replyMode && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
+        <div className="project-component-container fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col border border-black/10 overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Reply Modal Header */}
             <div className="px-6 py-4 border-b border-black/10 flex justify-between items-center bg-white">

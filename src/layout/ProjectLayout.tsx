@@ -55,7 +55,7 @@ const ProjectLayout = () => {
   }, [dispatch]);
 
   return (
-    <div className="w-full overflow-y-hidden overflow-x-hidden">
+    <div className="w-full overflow-y-hidden overflow-x-hidden project-component-container">
       <div className="flex flex-col w-full h-full">
         <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4">

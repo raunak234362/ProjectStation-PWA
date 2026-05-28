@@ -162,7 +162,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
 
   if (loading) {
     return createPortal(
-      <div className="fixed inset-0 z-10001 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="fixed inset-0 z-10001 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md project-component-container">
         <div className="bg-white dark:bg-slate-900 w-[95%] max-w-[90vw] h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
           <div className="flex items-center justify-center h-full text-gray-700">
             <Loader2 className="w-5 h-5 animate-spin mr-2" />
@@ -176,7 +176,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
 
   if (!submittal || error) {
     return createPortal(
-      <div className="fixed inset-0 z-10001 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="fixed inset-0 z-10001 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md project-component-container">
         <div className="bg-white dark:bg-slate-900 w-[95%] max-w-[90vw] h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
           <div className="flex items-center justify-center h-full text-red-600">
             <AlertCircle className="w-5 h-5 mr-2" />
@@ -227,7 +227,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-10001 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-10001 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md project-component-container">
       <div className="bg-white dark:bg-slate-900 w-[95%] max-w-[90vw] h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50/50">

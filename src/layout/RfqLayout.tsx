@@ -11,7 +11,7 @@ const RfqLayout = () => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
   return (
-    <div className="w-full">
+    <div className="w-full project-component-container">
       <div className="flex flex-col w-full h-full mb-6">
         <div className="px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-end">

@@ -184,7 +184,7 @@ const ProjectDetailsContent = ({
 
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-white">
+    <div className="flex flex-col h-full overflow-hidden bg-white project-component-container">
       {/* ✅ CLOSE BUTTON */}
       <button
         onClick={close}

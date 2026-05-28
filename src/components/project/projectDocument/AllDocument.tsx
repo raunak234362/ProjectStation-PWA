@@ -12,8 +12,8 @@ const AllDocument = ({ projectId }: { projectId?: string }) => {
 
   return (
     <div className="space-y-4 mt-6">
-      <div className="flex justify-between items-center border-b pb-2">
-        <h2 className="text-xl font-black text-black uppercase tracking-tight">Project Explorer</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-black text-black uppercase tracking-tight"></h2>
         <div className="flex gap-2">
           <button
             onClick={() => setView("list")}

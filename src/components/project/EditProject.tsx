@@ -249,7 +249,7 @@ const EditProject: React.FC<EditProjectProps> = ({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm project-component-container"
       onClick={onCancel}
     >
       <div

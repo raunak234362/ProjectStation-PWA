@@ -42,7 +42,7 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+    <div className="project-component-container fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-[#fafffb] p-8 w-full max-w-lg rounded-3xl shadow-2xl relative space-y-4 border border-green-100/50">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-black text-black uppercase tracking-tight">

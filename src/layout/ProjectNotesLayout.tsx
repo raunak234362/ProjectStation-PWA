@@ -17,7 +17,7 @@ const ProjectNotesLayout = ({ projectId, project }: ProjectNotesLayoutProps) => 
     }`;
 
   return (
-    <div className="w-full h-full overflow-hidden flex flex-col bg-white">
+    <div className="w-full h-full overflow-hidden flex flex-col bg-white project-component-container">
       <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
         <button onClick={() => setActiveTab("allNotes")} className={btnClass("allNotes")}>Notes</button>
         <button onClick={() => setActiveTab("addNote")} className={btnClass("addNote")}>Create Note</button>

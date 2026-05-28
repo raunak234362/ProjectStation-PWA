@@ -18,7 +18,7 @@ const MilestoneLayout = ({ project, onUpdate }: MilestoneLayoutProps) => {
     } text-black`;
 
   return (
-    <div className="w-full h-full overflow-hidden flex flex-col bg-white">
+    <div className="w-full h-full overflow-hidden flex flex-col bg-white project-component-container">
       <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
         <button onClick={() => setActiveTab("allMilestones")} className={btnClass("allMilestones")}>All Milestones</button>
         {userRole !== "client" && userRole !== "client_admin" && (

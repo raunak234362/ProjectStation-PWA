@@ -108,6 +108,7 @@ function TaskDetailPanel({ taskId, onClose }: { taskId: string; onClose: () => v
 
     return createPortal(
         <div
+            className="project-component-container"
             style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", justifyContent: "flex-end" }}
             onClick={onClose}
         >

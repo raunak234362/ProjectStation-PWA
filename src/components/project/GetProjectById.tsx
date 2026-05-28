@@ -36,7 +36,6 @@ import AllCO from "../co/AllCO";
 import AddCO from "../co/AddCO";
 import CoTable from "../co/CoTable";
 import ProjectMilestoneMetrics from "./ProjectMilestoneMetrics";
-import AllDocumentsByProjectID from "./designDrawings/AllDocumentsByProjectID";
 import TeamsAnalytics from "./TeamsAnalytics";
 import RfiLayout from "../../layout/RfiLayout";
 import SubmittalLayout from "../../layout/SubmittalLayout";
@@ -521,7 +520,7 @@ const GetProjectById = ({
     );
 
   return createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-md overflow-y-auto project-component-container">
       <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-3 mb-3">
@@ -1092,7 +1091,6 @@ const GetProjectById = ({
           {/* ✅ Files */}
           {activeTab === "files" && (
             <div className="space-y-4">
-              <AllDocumentsByProjectID projectId={id} />
               <AllDocument projectId={id} />
             </div>
           )}
@@ -1169,63 +1167,64 @@ const GetProjectById = ({
             </div>
           )}
 
-          {activeTab === "changeOrder" && !isConnectionDesigner && (
-
-            <div className="space-y-6">
-              {/* Pill-style Sub-tabs for Change Order */}
-              <div className="flex p-1.5 bg-gray-100/30 rounded-2xl w-fit mb-6 border border-gray-200/50 gap-2">
-                <button
-                  onClick={() => setChangeOrderView("list")}
-                  className={`
-                    px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
-                    ${changeOrderView === "list"
-                      ? "bg-green-50 text-black border-green-700/80 shadow-sm"
-                      : "bg-gray-100 text-black border-black/10 hover:border-black/20"
-                    }
-                  `}
-                >
-                  All Change Orders
-                </button>
-                {!isClient && (
-                  <button
-                    onClick={() => setChangeOrderView("add")}
-                    className={`
-                      px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
-                      ${changeOrderView === "add"
-                        ? "bg-green-50 text-black border-green-700/80 shadow-sm"
-                        : "bg-gray-100 text-black border-black/10 hover:border-black/20"
-                      }
-                  `}
-                  >
-                    Raise Change Order
-                  </button>
-                )}
-              </div>
-
-
-              {/* Change Order Content */}
-              {changeOrderView === "list" ? (
-                <AllCO changeOrderData={changeOrderData} />
-              ) : changeOrderView === "add" ? (
-                <AddCO project={project} onSuccess={handleCoSuccess} />
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h4 className="text-lg font-semibold text-green-700">
-                      Change Order Table
-                    </h4>
+          {activeTab === "changeOrder" && !isConnectionDesigner && (() => {
+            const showAddCoButton = !isClient && userRole !== "client_estimator";
+            return (
+              <div className="space-y-6">
+                {/* Pill-style Sub-tabs for Change Order */}
+                {showAddCoButton && (
+                  <div className="flex p-1.5 bg-gray-100/30 rounded-2xl w-fit mb-6 border border-gray-200/50 gap-2">
                     <button
                       onClick={() => setChangeOrderView("list")}
-                      className="px-4 py-2 bg-gray-100 text-black border-2 border-black/10 rounded-lg hover:border-black/20 transition-all font-bold text-xs uppercase tracking-tight flex items-center gap-2"
+                      className={`
+                        px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
+                        ${changeOrderView === "list"
+                          ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+                          : "bg-gray-100 text-black border-black/10 hover:border-black/20"
+                        }
+                      `}
                     >
-                      &larr; Back to List
+                      All Change Orders
+                    </button>
+                    <button
+                      onClick={() => setChangeOrderView("add")}
+                      className={`
+                        px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
+                        ${changeOrderView === "add"
+                          ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+                          : "bg-gray-100 text-black border-black/10 hover:border-black/20"
+                        }
+                      `}
+                    >
+                      Raise Change Order
                     </button>
                   </div>
-                  {selectedCoId && <CoTable coId={selectedCoId} />}
-                </div>
-              )}
-            </div>
-          )}
+                )}
+
+                {/* Change Order Content */}
+                {changeOrderView === "list" ? (
+                  <AllCO changeOrderData={changeOrderData} />
+                ) : (changeOrderView === "add" && showAddCoButton) ? (
+                  <AddCO project={project} onSuccess={handleCoSuccess} />
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-lg font-semibold text-green-700">
+                        Change Order Table
+                      </h4>
+                      <button
+                        onClick={() => setChangeOrderView("list")}
+                        className="px-4 py-2 bg-gray-100 text-black border-2 border-black/10 rounded-lg hover:border-black/20 transition-all font-bold text-xs uppercase tracking-tight flex items-center gap-2"
+                      >
+                        &larr; Back to List
+                      </button>
+                    </div>
+                    {selectedCoId && <CoTable coId={selectedCoId} />}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
         </div>
       </div>
@@ -1246,7 +1245,7 @@ const GetProjectById = ({
       {selectedOtherBundle &&
         createPortal(
           <div
-            className="fixed inset-0  flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0  flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm project-component-container"
             onClick={() => setSelectedOtherBundle(null)}
           >
             <div
@@ -1382,15 +1381,17 @@ const GetProjectById = ({
         )}
       {selectedSubmittalToView &&
         createPortal(
-          <GetSubmittalByID
-            id={selectedSubmittalToView}
-            onClose={() => setSelectedSubmittalToView(null)}
-          />,
+          <div className="project-component-container">
+            <GetSubmittalByID
+              id={selectedSubmittalToView}
+              onClose={() => setSelectedSubmittalToView(null)}
+            />
+          </div>,
           document.body,
         )}
       {selectedMilestoneToView &&
         createPortal(
-          <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto project-component-container">
             <div className="w-full max-w-5xl my-auto animate-in fade-in zoom-in duration-200">
               <GetMilestoneByID
                 row={selectedMilestoneToView}

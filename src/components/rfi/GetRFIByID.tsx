@@ -52,7 +52,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
 
   if (loading || error || !rfi) {
     return createPortal(
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md project-component-container">
         <div className="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
           {loading ? (
             <>
@@ -148,7 +148,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md project-component-container">
       <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">

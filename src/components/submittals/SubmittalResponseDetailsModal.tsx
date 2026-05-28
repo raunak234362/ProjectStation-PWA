@@ -61,7 +61,7 @@ const SubmittalResponseDetailsModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 backdrop-blur-sm">
+    <div className="project-component-container fixed inset-0 bg-black/60 flex justify-center items-center z-50 backdrop-blur-sm">
       <div className="bg-[#fafffb] w-full max-w-4xl p-8 rounded-3xl shadow-2xl space-y-5 relative border border-gray-100">
         {/* Close Button */}
         <div className="flex justify-between items-center mb-6">

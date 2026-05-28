@@ -335,7 +335,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
     );
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200 project-component-container">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] border border-gray-200 overflow-hidden flex flex-col relative">
         {/* Header */}
         <div className=" px-6 py-4 border-b flex justify-between items-center bg-gray-50/30 shrink-0">
