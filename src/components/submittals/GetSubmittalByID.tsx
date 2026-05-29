@@ -275,7 +275,10 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 <p className="text-gray-700 italic">No responses yet.</p>
               )}
             </div>
-            <BfaManager submittalId={submittal.id} />
+            {userRole !== "CONNECTION_DESIGNER_ADMIN" &&
+              userRole !== "CONNECTION_DESIGNER_ENGINEER" && (
+                <BfaManager submittalId={submittal.id} />
+              )}
             {/* LEFT PANEL */}
             <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
               <div className="flex justify-between items-start mb-2">

@@ -48,6 +48,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 token,
                 newPassword,
                 username: "", // Not needed for this endpoint but required by interface
+                purpose: "password_reset",
             });
 
             toast.success("Password changed successfully");
@@ -120,13 +121,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                         </div>
 
                         <div className="flex justify-end gap-3 result pt-2">
-                            <Button
-                                type="button"
-                                onClick={onClose}
-                                className="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg"
-                            >
-                                Cancel
-                            </Button>
+                          
                             <Button
                                 type="submit"
                                 disabled={loading}

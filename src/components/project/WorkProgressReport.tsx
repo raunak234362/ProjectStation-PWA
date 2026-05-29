@@ -1,0 +1,1695 @@
+// @ts-nocheck
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import {
+  FileSpreadsheet,
+  Printer,
+  Download,
+  Plus,
+  Save,
+  Trash2,
+  FileText,
+  Calendar,
+  CheckCircle,
+  HelpCircle,
+  Clock,
+  ArrowRight,
+  TrendingUp,
+  Loader2,
+  Compass
+} from "lucide-react";
+import Service from "../../api/Service";
+import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
+import * as htmlToImage from "html-to-image";
+import { jsPDF } from "jspdf";
+
+interface WorkProgressReportProps {
+  projectId?: string;
+  project?: any;
+  milestones?: any[];
+  rfiData?: any;
+  submittalData?: any[];
+  coordinationDrawings?: any[];
+  onUpdate?: () => void;
+}
+
+const WorkProgressReport: React.FC<WorkProgressReportProps> = ({
+  projectId,
+  project,
+  milestones = [],
+  rfiData = [],
+  submittalData = [],
+  coordinationDrawings = [],
+  onUpdate
+}) => {
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const canEdit = !["client", "staff", "estimator", "client_admin", "client_estimator", "client_accountant"].includes(userRole);
+
+  // WPR Header Info state
+  const [reportDate, setReportDate] = useState(new Date().toISOString().split("T")[0]);
+  const [weekEnding, setWeekEnding] = useState("");
+  const [circulatedTo, setCirculatedTo] = useState("Rob Tucci / Vishal / Rajeshwari");
+  const [software, setSoftware] = useState(project?.tools || "SDS2");
+  const [fabProjectManager, setFabProjectManager] = useState("Matt Aurand");
+
+  // Raw grids local states (unfiltered)
+  const [rawRfis, setRawRfis] = useState<any[]>([]);
+  const [rawScheduleRows, setRawScheduleRows] = useState<any[]>([]);
+  const [rawCoRows, setRawCoRows] = useState<any[]>([]);
+  const [rawCoordDrawings, setRawCoordDrawings] = useState<any[]>([]);
+
+  // Selected week state
+  const [selectedWeek, setSelectedWeek] = useState("All");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Keyboard navigation & Editing Cell state
+  // format: { table: 'rfi'|'schedule'|'co'|'coordDrawing', rowId: string, field: string }
+  const [activeCell, setActiveCell] = useState<any>(null);
+  const [editValue, setEditValue] = useState("");
+  const inputRef = useRef(null);
+
+  // Date helper functions for week calculation
+  const getMonday = (d) => {
+    const date = new Date(d);
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    const monday = new Date(date.setDate(diff));
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+  };
+
+  const getSunday = (d) => {
+    const mon = getMonday(d);
+    const sun = new Date(mon);
+    sun.setDate(mon.getDate() + 6);
+    sun.setHours(23, 59, 59, 999);
+    return sun;
+  };
+
+  const isWithinWeek = (dateStr, start, end) => {
+    if (!dateStr || dateStr === "—" || dateStr === "Waiting...") return false;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return false;
+    return d >= start && d <= end;
+  };
+
+  // Generate Available Weeks from Project Start Date to End Date / Today
+  const projectWeeks = useMemo(() => {
+    if (!project || !project.startDate) return [];
+
+    const start = new Date(project.startDate);
+    if (isNaN(start.getTime())) return [];
+
+    let end = new Date();
+    if (project.fabricationDate) {
+      const fabDate = new Date(project.fabricationDate);
+      if (!isNaN(fabDate.getTime())) {
+        end = fabDate;
+      }
+    } else if (project.endDate) {
+      const eDate = new Date(project.endDate);
+      if (!isNaN(eDate.getTime())) {
+        end = eDate;
+      }
+    }
+
+    // Constrain end date to never exceed today
+    const today = new Date();
+    if (end > today) {
+      end = today;
+    }
+
+    const startMon = getMonday(start);
+    const endSun = getSunday(end);
+
+    const weeks = [];
+    let currentMon = new Date(startMon);
+
+    while (currentMon <= endSun) {
+      const currentSun = getSunday(currentMon);
+      const label = `Week ${weeks.length + 1} (${currentMon.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${currentSun.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})`;
+
+      weeks.push({
+        index: weeks.length + 1,
+        start: new Date(currentMon),
+        end: new Date(currentSun),
+        label
+      });
+
+      currentMon.setDate(currentMon.getDate() + 7);
+    }
+
+    return weeks;
+  }, [project]);
+
+  // Set default week ending date to current week
+  useEffect(() => {
+    if (projectWeeks.length > 0 && selectedWeek === "All") {
+      const today = new Date();
+      const current = projectWeeks.find(w => today >= w.start && today <= w.end);
+      if (current) {
+        setSelectedWeek(current.label);
+        setWeekEnding(current.end.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }));
+      } else {
+        setSelectedWeek("All");
+        const sunday = getSunday(today);
+        setWeekEnding(sunday.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }));
+      }
+    } else if (selectedWeek === "All") {
+      const d = new Date();
+      const sunday = getSunday(d);
+      setWeekEnding(sunday.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }));
+    }
+  }, [projectWeeks]);
+
+  const handleWeekChange = (label) => {
+    setSelectedWeek(label);
+    if (label === "All") {
+      const d = new Date();
+      const sunday = getSunday(d);
+      setWeekEnding(sunday.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }));
+    } else {
+      const wk = projectWeeks.find(w => w.label === label);
+      if (wk) {
+        setWeekEnding(wk.end.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }));
+      }
+    }
+  };
+
+  // Sync RFIs
+  useEffect(() => {
+    let rfiArray = [];
+    if (Array.isArray(rfiData)) {
+      rfiArray = rfiData;
+    } else if (rfiData && rfiData.data) {
+      rfiArray = rfiData.data;
+    } else if (rfiData && rfiData["show rfi"]) {
+      rfiArray = rfiData["show rfi"];
+    }
+
+    // Hide connection design RFIs
+    rfiArray = rfiArray.filter(r => !(r.isConnectionDesign === true || String(r.isConnectionDesign).toLowerCase() === "true"));
+
+    const formattedRFIs = rfiArray.map((r, index) => {
+      const responses = r.rfiresponse || [];
+
+      // Detect role from nested user object or responseState
+      const isClientResponse = (res) => {
+        const role = (res.user?.role || res.userRole || res.createdByRole || "").toUpperCase();
+        return role === "CLIENT" || role === "CLIENT_ADMIN";
+      };
+
+      // Sort responses by date (oldest first) so we can separate Q & A
+      const sorted = [...responses].sort(
+        (a, b) => new Date(a.createdAt || a.date || 0) - new Date(b.createdAt || b.date || 0)
+      );
+
+      // Customer response = first SENT response from client, else latest non-wbt
+      const customerRep = sorted.find(res => isClientResponse(res))
+        || sorted.find(res => res.responseState === "SENT" && !isClientResponse(res));
+
+      // WBT response = latest non-client response
+      const wbtRep = [...sorted].reverse().find(res => !isClientResponse(res));
+
+      let statusLabel = "PENDING";
+      if (sorted.length > 0) {
+        const latest = sorted[sorted.length - 1];
+        const rfiStatus = latest.wbtStatus || latest.status;
+        if (rfiStatus && typeof rfiStatus === "string") {
+          statusLabel = rfiStatus.toUpperCase();
+        }
+      } else {
+        statusLabel = r.status === true || r.status === "OPEN" || r.status === "PENDING" ? "PENDING" : "ANSWERED";
+      }
+
+      // Prefer `reason` field (actual API field), fallback to `description`
+      const extractText = (res) =>
+        ((res?.reason || res?.description || "").replace(/<[^>]+>/g, "")).trim();
+
+      return {
+        id: r.id || r._id,
+        rfiNo: r.subject || r.serialNo || `RFI #${index + 1}`,
+        sentDate: r.date ? new Date(r.date).toLocaleDateString("en-US") : "—",
+        customerResponse: customerRep ? (extractText(customerRep) || "(no text)") : "Waiting...",
+        responseReceivedDate: customerRep
+          ? new Date(customerRep.createdAt || customerRep.date).toLocaleDateString("en-US")
+          : "—",
+        wbtResponse: wbtRep ? (extractText(wbtRep) || "Responded") : "—",
+        status: statusLabel,
+        rfiresponse: r.rfiresponse
+      };
+    });
+
+    setRawRfis(formattedRFIs);
+  }, [rfiData]);
+
+  // Sync Schedule – one row per milestone (with stacked submittal entries), plus standalone submittals
+  useEffect(() => {
+    const processSchedule = async () => {
+      // Hide connection design submittals
+      const filteredSubmittalData = (submittalData || []).filter(sub => !(sub.isConnectionDesign === true || String(sub.isConnectionDesign).toLowerCase() === "true"));
+
+      // Fetch BFA details for submittals marked as BFA_SENT
+      const bfaCache = {};
+      const subsToFetch = filteredSubmittalData.filter(sub => sub.bfaStatus === true && sub.status === "BFA_SENT");
+
+      await Promise.all(subsToFetch.map(async (sub) => {
+        try {
+          const res = await Service.GetBFABySubmittalId(sub.id || sub._id);
+          if (res && res.data) {
+            bfaCache[sub.id || sub._id] = res.data;
+          }
+        } catch (e) {
+          console.error("Failed to fetch BFA for submittal", sub.id, e);
+        }
+      }));
+
+      const linkedSubmittalIds = new Set();
+      const fmt = (d) => d ? new Date(d).toLocaleDateString("en-US") : "—";
+      const toEntry = (sub) => ({ subject: sub.subject || sub.serialNo || "—", date: fmt(sub.date || sub.createdAt) });
+      const cleanHtml = (str) => (str || "").replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
+
+      // ── Milestone rows ────────────────────────────────────────────────────────
+      const milestoneRows = milestones.map((m) => {
+        const mId = String(m.id || m._id);
+
+        // A submittal belongs to this milestone if:
+        //   1. Its mileStoneId / milestoneId matches, OR
+        //   2. Its mileStoneIds[] (new field) contains this milestone ID, OR
+        //   3. Its mileStoneLinks[] (legacy) contains a reference to this milestone
+        const matchLink = (link) =>
+          String(link) === mId ||
+          String(link?.id) === mId ||
+          String(link?.mileStoneId) === mId ||
+          String(link?.milestoneId) === mId;
+
+        const belongsToMilestone = (sub) => {
+          if (String(sub.mileStoneId || sub.milestoneId || sub.milestone?.id) === mId) return true;
+          if (Array.isArray(sub.mileStoneIds) && sub.mileStoneIds.some(matchLink)) return true;
+          if (Array.isArray(sub.mileStoneLinks) && sub.mileStoneLinks.some(matchLink)) return true;
+          return false;
+        };
+
+        const subs = filteredSubmittalData.filter(belongsToMilestone);
+        subs.forEach(s => linkedSubmittalIds.add(s.id || s._id));
+
+        const ifaSubs = subs.filter(s => String(s.stage || "").toUpperCase() === "IFA");
+        const ifcSubs = subs.filter(s => String(s.stage || "").toUpperCase() === "IFC");
+        const corSubs = subs.filter(s => ["CO", "COR"].includes(String(s.stage || "").toUpperCase()));
+
+        const unifiedEntries = subs.map(s => {
+          const stage = String(s.stage || "").toUpperCase();
+          const dateStr = s.createdAt || s.date || 0;
+
+          let bfaDate = "—";
+          const resList = s.submittalsResponse || [];
+          if (resList.length > 0) {
+            const latest = [...resList].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0];
+            if (latest && latest.createdAt) bfaDate = fmt(latest.createdAt);
+          }
+          if (s.bfaStatus === true && s.status === "BFA_SENT" && bfaCache[s.id || s._id]) {
+            const bfaData = bfaCache[s.id || s._id];
+            const bDate = bfaData.createdAt || bfaData.date;
+            if (bDate) bfaDate = fmt(bDate);
+          }
+
+          let currentStatus = s.wbtStatus || s.status || "PENDING";
+          if (bfaCache[s.id || s._id]) {
+            const bfaData = bfaCache[s.id || s._id];
+            if (bfaData.status) currentStatus = bfaData.status;
+          }
+
+          return {
+            id: s.id || s._id,
+            subject: s.subject || s.serialNo || "—",
+            ifaDate: stage === "IFA" ? fmt(dateStr) : "—",
+            bfaDate: bfaDate,
+            ifcDate: stage === "IFC" ? fmt(dateStr) : "—",
+            corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "—",
+            status: currentStatus,
+            date: dateStr
+          };
+        });
+
+        const finalBfaRecdDate = unifiedEntries.find(e => e.bfaDate !== "—")?.bfaDate || "—";
+        const primarySub = subs.length > 0 ? [...subs].sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0))[0] : null;
+        const submittalStatus = primarySub ? (primarySub.wbtStatus || primarySub.status || "PENDING") : "—";
+
+        return {
+          id: m.id || m._id,
+          _type: "milestone",
+          phase: m.subject || "Unnamed Phase",
+          startDate: m.date ? fmt(m.date) : (project?.startDate ? fmt(project.startDate) : "—"),
+          unifiedEntries,
+          bfaRecdDate: finalBfaRecdDate,
+          submittalStatus,
+          // flat dates kept for filtering/export
+          ifaSubDate: unifiedEntries.find(e => e.ifaDate !== "—")?.ifaDate || "—",
+          ifcSubDate: unifiedEntries.find(e => e.ifcDate !== "—")?.ifcDate || "—",
+          corSubDate: unifiedEntries.find(e => e.corDate !== "—")?.corDate || "—",
+          comments: m.description ? cleanHtml(m.description) : (m.percentage ? `${m.percentage}% Completed` : "—"),
+          types: m.types || "ANCHOR_BOLT",
+          subSubject: "",
+        };
+      });
+
+      // ── Standalone submittal rows (no milestone link of any kind) ─────────────
+      const standaloneRows = filteredSubmittalData
+        .filter(sub => {
+          if (linkedSubmittalIds.has(sub.id || sub._id)) return false;
+          if (sub.mileStoneId || sub.milestoneId) return false;
+          if (sub.mileStoneIds && sub.mileStoneIds.length > 0) return false;
+          if (sub.mileStoneLinks && sub.mileStoneLinks.length > 0) return false;
+          return true;
+        })
+        .map((sub) => {
+          const responses = sub.submittalsResponse || [];
+          const latestResponse = responses.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0];
+          const stage = String(sub.stage || "").toUpperCase();
+          const entry = toEntry(sub);
+
+          let finalBfaRecdDate = latestResponse ? fmt(latestResponse.createdAt || latestResponse.respondedAt) : "—";
+          if (sub.bfaStatus === true && sub.status === "BFA_SENT" && bfaCache[sub.id || sub._id]) {
+            const bfaData = bfaCache[sub.id || sub._id];
+            const dateStr = bfaData.createdAt || bfaData.date;
+            if (dateStr) finalBfaRecdDate = fmt(dateStr);
+          }
+          const bfaEntries = finalBfaRecdDate !== "—" ? [{ subject: sub.subject || sub.serialNo || "—", date: finalBfaRecdDate }] : [];
+          let currentStatus = sub.wbtStatus || sub.status || "PENDING";
+          if (bfaCache[sub.id || sub._id]) {
+            const bfaData = bfaCache[sub.id || sub._id];
+            if (bfaData.status) currentStatus = bfaData.status;
+          }
+          const statusEntries = [{
+            subject: sub.subject || sub.serialNo || "—",
+            status: currentStatus,
+            date: sub.createdAt || sub.date || 0
+          }];
+
+          const dateStr = sub.createdAt || sub.date || 0;
+          const unifiedEntries = [{
+            id: sub.id || sub._id,
+            subject: sub.subject || sub.serialNo || "—",
+            ifaDate: stage === "IFA" ? fmt(dateStr) : "—",
+            bfaDate: finalBfaRecdDate,
+            ifcDate: stage === "IFC" ? fmt(dateStr) : "—",
+            corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "—",
+            status: currentStatus,
+            date: dateStr
+          }];
+
+          return {
+            id: sub.id || sub._id,
+            _type: "submittal",
+            phase: sub.subject || sub.serialNo || "Unnamed Submittal",
+            startDate: fmt(sub.date || sub.createdAt),
+            unifiedEntries,
+            bfaRecdDate: finalBfaRecdDate,
+            ifaSubDate: stage === "IFA" ? entry.date : "—",
+            ifcSubDate: stage === "IFC" ? entry.date : "—",
+            corSubDate: ["CO", "COR"].includes(stage) ? entry.date : "—",
+            submittalStatus: sub.wbtStatus || sub.status || "PENDING",
+            comments: latestResponse
+              ? cleanHtml(latestResponse.description || latestResponse.reason) || "—"
+              : "—",
+            types: "ANCHOR_BOLT",
+            subSubject: sub.subject || sub.serialNo || "",
+          };
+        });
+
+      // ── Merge rows that share the same Phase / Subject ────────────────────────
+      // (e.g. two milestones both named "ANCHOR BOLT" collapse into one row)
+      const sortByDate = (entries) =>
+        [...entries].sort((a, b) => {
+          const da = a.date && a.date !== "—" ? new Date(a.date) : new Date(0);
+          const db = b.date && b.date !== "—" ? new Date(b.date) : new Date(0);
+          return da - db;
+        });
+
+      const mergeMap = new Map();
+      [...milestoneRows, ...standaloneRows].forEach((row) => {
+        const key = (row.phase || "").trim().toUpperCase();
+        if (!mergeMap.has(key)) {
+          mergeMap.set(key, {
+            ...row,
+            unifiedEntries: [...(row.unifiedEntries || [])],
+          });
+        } else {
+          const base = mergeMap.get(key);
+          base.unifiedEntries.push(...(row.unifiedEntries || []));
+          // Keep earliest start date
+          if (row.startDate && row.startDate !== "—" &&
+            (base.startDate === "—" || new Date(row.startDate) < new Date(base.startDate))) {
+            base.startDate = row.startDate;
+          }
+          // Keep latest BFA date
+          if (row.bfaRecdDate && row.bfaRecdDate !== "—") {
+            if (base.bfaRecdDate === "—" || new Date(row.bfaRecdDate) > new Date(base.bfaRecdDate)) {
+              base.bfaRecdDate = row.bfaRecdDate;
+            }
+          }
+          // Keep most meaningful status
+          if (row.submittalStatus && row.submittalStatus !== "—") {
+            base.submittalStatus = row.submittalStatus;
+          }
+          // Append unique comments
+          if (row.comments && row.comments !== "—") {
+            base.comments = base.comments === "—"
+              ? row.comments
+              : base.comments.includes(row.comments)
+                ? base.comments
+                : `${base.comments} | ${row.comments}`;
+          }
+        }
+      });
+
+      // Sort each entry list by date and update flat date fields
+      const mergedRows = Array.from(mergeMap.values()).map((row) => {
+        const sortedEntries = sortByDate(row.unifiedEntries || []);
+        return {
+          ...row,
+          unifiedEntries: sortedEntries,
+          ifaSubDate: sortedEntries.find(e => e.ifaDate !== "—")?.ifaDate || "—",
+          ifcSubDate: sortedEntries.find(e => e.ifcDate !== "—")?.ifcDate || "—",
+          corSubDate: sortedEntries.find(e => e.corDate !== "—")?.corDate || "—",
+        };
+      });
+
+      setRawScheduleRows(mergedRows);
+    };
+
+    processSchedule();
+  }, [milestones, submittalData, project]);
+
+  // Sync Change Orders Month-by-month
+  useEffect(() => {
+    const rawCOs = project?.changeOrders || [];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const rows = rawCOs.map((co) => {
+      const coDate = co.createdAt || co.date ? new Date(co.createdAt || co.date) : null;
+      const coMonthIndex = coDate ? coDate.getMonth() : -1;
+      const amount = co.totalCost || co.amount || 0;
+
+      const monthlyBreakdown = {};
+      months.forEach((m, idx) => {
+        if (idx === coMonthIndex) {
+          monthlyBreakdown[m] = amount > 0 ? `$${amount.toLocaleString()}` : "Sent";
+        } else {
+          monthlyBreakdown[m] = "";
+        }
+      });
+
+      return {
+        id: co.id || co._id,
+        createdAt: co.createdAt || co.date || new Date().toISOString(),
+        changeOrder: co.changeOrderNumber ? `COR-${co.changeOrderNumber.slice(-3)}` : "COR-New",
+        ...monthlyBreakdown,
+        total: amount > 0 ? `$${amount.toLocaleString()}` : "—"
+      };
+    });
+
+    setRawCoRows(rows);
+  }, [project]);
+
+  // Sync Coordination Drawings
+  useEffect(() => {
+    if (Array.isArray(coordinationDrawings)) {
+      const formattedDrawings = coordinationDrawings.map((cd, index) => ({
+        id: cd.id || cd._id,
+        title: cd.title || `Drawing #${index + 1}`,
+        stage: cd.stage || "IFA",
+        status: cd.status || "Pending",
+        createdAt: cd.createdAt ? new Date(cd.createdAt).toLocaleDateString("en-US") : "—"
+      }));
+      setRawCoordDrawings(formattedDrawings);
+    }
+  }, [coordinationDrawings]);
+
+  // Filtered Datasets based on selected week
+  const activeWeekRange = useMemo(() => {
+    if (selectedWeek === "All") return null;
+    return projectWeeks.find(w => w.label === selectedWeek) || null;
+  }, [selectedWeek, projectWeeks]);
+
+  const filteredRfis = useMemo(() => {
+    if (!activeWeekRange) return rawRfis;
+    return rawRfis.filter(r =>
+      isWithinWeek(r.sentDate, activeWeekRange.start, activeWeekRange.end) ||
+      isWithinWeek(r.responseReceivedDate, activeWeekRange.start, activeWeekRange.end)
+    );
+  }, [rawRfis, activeWeekRange]);
+
+  const filteredScheduleRows = useMemo(() => {
+    if (!activeWeekRange) return rawScheduleRows;
+    return rawScheduleRows.filter(s =>
+      isWithinWeek(s.startDate, activeWeekRange.start, activeWeekRange.end) ||
+      isWithinWeek(s.ifaSubDate, activeWeekRange.start, activeWeekRange.end) ||
+      isWithinWeek(s.bfaRecdDate, activeWeekRange.start, activeWeekRange.end) ||
+      isWithinWeek(s.ifcSubDate, activeWeekRange.start, activeWeekRange.end) ||
+      isWithinWeek(s.corSubDate, activeWeekRange.start, activeWeekRange.end)
+    );
+  }, [rawScheduleRows, activeWeekRange]);
+
+  const filteredCoRows = useMemo(() => {
+    if (!activeWeekRange) return rawCoRows;
+    return rawCoRows.filter(c => isWithinWeek(c.createdAt, activeWeekRange.start, activeWeekRange.end));
+  }, [rawCoRows, activeWeekRange]);
+
+  const filteredCoordDrawings = useMemo(() => {
+    if (!activeWeekRange) return rawCoordDrawings;
+    return rawCoordDrawings.filter(cd => isWithinWeek(cd.createdAt, activeWeekRange.start, activeWeekRange.end));
+  }, [rawCoordDrawings, activeWeekRange]);
+
+  // Handle cell double-click
+  const handleCellClick = (table, rowId, field, value) => {
+    if (!canEdit) return;
+    setActiveCell({ table, rowId, field });
+    setEditValue(value);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  // Save cell edit
+  const handleCellSave = () => {
+    if (!activeCell) return;
+    const { table, rowId, field } = activeCell;
+
+    if (table === "rfi") {
+      const updated = rawRfis.map(row => {
+        if (row.id === rowId) {
+          return { ...row, [field]: editValue };
+        }
+        return row;
+      });
+      setRawRfis(updated);
+    } else if (table === "schedule") {
+      const updated = rawScheduleRows.map(row => {
+        if (row.id === rowId) {
+          return { ...row, [field]: editValue };
+        }
+        return row;
+      });
+      setRawScheduleRows(updated);
+    } else if (table === "co") {
+      const updated = rawCoRows.map(row => {
+        if (row.id === rowId) {
+          const newRow = { ...row, [field]: editValue };
+          // Recompute total if month was changed
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          let sum = 0;
+          months.forEach(m => {
+            const val = newRow[m]?.replace(/[^0-9.]/g, "");
+            if (val) sum += Number(val);
+          });
+          newRow.total = sum > 0 ? `$${sum.toLocaleString()}` : "—";
+          return newRow;
+        }
+        return row;
+      });
+      setRawCoRows(updated);
+    } else if (table === "coordDrawing") {
+      const updated = rawCoordDrawings.map(row => {
+        if (row.id === rowId) {
+          return { ...row, [field]: editValue };
+        }
+        return row;
+      });
+      setRawCoordDrawings(updated);
+    }
+    setActiveCell(null);
+  };
+
+  // Keyboard Navigation inside table cells
+  const handleKeyDown = (e) => {
+    if (!activeCell) return;
+    const { table, rowId, field } = activeCell;
+    const tableData =
+      table === "rfi"
+        ? filteredRfis
+        : table === "schedule"
+          ? filteredScheduleRows
+          : table === "co"
+            ? filteredCoRows
+            : filteredCoordDrawings;
+    const rowIndex = tableData.findIndex(row => row.id === rowId);
+    if (rowIndex === -1) return;
+
+    const fields = Object.keys(tableData[0]).filter(k => k !== "id" && k !== "createdAt");
+    const fieldIndex = fields.indexOf(field);
+
+    if (e.key === "Enter") {
+      handleCellSave();
+      if (rowIndex < tableData.length - 1) {
+        const nextRow = tableData[rowIndex + 1];
+        handleCellClick(table, nextRow.id, field, nextRow[field]);
+      }
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      handleCellSave();
+      if (fieldIndex < fields.length - 1) {
+        const nextField = fields[fieldIndex + 1];
+        handleCellClick(table, rowId, nextField, tableData[rowIndex][nextField]);
+      } else if (rowIndex < tableData.length - 1) {
+        const nextRow = tableData[rowIndex + 1];
+        const nextField = fields[0];
+        handleCellClick(table, nextRow.id, nextField, nextRow[nextField]);
+      }
+    } else if (e.key === "Escape") {
+      setActiveCell(null);
+    }
+  };
+
+  // Save WPR Data to Server/API
+  const [saving, setSaving] = useState(false);
+  const handleSaveChanges = async () => {
+    try {
+      setSaving(true);
+      // Sync milestones to backend
+      for (const row of rawScheduleRows) {
+        const payload = {
+          projectId: projectId,
+          subject: row.phase,
+          description: row.comments,
+          date: row.startDate !== "—" ? new Date(row.startDate).toISOString() : new Date().toISOString(),
+          approvalDate: row.ifaSubDate !== "—" ? new Date(row.ifaSubDate).toISOString() : undefined,
+          CDApprovalDate: row.ifcSubDate !== "—" ? new Date(row.ifcSubDate).toISOString() : undefined,
+          types: row.types || "ANCHOR_BOLT",
+          subSubject: row.subSubject || "string",
+        };
+        if (row.id && !String(row.id).startsWith("temp-")) {
+          await Service.EditMilestoneById(row.id, payload);
+        } else {
+          await Service.AddProjectMilestone(payload);
+        }
+      }
+
+      // Sync RFIs to backend
+      for (const row of rawRfis) {
+        if (row.id && !String(row.id).startsWith("temp-")) {
+          const payload = {
+            subject: row.rfiNo,
+            status: ["OPEN", "PENDING", "PARTIAL"].includes(row.status?.toUpperCase()),
+          };
+          await Service.EditRFIByID(row.id, payload);
+        } else {
+          const formData = new FormData();
+          formData.append("projectId", projectId);
+          formData.append("subject", row.rfiNo);
+          formData.append("description", "Created from Weekly Progress Report");
+          formData.append("date", row.sentDate !== "—" ? new Date(row.sentDate).toISOString() : new Date().toISOString());
+          await Service.addRFI(formData);
+        }
+      }
+
+      // Sync Coordination Drawings to backend
+      for (const row of rawCoordDrawings) {
+        if (row.id && !String(row.id).startsWith("temp-")) {
+          const payload = {
+            title: row.title,
+            stage: row.stage,
+            status: row.status
+          };
+          await Service.updateCoordinationDrawing(row.id, payload);
+        } else {
+          const formData = new FormData();
+          formData.append("projectId", projectId);
+          formData.append("title", row.title);
+          formData.append("description", `Created from Weekly Progress Report on ${new Date().toLocaleDateString()}`);
+          formData.append("stage", row.stage || "IFA");
+
+          const res = await Service.createCoordinationDrawing(formData);
+          if (res && res.data && row.status !== "Pending") {
+            const newId = res.data.id || res.data._id;
+            if (newId) {
+              await Service.updateCoordinationDrawing(newId, { status: row.status });
+            }
+          }
+        }
+      }
+
+      // Sync Change Orders
+      for (const row of rawCoRows) {
+        if (row.id && String(row.id).startsWith("temp-")) {
+          const formData = new FormData();
+          formData.append("projectId", projectId);
+          formData.append("changeOrderNumber", row.changeOrder.replace("COR-", ""));
+          formData.append("description", "Created from Weekly Progress Report");
+          let sum = 0;
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          months.forEach(m => {
+            const val = row[m]?.replace(/[^0-9.]/g, "");
+            if (val) sum += Number(val);
+          });
+          formData.append("totalCost", sum);
+          await Service.ChangeOrder(formData);
+        }
+      }
+
+      toast.success("Progress Report updated successfully!");
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to sync report data with server");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Add new rows to table
+  const addRow = (table) => {
+    const defaultDate = activeWeekRange
+      ? activeWeekRange.start.toLocaleDateString("en-US")
+      : new Date().toLocaleDateString("en-US");
+
+    const tempId = `temp-${Date.now()}`;
+
+    if (table === "rfi") {
+      setRawRfis([...rawRfis, {
+        id: tempId,
+        rfiNo: `RFI #${rawRfis.length + 1}`,
+        sentDate: defaultDate,
+        customerResponse: "—",
+        responseReceivedDate: "—",
+        wbtResponse: "—",
+        status: "OPEN"
+      }]);
+    } else if (table === "schedule") {
+      setRawScheduleRows([...rawScheduleRows, {
+        id: tempId,
+        phase: `New Phase #${rawScheduleRows.length + 1}`,
+        startDate: defaultDate,
+        ifaSubDate: "—",
+        bfaRecdDate: "—",
+        ifcSubDate: "—",
+        corSubDate: "—",
+        comments: "—",
+        types: "ANCHOR_BOLT",
+        subSubject: "string"
+      }]);
+    } else if (table === "co") {
+      setRawCoRows([...rawCoRows, {
+        id: tempId,
+        changeOrder: `COR-${String(rawCoRows.length + 1).padStart(3, "0")}`,
+        createdAt: activeWeekRange ? activeWeekRange.start.toISOString() : new Date().toISOString(),
+        Jan: "", Feb: "", Mar: "", Apr: "", May: "", Jun: "", Jul: "", Aug: "", Sep: "", Oct: "", Nov: "", Dec: "",
+        total: "—"
+      }]);
+    } else if (table === "coordDrawing") {
+      setRawCoordDrawings([...rawCoordDrawings, {
+        id: tempId,
+        title: `Drawing #${rawCoordDrawings.length + 1}`,
+        stage: "IFA",
+        status: "Pending",
+        createdAt: defaultDate
+      }]);
+    }
+  };
+
+  // Export spreadsheet using XLSX
+  const exportToExcel = () => {
+    const workbook = XLSX.utils.book_new();
+
+    // Sheet 1: RFI
+    const rfiWS = XLSX.utils.json_to_sheet(filteredRfis.map(r => ({
+      "RFI No.": r.rfiNo,
+      "Sent Date": r.sentDate,
+      "Customer Response": r.customerResponse,
+      "Response Received Date": r.responseReceivedDate,
+      "Whiteboard Response": r.wbtResponse,
+      "Status": r.status
+    })));
+    XLSX.utils.book_append_sheet(workbook, rfiWS, "RFI Status");
+
+    // Sheet 2: Schedule
+    const schedWS = XLSX.utils.json_to_sheet(filteredScheduleRows.map(s => ({
+      "Phase": s.phase,
+      "Start Date": s.startDate,
+      "IFA Submission Date": s.ifaSubDate,
+      "BFA Received Date": s.bfaRecdDate,
+      "IFC Submission Date": s.ifcSubDate,
+      "COR Drawing Submission Date": s.corSubDate,
+      "Comments": s.comments
+    })));
+    XLSX.utils.book_append_sheet(workbook, schedWS, "Project Schedule");
+
+    // Sheet 3: Change Orders
+    const coWS = XLSX.utils.json_to_sheet(filteredCoRows.map(c => {
+      const { id, createdAt, ...rest } = c;
+      return rest;
+    }));
+    XLSX.utils.book_append_sheet(workbook, coWS, "Change Orders");
+
+    XLSX.writeFile(workbook, `${project?.projectName || "Project"}_WPR_Report.xlsx`);
+    toast.success("Excel sheet exported successfully!");
+  };
+
+  // Export layout to PDF using html-to-image and jsPDF
+  const exportToPDF = async () => {
+    const element = document.getElementById("wpr-report-container");
+    if (!element) return;
+    try {
+      toast.info("Generating PDF, please wait...");
+      
+      const imgData = await htmlToImage.toJpeg(element, { 
+        quality: 0.98,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+        width: element.scrollWidth,
+        height: element.scrollHeight
+      });
+      
+      const imgProps = new Image();
+      imgProps.src = imgData;
+      await new Promise(resolve => imgProps.onload = resolve);
+      
+      // Use A3 landscape for better fit
+      const pdf = new jsPDF('landscape', 'pt', 'a3');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      const imgWidth = pdfWidth;
+      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      let heightLeft = imgHeight;
+      let position = 0;
+      
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+      
+      // Add extra pages if content overflows a single A3 page
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+      
+      pdf.save(`${project?.projectName || "Project"}_WPR_Report.pdf`);
+      toast.success("PDF report exported successfully!");
+    } catch (error) {
+      console.error("PDF export failed:", error);
+      toast.error("Failed to export PDF.");
+    }
+  };
+
+  // Print layout handler
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 relative">
+
+      {!isModalOpen ? (
+        <div className="bg-white border border-black shadow-sm">
+          <div className="overflow-x-auto shadow-sm bg-white">
+            <table className="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr className="bg-slate-100 border-b border-black">
+                  <th className="p-4 border-r border-black font-bold uppercase tracking-wider text-black">Week Ending</th>
+                  <th className="p-4 font-bold uppercase tracking-wider text-black w-72">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-black">
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 border-r border-black font-bold uppercase">All Weeks (Master Log)</td>
+                  <td className="p-4 space-x-3">
+                    <button onClick={() => { setSelectedWeek("All"); setIsModalOpen(true); }} className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-700 font-bold uppercase text-xs hover:bg-blue-100 transition-colors shadow-sm cursor-pointer">
+                      View Report
+                    </button>
+                  </td>
+                </tr>
+                {projectWeeks.map((w) => {
+                  const now = new Date();
+                  const isCurrent = now >= w.start && now <= w.end;
+                  
+                  return (
+                  <tr key={w.label} className={`transition-colors ${isCurrent ? "bg-[#6bbd45]/20 hover:bg-[#6bbd45]/30" : "hover:bg-slate-50"}`}>
+                    <td className="p-4 border-r border-black font-bold uppercase">
+                      <div className="flex items-center justify-between">
+                        <span>{w.label}</span>
+                        {isCurrent && <span className="text-[10px] bg-[#6bbd45] text-white px-2 py-0.5 uppercase tracking-wider rounded-none font-bold">CURRENT</span>}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => {
+                            setSelectedWeek(w.label);
+                            setIsModalOpen(true);
+                          }}
+                          className="px-4 py-2 bg-slate-100 text-black border border-black font-bold uppercase text-xs hover:bg-slate-200 transition-colors shadow-sm cursor-pointer flex items-center gap-2"
+                        >
+                          Preview & Export
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm overflow-y-auto p-4 md:p-8 flex justify-center items-start">
+          <div className="bg-white w-full max-w-[98vw] border-2 border-black shadow-2xl relative">
+            <div className="sticky top-0 z-40 bg-white border-b-2 border-black p-4 flex justify-between items-center shadow-sm">
+              <h2 className="text-xl font-bold uppercase tracking-wider text-black flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                WPR: {selectedWeek}
+              </h2>
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className="px-5 py-2.5 bg-red-200 border border-red-600 text-black font-bold uppercase text-sm hover:bg-red-300 transition-colors cursor-pointer shadow-md"
+              >
+                Close Preview
+              </button>
+            </div>
+            
+            <div className="p-6 md:p-8 space-y-8 bg-slate-50 min-h-screen">
+              {/* ── ACTION TOOLBAR ── */}
+              <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-black p-4 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-2.5 h-6 bg-[#6bbd45] rounded-none" />
+          <h2 className="text-sm font-bold uppercase tracking-wider text-black">WPR Spreadsheet Control</h2>
+          {projectWeeks.length > 0 && (
+            <div className="flex items-center gap-2 ml-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-black">Select Week:</span>
+              <select
+                value={selectedWeek}
+                onChange={(e) => handleWeekChange(e.target.value)}
+                className="px-3 py-1.5 bg-white border border-black rounded-none text-xs font-bold uppercase tracking-wider outline-none focus:border-[#6bbd45] transition-all cursor-pointer"
+              >
+                <option value="All">All Weeks</option>
+                {projectWeeks.map((w) => (
+                  <option key={w.label} value={w.label}>
+                    {w.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          {canEdit && (
+            <button
+              onClick={handleSaveChanges}
+              disabled={saving}
+              className="flex items-center gap-2 px-5 py-2 bg-green-50 text-black border-2 border-green-700/80 hover:bg-green-100 rounded-none text-sm font-bold uppercase tracking-tight shadow-sm transition-all cursor-pointer"
+            >
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+              Save Changes
+            </button>
+          )}
+          <button
+            onClick={exportToExcel}
+            className="flex items-center gap-2 px-5 py-2 bg-blue-50 text-black border-2 border-blue-700/80 hover:bg-blue-100 rounded-none text-sm font-bold uppercase tracking-tight shadow-sm transition-all cursor-pointer"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            Excel Export
+          </button>
+          <button
+            onClick={exportToPDF}
+            className="flex items-center gap-2 px-5 py-2 bg-red-50 text-black border-2 border-red-700/80 hover:bg-red-100 rounded-none text-sm font-bold uppercase tracking-tight shadow-sm transition-all cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />
+            PDF Export
+          </button>
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-2 px-5 py-2 bg-slate-50 text-black border-2 border-slate-700/80 hover:bg-slate-100 rounded-none text-sm font-bold uppercase tracking-tight shadow-sm transition-all cursor-pointer"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            Print Report
+          </button>
+        </div>
+      </div>
+
+      {/* ── REPORT METADATA GRID (SPREADSHEET HEADER) ── */}
+      <div id="wpr-report-container" className="space-y-8 bg-white p-4 sm:p-8">
+      <div className="bg-[#f4faf0] border border-black rounded-none overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-black flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <FileText className="text-black" />
+            <span className="text-sm font-bold uppercase tracking-wider text-black">WPR Report Metadata</span>
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider border border-black px-3 py-1 rounded-none bg-white text-black">
+            FORM NO: WBT/PMO/WPR-001
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">Week Ending Date</span>
+            <input
+              type="text"
+              value={weekEnding}
+              onChange={(e) => setWeekEnding(e.target.value)}
+              className="w-full px-4 py-2.5 border border-black rounded-none font-bold outline-none focus:border-green-700 bg-white transition-all text-sm uppercase text-black"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">Customer</span>
+            <div className="px-4 py-2.5 border border-black bg-white rounded-none font-bold text-sm uppercase text-black">
+              {project?.fabricator?.fabName || "—"}
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">Project Name</span>
+            <div className="px-4 py-2.5 border border-black bg-white rounded-none font-bold text-sm uppercase text-black truncate">
+              {project?.projectName || project?.name || "—"}
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">WBT Project Manager</span>
+            <div className="px-4 py-2.5 border border-black bg-white rounded-none font-bold text-sm uppercase text-black">
+              {project?.manager ? `${project.manager.firstName} ${project.manager.lastName}` : "—"}
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">Fabricator Project Manager</span>
+            <input
+              type="text"
+              value={fabProjectManager}
+              onChange={(e) => setFabProjectManager(e.target.value)}
+              className="w-full px-4 py-2.5 border border-black rounded-none font-bold outline-none focus:border-green-700 bg-white transition-all text-sm uppercase text-black"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">Report Circulated To</span>
+            <input
+              type="text"
+              value={circulatedTo}
+              onChange={(e) => setCirculatedTo(e.target.value)}
+              className="w-full px-4 py-2.5 border border-black rounded-none font-bold outline-none focus:border-green-700 bg-white transition-all text-sm uppercase text-black"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">Software</span>
+            <input
+              type="text"
+              value={software}
+              onChange={(e) => setSoftware(e.target.value)}
+              className="w-full px-4 py-2.5 border border-black rounded-none font-bold outline-none focus:border-green-700 bg-white transition-all text-sm uppercase text-black"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">Project Awarded</span>
+            <div className="px-4 py-2.5 border border-black bg-white rounded-none font-bold text-sm uppercase text-black">
+              {project?.startDate ? new Date(project.startDate).toLocaleDateString() : "—"}
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-black">Fab Released Date</span>
+            <div className="px-4 py-2.5 border border-black bg-white rounded-none font-bold text-sm uppercase text-black">
+              {project?.fabricationDate ? new Date(project.fabricationDate).toLocaleDateString() : "—"}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 2. RFIs OVERVIEW TABLE ── */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="text-black w-5 h-5" />
+            <h3 className="text-sm font-bold uppercase tracking-wider text-black">2. RFI Status Overview</h3>
+          </div>
+          {canEdit && (
+            <button
+              onClick={() => addRow("rfi")}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded-none text-xs font-bold uppercase transition-all shadow-sm cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add Row
+            </button>
+          )}
+        </div>
+
+        <div className="overflow-x-auto border border-black rounded-none bg-white shadow-sm custom-scrollbar max-w-full">
+          <table className="w-full text-left border-collapse min-w-[800px] text-xs">
+            <thead>
+              <tr className="bg-slate-100 border-b border-black">
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 w-24">RFI No.</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 w-28">Sent Date</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10">Customer Response</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 w-36">Response Received</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10">Whiteboard Response</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black w-24">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/10">
+              {filteredRfis.map((row) => (
+                <tr key={row.id} className="hover:bg-slate-50 transition-all">
+                  {/* RFI No. */}
+                  <td
+                    onClick={() => handleCellClick("rfi", row.id, "rfiNo", row.rfiNo)}
+                    className="p-3 font-bold border-r border-black/10 cursor-pointer hover:bg-slate-100/50 text-black"
+                  >
+                    {activeCell?.table === "rfi" && activeCell.rowId === row.id && activeCell.field === "rfiNo" ? (
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-2 py-1 rounded-none font-bold text-xs text-black"
+                      />
+                    ) : (
+                      <span>{row.rfiNo}</span>
+                    )}
+                  </td>
+
+                  {/* Sent Date */}
+                  <td
+                    onClick={() => handleCellClick("rfi", row.id, "sentDate", row.sentDate)}
+                    className="p-3 border-r border-black/10 font-bold text-black cursor-pointer hover:bg-slate-100/50"
+                  >
+                    {activeCell?.table === "rfi" && activeCell.rowId === row.id && activeCell.field === "sentDate" ? (
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                      />
+                    ) : (
+                      <span>{row.sentDate}</span>
+                    )}
+                  </td>
+
+                  {/* Customer Response */}
+                  <td
+                    onClick={() => handleCellClick("rfi", row.id, "customerResponse", row.customerResponse)}
+                    className="p-3 border-r border-black/10 font-bold text-black cursor-pointer hover:bg-slate-100/50"
+                  >
+                    {activeCell?.table === "rfi" && activeCell.rowId === row.id && activeCell.field === "customerResponse" ? (
+                      <textarea
+                        ref={inputRef}
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                      />
+                    ) : (
+                      <span>{row.customerResponse}</span>
+                    )}
+                  </td>
+
+                  {/* Response Recd Date */}
+                  <td
+                    onClick={() => handleCellClick("rfi", row.id, "responseReceivedDate", row.responseReceivedDate)}
+                    className="p-3 border-r border-black/10 font-bold text-black cursor-pointer hover:bg-slate-100/50"
+                  >
+                    {activeCell?.table === "rfi" && activeCell.rowId === row.id && activeCell.field === "responseReceivedDate" ? (
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                      />
+                    ) : (
+                      <span>{row.responseReceivedDate}</span>
+                    )}
+                  </td>
+
+                  {/* WBT Response */}
+                  <td
+                    onClick={() => handleCellClick("rfi", row.id, "wbtResponse", row.wbtResponse)}
+                    className="p-3 border-r border-black/10 font-bold text-black cursor-pointer hover:bg-slate-100/50"
+                  >
+                    {activeCell?.table === "rfi" && activeCell.rowId === row.id && activeCell.field === "wbtResponse" ? (
+                      <textarea
+                        ref={inputRef}
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                      />
+                    ) : (
+                      <span>{row.wbtResponse}</span>
+                    )}
+                  </td>
+
+                  {/* Status */}
+                  <td
+                    onClick={() => handleCellClick("rfi", row.id, "status", row.status)}
+                    className="p-3 font-bold text-xs cursor-pointer hover:bg-slate-100/50 text-black"
+                  >
+                    {activeCell?.table === "rfi" && activeCell.rowId === row.id && activeCell.field === "status" ? (
+                      <select
+                        ref={inputRef}
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-1 py-1 rounded-none text-xs uppercase font-bold text-black"
+                      >
+                        <option value="OPEN">OPEN</option>
+                        <option value="PARTIAL">PARTIAL</option>
+                        <option value="COMPLETE">COMPLETE</option>
+                        <option value="PENDING">PENDING</option>
+                        <option value="ANSWERED">ANSWERED</option>
+                      </select>
+                    ) : (
+                      <span className={`px-2 py-1 rounded-none border border-black ${row.status === "OPEN" ? "bg-blue-50 text-blue-700" :
+                          row.status === "PARTIAL" ? "bg-orange-50 text-orange-700" :
+                            row.status === "COMPLETE" ? "bg-green-50 text-green-700" :
+                              row.status === "PENDING" ? "bg-green-50 text-green-700" :
+                                row.status === "ANSWERED" ? "bg-orange-50 text-orange-700" :
+                                  "bg-slate-50 text-slate-700"
+                        }`}>
+                        {row.status}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* ── 1. PROJECT SCHEDULE & MILESTONES TABLE ── */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="text-black w-5 h-5" />
+            <h3 className="text-sm font-bold uppercase tracking-wider text-black">1. Project Schedule / Milestones</h3>
+          </div>
+          {canEdit && (
+            <button
+              onClick={() => addRow("schedule")}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-750 rounded-none text-xs font-bold uppercase transition-all shadow-sm cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add Row
+            </button>
+          )}
+        </div>
+
+        <div className="overflow-x-auto border border-black rounded-none bg-white shadow-sm custom-scrollbar max-w-full">
+          <table className="w-full text-left border-collapse min-w-[800px] text-xs">
+            <thead>
+              <tr className="bg-slate-100 border-b border-black">
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 w-56">Phase / Subject</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 w-28">Start Date</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 min-w-[15rem]">IFA - Submission Date</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 min-w-[15rem]">BFA - Recd Date</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 min-w-[15rem]">IFC - Sub Date</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 min-w-[16rem]">COR Drawing Submission Date</th>
+                <th className="p-3 font-bold uppercase tracking-wider text-black min-w-[16rem]">Comment</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/10">
+              {filteredScheduleRows.map((row) => (
+                <tr
+                  key={row.id}
+                  className={`border-b border-black/10 transition-all ${row._type === "milestone"
+                      ? "bg-[#f0f7ed] hover:bg-[#e6f3e2]"
+                      : "bg-white hover:bg-slate-50"
+                    }`}
+                >
+                  {/* Phase cell */}
+                  <td
+                    onClick={() => handleCellClick("schedule", row.id, "phase", row.phase)}
+                    className="p-3 font-bold border-r border-black/10 cursor-pointer hover:bg-slate-100/50 text-black"
+                  >
+                    {activeCell?.table === "schedule" && activeCell.rowId === row.id && activeCell.field === "phase" ? (
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-2 py-1 rounded-none font-bold uppercase text-xs text-black"
+                      />
+                    ) : (
+                      <span className="uppercase">{row.phase}</span>
+                    )}
+                  </td>
+
+
+
+                  {/* Start Date */}
+                  <td
+                    onClick={() => handleCellClick("schedule", row.id, "startDate", row.startDate)}
+                    className="p-3 border-r border-black/10 font-bold text-black cursor-pointer hover:bg-slate-100/50"
+                  >
+                    {activeCell?.table === "schedule" && activeCell.rowId === row.id && activeCell.field === "startDate" ? (
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                      />
+                    ) : (
+                      <span>{row.startDate}</span>
+                    )}
+                  </td>
+
+                  {/* IFA submission date – stacked entries: Subject – Date */}
+                  <td className="p-0 border-r border-black/10 align-top">
+                    {activeCell?.table === "schedule" && activeCell.rowId === row.id && activeCell.field === "ifaSubDate" ? (
+                      <div className="p-3">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={handleCellSave}
+                          onKeyDown={handleKeyDown}
+                          className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                        />
+                      </div>
+                    ) : row.unifiedEntries && row.unifiedEntries.length > 0 ? (
+                      <div className="flex flex-col h-full">
+                        {row.unifiedEntries.map((entry, i) => (
+                          <div key={i} className={`flex flex-col flex-1 justify-center p-3 ${i !== row.unifiedEntries.length - 1 ? "border-b border-black/10" : ""}`}>
+                            {entry.ifaDate !== "—" ? (
+                              <>
+                                <span className="text-[11px] font-bold text-blue-800 leading-tight">
+                                  {entry.subject}
+                                </span>
+                                <span className="text-[11px] text-blue-600 font-semibold leading-tight mt-0.5">
+                                  {entry.ifaDate}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="block p-3 text-gray-400">—</span>
+                    )}
+                  </td>
+
+                  {/* BFA date */}
+                  <td
+                    onClick={() => handleCellClick("schedule", row.id, "bfaRecdDate", row.bfaRecdDate)}
+                    className="p-0 border-r border-black/10 align-top cursor-pointer hover:bg-slate-100/50"
+                  >
+                    {activeCell?.table === "schedule" && activeCell.rowId === row.id && activeCell.field === "bfaRecdDate" ? (
+                      <div className="p-3">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={handleCellSave}
+                          onKeyDown={handleKeyDown}
+                          className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                        />
+                      </div>
+                    ) : row.unifiedEntries && row.unifiedEntries.length > 0 ? (
+                      <div className="flex flex-col h-full">
+                        {row.unifiedEntries.map((entry, i) => (
+                          <div key={i} className={`flex flex-col flex-1 justify-center p-3 ${i !== row.unifiedEntries.length - 1 ? "border-b border-black/10" : ""}`}>
+                            {entry.bfaDate !== "—" ? (
+                              <>
+                                <span className="text-[11px] font-bold text-blue-800 leading-tight">
+                                  {entry.subject}
+                                </span>
+                                <span className="text-[11px] text-blue-600 font-semibold leading-tight mt-0.5">
+                                  {entry.bfaDate}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="block p-3 text-gray-400">—</span>
+                    )}
+                  </td>
+
+                  {/* IFC sub date – stacked entries */}
+                  <td className="p-0 border-r border-black/10 align-top">
+                    {activeCell?.table === "schedule" && activeCell.rowId === row.id && activeCell.field === "ifcSubDate" ? (
+                      <div className="p-3">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={handleCellSave}
+                          onKeyDown={handleKeyDown}
+                          className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                        />
+                      </div>
+                    ) : row.unifiedEntries && row.unifiedEntries.length > 0 ? (
+                      <div className="flex flex-col h-full">
+                        {row.unifiedEntries.map((entry, i) => (
+                          <div key={i} className={`flex flex-col flex-1 justify-center p-3 ${i !== row.unifiedEntries.length - 1 ? "border-b border-black/10" : ""}`}>
+                            {entry.ifcDate !== "—" ? (
+                              <>
+                                <span className="text-[11px] font-bold text-blue-800 leading-tight">
+                                  {entry.subject}
+                                </span>
+                                <span className="text-[11px] text-blue-600 font-semibold leading-tight mt-0.5">
+                                  {entry.ifcDate}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="block p-3 text-gray-400">—</span>
+                    )}
+                  </td>
+
+                  {/* COR Drawing Sub date – stacked entries */}
+                  <td className="p-0 border-r border-black/10 align-top">
+                    {activeCell?.table === "schedule" && activeCell.rowId === row.id && activeCell.field === "corSubDate" ? (
+                      <div className="p-3">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={handleCellSave}
+                          onKeyDown={handleKeyDown}
+                          className="w-full bg-white border border-black px-2 py-1 rounded-none text-xs text-black"
+                        />
+                      </div>
+                    ) : row.unifiedEntries && row.unifiedEntries.length > 0 ? (
+                      <div className="flex flex-col h-full">
+                        {row.unifiedEntries.map((entry, i) => (
+                          <div key={i} className={`flex flex-col flex-1 justify-center p-3 ${i !== row.unifiedEntries.length - 1 ? "border-b border-black/10" : ""}`}>
+                            {entry.corDate !== "—" ? (
+                              <>
+                                <span className="text-[11px] font-bold text-blue-800 leading-tight">
+                                  {entry.subject}
+                                </span>
+                                <span className="text-[11px] text-blue-600 font-semibold leading-tight mt-0.5">
+                                  {entry.corDate}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="block p-3 text-gray-400">—</span>
+                    )}
+                  </td>
+
+                  {/* Submittal Status (now labeled Comment) */}
+                  <td className="p-0 align-top">
+                    {(() => {
+                      const STATUS_LABELS = {
+                        WAITING_FOR_BFA: "Waiting for BFA",
+                        BFA_RECEIVED: "BFA RECEIVED",
+                        BFA_SENT: "BFA SENT",
+                        SUBMITTED_TO_EOR: "Submitted to EOR",
+                        RELEASE_FOR_FABRICATION: "Release for Fab",
+                        NOT_APPROVED: "Not Approved",
+                        REVISED_RESUBMITTAL: "Revised & Resubmitted",
+                        REVISED_RESUBMIT_FOR_FABRICATION: "Revised & Resub for Fab",
+                        PENDING: "Pending",
+                        COMPLETE: "BFA - Complete",
+                        COMPLETED: "BFA - Complete",
+                        PARTIAL: "BFA - Partial",
+                        SUCCESS: "BFA - Success",
+                      };
+                      const STATUS_COLORS = {
+                        WAITING_FOR_BFA: "bg-purple-100 text-purple-700 border-purple-200",
+                        BFA_RECEIVED: "bg-emerald-100 text-emerald-700 border-emerald-200",
+                        BFA_SENT: "bg-indigo-100 text-indigo-700 border-indigo-200",
+                        SUBMITTED_TO_EOR: "bg-blue-100 text-blue-700 border-blue-200",
+                        RELEASE_FOR_FABRICATION: "bg-green-100 text-green-700 border-green-200",
+                        NOT_APPROVED: "bg-red-100 text-red-700 border-red-200",
+                        REVISED_RESUBMITTAL: "bg-orange-100 text-orange-700 border-orange-200",
+                        REVISED_RESUBMIT_FOR_FABRICATION: "bg-orange-100 text-orange-700 border-orange-200",
+                        PENDING: "bg-yellow-100 text-yellow-700 border-yellow-200",
+                        COMPLETE: "bg-teal-100 text-teal-700 border-teal-200",
+                        COMPLETED: "bg-teal-100 text-teal-700 border-teal-200",
+                        PARTIAL: "bg-amber-100 text-amber-700 border-amber-200",
+                        SUCCESS: "bg-emerald-100 text-emerald-700 border-emerald-200",
+                      };
+
+                      if (row.unifiedEntries && row.unifiedEntries.length > 0) {
+                        return (
+                          <div className="flex flex-col h-full">
+                            {row.unifiedEntries.map((entry, i) => {
+                              const key = String(entry.status || "—").replace(/\s+/g, "_").toUpperCase();
+                              const label = STATUS_LABELS[key] || String(entry.status || "—").replace(/_/g, " ");
+                              const color = STATUS_COLORS[key] || "bg-gray-100 text-gray-600 border-gray-200";
+                              return (
+                                <div key={i} className={`flex flex-col flex-1 justify-center p-3 ${i !== row.unifiedEntries.length - 1 ? "border-b border-black/10" : ""}`}>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[11px] font-semibold text-blue-800">
+                                      {entry.subject}
+                                    </span>
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color} shrink-0`}>
+                                      {label}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      }
+
+                      const key = String(row.submittalStatus || "—").replace(/\s+/g, "_").toUpperCase();
+                      const label = STATUS_LABELS[key] || String(row.submittalStatus || "—").replace(/_/g, " ");
+                      const color = STATUS_COLORS[key] || "bg-gray-100 text-gray-600 border-gray-200";
+                      if (row.submittalStatus && row.submittalStatus !== "—") {
+                        return (
+                          <div className="p-3">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color}`}>
+                              {label}
+                            </span>
+                          </div>
+                        );
+                      }
+                      return <span className="block p-3 text-gray-400">—</span>;
+                    })()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+
+      {/* ── 3. CHANGE ORDER AMOUNT GRID ── */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Clock className="text-black w-5 h-5" />
+            <h3 className="text-sm font-bold uppercase tracking-wider text-black">3. Change Order Amount ($) Monthly Breakdown</h3>
+          </div>
+          {canEdit && (
+            <button
+              onClick={() => addRow("co")}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded-none text-xs font-bold uppercase transition-all shadow-sm cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add Row
+            </button>
+          )}
+        </div>
+
+        <div className="overflow-x-auto border border-black rounded-none bg-white shadow-sm custom-scrollbar max-w-full">
+          <table className="w-full text-center border-collapse min-w-[1000px] text-xs">
+            <thead>
+              <tr className="bg-slate-100 border-b border-black">
+                <th className="p-3 text-left font-bold uppercase tracking-wider text-black border-r border-black/10">Change Order</th>
+                {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map(m => (
+                  <th key={m} className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10">{m}</th>
+                ))}
+                <th className="p-3 font-bold uppercase tracking-wider text-black">FY Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/10 font-bold text-black">
+              {filteredCoRows.map((row) => (
+                <tr key={row.id} className="hover:bg-slate-50 transition-all">
+                  {/* CO number name */}
+                  <td
+                    onClick={() => handleCellClick("co", row.id, "changeOrder", row.changeOrder)}
+                    className="p-3 text-left font-bold text-black border-r border-black/10 cursor-pointer hover:bg-slate-100/50"
+                  >
+                    {activeCell?.table === "co" && activeCell.rowId === row.id && activeCell.field === "changeOrder" ? (
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleCellSave}
+                        onKeyDown={handleKeyDown}
+                        className="w-full bg-white border border-black px-2 py-1 rounded-none font-bold text-xs text-black"
+                      />
+                    ) : (
+                      <span>{row.changeOrder}</span>
+                    )}
+                  </td>
+
+                  {/* Monthly amount columns */}
+                  {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map(m => (
+                    <td
+                      key={m}
+                      onClick={() => handleCellClick("co", row.id, m, row[m])}
+                      className="p-3 border-r border-black/10 cursor-pointer hover:bg-slate-100/50 text-black"
+                    >
+                      {activeCell?.table === "co" && activeCell.rowId === row.id && activeCell.field === m ? (
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={handleCellSave}
+                          onKeyDown={handleKeyDown}
+                          className="w-8/12 bg-white border border-black px-1 py-0.5 rounded-none text-center text-xs text-black"
+                        />
+                      ) : (
+                        <span className={row[m] === "Sent" ? "text-blue-600 font-bold" : ""}>{row[m] || "—"}</span>
+                      )}
+                    </td>
+                  ))}
+
+                  {/* Total */}
+                  <td className="p-3 font-bold text-black">{row.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+        </div>
+      </div>
+      </div>
+      </div>
+      )}
+    </div>
+  );
+};
+
+export default WorkProgressReport;

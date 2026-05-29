@@ -19,7 +19,6 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStage, setSelectedStage] = useState<string>("All");
 
-  // Dynamically calculate only the existing stages from the current submittals
   const existingStages = Array.from(new Set(submittals.map(s => s.stage).filter(Boolean))).sort();
   const stages = ["All", ...existingStages];
 
@@ -178,12 +177,12 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
     },
 
     {
-      accessorKey: "wbtStatus",
+      accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
         const STATUS_LABELS: Record<string, string> = {
           WAITING_FOR_BFA:                    "Waiting for BFA",
-          BFA_RECEIVED:                       "Back From Approval – Received",
+          BFA_RECEIVED:                       "Back From Approval-Received",
           BFA_SENT:                           "Back From Approval – Sent",
           SUBMITTED_TO_EOR:                   "Submitted to EOR",
           RELEASE_FOR_FABRICATION:            "Release for Fabrication",
@@ -217,7 +216,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
           }
         };
 
-        const raw = row.original.wbtStatus || row.original.status || "PENDING";
+        const raw = row.original.status || row.original.wbtStatus || "PENDING";
         const key = String(raw).replace(/\s+/g, "_").toUpperCase();
         const label = STATUS_LABELS[key] ?? String(raw).replace(/_/g, " ");
 
@@ -325,7 +324,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
 
   return (
     <div className="bg-white rounded-3xl overflow-hidden flex flex-col pt-4">
-      <div className="mb-4 flex flex-col md:flex-row items-center gap-4">
+      <div className="mb-4 px-4 flex flex-col md:flex-row items-center gap-4">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input

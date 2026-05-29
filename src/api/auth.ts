@@ -23,11 +23,12 @@ class AuthService {
     }
   }
   // change password
-  static async changePassword({ id, token, newPassword }: ChangePasswordPayload) {
+  static async changePassword({ id, token, newPassword, purpose }: ChangePasswordPayload) {
     const userData = {
       id,
       token,
       newPassword,
+      purpose: purpose || "password_reset",
     };
 
     console.log("Sending login request with payload:", userData);

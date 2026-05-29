@@ -67,7 +67,7 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
   const onSubmit = async (data: RFIPayload) => {
     try {
       setLoading(true);
-      const payload: RFIPayload = {
+      const payload: any = {
         ...data,
         project_id: project_id,
         fabricator_id: fabricatorID,
@@ -77,6 +77,7 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
         isAproovedByAdmin: "PENDING",
         description,
         files,
+        isConnectionDesign: isConnectionDesigner,
       };
 
       const formData = new FormData();

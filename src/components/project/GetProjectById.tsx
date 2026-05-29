@@ -17,6 +17,7 @@ import {
   MessageSquare,
   CalendarCheck,
   Compass,
+  Download,
 } from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -46,6 +47,7 @@ import ProjectUpcomingMilestones from "./ProjectUpcomingMilestones";
 import GetSubmittalByID from "../submittals/GetSubmittalByID";
 import GetMilestoneByID from "./mileStone/GetMilestoneByID";
 import ProjectProgress from "./progressReports/ProjectProgress";
+import WorkProgressReport from "./WorkProgressReport";
 import CoordinationDrawings from "./coordinationDrawings/CoordinationDrawings";
 
 
@@ -81,6 +83,7 @@ const GetProjectById = ({
   const [selectedMilestoneToView, setSelectedMilestoneToView] = useState<
     any | null
   >(null);
+  const [isWprListOpen, setIsWprListOpen] = useState(false);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const rfiData = useMemo(() => {
     return project?.rfi || [];
@@ -414,7 +417,7 @@ const GetProjectById = ({
     }
   };
 
-  const isClient = userRole === "client" || userRole === "client_admin";
+  const isClient = ["client", "client_admin", "client_estimator", "client_accountant"].includes(userRole);
   const isConnectionDesigner =
     userRole === "connection_designer_engineer" ||
     userRole === "connection_designer_admin";
@@ -531,13 +534,22 @@ const GetProjectById = ({
 
           </div>
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            {isClient && (
+              <button
+                onClick={() => setIsWprListOpen(true)}
+                className="px-4 py-1.5 bg-green-200 text-black border border-green-600 font-bold text-sm uppercase tracking-tight rounded-lg hover:bg-green-600 transition-colors shadow-sm cursor-pointer"
+              >
+                <Download className="inline w-4 h-4 mr-2" />Download WPR
+              </button>
+            )}
             {project.projectNumber && (
-              <div className="inline-block px-4 py-1.5 bg-green-50 border-2 border-[#6bbd45] rounded-lg">
+              <div className="inline-block px-4 py-1 bg-green-50 border-2 border-[#6bbd45] rounded-lg">
                 <span className="text-black font-bold text-sm tracking-tight">
                   Project No: {project.projectNumber}
                 </span>
               </div>
             )}
+            
             <span className="px-4 py-1.5 rounded-lg text-sm font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
               {project.stage}
             </span>
@@ -855,9 +867,11 @@ const GetProjectById = ({
               </div>
 
               {/* Project Progress Reports */}
-              <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
-                <ProjectProgress projectId={id} />
-              </div>
+              {!isClient && (
+                <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
+                  <ProjectProgress projectId={id} />
+                </div>
+              )}
 
               <div id="project-progress">
                 <ProjectMilestoneMetrics projectId={id} />
@@ -1404,6 +1418,37 @@ const GetProjectById = ({
           </div>,
           document.body,
         )}
+      
+      {/* WPR List Modal */}
+      {isWprListOpen && isClient && (
+        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm overflow-y-auto p-4 md:p-8 flex justify-center items-start">
+          <div className="bg-white w-full max-w-[98vw] border-2 border-black shadow-2xl relative">
+            <div className="sticky top-0 z-40 bg-white border-b-2 border-black p-4 flex justify-between items-center shadow-sm">
+              <h2 className="text-xl font-bold uppercase tracking-wider text-black flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Weekly Progress Reports
+              </h2>
+              <button 
+                onClick={() => setIsWprListOpen(false)} 
+                className="px-5 py-2.5 bg-red-200 border border-red-600 text-black font-bold uppercase text-sm hover:bg-red-300 transition-colors cursor-pointer shadow-md"
+              >
+                Close Reports
+              </button>
+            </div>
+            
+            <div className="p-6 md:p-8 space-y-8 bg-slate-50 min-h-screen">
+              <WorkProgressReport 
+                projectId={id}
+                project={project}
+                milestones={milestoneData}
+                rfiData={rfiData}
+                submittalData={submittalData}
+                coordinationDrawings={project.coordinationDrawings || []}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>,
     document.body,
   );
@@ -1625,14 +1670,14 @@ const OtherTasksPanel = ({
                       {task.name || task.title || `Task #${idx + 1}`}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5 truncate">
-                      👤 {assignee}
+                      {assignee}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wide ${statusColor(task.status)}`}
                     >
-                      {task.status || "—"}
+                      {task.status || "-"}
                     </span>
                     <span className="text-[10px] text-gray-400 font-medium">
                       <Clock className="inline w-3 h-3 mr-0.5" />
