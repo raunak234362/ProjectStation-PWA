@@ -47,7 +47,7 @@ import ProjectUpcomingMilestones from "./ProjectUpcomingMilestones";
 import GetSubmittalByID from "../submittals/GetSubmittalByID";
 import GetMilestoneByID from "./mileStone/GetMilestoneByID";
 import ProjectProgress from "./progressReports/ProjectProgress";
-import WorkProgressReport from "./WorkProgressReport";
+import WorkProgressReport from "./wpr/WorkProgressReport";
 import CoordinationDrawings from "./coordinationDrawings/CoordinationDrawings";
 
 
@@ -549,7 +549,7 @@ const GetProjectById = ({
                 </span>
               </div>
             )}
-            
+
             <span className="px-4 py-1.5 rounded-lg text-sm font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
               {project.stage}
             </span>
@@ -619,424 +619,424 @@ const GetProjectById = ({
 
           {/* Tab Content */}
           <div className="flex-1 p-2 overflow-y-auto min-h-0 custom-scrollbar">
-          {/* ✅ Overview */}
-          {activeTab === "overview" && (
-            <div className="space-y-6 animate-in fade-in duration-500">
-              {!isClient &&
-                !isConnectionDesigner &&
-                userRole !== "connection_designer_admin" && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* ✅ Overview */}
+            {activeTab === "overview" && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                {!isClient &&
+                  !isConnectionDesigner &&
+                  userRole !== "connection_designer_admin" && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <StatCard
+                        icon={<Clock className="text-blue-600" />}
+                        label="Estimated Hours"
+                        value={`${Number(project.estimatedHours || 0).toFixed(2).replace(/\.00$/, '')}h`}
+                        color="bg-blue-50"
+                        layout="horizontal"
+                      />
+                      <StatCard
+                        icon={<Clock className="text-blue-600" />}
+                        label="Estimated Hours for Approval"
+                        value={`${(Number(project.estimatedHours || 0) * 0.8).toFixed(2).replace(/\.00$/, '')}h`}
+                        color="bg-blue-50"
+                        layout="horizontal"
+                      />
+                      <StatCard
+                        icon={<Clock className="text-blue-600" />}
+                        label="Estimated Hours for Fabrication"
+                        value={`${(Number(project.estimatedHours || 0) * 0.2).toFixed(2).replace(/\.00$/, '')}h`}
+                        color="bg-blue-50"
+                        layout="horizontal"
+                      />
+                      <StatCard
+                        icon={<CheckCircle2 className="text-green-600" />}
+                        label="Hours Completed"
+                        value={formatSeconds(
+                          projectStats?.workedSeconds ||
+                          project.workedSeconds ||
+                          project.totalWorkedSeconds ||
+                          0,
+                        )}
+                        color="bg-green-50"
+                        layout="horizontal"
+                      />
+                      <StatCard
+                        icon={
+                          <AlertCircle
+                            className={
+                              (projectStats?.isOverrun ?? project.isOverrun)
+                                ? "text-red-600"
+                                : "text-gray-400"
+                            }
+                          />
+                        }
+                        label="Overrun / Delay"
+                        value={
+                          (projectStats?.isOverrun ?? project.isOverrun)
+                            ? formatSeconds(
+                              (projectStats?.workedSeconds ||
+                                project.workedSeconds ||
+                                project.totalWorkedSeconds ||
+                                0) -
+                              (project.estimatedHours || 0) * 3600,
+                            )
+                            : "00:00"
+                        }
+                        color={
+                          (projectStats?.isOverrun ?? project.isOverrun)
+                            ? "bg-red-50"
+                            : "bg-gray-50"
+                        }
+                        description={
+                          (projectStats?.isOverrun ?? project.isOverrun)
+                            ? "Project is exceeding estimates"
+                            : "Project is within estimates"
+                        }
+                        isAlert={projectStats?.isOverrun ?? project.isOverrun}
+                        layout="horizontal"
+                      />
+                    </div>
+                  )}
+
+                {/* ✅ New Summary Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 text-black text-sm">
+                  <StatCard
+                    icon={<MessageSquare className="text-green-600" />}
+                    label="RFIs"
+                    value={project.rfi?.length || 0}
+                    color="bg-green-50"
+                    layout="horizontal"
+                    onClick={() => setActiveTab("rfi")}
+                  />
+                  <StatCard
+                    icon={<FileText className="text-green-600" />}
+                    label="Submittals"
+                    value={project.submittals?.length || 0}
+                    color="bg-green-50"
+                    layout="horizontal"
+                    onClick={() => setActiveTab("submittals")}
+                  />
+                  {!isConnectionDesigner && (
                     <StatCard
-                      icon={<Clock className="text-blue-600" />}
-                      label="Estimated Hours"
-                      value={`${Number(project.estimatedHours || 0).toFixed(2).replace(/\.00$/, '')}h`}
-                      color="bg-blue-50"
-                      layout="horizontal"
-                    />
-                    <StatCard
-                      icon={<Clock className="text-blue-600" />}
-                      label="Estimated Hours for Approval"
-                      value={`${(Number(project.estimatedHours || 0) * 0.8).toFixed(2).replace(/\.00$/, '')}h`}
-                      color="bg-blue-50"
-                      layout="horizontal"
-                    />
-                    <StatCard
-                      icon={<Clock className="text-blue-600" />}
-                      label="Estimated Hours for Fabrication"
-                      value={`${(Number(project.estimatedHours || 0) * 0.2).toFixed(2).replace(/\.00$/, '')}h`}
-                      color="bg-blue-50"
-                      layout="horizontal"
-                    />
-                    <StatCard
-                      icon={<CheckCircle2 className="text-green-600" />}
-                      label="Hours Completed"
-                      value={formatSeconds(
-                        projectStats?.workedSeconds ||
-                        project.workedSeconds ||
-                        project.totalWorkedSeconds ||
-                        0,
-                      )}
+                      icon={<ClipboardList className="text-green-600" />}
+                      label="Change Orders"
+                      value={project.changeOrders?.length || 0}
                       color="bg-green-50"
                       layout="horizontal"
+                      onClick={() => setActiveTab("changeOrder")}
                     />
-                    <StatCard
-                      icon={
-                        <AlertCircle
-                          className={
-                            (projectStats?.isOverrun ?? project.isOverrun)
-                              ? "text-red-600"
-                              : "text-gray-400"
-                          }
+                  )}
+                  <StatCard
+                    icon={<CalendarCheck className="text-green-600" />}
+                    label="Milestones"
+                    value={milestoneData.length}
+                    color="bg-green-50"
+                    layout="horizontal"
+                    onClick={() => {
+                      if (isClient) {
+                        setActiveTab("overview");
+                        setTimeout(() => {
+                          const el = document.getElementById("project-progress");
+                          el?.scrollIntoView({ behavior: "smooth" });
+                        }, 100);
+                      } else {
+                        setActiveTab("milestones");
+                      }
+                    }}
+                  />
+                  <StatCard
+                    icon={<FolderOpenDot className="text-green-600" />}
+                    label="Documents / Files"
+                    value={
+                      (allDocuments?.designDrawings?.length || 0) +
+                      (allDocuments?.project?.files?.length || 0)
+                    }
+                    color="bg-green-50"
+                    layout="horizontal"
+                    onClick={() => setActiveTab("files")}
+                  />
+                </div>
+
+                {/* ✅ Details (Moved to Overview) */}
+                <div className="bg-slate-50/50 p-6 sm:p-8 rounded-[32px] border border-black/5 animate-in fade-in slide-in-from-top-4 duration-700 space-y-8">
+                  {/* Main Project Info Grid */}
+                  <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-3 text-sm">
+                    <div className="space-y-3.5">
+                      {!isConnectionDesigner && (
+                        <InfoRow
+                          label="Department"
+                          value={project.department?.name || "—"}
                         />
-                      }
-                      label="Overrun / Delay"
-                      value={
-                        (projectStats?.isOverrun ?? project.isOverrun)
-                          ? formatSeconds(
-                            (projectStats?.workedSeconds ||
-                              project.workedSeconds ||
-                              project.totalWorkedSeconds ||
-                              0) -
-                            (project.estimatedHours || 0) * 3600,
-                          )
-                          : "00:00"
-                      }
-                      color={
-                        (projectStats?.isOverrun ?? project.isOverrun)
-                          ? "bg-red-50"
-                          : "bg-gray-50"
-                      }
-                      description={
-                        (projectStats?.isOverrun ?? project.isOverrun)
-                          ? "Project is exceeding estimates"
-                          : "Project is within estimates"
-                      }
-                      isAlert={projectStats?.isOverrun ?? project.isOverrun}
-                      layout="horizontal"
+                      )}
+                      <InfoRow
+                        label="Team / Tools"
+                        value={project.team?.name || "—"}
+                      />
+                      <InfoRow
+                        label="WBT Manager"
+                        value={
+                          project.manager
+                            ? `${project.manager.firstName} ${project.manager.lastName} `
+                            : "—"
+                        }
+                      />
+                      <InfoRow
+                        label="Project Manager"
+                        value={
+                          project.clientProjectManagers && project.clientProjectManagers.length > 0
+                            ? project.clientProjectManagers.map((pm: any) => `${pm.firstName.trim()} ${pm.lastName.trim()}`).join(", ")
+                            : "—"
+                        }
+                      />
+                    </div>
+                    <div className="space-y-3.5">
+                      {userRole !== "client" &&
+                        userRole !== "client_admin" &&
+                        !isConnectionDesigner && (
+                          <InfoRow
+                            label="Fabricator"
+                            value={project.fabricator?.fabName || "—"}
+                          />
+                        )}
+                      <InfoRow label="Stage" value={project.stage || "—"} />
+                      <InfoRow
+                        label="Start Date"
+                        value={formatDate(project.startDate)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Scopes - Full Width Sections */}
+                  <div className="space-y-4">
+                    {/* Connection Design Scope */}
+                    <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm transition-all hover:shadow-md">
+                      <h4 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                        <Settings className="w-5 h-5 text-green-600" /> Connection Design Scope
+                      </h4>
+                      <div className="flex flex-wrap gap-3">
+                        <ScopeTag
+                          label="Main Design"
+                          active={project.connectionDesign}
+                        />
+                        <ScopeTag
+                          label="Misc Design"
+                          active={project.miscDesign}
+                        />
+                        <ScopeTag
+                          label={
+                            project.customerDesign
+                              ? "Connection Design by WBT"
+                              : `Connection Design by ${project.fabricator?.fabName ?? ""}`
+                          }
+                          active={project.customerDesign}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Detailing Scope */}
+                    <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm transition-all hover:shadow-md">
+                      <h4 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
+                        <Settings2 className="w-5 h-5 text-green-600" /> Detailing Scope
+                      </h4>
+                      <div className="flex flex-wrap gap-3">
+                        <ScopeTag
+                          label="Detailing Main"
+                          active={project.detailingMain}
+                        />
+                        <ScopeTag
+                          label="Detailing Misc"
+                          active={project.detailingMisc}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Project Description */}
+                  <div className="pt-4 border-t border-black/5">
+                    <h4 className="font-bold text-black mb-4 text-base flex items-center gap-2 uppercase tracking-tight">
+                      <FolderOpenDot className="w-5 h-5 text-green-600" />
+                      Project Description
+                    </h4>
+                    <div
+                      className="text-gray-700 bg-white p-6 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none leading-relaxed"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          project.description || "No description available.",
+                      }}
                     />
+                  </div>
+                </div>
+
+                {/* Project Progress Reports */}
+                {!isClient && (
+                  <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
+                    <ProjectProgress projectId={id} />
                   </div>
                 )}
 
-              {/* ✅ New Summary Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 text-black text-sm">
-                <StatCard
-                  icon={<MessageSquare className="text-green-600" />}
-                  label="RFIs"
-                  value={project.rfi?.length || 0}
-                  color="bg-green-50"
-                  layout="horizontal"
-                  onClick={() => setActiveTab("rfi")}
-                />
-                <StatCard
-                  icon={<FileText className="text-green-600" />}
-                  label="Submittals"
-                  value={project.submittals?.length || 0}
-                  color="bg-green-50"
-                  layout="horizontal"
-                  onClick={() => setActiveTab("submittals")}
-                />
-                {!isConnectionDesigner && (
-                  <StatCard
-                    icon={<ClipboardList className="text-green-600" />}
-                    label="Change Orders"
-                    value={project.changeOrders?.length || 0}
-                    color="bg-green-50"
-                    layout="horizontal"
-                    onClick={() => setActiveTab("changeOrder")}
-                  />
-                )}
-                <StatCard
-                  icon={<CalendarCheck className="text-green-600" />}
-                  label="Milestones"
-                  value={milestoneData.length}
-                  color="bg-green-50"
-                  layout="horizontal"
-                  onClick={() => {
+                <div id="project-progress">
+                  <ProjectMilestoneMetrics projectId={id} />
+                </div>
+
+                <ProjectUpcomingMilestones
+                  milestones={milestonesWithoutSubmittals}
+                  onViewAll={() => {
                     if (isClient) {
-                      setActiveTab("overview");
-                      setTimeout(() => {
-                        const el = document.getElementById("project-progress");
-                        el?.scrollIntoView({ behavior: "smooth" });
-                      }, 100);
+                      const el = document.getElementById("project-progress");
+                      el?.scrollIntoView({ behavior: "smooth" });
                     } else {
                       setActiveTab("milestones");
                     }
                   }}
+                  onMilestoneClick={(ms) => setSelectedMilestoneToView(ms)}
                 />
-                <StatCard
-                  icon={<FolderOpenDot className="text-green-600" />}
-                  label="Documents / Files"
-                  value={
-                    (allDocuments?.designDrawings?.length || 0) +
-                    (allDocuments?.project?.files?.length || 0)
-                  }
-                  color="bg-green-50"
-                  layout="horizontal"
-                  onClick={() => setActiveTab("files")}
-                />
-              </div>
 
-              {/* ✅ Details (Moved to Overview) */}
-              <div className="bg-slate-50/50 p-6 sm:p-8 rounded-[32px] border border-black/5 animate-in fade-in slide-in-from-top-4 duration-700 space-y-8">
-                {/* Main Project Info Grid */}
-                <div className="grid max-sm:grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-3 text-sm">
-                  <div className="space-y-3.5">
-                    {!isConnectionDesigner && (
-                      <InfoRow
-                        label="Department"
-                        value={project.department?.name || "—"}
-                      />
-                    )}
-                    <InfoRow
-                      label="Team / Tools"
-                      value={project.team?.name || "—"}
-                    />
-                    <InfoRow
-                      label="WBT Manager"
-                      value={
-                        project.manager
-                          ? `${project.manager.firstName} ${project.manager.lastName} `
-                          : "—"
-                      }
-                    />
-                    <InfoRow
-                      label="Project Manager"
-                      value={
-                        project.clientProjectManagers && project.clientProjectManagers.length > 0
-                          ? project.clientProjectManagers.map((pm: any) => `${pm.firstName.trim()} ${pm.lastName.trim()}`).join(", ")
-                          : "—"
-                      }
-                    />
-                  </div>
-                  <div className="space-y-3.5">
-                    {userRole !== "client" &&
-                      userRole !== "client_admin" &&
-                      !isConnectionDesigner && (
-                        <InfoRow
-                          label="Fabricator"
-                          value={project.fabricator?.fabName || "—"}
-                        />
-                      )}
-                    <InfoRow label="Stage" value={project.stage || "—"} />
-                    <InfoRow
-                      label="Start Date"
-                      value={formatDate(project.startDate)}
-                    />
-                  </div>
-                </div>
-
-                {/* Scopes - Full Width Sections */}
-                <div className="space-y-4">
-                  {/* Connection Design Scope */}
-                  <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm transition-all hover:shadow-md">
-                    <h4 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
-                      <Settings className="w-5 h-5 text-green-600" /> Connection Design Scope
-                    </h4>
-                    <div className="flex flex-wrap gap-3">
-                      <ScopeTag
-                        label="Main Design"
-                        active={project.connectionDesign}
-                      />
-                      <ScopeTag
-                        label="Misc Design"
-                        active={project.miscDesign}
-                      />
-                      <ScopeTag
-                        label={
-                          project.customerDesign
-                            ? "Connection Design by WBT"
-                            : `Connection Design by ${project.fabricator?.fabName ?? ""}`
-                        }
-                        active={project.customerDesign}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Detailing Scope */}
-                  <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm transition-all hover:shadow-md">
-                    <h4 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-tight">
-                      <Settings2 className="w-5 h-5 text-green-600" /> Detailing Scope
-                    </h4>
-                    <div className="flex flex-wrap gap-3">
-                      <ScopeTag
-                        label="Detailing Main"
-                        active={project.detailingMain}
-                      />
-                      <ScopeTag
-                        label="Detailing Misc"
-                        active={project.detailingMisc}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Project Description */}
-                <div className="pt-4 border-t border-black/5">
-                  <h4 className="font-bold text-black mb-4 text-base flex items-center gap-2 uppercase tracking-tight">
-                    <FolderOpenDot className="w-5 h-5 text-green-600" />
-                    Project Description
-                  </h4>
-                  <div
-                    className="text-gray-700 bg-white p-6 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none leading-relaxed"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        project.description || "No description available.",
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Project Progress Reports */}
-              {!isClient && (
-                <div className="bg-white rounded-3xl border border-black/5 p-8 shadow-sm">
-                  <ProjectProgress projectId={id} />
-                </div>
-              )}
-
-              <div id="project-progress">
-                <ProjectMilestoneMetrics projectId={id} />
-              </div>
-
-              <ProjectUpcomingMilestones
-                milestones={milestonesWithoutSubmittals}
-                onViewAll={() => {
-                  if (isClient) {
-                    const el = document.getElementById("project-progress");
-                    el?.scrollIntoView({ behavior: "smooth" });
-                  } else {
-                    setActiveTab("milestones");
-                  }
-                }}
-                onMilestoneClick={(ms) => setSelectedMilestoneToView(ms)}
-              />
-
-              {/* Other Tasks Hours Breakdown (Overview only) */}
-              {!isClient && Object.keys(otherTasksByBundle).length > 0 && (
-                <div className="rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                  {/* Section header */}
-                  <div className="px-5 py-3 bg-slate-50 border-b border-gray-200 flex items-center gap-2">
-                    <ClipboardList className="w-4 h-4 text-slate-500" />
-                    <h4 className="text-sm font-black uppercase tracking-tight text-slate-700">
-                      Other Tasks &mdash; Logged Time
-                    </h4>
-                    <span className="ml-auto text-[10px] text-slate-400 font-semibold uppercase tracking-tight">
-                      {Object.values(otherTasksByBundle).reduce(
-                        (s, t) => s + t.length,
-                        0,
-                      )}{" "}
-                      tasks
-                    </span>
-                  </div>
-
-                  {/* Grouped by bundleKey */}
-                  <div className="divide-y divide-gray-100">
-                    {Object.entries(otherTasksByBundle).map(
-                      ([bundleKey, tasks]) => {
-                        const bundleTotalSeconds = tasks.reduce(
-                          (sum: number, t: any) =>
-                            sum +
-                            (t.workingHourTask || []).reduce(
-                              (s: number, w: any) =>
-                                s + (w.duration_seconds || 0),
-                              0,
-                            ),
+                {/* Other Tasks Hours Breakdown (Overview only) */}
+                {!isClient && Object.keys(otherTasksByBundle).length > 0 && (
+                  <div className="rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                    {/* Section header */}
+                    <div className="px-5 py-3 bg-slate-50 border-b border-gray-200 flex items-center gap-2">
+                      <ClipboardList className="w-4 h-4 text-slate-500" />
+                      <h4 className="text-sm font-black uppercase tracking-tight text-slate-700">
+                        Other Tasks &mdash; Logged Time
+                      </h4>
+                      <span className="ml-auto text-[10px] text-slate-400 font-semibold uppercase tracking-tight">
+                        {Object.values(otherTasksByBundle).reduce(
+                          (s, t) => s + t.length,
                           0,
-                        );
+                        )}{" "}
+                        tasks
+                      </span>
+                    </div>
 
-                        const statusMap: Record<string, string> = {
-                          completed:
-                            "bg-green-100 text-green-700 border-green-200",
-                          complete:
-                            "bg-green-100 text-green-700 border-green-200",
-                          validate_complete:
-                            "bg-green-100 text-green-700 border-green-200",
-                          assigned: "bg-blue-100 text-blue-700 border-blue-200",
-                          in_progress:
-                            "bg-yellow-100 text-yellow-700 border-yellow-200",
-                          rework:
-                            "bg-orange-100 text-orange-700 border-orange-200",
-                        };
+                    {/* Grouped by bundleKey */}
+                    <div className="divide-y divide-gray-100">
+                      {Object.entries(otherTasksByBundle).map(
+                        ([bundleKey, tasks]) => {
+                          const bundleTotalSeconds = tasks.reduce(
+                            (sum: number, t: any) =>
+                              sum +
+                              (t.workingHourTask || []).reduce(
+                                (s: number, w: any) =>
+                                  s + (w.duration_seconds || 0),
+                                0,
+                              ),
+                            0,
+                          );
 
-                        return (
-                          <div key={bundleKey}>
-                            {/* Bundle key header */}
-                            <div className="flex items-center gap-3 px-5 py-2 bg-slate-50/70 border-b border-gray-100">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#6bbd45] shrink-0" />
-                              <span className="flex-1 text-xs font-black uppercase tracking-tight text-slate-600">
-                                {bundleKey}
-                              </span>
-                              <span className="text-xs font-bold text-slate-500">
-                                {tasks.length} task
-                                {tasks.length !== 1 ? "s" : ""}
-                              </span>
-                              <span className="text-xs font-black text-[#3a8a1a] min-w-[52px] text-right">
-                                {formatSeconds(bundleTotalSeconds)}
-                              </span>
-                            </div>
+                          const statusMap: Record<string, string> = {
+                            completed:
+                              "bg-green-100 text-green-700 border-green-200",
+                            complete:
+                              "bg-green-100 text-green-700 border-green-200",
+                            validate_complete:
+                              "bg-green-100 text-green-700 border-green-200",
+                            assigned: "bg-blue-100 text-blue-700 border-blue-200",
+                            in_progress:
+                              "bg-yellow-100 text-yellow-700 border-yellow-200",
+                            rework:
+                              "bg-orange-100 text-orange-700 border-orange-200",
+                          };
 
-                            {/* Tasks */}
-                            <div className="divide-y divide-gray-50">
-                              {tasks.map((task: any, idx: number) => {
-                                const assignee = task.user
-                                  ? `${task.user.firstName || ""} ${task.user.lastName || ""}`.trim()
-                                  : task.assignedTo
-                                    ? `${task.assignedTo.firstName || ""} ${task.assignedTo.lastName || ""}`.trim()
-                                    : "Unassigned";
+                          return (
+                            <div key={bundleKey}>
+                              {/* Bundle key header */}
+                              <div className="flex items-center gap-3 px-5 py-2 bg-slate-50/70 border-b border-gray-100">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#6bbd45] shrink-0" />
+                                <span className="flex-1 text-xs font-black uppercase tracking-tight text-slate-600">
+                                  {bundleKey}
+                                </span>
+                                <span className="text-xs font-bold text-slate-500">
+                                  {tasks.length} task
+                                  {tasks.length !== 1 ? "s" : ""}
+                                </span>
+                                <span className="text-xs font-black text-[#3a8a1a] min-w-[52px] text-right">
+                                  {formatSeconds(bundleTotalSeconds)}
+                                </span>
+                              </div>
 
-                                const initials = assignee
-                                  .split(" ")
-                                  .filter(Boolean)
-                                  .map((n: string) => n[0])
-                                  .slice(0, 2)
-                                  .join("")
-                                  .toUpperCase();
+                              {/* Tasks */}
+                              <div className="divide-y divide-gray-50">
+                                {tasks.map((task: any, idx: number) => {
+                                  const assignee = task.user
+                                    ? `${task.user.firstName || ""} ${task.user.lastName || ""}`.trim()
+                                    : task.assignedTo
+                                      ? `${task.assignedTo.firstName || ""} ${task.assignedTo.lastName || ""}`.trim()
+                                      : "Unassigned";
 
-                                const taskSeconds = (
-                                  task.workingHourTask || []
-                                ).reduce(
-                                  (s: number, w: any) =>
-                                    s + (w.duration_seconds || 0),
-                                  0,
-                                );
+                                  const initials = assignee
+                                    .split(" ")
+                                    .filter(Boolean)
+                                    .map((n: string) => n[0])
+                                    .slice(0, 2)
+                                    .join("")
+                                    .toUpperCase();
 
-                                const sc =
-                                  statusMap[
-                                  (task.status || "").toLowerCase()
-                                  ] ||
-                                  "bg-gray-100 text-gray-500 border-gray-200";
+                                  const taskSeconds = (
+                                    task.workingHourTask || []
+                                  ).reduce(
+                                    (s: number, w: any) =>
+                                      s + (w.duration_seconds || 0),
+                                    0,
+                                  );
 
-                                return (
-                                  <div
-                                    key={task.id || idx}
-                                    className="flex items-center gap-3 px-5 py-2.5 bg-white hover:bg-slate-50 transition-colors"
-                                  >
-                                    {/* Avatar */}
-                                    <div className="w-7 h-7 rounded-full from-slate-300 to-slate-400 flex items-center justify-center text-[10px] font-black text-white shrink-0">
-                                      {initials || "?"}
-                                    </div>
+                                  const sc =
+                                    statusMap[
+                                    (task.status || "").toLowerCase()
+                                    ] ||
+                                    "bg-gray-100 text-gray-500 border-gray-200";
 
-                                    {/* Assignee + task name */}
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-xs font-bold text-gray-800 truncate leading-tight">
-                                        {assignee}
-                                      </p>
-                                      <p className="text-[10px] text-gray-400 truncate leading-tight mt-0.5">
-                                        {task.name ||
-                                          task.title ||
-                                          `Task #${idx + 1}`}
-                                      </p>
-                                    </div>
-
-                                    {/* Status */}
-                                    <span
-                                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wide shrink-0 ${sc}`}
+                                  return (
+                                    <div
+                                      key={task.id || idx}
+                                      className="flex items-center gap-3 px-5 py-2.5 bg-white hover:bg-slate-50 transition-colors"
                                     >
-                                      {task.status || "—"}
-                                    </span>
+                                      {/* Avatar */}
+                                      <div className="w-7 h-7 rounded-full from-slate-300 to-slate-400 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                        {initials || "?"}
+                                      </div>
 
-                                    {/* Logged time from duration_seconds */}
-                                    <div className="flex items-center gap-1 shrink-0">
-                                      <Clock className="w-3 h-3 text-gray-400" />
-                                      <span className="text-xs font-black text-gray-700 min-w-[42px] text-right">
-                                        {taskSeconds > 0
-                                          ? formatSeconds(taskSeconds)
-                                          : "—"}
+                                      {/* Assignee + task name */}
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-bold text-gray-800 truncate leading-tight">
+                                          {assignee}
+                                        </p>
+                                        <p className="text-[10px] text-gray-400 truncate leading-tight mt-0.5">
+                                          {task.name ||
+                                            task.title ||
+                                            `Task #${idx + 1}`}
+                                        </p>
+                                      </div>
+
+                                      {/* Status */}
+                                      <span
+                                        className={`text-[9px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wide shrink-0 ${sc}`}
+                                      >
+                                        {task.status || "—"}
                                       </span>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      },
-                    )}
-                  </div>
-                </div>
-              )}
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-                {/* <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                                      {/* Logged time from duration_seconds */}
+                                      <div className="flex items-center gap-1 shrink-0">
+                                        <Clock className="w-3 h-3 text-gray-400" />
+                                        <span className="text-xs font-black text-gray-700 min-w-[42px] text-right">
+                                          {taskSeconds > 0
+                                            ? formatSeconds(taskSeconds)
+                                            : "—"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        },
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+                  {/* <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                   <h4 className=" text-slate-800 mb-4 flex items-center gap-2">
                     <Clock size={18} className="text-indigo-600" />
                     Timeline Overview
@@ -1069,7 +1069,7 @@ const GetProjectById = ({
                   </div>
                 </div> */}
 
-                {/*<div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col justify-center items-center text-center">
+                  {/*<div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col justify-center items-center text-center">
                   <div className="mb-4 p-4 bg-white rounded-full shadow-inner border border-slate-200">
                     <Activity size={32} className="text-green-500" />
                   </div>
@@ -1083,163 +1083,163 @@ const GetProjectById = ({
                 </div>*/}
 
 
+                </div>
+
               </div>
+            )}
 
-            </div>
-          )}
+            {/* ✅ Analytics Dashboard */}
+            {activeTab === "analytics" && !isConnectionDesigner && (
+              <ProjectAnalyticsDashboard projectId={id} />
+            )}
 
-          {/* ✅ Analytics Dashboard */}
-          {activeTab === "analytics" && !isConnectionDesigner && (
-            <ProjectAnalyticsDashboard projectId={id} />
-          )}
-
-          {/* ✅ Teams Analytics */}
-          {activeTab === "teamsAnalytics" && !isConnectionDesigner && (
-            <TeamsAnalytics
-              projectId={id}
-              managerId={project.managerID}
-              tasks={allTasks}
-            />
-          )}
-
-          {/* ✅ Files */}
-          {activeTab === "files" && (
-            <div className="space-y-4">
-              <AllDocument projectId={id} />
-            </div>
-          )}
-          {activeTab === "milestones" && (
-            <MilestoneLayout project={project} onUpdate={fetchProject} />
-          )}
-
-          {/* ✅ Team */}
-          {activeTab === "team" && (
-            <div className="text-gray-700 text-sm">
-              <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
-                <Users className="w-4 h-4" /> Assigned Team
-              </h4>
-              <p>Team: {project.team?.name || "No team assigned."}</p>
-              <p>
-                Manager:{" "}
-                {project.manager
-                  ? `${project.manager.firstName} ${project.manager.lastName} (${project.manager.username})`
-                  : "Not assigned."}
-              </p>
-            </div>
-          )}
-
-          {/* ✅ Timeline */}
-          {activeTab === "timeline" && (
-            <div className="text-gray-700 italic text-center py-10">
-              <Clock className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-              Timeline view will be integrated soon.
-            </div>
-          )}
-
-          {/* ✅ Notes */}
-          {activeTab === "notes" && <NotesLayout projectId={id} />}
-          {/* ✅ Project Notes (Team Meeting Notes) */}
-          {activeTab === "projectNotes" && (
-            <ProjectNotesLayout projectId={id} project={project} />
-          )}
-
-          {activeTab === "wbs" && !isConnectionDesigner && (
-            <div className="text-gray-700 italic text-center">
-              {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
-              <WBS id={id} stage={project.stage || ""} />
-            </div>
-          )}
-
-          {/* ✅ Other Tasks – grouped by projectBundle.bundleKey */}
-          {activeTab === "otherTasks" && (
-            <OtherTasksPanel otherTasksByBundle={otherTasksByBundle} />
-          )}
-          {activeTab === "rfi" && (
-            <div className="space-y-4">
-              <RfiLayout
-                project={project}
-                rfiData={rfiData}
-                onSuccess={fetchProject}
+            {/* ✅ Teams Analytics */}
+            {activeTab === "teamsAnalytics" && !isConnectionDesigner && (
+              <TeamsAnalytics
+                projectId={id}
+                managerId={project.managerID}
+                tasks={allTasks}
               />
-            </div>
-          )}
+            )}
 
-          {activeTab === "submittals" && (
-            <div className="space-y-4">
-              <SubmittalLayout
-                project={project}
-                submittalData={submittalData}
-                onSuccess={fetchProject}
-              />
-            </div>
-          )}
+            {/* ✅ Files */}
+            {activeTab === "files" && (
+              <div className="space-y-4">
+                <AllDocument projectId={id} />
+              </div>
+            )}
+            {activeTab === "milestones" && (
+              <MilestoneLayout project={project} onUpdate={fetchProject} />
+            )}
+
+            {/* ✅ Team */}
+            {activeTab === "team" && (
+              <div className="text-gray-700 text-sm">
+                <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-1">
+                  <Users className="w-4 h-4" /> Assigned Team
+                </h4>
+                <p>Team: {project.team?.name || "No team assigned."}</p>
+                <p>
+                  Manager:{" "}
+                  {project.manager
+                    ? `${project.manager.firstName} ${project.manager.lastName} (${project.manager.username})`
+                    : "Not assigned."}
+                </p>
+              </div>
+            )}
+
+            {/* ✅ Timeline */}
+            {activeTab === "timeline" && (
+              <div className="text-gray-700 italic text-center py-10">
+                <Clock className="w-6 h-6 mx-auto mb-2 text-gray-400" />
+                Timeline view will be integrated soon.
+              </div>
+            )}
+
+            {/* ✅ Notes */}
+            {activeTab === "notes" && <NotesLayout projectId={id} />}
+            {/* ✅ Project Notes (Team Meeting Notes) */}
+            {activeTab === "projectNotes" && (
+              <ProjectNotesLayout projectId={id} project={project} />
+            )}
+
+            {activeTab === "wbs" && !isConnectionDesigner && (
+              <div className="text-gray-700 italic text-center">
+                {/* <FolderOpenDot className="w-6 h-6 mx-auto mb-2 text-gray-400" /> */}
+                <WBS id={id} stage={project.stage || ""} />
+              </div>
+            )}
+
+            {/* ✅ Other Tasks – grouped by projectBundle.bundleKey */}
+            {activeTab === "otherTasks" && (
+              <OtherTasksPanel otherTasksByBundle={otherTasksByBundle} />
+            )}
+            {activeTab === "rfi" && (
+              <div className="space-y-4">
+                <RfiLayout
+                  project={project}
+                  rfiData={rfiData}
+                  onSuccess={fetchProject}
+                />
+              </div>
+            )}
+
+            {activeTab === "submittals" && (
+              <div className="space-y-4">
+                <SubmittalLayout
+                  project={project}
+                  submittalData={submittalData}
+                  onSuccess={fetchProject}
+                />
+              </div>
+            )}
 
 
-          {activeTab === "coordinationDrawings" && (
-            <div className="space-y-4 h-full">
-              <CoordinationDrawings projectId={id} />
-            </div>
-          )}
+            {activeTab === "coordinationDrawings" && (
+              <div className="space-y-4 h-full">
+                <CoordinationDrawings projectId={id} />
+              </div>
+            )}
 
-          {activeTab === "changeOrder" && !isConnectionDesigner && (() => {
-            const showAddCoButton = !isClient && userRole !== "client_estimator";
-            return (
-              <div className="space-y-6">
-                {/* Pill-style Sub-tabs for Change Order */}
-                {showAddCoButton && (
-                  <div className="flex p-1.5 bg-gray-100/30 rounded-2xl w-fit mb-6 border border-gray-200/50 gap-2">
-                    <button
-                      onClick={() => setChangeOrderView("list")}
-                      className={`
-                        px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
-                        ${changeOrderView === "list"
-                          ? "bg-green-50 text-black border-green-700/80 shadow-sm"
-                          : "bg-gray-100 text-black border-black/10 hover:border-black/20"
-                        }
-                      `}
-                    >
-                      All Change Orders
-                    </button>
-                    <button
-                      onClick={() => setChangeOrderView("add")}
-                      className={`
-                        px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
-                        ${changeOrderView === "add"
-                          ? "bg-green-50 text-black border-green-700/80 shadow-sm"
-                          : "bg-gray-100 text-black border-black/10 hover:border-black/20"
-                        }
-                      `}
-                    >
-                      Raise Change Order
-                    </button>
-                  </div>
-                )}
-
-                {/* Change Order Content */}
-                {changeOrderView === "list" ? (
-                  <AllCO changeOrderData={changeOrderData} />
-                ) : (changeOrderView === "add" && showAddCoButton) ? (
-                  <AddCO project={project} onSuccess={handleCoSuccess} />
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <h4 className="text-lg font-semibold text-green-700">
-                        Change Order Table
-                      </h4>
+            {activeTab === "changeOrder" && !isConnectionDesigner && (() => {
+              const showAddCoButton = !isClient && userRole !== "client_estimator";
+              return (
+                <div className="space-y-6">
+                  {/* Pill-style Sub-tabs for Change Order */}
+                  {showAddCoButton && (
+                    <div className="flex p-1.5 bg-gray-100/30 rounded-2xl w-fit mb-6 border border-gray-200/50 gap-2">
                       <button
                         onClick={() => setChangeOrderView("list")}
-                        className="px-4 py-2 bg-gray-100 text-black border-2 border-black/10 rounded-lg hover:border-black/20 transition-all font-bold text-xs uppercase tracking-tight flex items-center gap-2"
+                        className={`
+                        px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
+                        ${changeOrderView === "list"
+                            ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+                            : "bg-gray-100 text-black border-black/10 hover:border-black/20"
+                          }
+                      `}
                       >
-                        &larr; Back to List
+                        All Change Orders
+                      </button>
+                      <button
+                        onClick={() => setChangeOrderView("add")}
+                        className={`
+                        px-8 py-3 rounded-lg border-2 font-bold text-sm uppercase tracking-tight transition-all duration-300 active:scale-95
+                        ${changeOrderView === "add"
+                            ? "bg-green-50 text-black border-green-700/80 shadow-sm"
+                            : "bg-gray-100 text-black border-black/10 hover:border-black/20"
+                          }
+                      `}
+                      >
+                        Raise Change Order
                       </button>
                     </div>
-                    {selectedCoId && <CoTable coId={selectedCoId} />}
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-        </div>
+                  )}
+
+                  {/* Change Order Content */}
+                  {changeOrderView === "list" ? (
+                    <AllCO changeOrderData={changeOrderData} />
+                  ) : (changeOrderView === "add" && showAddCoButton) ? (
+                    <AddCO project={project} onSuccess={handleCoSuccess} />
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-lg font-semibold text-green-700">
+                          Change Order Table
+                        </h4>
+                        <button
+                          onClick={() => setChangeOrderView("list")}
+                          className="px-4 py-2 bg-gray-100 text-black border-2 border-black/10 rounded-lg hover:border-black/20 transition-all font-bold text-xs uppercase tracking-tight flex items-center gap-2"
+                        >
+                          &larr; Back to List
+                        </button>
+                      </div>
+                      {selectedCoId && <CoTable coId={selectedCoId} />}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
         </div>
       </div>
       {editModel &&
@@ -1418,7 +1418,7 @@ const GetProjectById = ({
           </div>,
           document.body,
         )}
-      
+
       {/* WPR List Modal */}
       {isWprListOpen && isClient && (
         <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm overflow-y-auto p-4 md:p-8 flex justify-center items-start">
@@ -1428,16 +1428,16 @@ const GetProjectById = ({
                 <FileText className="w-5 h-5" />
                 Weekly Progress Reports
               </h2>
-              <button 
-                onClick={() => setIsWprListOpen(false)} 
+              <button
+                onClick={() => setIsWprListOpen(false)}
                 className="px-5 py-2.5 bg-red-200 border border-red-600 text-black font-bold uppercase text-sm hover:bg-red-300 transition-colors cursor-pointer shadow-md"
               >
                 Close Reports
               </button>
             </div>
-            
+
             <div className="p-6 md:p-8 space-y-8 bg-slate-50 min-h-screen">
-              <WorkProgressReport 
+              <WorkProgressReport
                 projectId={id}
                 project={project}
                 milestones={milestoneData}
