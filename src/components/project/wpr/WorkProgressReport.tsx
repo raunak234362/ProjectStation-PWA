@@ -1263,7 +1263,7 @@ const WorkProgressReport = ({
             const imgRatio = logoImg.width / logoImg.height;
             let drawH = 32;
             let drawW = drawH * imgRatio;
-            
+
             // Safety check to ensure it doesn't overflow cell
             if (drawW > cell.width - 10) {
               drawW = cell.width - 10;
@@ -1426,20 +1426,6 @@ const WorkProgressReport = ({
                 setEffDate={setEffDate}
               />
             </div>
-            <div id="section-schedule">
-              <WprScheduleTable
-                scheduleRows={filteredScheduleRows}
-                canEdit={canEdit}
-                activeCell={activeCell}
-                editValue={editValue}
-                setEditValue={setEditValue}
-                inputRef={inputRef}
-                onCellClick={handleCellClick}
-                onCellSave={handleCellSave}
-                onKeyDown={handleKeyDown}
-                onAddRow={() => addRow("schedule")}
-              />
-            </div>
             <div id="section-rfi">
               <WprRfiTable
                 rfis={filteredRfis}
@@ -1452,6 +1438,20 @@ const WorkProgressReport = ({
                 onCellSave={handleCellSave}
                 onKeyDown={handleKeyDown}
                 onAddRow={() => addRow("rfi")}
+              />
+            </div>
+            <div id="section-schedule">
+              <WprScheduleTable
+                scheduleRows={filteredScheduleRows}
+                canEdit={canEdit}
+                activeCell={activeCell}
+                editValue={editValue}
+                setEditValue={setEditValue}
+                inputRef={inputRef}
+                onCellClick={handleCellClick}
+                onCellSave={handleCellSave}
+                onKeyDown={handleKeyDown}
+                onAddRow={() => addRow("schedule")}
               />
             </div>
             <div id="section-co">
