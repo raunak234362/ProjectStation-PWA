@@ -42,12 +42,15 @@ const WorkProgressReport = ({
   onUpdate
 }: any) => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
-  const canEdit = !["client", "staff", "estimator"].includes(userRole);
+  const canEdit = false; // WPR is now fully read-only per user request
 
   // WPR Header Info state
   const [reportDate, setReportDate] = useState(new Date().toISOString().split("T")[0]);
   const [weekEnding, setWeekEnding] = useState("");
   const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [formNo, setFormNo] = useState("WBT/PMO/WPR-001");
+  const [version, setVersion] = useState("1.0");
+  const [effDate, setEffDate] = useState("05/09/2024");
   const [wbtCirculatedTo, setWbtCirculatedTo] = useState("");
   const [fabCirculatedTo, setFabCirculatedTo] = useState("");
   const [software, setSoftware] = useState(project?.tools || "SDS2");
@@ -188,12 +191,12 @@ const WorkProgressReport = ({
         if (fabId) {
           const fab = await Service.GetFabricatorByID(fabId);
           let clientAdmins: any[] = [];
-          
+
           try {
             const clientsRes = await Service.FetchAllClientsByFabricatorID(fabId);
             if (clientsRes?.data) {
               const rawClients = Array.isArray(clientsRes.data) ? clientsRes.data : [];
-              clientAdmins = rawClients.filter((c: any) => 
+              clientAdmins = rawClients.filter((c: any) =>
                 c.role === "CLIENT_ADMIN" || c.role === "client_admin"
               );
             }
@@ -245,6 +248,30 @@ const WorkProgressReport = ({
       }
     }
   };
+
+  // Sync Form No, Version, and Eff Date based on selected week
+  useEffect(() => {
+    let weekNum = 1;
+    let targetEnd = new Date();
+
+    if (selectedWeek !== "All") {
+      const match = selectedWeek.match(/Week (\d+)/i);
+      if (match) weekNum = parseInt(match[1], 10);
+      const wk = projectWeeks.find(w => w.label === selectedWeek);
+      if (wk) targetEnd = wk.end;
+    } else if (projectWeeks.length > 0) {
+      const lastWeek = projectWeeks[projectWeeks.length - 1];
+      const match = lastWeek.label.match(/Week (\d+)/i);
+      if (match) weekNum = parseInt(match[1], 10);
+      targetEnd = getSunday(new Date());
+    } else {
+      targetEnd = getSunday(new Date());
+    }
+
+    setVersion(`${weekNum}.0`);
+    setFormNo(`WBT/PMO/WPR-${String(weekNum).padStart(3, "0")}`);
+    setEffDate(targetEnd.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }));
+  }, [selectedWeek, projectWeeks]);
 
   // Sync RFIs
   useEffect(() => {
@@ -943,18 +970,18 @@ const WorkProgressReport = ({
       let row = 0;
 
       // Row 0: Title row
-      pushRow(["WHITEBOARD TECHNOLOGIES", "", "", `Week Ending ${weekEnding}`, "", "", "FORM NO", "WBT/PMO/WPR-001"]);
+      pushRow(["WHITEBOARD TECHNOLOGIES", "", "", `Week Ending ${weekEnding}`, "", "", "FORM NO", formNo]);
       merge(row, 0, row, 2); // Logo/company across 3 cols
       merge(row, 3, row, 5); // Title across 3 cols
       row++;
 
       // Row 1: Version
-      pushRow(["", "", "", "", "", "", "VERSION", "1.0"]);
+      pushRow(["", "", "", "", "", "", "VERSION", version]);
       merge(row, 0, row, 5);
       row++;
 
       // Row 2: Eff Date
-      pushRow(["", "", "", "", "", "", "EFF DATE", "05/09/2024"]);
+      pushRow(["", "", "", "", "", "", "EFF DATE", effDate]);
       merge(row, 0, row, 5);
       row++;
 
@@ -1083,7 +1110,7 @@ const WorkProgressReport = ({
       // CO header - use all 8 cols: CO | Jan-Feb | Mar-Apr | May-Jun | Jul-Aug | Sep-Oct | Nov-Dec | FY Total
       const coHeader = ["Change Order", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "FY Total"];
       const maxCols = Math.max(COL_COUNT, coHeader.length);
-      
+
       // Ensure all previous rows are padded
       wsData.forEach((r) => {
         while (r.length < maxCols) r.push("");
@@ -1139,13 +1166,13 @@ const WorkProgressReport = ({
   // Export layout to PDF using jsPDF and jspdf-autotable
   const exportToPDF = async () => {
     const toastId = toast.loading("Generating PDF, please wait...");
-    
+
     try {
       setIsExportingPDF(true);
-      
+
       // CRITICAL: Yield to the event loop so the Toast can actually render before we lock the thread!
       await new Promise(resolve => setTimeout(resolve, 150));
-      
+
       // Helper to strip HTML and preserve line breaks
       const cleanHtmlText = (html: any) => {
         if (!html) return "—";
@@ -1166,13 +1193,13 @@ const WorkProgressReport = ({
           img.onerror = () => resolve(null);
         });
       };
-      
+
       const logoImg = await loadLogo();
-      
+
       const pdf = new jsPDF("l", "pt", "a4");
       const startX = 40;
       let finalY = 40;
-      
+
       const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "—";
       const fabPMNames = project?.clientProjectManagers?.length > 0
         ? project.clientProjectManagers.map((pm: any) => `${pm.firstName || ""} ${pm.lastName || ""}`.trim()).join(", ")
@@ -1186,39 +1213,39 @@ const WorkProgressReport = ({
         styles: { fontSize: 8, cellPadding: 3, textColor: [0, 0, 0], lineColor: [0, 0, 0], lineWidth: 0.5 },
         body: [
           [
-            { content: "", rowSpan: 3, colSpan: 2, styles: { minCellWidth: 100 } }, 
+            { content: "", rowSpan: 3, colSpan: 2, styles: { minCellWidth: 100 } },
             { content: `WEEK ENDING ${weekEnding.toUpperCase()}`, rowSpan: 3, colSpan: 4, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: 12, fillColor: [230, 240, 255] } },
-            { content: "FORM NO", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } }, 
+            { content: "FORM NO", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } },
             { content: "WBT/PMO/WPR-001", styles: { fontSize: 6 } }
           ],
           [
-            { content: "VERSION", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } }, 
+            { content: "VERSION", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } },
             { content: "1.0", styles: { fontSize: 6 } }
           ],
           [
-            { content: "EFF DATE", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } }, 
+            { content: "EFF DATE", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } },
             { content: "05/09/2024", styles: { fontSize: 6 } }
           ],
           [
-            { content: "CUSTOMER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: [187, 247, 208], halign: 'center', valign: 'middle' } },
+            { content: "CUSTOMER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: project?.fabricator?.fabName || "—", colSpan: 6, styles: { valign: 'middle' } }
           ],
           [
-            { content: "PROJECT NAME :", colSpan: 2, styles: { fontStyle: 'bold', fillColor: [187, 247, 208], halign: 'center', valign: 'middle' } },
+            { content: "PROJECT NAME :", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: project?.projectName || project?.name || "—", colSpan: 2, styles: { valign: 'middle' } },
-            { content: "FABRICATOR PROJECT MANAGER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: [187, 247, 208], halign: 'center', valign: 'middle' } },
+            { content: "FABRICATOR PROJECT MANAGER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: fabPMNames || "—", colSpan: 2, styles: { valign: 'middle' } }
           ],
           [
-            { content: "WBT PROJECT MANAGER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: [187, 247, 208], halign: 'center', valign: 'middle' } },
+            { content: "WBT PROJECT MANAGER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: wbtPM, colSpan: 2, styles: { valign: 'middle' } },
-            { content: "REPORT CIRCULATED TO", colSpan: 2, styles: { fontStyle: 'bold', fillColor: [187, 247, 208], halign: 'center', valign: 'middle' } },
+            { content: "REPORT CIRCULATED TO", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: fabCirculatedTo || "—", colSpan: 2, styles: { valign: 'middle' } }
           ],
           [
-            { content: "REPORT CIRCULATED TO", colSpan: 2, styles: { fontStyle: 'bold', fillColor: [187, 247, 208], halign: 'center', valign: 'middle' } },
+            { content: "REPORT CIRCULATED TO", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: wbtCirculatedTo || "—", colSpan: 2, styles: { valign: 'middle' } },
-            { content: "SOFTWARE", colSpan: 2, styles: { fontStyle: 'bold', fillColor: [187, 247, 208], halign: 'center', valign: 'middle' } },
+            { content: "SOFTWARE", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: software || "SDS2", colSpan: 2, styles: { valign: 'middle' } }
           ],
           [
@@ -1230,19 +1257,23 @@ const WorkProgressReport = ({
             { content: fmtDate(project?.fabricationDate), colSpan: 1, styles: { valign: 'middle', halign: 'center' } }
           ]
         ],
-        didDrawCell: function(data) {
+        didDrawCell: function (data) {
           if (data.row.index === 0 && data.column.index === 0 && logoImg) {
             const cell = data.cell;
-            const padding = 5;
-            const availableW = cell.width - (padding * 2);
-            const availableH = cell.height - (padding * 2);
             const imgRatio = logoImg.width / logoImg.height;
-            let drawW = availableW;
-            let drawH = drawW / imgRatio;
-            if (drawH > availableH) {
-              drawH = availableH;
+            let drawH = 32;
+            let drawW = drawH * imgRatio;
+            
+            // Safety check to ensure it doesn't overflow cell
+            if (drawW > cell.width - 10) {
+              drawW = cell.width - 10;
+              drawH = drawW / imgRatio;
+            }
+            if (drawH > cell.height - 10) {
+              drawH = cell.height - 10;
               drawW = drawH * imgRatio;
             }
+
             const x = cell.x + (cell.width - drawW) / 2;
             const y = cell.y + (cell.height - drawH) / 2;
             pdf.addImage(logoImg, 'PNG', x, y, drawW, drawH);
@@ -1256,7 +1287,7 @@ const WorkProgressReport = ({
       pdf.setFont("helvetica", "bold");
       pdf.text("1. PROJECT SCHEDULE / MILESTONES", startX, finalY);
       finalY += 10;
-      
+
       const safeScheduleRows = Array.isArray(filteredScheduleRows) ? filteredScheduleRows : [];
       autoTable(pdf, {
         startY: finalY,
@@ -1281,7 +1312,7 @@ const WorkProgressReport = ({
       pdf.setFont("helvetica", "bold");
       pdf.text("2. RFI STATUS OVERVIEW", startX, finalY);
       finalY += 10;
-      
+
       const safeRfis = Array.isArray(filteredRfis) ? filteredRfis : [];
       autoTable(pdf, {
         startY: finalY,
@@ -1387,6 +1418,12 @@ const WorkProgressReport = ({
                 setFabCirculatedTo={setFabCirculatedTo}
                 software={software}
                 setSoftware={setSoftware}
+                formNo={formNo}
+                setFormNo={setFormNo}
+                version={version}
+                setVersion={setVersion}
+                effDate={effDate}
+                setEffDate={setEffDate}
               />
             </div>
             <div id="section-schedule">

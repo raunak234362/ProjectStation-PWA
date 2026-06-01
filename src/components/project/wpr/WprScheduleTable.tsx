@@ -26,6 +26,7 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
   onKeyDown,
   onAddRow
 }) => {
+
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
@@ -66,7 +67,7 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                   : "bg-white hover:bg-slate-50"
                   }`}
               >
-                {/* Phase cell */}
+                {/* Phase / Subject */}
                 <td
                   onClick={() => onCellClick("schedule", row.id, "phase", row.phase)}
                   className="p-3 font-bold border-r border-black/10 cursor-pointer hover:bg-slate-100/50 text-black"

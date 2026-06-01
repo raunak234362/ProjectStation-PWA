@@ -1,5 +1,5 @@
 import React from "react";
-import { Printer, Download, Save, Loader2, ArrowLeft } from "lucide-react";
+import { Download, Save, Loader2, ArrowLeft } from "lucide-react";
 
 interface WprToolbarProps {
   canEdit: boolean;
@@ -10,7 +10,6 @@ interface WprToolbarProps {
   onExportExcel: () => void;
   onExportPDF: () => void;
   exportingPDF?: boolean;
-  onPrint: () => void;
 }
 
 const WprToolbar: React.FC<WprToolbarProps> = ({
@@ -20,8 +19,7 @@ const WprToolbar: React.FC<WprToolbarProps> = ({
   onBackToWeeks,
   onSaveChanges,
   onExportPDF,
-  exportingPDF,
-  onPrint
+  exportingPDF
 }) => {
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 bg-white shrink-0">
@@ -59,13 +57,6 @@ const WprToolbar: React.FC<WprToolbarProps> = ({
         >
           {exportingPDF ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
           {exportingPDF ? "Exporting..." : "PDF Export"}
-        </button>
-        <button
-          onClick={onPrint}
-          className="flex items-center gap-2 px-5 py-2 bg-slate-50 text-black border-2 border-slate-700/80 hover:bg-slate-100 rounded-none text-sm font-bold uppercase tracking-tight shadow-sm transition-all cursor-pointer"
-        >
-          <Printer className="w-3.5 h-3.5" />
-          Print Report
         </button>
       </div>
     </div>

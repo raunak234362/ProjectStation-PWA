@@ -5,26 +5,30 @@ interface WprHeaderProps {
   weekEnding: string;
   project: any;
   fabProjectManager: string;
-  setFabProjectManager: (val: string) => void;
   wbtCirculatedTo: string;
-  setWbtCirculatedTo: (val: string) => void;
   fabCirculatedTo: string;
-  setFabCirculatedTo: (val: string) => void;
   software: string;
-  setSoftware: (val: string) => void;
+  formNo: string;
+  setFormNo: (val: string) => void;
+  version: string;
+  setVersion: (val: string) => void;
+  effDate: string;
+  setEffDate: (val: string) => void;
 }
 
 const WprHeader: React.FC<WprHeaderProps> = ({
   weekEnding,
   project,
   fabProjectManager,
-  setFabProjectManager,
   wbtCirculatedTo,
-  setWbtCirculatedTo,
   fabCirculatedTo,
-  setFabCirculatedTo,
   software,
-  setSoftware
+  formNo,
+  setFormNo,
+  version,
+  setVersion,
+  effDate,
+  setEffDate
 }) => {
   return (
     <div className="border border-black overflow-hidden mb-6 bg-white shadow-sm mt-4">
@@ -32,9 +36,9 @@ const WprHeader: React.FC<WprHeaderProps> = ({
         <tbody>
           {/* Header Row */}
           <tr className="bg-[#eaf4fe] border-b border-black">
-            <td className="w-1/4 p-4 border-r border-black text-center bg-white align-middle">
+            <td className="w-1/4 border-r border-black text-center bg-white align-middle">
               <div className="flex items-center justify-center">
-                <img src={Logo} alt="WBT Whiteboard Logo" className="h-12 w-auto object-contain mix-blend-multiply" />
+                <img src={Logo} alt="WBT Whiteboard Logo" className="h-16 w-auto object-contain mix-blend-multiply" />
               </div>
             </td>
             <td colSpan={2} className="p-4 border-r border-black text-center text-lg font-bold bg-[#eaf4fe]">
@@ -45,15 +49,21 @@ const WprHeader: React.FC<WprHeaderProps> = ({
                 <tbody>
                   <tr>
                     <td className="p-1.5 border-b border-r border-black bg-[#fef2cd] w-1/3">FORM NO</td>
-                    <td className="p-1.5 border-b border-black font-normal">WBT/PMO/WPR-001</td>
+                    <td className="p-0 border-b border-black font-normal bg-white">
+                      <input type="text" value={formNo} onChange={(e) => setFormNo(e.target.value)} className="w-full h-full p-1.5 outline-none bg-transparent" />
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-1.5 border-b border-r border-black bg-[#fef2cd]">VERSION</td>
-                    <td className="p-1.5 border-b border-black font-normal">1.0</td>
+                    <td className="p-0 border-b border-black font-normal bg-white">
+                      <input type="text" value={version} onChange={(e) => setVersion(e.target.value)} className="w-full h-full p-1.5 outline-none bg-transparent" />
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-1.5 border-r border-black bg-[#fef2cd]">EFF DATE</td>
-                    <td className="p-1.5 font-normal">05/09/2024</td>
+                    <td className="p-0 font-normal bg-white">
+                      <input type="text" value={effDate} onChange={(e) => setEffDate(e.target.value)} className="w-full h-full p-1.5 outline-none bg-transparent" />
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -79,7 +89,7 @@ const WprHeader: React.FC<WprHeaderProps> = ({
               <input
                 type="text"
                 value={fabProjectManager}
-                onChange={(e) => setFabProjectManager(e.target.value)}
+                readOnly
                 className="w-full h-full p-2 outline-none uppercase bg-transparent"
               />
             </td>
@@ -96,7 +106,7 @@ const WprHeader: React.FC<WprHeaderProps> = ({
               <input
                 type="text"
                 value={fabCirculatedTo}
-                onChange={(e) => setFabCirculatedTo(e.target.value)}
+                readOnly
                 className="w-full h-full p-2 outline-none uppercase bg-transparent"
               />
             </td>
@@ -109,7 +119,7 @@ const WprHeader: React.FC<WprHeaderProps> = ({
               <input
                 type="text"
                 value={wbtCirculatedTo}
-                onChange={(e) => setWbtCirculatedTo(e.target.value)}
+                readOnly
                 className="w-full h-full p-2 outline-none uppercase bg-transparent"
               />
             </td>
@@ -118,7 +128,7 @@ const WprHeader: React.FC<WprHeaderProps> = ({
               <input
                 type="text"
                 value={software}
-                onChange={(e) => setSoftware(e.target.value)}
+                readOnly
                 className="w-full h-full p-2 outline-none uppercase bg-transparent"
               />
             </td>

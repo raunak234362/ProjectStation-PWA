@@ -26,6 +26,7 @@ const WprChangeOrderTable: React.FC<WprChangeOrderTableProps> = ({
   onKeyDown,
   onAddRow
 }) => {
+
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
@@ -57,7 +58,7 @@ const WprChangeOrderTable: React.FC<WprChangeOrderTableProps> = ({
           </thead>
           <tbody className="divide-y divide-black/10 font-bold text-black">
             {coRows.map((row) => (
-              <tr key={row.id} className="hover:bg-slate-50 transition-all">
+              <tr key={row.id} className="hover:bg-slate-50 transition-colors">
                 {/* CO number name */}
                 <td
                   onClick={() => onCellClick("co", row.id, "changeOrder", row.changeOrder)}
