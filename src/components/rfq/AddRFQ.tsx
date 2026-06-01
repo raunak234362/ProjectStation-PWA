@@ -247,7 +247,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         description,
         tools: data.tools,
         location: data.location,
-        bidPrice: data.bidPrice,
+        bidPriceDecimal: data.bidPrice ? parseFloat(data.bidPrice) : 0,
         estimationDate: data.estimationDate
           ? new Date(data.estimationDate).toISOString()
           : null,
