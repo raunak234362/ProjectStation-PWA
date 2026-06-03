@@ -31,7 +31,7 @@ const StatCard: React.FC<StatCardProps> = ({
 }) => (
   <div
     onClick={onClick}
-    className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+    className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-8 border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
   >
     <div className="flex items-center gap-4 z-10">
       <div className={`${iconPadding} rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black`}>
@@ -535,7 +535,7 @@ const AccountantDashboard = () => {
         <div className="project-component-container fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
           <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white bg-slate-50/50">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-6">
                 <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
                   <FileText size={24} className="text-[#6bbd45]" />
