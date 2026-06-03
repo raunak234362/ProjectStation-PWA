@@ -45,6 +45,19 @@ class AuthService {
       throw error;
     }
   }
+
+  static async verifyChallenge({ otp, challengeToken }: { otp: string; challengeToken: string }) {
+    try {
+      const response = await api.post(`auth/verify-challenge`, { otp, challengeToken });
+      return response?.data;
+    } catch (error: any) {
+      console.error(
+        "Error while verifying challenge:",
+        error?.response?.data || error.message || error
+      );
+      throw error;
+    }
+  }
 }
 
 export default AuthService;

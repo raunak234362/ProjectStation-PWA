@@ -3,6 +3,7 @@ import RequireAuth from "../middleware/RequireAuth";
 import VendorPage from "../pages/VendorPage";
 
 const Login = lazy(() => import("../pages/Login"));
+const OTPVerification = lazy(() => import("../components/auth/OTPVerification"));
 const App = lazy(() => import("../App"));
 const WBTDashboard = lazy(() => import("../components/dashboard/WBTDashboard"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage"));
@@ -31,6 +32,7 @@ const WireTransferPage = lazy(() => import("../pages/WireTransferPage"));
 
 const routes = [
   { path: "/", Component: Login },
+  { path: "/verify-challenge", Component: OTPVerification },
   {
     path: "/co-table",
     Component: CoTablePage,

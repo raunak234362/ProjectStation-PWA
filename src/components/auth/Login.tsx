@@ -17,6 +17,16 @@ const Login = () => {
   const Submit = async (data: AuthInterface) => {
     try {
       const userLogin = await AuthService.login(data);
+      // Check if OTP verification is required
+      if (userLogin?.requiresVerification || userLogin?.data?.requiresVerification) {
+        const challengeToken = userLogin?.challengeToken || userLogin?.data?.challengeToken;
+        if (challengeToken) {
+          sessionStorage.setItem("challengeToken", challengeToken);
+          navigate("/verify-challenge");
+          return;
+        }
+      }
+
       const token = userLogin?.data?.token || userLogin?.token;
       const userDetail = userLogin?.data?.user || userLogin?.user;
 
@@ -50,6 +60,18 @@ const Login = () => {
       console.log("Login Successful:", userLogin);
     } catch (error: any) {
       console.error("Error While Logging in:", error);
+      // Let's check for 202 that might have been caught if axios was configured differently, though typically 202 goes to the success block.
+      if (error?.response?.status === 202) {
+        const data = error.response.data;
+        if (data?.requiresVerification) {
+          const challengeToken = data.challengeToken;
+          if (challengeToken) {
+            sessionStorage.setItem("challengeToken", challengeToken);
+            navigate("/verify-challenge");
+            return;
+          }
+        }
+      }
       const errorMessage =
         error?.response?.data?.message ||
         error.message ||
