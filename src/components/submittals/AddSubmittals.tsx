@@ -96,6 +96,7 @@ const AddSubmittal: React.FC<{
         sender_id: userDetail?.id,
         description,
         files,
+        isConnectionDesign: isConnectionDesigner,
       };
       console.log(payload);
 

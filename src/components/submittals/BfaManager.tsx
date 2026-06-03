@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Service from "../../api/Service";
-import { Loader2, Clock, History, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Clock, History, ChevronDown, ChevronUp } from "lucide-react";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
@@ -367,23 +367,13 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
           )}
         </div>
       ) : (
-        <div className="text-center py-8 border border-dashed border-gray-300 rounded-xl bg-white flex flex-col items-center justify-center">
-          <FileText className="w-10 h-10 text-gray-300 mb-2" />
-          <p className="text-sm text-gray-500 italic">No Bid for Approval (BFA) associated with this submittal yet.</p>
-          <button
-            type="button"
-            onClick={() => setShowCreateModal(true)}
-            className="text-xs font-bold text-[#6bbd45] mt-2 hover:underline"
-          >
-            Raise BFA Now
-          </button>
-        </div>
+        null
       )}
 
       {/* CREATE BFA MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-210 animate-in fade-in duration-200">
-          <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-lg relative space-y-4 border border-gray-100">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[210] animate-in fade-in duration-200">
+          <div className="bg-white p-6 rounded-xl w-full max-w-2xl shadow-lg relative space-y-4 border border-gray-100">
             <h2 className="text-xl font-bold text-green-700">
               BFA
             </h2>
@@ -407,7 +397,7 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
                 className="w-full border border-gray-200 bg-white rounded-md p-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#6bbd45] text-sm"
               >
                 <option value="partial">Partial</option>
-                <option value="completed">Completed</option>
+                <option value="complete">Completed</option>
               </select>
             </div>
 
@@ -453,7 +443,7 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
                 className="w-full border border-gray-200 bg-white rounded-md p-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#6bbd45] text-sm"
               >
                 <option value="partial">Partial</option>
-                <option value="completed">Completed</option>
+                <option value="complete">Completed</option>
               </select>
             </div>
 

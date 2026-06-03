@@ -246,6 +246,36 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
           <div className="grid grid-cols-1 gap-6">
+            {/* RESPONSES SECTION */}
+            <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-[#6bbd45]">
+                  Responses
+                </h2>
+                {(userRole === "CLIENT_ADMIN" ||
+                  userRole === "CLIENT" ||
+                  userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+                  userRole === "CONNECTION_DESIGNER_ADMIN") && (
+                    <Button
+                      className="bg-[#6bbd45]/20 text-black border border-black rounded-lg hover:bg-[#6bbd45]/30 font-bold text-sm"
+                      onClick={() => setShowResponseModal(true)}
+                    >
+                      + Add Response
+                    </Button>
+                  )}
+              </div>
+
+              {submittal.submittalsResponse?.length > 0 ? (
+                <DataTable
+                  columns={responseColumns}
+                  data={submittal.submittalsResponse}
+                  onRowClick={(row) => setSelectedResponse(row)}
+                />
+              ) : (
+                <p className="text-gray-700 italic">No responses yet.</p>
+              )}
+            </div>
+            <BfaManager submittalId={submittal.id} />
             {/* LEFT PANEL */}
             <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
               <div className="flex justify-between items-start mb-2">

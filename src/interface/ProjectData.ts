@@ -27,6 +27,7 @@ export interface ProjectData {
   rfi?: any[];
   changeOrders?: any;
   submittals?: any[];
+  coordinationDrawings?: any[];
   miscDesign: boolean;
   customerDesign: boolean;
   detailingMain: boolean;

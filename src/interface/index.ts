@@ -8,6 +8,7 @@ export interface ChangePasswordPayload {
   token: string;
   newPassword: string;
   username?: string;
+  purpose?: string;
 }
 
 export type Role = "ADMIN" | "STAFF" | "DEPT_MANAGER" | string;

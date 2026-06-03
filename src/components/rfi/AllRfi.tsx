@@ -36,6 +36,37 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
     }
   }, [rfiData]);
 
+  const getStatusInfo = (item: any) => {
+    const responses = item.rfiresponse || [];
+    if (responses.length > 0) {
+      const sorted = [...responses].sort(
+        (a, b) => new Date(b.createdAt || b.date || 0).getTime() - new Date(a.createdAt || a.date || 0).getTime()
+      );
+      const latest = sorted[0];
+      const rfiStatus = latest.wbtStatus || latest.status;
+      if (rfiStatus) {
+        const statusStr = rfiStatus.toUpperCase();
+        switch (statusStr) {
+          case "OPEN":
+            return { label: "OPEN", className: "bg-blue-100 text-black shadow-sm" };
+          case "PARTIAL":
+            return { label: "PARTIAL", className: "bg-orange-100 text-black shadow-sm" };
+          case "COMPLETE":
+            return { label: "COMPLETE", className: "bg-green-100 text-black shadow-sm" };
+          default:
+            return { label: statusStr, className: "bg-gray-100 text-black shadow-sm" };
+        }
+      }
+    }
+
+    // Fallback if no responses exist
+    if (item.status === true || item.status === "OPEN" || item.status === "PENDING") {
+      return { label: "PENDING", className: "bg-green-100 text-black shadow-sm" };
+    } else {
+      return { label: "ANSWERED", className: "bg-orange-100 text-black shadow-sm" };
+    }
+  };
+
   // ✅ Define columns
   const columns: ColumnDef<RFIItem>[] = [
     {
@@ -101,12 +132,12 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const isPending = row.original.status === true;
+        const statusInfo = getStatusInfo(row.original);
         return (
           <span
-            className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5"
+            className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border border-black ${statusInfo.className}`}
           >
-            {isPending ? "Pending" : "Responded"}
+            {statusInfo.label}
           </span>
         );
       },
@@ -153,8 +184,8 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
                         rfi.sender?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         rfi.sender?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const isPending = rfi.status === true;
-    const statusText = isPending ? "Pending" : "Responded";
+    const statusInfo = getStatusInfo(rfi);
+    const statusText = statusInfo.label === "PENDING" ? "Pending" : "Responded";
     const statusMatch = statusFilter === "All" || statusText === statusFilter;
 
     return searchMatch && statusMatch;

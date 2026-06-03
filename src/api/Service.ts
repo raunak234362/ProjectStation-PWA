@@ -3501,7 +3501,7 @@ class Service {
     }
   }
 
-  // BFA (Bid for Approval) API methods
+  // BFA (Back from Approval) API methods
   static async AddBFA(formData: FormData) {
     const response = await api.post(`bfa`, formData, {
       headers: {
