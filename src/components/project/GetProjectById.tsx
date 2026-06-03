@@ -578,8 +578,8 @@ const GetProjectById = ({
                     onClick={() => setActiveTab(tab.key)}
                     className={`flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-lg transition-all duration-200 relative w-full text-left
                       ${isActive
-                        ? "bg-gray-50 dark:bg-slate-800 text-black dark:text-white border border-black/10 dark:border-white/10 border-l-[4px] border-l-[#6bbd45]"
-                        : "text-black dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-black dark:hover:text-white hover:border-y hover:border-r hover:border-black/10 hover:border-l-[4px] hover:border-l-[#6bbd45] border border-transparent border-l-[4px] border-l-transparent"
+                        ? "bg-gray-50 dark:bg-slate-800 text-black dark:text-white border border-black/10 dark:border-white/10 border-l-4 border-l-[#6bbd45]"
+                        : "text-black dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-black dark:hover:text-white hover:border-y hover:border-r hover:border-black/10 hover:border-l-4 hover:border-l-[#6bbd45] border border-transparent border-l-4 border-l-transparent"
                       }`}
                   >
                     <Icon className={`w-4 h-4 transition-colors duration-200 ${isActive ? "text-[#6bbd45]" : "text-gray-500 dark:text-gray-400"}`} />

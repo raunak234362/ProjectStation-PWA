@@ -254,13 +254,14 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
     <div className="bg-gray-100 p-6 rounded-xl border border-gray-100 space-y-6">
       <div className="flex justify-between items-center border-b border-gray-200 pb-4">
         <div>
-          <h2 className="text-xl font-semibold text-[#6bbd45] flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-black flex items-center gap-2">
             BFA
           </h2>
         </div>
         {bfa ? (
-          <Button
-            className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30 font-bold text-sm"
+          <button
+            type="button"
+            className="px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
             onClick={() => {
               setDescription("");
               setFiles([]);
@@ -268,11 +269,12 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
               setShowUpdateModal(true);
             }}
           >
-            Update BFA
-          </Button>
+            UPDATE BFA
+          </button>
         ) : (
-          <Button
-            className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30 font-bold text-sm"
+          <button
+            type="button"
+            className="px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
             onClick={() => {
               setSubject("");
               setDescription("");
@@ -281,8 +283,8 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
               setShowCreateModal(true);
             }}
           >
-            + Upload BFA
-          </Button>
+            + UPLOAD BFA
+          </button>
         )}
       </div>
 
@@ -380,7 +382,7 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
 
       {/* CREATE BFA MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[210] animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-210 animate-in fade-in duration-200">
           <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-lg relative space-y-4 border border-gray-100">
             <h2 className="text-xl font-bold text-green-700">
               BFA
@@ -437,7 +439,7 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
 
       {/* UPDATE BFA MODAL */}
       {showUpdateModal && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[210] animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-210 animate-in fade-in duration-200">
           <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-lg relative space-y-4 border border-gray-100">
             <h2 className="text-xl font-bold text-green-700">
               Update BFA (New Version)

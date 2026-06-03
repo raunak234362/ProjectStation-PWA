@@ -36,7 +36,7 @@ const StatCard: React.FC<StatCardProps> = ({
 }) => (
   <div
     onClick={onClick}
-    className="p-4 sm:p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] sm:border-l-[8px] border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+    className="p-4 sm:p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] sm:border-l-8 border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
   >
     <div className="flex items-center gap-2 sm:gap-4 z-10 min-w-0">
       <div className={`${iconPadding} rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black shrink-0`}>

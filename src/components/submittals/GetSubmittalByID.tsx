@@ -246,36 +246,6 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
           <div className="grid grid-cols-1 gap-6">
-            {/* RESPONSES SECTION */}
-            <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-[#6bbd45]">
-                  Responses
-                </h2>
-                {(userRole === "CLIENT_ADMIN" ||
-                  userRole === "CLIENT" ||
-                  userRole === "CONNECTION_DESIGNER_ENGINEER" ||
-                  userRole === "CONNECTION_DESIGNER_ADMIN") && (
-                    <Button
-                      className="bg-[#6bbd45]/20 text-black border border-black rounded-lg hover:bg-[#6bbd45]/30 font-bold text-sm"
-                      onClick={() => setShowResponseModal(true)}
-                    >
-                      + Add Response
-                    </Button>
-                  )}
-              </div>
-
-              {submittal.submittalsResponse?.length > 0 ? (
-                <DataTable
-                  columns={responseColumns}
-                  data={submittal.submittalsResponse}
-                  onRowClick={(row) => setSelectedResponse(row)}
-                />
-              ) : (
-                <p className="text-gray-700 italic">No responses yet.</p>
-              )}
-            </div>
-            <BfaManager submittalId={submittal.id} />
             {/* LEFT PANEL */}
             <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5">
               <div className="flex justify-between items-start mb-2">
@@ -318,7 +288,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                       <span className="w-1.5 h-6 bg-[#6bbd45] rounded-full"></span>
                       Description
                     </h4>
-                    <div className="bg-white rounded-2xl border border-black/5 border-l-4 border-[#6bbd45] shadow-sm overflow-hidden w-full">
+                    <div className="bg-white rounded-2xl border border-black/5 border-l-4 shadow-sm overflow-hidden w-full">
                       <style>{`
                       .submittal-description * {
                         max-width: 100% !important;
@@ -350,7 +320,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                       .submittal-description li { margin-bottom: 0.5rem !important; }
                     `}</style>
                       <div
-                        className="submittal-description text-gray-800 p-6 text-sm break-words leading-relaxed prose prose-sm max-w-none"
+                        className="submittal-description text-gray-800 p-6 text-sm wrap-break-word leading-relaxed prose prose-sm max-w-none"
                         dangerouslySetInnerHTML={{
                           __html:
                             submittal.description ||
@@ -375,10 +345,6 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 </div>
               )}
             </div>
-
-            {/* RIGHT PANEL - BFA Manager */}
-
-
           </div>
 
           {/* ── VERSION HISTORY (only when > 1 versions) ── */}
@@ -410,7 +376,39 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
             </div>
           )}
 
+          {/* BFA Manager */}
+          <BfaManager submittalId={submittal.id} />
 
+          {/* RESPONSES SECTION */}
+          <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-black">
+                Responses
+              </h2>
+              {(userRole === "CLIENT_ADMIN" ||
+                userRole === "CLIENT" ||
+                userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+                userRole === "CONNECTION_DESIGNER_ADMIN") && (
+                  <button
+                    type="button"
+                    className="px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+                    onClick={() => setShowResponseModal(true)}
+                  >
+                    + ADD RESPONSE
+                  </button>
+                )}
+            </div>
+
+            {submittal.submittalsResponse?.length > 0 ? (
+              <DataTable
+                columns={responseColumns}
+                data={submittal.submittalsResponse}
+                onRowClick={(row) => setSelectedResponse(row)}
+              />
+            ) : (
+              <p className="text-gray-700 italic">No responses yet.</p>
+            )}
+          </div>
         </div>
       </div>
 
