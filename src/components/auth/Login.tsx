@@ -45,18 +45,7 @@ const Login = () => {
         dispatch(setUserData(userDetail));
       }
 
-      if (
-        userDetail?.role?.toLowerCase() === "sales" ||
-        userDetail?.role?.toLowerCase() === "sales_manager"
-      ) {
-        navigate("/dashboard/sales");
-      } else if (
-        userDetail?.role?.toLowerCase() === "connection_designer_engineer"
-      ) {
-        navigate("/dashboard/connection-designer-dashboard");
-      } else {
-        navigate("/dashboard");
-      }
+      navigate("/dashboard");
       console.log("Login Successful:", userLogin);
     } catch (error: any) {
       console.error("Error While Logging in:", error);

@@ -1422,7 +1422,7 @@ const GetProjectById = ({
       {/* WPR List Modal */}
       {isWprListOpen && isClient && (
         <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm overflow-y-auto p-4 md:p-8 flex justify-center items-start">
-          <div className="bg-white w-full max-w-[98vw] border-2 border-black shadow-2xl relative">
+          <div className="bg-white w-full max-w-[1400px] border-2 border-black shadow-2xl relative">
             <div className="sticky top-0 z-40 bg-white border-b-2 border-black p-4 flex justify-between items-center shadow-sm">
               <h2 className="text-xl font-bold uppercase tracking-wider text-black flex items-center gap-2">
                 <FileText className="w-5 h-5" />
@@ -1436,7 +1436,7 @@ const GetProjectById = ({
               </button>
             </div>
 
-            <div className="p-6 md:p-8 space-y-8 bg-slate-50 min-h-screen">
+            <div className="p-6 md:p-8 space-y-8 bg-slate-50 h-[90vh] overflow-y-scroll">
               <WorkProgressReport
                 projectId={id}
                 project={project}

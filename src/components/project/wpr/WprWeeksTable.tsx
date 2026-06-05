@@ -33,7 +33,10 @@ const WprWeeksTable: React.FC<WprWeeksTableProps> = ({
           </thead>
           <tbody className="divide-y divide-black/10">
             {/* Master Sheet Row */}
-            <tr className="hover:bg-slate-50 transition-all bg-[#eaf4fe]">
+            <tr 
+              className="hover:bg-slate-50 transition-all bg-[#eaf4fe] cursor-pointer"
+              onClick={() => onSelectWeek("All")}
+            >
               <td className="p-4 font-bold border-r border-black/10 text-black">
                 Master Sheet (All Weeks)
               </td>
@@ -42,13 +45,13 @@ const WprWeeksTable: React.FC<WprWeeksTableProps> = ({
               <td className="p-4 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <button
-                    onClick={() => onSelectWeek("All")}
+                    onClick={(e) => { e.stopPropagation(); onSelectWeek("All"); }}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-all font-bold text-xs uppercase"
                   >
                     <Eye className="w-3.5 h-3.5" /> View
                   </button>
                   <button
-                    onClick={() => onDownloadWeek("All")}
+                    onClick={(e) => { e.stopPropagation(); onDownloadWeek("All"); }}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-all font-bold text-xs uppercase"
                   >
                     <Download className="w-3.5 h-3.5" /> PDF
@@ -61,7 +64,11 @@ const WprWeeksTable: React.FC<WprWeeksTableProps> = ({
             {[...projectWeeks].reverse().map((w) => {
               const isCurrent = w.label === currentWeekLabel;
               return (
-                <tr key={w.label} className={`hover:bg-slate-50 transition-all ${isCurrent ? "bg-green-50/50" : ""}`}>
+                <tr 
+                  key={w.label} 
+                  className={`hover:bg-slate-50 transition-all cursor-pointer ${isCurrent ? "bg-green-50/50" : ""}`}
+                  onClick={() => onSelectWeek(w.label)}
+                >
                   <td className="p-4 font-bold border-r border-black/10 text-black flex items-center gap-2">
                     {w.label}
                     {isCurrent && <span className="px-2 py-0.5 bg-green-200 text-green-800 text-[10px] rounded-full uppercase tracking-wider">Current</span>}
@@ -75,13 +82,13 @@ const WprWeeksTable: React.FC<WprWeeksTableProps> = ({
                   <td className="p-4 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <button
-                        onClick={() => onSelectWeek(w.label)}
+                        onClick={(e) => { e.stopPropagation(); onSelectWeek(w.label); }}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-all font-bold text-xs uppercase"
                       >
                         <Eye className="w-3.5 h-3.5" /> View
                       </button>
                       <button
-                        onClick={() => onDownloadWeek(w.label)}
+                        onClick={(e) => { e.stopPropagation(); onDownloadWeek(w.label); }}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-all font-bold text-xs uppercase"
                       >
                         <Download className="w-3.5 h-3.5" /> PDF

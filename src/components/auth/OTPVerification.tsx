@@ -105,18 +105,7 @@ const OTPVerification = () => {
         dispatch(setUserData(userDetail));
       }
 
-      if (
-        userDetail?.role?.toLowerCase() === "sales" ||
-        userDetail?.role?.toLowerCase() === "sales_manager"
-      ) {
-        navigate("/dashboard/sales");
-      } else if (
-        userDetail?.role?.toLowerCase() === "connection_designer_engineer"
-      ) {
-        navigate("/dashboard/connection-designer-dashboard");
-      } else {
-        navigate("/dashboard");
-      }
+      navigate("/dashboard");
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message ||
@@ -165,7 +154,7 @@ const OTPVerification = () => {
                     onChange={(e) => handleChange(e, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onPaste={handlePaste}
-                    ref={(el) => (inputRefs.current[index] = el)}
+                    ref={(el) => { inputRefs.current[index] = el; }}
                   />
                 ))}
               </div>
