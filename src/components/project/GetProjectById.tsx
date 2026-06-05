@@ -1421,7 +1421,7 @@ const GetProjectById = ({
 
       {/* WPR List Modal */}
       {isWprListOpen && isClient && (
-        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm overflow-y-auto p-4 md:p-8 flex justify-center items-start">
+        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm overflow-y-hidden p-4 md:p-8 flex justify-center items-start">
           <div className="bg-white w-full max-w-[1400px] border-2 border-black shadow-2xl relative">
             <div className="sticky top-0 z-40 bg-white border-b-2 border-black p-4 flex justify-between items-center shadow-sm">
               <h2 className="text-xl font-bold uppercase tracking-wider text-black flex items-center gap-2">
