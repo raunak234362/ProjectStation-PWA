@@ -11,7 +11,7 @@ import { login, setUserData } from "../../store/userSlice";
 import { connectSocket } from "../../socket";
 
 const Login = () => {
-  const { register, handleSubmit } = useForm<AuthInterface>();
+  const { register, handleSubmit, formState: { isSubmitting } } = useForm<AuthInterface>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const Submit = async (data: AuthInterface) => {
@@ -133,8 +133,8 @@ const Login = () => {
               </div>
 
               <div className="mt-4">
-                <Button type="submit" className="w-full text-xl text-black border border-black bg-green-50 hover:bg-green-100 transition-all duration-300 ">
-                  Login
+                <Button type="submit" disabled={isSubmitting} className="w-full text-xl text-black border border-black bg-green-50 hover:bg-green-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isSubmitting ? "Logging in..." : "Login"}
                 </Button>
               </div>
             </form>
