@@ -49,7 +49,8 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
     );
   }, [co?.versions]);
 
-  const hasMultipleVersions = sortedVersions.length > 1;
+  const isClientRole = userRole === "CLIENT" || userRole === "CLIENT_ADMIN";
+  const hasMultipleVersions = sortedVersions.length > 1 && !isClientRole;
 
   const currentVersion = useMemo(() => {
     if (!co) return null;
@@ -253,9 +254,16 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
             {/* ================= LEFT: CO DETAILS ================= */}
             <div className="bg-[#fafffb] border border-green-100/50 p-6 rounded-3xl shadow-sm space-y-5">
               <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-black text-black uppercase tracking-tight">
-                  COR - {co.changeOrderNumber?.slice(-3)}
-                </h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl font-black text-black uppercase tracking-tight">
+                    COR - {co.changeOrderNumber?.slice(-3)}
+                  </h1>
+                  {isClientRole && sortedVersions.length > 1 && (
+                    <span className="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[10px] font-bold rounded-lg border border-yellow-300 uppercase tracking-widest shadow-sm">
+                      Latest Update
+                    </span>
+                  )}
+                </div>
 
                 <span
                   className="px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gray-100 text-black border border-gray-200"
@@ -293,6 +301,30 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
                   dangerouslySetInnerHTML={{ __html: co.currentVersion?.remarks || co.remarks || "—" }}
                 />
               </div>
+                <div className="pt-4 border-t flex items-center gap-5">
+                  <h4 className="font-semibold text-gray-700 mb-1">Please click here to view the table</h4>
+                {isViewingCurrent ? (
+                  <button
+                    onClick={() => {
+                      const data = {
+                        id: co.id,
+                        changeOrderNumber: co.changeOrderNumber,
+                        serialNo: co.serialNo,
+                        CoRefersTo: currentVersion?.changeOrderTables || currentVersion?.CoRefersTo || co?.CoRefersTo || [],
+                      };
+                      sessionStorage.setItem(`coTableData_${co.id}`, JSON.stringify(data));
+                      window.open(`/co-table?id=${co.id}`, "_blank");
+                    }}
+                    className="text-black text-md cursor-pointer font-bold uppercase tracking-tight bg-green-200 border border-green-600 px-2 py-1.5 hover:bg-green-300 transition-all text-sm"
+                  >
+                    View Change Order Reference Table
+                  </button>
+                ) : (
+                  <p className="text-xs text-gray-400 italic">
+                    Table view is only available for the current version.
+                  </p>
+                )}
+              </div>
 
               <div>
                 <h4 className="font-semibold text-gray-700 mb-1">Description</h4>
@@ -309,29 +341,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
                 versionId={currentVersion?.id || co.currentVersionId}
               />
 
-              <div className="pt-4 border-t">
-                {isViewingCurrent ? (
-                  <button
-                    onClick={() => {
-                      const data = {
-                        id: co.id,
-                        changeOrderNumber: co.changeOrderNumber,
-                        serialNo: co.serialNo,
-                        CoRefersTo: currentVersion?.changeOrderTables || currentVersion?.CoRefersTo || co?.CoRefersTo || [],
-                      };
-                      sessionStorage.setItem(`coTableData_${co.id}`, JSON.stringify(data));
-                      window.open(`/co-table?id=${co.id}`, "_blank");
-                    }}
-                    className="text-black font-bold uppercase tracking-tight underline hover:text-gray-700 transition-all text-sm"
-                  >
-                    View Change Order Reference Table
-                  </button>
-                ) : (
-                  <p className="text-xs text-gray-400 italic">
-                    Table view is only available for the current version.
-                  </p>
-                )}
-              </div>
+            
             </div>
 
             {/* RESPONSES SECTION */}
@@ -341,7 +351,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
                   Responses
                 </h2>
 
-                {(userRole === "CLIENT" || userRole === "CLIENT_ADMIN") && (
+                {isClientRole && (
                   <button
                     type="button"
                     className="px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"

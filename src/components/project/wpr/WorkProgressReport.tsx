@@ -597,11 +597,40 @@ const WorkProgressReport = ({
           const monthlyBreakdown: any = {};
           months.forEach(m => monthlyBreakdown[m] = "");
 
-          if (Array.isArray(co.CoRefersTo) && co.CoRefersTo.length > 0) {
+          let currentVersion = co.currentVersion || null;
+          if (!currentVersion && co.versions && Array.isArray(co.versions) && co.versions.length > 0) {
+            currentVersion = co.versions.find((v: any) => v.id === co.currentVersionId) || 
+              [...co.versions].sort(
+                (a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+              )[0];
+          }
+          
+          let latestRefersTo = currentVersion?.changeOrderTables || currentVersion?.CoRefersTo || co.changeOrderTables;
+          
+          // If we have to fall back to the main CoRefersTo array (which often contains items across ALL versions in the list API)
+          if (!latestRefersTo || latestRefersTo.length === 0) {
+            if (Array.isArray(co.CoRefersTo)) {
+              const targetVersionId = currentVersion?.id || co.currentVersionId;
+              if (targetVersionId) {
+                const hasVersionIds = co.CoRefersTo.some((item: any) => item.changeOrderVersionId);
+                if (hasVersionIds) {
+                  latestRefersTo = co.CoRefersTo.filter((item: any) => item.changeOrderVersionId === targetVersionId);
+                } else {
+                  latestRefersTo = co.CoRefersTo;
+                }
+              } else {
+                latestRefersTo = co.CoRefersTo;
+              }
+            } else {
+              latestRefersTo = [];
+            }
+          }
+
+          if (Array.isArray(latestRefersTo) && latestRefersTo.length > 0) {
             const monthSums: any = {};
             let hasAnyAmount = false;
 
-            co.CoRefersTo.forEach((item: any) => {
+            latestRefersTo.forEach((item: any) => {
               const itemDate = item.createdAt ? new Date(item.createdAt) : (co.createdAt ? new Date(co.createdAt) : null);
               if (itemDate) {
                 const mIdx = itemDate.getMonth();
