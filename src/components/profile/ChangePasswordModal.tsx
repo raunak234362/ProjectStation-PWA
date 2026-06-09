@@ -11,7 +11,7 @@ interface ChangePasswordModalProps {
 }
 
 const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
-    id,
+    // id,
     onClose,
     onSuccess,
 }) => {
