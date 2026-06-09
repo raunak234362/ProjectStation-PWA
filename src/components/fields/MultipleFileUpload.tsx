@@ -10,9 +10,11 @@ interface MultipleFileUploadProps {
   initialFiles?: File[];
 }
 
+const EMPTY_ARRAY: File[] = [];
+
 function MultipleFileUpload({
   onFilesChange,
-  initialFiles = [],
+  initialFiles = EMPTY_ARRAY,
 }: MultipleFileUploadProps) {
   const [files, setFiles] = useState<File[]>(initialFiles);
   const [isDraggingGlobal, setIsDraggingGlobal] = useState(false);

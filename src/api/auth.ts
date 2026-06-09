@@ -45,7 +45,23 @@ class AuthService {
       throw error;
     }
   }
+  static async updatePassword({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) {
+    const userData = {
+      currentPassword,
+      newPassword
+    };
 
+    try {
+      const response = await api.patch(`auth/change-password`, userData);
+      return response?.data;
+    } catch (error: any) {
+      console.error(
+        "Error while changing password:",
+        error?.response?.data || error.message || error
+      );
+      throw error;
+    }
+  }
   static async verifyChallenge({ otp, challengeToken }: { otp: string; challengeToken: string }) {
     try {
       const response = await api.post(`auth/verify-challenge`, { otp, challengeToken });

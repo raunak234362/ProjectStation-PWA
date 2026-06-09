@@ -36,8 +36,11 @@ const Login = () => {
 
       sessionStorage.setItem("token", token);
       connectSocket(token);
-      if (userDetail?.role) {
-        sessionStorage.setItem("userRole", userDetail.role);
+      const role = userDetail?.role || userDetail?.userRole || userLogin?.data?.role || userLogin?.data?.userRole || userLogin?.role;
+      if (role) {
+        sessionStorage.setItem("userRole", role);
+      } else {
+        console.warn("User role not found in response", userLogin);
       }
 
       dispatch(login(token));

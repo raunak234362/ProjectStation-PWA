@@ -96,8 +96,11 @@ const OTPVerification = () => {
       sessionStorage.removeItem("challengeToken");
       sessionStorage.setItem("token", token);
       connectSocket(token);
-      if (userDetail?.role) {
-        sessionStorage.setItem("userRole", userDetail.role);
+      const role = userDetail?.role || userDetail?.userRole || response?.data?.role || response?.data?.userRole || response?.role;
+      if (role) {
+        sessionStorage.setItem("userRole", role);
+      } else {
+        console.warn("User role not found in response", response);
       }
 
       dispatch(login(token));
