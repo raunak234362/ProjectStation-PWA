@@ -18,6 +18,8 @@ import {
   CalendarCheck,
   Compass,
   Download,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -84,6 +86,7 @@ const GetProjectById = ({
     any | null
   >(null);
   const [isWprListOpen, setIsWprListOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const rfiData = useMemo(() => {
     return project?.rfi || [];
@@ -578,7 +581,25 @@ const GetProjectById = ({
         {/* Main Body (Flex Row Layout) */}
         <div className="flex flex-1 flex-col md:flex-row min-h-0 overflow-hidden gap-4">
           {/* Desktop Left Sidebar */}
-          <aside className="hidden md:flex md:w-64 border-r border-gray-100 dark:border-slate-800 flex-col overflow-y-auto py-2 pr-4 space-y-1 shrink-0">
+          <aside
+            className={`hidden md:flex flex-col overflow-y-auto py-2 shrink-0 transition-all duration-300 ease-in-out border-r border-gray-100 dark:border-slate-800 ${
+              sidebarOpen ? "md:w-56 pr-4" : "md:w-12 pr-2 items-center"
+            }`}
+          >
+            {/* Sidebar toggle — always visible */}
+            <button
+              onClick={() => setSidebarOpen((v) => !v)}
+              title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+              className={`flex items-center justify-center w-7 h-7 rounded-md hover:bg-green-50 transition-colors shrink-0 mb-3 ${
+                sidebarOpen ? "self-end" : "self-center"
+              }`}
+            >
+              {sidebarOpen
+                ? <PanelLeftClose className="w-5 h-5 text-[#6bbd45]" />
+                : <PanelLeftOpen className="w-5 h-5 text-[#6bbd45]" />}
+            </button>
+
+            {/* Nav — always rendered; shows icon+text when open, icon-only when collapsed */}
             <nav className="flex flex-col gap-1.5 w-full">
               {tabsToShow.map((tab) => {
                 const Icon = tab.icon;
@@ -588,14 +609,18 @@ const GetProjectById = ({
                     key={tab.key}
                     type="button"
                     onClick={() => setActiveTab(tab.key)}
-                    className={`flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-lg transition-all duration-200 relative w-full text-left
+                    title={!sidebarOpen ? tab.label : undefined}
+                    className={`flex items-center gap-3 px-2 py-2 text-sm font-bold rounded-lg transition-all duration-200 relative w-full
+                      ${sidebarOpen ? "text-left" : "justify-center"}
                       ${isActive
                         ? "bg-gray-50 dark:bg-slate-800 text-black dark:text-white border border-black/10 dark:border-white/10 border-l-4 border-l-[#6bbd45]"
-                        : "text-black dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-black dark:hover:text-white hover:border-y hover:border-r hover:border-black/10 hover:border-l-4 hover:border-l-[#6bbd45] border border-transparent border-l-4 border-l-transparent"
+                        : "text-black dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-black dark:hover:text-white border border-transparent border-l-4 border-l-transparent"
                       }`}
                   >
-                    <Icon className={`w-4 h-4 transition-colors duration-200 ${isActive ? "text-[#6bbd45]" : "text-gray-500 dark:text-gray-400"}`} />
-                    <span className="truncate tracking-wide">{tab.label}</span>
+                    <Icon className={`w-4 h-4 shrink-0 transition-colors duration-200 ${isActive ? "text-[#6bbd45]" : "text-gray-500 dark:text-gray-400"}`} />
+                    {sidebarOpen && (
+                      <span className="truncate tracking-wide">{tab.label}</span>
+                    )}
                   </button>
                 );
               })}

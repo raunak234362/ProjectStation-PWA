@@ -14,6 +14,13 @@ const AllInvoices = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
+        const isConnectionDesigner = userRole === "connection_designer_engineer" || userRole === "connection_designer_admin";
+        if (isConnectionDesigner) {
+          setInvoices([]);
+          setLoading(false);
+          return;
+        }
+
         const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant";
         const res = (userRole === "client" || userRole === "client_estimator")
           ? await Service.GetAllInvoiceByClient()

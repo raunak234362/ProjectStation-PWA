@@ -265,6 +265,11 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                 {/* Submittal Status (Comment) */}
                 <td className="p-0 align-top">
                   {(() => {
+                    const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
+                    const isConnectionDesigner = userRole === "CONNECTION_DESIGNER" ||
+                                                 userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+                                                 userRole === "CONNECTION_DESIGNER_ADMIN";
+
                     const STATUS_LABELS: any = {
                       WAITING_FOR_BFA: "Waiting for BFA",
                       BFA_RECEIVED: "BFA RECEIVED",
@@ -309,9 +314,11 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                                   <span className="text-[11px] font-semibold text-blue-800">
                                     {entry.subject}
                                   </span>
-                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color} shrink-0`}>
-                                    {label}
-                                  </span>
+                                  {!(key === "WAITING_FOR_BFA" && isConnectionDesigner) && (
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color} shrink-0`}>
+                                      {label}
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                             );
@@ -324,6 +331,9 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                     const label = STATUS_LABELS[key] || String(row.submittalStatus || "—").replace(/_/g, " ");
                     const color = STATUS_COLORS[key] || "bg-gray-100 text-gray-600 border-gray-200";
                     if (row.submittalStatus && row.submittalStatus !== "—") {
+                      if (key === "WAITING_FOR_BFA" && isConnectionDesigner) {
+                        return <span className="block p-3 text-gray-400">—</span>;
+                      }
                       return (
                         <div className="p-3">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color}`}>

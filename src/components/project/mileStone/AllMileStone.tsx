@@ -21,6 +21,11 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
   );
   const milestones = milestonesByProject[project.id] || [];
 
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const isConnectionDesigner =
+    userRole === "connection_designer_engineer" ||
+    userRole === "connection_designer_admin";
+
   const fetchMileStone = async () => {
     try {
       const response = await Service.GetProjectMilestoneById(project.id);
@@ -51,15 +56,42 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
         <span className="font-bold text-black">{row.original.subject}</span>
       ),
     },
-    {
-      accessorKey: "approvalDate",
-      header: "Approval Date",
-      cell: ({ row }) => (
-        <span className="text-black/60 text-xs font-bold">
-          {formatDate(row.original.approvalDate)}
-        </span>
-      ),
-    },
+    ...(isConnectionDesigner
+      ? [
+          {
+            accessorKey: "CDApprovalDate",
+            header: "CD Approval Date",
+            cell: ({ row }: any) => (
+              <span className="text-black/60 text-xs font-bold">
+                {row.original.CDApprovalDate
+                  ? formatDate(row.original.CDApprovalDate)
+                  : "—"}
+              </span>
+            ),
+          },
+          {
+            accessorKey: "CDTargetDate",
+            header: "CD Target Date",
+            cell: ({ row }: any) => (
+              <span className="text-black/60 text-xs font-bold">
+                {row.original.CDTargetDate
+                  ? formatDate(row.original.CDTargetDate)
+                  : "—"}
+              </span>
+            ),
+          },
+        ]
+      : [
+          {
+            accessorKey: "approvalDate",
+            header: "Approval Date",
+            cell: ({ row }: any) => (
+              <span className="text-black/60 text-xs font-bold">
+                {formatDate(row.original.approvalDate)}
+              </span>
+            ),
+          },
+        ]),
     {
       accessorKey: "status",
       header: "Status",

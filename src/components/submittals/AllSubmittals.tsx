@@ -220,6 +220,14 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
         const key = String(raw).replace(/\s+/g, "_").toUpperCase();
         const label = STATUS_LABELS[key] ?? String(raw).replace(/_/g, " ");
 
+        const isConnectionDesigner = userRole === "CONNECTION_DESIGNER" ||
+                                     userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+                                     userRole === "CONNECTION_DESIGNER_ADMIN";
+
+        if (key === "WAITING_FOR_BFA" && isConnectionDesigner) {
+          return <span className="text-gray-400 font-medium">—</span>;
+        }
+
         return (
           <span
             className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${getStatusStyles(key)}`}

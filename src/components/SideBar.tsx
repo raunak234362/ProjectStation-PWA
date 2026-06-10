@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import LOGO from "../assets/logo.png";
 import SLOGO from "../assets/mainLogoS.png";
 import { navItems } from "../constants/navigation";
@@ -21,7 +22,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const navigate = useNavigate();
-  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const userDetail = useSelector((state: any) => state.userDetail?.userDetail);
+  const rawRole = userDetail?.role || userDetail?.userRole || sessionStorage.getItem("userRole") || "";
+  const userRole = rawRole.toLowerCase();
 
   const canView = (roles: string[]): boolean =>
     roles.includes(userRole.toLowerCase());
@@ -160,14 +163,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         {isExpanded && (
           <div className="flex items-center gap-3 mb-6 px-2">
             <div className="w-9 h-9 shrink-0 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-black font-black text-sm shadow-2xs">
-              {sessionStorage.getItem("username")?.[0] || "U"}
+              {(userDetail?.username || sessionStorage.getItem("username") || "U")[0].toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-lg font-bold text-black truncate">
-                {sessionStorage.getItem("firstName")}
+                {userDetail?.firstName || sessionStorage.getItem("firstName")}
               </p>
               <p className="text-xs uppercase tracking-wider text-black font-semibold whitespace-normal wrap-break-word leading-tight mt-1">
-                {sessionStorage.getItem("userDesignation")}
+                {userDetail?.designation || sessionStorage.getItem("userDesignation")}
               </p>
             </div>
           </div>

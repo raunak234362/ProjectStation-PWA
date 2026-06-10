@@ -45,6 +45,11 @@ const AppContent = () => {
         userDetail.connectionDesignerId,
       );
 
+      const role = userDetail?.role || userDetail?.userRole;
+      if (role) {
+        sessionStorage.setItem("userRole", role);
+      }
+
       // setUserId(userDetail.id);
       dispatch(setUserData(userDetail));
 

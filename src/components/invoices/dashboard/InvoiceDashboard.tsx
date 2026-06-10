@@ -34,6 +34,13 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
+        const isConnectionDesigner = userRole === "connection_designer_engineer" || userRole === "connection_designer_admin";
+        if (isConnectionDesigner) {
+          setInvoices([]);
+          setLoading(false);
+          return;
+        }
+
         const res = (userRole === "client" || userRole === "client_estimator")
           ? await Service.GetAllInvoiceByClient()
           : (isFabricatorRole ? await Service.getFabricatorAllInvoice() : await Service.GetAllInvoice());

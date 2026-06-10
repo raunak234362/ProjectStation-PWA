@@ -117,11 +117,13 @@ const ConnectionDesignerDashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const isConnectionDesigner = userRole === "connection_designer_engineer" || userRole === "connection_designer_admin";
+
                 const [sent, received, allInvoices, pendingCOsData] = await Promise.all(
                     [
                         Service.RfqSent(),
                         Service.SubmittalRecieved(),
-                        Service.GetAllInvoiceClient(),
+                        isConnectionDesigner ? Promise.resolve([]) : Service.GetAllInvoiceClient(),
                         isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(), // Updated
                     ],
                 );

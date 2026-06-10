@@ -12,16 +12,16 @@ const MilestoneLayout = ({ project, onUpdate }: MilestoneLayoutProps) => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
 
   const btnClass = (tab: string) =>
-    `px-6 py-2 rounded-lg text-sm font-bold transition-all border border-black ${activeTab === tab
-      ? "bg-green-200"
-      : "bg-green-50 hover:bg-green-100"
-    } text-black`;
+    `px-6 py-1.5 text-black border-2 rounded-lg transition-all font-bold text-sm uppercase tracking-tight shadow-sm ${activeTab === tab
+      ? "bg-green-200 border-green-700/80 hover:bg-green-200"
+      : "bg-green-50 border-green-700/80 hover:bg-green-100"
+    }`;
 
   return (
     <div className="w-full h-full overflow-hidden flex flex-col bg-white project-component-container">
       <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
         <button onClick={() => setActiveTab("allMilestones")} className={btnClass("allMilestones")}>All Milestones</button>
-        {userRole !== "client" && userRole !== "client_admin" && (
+        {userRole !== "client" && userRole !== "client_admin" && userRole !== "connection_designer_engineer" && userRole !== "connection_designer_admin" && (
           <button onClick={() => setActiveTab("addMilestone")} className={btnClass("addMilestone")}>Add Milestone</button>
         )}
       </div>

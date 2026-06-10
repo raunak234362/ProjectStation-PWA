@@ -105,6 +105,22 @@ const WBTDashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      // If we are redirecting this role, don't hit backend at all
+      const rolesToRedirect = [
+        "sales",
+        "sales_manager",
+        "client",
+        "client_admin",
+        "client_estimator",
+        "client_accountant",
+        "connection_designer_engineer",
+        "connection_designer_admin",
+        "estimation_head",
+        "human_resource"
+      ];
+      if (userRole && rolesToRedirect.includes(userRole)) {
+        return;
+      }
       try {
         const [
           sent,

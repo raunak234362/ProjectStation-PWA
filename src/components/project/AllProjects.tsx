@@ -13,6 +13,9 @@ const AllProjects = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<"ALL" | "ACTIVE" | "COMPLETE" | "ONHOLD">("ALL");
 
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+  const isConnectionDesigner = userRole === "connection_designer" || userRole === "connection_designer_admin";
+
   const stats = React.useMemo(() => ({
     total: projects.length,
     active: projects.filter((p: any) => p.status === "ACTIVE").length,
@@ -112,7 +115,7 @@ const AllProjects = () => {
       filterOptions: stageOptions,
       filterFn: "equalsString",
     },
-    {
+    ...(isConnectionDesigner ? [] : [{
       accessorKey: "clientProjectManagers",
       header: "Client PM",
       cell: ({ row }: { row: any }) => {
@@ -142,7 +145,7 @@ const AllProjects = () => {
           return fullName === search;
         });
       },
-    },
+    }]),
     {
       accessorKey: "status",
       header: "Status",

@@ -143,6 +143,9 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any>(null);
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
+  const isConnectionDesigner = userRole === "CONNECTION_DESIGNER" ||
+                               userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+                               userRole === "CONNECTION_DESIGNER_ADMIN";
 
   const fetchData = async () => {
     try {
@@ -254,7 +257,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                     {submittal.subject}
                   </h1>
                 </div>
-                {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && (
+                {userRole !== "CLIENT" && userRole !== "CLIENT_ADMIN" && !isConnectionDesigner && (
                   <Button
                     className="bg-[#6bbd45]/20 text-black border border-black hover:bg-[#6bbd45]/30 mt-1"
                     onClick={() => setShowUpdateModal(true)}
@@ -377,7 +380,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
           )}
 
           {/* BFA Manager */}
-          <BfaManager submittalId={submittal.id} />
+          {!isConnectionDesigner && <BfaManager submittalId={submittal.id} />}
 
           {/* RESPONSES SECTION */}
           <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">

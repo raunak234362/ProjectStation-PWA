@@ -225,9 +225,17 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
           }
         };
 
+        const isConnectionDesigner = userRole === "connection_designer" ||
+                                     userRole === "connection_designer_engineer" ||
+                                     userRole === "connection_designer_admin";
+
         const raw = row.original.wbtStatus || row.original.status || "PENDING";
         const key = String(raw).replace(/\s+/g, "_").toUpperCase();
         const label = STATUS_LABELS[key] ?? String(raw).replace(/_/g, " ");
+
+        if (key === "WAITING_FOR_BFA" && isConnectionDesigner) {
+          return <span className="text-gray-400 font-medium">—</span>;
+        }
 
         return (
           <span
