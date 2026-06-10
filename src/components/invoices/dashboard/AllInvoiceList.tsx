@@ -232,7 +232,7 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
   ];
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-md border border-black border-l-[6px] border-l-[#6bbd45] h-full mt-6">
+    <div className="bg-white p-6 rounded-2xl shadow-md h-full mt-6">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
         <h3 className="text-md font-black text-black uppercase tracking-widest shrink-0">
           All Invoices
