@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { Plus, Trash2 } from "lucide-react";
 import { numberToWords } from "../../utils/numberToWords";
 import { generateInvoiceNumber } from "../../utils/stringUtils";
+import MultipleFileUpload from "../fields/MultipleFileUpload";
 
 export interface AccountInfo {
   abaRoutingNumber: string;
@@ -67,16 +68,17 @@ const AddInvoice = ({
   initialProjectId,
 }: AddInvoiceProps) => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
-  // Connection designers raise invoices for WBT — no fabricator involvement
   const isConnectionDesigner =
     userRole === "connection_designer" ||
-    userRole === "connection_designer_admin";
+    userRole === "connection_designer_admin" ||
+    userRole === "connection_designer_engineer";
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [fabricators, setFabricators] = useState<any[]>([]);
   const [allProjects, setAllProjects] = useState<any[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [invoiceFiles, setInvoiceFiles] = useState<File[]>([]);
 
   const [selectedFabricatorId, setSelectedFabricatorId] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState("");
@@ -88,6 +90,7 @@ const AddInvoice = ({
     reset,
     setValue,
     watch,
+    getValues,
     control,
     formState: { errors },
   } = useForm<InvoiceFormData>({
@@ -252,6 +255,28 @@ const AddInvoice = ({
             setValue("customerName", senderName);
             setValue("clientId", rfq.senderId || rfq.sender.id);
           }
+
+          if (isConnectionDesigner && rfq.CDQuotas?.length > 0) {
+            const quote = rfq.CDQuotas.find((q: any) => q.approvalStatus === true) || rfq.CDQuotas[0];
+            if (quote) {
+              const bidPrice = Number(quote.bidprice) || 0;
+              setValue("invoiceItems", [
+                {
+                  description: "Connection Design Services",
+                  unit: 1,
+                  rateUSD: bidPrice,
+                  totalUSD: bidPrice,
+                  sacCode: "",
+                  remarks: "",
+                },
+              ]);
+              setValue("totalInvoiceValue", bidPrice);
+              setValue(
+                "totalInvoiceValueInWords",
+                numberToWords(bidPrice, getValues("currencyType"))
+              );
+            }
+          }
         } catch (error) {
           console.error("Error fetching RFQ:", error);
         }
@@ -355,7 +380,20 @@ const AddInvoice = ({
     };
 
     try {
-      await Service.AddInvoice(formattedData);
+      if (invoiceFiles.length > 0) {
+        const formData = new FormData();
+        Object.keys(formattedData).forEach(key => {
+          if (key === 'invoiceItems' || key === 'accountInfo') {
+            formData.append(key, JSON.stringify(formattedData[key as keyof typeof formattedData]));
+          } else if (formattedData[key as keyof typeof formattedData] !== undefined) {
+            formData.append(key, String(formattedData[key as keyof typeof formattedData]));
+          }
+        });
+        invoiceFiles.forEach((file) => formData.append('files', file));
+        await Service.AddInvoiceWithFile(formData);
+      } else {
+        await Service.AddInvoice(formattedData);
+      }
       toast.success("Invoice created successfully");
       reset();
       if (onSuccess) onSuccess();
@@ -422,84 +460,90 @@ const AddInvoice = ({
               </select>
             </div>
           )}
-          <div className="w-full md:w-64">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Existing Account
-            </label>
-            <select
-              onChange={handleAccountSelect}
-              className="w-full p-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-green-50/30"
-              disabled={loading}
-            >
-              <option value="">-- Choose an Account --</option>
-              {accounts.map((account: any) => (
-                <option
-                  key={account._id || account.id}
-                  value={account._id || account.id}
-                >
-                  {account.accountName} ({account.accountNumber})
-                </option>
-              ))}
-            </select>
-          </div>
+          {!isConnectionDesigner && (
+            <div className="w-full md:w-64">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select Existing Account
+              </label>
+              <select
+                onChange={handleAccountSelect}
+                className="w-full p-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-green-50/30"
+                disabled={loading}
+              >
+                <option value="">-- Choose an Account --</option>
+                {accounts.map((account: any) => (
+                  <option
+                    key={account._id || account.id}
+                    value={account._id || account.id}
+                  >
+                    {account.accountName} ({account.accountNumber})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </header>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Customer Details */}
-        <p className="text-lg font-semibold text-black-600 ">
-          Customer Details
-        </p>
-        <fieldset className="border p-4 rounded-lg shadow-green-200 ">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-1">
-              <Input
-                label="Customer Name *"
-                {...register("customerName", {
-                  required: "Customer Name is required",
-                })}
-              />
-              {errors.customerName && (
-                <p className="text-red-500 text-xs">
-                  {errors.customerName.message}
-                </p>
-              )}
-            </div>
+        {!isConnectionDesigner && (
+          <>
+            <p className="text-lg font-semibold text-black-600 ">
+              Customer Details
+            </p>
+            <fieldset className="border p-4 rounded-lg shadow-green-200 ">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <Input
+                    label="Customer Name *"
+                    {...register("customerName", {
+                      required: "Customer Name is required",
+                    })}
+                  />
+                  {errors.customerName && (
+                    <p className="text-red-500 text-xs">
+                      {errors.customerName.message}
+                    </p>
+                  )}
+                </div>
 
-            {/* Receipt ID (Fabricator POC) — hidden for connection designers */}
-            {!isConnectionDesigner && (
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Receipt ID (Contact)
-                </label>
-                <select
-                  {...register("receiptId")}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-                >
-                  <option value="">-- Select Contact --</option>
-                  {contacts.map((contact: any) => (
-                    <option
-                      key={contact.id || contact._id}
-                      value={`${contact.firstName || ""} ${contact.lastName || ""
-                        }`.trim()}
+                {/* Receipt ID (Fabricator POC) — hidden for connection designers */}
+                {!isConnectionDesigner && (
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Receipt ID (Contact)
+                    </label>
+                    <select
+                      {...register("receiptId")}
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                     >
-                      {contact.firstName} {contact.lastName}
-                    </option>
-                  ))}
-                </select>
+                      <option value="">-- Select Contact --</option>
+                      {contacts.map((contact: any) => (
+                        <option
+                          key={contact.id || contact._id}
+                          value={`${contact.firstName || ""} ${contact.lastName || ""
+                            }`.trim()}
+                        >
+                          {contact.firstName} {contact.lastName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <Input label="GSTIN" {...register("GSTIN")} />
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <Input label="Address" {...register("address")} />
+                </div>
+                <div className="space-y-1">
+                  <Input label="State Code" {...register("stateCode")} />
+                </div>
               </div>
-            )}
-            <div className="space-y-1">
-              <Input label="GSTIN" {...register("GSTIN")} />
-            </div>
-            <div className="space-y-1 md:col-span-2">
-              <Input label="Address" {...register("address")} />
-            </div>
-            <div className="space-y-1">
-              <Input label="State Code" {...register("stateCode")} />
-            </div>
-          </div>
-        </fieldset>
+            </fieldset>
+          </>
+        )}
 
         {/* Invoice Details */}
         <p className="text-lg font-semibold text-black-600  ">
@@ -507,26 +551,30 @@ const AddInvoice = ({
         </p>
         <fieldset className="border p-4 rounded-lg shadow-inner  ">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-1">
-              <Input
-                label="Invoice Number *"
-                {...register("invoiceNumber", {
-                  required: "Invoice Number is required",
-                })}
-              />
-              {errors.invoiceNumber && (
-                <p className="text-red-500 text-xs">
-                  {errors.invoiceNumber.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-1">
-              <Input
-                label="Invoice Date"
-                type="date"
-                {...register("invoiceDate")}
-              />
-            </div>
+            {!isConnectionDesigner && (
+              <>
+                <div className="space-y-1">
+                  <Input
+                    label="Invoice Number *"
+                    {...register("invoiceNumber", {
+                      required: "Invoice Number is required",
+                    })}
+                  />
+                  {errors.invoiceNumber && (
+                    <p className="text-red-500 text-xs">
+                      {errors.invoiceNumber.message}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <Input
+                    label="Invoice Date"
+                    type="date"
+                    {...register("invoiceDate")}
+                  />
+                </div>
+              </>
+            )}
             <div className="space-y-1">
               <Input
                 label="Job Name *"
@@ -536,16 +584,20 @@ const AddInvoice = ({
                 <p className="text-red-500 text-xs">{errors.jobName.message}</p>
               )}
             </div>
-            <div className="space-y-1">
-              <Input
-                label="Date of Supply"
-                type="date"
-                {...register("dateOfSupply")}
-              />
-            </div>
-            <div className="space-y-1">
-              <Input label="Place of Supply" {...register("placeOfSupply")} />
-            </div>
+            {!isConnectionDesigner && (
+              <div className="space-y-1">
+                <Input
+                  label="Date of Supply"
+                  type="date"
+                  {...register("dateOfSupply")}
+                />
+              </div>
+            )}
+            {!isConnectionDesigner && (
+              <div className="space-y-1">
+                <Input label="Place of Supply" {...register("placeOfSupply")} />
+              </div>
+            )}
             <div className="space-y-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Currency
@@ -554,136 +606,148 @@ const AddInvoice = ({
                 {...register("currencyType")}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
               >
-                <option value="INR">Rupees</option>
-                <option value="CAD">CAD</option>
                 <option value="USD">USD</option>
+                <option value="CAD">CAD</option>
+                <option value="INR">INR</option>
               </select>
             </div>
           </div>
         </fieldset>
 
-        {/* Invoice Items */}
-        <p className="text-lg font-semibold text-black-600 ">
-          Invoice Items
-        </p>
-        <fieldset className="border p-4 rounded-lg shadow-inner">
-          <div className="space-y-4">
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end border-b pb-4"
-              >
-                <div className="md:col-span-3">
-                  <Input
-                    label={index === 0 ? "Description *" : ""}
-                    placeholder="Item description"
-                    {...register(`invoiceItems.${index}.description` as const, {
-                      required: "Description is required",
-                    })}
-                  />
-                  {errors.invoiceItems?.[index]?.description && (
-                    <p className="text-red-500 text-xs">
-                      {errors.invoiceItems[index]?.description?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="md:col-span-1">
-                  <Input
-                    label={index === 0 ? "Unit *" : ""}
-                    placeholder="Unit"
-                    type="number"
-                    {...register(`invoiceItems.${index}.unit` as const, {
-                      required: "Unit is required",
-                      valueAsNumber: true,
-                      min: { value: 0, message: "Min 0" },
-                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                        const unit = parseFloat(e.target.value) || 0;
-                        const rate =
-                          watch(`invoiceItems.${index}.rateUSD`) || 0;
-                        setValue(`invoiceItems.${index}.totalUSD`, unit * rate);
-                      },
-                    })}
-                  />
-                  {errors.invoiceItems?.[index]?.unit && (
-                    <p className="text-red-500 text-xs">
-                      {errors.invoiceItems[index]?.unit?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="md:col-span-1">
-                  <Input
-                    label={index === 0 ? "SAC" : ""}
-                    placeholder="SAC"
-                    {...register(`invoiceItems.${index}.sacCode` as const)}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Input
-                    label={index === 0 ? "Rate *" : ""}
-                    type="number"
-                    step="any"
-                    {...register(`invoiceItems.${index}.rateUSD` as const, {
-                      required: "Rate is required",
-                      valueAsNumber: true,
-                      min: { value: 0, message: "Min 0" },
-                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                        const rate = parseFloat(e.target.value) || 0;
-                        const unit = watch(`invoiceItems.${index}.unit`) || 0;
-                        setValue(`invoiceItems.${index}.totalUSD`, unit * rate);
-                      },
-                    })}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Input
-                    label={index === 0 ? "Total" : ""}
-                    type="number"
-                    readOnly
-                    {...register(`invoiceItems.${index}.totalUSD` as const, {
-                      valueAsNumber: true,
-                    })}
-                  />
-                </div>
-                <div className="md:col-span-1 flex justify-center">
-                  {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => remove(index)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 size={20} />
-                    </Button>
-                  )}
-                </div>
-                <div className="md:col-span-12">
-                  <Input
-                    label="Remarks"
-                    placeholder="Remarks"
-                    {...register(`invoiceItems.${index}.remarks` as const)}
-                  />
-                </div>
+            {(userRole === "connection_designer" || userRole === "connection_designer_admin") && (
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Upload Invoice Document(s)
+                </label>
+                <MultipleFileUpload onFilesChange={setInvoiceFiles} />
               </div>
-            ))}
-            <Button
-              type="button"
-              onClick={() => {
-                append({
-                  description: "",
-                  unit: 1,
-                  rateUSD: 0,
-                  totalUSD: 0,
-                  sacCode: "",
-                  remarks: "",
-                });
-              }}
-              className="flex items-center gap-2 bg-green-50 text-black-700 hover:bg-green-100 border border-black"
-            >
-              <Plus size={18} /> Add Item
-            </Button>
-          </div>
-        </fieldset>
+            )}
+        {/* Invoice Items */}
+        {!isConnectionDesigner && (
+          <>
+            <p className="text-lg font-semibold text-black-600 ">
+              Invoice Items
+            </p>
+            <fieldset className="border p-4 rounded-lg shadow-inner">
+              <div className="space-y-4">
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end border-b pb-4"
+                  >
+                    <div className="md:col-span-3">
+                      <Input
+                        label={index === 0 ? "Description *" : ""}
+                        placeholder="Item description"
+                        {...register(`invoiceItems.${index}.description` as const, {
+                          required: "Description is required",
+                        })}
+                      />
+                      {errors.invoiceItems?.[index]?.description && (
+                        <p className="text-red-500 text-xs">
+                          {errors.invoiceItems[index]?.description?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="md:col-span-1">
+                      <Input
+                        label={index === 0 ? "Unit *" : ""}
+                        placeholder="Unit"
+                        type="number"
+                        {...register(`invoiceItems.${index}.unit` as const, {
+                          required: "Unit is required",
+                          valueAsNumber: true,
+                          min: { value: 0, message: "Min 0" },
+                          onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                            const unit = parseFloat(e.target.value) || 0;
+                            const rate =
+                              watch(`invoiceItems.${index}.rateUSD`) || 0;
+                            setValue(`invoiceItems.${index}.totalUSD`, unit * rate);
+                          },
+                        })}
+                      />
+                      {errors.invoiceItems?.[index]?.unit && (
+                        <p className="text-red-500 text-xs">
+                          {errors.invoiceItems[index]?.unit?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="md:col-span-1">
+                      <Input
+                        label={index === 0 ? "SAC" : ""}
+                        placeholder="SAC"
+                        {...register(`invoiceItems.${index}.sacCode` as const)}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Input
+                        label={index === 0 ? "Rate *" : ""}
+                        type="number"
+                        step="any"
+                        {...register(`invoiceItems.${index}.rateUSD` as const, {
+                          required: "Rate is required",
+                          valueAsNumber: true,
+                          min: { value: 0, message: "Min 0" },
+                          onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                            const rate = parseFloat(e.target.value) || 0;
+                            const unit = watch(`invoiceItems.${index}.unit`) || 0;
+                            setValue(`invoiceItems.${index}.totalUSD`, unit * rate);
+                          },
+                        })}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Input
+                        label={index === 0 ? "Total" : ""}
+                        type="number"
+                        readOnly
+                        {...register(`invoiceItems.${index}.totalUSD` as const, {
+                          valueAsNumber: true,
+                        })}
+                      />
+                    </div>
+                    <div className="md:col-span-1 flex justify-center">
+                      {fields.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => remove(index)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 size={20} />
+                        </Button>
+                      )}
+                    </div>
+                    <div className="md:col-span-12">
+                      <Input
+                        label="Remarks"
+                        placeholder="Remarks"
+                        {...register(`invoiceItems.${index}.remarks` as const)}
+                      />
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  onClick={() => {
+                    append({
+                      description: "",
+                      unit: 1,
+                      rateUSD: 0,
+                      totalUSD: 0,
+                      sacCode: "",
+                      remarks: "",
+                    });
+                  }}
+                  className="flex items-center gap-2 bg-green-50 text-black-700 hover:bg-green-100 border border-black"
+                >
+                  <Plus size={18} /> Add Item
+                </Button>
+              </div>
+            </fieldset>
+          </>
+        )}
 
         {/* Totals and Bank Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

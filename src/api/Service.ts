@@ -3395,7 +3395,7 @@ class Service {
     }
   }
 
-  //All invoice for Fabricator :
+  // All invoice for Fabricator :
 
   static async getFabricatorAllInvoice() {
     try {
@@ -3406,6 +3406,22 @@ class Service {
       throw error;
     }
   }
+
+  // Add Invoice (with File support)
+  static async AddInvoiceWithFile(formData: FormData) {
+    try {
+      const response = await api.post('invoice', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error adding invoice with file:', error);
+      throw error;
+    }
+  }
+
  // Invoice Wire Transfers Services
   // Create a new wire transfer
   static async CreateInvoiceWireTransfer(data: any) {
