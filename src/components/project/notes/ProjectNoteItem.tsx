@@ -56,6 +56,11 @@ const ProjectNoteItem: React.FC<ProjectNoteItemProps> = ({
   onSelectResponse,
   deletingId,
 }) => {
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const isConnectionDesigner =
+    userRole === "connection_designer" ||
+    userRole === "connection_designer_admin";
+
   const getPriorityBadge = (priority?: string | number) => {
     const p = Number(priority);
     switch (p) {
@@ -127,7 +132,7 @@ const ProjectNoteItem: React.FC<ProjectNoteItemProps> = ({
                 </span>
               ))}
                {getPriorityBadge(note.priority)}
-            {(() => {
+            {!isConnectionDesigner && (() => {
               const rawList = [
                 ...(note.taggedUsers || []),
                 ...(note.taggedUserIds || []),
