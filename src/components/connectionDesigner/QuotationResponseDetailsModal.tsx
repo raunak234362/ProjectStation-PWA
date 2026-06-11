@@ -31,10 +31,16 @@ const QuotationResponseDetailsModal = ({
   const [submitting, setSubmitting] = useState(false);
 
   const userRole = sessionStorage.getItem("userRole");
+  const userRoleLower = userRole?.toLowerCase() || "";
   const isAdmin =
     userRole === "ADMIN" ||
     userRole === "DEPUTY_MANAGER" ||
     userRole === "OPERATION_EXECUTIVE";
+
+  const isCDRole =
+    userRoleLower === "connection_designer" ||
+    userRoleLower === "connection_designer_engineer" ||
+    userRoleLower === "connection_designer_admin";
 
   const handleReplySubmit = async () => {
     if (!replyMessage.trim()) {
@@ -97,16 +103,20 @@ const QuotationResponseDetailsModal = ({
               label="Bid Price"
               value={`$${quotation.bidprice || "N/A"}`}
             />
-            <DetailCard
-              icon={<Clock className="text-blue-600" size={20} />}
-              label="Estimated Hours"
-              value={`${quotation.estimatedHours || "N/A"} hrs`}
-            />
-            <DetailCard
-              icon={<Calendar className="text-purple-600" size={20} />}
-              label="Duration"
-              value={`${quotation.weeks || "0"} wks${quotation.days && quotation.days !== "0" ? ` ${quotation.days} days` : ""}`}
-            />
+            {!isCDRole && (
+              <>
+                <DetailCard
+                  icon={<Clock className="text-blue-600" size={20} />}
+                  label="Estimated Hours"
+                  value={`${quotation.estimatedHours || "N/A"} hrs`}
+                />
+                <DetailCard
+                  icon={<Calendar className="text-purple-600" size={20} />}
+                  label="Duration"
+                  value={`${quotation.weeks || "0"} wks${quotation.days && quotation.days !== "0" ? ` ${quotation.days} days` : ""}`}
+                />
+              </>
+            )}
             <DetailCard
               icon={
                 <CheckCircle

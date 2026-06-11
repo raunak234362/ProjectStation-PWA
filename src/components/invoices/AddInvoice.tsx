@@ -66,6 +66,12 @@ const AddInvoice = ({
   initialFabricatorId,
   initialProjectId,
 }: AddInvoiceProps) => {
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  // Connection designers raise invoices for WBT — no fabricator involvement
+  const isConnectionDesigner =
+    userRole === "connection_designer" ||
+    userRole === "connection_designer_admin";
+
   const [accounts, setAccounts] = useState<any[]>([]);
   const [fabricators, setFabricators] = useState<any[]>([]);
   const [allProjects, setAllProjects] = useState<any[]>([]);
@@ -113,20 +119,36 @@ const AddInvoice = ({
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [accountsRes, fabricatorsRes, projectsRes] = await Promise.all([
-          Service.GetBankAccounts(),
-          Service.GetAllFabricators(),
-          Service.GetAllProjects(),
-        ]);
+        if (isConnectionDesigner) {
+          // Connection designers invoice WBT — no fabricator data needed
+          const [accountsRes, projectsRes] = await Promise.all([
+            Service.GetBankAccounts(),
+            Service.GetAllProjects(),
+          ]);
 
-        const accountsData = accountsRes?.data || accountsRes || [];
-        setAccounts(Array.isArray(accountsData) ? accountsData : []);
+          const accountsData = accountsRes?.data || accountsRes || [];
+          setAccounts(Array.isArray(accountsData) ? accountsData : []);
 
-        const fabricatorsData = fabricatorsRes?.data || fabricatorsRes || [];
-        setFabricators(Array.isArray(fabricatorsData) ? fabricatorsData : []);
+          const projectsData = projectsRes?.data || projectsRes || [];
+          const projects = Array.isArray(projectsData) ? projectsData : [];
+          setAllProjects(projects);
+          setFilteredProjects(projects); // all projects visible directly
+        } else {
+          const [accountsRes, fabricatorsRes, projectsRes] = await Promise.all([
+            Service.GetBankAccounts(),
+            Service.GetAllFabricators(),
+            Service.GetAllProjects(),
+          ]);
 
-        const projectsData = projectsRes?.data || projectsRes || [];
-        setAllProjects(Array.isArray(projectsData) ? projectsData : []);
+          const accountsData = accountsRes?.data || accountsRes || [];
+          setAccounts(Array.isArray(accountsData) ? accountsData : []);
+
+          const fabricatorsData = fabricatorsRes?.data || fabricatorsRes || [];
+          setFabricators(Array.isArray(fabricatorsData) ? fabricatorsData : []);
+
+          const projectsData = projectsRes?.data || projectsRes || [];
+          setAllProjects(Array.isArray(projectsData) ? projectsData : []);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -150,7 +172,6 @@ const AddInvoice = ({
     const selectedFabricator = fabricators.find(
       (f: any) => f.id === fabricatorId || f._id === fabricatorId
     );
-    console.log(selectedFabricator);
 
     if (selectedFabricator) {
       setValue("customerName", selectedFabricator.fabName || "");
@@ -210,7 +231,6 @@ const AddInvoice = ({
     const project = allProjects.find(
       (p: any) => p.id === projectId || p._id === projectId
     );
-    console.log("Project-------", project);
 
     if (project) {
       setValue("jobName", project.name || "");
@@ -225,7 +245,6 @@ const AddInvoice = ({
         try {
           const rfqRes = await Service.GetRFQbyId(project.rfqId);
           const rfq = rfqRes.data;
-          console.log("RFQ Data-------", rfq);
 
           if (rfq && rfq.sender) {
             const senderName = `${rfq.sender.firstName || ""} ${rfq.sender.lastName || ""
@@ -252,17 +271,25 @@ const AddInvoice = ({
     }
   }, [watchedInvoiceDate, watchedJobName, setValue]);
 
+  // Non-CD: pre-select fabricator → then project (fabricator-filtered list)
   useEffect(() => {
-    if (fabricators.length > 0 && initialFabricatorId) {
+    if (!isConnectionDesigner && fabricators.length > 0 && initialFabricatorId) {
       selectFabricator(initialFabricatorId);
     }
   }, [fabricators, initialFabricatorId]);
 
   useEffect(() => {
-    if (filteredProjects.length > 0 && initialProjectId) {
+    if (!isConnectionDesigner && filteredProjects.length > 0 && initialProjectId) {
       selectProject(initialProjectId);
     }
   }, [filteredProjects, initialProjectId]);
+
+  // CD: pre-select project directly (all projects loaded, no fabricator step)
+  useEffect(() => {
+    if (isConnectionDesigner && allProjects.length > 0 && initialProjectId) {
+      selectProject(initialProjectId);
+    }
+  }, [allProjects, initialProjectId]);
 
   const handleCalculateTotal = () => {
     if (watchedItems) {
@@ -347,26 +374,32 @@ const AddInvoice = ({
           </h1>
         </div>
         <div className="flex flex-wrap gap-4 w-full md:w-auto">
-          <div className="w-full md:w-64">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Fabricator
-            </label>
-            <select
-              onChange={handleFabricatorSelect}
-              className="w-full p-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-green-50/30"
-              disabled={loading}
-              value={selectedFabricatorId}
-            >
-              <option value="">-- Choose a Fabricator --</option>
-              {fabricators.map((fab: any) => (
-                <option key={fab.id || fab._id} value={fab.id || fab._id}>
-                  {fab.fabName}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Fabricator selector — hidden for connection designers (invoice is for WBT) */}
+          {!isConnectionDesigner && (
+            <div className="w-full md:w-64">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select Fabricator
+              </label>
+              <select
+                onChange={handleFabricatorSelect}
+                className="w-full p-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-green-50/30"
+                disabled={loading}
+                value={selectedFabricatorId}
+              >
+                <option value="">-- Choose a Fabricator --</option>
+                {fabricators.map((fab: any) => (
+                  <option key={fab.id || fab._id} value={fab.id || fab._id}>
+                    {fab.fabName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-          {selectedFabricatorId && (
+          {/* Project selector:
+              - Non-CD: visible only after fabricator is selected (filtered list)
+              - CD: always visible (all projects) */}
+          {(isConnectionDesigner || selectedFabricatorId) && (
             <div className="w-full md:w-64">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Select Project
@@ -414,11 +447,10 @@ const AddInvoice = ({
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Customer Details */}
-          <p className="text-lg font-semibold text-black-600 ">
-            Customer Details
-          </p>
+        <p className="text-lg font-semibold text-black-600 ">
+          Customer Details
+        </p>
         <fieldset className="border p-4 rounded-lg shadow-green-200 ">
-        
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <Input
@@ -433,26 +465,30 @@ const AddInvoice = ({
                 </p>
               )}
             </div>
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Receipt ID (Contact)
-              </label>
-              <select
-                {...register("receiptId")}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-              >
-                <option value="">-- Select Contact --</option>
-                {contacts.map((contact: any) => (
-                  <option
-                    key={contact.id || contact._id}
-                    value={`${contact.firstName || ""} ${contact.lastName || ""
-                      }`.trim()}
-                  >
-                    {contact.firstName} {contact.lastName}
-                  </option>
-                ))}
-              </select>
-            </div>
+
+            {/* Receipt ID (Fabricator POC) — hidden for connection designers */}
+            {!isConnectionDesigner && (
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Receipt ID (Contact)
+                </label>
+                <select
+                  {...register("receiptId")}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                >
+                  <option value="">-- Select Contact --</option>
+                  {contacts.map((contact: any) => (
+                    <option
+                      key={contact.id || contact._id}
+                      value={`${contact.firstName || ""} ${contact.lastName || ""
+                        }`.trim()}
+                    >
+                      {contact.firstName} {contact.lastName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="space-y-1">
               <Input label="GSTIN" {...register("GSTIN")} />
             </div>
@@ -466,11 +502,10 @@ const AddInvoice = ({
         </fieldset>
 
         {/* Invoice Details */}
-          <p className="text-lg font-semibold text-black-600  ">
-            Invoice Details
-          </p>
+        <p className="text-lg font-semibold text-black-600  ">
+          Invoice Details
+        </p>
         <fieldset className="border p-4 rounded-lg shadow-inner  ">
-        
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <Input
@@ -528,11 +563,10 @@ const AddInvoice = ({
         </fieldset>
 
         {/* Invoice Items */}
-         <p className="text-lg font-semibold text-black-600 ">
-            Invoice Items
-          </p>
+        <p className="text-lg font-semibold text-black-600 ">
+          Invoice Items
+        </p>
         <fieldset className="border p-4 rounded-lg shadow-inner">
-         
           <div className="space-y-4">
             {fields.map((field, index) => (
               <div
@@ -635,17 +669,12 @@ const AddInvoice = ({
             <Button
               type="button"
               onClick={() => {
-                const selectedFab = fabricators.find(
-                  (f: any) =>
-                    f.id === selectedFabricatorId ||
-                    f._id === selectedFabricatorId
-                );
                 append({
                   description: "",
                   unit: 1,
                   rateUSD: 0,
                   totalUSD: 0,
-                  sacCode: selectedFab?.SAC || "",
+                  sacCode: "",
                   remarks: "",
                 });
               }}

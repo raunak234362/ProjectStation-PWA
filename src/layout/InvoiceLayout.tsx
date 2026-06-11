@@ -3,8 +3,15 @@ import { AddInvoice, AllInvoices, InvoiceDashboard } from "../components";
 import AccountLayout from "./AccountLayout";
 
 const InvoiceLayout = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+
+  const isConnectionDesigner =
+    userRole === "connection_designer" ||
+    userRole === "connection_designer_admin";
+
+  const [activeTab, setActiveTab] = useState(
+    isConnectionDesigner ? "addInvoice" : "dashboard"
+  );
 
   return (
     <div className="w-full overflow-y-hidden overflow-x-hidden">
@@ -31,9 +38,28 @@ const InvoiceLayout = () => {
               All Invoices
             </button></>
           )}
-          {userRole === "sales" || userRole === "sales_manager" || userRole === "admin" || userRole === "project_manager_officer" ? (
-            <>
 
+
+          {/* All Invoices tab — visible for connection designers (no API call made inside) */}
+          {isConnectionDesigner && (
+            <button
+              onClick={() => setActiveTab("allInvoices")}
+              className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "allInvoices"
+                ? "bg-green-200 text-black shadow-medium"
+                : "text-black hover:bg-green-50"
+                }`}
+            >
+              All Invoices
+            </button>
+          )}
+
+
+          {(userRole === "sales" ||
+            userRole === "sales_manager" ||
+            userRole === "admin" ||
+            userRole === "project_manager_officer" ||
+            isConnectionDesigner) && (
+            <>
               <button
                 onClick={() => setActiveTab("addInvoice")}
                 className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "addInvoice"
@@ -44,17 +70,19 @@ const InvoiceLayout = () => {
                 Add Invoice
               </button>
 
-              <button
-                onClick={() => setActiveTab("accounts")}
-                className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "accounts"
-                  ? "bg-green-200 text-black shadow-medium"
-                  : "text-black hover:bg-green-50"
-                  }`}
-              >
-                Accounts
-              </button>
+              {!isConnectionDesigner && (
+                <button
+                  onClick={() => setActiveTab("accounts")}
+                  className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-bold transition-all border border-black ${activeTab === "accounts"
+                    ? "bg-green-200 text-black shadow-medium"
+                    : "text-black hover:bg-green-50"
+                    }`}
+                >
+                  Accounts
+                </button>
+              )}
             </>
-          ) : (null)}
+          )}
         </div>
       </div>
       <div className="flex-1 min-h-0 bg-white p-2 rounded-[6px] overflow-y-auto laptop-fit">

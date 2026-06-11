@@ -14,17 +14,29 @@ const AllInvoices = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const isConnectionDesigner = userRole === "connection_designer_engineer" || userRole === "connection_designer_admin";
+        const isConnectionDesigner =
+          userRole === "connection_designer" ||
+          userRole === "connection_designer_engineer" ||
+          userRole === "connection_designer_admin";
+
+        // CD roles: tab is visible but API route is not ready yet — skip fetch
         if (isConnectionDesigner) {
           setInvoices([]);
           setLoading(false);
           return;
         }
 
-        const isFabricatorRole = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator" || userRole === "client_accountant";
-        const res = (userRole === "client" || userRole === "client_estimator")
-          ? await Service.GetAllInvoiceByClient()
-          : (isFabricatorRole ? await Service.getFabricatorAllInvoice() : await Service.GetAllInvoice());
+        const isFabricatorRole =
+          userRole === "client" ||
+          userRole === "client_admin" ||
+          userRole === "client_estimator" ||
+          userRole === "client_accountant";
+        const res =
+          userRole === "client" || userRole === "client_estimator"
+            ? await Service.GetAllInvoiceByClient()
+            : isFabricatorRole
+              ? await Service.getFabricatorAllInvoice()
+              : await Service.GetAllInvoice();
         setInvoices(Array.isArray(res) ? res : res?.data || []);
       } catch (error) {
         console.error("Error fetching invoices:", error);

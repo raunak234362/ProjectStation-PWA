@@ -582,17 +582,15 @@ const GetProjectById = ({
         <div className="flex flex-1 flex-col md:flex-row min-h-0 overflow-hidden gap-4">
           {/* Desktop Left Sidebar */}
           <aside
-            className={`hidden md:flex flex-col overflow-y-auto py-2 shrink-0 transition-all duration-300 ease-in-out border-r border-gray-100 dark:border-slate-800 ${
-              sidebarOpen ? "md:w-56 pr-4" : "md:w-12 pr-2 items-center"
-            }`}
+            className={`hidden md:flex flex-col overflow-y-auto py-2 shrink-0 transition-all duration-300 ease-in-out border-r border-gray-100 dark:border-slate-800 ${sidebarOpen ? "md:w-56 pr-4" : "md:w-12 pr-2 items-center"
+              }`}
           >
             {/* Sidebar toggle — always visible */}
             <button
               onClick={() => setSidebarOpen((v) => !v)}
               title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-              className={`flex items-center justify-center w-7 h-7 rounded-md hover:bg-green-50 transition-colors shrink-0 mb-3 ${
-                sidebarOpen ? "self-end" : "self-center"
-              }`}
+              className={`flex items-center justify-center w-7 h-7 rounded-md hover:bg-green-50 transition-colors shrink-0 mb-3 ${sidebarOpen ? "self-end" : "self-center"
+                }`}
             >
               {sidebarOpen
                 ? <PanelLeftClose className="w-5 h-5 text-[#6bbd45]" />

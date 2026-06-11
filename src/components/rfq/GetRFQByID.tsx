@@ -420,6 +420,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const isCDRole =
+    userRole === "connection_designer" ||
     userRole === "connection_designer_engineer" ||
     userRole === "connection_designer_admin";
 
@@ -447,27 +448,8 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         </span>
       ),
     },
-    {
-      accessorKey: "estimatedHours",
-      header: "Est. Hours",
-      cell: ({ row }) => (
-        <span className="text-sm text-gray-600">
-          {row.original.estimatedHours} hrs
-        </span>
-      ),
-    },
-    {
-      accessorKey: "weeks",
-      header: "Weeks",
-      cell: ({ row }) => (
-        <span className="text-sm text-gray-600">
-          {row.original.weeks || "0"} wks
-          {row.original.days && row.original.days !== "0"
-            ? ` ${row.original.days} d`
-            : ""}
-        </span>
-      ),
-    },
+
+
     {
       accessorKey: "approvalStatus",
       header: "Status",
@@ -546,8 +528,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
             {userRole !== "client" &&
               userRole !== "client_admin" &&
               userRole !== "client_estimator" &&
-              userRole !== "connection_designer_engineer" &&
-              userRole !== "connection_designer_admin" && (
+              !isCDRole && (
                 <>
                   <button
                     onClick={() => setShowEditModal(true)}
@@ -751,8 +732,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
               {userRole !== "client_admin" &&
                 userRole !== "client" &&
                 userRole !== "client_estimator" &&
-                userRole !== "connection_designer_engineer" &&
-                userRole !== "connection_designer_admin" && (
+                !isCDRole && (
                   <div className="flex flex-col gap-2 pt-2">
                     <Button
                       onClick={() => setShowEstimationModal(true)}
@@ -808,7 +788,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                 />
               )}
               {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
-              {userRole !== "connection_designer_engineer" &&
+              {!isCDRole &&
                 (topLevelResponses.length ? (
                   <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                     {topLevelResponses.map((resp: any) => (
@@ -839,15 +819,15 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                       onRowClick={(row: any) => setSelectedQuotation(row)}
                     />
                   </>
-                ) : userRole === "connection_designer_engineer" ? (
-                  // Show Submit Button if not submitted
+                ) : isCDRole ? (
+                  // Show Submit Button for all connection designer roles
                   <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
                     <p className="text-gray-500 mb-4 text-center">
                       You haven't submitted a quotation yet.
                     </p>
                     <Button
                       onClick={() => setShowQuotationResponseModal(true)}
-                      className="px-6 py-2.5 bg-green-600 text-white  rounded-lg shadow-md hover:bg-green-700 transition"
+                      className="px-6 py-2.5 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
                     >
                       Submit Quotation Response
                     </Button>

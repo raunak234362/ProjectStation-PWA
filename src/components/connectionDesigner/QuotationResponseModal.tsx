@@ -29,9 +29,10 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
       formData.append("rfqId", rfqId);
       formData.append("connectionDesignerId", connectionDesignerId);
       formData.append("bidprice", data.bidprice);
-      formData.append("estimatedHours", data.estimatedHours);
-      formData.append("weeks", data.weeks);
-      formData.append("days", data.days || "0");
+      // Send dummy values for removed fields to satisfy backend validation
+      formData.append("estimatedHours", "0");
+      formData.append("weeks", "0");
+      formData.append("days", "0");
 
       if (data.approvalDate) formData.append("approvalDate", data.approvalDate);
       if (files?.length) files.forEach((file) => formData.append("files", file));
@@ -61,45 +62,12 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-10 space-y-8 overflow-y-auto custom-scrollbar">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Bid Price (USD)</label>
-              <input {...register("bidprice", { required: "Bid price is required" })} type="number" step="0.01" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" placeholder="0.00" />
-              {errors.bidprice && <p className="text-rose-500 text-[9px] font-black uppercase tracking-widest">{errors.bidprice.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Estimated Hours</label>
-              <input {...register("estimatedHours", { required: "Estimated hours is required" })} type="number" step="0.01" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" placeholder="40.0" />
-              {errors.estimatedHours && <p className="text-rose-500 text-[9px] font-black uppercase tracking-widest">{errors.estimatedHours.message}</p>}
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest leading-none">Duration Calculation</label>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="relative">
-                    <input {...register("weeks")} type="number" step="1" className="w-full h-12 px-4 pr-12 border border-black/10 rounded-xl outline-none font-bold bg-gray-50/30 focus:bg-white focus:border-black transition-all" placeholder="0" />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-black/20 uppercase tracking-widest pointer-events-none">Wks</span>
-                  </div>
-                  <p className="text-[9px] font-bold text-black/40 uppercase tracking-tight pl-1">Standard Weeks</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="relative">
-                    <input {...register("days")} type="number" step="1" max="6" className="w-full h-12 px-4 pr-12 border border-black/10 rounded-xl outline-none font-bold bg-gray-100/30 focus:bg-white focus:border-black transition-all" placeholder="0" />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-black/20 uppercase tracking-widest pointer-events-none">Days</span>
-                  </div>
-                  <p className="text-[9px] font-bold text-black/40 uppercase tracking-tight pl-1">Adjustment (0-6)</p>
-                </div>
-              </div>
-            </div>
-            {/* <div className="space-y-2">
-              <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Projected Approval</label>
-              <input {...register("approvalDate")} type="date" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" />
-            </div> */}
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Bid Price (USD)</label>
+            <input {...register("bidprice", { required: "Bid price is required" })} type="number" step="0.01" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" placeholder="0.00" />
+            {errors.bidprice && <p className="text-rose-500 text-[9px] font-black uppercase tracking-widest">{errors.bidprice.message}</p>}
           </div>
-
           {/* <div className="flex items-center gap-4 bg-gray-50/50 p-4 rounded-xl border border-black/5">
             <input {...register("approvalStatus")} type="checkbox" id="approvalStatus" className="w-6 h-6 text-black border-black/10 rounded-lg cursor-pointer" />
             <label htmlFor="approvalStatus" className="text-xs font-black text-black uppercase tracking-widest cursor-pointer">Verify & Approve Quotation</label>

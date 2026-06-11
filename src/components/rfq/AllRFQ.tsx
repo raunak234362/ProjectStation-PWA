@@ -127,67 +127,113 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     });
   }
 
+  const isConnectionDesigner =
+    userRole === "CONNECTION_DESIGNER" ||
+    userRole === "CONNECTION_DESIGNER_ADMIN" ||
+    userRole === "connection_designer" ||
+    userRole === "connection_designer_admin";
+
   columns.push(
-    {
+    // Requested By — hidden for connection designers
+    ...(!isConnectionDesigner ? [{
       accessorKey: "sender",
       header: "Requested By",
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         const sender = row.original.sender as any;
         const name = sender ? `${sender.firstName || ""} ${sender.lastName || ""}` : "—";
         return (
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-gray-700">{name}</span>
-
           </div>
+        );
+      },
+    }] as any : []),
+
+    // Created Date — for CD: show connectionDesignerRFQ[0].createdAt; for others: row.createdAt
+    {
+      accessorKey: "createdAt",
+      header: "Created Date",
+      cell: ({ row }: any) => {
+        let dateVal: string | undefined;
+        if (isConnectionDesigner) {
+          const cdRFQ = row.original.connectionDesignerRFQ;
+          dateVal = Array.isArray(cdRFQ) && cdRFQ.length > 0
+            ? cdRFQ[0].createdAt
+            : undefined;
+        } else {
+          dateVal = row.original.createdAt;
+        }
+        return (
+          <span className="text-sm font-semibold text-gray-600">
+            {dateVal ? formatDate(dateVal) : "—"}
+          </span>
         );
       },
     },
 
-    {
-      accessorKey: "createdAt",
-      header: "Created Date",
-      cell: ({ row }) => (
-        <span className="text-sm font-semibold text-gray-600">
-          {row.original.createdAt ? formatDate(row.original.createdAt) : "—"}
-        </span>
-      ),
-    },
-    {
+    // Due Date — hidden for connection designers
+    ...(!isConnectionDesigner ? [{
       accessorKey: "estimationDate",
       header: "Due Date",
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <span className="text-sm font-bold text-gray-600">
           {row.original.estimationDate ? formatDate(row.original.estimationDate) : "—"}
         </span>
       ),
-    },
-    {
+    }] as any : []),
+
+    // WBT Submitted Date — hidden for connection designers
+    ...(!isConnectionDesigner ? [{
       id: "responseDate",
       header: "WBT Submitted Date",
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         const responses = row.original.responses || [];
         if (responses.length === 0) return <span className="text-gray-400">—</span>;
-
-        // Find latest response date
-        const latestResponse = [...responses].sort((a, b) =>
+        const latestResponse = [...responses].sort((a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )[0];
-
         return (
           <span className="text-sm font-semibold text-primary">
             {formatDate(latestResponse.createdAt)}
           </span>
         );
-      }
-    },
-    {
+      },
+    }] as any : []),
+
+    // Status — for CD roles: show CDQuotations[0].approvalStatus; for others: normal RFQ status
+    ...(isConnectionDesigner ? [{
+      id: "status",
+      header: "Status",
+      cell: ({ row }: any) => {
+        const cdRFQ = row.original.connectionDesignerRFQ;
+        const quotation =
+          Array.isArray(cdRFQ) && cdRFQ.length > 0 &&
+          Array.isArray(cdRFQ[0].CDQuotations) && cdRFQ[0].CDQuotations.length > 0
+            ? cdRFQ[0].CDQuotations[0]
+            : null;
+
+        const approved = quotation?.approvalStatus === true;
+        const hasQuotation = quotation !== null;
+
+        return (
+          <span className={`px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-lg border ${
+            !hasQuotation
+              ? "bg-gray-50 text-gray-400 border-gray-200"
+              : approved
+                ? "bg-green-50 text-green-700 border-green-200"
+                : "bg-yellow-50 text-yellow-700 border-yellow-200"
+          }`}>
+            {!hasQuotation ? "No Quotation" : approved ? "Approved" : "Pending"}
+          </span>
+        );
+      },
+    }] as any : [{
       id: "status",
       header: "Status",
       accessorFn: getRFQStatus,
-      cell: ({ getValue, row }) => {
+      cell: ({ getValue, row }: any) => {
         const val = getValue() as string;
         let label = "";
-
         if (val === "AWARDED") {
           const r = row.original as any;
           const isMTO = !!(r.MTOManual || r.MTOStickModel || r.MTOValue || r.mtoStickModelEnabled);
@@ -199,15 +245,15 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         } else {
           label = val?.replace("_", " ") || "—";
         }
-
         return (
           <span className="px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-lg text-black">
             {label}
           </span>
         );
       },
-    },
+    }] as any),
   );
+
 
   const filteredData = useMemo(() => {
     let data = rfq || [];
