@@ -1,6 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { formatDateTime } from "../../utils/dateUtils";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Service from "../../api/Service";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
@@ -11,18 +11,44 @@ interface ResponseDetailsModalProps {
   response: any;
   onClose: () => void;
   onSuccess?: () => void;
+  rfqId?: string;
+  fabricatorName?: string;
+  rfqProjectName?: string;
 }
 
 const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
   response,
   onClose,
   onSuccess,
+  rfqId,
+  fabricatorName: propFabricatorName,
+  rfqProjectName: propRfqProjectName,
 }) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
   const [replyStatus, setReplyStatus] = useState("AWARDED");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rfqDetails, setRfqDetails] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchRfq = async () => {
+      try {
+        const targetRfqId = rfqId || response.rfqId;
+        if (!targetRfqId) return;
+        const res = await Service.GetRFQbyId(targetRfqId);
+        const data = res?.data || res;
+        if (data) {
+          setRfqDetails(data);
+        }
+      } catch (err) {
+        console.error("Error fetching RFQ in response modal reply:", err);
+      }
+    };
+    if (rfqId || response?.rfqId) {
+      fetchRfq();
+    }
+  }, [rfqId, response?.rfqId]);
 
   const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
 
@@ -32,10 +58,11 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
       return;
     }
 
+    const targetRfqId = rfqId || response.rfqId;
     const formData = new FormData();
     formData.append("description", replyMessage);
     formData.append("parentResponseId", response.id);
-    formData.append("rfqId", response.rfqId);
+    formData.append("rfqId", targetRfqId || "");
     formData.append("userId", sessionStorage.getItem("userId") || "");
     formData.append("status", replyStatus);
     formData.append("wbtStatus", replyStatus); 
@@ -44,7 +71,9 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
 
     try {
       setIsSubmitting(true);
-      const res = await Service.addResponse(formData, response.rfqId);
+      const fabricatorName = propFabricatorName || rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
+      const rfqProjectName = propRfqProjectName || rfqDetails?.projectName || "";
+      const res = await Service.addResponse(formData, targetRfqId || "", fabricatorName, rfqProjectName);
       toast.success(res?.data?.message || "Reply sent successfully!");
       setReplyMode(false);
       setReplyMessage("");

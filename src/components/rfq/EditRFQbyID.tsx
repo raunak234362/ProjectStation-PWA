@@ -106,7 +106,7 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
                         mtoStickModelEnabled: d.mtoStickModelEnabled ?? false,
                         MTOStickModel: d.MTOStickModel || ""
                     })
-                    setFabricatorName(d.fabricator?.fabName || d.fabricatorName || "")
+                    setFabricatorName(d.fabricator?.fabName || d.sender?.fabricator?.fabName || d.fabricatorName || "")
                 }
             } catch (error) {
                 console.error('Fetch RFQ error:', error)

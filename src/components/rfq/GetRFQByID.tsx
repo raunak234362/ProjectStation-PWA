@@ -377,7 +377,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
         wbtStatus: newStatus,
         reason: statusReason,
       };
-      await Service.UpdateRFQById(id, payload);
+      const fabricatorName = rfq?.fabricator?.fabName || rfq?.sender?.fabricator?.fabName || (rfq as any)?.fabricatorName || "";
+      const rfqProjectName = rfq?.projectName || "";
+      await Service.UpdateRFQById(id, payload, fabricatorName, rfqProjectName);
       toast.success("RFQ status updated successfully");
       setShowStatusModal(false);
       setNewStatus("");
@@ -785,6 +787,8 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
                   }}
                   onSuccess={fetchRfq}
                   parentResponseId={selectedParentResponseId || undefined}
+                  fabricatorName={rfq?.fabricator?.fabName || rfq?.sender?.fabricator?.fabName || (rfq as any)?.fabricatorName || ""}
+                  rfqProjectName={rfq?.projectName || ""}
                 />
               )}
               {/* ---- RESPONSE TABLE (HIDDEN FOR CONNECTION DESIGNERS) ---- */}
@@ -851,6 +855,9 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
             response={selectedResponse}
             onClose={() => setSelectedResponse(null)}
             onSuccess={fetchRfq}
+            rfqId={id}
+            fabricatorName={rfq?.fabricator?.fabName || rfq?.sender?.fabricator?.fabName || (rfq as any)?.fabricatorName || ""}
+            rfqProjectName={rfq?.projectName || ""}
           />
         )}
 

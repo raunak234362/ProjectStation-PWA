@@ -18,6 +18,8 @@ interface ResponseModalProps {
   onClose: () => void;
   onSuccess: () => void; // callback to refresh RFQ after submission
   parentResponseId?: string;
+  fabricatorName?: string;
+  rfqProjectName?: string;
 }
 
 const ResponseModal: React.FC<ResponseModalProps> = ({
@@ -25,6 +27,8 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
   onClose,
   onSuccess,
   parentResponseId,
+  fabricatorName: propFabricatorName,
+  rfqProjectName: propRfqProjectName,
 }) => {
   const { register, handleSubmit, control, reset, setValue, getValues, watch } =
     useForm<RfqResponsePayload>();
@@ -54,6 +58,25 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     { label: "Main Steel Design", price: "", weeks: "", selected: false },
     { label: "Misc Steel Design", price: "", weeks: "", selected: false },
   ]);
+
+  const [rfqDetails, setRfqDetails] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchRfqDetails = async () => {
+      try {
+        const res = await Service.GetRFQbyId(rfqId);
+        const data = res?.data || res;
+        if (data) {
+          setRfqDetails(data);
+        }
+      } catch (error) {
+        console.error("Error fetching RFQ details in response modal:", error);
+      }
+    };
+    if (rfqId) {
+      fetchRfqDetails();
+    }
+  }, [rfqId]);
 
   useEffect(() => {
     const fetchEstimations = async () => {
@@ -440,7 +463,9 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         files.forEach((file) => formData.append("files", file));
       }
 
-      const res = await Service.addResponse(formData, rfqId);
+      const fabricatorName = propFabricatorName || rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
+      const rfqProjectName = propRfqProjectName || rfqDetails?.projectName || "";
+      const res = await Service.addResponse(formData, rfqId, fabricatorName, rfqProjectName);
       toast.success(res?.data?.message || "Response added successfully!");
       reset();
       setFiles([]);

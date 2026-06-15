@@ -31,6 +31,23 @@ const QuotationRaise = ({
   const [connectionDesigners, setConnectionDesigners] = useState<ConnectionDesigner[]>([]);
   const [filteredDesigners, setFilteredDesigners] = useState<ConnectionDesigner[]>([]);
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
+  const [rfqDetails, setRfqDetails] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchRfq = async () => {
+      try {
+        const res = await Service.GetRFQbyId(rfqId);
+        if (res?.data) {
+          setRfqDetails(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching RFQ in QuotationRaise:", err);
+      }
+    };
+    if (rfqId) {
+      fetchRfq();
+    }
+  }, [rfqId]);
 
   const fetchCD = async () => {
     try {
@@ -98,7 +115,9 @@ const QuotationRaise = ({
         CDDueDate: data.CDDueDate,
         CDTargetDate: data.CDTargetDate,
       };
-      await Service.UpdateRFQById(rfqId, payload);
+      const fabricatorName = rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
+      const rfqProjectName = rfqDetails?.projectName || "";
+      await Service.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
       toast.success("Quotation raised successfully!");
       onSuccess();
       onClose();

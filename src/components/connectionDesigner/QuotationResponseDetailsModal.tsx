@@ -103,6 +103,20 @@ const QuotationResponseDetailsModal = ({
               label="Bid Price"
               value={`$${quotation.bidprice || "N/A"}`}
             />
+            {quotation.mainSteelPrice && (
+              <DetailCard
+                icon={<DollarSign className="text-green-600" size={20} />}
+                label="Main Steel Price"
+                value={`$${quotation.mainSteelPrice}`}
+              />
+            )}
+            {quotation.miscSteelPrice && (
+              <DetailCard
+                icon={<DollarSign className="text-green-600" size={20} />}
+                label="Misc Steel Price"
+                value={`$${quotation.miscSteelPrice}`}
+              />
+            )}
             {!isCDRole && (
               <>
                 <DetailCard
@@ -139,6 +153,16 @@ const QuotationResponseDetailsModal = ({
               <p className="text-sm text-gray-600 mb-1">Approval Date</p>
               <p className="font-semibold text-gray-800">
                 {formatDate(quotation.approvalDate)}
+              </p>
+            </div>
+          )}
+
+          {/* Description */}
+          {quotation.description && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <p className="text-[10px] font-black text-black/40 uppercase tracking-widest mb-1">Description</p>
+              <p className="font-semibold text-gray-800 whitespace-pre-wrap text-sm leading-relaxed">
+                {quotation.description}
               </p>
             </div>
           )}

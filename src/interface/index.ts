@@ -911,4 +911,7 @@ export interface Quotation {
   days?: string;
   approvalStatus: boolean;
   approvalDate: string;
+  mainSteelPrice?: string;
+  miscSteelPrice?: string;
+  description?: string;
 }
