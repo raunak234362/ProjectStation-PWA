@@ -7,7 +7,7 @@ import RenderFiles from "../ui/RenderFiles";
 
 const STATUS_OPTIONS = ["PENDING", "APPROVED", "REJECTED"];
 
-const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
+const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any) => {
   const [replyMessage, setReplyMessage] = useState("");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [replyStatus, setReplyStatus] = useState("PENDING");
@@ -31,7 +31,29 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess }: any) => {
     replyFiles.forEach((f) => formData.append("files", f));
 
     try {
-      await Service.addCOResponse(formData, response.id);
+      let fabricatorName = "";
+      let projectName = "";
+      if (projectId) {
+        const project = await Service.GetProjectById(projectId);
+        fabricatorName = project?.fabricator?.fabName || "";
+        projectName = project?.projectName || project?.name || "";
+      } else {
+        const coDetails = await Service.GetChangeOrderById(response.CoId);
+        const projectObj = coDetails?.data?.project || coDetails?.project;
+        if (projectObj) {
+          fabricatorName = projectObj.fabricator?.fabName || "";
+          projectName = projectObj.projectName || projectObj.name || "";
+        } else {
+          const pid = coDetails?.data?.projectId || coDetails?.projectId;
+          if (pid) {
+            const project = await Service.GetProjectById(pid);
+            fabricatorName = project?.fabricator?.fabName || "";
+            projectName = project?.projectName || project?.name || "";
+          }
+        }
+      }
+
+      await Service.addCOResponse(formData, response.id, fabricatorName, projectName);
       toast.success("Reply sent successfully!");
       onSuccess();
       onClose();

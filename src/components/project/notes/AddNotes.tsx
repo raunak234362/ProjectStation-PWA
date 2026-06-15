@@ -9,6 +9,7 @@ import RichTextEditor from "../../fields/RichTextEditor";
 
 interface AddNotesProps {
   projectId: string;
+  project?: any;
   onNoteAdded: () => void;
   onClose: () => void;
 }
@@ -18,7 +19,7 @@ interface NoteFormInputs {
   stage: string;
 }
 
-const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
+const AddNotes = ({ projectId, project, onNoteAdded, onClose }: AddNotesProps) => {
   const [loading, setLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const {
@@ -50,7 +51,15 @@ const AddNotes = ({ projectId, onNoteAdded, onClose }: AddNotesProps) => {
         formData.append("files", file);
       });
 
-      await Service.CreateProjectNote(projectId, formData);
+      let fabricatorName = project?.fabricator?.fabName || "";
+      let projectName = project?.projectName || project?.name || "";
+      if (!fabricatorName || !projectName) {
+        const fetchedProject = await Service.GetProjectById(projectId);
+        fabricatorName = fetchedProject?.fabricator?.fabName || "";
+        projectName = fetchedProject?.projectName || fetchedProject?.name || "";
+      }
+
+      await Service.CreateProjectNote(projectId, formData, fabricatorName, projectName);
       toast.success("Note added successfully");
       onNoteAdded();
       onClose();

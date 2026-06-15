@@ -10,12 +10,14 @@ interface RFIResponseModalProps {
   rfiId: string;
   onClose: () => void;
   onSuccess: () => void;
+  projectId?: string;
 }
 
 const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
   rfiId,
   onClose,
   onSuccess,
+  projectId,
 }) => {
   const { handleSubmit, control, reset } = useForm<RFIResponseSchema>();
   const [files, setFiles] = useState<File[]>([]);
@@ -44,7 +46,24 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
 
       files.forEach((file) => formData.append("files", file));
 
-      await Service.addRFIResponse(formData, rfiId);
+      let fabricatorName = "";
+      let projectName = "";
+      const targetProjectId = projectId;
+      if (targetProjectId) {
+        const project = await Service.GetProjectById(targetProjectId);
+        fabricatorName = project?.fabricator?.fabName || "";
+        projectName = project?.projectName || project?.name || "";
+      } else {
+        const rfi = await Service.GetRFIbyId(rfiId);
+        const pid = rfi?.projectId || rfi?.data?.projectId || rfi?.project_id || rfi?.data?.project_id;
+        if (pid) {
+          const project = await Service.GetProjectById(pid);
+          fabricatorName = project?.fabricator?.fabName || "";
+          projectName = project?.projectName || project?.name || "";
+        }
+      }
+
+      await Service.addRFIResponse(formData, rfiId, fabricatorName, projectName);
 
       reset();
       setFiles([]);

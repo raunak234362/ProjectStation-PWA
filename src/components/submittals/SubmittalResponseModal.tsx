@@ -45,7 +45,24 @@ const SubmittalResponseModal = ({
     files.forEach((file) => formData.append("files", file));
 
     try {
-      await Service.addSubmittalResponse(formData);
+      let fabricatorName = "";
+      let projectName = "";
+      const projectId = submittal?.projectId || submittal?.project_id || submittal?.data?.projectId || submittal?.data?.project_id;
+      if (projectId) {
+        const project = await Service.GetProjectById(projectId);
+        fabricatorName = project?.fabricator?.fabName || "";
+        projectName = project?.projectName || project?.name || "";
+      } else {
+        const submittalDetails = await Service.GetSubmittalbyId(submittal.id);
+        const pid = submittalDetails?.projectId || submittalDetails?.project_id || submittalDetails?.data?.projectId || submittalDetails?.data?.project_id;
+        if (pid) {
+          const project = await Service.GetProjectById(pid);
+          fabricatorName = project?.fabricator?.fabName || "";
+          projectName = project?.projectName || project?.name || "";
+        }
+      }
+
+      await Service.addSubmittalResponse(formData, fabricatorName, projectName);
       toast.success("Submittal response added successfully");
       onSuccess();
     } catch (err) {

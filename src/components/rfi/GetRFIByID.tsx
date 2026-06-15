@@ -245,6 +245,7 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
             {showModal && (
               <RFIResponseModal
                 rfiId={id}
+                projectId={rfi?.project_id || (rfi as any)?.projectId || (rfi as any)?.project?.id}
                 onClose={() => setShowModal(false)}
                 onSuccess={fetchRfi}
               />

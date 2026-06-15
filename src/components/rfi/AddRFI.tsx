@@ -89,7 +89,15 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
         }
       });
 
-      await Service.addRFI(formData);
+      let fabricatorName = project?.fabricator?.fabName || selectedFabricator?.fabName || "";
+      let projectName = project?.projectName || project?.name || "";
+      if (!fabricatorName || !projectName) {
+        const fetchedProject = await Service.GetProjectById(project_id);
+        fabricatorName = fetchedProject?.fabricator?.fabName || "";
+        projectName = fetchedProject?.projectName || fetchedProject?.name || "";
+      }
+
+      await Service.addRFI(formData, fabricatorName, projectName);
       toast.success("RFI Submitted Successfully");
       reset();
       setDescription("");

@@ -35,7 +35,15 @@ const AddCoordinationDrawing = ({ projectId, onClose, onSuccess }: AddCoordinati
         data.append('files', file);
       });
 
-      await Service.createCoordinationDrawing(data);
+      let fabricatorName = "";
+      let projectName = "";
+      if (projectId) {
+        const project = await Service.GetProjectById(projectId);
+        fabricatorName = project?.fabricator?.fabName || "";
+        projectName = project?.projectName || project?.name || "";
+      }
+
+      await Service.createCoordinationDrawing(data, fabricatorName, projectName);
       onSuccess();
     } catch (error) {
       console.error('Error creating drawing:', error);

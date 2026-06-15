@@ -181,7 +181,19 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
       formData.append("status", status);
       files.forEach((file) => formData.append("files", file));
 
-      await Service.AddBFA(formData);
+      let fabricatorName = "";
+      let projectName = "";
+      if (submittalId) {
+        const submittal = await Service.GetSubmittalbyId(submittalId);
+        const projectId = submittal?.projectId || submittal?.data?.projectId || submittal?.project_id || submittal?.data?.project_id;
+        if (projectId) {
+          const project = await Service.GetProjectById(projectId);
+          fabricatorName = project?.fabricator?.fabName || "";
+          projectName = project?.projectName || project?.name || "";
+        }
+      }
+
+      await Service.AddBFA(formData, fabricatorName, projectName);
       toast.success("BFA Raised Successfully!");
       
       // Reset form
@@ -214,7 +226,19 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
       formData.append("status", status);
       files.forEach((file) => formData.append("files", file));
 
-      await Service.UpdateBFA(bfa.id, formData);
+      let fabricatorName = "";
+      let projectName = "";
+      if (submittalId) {
+        const submittal = await Service.GetSubmittalbyId(submittalId);
+        const projectId = submittal?.projectId || submittal?.data?.projectId || submittal?.project_id || submittal?.data?.project_id;
+        if (projectId) {
+          const project = await Service.GetProjectById(projectId);
+          fabricatorName = project?.fabricator?.fabName || "";
+          projectName = project?.projectName || project?.name || "";
+        }
+      }
+
+      await Service.UpdateBFA(bfa.id, formData, fabricatorName, projectName);
       toast.success("BFA Updated Successfully!");
       
       // Reset form

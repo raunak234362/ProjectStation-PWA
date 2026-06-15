@@ -14,6 +14,7 @@ interface AddProjectNoteProps {
 
 const AddProjectNote = ({
     projectId,
+    project,
     onClose,
     onSuccess,
 }: AddProjectNoteProps) => {
@@ -57,7 +58,15 @@ const AddProjectNote = ({
             formData.append("visibility", visibility);
             files.forEach((file) => formData.append("files", file));
 
-            await Service.AddTeamMeetingNotes(formData);
+            let fabricatorName = project?.fabricator?.fabName || "";
+            let projectName = project?.projectName || project?.name || "";
+            if (!fabricatorName || !projectName) {
+                const fetchedProject = await Service.GetProjectById(projectId);
+                fabricatorName = fetchedProject?.fabricator?.fabName || "";
+                projectName = fetchedProject?.projectName || fetchedProject?.name || "";
+            }
+
+            await Service.AddTeamMeetingNotes(formData, fabricatorName, projectName);
             toast.success("Note added successfully!");
             onSuccess();
         } catch (err: any) {

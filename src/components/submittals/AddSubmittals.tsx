@@ -110,7 +110,15 @@ const AddSubmittal: React.FC<{
       });
       console.log(formData);
 
-      await Service.AddSubmittal(formData);
+      let fabricatorName = project?.fabricator?.fabName || selectedFabricator?.fabName || "";
+      let projectName = project?.projectName || project?.name || "";
+      if (!fabricatorName || !projectName) {
+        const fetchedProject = await Service.GetProjectById(projectId);
+        fabricatorName = fetchedProject?.fabricator?.fabName || "";
+        projectName = fetchedProject?.projectName || fetchedProject?.name || "";
+      }
+
+      await Service.AddSubmittal(formData, fabricatorName, projectName);
       toast.success("Submittal Created Successfully!");
 
       reset();

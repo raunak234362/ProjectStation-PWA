@@ -380,6 +380,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
         {showResponseModal && (
           <CoResponseModal
             CoId={id}
+            projectId={projectId}
             currentVersionId={co.currentVersionId}
             onClose={() => setShowResponseModal(false)}
             onSuccess={fetchCO}
@@ -389,6 +390,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
         {selectedResponse && (
           <COResponseDetailsModal
             response={selectedResponse}
+            projectId={projectId}
             onClose={() => setSelectedResponse(null)}
             onSuccess={fetchCO}
           />

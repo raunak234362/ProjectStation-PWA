@@ -29,7 +29,24 @@ const UpdateSubmittalById = ({ submittal, onClose, onSuccess }: any) => {
         formData.append("files", files);
       }
 
-      await Service.updateSubmittalVersionById(submittal.id, formData);
+      let fabricatorName = "";
+      let projectName = "";
+      const projectId = submittal?.projectId || submittal?.project_id || submittal?.data?.projectId || submittal?.data?.project_id;
+      if (projectId) {
+        const project = await Service.GetProjectById(projectId);
+        fabricatorName = project?.fabricator?.fabName || "";
+        projectName = project?.projectName || project?.name || "";
+      } else {
+        const submittalDetails = await Service.GetSubmittalbyId(submittal.id);
+        const pid = submittalDetails?.projectId || submittalDetails?.project_id || submittalDetails?.data?.projectId || submittalDetails?.data?.project_id;
+        if (pid) {
+          const project = await Service.GetProjectById(pid);
+          fabricatorName = project?.fabricator?.fabName || "";
+          projectName = project?.projectName || project?.name || "";
+        }
+      }
+
+      await Service.updateSubmittalVersionById(submittal.id, formData, fabricatorName, projectName);
 
       onSuccess?.();
       onClose();

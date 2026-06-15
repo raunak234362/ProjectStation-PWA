@@ -30,7 +30,15 @@ const AddDesignDrawing = ({ projectId, onSuccess }: AddDesignDrawingProps) => {
         }
       }
 
-      await Service.CreateDesignDrawing(formData);
+      let fabricatorName = "";
+      let projectName = "";
+      if (projectId) {
+        const project = await Service.GetProjectById(projectId);
+        fabricatorName = project?.fabricator?.fabName || "";
+        projectName = project?.projectName || project?.name || "";
+      }
+
+      await Service.CreateDesignDrawing(formData, fabricatorName, projectName);
       toast.success("Design drawing created successfully!");
       reset();
       setFiles(null);

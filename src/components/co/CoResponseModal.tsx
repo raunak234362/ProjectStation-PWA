@@ -11,6 +11,7 @@ interface Props {
   onClose: () => void;
   onSuccess: () => void;
   currentVersionId?: string;
+  projectId?: string;
 }
 
 const CoResponseModal = ({
@@ -18,6 +19,7 @@ const CoResponseModal = ({
   onClose,
   onSuccess,
   currentVersionId,
+  projectId,
 }: Props) => {
   const { register, handleSubmit, control } = useForm<CoResponsePayload>();
   console.log(CoId);
@@ -45,7 +47,29 @@ const CoResponseModal = ({
         });
       }
 
-      await Service.addCOResponse(formData, CoId);
+      let fabricatorName = "";
+      let projectName = "";
+      if (projectId) {
+        const project = await Service.GetProjectById(projectId);
+        fabricatorName = project?.fabricator?.fabName || "";
+        projectName = project?.projectName || project?.name || "";
+      } else {
+        const coDetails = await Service.GetChangeOrderById(CoId);
+        const projectObj = coDetails?.data?.project || coDetails?.project;
+        if (projectObj) {
+          fabricatorName = projectObj.fabricator?.fabName || "";
+          projectName = projectObj.projectName || projectObj.name || "";
+        } else {
+          const pid = coDetails?.data?.projectId || coDetails?.projectId;
+          if (pid) {
+            const project = await Service.GetProjectById(pid);
+            fabricatorName = project?.fabricator?.fabName || "";
+            projectName = project?.projectName || project?.name || "";
+          }
+        }
+      }
+
+      await Service.addCOResponse(formData, CoId, fabricatorName, projectName);
       toast.success("Response added successfully!");
 
       onSuccess();

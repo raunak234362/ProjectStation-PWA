@@ -1617,10 +1617,10 @@ class Service {
   }
 
   // Create Project Note
-  static async CreateProjectNote(projectId: string, data: FormData) {
+  static async CreateProjectNote(projectId: string, data: FormData, fabricatorName: string, projectName: string) {
     try {
       const response = await api.post(
-        `project/projects/${projectId}/notes`,
+        `project/projects/${projectId}/notes?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`,
         data,
         {
           headers: {
@@ -1676,12 +1676,13 @@ class Service {
 
   //RFI components
   //Add new RFI----------------------------------------------------
-  static async addRFI(formData: FormData) {
-    const response = await api.post(`rfi`, formData, {
+  static async addRFI(formData: FormData, fabricatorName: string, projectName: string) {
+    const response = await api.post(`rfi?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
+
     return response.data;
   }
 
@@ -1801,9 +1802,9 @@ class Service {
     }
   }
 
-  static async EditRFIByID(id: string, data: FormData) {
+  static async EditRFIByID(id: string, data: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.put(`rfi/${id}`, data, {
+      const response = await api.put(`rfi/${id}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("RFI Edited:", response.data);
@@ -1813,8 +1814,8 @@ class Service {
     }
   }
   //RFI responses
-  static async addRFIResponse(formData: FormData, responseId: string) {
-    const response = await api.post(`rfi/${responseId}/responses`, formData);
+  static async addRFIResponse(formData: FormData, responseId: string, fabricatorName: string, projectName: string) {
+    const response = await api.post(`rfi/${responseId}/responses?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData);
 
     return response.data;
   }
@@ -1863,13 +1864,13 @@ class Service {
   }
 
   //submitals route ----------------------------------------------
-  static async AddSubmittal(formData: FormData) {
+  static async AddSubmittal(formData: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`submittal/`, formData);
-      console.log(response);
+      const response = await api.post(`submittal/?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData);
+      console.log("Submittal added:", response.data);
       return response.data;
     } catch (error) {
-      console.log(error);
+      console.error("cannot add submittal", error);
     }
   }
 
@@ -1943,25 +1944,23 @@ class Service {
   }
 
   // update submittal version by ID
-  static async updateSubmittalVersionById(id: string, data: FormData | any) {
+  static async updateSubmittalVersionById(id: string, data: FormData | any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`submittal/${id}/versions`, data, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      const response = await api.post(`submittal/${id}/versions?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       console.log('Submittal version updated:', response.data)
       return response.data
     } catch (error) {
       console.error('cannot update submittal version', error)
-      throw error
     }
   }
 
   //submittal responses
-  static async addSubmittalResponse(formData: FormData) {
+  static async addSubmittalResponse(formData: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`submittal/responses`, formData);
+      const response = await api.post(`submittal/responses?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData);
+      console.log("submittal response added:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot add submittal response", error);
@@ -2010,9 +2009,9 @@ class Service {
   }
 
   //change Order ---------------------------------------------
-  static async ChangeOrder(formData: FormData) {
+  static async ChangeOrder(formData: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`changeOrder/`, formData);
+      const response = await api.post(`changeOrder/?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData);
       console.log(response);
       return response.data;
     } catch (error) {
@@ -2080,9 +2079,9 @@ class Service {
   }
 
   //update Co
-  static async EditCoById(id: string, data: FormData) {
+  static async EditCoById(id: string, data: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.put(`changeOrder/${id}`, data, {
+      const response = await api.put(`changeOrder/${id}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("co Edited:", response.data);
@@ -2092,9 +2091,9 @@ class Service {
     }
   }
   //response routes
-  static async addCOResponse(formData: FormData, responseId: string) {
+  static async addCOResponse(formData: FormData, responseId: string, fabricatorName: string, projectName: string) {
     const response = await api.post(
-      `changeOrder/${responseId}/responses`,
+      `changeOrder/${responseId}/responses?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`,
       formData,
     );
 
@@ -2471,9 +2470,9 @@ class Service {
   // ===========================================================
 
   // Create new Design Drawing
-  static async CreateDesignDrawing(data: FormData) {
+  static async CreateDesignDrawing(data: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`designDrawings`, data, {
+      const response = await api.post(`designDrawings?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -2484,9 +2483,9 @@ class Service {
   }
 
   // Update stage / description of a Design Drawing
-  static async UpdateDesignDrawing(id: string, data: FormData) {
+  static async UpdateDesignDrawing(id: string, data: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.put(`designDrawings/${id}`, data, {
+      const response = await api.put(`designDrawings/${id}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -2622,9 +2621,9 @@ class Service {
   // ==================== MEETINGS API ====================
 
   // Create a new meeting
-  static async CreateMeeting(data: any) {
+  static async CreateMeeting(data: any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`meetings`, data);
+      const response = await api.post(`meetings?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data);
       console.log("Meeting created:", response.data);
       return response.data;
     } catch (error) {
@@ -2658,9 +2657,9 @@ class Service {
   }
 
   // Add participants to a meeting
-  static async AddMeetingParticipants(data: any) {
+  static async AddMeetingParticipants(data: any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`meetings/participants`, data);
+      const response = await api.post(`meetings/participants?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data);
       console.log("Participants added:", response.data);
       return response.data;
     } catch (error) {
@@ -2682,10 +2681,10 @@ class Service {
   }
 
   // Update a participant in a meeting
-  static async UpdateMeetingParticipant(attendeeId: string, data: any) {
+  static async UpdateMeetingParticipant(attendeeId: string, data: any, fabricatorName: string, projectName: string) {
     try {
       const response = await api.put(
-        `meetings/participants/${attendeeId}`,
+        `meetings/participants/${attendeeId}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`,
         data,
       );
       console.log("Participant updated:", response.data);
@@ -2960,9 +2959,9 @@ class Service {
     }
   }
   //team meeting notes
-  static async AddTeamMeetingNotes(formData: FormData) {
+  static async AddTeamMeetingNotes(formData: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`teamMeetingNotes`, formData);
+      const response = await api.post(`teamMeetingNotes?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData);
       return response.data;
     } catch (error) {
       console.error("Error fetching team meeting notes:", error);
@@ -2998,9 +2997,9 @@ class Service {
       throw error;
     }
   }
-  static async UpdateTeamMeetingNotes(id: string, data: any) {
+  static async UpdateTeamMeetingNotes(id: string, data: any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.put(`teamMeetingNotes/${id}`, data);
+      const response = await api.put(`teamMeetingNotes/${id}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data);
       return response.data;
     } catch (error) {
       console.error("Error updating team meeting notes:", error);
@@ -3026,9 +3025,9 @@ class Service {
     }
   }
   //team meeting respoense routes
-  static async AddTeamMeetingResponse(notesId: string, formData: FormData) {
+  static async AddTeamMeetingResponse(notesId: string, formData: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post(`teamMeetingNotes/${notesId}/responses`, formData);
+      const response = await api.post(`teamMeetingNotes/${notesId}/responses?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData);
       return response.data;
     } catch (error) {
       console.error("Error fetching team meeting response:", error);
@@ -3054,9 +3053,9 @@ class Service {
       throw error;
     }
   }
-  static async UpdateTeamMeetingResponse(id: string, data: any) {
+  static async UpdateTeamMeetingResponse(id: string, data: any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.put(`teamMeetingNotes/responses/${id}`, data);
+      const response = await api.put(`teamMeetingNotes/responses/${id}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data);
       return response.data;
     } catch (error) {
       console.error("Error updating team meeting response:", error);
@@ -3281,9 +3280,9 @@ class Service {
   }
 
   // Coordination Drawing Endpoints
-  static async createCoordinationDrawing(data: any) {
+  static async createCoordinationDrawing(data: any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post('coordinationDrawing', data, {
+      const response = await api.post(`coordinationDrawing?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -3323,9 +3322,9 @@ class Service {
     }
   }
 
-  static async updateCoordinationDrawing(id: string, data: any) {
+  static async updateCoordinationDrawing(id: string, data: any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.patch(`coordinationDrawing/${id}`, data);
+      const response = await api.patch(`coordinationDrawing/${id}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data);
       return response.data;
     } catch (error) {
       console.error('Error updating coordination drawing:', error);
@@ -3343,9 +3342,9 @@ class Service {
     }
   }
 
-  static async createCoordinationDrawingResponse(data: any) {
+  static async createCoordinationDrawingResponse(data: any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.post('coordinationDrawing/response', data, {
+      const response = await api.post(`coordinationDrawing/response?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -3365,9 +3364,9 @@ class Service {
     }
   }
 
-  static async updateCoordinationDrawingResponse(id: string, data: any) {
+  static async updateCoordinationDrawingResponse(id: string, data: any, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.patch(`coordinationDrawing/response/${id}`, data);
+      const response = await api.patch(`coordinationDrawing/response/${id}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, data);
       return response.data;
     } catch (error) {
       console.error('Error updating drawing response:', error);
@@ -3518,8 +3517,8 @@ class Service {
   }
 
   // BFA (Back from Approval) API methods
-  static async AddBFA(formData: FormData) {
-    const response = await api.post(`bfa`, formData, {
+  static async AddBFA(formData: FormData, fabricatorName: string, projectName: string) {
+    const response = await api.post(`bfa?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -3547,9 +3546,9 @@ class Service {
     }
   }
 
-  static async UpdateBFA(id: string, formData: FormData) {
+  static async UpdateBFA(id: string, formData: FormData, fabricatorName: string, projectName: string) {
     try {
-      const response = await api.put(`bfa/${id}`, formData, {
+      const response = await api.put(`bfa/${id}?fabricatorName=${encodeURIComponent(fabricatorName)}&projectName=${encodeURIComponent(projectName)}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

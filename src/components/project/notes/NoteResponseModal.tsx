@@ -42,7 +42,19 @@ const NoteResponseModal: React.FC<NoteResponseModalProps> = ({
                 files.forEach((file) => formData.append("files", file));
             }
 
-            await Service.AddTeamMeetingResponse(noteId, formData);
+            let fabricatorName = "";
+            let projectName = "";
+            if (noteId) {
+                const noteDetails = await Service.GetTeamMeetingNotesById(noteId);
+                const projectId = noteDetails?.projectId || noteDetails?.data?.projectId;
+                if (projectId) {
+                    const project = await Service.GetProjectById(projectId);
+                    fabricatorName = project?.fabricator?.fabName || "";
+                    projectName = project?.projectName || project?.name || "";
+                }
+            }
+
+            await Service.AddTeamMeetingResponse(noteId, formData, fabricatorName, projectName);
             toast.success("Response added successfully!");
             reset();
             setFiles([]);

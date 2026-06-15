@@ -39,7 +39,16 @@ const EditDesignDrawing = ({
         }
       }
 
-      await Service.UpdateDesignDrawing(drawing.id, formData);
+      let fabricatorName = "";
+      let projectName = "";
+      const projectId = drawing?.projectId;
+      if (projectId) {
+        const project = await Service.GetProjectById(projectId);
+        fabricatorName = project?.fabricator?.fabName || "";
+        projectName = project?.projectName || project?.name || "";
+      }
+
+      await Service.UpdateDesignDrawing(drawing.id, formData, fabricatorName, projectName);
       toast.success("Design drawing updated successfully!");
       onSuccess();
     } catch (error: any) {

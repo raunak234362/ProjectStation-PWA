@@ -1160,7 +1160,7 @@ const GetProjectById = ({
             )}
 
             {/* ✅ Notes */}
-            {activeTab === "notes" && <NotesLayout projectId={id} />}
+            {activeTab === "notes" && <NotesLayout projectId={id} project={project} />}
             {/* ✅ Project Notes (Team Meeting Notes) */}
             {activeTab === "projectNotes" && (
               <ProjectNotesLayout projectId={id} project={project} />

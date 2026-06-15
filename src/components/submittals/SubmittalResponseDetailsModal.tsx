@@ -53,7 +53,19 @@ const SubmittalResponseDetailsModal = ({
     replyFiles.forEach((file) => formData.append("files", file));
 
     try {
-      await Service.addSubmittalResponse(formData);
+      let fabricatorName = "";
+      let projectName = "";
+      if (response.submittalsId) {
+        const submittal = await Service.GetSubmittalbyId(response.submittalsId);
+        const projectId = submittal?.projectId || submittal?.data?.projectId || submittal?.project_id || submittal?.data?.project_id;
+        if (projectId) {
+          const project = await Service.GetProjectById(projectId);
+          fabricatorName = project?.fabricator?.fabName || "";
+          projectName = project?.projectName || project?.name || "";
+        }
+      }
+
+      await Service.addSubmittalResponse(formData, fabricatorName, projectName);
       onClose(); // close to refresh parent
     } catch (err) {
       console.error("Failed to send submittal reply:", err);

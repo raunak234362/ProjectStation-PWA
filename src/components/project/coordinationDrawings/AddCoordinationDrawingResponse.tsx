@@ -33,7 +33,19 @@ const AddCoordinationDrawingResponse = ({ drawingId, parentResponseId, onClose, 
         data.append('files', file);
       });
 
-      await Service.createCoordinationDrawingResponse(data);
+      let fabricatorName = "";
+      let projectName = "";
+      if (drawingId) {
+        const drawing = await Service.getCoordinationDrawingById(drawingId);
+        const projectId = drawing?.projectId || drawing?.data?.projectId;
+        if (projectId) {
+          const project = await Service.GetProjectById(projectId);
+          fabricatorName = project?.fabricator?.fabName || "";
+          projectName = project?.projectName || project?.name || "";
+        }
+      }
+
+      await Service.createCoordinationDrawingResponse(data, fabricatorName, projectName);
       onSuccess();
     } catch (error) {
       console.error('Error adding response:', error);

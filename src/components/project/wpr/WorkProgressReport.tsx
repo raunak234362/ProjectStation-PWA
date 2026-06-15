@@ -833,6 +833,16 @@ const WorkProgressReport = ({
   const handleSaveChanges = async () => {
     try {
       setSaving(true);
+
+      let fabName = project?.fabricator?.fabName || "";
+      let projName = project?.projectName || project?.name || "";
+
+      if (!fabName || !projName) {
+        const fetchedProject = await Service.GetProjectById(projectId);
+        fabName = fetchedProject?.fabricator?.fabName || "";
+        projName = fetchedProject?.projectName || fetchedProject?.name || "";
+      }
+
       // Sync milestones to backend
       for (const row of rawScheduleRows) {
         const payload = {
@@ -859,14 +869,14 @@ const WorkProgressReport = ({
             subject: row.rfiNo,
             status: ["OPEN", "PENDING", "PARTIAL"].includes(row.status?.toUpperCase()),
           };
-          await Service.EditRFIByID(row.id, payload as any);
+          await Service.EditRFIByID(row.id, payload as any, fabName, projName);
         } else {
           const formData = new FormData();
           formData.append("projectId", projectId);
           formData.append("subject", row.rfiNo);
           formData.append("description", "Created from Weekly Progress Report");
           formData.append("date", row.sentDate !== "—" ? new Date(row.sentDate).toISOString() : new Date().toISOString());
-          await Service.addRFI(formData);
+          await Service.addRFI(formData, fabName, projName);
         }
       }
 
@@ -878,7 +888,7 @@ const WorkProgressReport = ({
             stage: row.stage,
             status: row.status
           };
-          await Service.updateCoordinationDrawing(row.id, payload);
+          await Service.updateCoordinationDrawing(row.id, payload, fabName, projName);
         } else {
           const formData = new FormData();
           formData.append("projectId", projectId);
@@ -886,11 +896,11 @@ const WorkProgressReport = ({
           formData.append("description", `Created from Weekly Progress Report on ${new Date().toLocaleDateString()}`);
           formData.append("stage", row.stage || "IFA");
 
-          const res = await Service.createCoordinationDrawing(formData);
+          const res = await Service.createCoordinationDrawing(formData, fabName, projName);
           if (res && res.data && row.status !== "Pending") {
             const newId = res.data.id || res.data._id;
             if (newId) {
-              await Service.updateCoordinationDrawing(newId, { status: row.status });
+              await Service.updateCoordinationDrawing(newId, { status: row.status }, fabName, projName);
             }
           }
         }
@@ -910,7 +920,7 @@ const WorkProgressReport = ({
             if (val) sum += Number(val);
           });
           formData.append("totalCost", sum.toString());
-          await Service.ChangeOrder(formData);
+          await Service.ChangeOrder(formData, fabName, projName);
         }
       }
 
