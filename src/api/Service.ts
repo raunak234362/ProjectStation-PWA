@@ -372,8 +372,8 @@ class Service {
   }
 
   //Add new RFQ
-  static async addRFQ(formData: FormData) {
-    const response = await api.post(`rfq`, formData, {
+  static async addRFQ(formData: FormData, fabricatorName: string, rfqProjectName: string) {
+    const response = await api.post(`rfq?fabricatorName=${encodeURIComponent(fabricatorName)}&rfqProjectName=${encodeURIComponent(rfqProjectName)}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -484,9 +484,9 @@ class Service {
   }
 
   // Update RFQ by ID
-  static async UpdateRFQById(rfqId: string, data: any) {
+  static async UpdateRFQById(rfqId: string, data: any, fabricatorName: string, rfqProjectName: string) {
     try {
-      const response = await api.put(`rfq/update/${rfqId}`, data);
+      const response = await api.put(`rfq/update/${rfqId}?fabricatorName=${encodeURIComponent(fabricatorName)}&rfqProjectName=${encodeURIComponent(rfqProjectName)}`, data);
       console.log("RFQ updated:", response.data);
       return response.data;
     } catch (error) {
@@ -601,8 +601,8 @@ class Service {
   //RESPONSES
   //response post request
 
-  static async addResponse(formData: FormData, responseId: string) {
-    const response = await api.post(`rfq/${responseId}/responses`, formData, {
+  static async addResponse(formData: FormData, responseId: string, fabricatorName: string, rfqProjectName: string) {
+    const response = await api.post(`rfq/${responseId}/responses?fabricatorName=${encodeURIComponent(fabricatorName)}&rfqProjectName=${encodeURIComponent(rfqProjectName)}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -612,9 +612,9 @@ class Service {
   }
 
   //rfq followups:
-  static async addRFQFollowups(formData: FormData, rfqId: string) {
+  static async addRFQFollowups(formData: FormData, rfqId: string, fabricatorName: string, rfqProjectName: string) {
     try {
-      const response = await api.post(`rfq/${rfqId}/followups`, formData, {
+      const response = await api.post(`rfq/${rfqId}/followups?fabricatorName=${encodeURIComponent(fabricatorName)}&rfqProjectName=${encodeURIComponent(rfqProjectName)}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
