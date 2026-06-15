@@ -247,30 +247,50 @@
 }
 
 /* Rich Text Formatting Overrides */
-.rich-text-content ul {
+.rich-text-content ul,
+.prose ul,
+.submittal-description ul,
+.jodit-wysiwyg ul,
+.ql-editor ul {
   list-style-type: disc !important;
   padding-left: 1.5rem !important;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
 
-.rich-text-content ol {
+.rich-text-content ol,
+.prose ol,
+.submittal-description ol,
+.jodit-wysiwyg ol,
+.ql-editor ol {
   list-style-type: decimal !important;
   padding-left: 1.5rem !important;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
 
-.rich-text-content li {
+.rich-text-content li,
+.prose li,
+.submittal-description li,
+.jodit-wysiwyg li,
+.ql-editor li {
   display: list-item !important;
   margin-bottom: 0.25rem !important;
 }
 
-.rich-text-content p {
+.rich-text-content p,
+.prose p,
+.submittal-description p,
+.jodit-wysiwyg p,
+.ql-editor p {
   margin-bottom: 0.5rem !important;
 }
 
-.rich-text-content strong {
+.rich-text-content strong,
+.prose strong,
+.submittal-description strong,
+.jodit-wysiwyg strong,
+.ql-editor strong {
   font-weight: 700 !important;
   color: black !important;
 }

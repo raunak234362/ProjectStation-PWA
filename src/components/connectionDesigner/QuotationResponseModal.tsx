@@ -66,6 +66,7 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
           <div className="space-y-2">
             <label className="block text-[10px] font-black text-black/40 uppercase tracking-widest">Bid Price (USD)</label>
             <input {...register("bidprice", { required: "Bid price is required" })} type="number" step="0.01" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" placeholder="0.00" />
+            <input {...register("bidprice", { required: "Bid price is required" })} type="number" step="0.01" className="w-full h-12 px-4 border border-black/10 rounded-xl outline-none font-bold" placeholder="0.00" />
             {errors.bidprice && <p className="text-rose-500 text-[9px] font-black uppercase tracking-widest">{errors.bidprice.message}</p>}
           </div>
           {/* <div className="flex items-center gap-4 bg-gray-50/50 p-4 rounded-xl border border-black/5">
