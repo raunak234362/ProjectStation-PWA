@@ -915,3 +915,16 @@ export interface Quotation {
   miscSteelPrice?: string;
   description?: string;
 }
+
+export interface CDQuotaResponse {
+  id?: string;
+  quotaId: string;
+  parentId?: string | null;
+  mainSteelPrice?: number;
+  miscSteelPrice?: number;
+  description?: string;
+  status?: string;
+  files?: any[];
+  createdAt?: string;
+  updatedAt?: string;
+}
