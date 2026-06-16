@@ -5,10 +5,6 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
-  server: {
-    host: true,
-    port: 5173
-  },
   plugins: [
     react(),
     tailwindcss(),
@@ -55,22 +51,22 @@ export default defineConfig({
       },
 
       workbox: {
-  globPatterns: ["**/*.{js,css,svg,png,ico}"],
-  cleanupOutdatedCaches: true,
-  clientsClaim: true,
-  skipWaiting: true,
-  maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+        globPatterns: ["**/*.{js,css,svg,png,ico}"],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
 
-  runtimeCaching: [
-    {
-      urlPattern: ({ request }) => request.mode === 'navigate',
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'html-cache',
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'html-cache',
+            },
+          },
+        ],
       },
-    },
-  ],
-},
 
 
       devOptions: {
