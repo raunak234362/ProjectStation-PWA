@@ -28,7 +28,7 @@ const RfiLayout = ({ project, rfiData, onSuccess }: RfiLayoutProps) => {
       {showAddButton && (
         <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
           <button onClick={() => setActiveTab("allRFI")} className={btnClass("allRFI")}>All RFI</button>
-          <button onClick={() => setActiveTab("addRFI")} className={btnClass("addRFI")}>Add RFI</button>
+          <button onClick={() => setActiveTab("addRFI")} className={btnClass("addRFI")}>Create RFI</button>
         </div>
       )}
       <div className={`flex-1 min-h-0 px-8 pb-8 overflow-y-auto ${!showAddButton ? "pt-8" : ""}`}>
