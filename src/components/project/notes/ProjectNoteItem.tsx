@@ -57,6 +57,7 @@ const ProjectNoteItem: React.FC<ProjectNoteItemProps> = ({
   deletingId,
 }) => {
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const isClientSide = userRole.startsWith("client");
   const isConnectionDesigner =
     userRole === "connection_designer" ||
     userRole === "connection_designer_admin";
@@ -132,7 +133,7 @@ const ProjectNoteItem: React.FC<ProjectNoteItemProps> = ({
                 </span>
               ))}
                {getPriorityBadge(note.priority)}
-            {!isConnectionDesigner && (() => {
+             {!isClientSide && !isConnectionDesigner && (() => {
               const rawList = [
                 ...(note.taggedUsers || []),
                 ...(note.taggedUserIds || []),
