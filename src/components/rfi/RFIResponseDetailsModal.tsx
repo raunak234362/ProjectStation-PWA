@@ -40,13 +40,10 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
     let fabricatorName = "";
     let projectName = "";
     if (response.rfiId) {
-      const rfi = await Service.GetRFIbyId(response.rfiId);
-      const projectId = rfi?.projectId || rfi?.data?.projectId || rfi?.project_id || rfi?.data?.project_id;
-      if (projectId) {
-        const project = await Service.GetProjectById(projectId);
-        fabricatorName = project?.fabricator?.fabName || "";
-        projectName = project?.projectName || project?.name || "";
-      }
+      const rfiRes = await Service.GetRFIbyId(response.rfiId);
+      const rfi = rfiRes?.data || rfiRes;
+      fabricatorName = rfi?.fabricator?.fabName || rfi?.fabricatorName || rfi?.project?.fabricator?.fabName || "";
+      projectName = rfi?.project?.projectName || rfi?.project?.name || "";
     }
 
     await Service.addRFIResponse(formData, response.rfiId, fabricatorName, projectName);

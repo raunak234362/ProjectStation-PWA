@@ -50,17 +50,15 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
       let projectName = "";
       const targetProjectId = projectId;
       if (targetProjectId) {
-        const project = await Service.GetProjectById(targetProjectId);
+        const projectRes = await Service.GetProjectById(targetProjectId);
+        const project = projectRes?.data || projectRes;
         fabricatorName = project?.fabricator?.fabName || "";
         projectName = project?.projectName || project?.name || "";
       } else {
-        const rfi = await Service.GetRFIbyId(rfiId);
-        const pid = rfi?.projectId || rfi?.data?.projectId || rfi?.project_id || rfi?.data?.project_id;
-        if (pid) {
-          const project = await Service.GetProjectById(pid);
-          fabricatorName = project?.fabricator?.fabName || "";
-          projectName = project?.projectName || project?.name || "";
-        }
+        const rfiRes = await Service.GetRFIbyId(rfiId);
+        const rfi = rfiRes?.data || rfiRes;
+        fabricatorName = rfi?.fabricator?.fabName || rfi?.fabricatorName || rfi?.project?.fabricator?.fabName || "";
+        projectName = rfi?.project?.projectName || rfi?.project?.name || "";
       }
 
       await Service.addRFIResponse(formData, rfiId, fabricatorName, projectName);
