@@ -8,6 +8,9 @@ import GetMilestoneByID from "../project/mileStone/GetMilestoneByID";
 import FetchTaskByID from "../task/FetchTaskByID";
 import GetProjectById from "../project/GetProjectById";
 import GetCOByID from "../co/GetCOByID";
+import GetInternalRFQByID from "../rfq/GetInternalRFQByID";
+import ConnectionDesignerQuotaByID from "../connectionDesigner/ConnectionDesignerQuotaByID";
+import GetCDRFQByID from "../connectionDesigner/GetCDRFQByID";
 
 const GlobalDetailView = () => {
   const dispatch = useDispatch();
@@ -28,6 +31,12 @@ const GlobalDetailView = () => {
       return <GetRFIByID id={id} onClose={handleClose} />;
     case "RFQ":
       return <GetRFQByID id={id} onClose={handleClose} />;
+    case "INTERNAL_RFQ":
+      return <GetInternalRFQByID id={id} onClose={handleClose} />;
+    case "CD_QUOTA":
+      return <ConnectionDesignerQuotaByID id={id} close={handleClose} />;
+    case "CD_RFQ":
+      return <GetCDRFQByID id={id} onClose={handleClose} />;
     case "MILESTONE":
       return <GetMilestoneByID row={{ id }} close={handleClose} />;
     case "TASK":

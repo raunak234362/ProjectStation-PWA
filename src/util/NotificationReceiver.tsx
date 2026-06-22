@@ -20,6 +20,9 @@ const NotificationReceiver = () => {
     if (t === "SUBMITTAL" || t === "SUBMITTALS") targetId = findId("submittalId") || findId("submittal_id") || findId("submittalId");
     else if (t === "RFI") targetId = findId("rfiId") || findId("rfi_id");
     else if (t === "RFQ") targetId = findId("rfqId") || findId("rfq_id");
+    else if (t === "INTERNAL_RFQ" || t === "INTERNAL-RFQ") targetId = findId("rfqId") || findId("rfq_id");
+    else if (t === "CD_QUOTA" || t === "CD-QUOTA") targetId = findId("cdQuotaId") || findId("quotaId");
+    else if (t === "CD_RFQ" || t === "CD-RFQ") targetId = findId("rfqId") || findId("rfq_id");
     else if (t === "MILESTONE") targetId = findId("milestoneId") || findId("milestone_id");
     else if (t === "PROJECT") targetId = findId("projectId") || findId("project_id");
     else if (t === "TASK") targetId = findId("taskId") || findId("task_id");
@@ -35,6 +38,9 @@ const NotificationReceiver = () => {
       if (t === "SUBMITTAL" || t === "SUBMITTALS") viewType = "SUBMITTAL";
       else if (t === "RFI") viewType = "RFI";
       else if (t === "RFQ") viewType = "RFQ";
+      else if (t === "INTERNAL_RFQ" || t === "INTERNAL-RFQ") viewType = "INTERNAL_RFQ";
+      else if (t === "CD_QUOTA" || t === "CD-QUOTA") viewType = "CD_QUOTA";
+      else if (t === "CD_RFQ" || t === "CD-RFQ") viewType = "CD_RFQ";
       else if (t === "MILESTONE") viewType = "MILESTONE";
       else if (t === "PROJECT") viewType = "PROJECT";
       else if (t === "TASK") viewType = "TASK";

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
+import GetCDRFQByID from "../connectionDesigner/GetCDRFQByID";
 import { formatDate } from "../../utils/dateUtils";
 import { Search, X } from "lucide-react";
 
@@ -434,7 +435,11 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       />
 
       {selectedRfqId && (
-        <GetRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
+        isConnectionDesigner ? (
+          <GetCDRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
+        ) : (
+          <GetRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
+        )
       )}
     </div>
   );
