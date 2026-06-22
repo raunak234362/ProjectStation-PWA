@@ -29,10 +29,24 @@ const ConnectionDesignerDashboard = lazy(
   () => import("../components/dashboard/ConnectionDesignerDashboard"),
 );
 const WireTransferPage = lazy(() => import("../pages/WireTransferPage"));
+const RFIDetailsRoute = lazy(() => import("../components/rfi/RFIDetailsRoute"));
+const RFQDetailsRoute = lazy(() => import("../components/rfq/RFQDetailsRoute"));
+const SubmittalDetailsRoute = lazy(() => import("../components/submittals/SubmittalDetailsRoute"));
+const CODetailsRoute = lazy(() => import("../components/co/CODetailsRoute"));
+const InternalRFQDetailsRoute = lazy(() => import("../components/rfq/InternalRFQDetailsRoute"));
+const CDQuotaDetailsRoute = lazy(() => import("../components/connectionDesigner/CDQuotaDetailsRoute"));
+const CDRFQDetailsRoute = lazy(() => import("../components/connectionDesigner/CDRFQDetailsRoute"));
 
 const routes = [
   { path: "/", Component: Login },
   { path: "/verify-challenge", Component: OTPVerification },
+  { path: "/rfi/:id", Component: RFIDetailsRoute },
+  { path: "/rfq/:id", Component: RFQDetailsRoute },
+  { path: "/submittals/:id", Component: SubmittalDetailsRoute },
+  { path: "/co/:id", Component: CODetailsRoute },
+  { path: "/internal-rfq/:id", Component: InternalRFQDetailsRoute },
+  { path: "/cd-quota/:id", Component: CDQuotaDetailsRoute },
+  { path: "/cd-rfq/:id", Component: CDRFQDetailsRoute },
   {
     path: "/co-table",
     Component: CoTablePage,
