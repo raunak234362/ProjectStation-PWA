@@ -131,7 +131,9 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     userRole === "CONNECTION_DESIGNER" ||
     userRole === "CONNECTION_DESIGNER_ADMIN" ||
     userRole === "connection_designer" ||
-    userRole === "connection_designer_admin";
+    userRole === "connection_designer_admin" ||
+    userRole === "connection_designer_engineer" ||
+    userRole === "CONNECTION_DESIGNER_ENGINEER";
 
   columns.push(
     // Requested By — hidden for connection designers
@@ -157,9 +159,9 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         let dateVal: string | undefined;
         if (isConnectionDesigner) {
           const cdRFQ = row.original.connectionDesignerRFQ;
-          dateVal = Array.isArray(cdRFQ) && cdRFQ.length > 0
+          dateVal = Array.isArray(cdRFQ) && cdRFQ.length > 0 && cdRFQ[0].createdAt
             ? cdRFQ[0].createdAt
-            : undefined;
+            : row.original.createdAt;
         } else {
           dateVal = row.original.createdAt;
         }
@@ -171,8 +173,8 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       },
     },
 
-    // Due Date — hidden for connection designers
-    ...(!isConnectionDesigner ? [{
+    // Due Date
+    {
       accessorKey: "estimationDate",
       header: "Due Date",
       cell: ({ row }: any) => (
@@ -180,7 +182,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
           {row.original.estimationDate ? formatDate(row.original.estimationDate) : "—"}
         </span>
       ),
-    }] as any : []),
+    },
 
     // WBT Submitted Date — hidden for connection designers
     ...(!isConnectionDesigner ? [{
@@ -223,7 +225,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
                 ? "bg-green-50 text-green-700 border-green-200"
                 : "bg-yellow-50 text-yellow-700 border-yellow-200"
           }`}>
-            {!hasQuotation ? "No Quotation" : approved ? "Approved" : "Pending"}
+            {!hasQuotation ? "Pending" : approved ? "Approved" : "In-Review"}
           </span>
         );
       },

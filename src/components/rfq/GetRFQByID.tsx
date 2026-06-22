@@ -431,17 +431,6 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
   /* ---------------- QUOTATION COLUMNS ---------------- */
   const quotationColumns: ColumnDef<any>[] = [
     {
-      accessorKey: "connectionDesignerName",
-      header: "Designer",
-      cell: ({ row }) => {
-        const name =
-          row.original.connectionDesignerName ||
-          row.original.connectionDesignerId ||
-          "Unknown";
-        return <span className="font-medium text-sm">{name}</span>;
-      },
-    },
-    {
       accessorKey: "bidprice",
       header: "Bid Price",
       cell: ({ row }) => (
