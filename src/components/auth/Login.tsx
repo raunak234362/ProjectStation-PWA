@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import type { AuthInterface } from "../../interface";
 import AuthService from "../../api/auth";
 import Background from "../../assets/Green Banana Leaf Pattern Reminder Facebook Post(1).jpg";
 import LOGO from "../../assets/logo.png";
 import Input from "../fields/input";
 import Button from "../fields/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login, setUserData } from "../../store/userSlice";
 import { connectSocket } from "../../socket";
@@ -13,7 +14,22 @@ import { connectSocket } from "../../socket";
 const Login = () => {
   const { register, handleSubmit, formState: { isSubmitting } } = useForm<AuthInterface>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const redirectUrl = searchParams.get("redirect") || sessionStorage.getItem("redirectUrl");
+      if (redirectUrl) {
+        sessionStorage.removeItem("redirectUrl");
+        navigate(redirectUrl);
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [navigate, searchParams]);
+
   const Submit = async (data: AuthInterface) => {
     try {
       const userLogin = await AuthService.login(data);
@@ -22,6 +38,10 @@ const Login = () => {
         const challengeToken = userLogin?.challengeToken || userLogin?.data?.challengeToken;
         if (challengeToken) {
           sessionStorage.setItem("challengeToken", challengeToken);
+          const redirectUrl = searchParams.get("redirect");
+          if (redirectUrl) {
+            sessionStorage.setItem("redirectUrl", redirectUrl);
+          }
           navigate("/verify-challenge");
           return;
         }
@@ -48,7 +68,14 @@ const Login = () => {
         dispatch(setUserData(userDetail));
       }
 
-      navigate("/dashboard");
+      const redirectUrl = searchParams.get("redirect") || sessionStorage.getItem("redirectUrl");
+      if (redirectUrl) {
+        sessionStorage.removeItem("redirectUrl");
+        navigate(redirectUrl);
+      } else {
+        navigate("/dashboard");
+      }
+      
       console.log("Login Successful:", userLogin);
     } catch (error: any) {
       console.error("Error While Logging in:", error);
@@ -59,6 +86,10 @@ const Login = () => {
           const challengeToken = data.challengeToken;
           if (challengeToken) {
             sessionStorage.setItem("challengeToken", challengeToken);
+            const redirectUrl = searchParams.get("redirect");
+            if (redirectUrl) {
+              sessionStorage.setItem("redirectUrl", redirectUrl);
+            }
             navigate("/verify-challenge");
             return;
           }

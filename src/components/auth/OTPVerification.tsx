@@ -108,7 +108,13 @@ const OTPVerification = () => {
         dispatch(setUserData(userDetail));
       }
 
-      navigate("/dashboard");
+      const redirectUrl = sessionStorage.getItem("redirectUrl");
+      if (redirectUrl) {
+        sessionStorage.removeItem("redirectUrl");
+        navigate(redirectUrl);
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message ||

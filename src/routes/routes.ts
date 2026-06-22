@@ -39,6 +39,7 @@ const CDRFQDetailsRoute = lazy(() => import("../components/connectionDesigner/CD
 
 const routes = [
   { path: "/", Component: Login },
+  { path: "/login", Component: Login },
   { path: "/verify-challenge", Component: OTPVerification },
   { path: "/rfi/:id", Component: RFIDetailsRoute },
   { path: "/rfq/:id", Component: RFQDetailsRoute },
