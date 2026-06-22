@@ -10,7 +10,7 @@ const CODetailsRoute = () => {
   return (
     <div className="h-screen w-full bg-gray-50 overflow-auto">
       {id ? (
-        <GetCOByID id={id} projectId={projectId} onClose={() => navigate(-1)} />
+        <GetCOByID id={id} projectId={projectId} onClose={() => navigate('/dashboard')} />
       ) : (
         <div className="p-4 flex justify-center items-center h-full">
           <p className="text-gray-500 font-bold uppercase tracking-widest">No Change Order ID provided</p>

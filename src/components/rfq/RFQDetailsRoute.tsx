@@ -8,7 +8,7 @@ const RFQDetailsRoute = () => {
   return (
     <div className="h-screen w-full bg-gray-50 overflow-auto">
       {id ? (
-        <GetRFQByID id={id} onClose={() => navigate(-1)} />
+        <GetRFQByID id={id} onClose={() => navigate('/dashboard')} />
       ) : (
         <div className="p-4 flex justify-center items-center h-full">
           <p className="text-gray-500 font-bold uppercase tracking-widest">No RFQ ID provided</p>
