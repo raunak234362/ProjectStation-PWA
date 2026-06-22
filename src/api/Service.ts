@@ -480,6 +480,33 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find rfq", error);
+      throw error;
+    }
+  }
+
+  //getting Internal RFQ by ID
+  static async GetInternalRFQByID(rfqId: string) {
+    try {
+      // NOTE: Adjust endpoint if backend is different
+      const response = await api.get(`rfq/getById/${rfqId}`);
+      console.log(" All internal rfq fetched by rfq ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find internal rfq", error);
+      throw error;
+    }
+  }
+
+  //getting CD RFQ by ID
+  static async GetCDRFQByID(rfqId: string) {
+    try {
+      // NOTE: Adjust endpoint if backend is different
+      const response = await api.get(`rfq/getById/${rfqId}`);
+      console.log(" All cd rfq fetched by rfq ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find cd rfq", error);
+      throw error;
     }
   }
 
