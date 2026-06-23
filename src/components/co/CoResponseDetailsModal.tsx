@@ -34,20 +34,23 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
       let fabricatorName = "";
       let projectName = "";
       if (projectId) {
-        const project = await Service.GetProjectById(projectId);
-        fabricatorName = project?.fabricator?.fabName || "";
+        const projectRes = await Service.GetProjectById(projectId);
+        const project = projectRes?.data || projectRes;
+        fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
         projectName = project?.projectName || project?.name || "";
       } else {
         const coDetails = await Service.GetChangeOrderById(response.CoId);
-        const projectObj = coDetails?.data?.project || coDetails?.project;
+        const coObj = coDetails?.data || coDetails;
+        const projectObj = coObj?.project;
         if (projectObj) {
-          fabricatorName = projectObj.fabricator?.fabName || "";
+          fabricatorName = projectObj.fabricator?.fabName || projectObj.fabricatorName || "";
           projectName = projectObj.projectName || projectObj.name || "";
         } else {
-          const pid = coDetails?.data?.projectId || coDetails?.projectId;
+          const pid = coObj?.projectId || coObj?.project_id;
           if (pid) {
-            const project = await Service.GetProjectById(pid);
-            fabricatorName = project?.fabricator?.fabName || "";
+            const projectRes = await Service.GetProjectById(pid);
+            const project = projectRes?.data || projectRes;
+            fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
             projectName = project?.projectName || project?.name || "";
           }
         }
