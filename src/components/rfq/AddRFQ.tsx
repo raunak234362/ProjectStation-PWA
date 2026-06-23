@@ -311,10 +311,17 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         }
       }
 
+      const targetFabricatorId = payload.fabricatorId;
       const selectedFab = fabricators?.find(
-        (f) => String(f.id) === String(data.fabricatorId),
+        (f) => String(f.id) === String(targetFabricatorId),
       );
-      const fabricatorName = selectedFab?.fabName || "";
+      let fabricatorName = selectedFab?.fabName || "";
+      if (!fabricatorName) {
+        fabricatorName = userDetail?.FabricatorPointOfContacts?.[0]?.fabricator?.fabName || 
+                         userDetail?.FabricatorPointOfContacts?.[0]?.fabName || 
+                         userDetail?.fabricator?.fabName || 
+                         "";
+      }
       const rfqProjectName = data.projectName || "";
 
       const response = await Service.addRFQ(formData, fabricatorName, rfqProjectName);
