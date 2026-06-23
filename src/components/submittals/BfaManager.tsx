@@ -162,46 +162,35 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
   }, [submittalId]);
 
   const handleCreateBfa = async () => {
-    if (!subject.trim()) {
-      toast.error("Subject is required");
-      return;
-    }
-    const strippedDescription = description.replace(/<[^>]+>/g, "").trim();
-    if (!strippedDescription) {
-      toast.error("Description is required");
-      return;
-    }
-
     try {
       setSubmitting(true);
       const formData = new FormData();
       formData.append("submittalID", submittalId);
-      formData.append("subject", subject);
-      formData.append("description", description);
+      formData.append("subject", subject ? subject.trim() : "");
+      formData.append("description", description ? description.trim() : "");
       formData.append("status", status);
       files.forEach((file) => formData.append("files", file));
 
+      const submittalDetails = await Service.GetSubmittalbyId(submittalId);
+      const pid = submittalDetails?.projectId || submittalDetails?.project_id || submittalDetails?.data?.projectId || submittalDetails?.data?.project_id || submittalDetails?.project?.id || submittalDetails?.data?.project?.id;
       let fabricatorName = "";
       let projectName = "";
-      if (submittalId) {
-        const submittal = await Service.GetSubmittalbyId(submittalId);
-        const projectId = submittal?.projectId || submittal?.data?.projectId || submittal?.project_id || submittal?.data?.project_id;
-        if (projectId) {
-          const project = await Service.GetProjectById(projectId);
-          fabricatorName = project?.fabricator?.fabName || "";
-          projectName = project?.projectName || project?.name || "";
-        }
+      if (pid) {
+        const projectRes = await Service.GetProjectById(pid);
+        const project = projectRes?.data || projectRes;
+        fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
+        projectName = project?.projectName || project?.name || "";
       }
 
       await Service.AddBFA(formData, fabricatorName, projectName);
       toast.success("BFA Raised Successfully!");
-      
+
       // Reset form
       setSubject("");
       setDescription("");
       setFiles([]);
       setShowCreateModal(false);
-      
+
       // Refresh BFA details
       fetchBfa();
     } catch (err) {
@@ -213,39 +202,32 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
   };
 
   const handleUpdateBfa = async () => {
-    const strippedDescription = description.replace(/<[^>]+>/g, "").trim();
-    if (!strippedDescription) {
-      toast.error("Description is required");
-      return;
-    }
-
     try {
       setSubmitting(true);
       const formData = new FormData();
-      formData.append("description", description);
+      formData.append("description", description ? description.trim() : "");
       formData.append("status", status);
       files.forEach((file) => formData.append("files", file));
 
+      const submittalDetails = await Service.GetSubmittalbyId(submittalId);
+      const pid = submittalDetails?.projectId || submittalDetails?.project_id || submittalDetails?.data?.projectId || submittalDetails?.data?.project_id || submittalDetails?.project?.id || submittalDetails?.data?.project?.id;
       let fabricatorName = "";
       let projectName = "";
-      if (submittalId) {
-        const submittal = await Service.GetSubmittalbyId(submittalId);
-        const projectId = submittal?.projectId || submittal?.data?.projectId || submittal?.project_id || submittal?.data?.project_id;
-        if (projectId) {
-          const project = await Service.GetProjectById(projectId);
-          fabricatorName = project?.fabricator?.fabName || "";
-          projectName = project?.projectName || project?.name || "";
-        }
+      if (pid) {
+        const projectRes = await Service.GetProjectById(pid);
+        const project = projectRes?.data || projectRes;
+        fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
+        projectName = project?.projectName || project?.name || "";
       }
 
       await Service.UpdateBFA(bfa.id, formData, fabricatorName, projectName);
       toast.success("BFA Updated Successfully!");
-      
+
       // Reset form
       setDescription("");
       setFiles([]);
       setShowUpdateModal(false);
-      
+
       // Refresh BFA details
       fetchBfa();
     } catch (err) {
@@ -318,13 +300,12 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
             <Info label="BFA Subject" value={bfa.subject} />
             <div className="mb-2">
               <h4 className="text-sm text-gray-700">BFA Status</h4>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-tight border mt-1 ${
-                bfa.status === "APPROVED"
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-tight border mt-1 ${bfa.status === "APPROVED"
                   ? "bg-green-100 text-green-700 border-green-200"
                   : bfa.status === "REJECTED"
                     ? "bg-red-100 text-red-700 border-red-200"
                     : "bg-yellow-100 text-yellow-700 border-yellow-200"
-              }`}>
+                }`}>
                 {bfa.status || "PENDING"}
               </span>
             </div>
@@ -397,56 +378,62 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
       {/* CREATE BFA MODAL */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[210] animate-in fade-in duration-200">
-          <div className="bg-white p-6 rounded-xl w-full max-w-2xl shadow-lg relative space-y-4 border border-gray-100">
-            <h2 className="text-xl font-bold text-green-700">
-              BFA
-            </h2>
+          <div className="bg-white p-6 rounded-xl w-full h-[80vh] max-w-4xl shadow-lg relative space-y-4 border border-gray-100">
 
-            <div>
-              <label className="text-sm font-medium">BFA Subject *</label>
-              <input
-                type="text"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full border border-gray-200 rounded-md p-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#6bbd45] text-sm"
-                placeholder="Enter BFA subject..."
-              />
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold text-green-700">
+                BFA
+              </h2>
+              <Button className="text-black font-bold border-2 bg-red-100 hover:bg-red-200 border-red-700" onClick={() => setShowCreateModal(false)}>Close</Button>
             </div>
 
-            <div>
-              <label className="text-sm font-medium">BFA Status *</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full border border-gray-200 bg-white rounded-md p-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#6bbd45] text-sm"
-              >
-                <option value="partial">Partial</option>
-                <option value="complete">Completed</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium">Description *</label>
-              <div className="mt-1">
-                <RichTextEditor
-                  value={description}
-                  onChange={setDescription}
-                  placeholder="Explain BFA details..."
+            <div className=" h-[65vh] overflow-y-auto">
+              <div>
+                <label className="text-sm font-medium">BFA Subject (Optional)</label>
+                <input
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="w-full border border-gray-200 rounded-md p-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#6bbd45] text-sm"
+                  placeholder="Enter BFA subject..."
                 />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">BFA Status *</label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="w-full border border-gray-200 bg-white rounded-md p-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#6bbd45] text-sm"
+                >
+                  <option value="partial">Partial</option>
+                  <option value="complete">Completed</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Description (Optional)</label>
+                <div className="mt-1">
+                  <RichTextEditor
+                    value={description}
+                    onChange={setDescription}
+                    placeholder="Explain BFA details..."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-1 block">Attachments</label>
+                <MultipleFileUpload onFilesChange={setFiles} initialFiles={files} />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
+                <Button className="bg-green-600 text-white font-bold" onClick={handleCreateBfa} disabled={submitting}>
+                  {submitting ? "Submitting..." : "Raise BFA"}
+                </Button>
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-1 block">Attachments</label>
-              <MultipleFileUpload onFilesChange={setFiles} initialFiles={files} />
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
-              <Button onClick={() => setShowCreateModal(false)}>Cancel</Button>
-              <Button className="bg-green-600 text-white font-bold" onClick={handleCreateBfa} disabled={submitting}>
-                {submitting ? "Submitting..." : "Raise BFA"}
-              </Button>
-            </div>
           </div>
         </div>
       )}
@@ -472,7 +459,7 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Description *</label>
+              <label className="text-sm font-medium">Description (Optional)</label>
               <div className="mt-1">
                 <RichTextEditor
                   value={description}
@@ -488,7 +475,7 @@ const BfaManager: React.FC<BfaManagerProps> = ({ submittalId }) => {
             </div>
 
             <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
-              <Button onClick={() => setShowUpdateModal(false)}>Cancel</Button>
+
               <Button className="bg-green-600 text-white font-bold" onClick={handleUpdateBfa} disabled={submitting}>
                 {submitting ? "Updating..." : "Update BFA"}
               </Button>
