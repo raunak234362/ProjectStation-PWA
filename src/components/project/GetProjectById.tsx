@@ -494,6 +494,7 @@ const GetProjectById = ({
           "wbs",
           "changeOrder",
           "notes",
+          "files",
         ];
         if (hiddenTabs.includes(tab.key)) return false;
       }
