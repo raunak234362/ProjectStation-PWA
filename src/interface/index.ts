@@ -618,6 +618,7 @@ export interface RFIItem {
   files: RFIResponseFile[] | string[];
   rfiresponse: RFIResponse[];
   date: string;
+  isConnectionDesign?: boolean | string;
 }
 
 export interface RFIResponseSchema {
