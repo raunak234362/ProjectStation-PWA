@@ -250,9 +250,10 @@ const RFQResponseItem = ({
 interface GetRfqByIDProps {
   id: string;
   onClose?: () => void;
+  filterType?: "MTO" | "DETAILING";
 }
 
-const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
+const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
   console.log("GetRFQByID initialized with ID:", id);
   const [rfq, setRfq] = useState<RFQItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -283,9 +284,16 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
   const topLevelResponses = useMemo(() => {
     return (rfq?.responses || [])
-      .filter((r: any) => !r.parentResponseId)
+      .filter((r: any) => {
+        if (r.parentResponseId) return false;
+        if (filterType) {
+          const type = (r.type || r.Type || "").toUpperCase();
+          return type === filterType.toUpperCase();
+        }
+        return true;
+      })
       .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [rfq?.responses]);
+  }, [rfq?.responses, filterType]);
 
   console.log(rfq);
   const fetchRfq = async () => {

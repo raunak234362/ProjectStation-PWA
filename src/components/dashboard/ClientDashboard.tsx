@@ -262,16 +262,30 @@ const ClientDashboard = () => {
       const data = Array.isArray(response) ? response : response?.data || [];
 
       const pending = data.filter((r: any) => {
+        const responses = r.responses || [];
+        const hasUnansweredMTO = responses.some(
+          (res: any) =>
+            (res.type || res.Type || "").toUpperCase() === "MTO" &&
+            (!res.childResponses || res.childResponses.length === 0)
+        );
+        const hasUnansweredDetailing = responses.some(
+          (res: any) =>
+            (res.type || res.Type || "").toUpperCase() === "DETAILING" &&
+            (!res.childResponses || res.childResponses.length === 0)
+        );
+
+        if (isClientAdmin) {
+          return hasUnansweredMTO || hasUnansweredDetailing;
+        }
+
         // Original condition: Status is PENDING
         let isPending = false;
         if (r.status === "PENDING") {
           isPending = true;
         } else {
           // New condition: Has responses but at least one response has no childResponses (unanswered)
-          const responses = r.responses || [];
-          if (responses.length > 0) {
-            const hasUnanswered = responses.some((res: any) => !res.childResponses || res.childResponses.length === 0);
-            if (hasUnanswered) isPending = true;
+          if (hasUnansweredMTO || hasUnansweredDetailing) {
+            isPending = true;
           }
         }
 
@@ -283,11 +297,15 @@ const ClientDashboard = () => {
         // and if MTO STATUS WBT_SUBMITTED That means it's completed so no need to show in Pending
         const isWbtSubmittedOrAwarded = r.wbtStatus === "AWARDED" || (r.responses && r.responses.length > 0);
         if (hasMTO && isWbtSubmittedOrAwarded) {
-          return false;
+          if (hasDetailing && hasUnansweredDetailing) {
+            // Keep it since detailing is still pending attention
+          } else {
+            return false;
+          }
         }
 
         // if MTO is there then don't show in RFQ pending action show only in MTO Ongoing, but if both MTO Or Detailing is there then show
-        if (!isClientAdmin && hasMTO && !hasDetailing) {
+        if (hasMTO && !hasDetailing) {
           return false;
         }
 
@@ -362,7 +380,9 @@ const ClientDashboard = () => {
                   dashboardStats
                     ? {
                         ...dashboardStats,
-                        pendingRFQ: pendingRFQs.length,
+                        pendingRFQ: isClientAdmin
+                          ? (dashboardStats.pendingRFQ ?? 0)
+                          : pendingRFQs.length,
                       }
                     : null
                 }
@@ -456,6 +476,7 @@ const ClientDashboard = () => {
                 <GetRFQByID
                   id={selectedRfqId}
                   onClose={() => setSelectedRfqId(null)}
+                  filterType={rfqFilter === "ALL" ? undefined : rfqFilter}
                 />
               </Suspense>
             </div>
