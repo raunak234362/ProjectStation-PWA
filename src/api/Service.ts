@@ -2571,9 +2571,13 @@ class Service {
     versionId?: string | undefined,
   ) {
     try {
+      let mappedTable = table;
+      if (table === "rfqResponse" || table === "rFQResponse" || table === "rFQresponse") {
+        mappedTable = "rFQResponse";
+      }
       const url = versionId
-        ? `share/${table}/${parentId}/versions/${versionId}/${fileId}`
-        : `share/${table}/${parentId}/${fileId}`;
+        ? `share/${mappedTable}/${parentId}/versions/${versionId}/${fileId}`
+        : `share/${mappedTable}/${parentId}/${fileId}`;
       const response = await api.post(url);
       return response.data;
     } catch (error) {

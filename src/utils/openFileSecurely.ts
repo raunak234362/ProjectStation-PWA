@@ -27,8 +27,10 @@ const getDownloadUrl = (
       return `${baseURL}/submittal/response/${parentId}/viewfile/${fileId}`;
     case "rFQ":
       return `${baseURL}/rfq/viewFile/${parentId}/${fileId}`;
-    case "rfqResponse":
-    case "rfq/response":
+      case 'rfqResponse':
+    case 'rFQResponse':
+    case 'rFQresponse':
+    case 'rfq/response':
       return `${baseURL}/rfq/response/viewFile/${parentId}/${fileId}`;
     case "rfqFollowup":
     case "rfq/followup":
@@ -155,25 +157,34 @@ export const shareFileSecurely = async (
   versionId?: string | number,
 ) => {
   try {
-    const response =
-      type === "submittals"
-        ? await Service.createShareLink(
-            "submittalVersion",
-            String(versionId),
-            String(fileId),
-          )
-        : type === "bfa"
-          ? await Service.createShareLink(
-              "bfa",
-              String(id),
-              String(fileId),
-            )
-          : await Service.createShareLink(
-              type,
-              String(id),
-              String(fileId),
-              versionId ? String(versionId) : undefined,
-            );
+    let response;
+    if (type === "submittals") {
+      response = await Service.createShareLink(
+        "submittalVersion",
+        String(versionId),
+        String(fileId),
+      );
+    } else if (type === "bfa") {
+      response = await Service.createShareLink(
+        "bfa",
+        String(id),
+        String(fileId),
+      );
+    } else if (type === "rfqResponse" || type === "rFQResponse" || type === "rFQresponse") {
+      response = await Service.createShareLink(
+        "rFQResponse",
+        String(id),
+        String(fileId),
+        versionId ? String(versionId) : undefined,
+      );
+    } else {
+      response = await Service.createShareLink(
+        type,
+        String(id),
+        String(fileId),
+        versionId ? String(versionId) : undefined,
+      );
+    }
     if (response?.shareUrl) {
       await navigator.clipboard.writeText(response.shareUrl);
       toast.success("Link copied to clipboard!");
