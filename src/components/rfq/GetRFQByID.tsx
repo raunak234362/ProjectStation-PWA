@@ -5,7 +5,7 @@ import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
 import {
   Loader2, AlertCircle,
-  MessageSquare, User, Clock, Trash2, X
+  MessageSquare, User, Clock, Trash2, X, ChevronDown, ChevronUp
 } from "lucide-react";
 import ResponseModal from "./ResponseModal";
 import DataTable from "../ui/table";
@@ -33,7 +33,7 @@ const RFQResponseItem = ({
   onReply?: (parent: any) => void;
   onSelect?: (resp: any) => void;
 }) => {
-  const isOpen = false;
+  const [isOpen, setIsOpen] = useState(false);
   const hasChildren =
     response.childResponses && response.childResponses.length > 0;
 
@@ -41,11 +41,13 @@ const RFQResponseItem = ({
     <div className="mb-6 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
       {/* Header */}
       <div
-        onClick={() => onSelect?.(response)}
-        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer transition-colors ${isOpen ? "bg-gray-50" : "bg-white"
+        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${isOpen ? "bg-gray-50" : "bg-white"
           } hover:bg-gray-50 ${isOpen ? "border-b border-gray-100" : ""}`}
       >
-        <div className="flex items-center gap-4">
+        <div
+          className="flex items-center gap-4 flex-1 cursor-pointer"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-100 shrink-0">
             <User className="w-6 h-6 text-green-600" />
           </div>
@@ -85,19 +87,24 @@ const RFQResponseItem = ({
             </span>
           </div>
 
-          {/* <Button
+          <Button
             variant="outline"
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              onSelect?.(response);
+              onReply?.(response);
             }}
-            className="h-9 px-4 rounded-xl border border-black/10 bg-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 hover:text-blue-600 transition-all shadow-2xs"
+            className="h-9 px-4 rounded-xl border border-black/10 bg-white font-black text-[10px] uppercase tracking-widest hover:bg-green-50 hover:text-green-700 transition-all shadow-2xs"
           >
-            Popup View
+            Reply
           </Button>
- */}
 
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            {isOpen ? <ChevronUp size={18} className="text-gray-500" /> : <ChevronDown size={18} className="text-gray-500" />}
+          </button>
         </div>
       </div>
 
@@ -271,6 +278,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
   const [newStatus, setNewStatus] = useState("");
   const [statusReason, setStatusReason] = useState("");
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isDescOpen, setIsDescOpen] = useState(false);
 
   // New states for quotation responses
   const [showQuotationResponseModal, setShowQuotationResponseModal] =
@@ -514,12 +522,12 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 const wbtStatus = (rfq as any)?.wbtStatus;
                 const status = rfq?.status;
                 const currentStatus = (wbtStatus && wbtStatus !== "RECEIVED") ? wbtStatus : status;
-                
+
                 if (currentStatus === "AWARDED") {
                   const isMTO = !!(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.mtoStickModelEnabled);
                   return isMTO ? "SUBMITTED" : "AWARDED";
                 }
-                
+
                 return currentStatus?.replace("_", " ");
               })()}
             </span>
@@ -667,49 +675,60 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
 
               {/* Description */}
               <div className="space-y-4">
-                <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
-                  {isCDRole ? "Description" : "Description"}
-                </h4>
-                <div className="pl-4">
-                  <style>{`
-                    .rfq-description * {
-                      max-width: 100% !important;
-                      width: auto !important;
-                      box-sizing: border-box !important;
-                      overflow-x: hidden !important;
-                    }
-                    .rfq-description table {
-                      width: 100% !important;
-                      table-layout: fixed !important;
-                    }
-                    .rfq-description td, .rfq-description th {
-                      word-break: break-word !important;
-                    }
-                    .rfq-description img {
-                      max-width: 100% !important;
-                      height: auto !important;
-                    }
-                    .rfq-description center {
-                      display: block !important;
-                      text-align: left !important;
-                    }
-                    .rfq-description a {
-                      color: #2563eb !important;
-                      word-break: break-all !important;
-                    }
-                    .rfq-description p { margin-bottom: 1rem !important; }
-                  `}</style>
-                  <div
-                    className="rfq-description text-gray-800 text-sm font-medium wrap-break-word leading-relaxed"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        (isCDRole ? rfq?.CDDescription : rfq?.description) ||
-                        (isCDRole
-                          ? "No CD description provided"
-                          : "No description provided"),
-                    }}
-                  />
+                <div
+                  className="flex items-center gap-2 cursor-pointer group"
+                  onClick={() => setIsDescOpen(!isDescOpen)}
+                >
+                  <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                    {isDescOpen ? "Description" : "Click here to View the Description"}
+                  </h4>
+                  <button className="p-1.5 rounded-full group-hover:bg-gray-100 transition-colors">
+                    {isDescOpen ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
+                  </button>
                 </div>
+
+                {isDescOpen && (
+                  <div className="pl-4 animate-in slide-in-from-top-2 duration-300">
+                    <style>{`
+                      .rfq-description * {
+                        max-width: 100% !important;
+                        width: auto !important;
+                        box-sizing: border-box !important;
+                        overflow-x: hidden !important;
+                      }
+                      .rfq-description table {
+                        width: 100% !important;
+                        table-layout: fixed !important;
+                      }
+                      .rfq-description td, .rfq-description th {
+                        word-break: break-word !important;
+                      }
+                      .rfq-description img {
+                        max-width: 100% !important;
+                        height: auto !important;
+                      }
+                      .rfq-description center {
+                        display: block !important;
+                        text-align: left !important;
+                      }
+                      .rfq-description a {
+                        color: #2563eb !important;
+                        word-break: break-all !important;
+                      }
+                      .rfq-description p { margin-bottom: 1rem !important; }
+                    `}</style>
+                    <div
+                      className="rfq-description text-gray-800 text-sm font-medium wrap-break-word leading-relaxed bg-gray-50/50 p-4 rounded-xl border border-gray-100"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          (isCDRole ? rfq?.CDDescription : rfq?.description) ||
+                          (isCDRole
+                            ? "No CD description provided"
+                            : "No description provided"),
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Files */}
@@ -759,12 +778,8 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 </h4>
 
                 {(userRole === "admin" ||
-                  userRole === "client" ||
-                  userRole === "client_admin" ||
-                  userRole === "client_estimator" ||
                   userRole === "deputy_manager" ||
-                  userRole === "operation_executive" ||
-                  userRole === "user") && (
+                  userRole === "operation_executive") && (
                     <Button
                       onClick={() => {
                         setSelectedParentResponseId(null);
