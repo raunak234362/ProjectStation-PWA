@@ -325,7 +325,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       const rfqProjectName = data.projectName || "";
 
       const response = await Service.addRFQ(formData, fabricatorName, rfqProjectName);
-      const createdRFQ = response.data || response.rfq || response;
+      const createdRFQ = response.data?.newRfq || response.data || response.rfq || response;
 
       if (createdRFQ && !createdRFQ.error) {
         // Enrich with form data for immediate display in the table
@@ -337,7 +337,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           ...createdRFQ,
           projectName: data.projectName,
           projectNumber: data.projectNumber,
-          status: "IN_REVIEW",
           estimationDate: data.estimationDate,
           tools: data.tools,
           fabricator: selectedFab || createdRFQ.fabricator,

@@ -81,18 +81,27 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
 
   const responseColumns: ColumnDef<any>[] = [
     {
-      accessorKey: "createdByRole",
-      header: "To",
+      accessorKey: "respondedBy",
+      header: "Responded By",
       cell: ({ row }) => {
         if (row.original.userRole === "CLIENT" || row.original.userRole === "CLIENT_ADMIN") {
           return <span className="font-medium text-sm">Client</span>;
         }
 
-        const responderId = row.original.userId;
-        const user = users.find((u: any) => String(u.id) === String(responderId));
-        const name = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "WBT Team";
+        let name = "WBT Team";
+        const rUser = row.original.user;
 
-        return <span className="font-medium text-sm">{name}</span>;
+        if (rUser) {
+           name = `${rUser.firstName || ""} ${rUser.lastName || ""}`.trim();
+        } else {
+            const responderId = row.original.userId;
+            const user = users.find((u: any) => String(u.id) === String(responderId));
+            if (user) {
+                name = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+            }
+        }
+
+        return <span className="font-medium text-sm uppercase">{name}</span>;
       },
     },
     {
@@ -107,26 +116,18 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
         />
       ),
     },
-    {
-      accessorKey: "files",
-      header: "Files",
-      cell: ({ row }) => {
-        const count = row.original.files?.length ?? 0;
-        return count > 0 ? (
-          <span className="text-black font-medium">{count} file(s)</span>
-        ) : (
-          <span className="text-gray-400">—</span>
-        );
-      },
-    },
+    
     {
       accessorKey: "createdAt",
       header: "Created",
-      cell: ({ row }) => (
-        <span className="text-gray-700 text-sm">
-          {new Date(row.original.createdAt).toLocaleString()}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const dateValue = row.original.createdAt || row.original.date;
+        return (
+          <span className="text-gray-700 text-sm">
+            {dateValue ? new Date(dateValue).toLocaleString() : "—"}
+          </span>
+        );
+      },
     },
 
     {

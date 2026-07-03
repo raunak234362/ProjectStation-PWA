@@ -7,11 +7,14 @@ import { formatDate } from "../../utils/dateUtils";
 import { Search, X } from "lucide-react";
 
 const getRFQStatus = (row: any) => {
-  const status = row.status;
-  const wbtStatus = row.wbtStatus;
+  const status = row.status?.toUpperCase()?.trim();
+  const wbtStatus = row.wbtStatus?.toUpperCase()?.trim();
   const responses = row.responses || [];
 
-  if (wbtStatus === "AWARDED") return "AWARDED";
+  if (wbtStatus === "AWARDED" || status === "AWARDED") return "AWARDED";
+  if (wbtStatus === "REVISE" || status === "REVISE") return "REVISE";
+  if (wbtStatus === "REJECTED" || status === "REJECTED") return "REJECTED";
+  if (wbtStatus === "CLOSED" || status === "CLOSED") return "CLOSED";
   if (responses.length > 0) return "WBT_SUBMITTED";
   if (status === "IN_REVIEW") return "IN_REVIEW";
 
@@ -36,6 +39,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     { label: "RE-ESTIMATION REQUIRED", value: "RE_ESTIMATION_REQUESTED" },
     { label: "WBT SUBMITTED", value: "WBT_SUBMITTED" },
     { label: "CLARIFICATION REQUIRED", value: "CLARIFICATION_REQUIRED" },
+    { label: "REVISE", value: "REVISE" },
   ];
 
   const yearOptions = useMemo(() => {
@@ -245,6 +249,8 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
           label = "WBT Submitted";
         } else if (val === "IN_REVIEW") {
           label = "Estimation In Progress";
+        } else if (val === "REVISE") {
+          label = "Revise";
         } else {
           label = val?.replace("_", " ") || "—";
         }

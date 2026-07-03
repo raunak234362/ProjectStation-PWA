@@ -433,6 +433,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
     userRole === "connection_designer" ||
     userRole === "connection_designer_engineer" ||
     userRole === "connection_designer_admin";
+  const isClientRole = ["client", "client_admin", "client_estimator", "client_accountant"].includes(userRole);
 
 
 
@@ -807,34 +808,36 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 ) : (
                   <p className="text-gray-700 italic">No responses yet.</p>
                 ))}
-              <div className="mt-4">
-                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                  <>
-                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-                      CD Quotation
-                    </p>
-                    <DataTable
-                      columns={quotationColumns}
-                      data={rfq?.CDQuotas || []}
-                      pageSizeOptions={[5]}
-                      onRowClick={(row: any) => setSelectedQuotation(row)}
-                    />
-                  </>
-                ) : isCDRole ? (
-                  // Show Submit Button for all connection designer roles
-                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                    <p className="text-gray-500 mb-4 text-center">
-                      You haven't submitted a quotation yet.
-                    </p>
-                    <Button
-                      onClick={() => setShowQuotationResponseModal(true)}
-                      className="px-6 py-2.5 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
-                    >
-                      Submit Quotation Response
-                    </Button>
-                  </div>
-                ) : null}
-              </div>
+              {!isClientRole && (
+                <div className="mt-4">
+                  {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                    <>
+                      <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                        CD Quotation
+                      </p>
+                      <DataTable
+                        columns={quotationColumns}
+                        data={rfq?.CDQuotas || []}
+                        pageSizeOptions={[5]}
+                        onRowClick={(row: any) => setSelectedQuotation(row)}
+                      />
+                    </>
+                  ) : isCDRole ? (
+                    // Show Submit Button for all connection designer roles
+                    <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                      <p className="text-gray-500 mb-4 text-center">
+                        You haven't submitted a quotation yet.
+                      </p>
+                      <Button
+                        onClick={() => setShowQuotationResponseModal(true)}
+                        className="px-6 py-2.5 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
+                      >
+                        Submit Quotation Response
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+              )}
             </div>
 
           </div>

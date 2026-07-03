@@ -340,6 +340,11 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         return pendingCols;
       case "PENDING_RFI":
         return [
+          {
+            accessorKey: "projectName",
+            header: "Project Name",
+            cell: ({ row }) => row.original.jobName || row.original.projectName || row.original.project?.name || row.original.project?.projectName || row.original.customerName || "—",
+          },
           { accessorKey: "subject", header: "Subject" },
           {
             accessorKey: "sender",
@@ -370,6 +375,11 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         ];
       case "PENDING_COR":
         return [
+          {
+            accessorKey: "projectName",
+            header: "Project Name",
+            cell: ({ row }) => row.original.jobName || row.original.projectName || row.original.project?.name || row.original.project?.projectName || row.original.customerName || "—",
+          },
           {
             accessorKey: "changeOrderNumber",
             header: "CO Number",

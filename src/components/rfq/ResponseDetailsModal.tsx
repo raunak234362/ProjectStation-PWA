@@ -199,35 +199,37 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
             </div>
 
             {/* Tonnage & Pages 3-column Box */}
-            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
-                <div>
-                  <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
-                    Tonnage (With Connections) :  <span className="text-base font-semibold text-black">
-                      {response.totalTonnageWithConnection || "—"}
+            {(response.type || response.Type || "")?.toUpperCase() !== "DETAILING" && (
+              <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                  <div>
+                    <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
+                      Tonnage (With Connections) :  <span className="text-base font-semibold text-black">
+                        {response.totalTonnageWithConnection || "—"}
+                      </span>
                     </span>
-                  </span>
 
-                </div>
-                <div>
-                  <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
-                    Tonnage (W/O Connections) : <span className="text-base font-semibold text-black">
-                      {response.totalTonnageWithoutConnection || "—"}
+                  </div>
+                  <div>
+                    <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
+                      Tonnage (W/O Connections) : <span className="text-base font-semibold text-black">
+                        {response.totalTonnageWithoutConnection || "—"}
+                      </span>
                     </span>
-                  </span>
 
-                </div>
-                <div className="sm:col-span-2">
-                  <span className="text-sm font-semibold text-black uppercase tracking-widest block mb-1.5">
-                    Page Numbers :
-                  </span>
-                  <div
-                    className="text-sm text-black rich-text-content"
-                    dangerouslySetInnerHTML={{ __html: response.PageNumbers || "—" }}
-                  />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="text-sm font-semibold text-black uppercase tracking-widest block mb-1.5">
+                      Page Numbers :
+                    </span>
+                    <div
+                      className="text-sm text-black rich-text-content"
+                      dangerouslySetInnerHTML={{ __html: response.PageNumbers || "—" }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Project Files */}
             <div className="space-y-2">
@@ -304,9 +306,8 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                   >
                     <option value="AWARDED">Awarded</option>
                     <option value="REJECTED">Rejected</option>
-                    <option value="IN_REVIEW">In Review</option>
-                    <option value="RE_ESTIMATION_REQUESTED">Re-Estimation Required</option>
-                    <option value="WBT_SUBMITTED">WBT Submitted</option>
+                    <option value="REVISE">Revise</option>
+                    <option value="CLOSED">CLOSED</option>
                   </select>
                 </div>
                 <div className="space-y-2">

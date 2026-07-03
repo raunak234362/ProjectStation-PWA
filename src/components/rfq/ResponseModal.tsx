@@ -438,7 +438,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
       const formData = new FormData();
       formData.append("rfqId", rfqId);
       formData.append("description", data.description);
-      formData.append("status", "OPEN"); // response status
+      formData.append("status", data.wbtStatus || "OPEN"); // response status
       formData.append("wbtStatus", data.wbtStatus || "OPEN"); // parent rfq status
       formData.append("userRole", userRole ?? "");
       formData.append("userId", userId ?? "");
@@ -694,15 +694,11 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                     className="w-full h-12 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-black uppercase text-xs tracking-widest appearance-none cursor-pointer"
                     defaultValue="OPEN"
                   >
-                    <option value="OPEN">ACTIVE</option>
+                    <option value="">Please Select The status</option>
                     <option value="CLOSED">CLOSED</option>
                     <option value="AWARDED">AWARDED</option>
-                    <option value="RE_APPROVED">REVISE</option>
-                    <option value="PENDING">PENDING</option>
+                    <option value="REVISE">REVISE</option>              
                     <option value="REJECTED">REJECTED</option>
-                    <option value="IN_REVIEW">IN_REVIEW</option>
-                    <option value="RE_ESTIMATION_REQUESTED">RE_ESTIMATION REQUIRED</option>
-                    <option value="WBT_SUBMITTED">WBT SUBMITTED</option>
                     <option value="CLARIFICATION_REQUIRED">CLARIFICATION REQUIRED</option>
                   </select>
                 </div>
