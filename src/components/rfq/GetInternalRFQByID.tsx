@@ -5,7 +5,7 @@ import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
 import {
   Loader2, AlertCircle,
-  MessageSquare, User, Clock, Trash2, X, ChevronDown, ChevronUp
+  MessageSquare, User, Clock, Trash2, X
 } from "lucide-react";
 import ResponseModal from "./ResponseModal";
 import DataTable from "../ui/table";
@@ -33,7 +33,7 @@ const RFQResponseItem = ({
   onReply?: (parent: any) => void;
   onSelect?: (resp: any) => void;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = false;
   const hasChildren =
     response.childResponses && response.childResponses.length > 0;
 
@@ -41,13 +41,11 @@ const RFQResponseItem = ({
     <div className="mb-6 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
       {/* Header */}
       <div
-        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${isOpen ? "bg-gray-50" : "bg-white"
+        onClick={() => onSelect?.(response)}
+        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer transition-colors ${isOpen ? "bg-gray-50" : "bg-white"
           } hover:bg-gray-50 ${isOpen ? "border-b border-gray-100" : ""}`}
       >
-        <div
-          className="flex items-center gap-4 flex-1 cursor-pointer"
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-100 shrink-0">
             <User className="w-6 h-6 text-green-600" />
           </div>
@@ -87,24 +85,19 @@ const RFQResponseItem = ({
             </span>
           </div>
 
-          <Button
+          {/* <Button
             variant="outline"
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              onReply?.(response);
+              onSelect?.(response);
             }}
-            className="h-9 px-4 rounded-xl border border-black/10 bg-white font-black text-[10px] uppercase tracking-widest hover:bg-green-50 hover:text-green-700 transition-all shadow-2xs"
+            className="h-9 px-4 rounded-xl border border-black/10 bg-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 hover:text-blue-600 transition-all shadow-2xs"
           >
-            Reply
+            Popup View
           </Button>
+ */}
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
-          >
-            {isOpen ? <ChevronUp size={18} className="text-gray-500" /> : <ChevronDown size={18} className="text-gray-500" />}
-          </button>
         </div>
       </div>
 
@@ -254,14 +247,13 @@ const RFQResponseItem = ({
 };
 
 
-interface GetRfqByIDProps {
+interface GetInternalRFQByIDProps {
   id: string;
   onClose?: () => void;
-  filterType?: "MTO" | "DETAILING";
 }
 
-const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
-  console.log("GetRFQByID initialized with ID:", id);
+const GetInternalRFQByID = ({ id, onClose }: GetInternalRFQByIDProps) => {
+  console.log("GetInternalRFQByID initialized with ID:", id);
   const [rfq, setRfq] = useState<RFQItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -278,7 +270,6 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
   const [newStatus, setNewStatus] = useState("");
   const [statusReason, setStatusReason] = useState("");
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [isDescOpen, setIsDescOpen] = useState(false);
 
   // New states for quotation responses
   const [showQuotationResponseModal, setShowQuotationResponseModal] =
@@ -292,22 +283,15 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
 
   const topLevelResponses = useMemo(() => {
     return (rfq?.responses || [])
-      .filter((r: any) => {
-        if (r.parentResponseId) return false;
-        if (filterType) {
-          const type = (r.type || r.Type || "").toUpperCase();
-          return type === filterType.toUpperCase();
-        }
-        return true;
-      })
+      .filter((r: any) => !r.parentResponseId)
       .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [rfq?.responses, filterType]);
+  }, [rfq?.responses]);
 
   console.log(rfq);
   const fetchRfq = async () => {
     try {
       if (!rfq) setLoading(true);
-      const rfqRes = await Service.GetRFQbyId(id);
+      const rfqRes = await Service.GetInternalRFQByID(id);
 
       const rfqData = rfqRes?.data || rfqRes;
       if (rfqData) {
@@ -441,7 +425,6 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
     userRole === "connection_designer" ||
     userRole === "connection_designer_engineer" ||
     userRole === "connection_designer_admin";
-  const isClientRole = ["client", "client_admin", "client_estimator", "client_accountant"].includes(userRole);
 
 
 
@@ -522,12 +505,12 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 const wbtStatus = (rfq as any)?.wbtStatus;
                 const status = rfq?.status;
                 const currentStatus = (wbtStatus && wbtStatus !== "RECEIVED") ? wbtStatus : status;
-
+                
                 if (currentStatus === "AWARDED") {
                   const isMTO = !!(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.mtoStickModelEnabled);
                   return isMTO ? "SUBMITTED" : "AWARDED";
                 }
-
+                
                 return currentStatus?.replace("_", " ");
               })()}
             </span>
@@ -675,60 +658,49 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
 
               {/* Description */}
               <div className="space-y-4">
-                <div
-                  className="flex items-center gap-2 cursor-pointer group"
-                  onClick={() => setIsDescOpen(!isDescOpen)}
-                >
-                  <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
-                    {isDescOpen ? "Description" : "Click here to View the Description"}
-                  </h4>
-                  <button className="p-1.5 rounded-full group-hover:bg-gray-100 transition-colors">
-                    {isDescOpen ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
-                  </button>
+                <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                  {isCDRole ? "Description" : "Description"}
+                </h4>
+                <div className="pl-4">
+                  <style>{`
+                    .rfq-description * {
+                      max-width: 100% !important;
+                      width: auto !important;
+                      box-sizing: border-box !important;
+                      overflow-x: hidden !important;
+                    }
+                    .rfq-description table {
+                      width: 100% !important;
+                      table-layout: fixed !important;
+                    }
+                    .rfq-description td, .rfq-description th {
+                      word-break: break-word !important;
+                    }
+                    .rfq-description img {
+                      max-width: 100% !important;
+                      height: auto !important;
+                    }
+                    .rfq-description center {
+                      display: block !important;
+                      text-align: left !important;
+                    }
+                    .rfq-description a {
+                      color: #2563eb !important;
+                      word-break: break-all !important;
+                    }
+                    .rfq-description p { margin-bottom: 1rem !important; }
+                  `}</style>
+                  <div
+                    className="rfq-description text-gray-800 text-sm font-medium wrap-break-word leading-relaxed"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        (isCDRole ? rfq?.CDDescription : rfq?.description) ||
+                        (isCDRole
+                          ? "No CD description provided"
+                          : "No description provided"),
+                    }}
+                  />
                 </div>
-
-                {isDescOpen && (
-                  <div className="pl-4 animate-in slide-in-from-top-2 duration-300">
-                    <style>{`
-                      .rfq-description * {
-                        max-width: 100% !important;
-                        width: auto !important;
-                        box-sizing: border-box !important;
-                        overflow-x: hidden !important;
-                      }
-                      .rfq-description table {
-                        width: 100% !important;
-                        table-layout: fixed !important;
-                      }
-                      .rfq-description td, .rfq-description th {
-                        word-break: break-word !important;
-                      }
-                      .rfq-description img {
-                        max-width: 100% !important;
-                        height: auto !important;
-                      }
-                      .rfq-description center {
-                        display: block !important;
-                        text-align: left !important;
-                      }
-                      .rfq-description a {
-                        color: #2563eb !important;
-                        word-break: break-all !important;
-                      }
-                      .rfq-description p { margin-bottom: 1rem !important; }
-                    `}</style>
-                    <div
-                      className="rfq-description text-gray-800 text-sm font-medium wrap-break-word leading-relaxed bg-gray-50/50 p-4 rounded-xl border border-gray-100"
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          (isCDRole ? rfq?.CDDescription : rfq?.description) ||
-                          (isCDRole
-                            ? "No CD description provided"
-                            : "No description provided"),
-                      }}
-                    />
-                  </div>
-                )}
               </div>
 
               {/* Files */}
@@ -778,8 +750,12 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 </h4>
 
                 {(userRole === "admin" ||
+                  userRole === "client" ||
+                  userRole === "client_admin" ||
+                  userRole === "client_estimator" ||
                   userRole === "deputy_manager" ||
-                  userRole === "operation_executive") && (
+                  userRole === "operation_executive" ||
+                  userRole === "user") && (
                     <Button
                       onClick={() => {
                         setSelectedParentResponseId(null);
@@ -823,36 +799,34 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 ) : (
                   <p className="text-gray-700 italic">No responses yet.</p>
                 ))}
-              {!isClientRole && (
-                <div className="mt-4">
-                  {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
-                    <>
-                      <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-                        CD Quotation
-                      </p>
-                      <DataTable
-                        columns={quotationColumns}
-                        data={rfq?.CDQuotas || []}
-                        pageSizeOptions={[5]}
-                        onRowClick={(row: any) => setSelectedQuotation(row)}
-                      />
-                    </>
-                  ) : isCDRole ? (
-                    // Show Submit Button for all connection designer roles
-                    <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                      <p className="text-gray-500 mb-4 text-center">
-                        You haven't submitted a quotation yet.
-                      </p>
-                      <Button
-                        onClick={() => setShowQuotationResponseModal(true)}
-                        className="px-6 py-2.5 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
-                      >
-                        Submit Quotation Response
-                      </Button>
-                    </div>
-                  ) : null}
-                </div>
-              )}
+              <div className="mt-4">
+                {(rfq?.CDQuotas?.length ?? 0) > 0 ? (
+                  <>
+                    <p className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                      CD Quotation
+                    </p>
+                    <DataTable
+                      columns={quotationColumns}
+                      data={rfq?.CDQuotas || []}
+                      pageSizeOptions={[5]}
+                      onRowClick={(row: any) => setSelectedQuotation(row)}
+                    />
+                  </>
+                ) : isCDRole ? (
+                  // Show Submit Button for all connection designer roles
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                    <p className="text-gray-500 mb-4 text-center">
+                      You haven't submitted a quotation yet.
+                    </p>
+                    <Button
+                      onClick={() => setShowQuotationResponseModal(true)}
+                      className="px-6 py-2.5 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
+                    >
+                      Submit Quotation Response
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
             </div>
 
           </div>
@@ -1056,4 +1030,4 @@ const Info = ({ label, value }: { label: string; value: string | number }) => {
 
 
 
-export default GetRFQByID;
+export default GetInternalRFQByID;

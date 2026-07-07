@@ -47,17 +47,21 @@ const SubmittalResponseModal = ({
     try {
       let fabricatorName = "";
       let projectName = "";
-      const projectId = submittal?.projectId || submittal?.project_id || submittal?.data?.projectId || submittal?.data?.project_id;
+      const submittalObj = submittal?.data || submittal;
+      const projectId = submittalObj?.projectId || submittalObj?.project_id || submittalObj?.project?.id || submittalObj?.project?._id;
       if (projectId) {
-        const project = await Service.GetProjectById(projectId);
-        fabricatorName = project?.fabricator?.fabName || "";
+        const projectRes = await Service.GetProjectById(projectId);
+        const project = projectRes?.data || projectRes;
+        fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
         projectName = project?.projectName || project?.name || "";
       } else {
         const submittalDetails = await Service.GetSubmittalbyId(submittal.id);
-        const pid = submittalDetails?.projectId || submittalDetails?.project_id || submittalDetails?.data?.projectId || submittalDetails?.data?.project_id;
+        const subDetailsObj = submittalDetails?.data || submittalDetails;
+        const pid = subDetailsObj?.projectId || subDetailsObj?.project_id || subDetailsObj?.project?.id || subDetailsObj?.project?._id;
         if (pid) {
-          const project = await Service.GetProjectById(pid);
-          fabricatorName = project?.fabricator?.fabName || "";
+          const projectRes = await Service.GetProjectById(pid);
+          const project = projectRes?.data || projectRes;
+          fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
           projectName = project?.projectName || project?.name || "";
         }
       }

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import DataTable, { type ExtendedColumnDef } from "../../ui/table";
 import GetRFQByID from "../../rfq/GetRFQByID";
+import GetCDRFQByID from "../../connectionDesigner/GetCDRFQByID";
 import GetRFIByID from "../../rfi/GetRFIByID";
 import GetCOByID from "../../co/GetCOByID";
 import GetInvoiceById from "../../invoices/GetInvoiceById";
@@ -40,6 +41,11 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
   const userRole = userDetail?.role;
   const rawRole = sessionStorage.getItem("userRole") || userRole || "";
   const isClientAdmin = ["client_admin", "clientadmin"].includes(rawRole.toLowerCase());
+  const isCDRole = [
+    "connection_designer",
+    "connection_designer_engineer",
+    "connection_designer_admin",
+  ].includes(rawRole.toLowerCase());
   const [rfqSubTab, setRfqSubTab] = useState<"MTO" | "DETAILING">("MTO");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -334,6 +340,11 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         return pendingCols;
       case "PENDING_RFI":
         return [
+          {
+            accessorKey: "projectName",
+            header: "Project Name",
+            cell: ({ row }) => row.original.jobName || row.original.projectName || row.original.project?.name || row.original.project?.projectName || row.original.customerName || "—",
+          },
           { accessorKey: "subject", header: "Subject" },
           {
             accessorKey: "sender",
@@ -709,7 +720,11 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
 
               />
               {selectedId && (type === "PENDING_RFQ" || type === "ALL_RFQ" || type === "AWARDED_RFQ" || type === "ALL_MTO" || type === "PENDING_MTO" || type === "COMPLETED_MTO") && (
-                <GetRFQByID id={selectedId} onClose={() => setSelectedId(null)} />
+                isCDRole ? (
+                  <GetCDRFQByID id={selectedId} onClose={() => setSelectedId(null)} />
+                ) : (
+                  <GetRFQByID id={selectedId} onClose={() => setSelectedId(null)} />
+                )
               )}
 
               {selectedId && type === "PENDING_RFI" && (

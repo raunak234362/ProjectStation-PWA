@@ -65,7 +65,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
     formData.append("rfqId", targetRfqId || "");
     formData.append("userId", sessionStorage.getItem("userId") || "");
     formData.append("status", replyStatus);
-    formData.append("wbtStatus", replyStatus); 
+    formData.append("wbtStatus", replyStatus);
 
     replyFiles.forEach((file) => formData.append("files", file));
 
@@ -134,133 +134,135 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
     <>
       <div className="project-component-container fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-200">
         <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] relative flex flex-col border border-black/10 overflow-hidden">
-        {/* Header */}
-        <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
-          <h2 className="text-xl sm:text-2xl font-semibold text-black uppercase tracking-tight">
-            Response Details
-          </h2>
-          <div className="flex items-center gap-3">
-            {["ADMIN", "CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRole) && (
-              <button
-                onClick={() => setReplyMode(true)}
-                className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-              >
-                Reply
-              </button>
-            )}
-            <button
-              onClick={onClose}
-              className="px-4 sm:px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-6 bg-gray-50/30">
-          {/* Main Message Header info */}
-          <div className="flex flex-wrap justify-between items-center gap-2">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
+            <h2 className="text-xl sm:text-2xl font-semibold text-black uppercase tracking-tight">
+              Response Details
+            </h2>
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold text-black uppercase tracking-widest">
-                Main Message
-              </span>
-              {response.status && (
-                <span className="text-[10px] font-semibold bg-green-100 text-black px-3 py-0.5 rounded-md uppercase tracking-widest border border-gray-200 shadow-2xs">
-                  {response.status}
+              {["ADMIN", "CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRole) && (
+                <button
+                  onClick={() => setReplyMode(true)}
+                  className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+                >
+                  Reply
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="px-4 sm:px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-6 bg-gray-50/30">
+            {/* Main Message Header info */}
+            <div className="flex flex-wrap justify-between items-center gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-semibold text-black uppercase tracking-widest">
+                  Main Message
+                </span>
+                {response.status && (
+                  <span className="text-[10px] font-semibold bg-green-100 text-black px-3 py-0.5 rounded-md uppercase tracking-widest border border-gray-200 shadow-2xs">
+                    {response.status}
+                  </span>
+                )}
+              </div>
+              {response.user && (
+                <span className="text-sm font-semibold text-black uppercase tracking-tight">
+                  Sent by {response.user.firstName ? `${response.user.firstName} ${response.user.lastName}` : response.user.username}
                 </span>
               )}
             </div>
-            {response.user && (
-              <span className="text-sm font-semibold text-black uppercase tracking-tight">
-                Sent by {response.user.firstName ? `${response.user.firstName} ${response.user.lastName}` : response.user.username}
-              </span>
+
+            {/* Subject Box */}
+            {response.subject && (
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs space-y-1.5">
+                <span className="text-base text-black uppercase tracking-widest block">
+                  Subject :  <span className="text-base text-black">
+                    {response.subject}
+                  </span>
+                </span>
+
+              </div>
             )}
-          </div>
 
-          {/* Subject Box */}
-          {response.subject && (
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs space-y-1.5">
-              <span className="text-base text-black uppercase tracking-widest block">
-                Subject :  <span className="text-base text-black">
-                  {response.subject}
-                </span>
-              </span>
-
+            {/* Message Content Box */}
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
+              <div
+                className="prose prose-base max-w-none text-black leading-relaxed rich-text-content"
+                dangerouslySetInnerHTML={{ __html: response.description }}
+              />
             </div>
-          )}
 
-          {/* Message Content Box */}
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
-            <div
-              className="prose prose-base max-w-none text-black leading-relaxed rich-text-content"
-              dangerouslySetInnerHTML={{ __html: response.description }}
-            />
-          </div>
+            {/* Tonnage & Pages 3-column Box */}
+            {(response.type || response.Type || "")?.toUpperCase() !== "DETAILING" && (
+              <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                  <div>
+                    <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
+                      Tonnage (With Connections) :  <span className="text-base font-semibold text-black">
+                        {response.totalTonnageWithConnection || "—"}
+                      </span>
+                    </span>
 
-          {/* Tonnage & Pages 3-column Box */}
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
-              <div>
-                <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
-                  Tonnage (With Connections) :  <span className="text-base font-semibold text-black">
-                    {response.totalTonnageWithConnection || "—"}
-                  </span>
-                </span>
+                  </div>
+                  <div>
+                    <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
+                      Tonnage (W/O Connections) : <span className="text-base font-semibold text-black">
+                        {response.totalTonnageWithoutConnection || "—"}
+                      </span>
+                    </span>
 
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="text-sm font-semibold text-black uppercase tracking-widest block mb-1.5">
+                      Page Numbers :
+                    </span>
+                    <div
+                      className="text-sm text-black rich-text-content"
+                      dangerouslySetInnerHTML={{ __html: response.PageNumbers || "—" }}
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
-                  Tonnage (W/O Connections) : <span className="text-base font-semibold text-black">
-                    {response.totalTonnageWithoutConnection || "—"}
-                  </span>
-                </span>
+            )}
 
-              </div>
-              <div className="sm:col-span-2">
-                <span className="text-sm font-semibold text-black uppercase tracking-widest block mb-1.5">
-                  Page Numbers :
-                </span>
-                <div
-                  className="text-sm text-black rich-text-content"
-                  dangerouslySetInnerHTML={{ __html: response.PageNumbers || "—" }}
+            {/* Project Files */}
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-black uppercase tracking-widest block">
+                Project Files
+              </span>
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs">
+                <RenderFiles
+                  files={response.files}
+                  table="rfqResponse"
+                  parentId={response.id}
+                  hideHeader={true}
+                  noAccordion={true}
                 />
               </div>
             </div>
+
+            {response.childResponses?.length > 0 && (
+              <div className="space-y-4 pt-4">
+                <h3 className="text-xs font-semibold text-black uppercase tracking-widest">
+                  Threaded Communications ({response.childResponses.length})
+                </h3>
+                {renderThread(response)}
+              </div>
+            )}
           </div>
 
-          {/* Project Files */}
-          <div className="space-y-2">
-            <span className="text-xs font-semibold text-black uppercase tracking-widest block">
-              Project Files
+          {/* Footer */}
+          <div className="px-6 py-5 border-t border-black/10 bg-white flex items-center shrink-0">
+            <span className="text-xs text-black font-bold tracking-wide">
+              Submitted on: {formatDateTime(response.createdAt)}
             </span>
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs">
-              <RenderFiles
-                files={response.files}
-                table="rfqResponse"
-                parentId={response.id}
-                hideHeader={true}
-                noAccordion={true}
-              />
-            </div>
           </div>
-
-          {response.childResponses?.length > 0 && (
-            <div className="space-y-4 pt-4">
-              <h3 className="text-xs font-semibold text-black uppercase tracking-widest">
-                Threaded Communications ({response.childResponses.length})
-              </h3>
-              {renderThread(response)}
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="px-6 py-5 border-t border-black/10 bg-white flex items-center shrink-0">
-          <span className="text-xs text-black font-bold tracking-wide">
-            Submitted on: {formatDateTime(response.createdAt)}
-          </span>
-        </div>
         </div>
       </div>
 
@@ -304,9 +306,8 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                   >
                     <option value="AWARDED">Awarded</option>
                     <option value="REJECTED">Rejected</option>
-                    <option value="IN_REVIEW">In Review</option>
-                    <option value="RE_ESTIMATION_REQUESTED">Re-Estimation Required</option>
-                    <option value="WBT_SUBMITTED">WBT Submitted</option>
+                    <option value="REVISE">Revise</option>
+                    <option value="CLOSED">CLOSED</option>
                   </select>
                 </div>
                 <div className="space-y-2">

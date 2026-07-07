@@ -1,6 +1,6 @@
  
  
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 // import { useSelector } from "react-redux";
 
 // Define your RootState type for Redux
@@ -15,6 +15,7 @@ import { Navigate, Outlet } from "react-router-dom";
 
 const RequireAuth: React.FC = () => {
   const token: string | null = sessionStorage.getItem("token");
+  const location = useLocation();
 //   const userInfo = useSelector((state: RootState) => state.userData.userData);
 //   const navigate = useNavigate();
 
@@ -26,7 +27,8 @@ const RequireAuth: React.FC = () => {
   // }, [token, userInfo, navigate]);
 
   if (!token) {
-    return <Navigate to="/" replace />;
+    const targetUrl = location.pathname + location.search;
+    return <Navigate to={`/?redirect=${encodeURIComponent(targetUrl)}`} replace />;
   }
 
   return <Outlet />;

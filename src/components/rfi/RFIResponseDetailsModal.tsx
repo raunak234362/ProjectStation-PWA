@@ -105,8 +105,9 @@ const RFIResponseDetailsModal = ({ response, onClose }: any) => {
                 className="bg-gray-50 p-3 rounded border text-sm"
               >
                 <div className="flex justify-between text-xs text-gray-700 mb-1">
-                  <span className="font-medium text-gray-700">
-                    {child.user?.name || "User"} ({child.user?.role || "N/A"})
+                  <span className="font-medium text-gray-700 uppercase">
+                    {child.user ? `${child.user.firstName || ""} ${child.user.lastName || ""}`.trim() : "User"}
+                    {child.user?.role ? ` (${child.user.role})` : ""}
                   </span>
                   <span>{formatDateTime(child.createdAt)}</span>
                 </div>

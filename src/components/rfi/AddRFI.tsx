@@ -9,6 +9,7 @@ import Service from "../../api/Service";
 import type { Fabricator, SelectOption, RFIPayload } from "../../interface";
 import Select from "react-select";
 import RichTextEditor from "../fields/RichTextEditor";
+import { Loader2 } from "lucide-react";
 
 const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
   project,
@@ -44,6 +45,7 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
 
   const loweredRole = userRole?.toLowerCase();
   const isConnectionDesigner =
+    loweredRole === "connection_designer" ||
     loweredRole === "connection_designer_admin" ||
     loweredRole === "connection_designer_engineer";
 
@@ -64,11 +66,32 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
       value: String(p.id),
     })) ?? [];
 
+  const getAutoPrefix = () => {
+    const existingRfis = project?.rfi || [];
+    let maxNum = 0;
+    let hasRfiPattern = false;
+    existingRfis.forEach((r: any) => {
+      const match = r.subject?.match(/^RFI#(\d+)/i);
+      if (match) {
+        hasRfiPattern = true;
+        const num = parseInt(match[1], 10);
+        if (num > maxNum) {
+          maxNum = num;
+        }
+      }
+    });
+    const nextNum = hasRfiPattern ? maxNum + 1 : existingRfis.length + 1;
+    return `RFI#${String(nextNum).padStart(3, "0")}`;
+  };
+
+  const autoRfiPrefix = isConnectionDesigner ? getAutoPrefix() : "";
+
   const onSubmit = async (data: RFIPayload) => {
     try {
       setLoading(true);
       const payload: any = {
         ...data,
+        subject: isConnectionDesigner ? `${autoRfiPrefix} - ${data.subject}` : data.subject,
         project_id: project_id,
         fabricator_id: fabricatorID,
         recepient_id: data.recepient_id,
@@ -128,8 +151,21 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
     }
   }, [userRole, projectOptions, setValue]);
 
+
+
   return (
-    <div className="w-full mx-auto bg-zinc-100 p-2 rounded-xl shadow">
+    <div className="w-full mx-auto bg-zinc-100 p-2 rounded-xl shadow relative">
+      {loading && (
+        <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center rounded-xl transition-all duration-300">
+          <Loader2 className="w-12 h-12 animate-spin text-green-600 mb-2" />
+          <p className="text-black dark:text-white font-semibold text-lg animate-pulse">
+            Uploading files & submitting RFI...
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Please wait, do not close this window
+          </p>
+        </div>
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* <SectionTitle title="Fabrication & Routing" /> */}
 
@@ -154,11 +190,30 @@ const AddRFI: React.FC<{ project?: any; onSuccess?: () => void }> = ({
 
         {/* <SectionTitle title="Details" /> */}
 
-        <Input
-          label="Subject"
-          placeholder="Enter subject"
-          {...register("subject", { required: true })}
-        />
+        {isConnectionDesigner ? (
+          <div className="w-full flex flex-col gap-1">
+            <label className="text-sm font-medium text-black dark:text-white">
+              Subject
+            </label>
+            <div className="flex items-center border border-black dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus-within:ring-2 focus-within:ring-blue-500 overflow-hidden">
+              <span className="px-3 py-2 bg-zinc-200 dark:bg-slate-700 text-black dark:text-white border-r border-black dark:border-slate-700 font-bold select-none whitespace-nowrap">
+                {autoRfiPrefix}
+              </span>
+              <input
+                type="text"
+                placeholder="Enter subject description"
+                className="w-full px-3 py-2 text-black dark:text-white placeholder-gray-500 dark:placeholder-slate-500 focus:outline-none bg-transparent"
+                {...register("subject", { required: true })}
+              />
+            </div>
+          </div>
+        ) : (
+          <Input
+            label="Subject"
+            placeholder="Enter subject"
+            {...register("subject", { required: true })}
+          />
+        )}
 
         <div className="space-y-1">
           <label className="text-sm font-medium text-gray-700">

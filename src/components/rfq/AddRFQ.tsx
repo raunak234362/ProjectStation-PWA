@@ -311,14 +311,21 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         }
       }
 
+      const targetFabricatorId = payload.fabricatorId;
       const selectedFab = fabricators?.find(
-        (f) => String(f.id) === String(data.fabricatorId),
+        (f) => String(f.id) === String(targetFabricatorId),
       );
-      const fabricatorName = selectedFab?.fabName || "";
+      let fabricatorName = selectedFab?.fabName || "";
+      if (!fabricatorName) {
+        fabricatorName = userDetail?.FabricatorPointOfContacts?.[0]?.fabricator?.fabName || 
+                         userDetail?.FabricatorPointOfContacts?.[0]?.fabName || 
+                         userDetail?.fabricator?.fabName || 
+                         "";
+      }
       const rfqProjectName = data.projectName || "";
 
       const response = await Service.addRFQ(formData, fabricatorName, rfqProjectName);
-      const createdRFQ = response.data || response.rfq || response;
+      const createdRFQ = response.data?.newRfq || response.data || response.rfq || response;
 
       if (createdRFQ && !createdRFQ.error) {
         // Enrich with form data for immediate display in the table
@@ -330,7 +337,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
           ...createdRFQ,
           projectName: data.projectName,
           projectNumber: data.projectNumber,
-          status: "IN_REVIEW",
           estimationDate: data.estimationDate,
           tools: data.tools,
           fabricator: selectedFab || createdRFQ.fabricator,

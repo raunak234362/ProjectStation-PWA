@@ -2,15 +2,19 @@ import { useState, useMemo } from "react";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
+import GetCDRFQByID from "../connectionDesigner/GetCDRFQByID";
 import { formatDate } from "../../utils/dateUtils";
 import { Search, X } from "lucide-react";
 
 const getRFQStatus = (row: any) => {
-  const status = row.status;
-  const wbtStatus = row.wbtStatus;
+  const status = row.status?.toUpperCase()?.trim();
+  const wbtStatus = row.wbtStatus?.toUpperCase()?.trim();
   const responses = row.responses || [];
 
-  if (wbtStatus === "AWARDED") return "AWARDED";
+  if (wbtStatus === "AWARDED" || status === "AWARDED") return "AWARDED";
+  if (wbtStatus === "REVISE" || status === "REVISE") return "REVISE";
+  if (wbtStatus === "REJECTED" || status === "REJECTED") return "REJECTED";
+  if (wbtStatus === "CLOSED" || status === "CLOSED") return "CLOSED";
   if (responses.length > 0) return "WBT_SUBMITTED";
   if (status === "IN_REVIEW") return "IN_REVIEW";
 
@@ -35,6 +39,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     { label: "RE-ESTIMATION REQUIRED", value: "RE_ESTIMATION_REQUESTED" },
     { label: "WBT SUBMITTED", value: "WBT_SUBMITTED" },
     { label: "CLARIFICATION REQUIRED", value: "CLARIFICATION_REQUIRED" },
+    { label: "REVISE", value: "REVISE" },
   ];
 
   const yearOptions = useMemo(() => {
@@ -131,7 +136,9 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     userRole === "CONNECTION_DESIGNER" ||
     userRole === "CONNECTION_DESIGNER_ADMIN" ||
     userRole === "connection_designer" ||
-    userRole === "connection_designer_admin";
+    userRole === "connection_designer_admin" ||
+    userRole === "connection_designer_engineer" ||
+    userRole === "CONNECTION_DESIGNER_ENGINEER";
 
   columns.push(
     // Requested By — hidden for connection designers
@@ -157,9 +164,9 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         let dateVal: string | undefined;
         if (isConnectionDesigner) {
           const cdRFQ = row.original.connectionDesignerRFQ;
-          dateVal = Array.isArray(cdRFQ) && cdRFQ.length > 0
+          dateVal = Array.isArray(cdRFQ) && cdRFQ.length > 0 && cdRFQ[0].createdAt
             ? cdRFQ[0].createdAt
-            : undefined;
+            : row.original.createdAt;
         } else {
           dateVal = row.original.createdAt;
         }
@@ -171,8 +178,8 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       },
     },
 
-    // Due Date — hidden for connection designers
-    ...(!isConnectionDesigner ? [{
+    // Due Date
+    {
       accessorKey: "estimationDate",
       header: "Due Date",
       cell: ({ row }: any) => (
@@ -180,7 +187,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
           {row.original.estimationDate ? formatDate(row.original.estimationDate) : "—"}
         </span>
       ),
-    }] as any : []),
+    },
 
     // WBT Submitted Date — hidden for connection designers
     ...(!isConnectionDesigner ? [{
@@ -223,7 +230,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
                 ? "bg-green-50 text-green-700 border-green-200"
                 : "bg-yellow-50 text-yellow-700 border-yellow-200"
           }`}>
-            {!hasQuotation ? "No Quotation" : approved ? "Approved" : "Pending"}
+            {!hasQuotation ? "Pending" : approved ? "Approved" : "In-Review"}
           </span>
         );
       },
@@ -242,6 +249,8 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
           label = "WBT Submitted";
         } else if (val === "IN_REVIEW") {
           label = "Estimation In Progress";
+        } else if (val === "REVISE") {
+          label = "Revise";
         } else {
           label = val?.replace("_", " ") || "—";
         }
@@ -432,7 +441,11 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       />
 
       {selectedRfqId && (
-        <GetRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
+        isConnectionDesigner ? (
+          <GetCDRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
+        ) : (
+          <GetRFQByID id={selectedRfqId} onClose={() => setSelectedRfqId(null)} />
+        )
       )}
     </div>
   );

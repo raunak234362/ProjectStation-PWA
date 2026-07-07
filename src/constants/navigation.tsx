@@ -153,6 +153,7 @@ export const navItems: NavItem[] = [
       "human-resource",
     ],
   },
+
   {
     label: "Invoices",
     to: "invoices",

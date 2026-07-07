@@ -175,6 +175,9 @@ const GetProjectById = ({
     try {
       const rolesForReceived = [
         "client",
+        "client_admin",
+        "client_estimator",
+        "connection_designer",
         "connection_designer_engineer",
         "connection_designer_admin",
       ];
@@ -422,6 +425,7 @@ const GetProjectById = ({
 
   const isClient = ["client", "client_admin", "client_estimator", "client_accountant"].includes(userRole);
   const isConnectionDesigner =
+    userRole === "connection_designer" ||
     userRole === "connection_designer_engineer" ||
     userRole === "connection_designer_admin";
 
@@ -476,6 +480,7 @@ const GetProjectById = ({
     "admin",
     "project_manager",
     "deputy_manager",
+    "connection_designer",
     "connection_designer_engineer",
     "connection_designer_admin",
     "client",
@@ -494,6 +499,7 @@ const GetProjectById = ({
           "wbs",
           "changeOrder",
           "notes",
+          "files",
         ];
         if (hiddenTabs.includes(tab.key)) return false;
       }

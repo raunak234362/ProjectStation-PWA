@@ -63,6 +63,9 @@ const ProjectDetailsContent = ({
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
   const isClient = userRole === "client" || userRole === "client_admin";
+  const isConnectionDesigner =
+    userRole === "connection_designer_engineer" ||
+    userRole === "connection_designer_admin";
 
   const fetchProject = async () => {
     try {
@@ -164,7 +167,14 @@ const ProjectDetailsContent = ({
 
 
 
-  const tabsToShow = isClient ? clientTabs : defaultDesktopTabs;
+  const filterTabsByRole = (tabs: any[]) => {
+    return tabs.filter((tab) => {
+      if (isConnectionDesigner && tab.key === "files") return false;
+      return true;
+    });
+  };
+
+  const tabsToShow = filterTabsByRole(isClient ? clientTabs : defaultDesktopTabs);
 
   if (loading)
     return (

@@ -57,10 +57,12 @@ const SubmittalResponseDetailsModal = ({
       let projectName = "";
       if (response.submittalsId) {
         const submittal = await Service.GetSubmittalbyId(response.submittalsId);
-        const projectId = submittal?.projectId || submittal?.data?.projectId || submittal?.project_id || submittal?.data?.project_id;
+        const submittalObj = submittal?.data || submittal;
+        const projectId = submittalObj?.projectId || submittalObj?.project_id || submittalObj?.project?.id || submittalObj?.project?._id;
         if (projectId) {
-          const project = await Service.GetProjectById(projectId);
-          fabricatorName = project?.fabricator?.fabName || "";
+          const projectRes = await Service.GetProjectById(projectId);
+          const project = projectRes?.data || projectRes;
+          fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
           projectName = project?.projectName || project?.name || "";
         }
       }

@@ -20,10 +20,21 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const userRole = sessionStorage.getItem("userRole");
-  const userRoleUpper = userRole?.toUpperCase();
-  const isClient = ["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRoleUpper || "");
+  const userRole = sessionStorage.getItem("userRole") || "";
+  const userRoleUpper = userRole.toUpperCase();
+  const currentUserId = sessionStorage.getItem("userId") || "";
 
+  const isClient = ["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRoleUpper);
+  const isConnectionDesigner = [
+    "CONNECTION_DESIGNER",
+    "CONNECTION_DESIGNER_ADMIN",
+    "CONNECTION_DESIGNER_ENGINEER",
+  ].includes(userRoleUpper);
+
+  const isWBTStaff = !isClient && !isConnectionDesigner;
+
+  const [activeSubTab, setActiveSubTab] = useState<"general" | "cd">("general");
+  const [sentReceivedTab, setSentReceivedTab] = useState<"sent" | "received">("received");
 
   useEffect(() => {
     if (rfiData) {
@@ -179,75 +190,230 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
     },
   ];
 
+  const isCDRole = (roleStr?: string) => {
+    if (!roleStr) return false;
+    const r = roleStr.toUpperCase();
+    return r.includes("CONNECTION_DESIGNER") || r.includes("CD_") || r === "CD";
+  };
+
+  const isClientRole = (roleStr?: string) => {
+    if (!roleStr) return false;
+    const r = roleStr.toUpperCase();
+    return ["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(r) || r.includes("CLIENT");
+  };
+
+  const isConnectionDesignerRFI = (rfi: RFIItem) => {
+    const isCDFlag = rfi.isConnectionDesign === true || String(rfi.isConnectionDesign).toLowerCase() === "true";
+    if (isCDFlag) return true;
+
+    if (rfi.sender && isCDRole(rfi.sender.role)) return true;
+
+    if (rfi.recepients && isCDRole((rfi.recepients as any).role)) return true;
+
+    const multipleRecipients = (rfi as any).multipleRecipients || [];
+    if (Array.isArray(multipleRecipients) && multipleRecipients.some((r: any) => isCDRole(r?.role))) return true;
+
+    return false;
+  };
+
   const filteredRfis = rfis.filter((rfi) => {
+    // 1. Search Query Filter
     const searchMatch = rfi.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         rfi.sender?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         rfi.sender?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
     
+    // 2. Status Filter
     const statusInfo = getStatusInfo(rfi);
     const statusText = statusInfo.label === "PENDING" ? "Pending" : "Responded";
     const statusMatch = statusFilter === "All" || statusText === statusFilter;
 
-    return searchMatch && statusMatch;
+    if (!searchMatch || !statusMatch) return false;
+
+    // 3. Category/Role Filtering
+    const isRfiCD = isConnectionDesignerRFI(rfi);
+
+    if (isWBTStaff) {
+      if (activeSubTab === "general") {
+        if (sentReceivedTab === "sent") {
+          // Sent by WBT staff to Client
+          return !isRfiCD && (rfi.senderId === currentUserId || !isClientRole(rfi.sender?.role));
+        } else {
+          // Received by WBT from Client
+          return !isRfiCD && (rfi.senderId !== currentUserId && isClientRole(rfi.sender?.role));
+        }
+      } else {
+        // CD RFI Subtab: Filter by Sent/Received from WBT's perspective
+        if (sentReceivedTab === "sent") {
+          // Sent by WBT staff to CD
+          return isRfiCD && (rfi.senderId === currentUserId || !isCDRole(rfi.sender?.role));
+        } else {
+          // Received by WBT from CD
+          return isRfiCD && (rfi.senderId !== currentUserId && isCDRole(rfi.sender?.role));
+        }
+      }
+    } else if (isConnectionDesigner) {
+      // Connection Designer role: only see CD RFIs (inherent from rolesForReceived, but verify just in case)
+      const sId = rfi.senderId || (rfi as any).sender_id || rfi.sender?.id;
+      if (sentReceivedTab === "sent") {
+        // Sent by the logged-in CD
+        return sId === currentUserId;
+      } else {
+        // Received by the logged-in CD
+        return sId !== currentUserId;
+      }
+    } else if (isClient) {
+      // Client role: only see General RFIs
+      return !isRfiCD;
+    }
+
+    return true;
   });
 
-  // ✅ Empty state
-  if (!loading && rfis.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 py-40 bg-white rounded-3xl border border-dashed border-gray-100 italic text-gray-400">
-        <Inbox className="w-10 h-10 mb-3 text-gray-200" />
-        <p className="text-black font-black text-lg">No RFIs Available</p>
-        <p className="text-sm">
-          {isClient
-            ? "No RFIs have been received for this project yet."
-            : "You haven’t initiated any RFIs yet."}
-        </p>
-      </div>
-    );
-  }
+  const getEmptyStateMessage = () => {
+    if (isClient) {
+      return "No RFIs have been received for this project yet.";
+    }
+    return `No RFIs have been ${sentReceivedTab} yet.`;
+  };
 
-  // ✅ Render DataTable
+  // ✅ Render DataTable with tabs and controls
   return (
     <div className="bg-white rounded-3xl overflow-hidden flex flex-col pt-4">
-      <div className="px-4 mb-4 flex flex-col md:flex-row items-center gap-4">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input 
-            type="text" 
-            placeholder="Search RFIs..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all"
-          />
-        </div>
-        
-        <div className="relative w-full md:w-auto">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          <select 
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full md:w-auto pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all cursor-pointer appearance-none"
-            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
-          >
-            <option value="All">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Responded">Responded</option>
-          </select>
+      {/* Tabs and Controls Container */}
+      <div className="px-4 mb-6 flex flex-col gap-4 border-b border-gray-100 pb-4">
+        {/* Main tabs / subtabs (visible to WBT Staff) & Sent/Received toggles & Search */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          
+          {/* Sub-tabs for WBT Staff */}
+          {isWBTStaff && (
+            <div className="flex border-b border-transparent gap-6">
+              <button
+                onClick={() => {
+                  setActiveSubTab("general");
+                  setSearchQuery("");
+                }}
+                className={`pb-2 px-1 border-b-2 font-bold text-sm uppercase tracking-tight transition-all duration-200 ${
+                  activeSubTab === "general"
+                    ? "border-green-600 text-green-600"
+                    : "border-transparent text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                General RFIs
+              </button>
+              <button
+                onClick={() => {
+                  setActiveSubTab("cd");
+                  setSearchQuery("");
+                }}
+                className={`pb-2 px-1 border-b-2 font-bold text-sm uppercase tracking-tight transition-all duration-200 ${
+                  activeSubTab === "cd"
+                    ? "border-green-600 text-green-600"
+                    : "border-transparent text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                Connection Designer's RFI
+              </button>
+            </div>
+          )}
+
+          {/* Controls right-aligned or inline */}
+          <div className="flex flex-wrap items-center gap-4 ml-auto lg:ml-0">
+            {/* SENT / RECEIVED Toggles */}
+            {!isClient && (
+              <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200/50">
+                <button
+                  onClick={() => setSentReceivedTab("sent")}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${
+                    sentReceivedTab === "sent"
+                      ? "bg-white text-black shadow-sm"
+                      : "text-gray-500 hover:text-gray-800"
+                  }`}
+                >
+                  Sent
+                </button>
+                <button
+                  onClick={() => setSentReceivedTab("received")}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${
+                    sentReceivedTab === "received"
+                      ? "bg-white text-black shadow-sm"
+                      : "text-gray-500 hover:text-gray-800"
+                  }`}
+                >
+                  Received
+                </button>
+              </div>
+            )}
+
+            {/* Search input */}
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by subject..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all text-black font-semibold placeholder-gray-400"
+              />
+            </div>
+
+            {/* Status Filter */}
+            <div className="relative w-full sm:w-auto">
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full sm:w-auto pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all cursor-pointer appearance-none uppercase"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right 0.75rem center",
+                  backgroundSize: "1rem",
+                }}
+              >
+                <option value="All">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Responded">Responded</option>
+              </select>
+            </div>
+          </div>
+
         </div>
       </div>
 
+      {/* Main Table area */}
       <div className="flex-1 min-h-0">
-        <DataTable
-          columns={columns}
-          data={filteredRfis}
-          onRowClick={(row) => setSelectedRfiID(row.id)}
-          pageSizeOptions={[10]}
-          noBorder
-        />
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24">
+            <div className="w-8 h-8 rounded-full border-4 border-green-500 border-t-transparent animate-spin mb-4" />
+            <p className="text-black font-black uppercase tracking-widest text-xs">Accessing intelligence...</p>
+          </div>
+        ) : filteredRfis.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4 py-32 bg-white rounded-3xl border border-dashed border-gray-100 italic text-gray-400">
+            <Inbox className="w-10 h-10 mb-3 text-gray-200" />
+            <p className="text-black font-black text-lg uppercase tracking-tight">No RFIs Available</p>
+            <p className="text-sm font-bold uppercase tracking-wider">
+              {getEmptyStateMessage()}
+            </p>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filteredRfis}
+            onRowClick={(row) => setSelectedRfiID(row.id)}
+            pageSizeOptions={[10]}
+            noBorder
+          />
+        )}
       </div>
 
       {selectedRfiID && (
-        <Suspense fallback={<div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-md text-white font-black uppercase tracking-widest text-xs">Accessing intelligence...</div>}>
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-md text-white font-black uppercase tracking-widest text-xs">
+              Accessing intelligence...
+            </div>
+          }
+        >
           <GetRFIByID id={selectedRfiID} onClose={() => setSelectedRfiID(null)} />
         </Suspense>
       )}
