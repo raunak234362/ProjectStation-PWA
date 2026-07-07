@@ -18,7 +18,7 @@ const RfqLayout = () => {
             {userRole !== "connection_designer_engineer" && userRole !== "connection_designer_admin" && (
               <button
                 onClick={() => setActiveTab("addRFQ")}
-                className={`flex items-center gap-2 px-8 py-3 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${activeTab === "addRFQ"
+                className={`flex items-center gap-2 px-8 py-1.5 rounded-none text-sm font-bold uppercase tracking-tight transition-all border-2 ${activeTab === "addRFQ"
                   ? "bg-green-50 text-black border-green-700/80 shadow-sm"
                   : "bg-gray-100 text-black border-black/10 hover:border-black/20"
                   }`}
@@ -28,7 +28,7 @@ const RfqLayout = () => {
             )}
             <button
               onClick={() => setActiveTab("allRFQ")}
-              className={`flex items-center gap-2 px-8 py-3 rounded-lg text-sm font-bold uppercase tracking-tight transition-all border-2 ${activeTab === "allRFQ"
+              className={`flex items-center gap-2 px-8 py-1.5 rounded-none text-sm font-bold uppercase tracking-tight transition-all border-2 ${activeTab === "allRFQ"
                 ? "bg-green-50 text-black border-green-700/80 shadow-sm"
                 : "bg-gray-100 text-black border-black/10 hover:border-black/20"
                 }`}
