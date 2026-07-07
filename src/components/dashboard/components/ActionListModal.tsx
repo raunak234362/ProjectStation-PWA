@@ -93,7 +93,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
     if (searchTerm) {
       const query = searchTerm.toLowerCase();
       result = result.filter((item) => {
-        const project = item.projectName || item.project?.name || item.project?.projectName || "";
+        const project = item.projectName || item.project?.name || item.project?.projectName || item.Project?.name || item.Project?.projectName || "";
         const id = item.projectNumber || item.id || item._id || "";
         const subject = item.subject || item.remarks || "";
         const invoice = item.invoiceNumber || item.jobName || "";
@@ -168,7 +168,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
         let val = "";
         
         if (col.header === "Project Name") {
-          val = item.jobName || item.projectName || item.project?.name || item.project?.projectName || item.customerName || "—";
+          val = item.jobName || item.projectName || item.project?.name || item.project?.projectName || item.Project?.name || item.Project?.projectName || item.customerName || "—";
         } else if (col.header === "Status") {
           const status = item.status;
           const wbtStatus = item.wbtStatus;
@@ -319,7 +319,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
 
               return (
                 <span
-                  className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-50 text-black border border-black/10 font-black"
+                  className="px-3 py-1 text-xs uppercase tracking-widest rounded-none bg-gray-50 text-black border border-black/10 font-black"
                 >
                   {label}
                 </span>
@@ -366,7 +366,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Status",
             cell: ({ row }) => (
               <span
-                className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+                className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-none bg-gray-100 text-black border border-gray-200"
               >
                 {row.original.status ? "PENDING" : "RESPONDED"}
               </span>
@@ -376,9 +376,13 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
       case "PENDING_COR":
         return [
           {
-            accessorKey: "projectName",
+            accessorKey: "Project.name",
             header: "Project Name",
-            cell: ({ row }) => row.original.jobName || row.original.projectName || row.original.project?.name || row.original.project?.projectName || row.original.customerName || "—",
+            cell: ({ row }) => (
+              <span>
+                {row.original.Project?.name || row.original.Project?.projectName || row.original.project?.name || row.original.project?.projectName || row.original.projectName || "—"}
+              </span>
+            ),
           },
           {
             accessorKey: "changeOrderNumber",
@@ -398,7 +402,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             header: "Status",
             cell: ({ row }) => (
               <span
-                className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+                className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-none bg-gray-100 text-black border border-gray-200"
               >
                 {row.original.status ?? "—"}
               </span>
@@ -488,7 +492,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
 
               return (
                 <span
-                  className="px-3 py-1 text-[10px] md:text-xs uppercase tracking-widest rounded-lg bg-gray-50 text-black border border-black/10 font-black"
+                  className="px-3 py-1 text-[10px] md:text-xs uppercase tracking-widest rounded-none bg-gray-50 text-black border border-black/10 font-black"
                 >
                   {label}
                 </span>
@@ -522,7 +526,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               const isPaid = row.original.paymentStatus === true || String(row.original.paymentStatus).toLowerCase() === 'true' || String(row.original.paymentStatus).toLowerCase() === 'paid' || String(row.original.status).toLowerCase() === 'paid' || String(row.original.status).toLowerCase() === 'completed';
               return (
                 <span
-                  className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200"
+                  className="px-3 py-1 text-xs uppercase tracking-widest rounded-none bg-gray-100 text-black border border-gray-200"
                 >
                   {isPaid ? "PAID" : "PENDING"}
                 </span>
@@ -550,52 +554,37 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
 
   return createPortal(
     <div className="project-component-container fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-none shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between bg-white gap-4">
-          <div className="flex flex-wrap items-center gap-6">
-            <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
-              {getIcon()}
-              {getTitle()}
-            </h3>
-            {/* Tabs for client admin inside PENDING_RFQ */}
-            {type === "PENDING_RFQ" && isClientAdmin && (
-              <div className="flex bg-gray-100 p-1 rounded-xl border border-black/10">
-                <button
-                  type="button"
-                  onClick={() => setRfqSubTab("MTO")}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                    rfqSubTab === "MTO"
-                      ? "bg-white text-black shadow-sm"
-                      : "text-gray-500 hover:text-black"
-                  }`}
-                >
-                  MTO
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRfqSubTab("DETAILING")}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                    rfqSubTab === "DETAILING"
-                      ? "bg-white text-black shadow-sm"
-                      : "text-gray-500 hover:text-black"
-                  }`}
-                >
-                  Detailing
-                </button>
-              </div>
-            )}
+        <div className="p-6 border-b border-gray-100 flex flex-col gap-4 bg-white">
+          {/* Top Row: Title & Close Button */}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex flex-wrap items-center gap-6">
+              <h3 className="text-xl font-semibold text-black flex items-center gap-2 tracking-tight">
+                {getIcon()}
+                {getTitle()}
+              </h3>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-none hover:bg-red-100 transition-all font-semibold text-sm uppercase tracking-tight shadow-sm cursor-pointer whitespace-nowrap shrink-0"
+            >
+              Close
+            </button>
           </div>
-          <div className="flex items-center gap-3">
+
+          {/* Bottom Row: Search, Date Filter, and Download CSV Button */}
+          <div className="flex flex-wrap items-center gap-3 w-full justify-start md:justify-end">
             {/* Search Input */}
-            <div className="relative group">
+            <div className="relative group w-full sm:w-auto">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-green-600 transition-colors" />
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-10 py-2 uppercase bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 focus:ring-4 focus:ring-green-600/5 transition-all outline-none w-64"
+                className="pl-10 pr-10 py-2 uppercase bg-gray-50 border border-gray-200 rounded-none text-sm font-bold focus:bg-white focus:border-green-600/30 focus:ring-4 focus:ring-green-600/5 transition-all outline-none w-full sm:w-64"
               />
               {searchTerm && (
                 <button
@@ -608,12 +597,12 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             </div>
 
             {/* Date Filter */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none appearance-none cursor-pointer text-gray-700 min-w-[140px]"
+                className="pl-10 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-none text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none appearance-none cursor-pointer text-gray-700 w-full sm:w-auto min-w-[140px]"
               >
                 <option value="all">ALL TIME</option>
                 <option value="today">TODAY</option>
@@ -630,48 +619,76 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
             </div>
             
             {dateFilter === "custom" && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none"
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-none text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none flex-1 sm:flex-none"
                 />
                 <span className="text-gray-500 font-bold">TO</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none"
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-none text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none flex-1 sm:flex-none"
                 />
               </div>
             )}
             
             {dateFilter === "month_range" && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <input
                   type="month"
                   value={startMonth}
                   onChange={(e) => setStartMonth(e.target.value)}
-                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none"
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-none text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none flex-1 sm:flex-none"
                 />
                 <span className="text-gray-500 font-bold">TO</span>
                 <input
                   type="month"
                   value={endMonth}
                   onChange={(e) => setEndMonth(e.target.value)}
-                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none"
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-none text-sm font-bold focus:bg-white focus:border-green-600/30 transition-all outline-none flex-1 sm:flex-none"
                 />
               </div>
             )}
 
             <button
               onClick={handleDownloadCSV}
-              className="px-4 py-2 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer flex items-center gap-2"
+              className="px-4 py-2 bg-green-50 text-black border-2 border-green-700/80 rounded-none hover:bg-green-100 transition-all font-semibold text-sm uppercase tracking-tight shadow-sm cursor-pointer flex items-center gap-2 whitespace-nowrap shrink-0"
             >
-              <Download size={14} />
+              <Download size={14} className="shrink-0" />
               Download CSV
             </button>
+
+            {/* Tabs for client admin inside PENDING_RFQ */}
+            {type === "PENDING_RFQ" && isClientAdmin && (
+              <div className="flex bg-gray-100 p-1 rounded-none border border-black/10 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setRfqSubTab("MTO")}
+                  className={`px-4 py-1.5 rounded-none text-xs font-bold uppercase tracking-wider transition-all ${
+                    rfqSubTab === "MTO"
+                      ? "bg-white text-black shadow-sm"
+                      : "text-gray-500 hover:text-black"
+                  }`}
+                >
+                  MTO
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRfqSubTab("DETAILING")}
+                  className={`px-4 py-1.5 rounded-none text-xs font-bold uppercase tracking-wider transition-all ${
+                    rfqSubTab === "DETAILING"
+                      ? "bg-white text-black shadow-sm"
+                      : "text-gray-500 hover:text-black"
+                  }`}
+                >
+                  Detailing
+                </button>
+              </div>
+            )}
 
             {(searchTerm || dateFilter !== "all") && (
               <button
@@ -683,20 +700,11 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
                   setStartMonth("");
                   setEndMonth("");
                 }}
-                className="px-3 py-2 text-xs font-black text-red-600 uppercase tracking-widest hover:bg-red-50 rounded-xl transition-all"
+                className="px-3 py-2 text-xs font-black text-red-600 uppercase tracking-widest hover:bg-red-50 rounded-none transition-all whitespace-nowrap shrink-0"
               >
                 Reset
               </button>
             )}
-
-            <div className="w-px h-8 bg-gray-100 mx-2" />
-
-            <button
-              onClick={onClose}
-              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-            >
-              Close
-            </button>
           </div>
         </div>
 

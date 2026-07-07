@@ -70,7 +70,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
                 isClickable && card.status && onCardClick(card.status)
               }
               className={cn(
-                "p-4 rounded-xl flex items-center justify-between group transition-all duration-300 bg-white relative overflow-hidden",
+                "p-4 rounded-none flex items-center justify-between group transition-all duration-300 bg-white relative overflow-hidden",
                 "border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm",
                 "hover:shadow-md",
                 isClickable && "cursor-pointer",
@@ -79,7 +79,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
               <div className="flex items-center gap-3 z-10 min-w-0 flex-1">
                 <div
                   className={cn(
-                    "p-2 sm:p-2.5 rounded-full transition-colors bg-gray-50 group-hover:bg-[#f4f6f8] shrink-0",
+                    "p-2 sm:p-2.5 rounded-none transition-colors bg-gray-50 group-hover:bg-[#f4f6f8] shrink-0",
                     "text-black",
                   )}
                 >
@@ -97,7 +97,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({ stats, onCardClick }) => {
               </div>
 
               <div className="z-10 text-right ml-3 shrink-0">
-                <span className="text-base font-black text-black tracking-tight">
+                <span className="text-xl font-black text-black tracking-tight">
                   {card.value}
                 </span>
               </div>

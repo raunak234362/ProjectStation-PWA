@@ -72,7 +72,7 @@ const DocumentListModal: React.FC<DocumentListModalProps> = ({
                         accessorKey: "status",
                         header: "Status",
                         cell: ({ row }) => (
-                            <span className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
+                            <span className="px-3 py-1 text-xs uppercase tracking-widest rounded-none bg-gray-100 text-black border border-gray-200">
                                 {row.original.status?.replace(/_/g, " ") ?? "—"}
                             </span>
                         ),
@@ -110,7 +110,7 @@ const DocumentListModal: React.FC<DocumentListModalProps> = ({
                         accessorKey: "isAproovedByAdmin",
                         header: "Status",
                         cell: ({ row }) => (
-                            <span className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
+                            <span className="px-3 py-1 text-xs uppercase tracking-widest rounded-none bg-gray-100 text-black border border-gray-200">
                                 {row.original.isAproovedByAdmin ?? "PENDING"}
                             </span>
                         ),
@@ -135,7 +135,7 @@ const DocumentListModal: React.FC<DocumentListModalProps> = ({
                         accessorKey: "stage",
                         header: "Stage",
                         cell: ({ row }) => (
-                            <span className="font-bold text-[#6bbd45] bg-[#6bbd45]/10 px-2 py-0.5 rounded-full text-[10px] uppercase border border-[#6bbd45]/20">
+                            <span className="font-bold text-[#6bbd45] bg-[#6bbd45]/10 px-2 py-0.5 rounded-none text-[10px] uppercase border border-[#6bbd45]/20">
                                 {row.original.stage ?? "—"}
                             </span>
                         ),
@@ -160,7 +160,7 @@ const DocumentListModal: React.FC<DocumentListModalProps> = ({
                             const label =
                                 val === true ? "APPROVED" : val === false ? "REJECTED" : "PENDING";
                             return (
-                                <span className="px-3 py-1 text-xs uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
+                                <span className="px-3 py-1 text-xs uppercase tracking-widest rounded-none bg-gray-100 text-black border border-gray-200">
                                     {label}
                                 </span>
                             );
@@ -183,16 +183,16 @@ const DocumentListModal: React.FC<DocumentListModalProps> = ({
 
     return createPortal(
         <div className="project-component-container fixed inset-0 z-[1000] flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
+            <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-none shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
                 {/* Header */}
                 <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
-                    <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
+                    <h3 className="text-xl font-semibold text-black flex items-center gap-2 tracking-tight">
                         {getIcon()}
                         {getTitle()}
                     </h3>
                     <button
                         onClick={onClose}
-                        className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+                        className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-none hover:bg-red-100 transition-all font-semibold text-sm uppercase tracking-tight shadow-sm cursor-pointer whitespace-nowrap shrink-0"
                     >
                         Close
                     </button>

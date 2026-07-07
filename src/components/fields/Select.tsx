@@ -151,7 +151,7 @@ const Select = ({
             }, 100);
           }
         }}
-        className={`flex items-center justify-between p-2 text-sm border font-bold rounded-xl bg-white dark:bg-slate-800 cursor-pointer transition-all ${
+        className={`flex items-center justify-between p-2 text-sm border font-bold rounded-none bg-white dark:bg-slate-800 cursor-pointer transition-all ${
           disabled ? "border-gray-200 bg-gray-50 pointer-events-none" : 
           isOpen ? "border-green-500 ring-2 ring-green-100" : "border-black dark:border-slate-700"
           } ${className}`}
@@ -201,7 +201,7 @@ const Select = ({
           <div
             ref={menuRef}
             style={menuStyles}
-            className="text-sm bg-white dark:bg-slate-800 border border-black dark:border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
+            className="text-sm bg-white dark:bg-slate-800 border border-black dark:border-slate-700 rounded-none shadow-lg max-h-60 overflow-y-auto custom-scrollbar"
           >
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (

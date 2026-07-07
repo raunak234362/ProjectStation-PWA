@@ -75,7 +75,7 @@ function ColumnFilter({ column }: { column: any }) {
       <input
         value={column.getFilterValue() ?? ""}
         onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-        className="pl-11 pr-4 h-full w-full border border-black dark:border-slate-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none uppercase transition-all bg-white dark:bg-slate-800 text-black dark:text-slate-200 placeholder:text-black/30 shadow-xs"
+        className="pl-11 pr-4 h-full w-full border border-black dark:border-slate-700 rounded-none text-xs font-bold focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none uppercase transition-all bg-white dark:bg-slate-800 text-black dark:text-slate-200 placeholder:text-black/30 shadow-xs"
         placeholder={`Search ${headerText}...`}
       />
     </div>
@@ -276,7 +276,7 @@ export default function DataTable<T extends object>({
       {table
         .getAllColumns()
         .some((c) => (c.columnDef as any).enableColumnFilter) && (
-        <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-gray-50 rounded-2xl border border-black/10 shadow-sm">
+        <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-gray-50 rounded-none">
           {table
             .getAllColumns()
             .filter((c) => (c.columnDef as any).enableColumnFilter)
@@ -287,7 +287,7 @@ export default function DataTable<T extends object>({
             ))}
           <Button
             onClick={() => table.resetColumnFilters()}
-            className="text-xs text-black border border-black hover:bg-green-100 transition-all h-11 px-8 font-semibold rounded-xl flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
+            className="text-xs text-black border border-black hover:bg-green-100 transition-all h-11 px-8 font-semibold rounded-none flex items-center gap-2 bg-white shadow-sm uppercase tracking-widest whitespace-nowrap"
           >
             <X className="w-4 h-4" /> Reset Filters
           </Button>
@@ -303,7 +303,7 @@ export default function DataTable<T extends object>({
         />
       ) : (
         <div
-          className={`w-full ${noBorder ? "" : "border border-black/5 dark:border-slate-800"} rounded-lg overflow-hidden bg-white dark:bg-slate-900 shadow-sm transition-all duration-300`}
+          className={`w-full ${noBorder ? "" : "border border-black/5 dark:border-slate-800"} rounded-none overflow-hidden bg-white dark:bg-slate-900 shadow-sm transition-all duration-300`}
         >
           <div className="max-h-[800px] overflow-y-auto overflow-x-auto custom-scrollbar">
             <table className="min-w-full table-fixed divide-y divide-black/5 dark:divide-slate-800">

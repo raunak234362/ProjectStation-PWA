@@ -96,10 +96,10 @@ console.log(filteredActions,"dashboardStats-----------------------------");
                   onActionClick(actionMap[action.title] || action.title);
                 }
               }}
-              className="p-4 rounded-xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
+              className="p-4 rounded-none flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-[6px] border-l-[#6bbd45] shadow-sm hover:shadow-md"
             >
               <div className="flex items-center gap-3 z-10 min-w-0 flex-1">
-                <div className="p-2 sm:p-2.5 rounded-full bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black shrink-0">
+                <div className="p-2 sm:p-2.5 rounded-none bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black shrink-0">
                   <action.icon size={18} className="sm:w-5 sm:h-5" strokeWidth={2} />
                 </div>
                 <div className="flex flex-col min-w-0 pr-1">
@@ -110,7 +110,7 @@ console.log(filteredActions,"dashboardStats-----------------------------");
               </div>
 
               <div className="z-10 text-right ml-3 shrink-0">
-                <span className="text-SM font-black text-black tracking-tight">
+                <span className="text-xl font-black text-black tracking-tight">
                   {action.count}
                 </span>
               </div>
