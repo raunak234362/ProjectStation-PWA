@@ -179,7 +179,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       header: "Overrun",
       cell: ({ row }: any) =>
         row.original.isOverrun ? (
-          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-tighter animate-pulse">
+          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-none text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-tighter animate-pulse">
             OVERRUN
           </span>
         ) : (
@@ -209,14 +209,14 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
                 {actualPercentage.toFixed(0)}% Utilized
               </span>
               {isOverrun && (
-                <span className="text-[8px] bg-red-100 text-red-700 px-1 rounded  animate-pulse">
+                <span className="text-[8px] bg-red-100 text-red-700 px-1 rounded-none  animate-pulse">
                   CRITICAL
                 </span>
               )}
             </div>
-            <div className="h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200/30">
+            <div className="h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-none overflow-hidden border border-gray-200/30">
               <div
-                className={`h-full transition-all duration-500 rounded-full ${isOverrun
+                className={`h-full transition-all duration-500 rounded-none ${isOverrun
                   ? "bg-red-500"
                   : percentage > 80
                     ? "bg-orange-500"
@@ -233,7 +233,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
       accessorKey: "status",
       header: "Status",
       cell: ({ row }: any) => (
-        <span className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-lg bg-gray-100 text-black border border-gray-200">
+        <span className="px-3 py-1 text-xs md:text-sm lg:text-base xl:text-lg uppercase tracking-widest rounded-none bg-gray-100 text-black border border-gray-200">
           {row.original.status}
         </span>
       ),
@@ -254,13 +254,13 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm project-component-container">
-      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-none shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
           <div>
-            <h3 className="text-xl  text-gray-700 dark:text-slate-100 flex items-center gap-2">
+            <h3 className="text-xl font-semibold text-black dark:text-slate-100 flex items-center gap-2">
               <div
-                className={`w-2 h-6 rounded-full ${status.includes("ACTIVE") || status.includes("IFA")
+                className={`w-2 h-6 rounded-none ${status.includes("ACTIVE") || status.includes("IFA")
                   ? "bg-green-500"
                   : status.includes("COMPLETED") ||
                     status.includes("IFC") ||
@@ -269,7 +269,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
                     : status.includes("ONHOLD") ||
                       status.includes("CO#") ||
                       status.includes("On-Hold")
-                      ? "bg-orange-500"
+                      ? "bg-gray-500"
                       : "bg-gray-500"
                   }`}
               ></div>
@@ -278,7 +278,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-none hover:bg-red-100 transition-all font-semibold text-sm uppercase tracking-tight shadow-sm cursor-pointer whitespace-nowrap shrink-0"
           >
             Close
           </button>
@@ -295,7 +295,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="ml-auto flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors border border-red-200"
+                  className="ml-auto flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-none text-xs font-bold transition-colors border border-red-200"
                 >
                   <XCircle size={14} />
                   Clear Filters
@@ -312,7 +312,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
                 <select
                   value={selectedManager}
                   onChange={(e) => setSelectedManager(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-none text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
                 >
                   <option value="">All Managers</option>
                   {managers.map((manager) => (
@@ -331,7 +331,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
                 <select
                   value={selectedFabricator}
                   onChange={(e) => setSelectedFabricator(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-none text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
                 >
                   <option value="">All Fabricators</option>
                   {fabricators.map((fabricator) => (
@@ -350,7 +350,7 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
                 <select
                   value={selectedStage}
                   onChange={(e) => setSelectedStage(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-none text-sm font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
                 >
                   <option value="">All Stages</option>
                   {stages.map((stage) => (
@@ -363,12 +363,12 @@ const ProjectListModal: React.FC<ProjectListModalProps> = ({
 
               {/* Overrun Filter */}
               <div className="flex items-end">
-                <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors w-full">
+                <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-none cursor-pointer hover:bg-gray-50 transition-colors w-full">
                   <input
                     type="checkbox"
                     checked={showOverrunOnly}
                     onChange={(e) => setShowOverrunOnly(e.target.checked)}
-                    className="w-4 h-4 text-red-600 border-green-300 rounded focus:ring-red-500 focus:ring-2"
+                    className="w-4 h-4 text-red-600 border-green-300 rounded-none focus:ring-red-500 focus:ring-2"
                   />
                   <span className="text-sm font-semibold text-gray-700 dark:text-slate-200">
                     Overrun Only

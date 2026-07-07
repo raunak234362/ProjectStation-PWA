@@ -148,8 +148,8 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
 
         return (
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
-              <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[10px] uppercase">
+            <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-none border border-gray-100">
+              <div className="w-6 h-6 rounded-none bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[10px] uppercase">
                 {(firstRecipient?.firstName?.[0] || "") + (firstRecipient?.lastName?.[0] || "")}
               </div>
               <span className="text-gray-700 font-medium text-xs">
@@ -157,7 +157,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
               </span>
             </div>
             {remainingCount > 0 && (
-              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md">
+              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-none">
                 +{remainingCount} more
               </span>
             )}
@@ -176,7 +176,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
       accessorKey: "stage",
       header: "Stage",
       cell: ({ row }: any) => (
-        <span className="font-bold text-[#6bbd45] bg-[#6bbd45]/10 px-2 py-0.5 rounded-full text-[10px] uppercase border border-[#6bbd45]/20">
+        <span className="font-bold text-[#6bbd45] bg-[#6bbd45]/10 px-2 py-0.5 rounded-none text-[10px] uppercase border border-[#6bbd45]/20">
           {row.original.stage || "N/A"}
         </span>
       ),
@@ -239,7 +239,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
 
         return (
           <span
-            className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${getStatusStyles(key)}`}
+            className={`inline-flex items-center px-2.5 py-1 rounded-none text-[10px] font-black uppercase tracking-widest border ${getStatusStyles(key)}`}
           >
             {label}
           </span>
@@ -267,18 +267,18 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-none shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
           <div>
-            <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-tight">
+            <h3 className="text-xl font-semibold text-black flex items-center gap-2 uppercase tracking-tight">
               Pending Attention on Submittals
             </h3>
 
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-none hover:bg-red-100 transition-all font-semibold text-sm uppercase tracking-tight shadow-sm cursor-pointer whitespace-nowrap shrink-0"
           >
             Close
           </button>

@@ -40,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMinimized, isMobileOpe
             <ChevronLeft size={18} strokeWidth={2.5} />
           )}
         </button>
-        <h1 className="text-sm sm:text-xl font-black text-black uppercase tracking-tight truncate">
+        <h1 className="text-sm sm:text-xl font-semibold text-black uppercase tracking-tight truncate">
           {headerTitle}
         </h1>
       </div>
