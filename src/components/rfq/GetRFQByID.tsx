@@ -26,8 +26,7 @@ import { toast } from "react-toastify";
 
 const RFQResponseItem = ({
   response,
-  onReply,
-  onSelect,
+  onReply
 }: {
   response: any;
   onReply?: (parent: any) => void;

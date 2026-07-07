@@ -253,66 +253,14 @@ const ClientDashboard = () => {
     try {
       let response;
       if (isClientEstimator) {
-        response = await Service.GetClientEstimatorRFQ();
+        response = await Service.GetClientEstimatorPendingRFQ();
       } else if (isClientAdmin) {
-        response = await Service.getAllRFQFab();
+        response = await Service.ClientAdminPendingRFQs();
       } else {
-        response = await Service.RfqSent();
+        response = await Service.GetClientPendingRFQ();
       }
       const data = Array.isArray(response) ? response : response?.data || [];
-
-      const pending = data.filter((r: any) => {
-        const responses = r.responses || [];
-        const hasUnansweredMTO = responses.some(
-          (res: any) =>
-            (res.type || res.Type || "").toUpperCase() === "MTO" &&
-            (!res.childResponses || res.childResponses.length === 0)
-        );
-        const hasUnansweredDetailing = responses.some(
-          (res: any) =>
-            (res.type || res.Type || "").toUpperCase() === "DETAILING" &&
-            (!res.childResponses || res.childResponses.length === 0)
-        );
-
-        if (isClientAdmin) {
-          return hasUnansweredMTO || hasUnansweredDetailing;
-        }
-
-        // Original condition: Status is PENDING
-        let isPending = false;
-        if (r.status === "PENDING") {
-          isPending = true;
-        } else {
-          // New condition: Has responses but at least one response has no childResponses (unanswered)
-          if (hasUnansweredMTO || hasUnansweredDetailing) {
-            isPending = true;
-          }
-        }
-
-        if (!isPending) return false;
-
-        const hasMTO = !!(r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue);
-        const hasDetailing = !!(r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign);
-
-        // and if MTO STATUS WBT_SUBMITTED That means it's completed so no need to show in Pending
-        const isWbtSubmittedOrAwarded = r.wbtStatus === "AWARDED" || (r.responses && r.responses.length > 0);
-        if (hasMTO && isWbtSubmittedOrAwarded) {
-          if (hasDetailing && hasUnansweredDetailing) {
-            // Keep it since detailing is still pending attention
-          } else {
-            return false;
-          }
-        }
-
-        // if MTO is there then don't show in RFQ pending action show only in MTO Ongoing, but if both MTO Or Detailing is there then show
-        if (hasMTO && !hasDetailing) {
-          return false;
-        }
-
-        return true;
-      });
-
-      setPendingRFQs(pending);
+      setPendingRFQs(data);
     } catch (error) {
       console.error("Failed to fetch RFQs", error);
     }

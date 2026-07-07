@@ -3262,7 +3262,7 @@ class Service {
       throw error
     }
   }
-  static async GetClientRFQ() {
+  static async GetClientPendingRFQ() {
     try {
       console.log('Fetching client rfq...');
       const response = await api.get(`/rfq/pending/client`)
@@ -3273,6 +3273,18 @@ class Service {
       throw error
     }
   }
+  static async GetClientEstimatorPendingRFQ() {
+    try {
+      console.log('Fetching client estimator rfq...');
+      const response = await api.get(`/rfq/pending/clientEstimator`)
+      console.log('Client estimator rfq fetched successfully:', response.data);
+      return response.data
+    } catch (error) {
+      console.error('Error fetching client estimator rfq:', error)
+      throw error
+    }
+  }
+
   static async GetClientMilestone() {
     try {
       console.log('Fetching client milestone...');

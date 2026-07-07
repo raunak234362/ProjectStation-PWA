@@ -235,7 +235,7 @@ const ConnectionDesignerDashboard = () => {
 
     const fetchPendingRFQs = async () => {
         try {
-            const response = isClientRole ? await Service.GetClientRFQ() : await Service.ClientAdminPendingRFQs();
+            const response = isClientRole ? await Service.GetClientPendingRFQ() : await Service.ClientAdminPendingRFQs();
             console.log(response);
 
             setPendingRFQs(Array.isArray(response) ? response : response?.data || []);

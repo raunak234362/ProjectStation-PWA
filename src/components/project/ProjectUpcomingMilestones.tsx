@@ -70,7 +70,7 @@ const ProjectUpcomingMilestones: React.FC<ProjectUpcomingMilestonesProps> = ({
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-black truncate uppercase tracking-tight group-hover:text-green-700">
-                    {ms.subject}
+                    {ms.subject}{ms.subSubject ? ` - ${ms.subSubject}` : ""}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-[10px] text-gray-500 uppercase tracking-widest font-black">

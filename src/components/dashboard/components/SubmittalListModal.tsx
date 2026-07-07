@@ -186,7 +186,7 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
       filterFn: "equalsString",
     },
     {
-      accessorKey: "wbtStatus",
+      accessorKey: (userRole === "client" || userRole === "client_admin") ? "status" : "wbtStatus",
       header: "Status",
       cell: ({ row }: any) => {
         const STATUS_LABELS: Record<string, string> = {
@@ -228,8 +228,11 @@ const SubmittalListModal: React.FC<SubmittalListModalProps> = ({
         const isConnectionDesigner = userRole === "connection_designer" ||
                                      userRole === "connection_designer_engineer" ||
                                      userRole === "connection_designer_admin";
+        const isClient = userRole === "client" || userRole === "client_admin";
 
-        const raw = row.original.wbtStatus || row.original.status || "PENDING";
+        const raw = isClient
+          ? row.original.status || row.original.wbtStatus || "PENDING"
+          : row.original.wbtStatus || row.original.status || "PENDING";
         const key = String(raw).replace(/\s+/g, "_").toUpperCase();
         const label = STATUS_LABELS[key] ?? String(raw).replace(/_/g, " ");
 

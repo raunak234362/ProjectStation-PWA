@@ -427,7 +427,9 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                                           : "text-gray-900",
                                       )}
                                     >
-                                      {submittal.subject || "No Subject"}
+                                      {submittal.subject
+                                        ? `${submittal.subject}${submittal.subSubject ? ` - ${submittal.subSubject}` : ""}`
+                                        : "No Subject"}
                                     </h4>
                                     {overdue && (
                                       <AlertCircle
@@ -550,7 +552,9 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                                           : "text-gray-900",
                                       )}
                                     >
-                                      {submittal.subject || "No Subject"}
+                                      {submittal.subject
+                                        ? `${submittal.subject}${submittal.subSubject ? ` - ${submittal.subSubject}` : ""}`
+                                        : "No Subject"}
                                     </h4>
                                     {overdue && (
                                       <p className="text-[10px] font-extrabold text-rose-600 tracking-wider mt-0.5">

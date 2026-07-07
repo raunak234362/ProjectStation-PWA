@@ -8,7 +8,6 @@ import { Inbox, Search, Filter } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
 import { Suspense } from "react";
 
-
 interface AllRFIProps {
   rfiData?: RFIItem[];
 }
@@ -54,7 +53,19 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
         (a, b) => new Date(b.createdAt || b.date || 0).getTime() - new Date(a.createdAt || a.date || 0).getTime()
       );
       const latest = sorted[0];
-      const rfiStatus = latest.wbtStatus || latest.status;
+      
+      const roleStr = latest.user?.role || latest.sender?.role || "";
+      const roleUpper = roleStr.toUpperCase();
+      const isClientResp = ["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(roleUpper) || roleUpper.includes("CLIENT");
+      const isParent = !latest.parentResponseId;
+
+      let rfiStatus;
+      if (isClientResp && isParent) {
+        rfiStatus = latest.exStatus || latest.status;
+      } else {
+        rfiStatus = latest.wbtStatus || latest.status;
+      }
+
       if (rfiStatus) {
         const statusStr = rfiStatus.toUpperCase();
         switch (statusStr) {
@@ -137,7 +148,6 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
       },
       size: 200,
     },
-
 
     {
       accessorKey: "status",

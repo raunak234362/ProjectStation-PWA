@@ -92,21 +92,27 @@ const EstimatorDashboard = () => {
         const role = sessionStorage.getItem("userRole")?.toUpperCase();
 
         let rfqService;
+        let pendingRfqService;
         if (role === "CLIENT_ESTIMATOR") {
           rfqService = Service.GetClientEstimatorRFQ();
+          pendingRfqService = Service.GetClientEstimatorPendingRFQ();
         } else if (role === "CLIENT_ADMIN") {
           rfqService = Service.getAllRFQFab();
+          pendingRfqService = Service.ClientAdminPendingRFQs();
         } else {
           rfqService = Service.RfqSent();
+          pendingRfqService = Service.GetClientPendingRFQ();
         }
 
-        const [rfqRes, invoiceRes, projectRes] = await Promise.all([
+        const [rfqRes, pendingRfqRes, invoiceRes, projectRes] = await Promise.all([
           rfqService,
+          pendingRfqService,
           role === "CLIENT_ESTIMATOR" ? Service.GetAllInvoiceByClient() : Service.getFabricatorAllInvoice(),
           Service.GetAllProjects()
         ]);
 
         const rfqs = Array.isArray(rfqRes?.data) ? rfqRes.data : Array.isArray(rfqRes) ? rfqRes : [];
+        const pendingRfqs = Array.isArray(pendingRfqRes?.data) ? pendingRfqRes.data : Array.isArray(pendingRfqRes) ? pendingRfqRes : [];
         const invoices = Array.isArray(invoiceRes?.data) ? invoiceRes.data : Array.isArray(invoiceRes) ? invoiceRes : [];
         const projects = Array.isArray(projectRes?.data) ? projectRes.data : Array.isArray(projectRes) ? projectRes : [];
 
@@ -117,14 +123,9 @@ const EstimatorDashboard = () => {
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-        const upcomingMTOs = rfqs
-          .filter((r: any) => {
-            const isMTO = r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel;
-            const status = (r.status || "").toUpperCase();
-            const wbtStatus = (r.wbtStatus || "").toUpperCase();
-            const isNotFinal = status !== "AWARDED" && status !== "CLOSED" && wbtStatus !== "AWARDED" && wbtStatus !== "CLOSED";
-            return isMTO && isNotFinal;
-          })
+        // Filter upcoming MTOs using the backend's pending RFQs list
+        const upcomingMTOs = pendingRfqs
+          .filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue)
           .sort((a: any, b: any) => {
             const dateA = a.estimationDate ? new Date(a.estimationDate).getTime() : Infinity;
             const dateB = b.estimationDate ? new Date(b.estimationDate).getTime() : Infinity;
@@ -139,7 +140,11 @@ const EstimatorDashboard = () => {
         );
         const totalRfqsSent = detailingRfqs.length;
         const rfqsAwarded = detailingRfqs.filter((r: any) => r.status === "AWARDED" || r.wbtStatus === "AWARDED").length;
-        const pendingEstimates = detailingRfqs.filter((r: any) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED").length;
+        
+        // Use pendingRfqs for pendingEstimates
+        const pendingEstimates = pendingRfqs.filter((r: any) =>
+          r.connectionDesign || r.customerDesign || r.detailingMain || r.detailingMisc || r.miscDesign
+        ).length;
 
         let totalInvoicedAmount = 0;
         let pendingInvoicesAmount = 0;
@@ -161,7 +166,7 @@ const EstimatorDashboard = () => {
         const mtoRfqs = rfqs.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel);
         const totalMTO = mtoRfqs.length;
         const awardedMTO = mtoRfqs.filter((r: any) => r.status === "AWARDED" || r.wbtStatus === "AWARDED").length;
-        const pendingMTO = mtoRfqs.filter((r: any) => r.status !== "AWARDED" && r.wbtStatus !== "AWARDED").length;
+        const pendingMTO = pendingRfqs.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue).length;
 
         setStats({
           totalRfqsSent,
