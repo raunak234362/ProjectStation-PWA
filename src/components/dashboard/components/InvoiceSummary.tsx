@@ -163,7 +163,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 overflow-hidden flex flex-col p-6 w-full mt-2">
+    <div className="bg-white rounded-none shadow-sm border border-green-500/20 overflow-hidden flex flex-col p-6 w-full mt-2">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
@@ -175,7 +175,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
               <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">
                 Total Raised
               </span>
-              <span className="text-lg font-black text-gray-900 mt-1">
+              <span className="text-lg font-semibold text-gray-900 mt-1">
                 ${totalRaised.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
@@ -184,7 +184,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
               <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">
                 Total Paid
               </span>
-              <span className="text-lg font-black text-[#5da63c] mt-1">
+              <span className="text-lg font-semibold text-[#5da63c] mt-1">
                 ${totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
@@ -193,7 +193,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
               <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">
                 Total Pending
               </span>
-              <span className="text-lg font-black text-red-500 mt-1">
+              <span className="text-lg font-semibold text-red-500 mt-1">
                 ${totalPending.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
@@ -204,7 +204,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(e.target.value)}
-            className="py-2 px-4 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] font-bold text-gray-700 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all"
+            className="py-2 px-4 text-sm border border-gray-200 rounded-none outline-none focus:ring-2 focus:ring-[#6bbd45] font-bold text-gray-700 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all"
           >
             <option value="all">All YEARS</option>
             <option value="2024">2024</option>
@@ -215,7 +215,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="py-2 px-4 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#6bbd45] font-bold text-gray-700 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all"
+            className="py-2 px-4 text-sm border border-gray-200 rounded-none outline-none focus:ring-2 focus:ring-[#6bbd45] font-bold text-gray-700 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all"
           >
             <option value="all">ALL MONTHS</option>
             {months.map((m) => (
@@ -238,7 +238,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           return (
             <div
               key={job.jobName}
-              className="bg-gray-50 p-5 rounded-2xl border border-black flex flex-col gap-4 hover:shadow-md transition-shadow hover:bg-white justify-between"
+              className="bg-gray-50 p-5 rounded-none border border-black flex flex-col gap-4 hover:shadow-md transition-shadow hover:bg-white justify-between"
             >
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1">
@@ -246,7 +246,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                     <h4 className="text-base font-bold text-gray-800 uppercase tracking-tight leading-snug">
                       {job.jobName}
                     </h4>
-                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md border ${
+                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-none border ${
                       job.isMto
                         ? "bg-blue-50 text-blue-700 border-blue-200"
                         : "bg-purple-50 text-purple-700 border-purple-200"
@@ -290,7 +290,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
                   <span className="text-sm font-semibold text-gray-700 uppercase tracking-widest">
                     {job.isMto ? "TOTAL RAISED" : "TOTAL RAISED / BID PRICE"}
                   </span>
-                  <span className="text-base font-bold text-gray-900 mt-1">
+                  <span className="text-base font-semibold text-gray-900 mt-1">
                     ${job.totalRaised.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     {!job.isMto && (
                       <>
@@ -305,16 +305,16 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
 
               <div className="mt-auto pt-2">
                 <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm font-black text-[#5da63c] uppercase tracking-wide">
+                  <span className="text-sm font-semibold text-[#5da63c] uppercase tracking-wide">
                     PAID: ${job.paid.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}{" "}
 
                   </span>
-                  <span className="text-sm font-black text-red-500 uppercase tracking-wide">
+                  <span className="text-sm font-semibold text-red-500 uppercase tracking-wide">
                     PENDING: ${job.pending.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </span>
                 </div>
 
-                <div className="w-full h-3 bg-gray-200/80 rounded-full overflow-hidden flex shadow-inner">
+                <div className="w-full h-3 bg-gray-200/80 rounded-none overflow-hidden flex shadow-inner">
                   <div
                     className="h-full bg-[#5da63c] transition-all duration-500 ease-out"
                     style={{ width: `${paidPercent}%` }}
