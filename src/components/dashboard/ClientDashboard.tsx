@@ -259,9 +259,7 @@ const ClientDashboard = () => {
   const fetchPendingRFQs = async () => {
     try {
       let response;
-      if (isClientEstimator) {
-        response = await Service.GetClientEstimatorPendingRFQ();
-      } else if (isClientAdmin) {
+      if (isClientAdmin) {
         response = await Service.ClientAdminPendingRFQs();
       } else {
         response = await Service.GetClientPendingRFQ();
