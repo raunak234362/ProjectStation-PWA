@@ -93,9 +93,10 @@ const EstimatorDashboard = () => {
 
         let rfqService;
         let pendingRfqService;
+        let dashboardDataService = null;
         if (role === "CLIENT_ESTIMATOR") {
           rfqService = Service.GetClientEstimatorRFQ();
-          pendingRfqService = Service.GetClientEstimatorPendingRFQ();
+          dashboardDataService = Service.GetClientEstimatorDashboardData();
         } else if (role === "CLIENT_ADMIN") {
           rfqService = Service.getAllRFQFab();
           pendingRfqService = Service.ClientAdminPendingRFQs();
@@ -104,12 +105,17 @@ const EstimatorDashboard = () => {
           pendingRfqService = Service.GetClientPendingRFQ();
         }
 
-        const [rfqRes, pendingRfqRes, invoiceRes, projectRes] = await Promise.all([
+        const [rfqRes, pendingRfqRes, invoiceRes, projectRes, dashboardRes] = await Promise.all([
           rfqService,
           pendingRfqService,
           role === "CLIENT_ESTIMATOR" ? Service.GetAllInvoiceByClient() : Service.getFabricatorAllInvoice(),
-          Service.GetAllProjects()
+          Service.GetAllProjects(),
+          dashboardDataService ? dashboardDataService : Promise.resolve(null)
         ]);
+        
+        if (dashboardRes) {
+          console.log("Client Estimator Dashboard Data:", dashboardRes);
+        }
 
         const rfqs = Array.isArray(rfqRes?.data) ? rfqRes.data : Array.isArray(rfqRes) ? rfqRes : [];
         const pendingRfqs = Array.isArray(pendingRfqRes?.data) ? pendingRfqRes.data : Array.isArray(pendingRfqRes) ? pendingRfqRes : [];

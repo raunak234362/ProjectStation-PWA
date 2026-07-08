@@ -208,7 +208,14 @@ const ClientDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = isClientRole ? await Service.GetClientDashboardData() : await Service.DashboardData();
+      let response;
+      if (isClientEstimator) {
+        response = await Service.GetClientEstimatorDashboardData();
+      } else if (isClientRole) {
+        response = await Service.GetClientDashboardData();
+      } else {
+        response = await Service.DashboardData();
+      }
       console.log("Dashboard client Data", response);
       setDashboardStats(response?.data || response || null);
     } catch (error) {

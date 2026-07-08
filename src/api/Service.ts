@@ -472,6 +472,17 @@ class Service {
     }
   }
 
+  // Client Estimator DashboardData
+ static async GetClientEstimatorDashboardData(){
+   try {
+     const response = await api.get(`dashBoardData/clientEstimator`);
+      console.log(" All RFQ fetched by Client Estimator:", response.data);
+      return response.data;
+  } catch (error) {
+    
+  }
+ }
+
   //getting rfqbyID
   static async GetRFQbyId(rfqId: string) {
     try {
@@ -2073,6 +2084,17 @@ class Service {
     }
   }
 
+  //Update submittal patch method by id (partial update, e.g. milestone ID only)
+  static async updateSubmittalById(id:string, data:any){
+    try {
+      const response = await api.patch(`submittal/${id}`,data)
+      return response.data
+    } catch (error) {
+      console.error('cannot update submittal', error)
+      throw error
+    }
+  }
+
   //submittal responses
   static async addSubmittalResponse(formData: FormData, fabricatorName: string, projectName: string) {
     try {
@@ -3270,17 +3292,6 @@ class Service {
       return response.data
     } catch (error) {
       console.error('Error fetching client rfq:', error)
-      throw error
-    }
-  }
-  static async GetClientEstimatorPendingRFQ() {
-    try {
-      console.log('Fetching client estimator rfq...');
-      const response = await api.get(`/rfq/pending/clientEstimator`)
-      console.log('Client estimator rfq fetched successfully:', response.data);
-      return response.data
-    } catch (error) {
-      console.error('Error fetching client estimator rfq:', error)
       throw error
     }
   }

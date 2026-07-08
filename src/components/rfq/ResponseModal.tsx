@@ -696,7 +696,12 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                   >
                     <option value="">Please Select The status</option>
                     <option value="CLOSED">CLOSED</option>
-                    <option value="AWARDED">AWARDED</option>
+                    {(rfqDetails?.MTOManual === true ||
+                      rfqDetails?.responses?.some((r: any) => r.type === "MTO")) ? (
+                      <option value="COMPLETED">COMPLETED</option>
+                    ) : (
+                      <option value="AWARDED">AWARDED</option>
+                    )}
                     <option value="REVISE">REVISE</option>              
                     <option value="REJECTED">REJECTED</option>
                     <option value="CLARIFICATION_REQUIRED">CLARIFICATION REQUIRED</option>
@@ -705,6 +710,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
               </div>
             
             </div>
+
 
             {/* Files */}
             <div className="space-y-3">
