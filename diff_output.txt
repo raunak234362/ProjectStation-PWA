@@ -1,0 +1,1187 @@
+--- 
+
++++ 
+
+-﻿// @ts-nocheck
+-import autoTable from "jspdf-autotable";
+-import Logo from "../../../assets/logo.png";
+-
+-import WprWeeksTable from "./WprWeeksTable";
+-import WprHeader from "./WprHeader";
+-import WprToolbar from "./WprToolbar";
+-import WprRfiTable from "./WprRfiTable";
+-import WprScheduleTable from "./WprScheduleTable";
+-import WprChangeOrderTable from "./WprChangeOrderTable";
++import "jspdf-autotable";
++import Logo from '../../../assets/logo.png';
+-  milestones,
+-  rfiData,
+-  submittalData,
+-  changeOrderData,
+-  coordinationDrawings,
++  milestones = [],
++  rfiData = [],
++  submittalData = [],
++  changeOrderData = [],
++  coordinationDrawings = [],
+-}: any) => {
++}) => {
+-  const canEdit = false; // WPR is now fully read-only per user request
++  const canEdit = !["client", "staff", "estimator"].includes(userRole);
+-  const [isExportingPDF, setIsExportingPDF] = useState(false);
+-  const [formNo, setFormNo] = useState("WBT/PMO/WPR-001");
+-  const [version, setVersion] = useState("1.0");
+-  const [effDate, setEffDate] = useState("05/09/2024");
+-  const [rawRfis, setRawRfis] = useState<any[]>([]);
+-  const [rawScheduleRows, setRawScheduleRows] = useState<any[]>([]);
+-  const [rawCoRows, setRawCoRows] = useState<any[]>([]);
+-  const [rawCoordDrawings, setRawCoordDrawings] = useState<any[]>([]);
++  const [rawRfis, setRawRfis] = useState([]);
++  const [rawScheduleRows, setRawScheduleRows] = useState([]);
++  const [rawCoRows, setRawCoRows] = useState([]);
++  const [rawCoordDrawings, setRawCoordDrawings] = useState([]);
+-  const [viewMode, setViewMode] = useState<"weeksTable" | "reportView">("weeksTable");
+-  const [activeCell, setActiveCell] = useState<any>(null);
++  const [activeCell, setActiveCell] = useState(null);
+-  const inputRef = useRef<any>(null);
++  const inputRef = useRef(null);
+-          let clientAdmins: any[] = [];
+-
+-          try {
+-            const clientsRes = await Service.FetchAllClientsByFabricatorID(fabId);
+-            if (clientsRes?.data) {
+-              const rawClients = Array.isArray(clientsRes.data) ? clientsRes.data : [];
+-              clientAdmins = rawClients.filter((c: any) =>
+-                c.role === "CLIENT_ADMIN" || c.role === "client_admin"
+-              );
+-            }
+-          } catch (err) {
+-            console.error("Failed to fetch clients for fabricator", err);
+-          }
+-
+-
+-            const clientPMs = project?.clientProjectManagers;
+-            if (clientPMs && Array.isArray(clientPMs) && clientPMs.length > 0) {
+-              const allPMs = clientPMs.map((pm: any) => `${pm.firstName || ""} ${pm.lastName || ""}`.trim().toUpperCase()).join(", ");
+-              setFabProjectManager(allPMs);
+-            } else if (fabPOCs && fabPOCs.length > 0) {
+-              const allPocs = fabPOCs.map((poc: any) => `${poc.firstName || ""} ${poc.lastName || ""}`.trim().toUpperCase()).join(", ");
+-              setFabProjectManager(allPocs);
++            if (fabPOCs && fabPOCs.length > 0) {
++              const fabPOC = fabPOCs[0];
++              setFabCirculatedTo(`${fabPOC.firstName || ""} ${fabPOC.lastName || ""}`.trim().toUpperCase());
+-          }
+-
+-          if (clientAdmins.length > 0) {
+-            const allAdmins = clientAdmins.map((c: any) => `${c.firstName || ""} ${c.lastName || ""}`.trim().toUpperCase()).join(", ");
+-            setFabCirculatedTo(allAdmins);
+-
+-  // Sync Form No, Version, and Eff Date based on selected week
+-  useEffect(() => {
+-    let weekNum = 1;
+-    let targetEnd = new Date();
+-
+-    if (selectedWeek !== "All") {
+-      const match = selectedWeek.match(/Week (\d+)/i);
+-      if (match) weekNum = parseInt(match[1], 10);
+-      const wk = projectWeeks.find(w => w.label === selectedWeek);
+-      if (wk) targetEnd = wk.end;
+-    } else if (projectWeeks.length > 0) {
+-      const lastWeek = projectWeeks[projectWeeks.length - 1];
+-      const match = lastWeek.label.match(/Week (\d+)/i);
+-      if (match) weekNum = parseInt(match[1], 10);
+-      targetEnd = getSunday(new Date());
+-    } else {
+-      targetEnd = getSunday(new Date());
+-    }
+-
+-    setVersion(`${weekNum}.0`);
+-    setFormNo(`WBT/PMO/WPR-${String(weekNum).padStart(3, "0")}`);
+-    setEffDate(targetEnd.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }));
+-  }, [selectedWeek, projectWeeks]);
+-      const bfaCache: any = {};
+-      const subsToFetch = filteredSubmittalData.filter((sub: any) => sub.bfaStatus === true && sub.status === "BFA_SENT");
+-
+-      await Promise.all(subsToFetch.map(async (sub: any) => {
++      const bfaCache = {};
++      const subsToFetch = filteredSubmittalData.filter(sub => sub.bfaStatus === true && sub.status === "BFA_SENT");
++
++      await Promise.all(subsToFetch.map(async (sub) => {
+-      const fmt = (d: any) => d ? new Date(d).toLocaleDateString("en-US") : "ΓÇö";
+-      const toEntry = (sub: any) => ({ subject: sub.subject || sub.serialNo || "ΓÇö", date: fmt(sub.date || sub.createdAt) });
+-      const cleanHtml = (str: any) => (str || "").replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
++      const fmt = (d) => d ? new Date(d).toLocaleDateString("en-US") : "ΓÇö";
++      const toEntry = (sub) => ({ subject: sub.subject || sub.serialNo || "ΓÇö", date: fmt(sub.date || sub.createdAt) });
++      const cleanHtml = (str) => (str || "").replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
+-      const milestoneRows = milestones.map((m: any) => {
++      const milestoneRows = milestones.map((m) => {
+-        const matchLink = (link: any) =>
++        const matchLink = (link) =>
+-        const belongsToMilestone = (sub: any) => {
++        const belongsToMilestone = (sub) => {
+-        subs.forEach((s: any) => linkedSubmittalIds.add(s.id || s._id));
+-
+-        const ifaSubs = subs.filter((s: any) => String(s.stage || "").toUpperCase() === "IFA");
+-        const ifcSubs = subs.filter((s: any) => String(s.stage || "").toUpperCase() === "IFC");
+-        const corSubs = subs.filter((s: any) => ["CO", "COR"].includes(String(s.stage || "").toUpperCase()));
+-
+-        const unifiedEntries = subs.map((s: any) => {
++        subs.forEach(s => linkedSubmittalIds.add(s.id || s._id));
++
++        const ifaSubs = subs.filter(s => String(s.stage || "").toUpperCase() === "IFA");
++        const ifcSubs = subs.filter(s => String(s.stage || "").toUpperCase() === "IFC");
++        const corSubs = subs.filter(s => ["CO", "COR"].includes(String(s.stage || "").toUpperCase()));
++
++        const unifiedEntries = subs.map(s => {
+-            const latest = [...resList].sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
++            const latest = [...resList].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0];
+-            ifaDate: stage === "IFA" ? fmt(dateStr) : "ΓÇö",
++            stage: s.stage || "IFA",
++            ifaDate: !["IFC", "CO", "COR"].includes(stage) ? fmt(dateStr) : "ΓÇö",
+-        const finalBfaRecdDate = unifiedEntries.find((e: any) => e.bfaDate !== "ΓÇö")?.bfaDate || "ΓÇö";
+-        const primarySub = subs.length > 0 ? [...subs].sort((a: any, b: any) => new Date(b.createdAt || b.date || 0).getTime() - new Date(a.createdAt || a.date || 0).getTime())[0] : null;
++        const finalBfaRecdDate = unifiedEntries.find(e => e.bfaDate !== "ΓÇö")?.bfaDate || "ΓÇö";
++        const primarySub = subs.length > 0 ? [...subs].sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0))[0] : null;
+-          ifaSubDate: unifiedEntries.find((e: any) => e.ifaDate !== "ΓÇö")?.ifaDate || "ΓÇö",
+-          ifcSubDate: unifiedEntries.find((e: any) => e.ifcDate !== "ΓÇö")?.ifcDate || "ΓÇö",
+-          corSubDate: unifiedEntries.find((e: any) => e.corDate !== "ΓÇö")?.corDate || "ΓÇö",
++          ifaSubDate: unifiedEntries.find(e => e.ifaDate !== "ΓÇö")?.ifaDate || "ΓÇö",
++          ifcSubDate: unifiedEntries.find(e => e.ifcDate !== "ΓÇö")?.ifcDate || "ΓÇö",
++          corSubDate: unifiedEntries.find(e => e.corDate !== "ΓÇö")?.corDate || "ΓÇö",
+-        .filter((sub: any) => {
++        .filter(sub => {
+-        .map((sub: any) => {
++        .map((sub) => {
+-          const latestResponse = responses.sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
++          const latestResponse = responses.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0];
+-            ifaDate: stage === "IFA" ? fmt(dateStr) : "ΓÇö",
++            stage: sub.stage || "IFA",
++            ifaDate: !["IFC", "CO", "COR"].includes(stage) ? fmt(dateStr) : "ΓÇö",
+-      const sortByDate = (entries: any) =>
+-        [...entries].sort((a: any, b: any) => {
+-          const da = a.date && a.date !== "ΓÇö" ? new Date(a.date).getTime() : new Date(0).getTime();
+-          const db = b.date && b.date !== "ΓÇö" ? new Date(b.date).getTime() : new Date(0).getTime();
++      const sortByDate = (entries) =>
++        [...entries].sort((a, b) => {
++          const da = a.date && a.date !== "ΓÇö" ? new Date(a.date) : new Date(0);
++          const db = b.date && b.date !== "ΓÇö" ? new Date(b.date) : new Date(0);
+-      [...milestoneRows, ...standaloneRows].forEach((row: any) => {
++      [...milestoneRows, ...standaloneRows].forEach((row) => {
+-      const mergedRows = Array.from(mergeMap.values()).map((row: any) => {
++      const mergedRows = Array.from(mergeMap.values()).map((row) => {
+-          ifaSubDate: sortedEntries.find((e: any) => e.ifaDate !== "ΓÇö")?.ifaDate || "ΓÇö",
+-          ifcSubDate: sortedEntries.find((e: any) => e.ifcDate !== "ΓÇö")?.ifcDate || "ΓÇö",
+-          corSubDate: sortedEntries.find((e: any) => e.corDate !== "ΓÇö")?.corDate || "ΓÇö",
++          ifaSubDate: sortedEntries.find(e => e.ifaDate !== "ΓÇö")?.ifaDate || "ΓÇö",
++          ifcSubDate: sortedEntries.find(e => e.ifcDate !== "ΓÇö")?.ifcDate || "ΓÇö",
++          corSubDate: sortedEntries.find(e => e.corDate !== "ΓÇö")?.corDate || "ΓÇö",
+-    const fetchCOs = async () => {
+-      try {
+-        let rawCOs: any[] = [];
+-        if (projectId && typeof projectId === "string" && !projectId.startsWith("temp-")) {
+-          const res = await Service.GetChangeOrder(projectId);
+-          rawCOs = res?.data || [];
+-        } else {
+-          rawCOs = changeOrderData || [];
+-        }
+-
+-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+-
+-        const rows = rawCOs.map((co: any) => {
+-          let totalAmount = 0;
+-          const monthlyBreakdown: any = {};
+-          months.forEach(m => monthlyBreakdown[m] = "");
+-
+-          let currentVersion = co.currentVersion || null;
+-          if (!currentVersion && co.versions && Array.isArray(co.versions) && co.versions.length > 0) {
+-            currentVersion = co.versions.find((v: any) => v.id === co.currentVersionId) || 
+-              [...co.versions].sort(
+-                (a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+-              )[0];
+-          }
+-          
+-          let latestRefersTo = currentVersion?.changeOrderTables || currentVersion?.CoRefersTo || co.changeOrderTables;
+-          
+-          // If we have to fall back to the main CoRefersTo array (which often contains items across ALL versions in the list API)
+-          if (!latestRefersTo || latestRefersTo.length === 0) {
+-            if (Array.isArray(co.CoRefersTo)) {
+-              const targetVersionId = currentVersion?.id || co.currentVersionId;
+-              if (targetVersionId) {
+-                const hasVersionIds = co.CoRefersTo.some((item: any) => item.changeOrderVersionId);
+-                if (hasVersionIds) {
+-                  latestRefersTo = co.CoRefersTo.filter((item: any) => item.changeOrderVersionId === targetVersionId);
+-                } else {
+-                  latestRefersTo = co.CoRefersTo;
+-                }
+-              } else {
+-                latestRefersTo = co.CoRefersTo;
+-              }
+-            } else {
+-              latestRefersTo = [];
+-            }
+-          }
+-
+-          if (Array.isArray(latestRefersTo) && latestRefersTo.length > 0) {
+-            const monthSums: any = {};
+-            let hasAnyAmount = false;
+-
+-            latestRefersTo.forEach((item: any) => {
+-              const itemDate = item.createdAt ? new Date(item.createdAt) : (co.createdAt ? new Date(co.createdAt) : null);
+-              if (itemDate) {
+-                const mIdx = itemDate.getMonth();
+-                const mName = months[mIdx];
+-                monthSums[mName] = (monthSums[mName] || 0) + (Number(item.cost) || 0);
+-              }
+-            });
+-
+-            months.forEach(m => {
+-              if (monthSums[m] > 0) {
+-                monthlyBreakdown[m] = `$${monthSums[m].toLocaleString()}`;
+-                totalAmount += monthSums[m];
+-                hasAnyAmount = true;
+-              }
+-            });
+-
+-            if (!hasAnyAmount) {
+-              const fallbackMonthIdx = co.createdAt ? new Date(co.createdAt).getMonth() : -1;
+-              if (fallbackMonthIdx >= 0) {
+-                monthlyBreakdown[months[fallbackMonthIdx]] = "SENT";
+-              }
+-            }
+-          } else {
+-            const amount = Number(co.totalCost) || Number(co.amount) || 0;
+-            totalAmount = amount;
+-            const coDate = co.createdAt || co.date ? new Date(co.createdAt || co.date) : null;
+-            const coMonthIndex = coDate ? coDate.getMonth() : -1;
+-
+-            if (coMonthIndex >= 0) {
+-              monthlyBreakdown[months[coMonthIndex]] = amount > 0 ? `$${amount.toLocaleString()}` : "SENT";
+-            }
+-          }
+-
+-          return {
+-            id: co.id || co._id,
+-            createdAt: co.createdAt || co.date || new Date().toISOString(),
+-            changeOrder: co.changeOrderNumber ? `COR-${String(co.changeOrderNumber).padStart(3, "0")}` : "COR-New",
+-            ...monthlyBreakdown,
+-            total: totalAmount > 0 ? `$${totalAmount.toLocaleString()}` : "ΓÇö"
+-          };
++    const rawCOs = changeOrderData || [];
++    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
++
++    const rows = rawCOs.map((co) => {
++      let totalAmount = 0;
++      const monthlyBreakdown = {};
++      months.forEach(m => monthlyBreakdown[m] = "");
++
++      if (Array.isArray(co.CoRefersTo) && co.CoRefersTo.length > 0) {
++        const monthSums = {};
++        let hasAnyAmount = false;
++
++        co.CoRefersTo.forEach(item => {
++          const itemDate = item.createdAt ? new Date(item.createdAt) : (co.createdAt ? new Date(co.createdAt) : null);
++          if (itemDate) {
++            const mIdx = itemDate.getMonth();
++            const mName = months[mIdx];
++            monthSums[mName] = (monthSums[mName] || 0) + (Number(item.cost) || 0);
++          }
+-        setRawCoRows(rows);
+-      } catch (e) {
+-        console.error("Error fetching change orders:", e);
+-      }
+-    };
+-    fetchCOs();
+-  }, [projectId, changeOrderData, project]);
++        months.forEach(m => {
++          if (monthSums[m] > 0) {
++            monthlyBreakdown[m] = `$${monthSums[m].toLocaleString()}`;
++            totalAmount += monthSums[m];
++            hasAnyAmount = true;
++          }
++        });
++
++        if (!hasAnyAmount) {
++          const fallbackMonthIdx = co.createdAt ? new Date(co.createdAt).getMonth() : -1;
++          if (fallbackMonthIdx >= 0) {
++            monthlyBreakdown[months[fallbackMonthIdx]] = "SENT";
++          }
++        }
++      } else {
++        const amount = Number(co.totalCost) || Number(co.amount) || 0;
++        totalAmount = amount;
++        const coDate = co.createdAt || co.date ? new Date(co.createdAt || co.date) : null;
++        const coMonthIndex = coDate ? coDate.getMonth() : -1;
++
++        if (coMonthIndex >= 0) {
++          monthlyBreakdown[months[coMonthIndex]] = amount > 0 ? `$${amount.toLocaleString()}` : "SENT";
++        }
++      }
++
++      return {
++        id: co.id || co._id,
++        createdAt: co.createdAt || co.date || new Date().toISOString(),
++        changeOrder: co.changeOrderNumber ? `COR-${String(co.changeOrderNumber).padStart(3, "0")}` : "COR-New",
++        ...monthlyBreakdown,
++        total: totalAmount > 0 ? `$${totalAmount.toLocaleString()}` : "ΓÇö"
++      };
++    });
++
++    setRawCoRows(rows);
++  }, [changeOrderData, project]);
+-  const handleCellClick = (table: string, rowId: string, field: string, value: string) => {
++  const handleCellClick = (table, rowId, field, value) => {
+-  const handleKeyDown = (e: any) => {
++  const handleKeyDown = (e) => {
++    const fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
++    const projectName = project?.projectName || project?.name || "";
+-
+-      let fabName = project?.fabricator?.fabName || "";
+-      let projName = project?.projectName || project?.name || "";
+-
+-      if (!fabName || !projName) {
+-        const fetchedProject = await Service.GetProjectById(projectId);
+-        fabName = fetchedProject?.fabricator?.fabName || "";
+-        projName = fetchedProject?.projectName || fetchedProject?.name || "";
+-      }
+-
+-          await Service.EditRFIByID(row.id, payload as any, fabName, projName);
++          await Service.EditRFIByID(row.id, payload, fabricatorName, projectName);
+-          await Service.addRFI(formData, fabName, projName);
++          await Service.addRFI(formData, fabricatorName, projectName);
+-          await Service.updateCoordinationDrawing(row.id, payload, fabName, projName);
++          await Service.updateCoordinationDrawing(row.id, payload, fabricatorName, projectName);
+-          const res = await Service.createCoordinationDrawing(formData, fabName, projName);
++          const res = await Service.createCoordinationDrawing(formData, fabricatorName, projectName);
+-              await Service.updateCoordinationDrawing(newId, { status: row.status }, fabName, projName);
++              await Service.updateCoordinationDrawing(newId, { status: row.status }, fabricatorName, projectName);
+-          formData.append("totalCost", sum.toString());
+-          await Service.ChangeOrder(formData, fabName, projName);
++          formData.append("totalCost", sum);
++          await Service.ChangeOrder(formData, fabricatorName, projectName);
+-  const addRow = (table: string) => {
++  const addRow = (table) => {
+-  // Export spreadsheet using XLSX ΓÇö mirrors the on-screen WPR component layout
++  // Export spreadsheet using XLSX
+-    try {
+-      const workbook = XLSX.utils.book_new();
+-      const wsData: any[][] = [];
+-      const merges: XLSX.Range[] = [];
+-      const COL_COUNT = 8; // total columns we'll use (A-H)
+-
+-      // ΓöÇΓöÇΓöÇ Helper: push a row padded to COL_COUNT ΓöÇΓöÇΓöÇ
+-      const pushRow = (cells: any[]) => {
+-        while (cells.length < COL_COUNT) cells.push("");
+-        wsData.push(cells);
+-      };
+-
+-      // ΓöÇΓöÇΓöÇ Helper: merge cells (s=start, e=end, 0-indexed) ΓöÇΓöÇΓöÇ
+-      const merge = (r: number, c1: number, r2: number, c2: number) => {
+-        merges.push({ s: { r, c: c1 }, e: { r: r2, c: c2 } });
+-      };
+-
+-      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+-      // SECTION: HEADER BLOCK
+-      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+-      let row = 0;
+-
+-      // Row 0: Title row
+-      pushRow(["WHITEBOARD TECHNOLOGIES", "", "", `Week Ending ${weekEnding}`, "", "", "FORM NO", formNo]);
+-      merge(row, 0, row, 2); // Logo/company across 3 cols
+-      merge(row, 3, row, 5); // Title across 3 cols
+-      row++;
+-
+-      // Row 1: Version
+-      pushRow(["", "", "", "", "", "", "VERSION", version]);
+-      merge(row, 0, row, 5);
+-      row++;
+-
+-      // Row 2: Eff Date
+-      pushRow(["", "", "", "", "", "", "EFF DATE", effDate]);
+-      merge(row, 0, row, 5);
+-      row++;
+-
+-      // Row 3: Customer
+-      pushRow(["Customer", "", project?.fabricator?.fabName || "ΓÇö", "", "", "", "", ""]);
+-      merge(row, 0, row, 1);
+-      merge(row, 2, row, COL_COUNT - 1);
+-      row++;
+-
+-      // Row 4: Project Name | Fab PM
+-      const fabPMNames = project?.clientProjectManagers?.length > 0
+-        ? project.clientProjectManagers.map((pm: any) => `${pm.firstName || ""} ${pm.lastName || ""}`.trim()).join(", ")
+-        : fabProjectManager;
+-      pushRow(["Project Name", "", project?.projectName || project?.name || "ΓÇö", "", "Fabricator Project Manager", "", fabPMNames || "ΓÇö", ""]);
+-      merge(row, 0, row, 1);
+-      merge(row, 2, row, 3);
+-      merge(row, 4, row, 5);
+-      merge(row, 6, row, 7);
+-      row++;
+-
+-      // Row 5: WBT PM | Report Circulated To
+-      const wbtPM = project?.manager ? `${project.manager.firstName} ${project.manager.lastName}` : "ΓÇö";
+-      pushRow(["WBT Project Manager", "", wbtPM, "", "Report Circulated To", "", fabCirculatedTo || "ΓÇö", ""]);
+-      merge(row, 0, row, 1);
+-      merge(row, 2, row, 3);
+-      merge(row, 4, row, 5);
+-      merge(row, 6, row, 7);
+-      row++;
+-
+-      // Row 6: Report Circulated To | Software
+-      pushRow(["Report Circulated To", "", wbtCirculatedTo || "ΓÇö", "", "Software", "", software || "SDS2", ""]);
+-      merge(row, 0, row, 1);
+-      merge(row, 2, row, 3);
+-      merge(row, 4, row, 5);
+-      merge(row, 6, row, 7);
+-      row++;
+-
+-      // Row 7: Empty spacer
+-      pushRow([]);
+-      row++;
+-
+-      // Row 8: Project dates
+-      const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "ΓÇö";
+-      pushRow(["Project Awarded", fmtDate(project?.startDate), "", "Approval Date", fmtDate(project?.approvalDate), "", "Fab Released Date", fmtDate(project?.fabricationDate)]);
+-      row++;
+-
+-      // Row 9: Empty spacer
+-      pushRow([]);
+-      row++;
+-
+-      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+-      // SECTION 1: PROJECT SCHEDULE / MILESTONES
+-      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+-      pushRow(["1. PROJECT SCHEDULE / MILESTONES", "", "", "", "", "", "", ""]);
+-      merge(row, 0, row, COL_COUNT - 1);
+-      row++;
+-
+-      // Schedule header
+-      pushRow(["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Comment", ""]);
+-      merge(row, 6, row, 7); // Comment spans 2 cols
+-      row++;
+-
+-      // Schedule data rows
+-      (filteredScheduleRows || []).forEach((s: any) => {
+-        pushRow([
+-          s.phase || "ΓÇö",
+-          s.startDate || "ΓÇö",
+-          s.ifaSubDate || "ΓÇö",
+-          s.bfaRecdDate || "ΓÇö",
+-          s.ifcSubDate || "ΓÇö",
+-          s.corSubDate || "ΓÇö",
+-          s.comments || "ΓÇö",
+-          ""
+-        ]);
+-        merge(row, 6, row, 7);
+-        row++;
+-      });
+-
+-      // Empty spacer
+-      pushRow([]);
+-      row++;
+-
+-      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+-      // SECTION 2: RFI STATUS OVERVIEW
+-      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+-      pushRow(["2. RFI STATUS OVERVIEW", "", "", "", "", "", "", ""]);
+-      merge(row, 0, row, COL_COUNT - 1);
+-      row++;
+-
+-      // RFI header
+-      pushRow(["RFI No.", "Sent Date", "Customer Response", "", "Response Received", "Whiteboard Response", "", "Status"]);
+-      merge(row, 2, row, 3); // Customer Response spans 2 cols
+-      merge(row, 5, row, 6); // WBT Response spans 2 cols
+-      row++;
+-
+-      // RFI data rows
+-      (filteredRfis || []).forEach((r: any) => {
+-        const custResp = r.customerResponse?.replace(/&NBSP;|&nbsp;/gi, ' ') || "ΓÇö";
+-        const wbtResp = r.wbtResponse?.replace(/&NBSP;|&nbsp;/gi, ' ') || "ΓÇö";
+-        pushRow([
+-          r.rfiNo || "ΓÇö",
+-          r.sentDate || "ΓÇö",
+-          custResp,
+-          "",
+-          r.responseReceivedDate || "ΓÇö",
+-          wbtResp,
+-          "",
+-          r.status || "ΓÇö"
+-        ]);
+-        merge(row, 2, row, 3);
+-        merge(row, 5, row, 6);
+-        row++;
+-      });
+-
+-      // Empty spacer
+-      pushRow([]);
+-      row++;
+-
+-      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+-      // SECTION 3: CHANGE ORDER AMOUNT ($) MONTHLY BREAKDOWN
+-      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+-      pushRow(["3. CHANGE ORDER AMOUNT ($) MONTHLY BREAKDOWN", "", "", "", "", "", "", ""]);
+-      merge(row, 0, row, COL_COUNT - 1);
+-      row++;
+-
+-      // CO header - use all 8 cols: CO | Jan-Feb | Mar-Apr | May-Jun | Jul-Aug | Sep-Oct | Nov-Dec | FY Total
+-      const coHeader = ["Change Order", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "FY Total"];
+-      const maxCols = Math.max(COL_COUNT, coHeader.length);
+-
+-      // Ensure all previous rows are padded
+-      wsData.forEach((r) => {
+-        while (r.length < maxCols) r.push("");
+-      });
+-
+-      wsData.push(coHeader);
+-      row++;
+-
+-      (filteredCoRows || []).forEach((c: any) => {
+-        const coRow = [
+-          c.changeOrder || "ΓÇö",
+-          c.Jan || "ΓÇö", c.Feb || "ΓÇö", c.Mar || "ΓÇö", c.Apr || "ΓÇö",
+-          c.May || "ΓÇö", c.Jun || "ΓÇö", c.Jul || "ΓÇö", c.Aug || "ΓÇö",
+-          c.Sep || "ΓÇö", c.Oct || "ΓÇö", c.Nov || "ΓÇö", c.Dec || "ΓÇö",
+-          c.total || "ΓÇö"
+-        ];
+-        wsData.push(coRow);
+-        row++;
+-      });
+-
+-      // ΓöÇΓöÇΓöÇ Create the worksheet ΓöÇΓöÇΓöÇ
+-      const ws = XLSX.utils.aoa_to_sheet(wsData);
+-      ws["!merges"] = merges;
+-
+-      // ΓöÇΓöÇΓöÇ Column widths ΓöÇΓöÇΓöÇ
+-      ws["!cols"] = [
+-        { wch: 22 }, // A
+-        { wch: 14 }, // B
+-        { wch: 28 }, // C
+-        { wch: 14 }, // D
+-        { wch: 14 }, // E
+-        { wch: 28 }, // F
+-        { wch: 22 }, // G
+-        { wch: 14 }, // H
+-        { wch: 10 }, // I (months)
+-        { wch: 10 }, // J
+-        { wch: 10 }, // K
+-        { wch: 10 }, // L
+-        { wch: 10 }, // M
+-        { wch: 12 }, // N (FY Total)
+-      ];
+-
+-      XLSX.utils.book_append_sheet(workbook, ws, "WPR Report");
+-
+-      XLSX.writeFile(workbook, `${project?.projectName || "Project"}_WPR_Report.xlsx`);
+-      toast.success("Excel sheet exported successfully!");
+-    } catch (err: any) {
+-      console.error("Excel export error:", err);
+-      toast.error("Failed to export Excel: " + (err.message || "Unknown error"));
+-    }
++    const workbook = XLSX.utils.book_new();
++
++    // Sheet 1: RFI
++    const rfiWS = XLSX.utils.json_to_sheet(filteredRfis.map(r => ({
++      "RFI No.": r.rfiNo,
++      "Sent Date": r.sentDate,
++      "Customer Response": r.customerResponse,
++      "Response Received Date": r.responseReceivedDate,
++      "Whiteboard Response": r.wbtResponse,
++      "Status": r.status
++    })));
++    XLSX.utils.book_append_sheet(workbook, rfiWS, "RFI Status");
++
++    // Sheet 2: Schedule
++    const schedWS = XLSX.utils.json_to_sheet(filteredScheduleRows.map(s => ({
++      "Phase": s.phase,
++      "Start Date": s.startDate,
++      "IFA Submission Date": s.ifaSubDate,
++      "BFA Received Date": s.bfaRecdDate,
++      "IFC Submission Date": s.ifcSubDate,
++      "COR Drawing Submission Date": s.corSubDate,
++      "Comments": s.comments
++    })));
++    XLSX.utils.book_append_sheet(workbook, schedWS, "Project Schedule");
++
++    // Sheet 3: Change Orders
++    const coWS = XLSX.utils.json_to_sheet(filteredCoRows.map(c => {
++      const { id, createdAt, ...rest } = c;
++      return rest;
++    }));
++    XLSX.utils.book_append_sheet(workbook, coWS, "Change Orders");
++
++    // Sheet 4: Coordination Drawings
++    const coordWS = XLSX.utils.json_to_sheet(filteredCoordDrawings.map(cd => ({
++      "Drawing Name": cd.title,
++      "Stage": cd.stage,
++      "Status": cd.status,
++      "Date Created": cd.createdAt
++    })));
++    XLSX.utils.book_append_sheet(workbook, coordWS, "Coordination Drawings");
++
++    XLSX.writeFile(workbook, `${project?.projectName || "Project"}_WPR_Report.xlsx`);
++    toast.success("Excel sheet exported successfully!");
+-  // Export layout to PDF using jsPDF and jspdf-autotable
+-  const exportToPDF = async () => {
+-    const toastId = toast.loading("Generating PDF, please wait...");
+-
+-    try {
+-      setIsExportingPDF(true);
+-
+-      // CRITICAL: Yield to the event loop so the Toast can actually render before we lock the thread!
+-      await new Promise(resolve => setTimeout(resolve, 150));
+-
+-      // Helper to strip HTML and preserve line breaks
+-      const cleanHtmlText = (html: any) => {
+-        if (!html) return "ΓÇö";
+-        let text = String(html).replace(/<br\s*[\/]?>/gi, '\n');
+-        text = text.replace(/<\/p>|<\/div>|<\/li>/gi, '\n');
+-        text = text.replace(/<li>/gi, 'ΓÇó ');
+-        const parser = new DOMParser();
+-        const doc = parser.parseFromString(text, 'text/html');
+-        return (doc.body.textContent || "").trim().replace(/\n{3,}/g, '\n\n') || "ΓÇö";
+-      };
+-
+-      // Helper to load Logo
+-      const loadLogo = (): Promise<HTMLImageElement | null> => {
+-        return new Promise((resolve) => {
+-          const img = new window.Image();
+-          img.src = Logo;
+-          img.onload = () => resolve(img);
+-          img.onerror = () => resolve(null);
+-        });
+-      };
+-
+-      const logoImg = await loadLogo();
+-
+-      const pdf = new jsPDF("l", "pt", "a4");
+-      const startX = 40;
+-      let finalY = 40;
+-
+-      const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "ΓÇö";
+-      const fabPMNames = project?.clientProjectManagers?.length > 0
+-        ? project.clientProjectManagers.map((pm: any) => `${pm.firstName || ""} ${pm.lastName || ""}`.trim()).join(", ")
+-        : fabProjectManager;
+-      const wbtPM = project?.manager ? `${project.manager.firstName} ${project.manager.lastName}` : "ΓÇö";
+-
+-      // Meta Table / Header Table
+-      autoTable(pdf, {
+-        startY: finalY,
+-        theme: 'grid',
+-        styles: { fontSize: 8, cellPadding: 3, textColor: [0, 0, 0], lineColor: [0, 0, 0], lineWidth: 0.5 },
+-        body: [
+-          [
+-            { content: "", rowSpan: 3, colSpan: 2, styles: { minCellWidth: 100 } },
+-            { content: `WEEK ENDING ${weekEnding.toUpperCase()}`, rowSpan: 3, colSpan: 4, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: 12, fillColor: [230, 240, 255] } },
+-            { content: "FORM NO", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } },
+-            { content: "WBT/PMO/WPR-001", styles: { fontSize: 6 } }
+-          ],
+-          [
+-            { content: "VERSION", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } },
+-            { content: "1.0", styles: { fontSize: 6 } }
+-          ],
+-          [
+-            { content: "EFF DATE", styles: { fillColor: [255, 250, 230], fontSize: 6, fontStyle: 'bold' } },
+-            { content: "05/09/2024", styles: { fontSize: 6 } }
+-          ],
+-          [
+-            { content: "CUSTOMER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
+-            { content: project?.fabricator?.fabName || "ΓÇö", colSpan: 6, styles: { valign: 'middle' } }
+-          ],
+-          [
+-            { content: "PROJECT NAME :", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
+-            { content: project?.projectName || project?.name || "ΓÇö", colSpan: 2, styles: { valign: 'middle' } },
+-            { content: "FABRICATOR PROJECT MANAGER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
+-            { content: fabPMNames || "ΓÇö", colSpan: 2, styles: { valign: 'middle' } }
+-          ],
+-          [
+-            { content: "WBT PROJECT MANAGER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
+-            { content: wbtPM, colSpan: 2, styles: { valign: 'middle' } },
+-            { content: "REPORT CIRCULATED TO", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
+-            { content: fabCirculatedTo || "ΓÇö", colSpan: 2, styles: { valign: 'middle' } }
+-          ],
+-          [
+-            { content: "REPORT CIRCULATED TO", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
+-            { content: wbtCirculatedTo || "ΓÇö", colSpan: 2, styles: { valign: 'middle' } },
+-            { content: "SOFTWARE", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
+-            { content: software || "SDS2", colSpan: 2, styles: { valign: 'middle' } }
+-          ],
+-          [
+-            { content: "PROJECT AWARDED", colSpan: 1, styles: { fontStyle: 'bold', halign: 'center', valign: 'middle' } },
+-            { content: fmtDate(project?.startDate), colSpan: 2, styles: { valign: 'middle', halign: 'center' } },
+-            { content: "APPROVAL DATE", colSpan: 1, styles: { fontStyle: 'bold', halign: 'center', valign: 'middle' } },
+-            { content: fmtDate(project?.approvalDate), colSpan: 1, styles: { valign: 'middle', halign: 'center' } },
+-            { content: "FAB RELEASED DATE", colSpan: 2, styles: { fontStyle: 'bold', halign: 'center', valign: 'middle' } },
+-            { content: fmtDate(project?.fabricationDate), colSpan: 1, styles: { valign: 'middle', halign: 'center' } }
+-          ]
+-        ],
+-        didDrawCell: function (data) {
+-          if (data.row.index === 0 && data.column.index === 0 && logoImg) {
+-            const cell = data.cell;
+-            const imgRatio = logoImg.width / logoImg.height;
+-            let drawH = 32;
+-            let drawW = drawH * imgRatio;
+-
+-            // Safety check to ensure it doesn't overflow cell
+-            if (drawW > cell.width - 10) {
+-              drawW = cell.width - 10;
+-              drawH = drawW / imgRatio;
+-            }
+-            if (drawH > cell.height - 10) {
+-              drawH = cell.height - 10;
+-              drawW = drawH * imgRatio;
+-            }
+-
+-            const x = cell.x + (cell.width - drawW) / 2;
+-            const y = cell.y + (cell.height - drawH) / 2;
+-            pdf.addImage(logoImg, 'PNG', x, y, drawW, drawH);
+-          }
+-        }
+-      });
+-      finalY = (pdf as any).lastAutoTable.finalY + 20;
+-
+-      // 1. PROJECT SCHEDULE / MILESTONES
+-      pdf.setFontSize(10);
+-      pdf.setFont("helvetica", "bold");
+-      pdf.text("1. PROJECT SCHEDULE / MILESTONES", startX, finalY);
+-      finalY += 10;
+-
+-      const safeScheduleRows = Array.isArray(filteredScheduleRows) ? filteredScheduleRows : [];
+-      autoTable(pdf, {
+-        startY: finalY,
+-        theme: 'grid',
+-        styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', textColor: [0, 0, 0], lineColor: [0, 0, 0], lineWidth: 0.5 },
+-        headStyles: { fillColor: [241, 245, 249], textColor: [0, 0, 0], fontStyle: 'bold' },
+-        head: [["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Comment"]],
+-        body: safeScheduleRows.map((s: any) => [
+-          s?.phase || "ΓÇö",
+-          s?.startDate || "ΓÇö",
+-          s?.ifaSubDate || "ΓÇö",
+-          s?.bfaRecdDate || "ΓÇö",
+-          s?.ifcSubDate || "ΓÇö",
+-          s?.corSubDate || "ΓÇö",
+-          cleanHtmlText(s?.comments)
+-        ]),
+-      });
+-      finalY = (pdf as any).lastAutoTable.finalY + 20;
+-
+-      // 2. RFI STATUS OVERVIEW
+-      pdf.setFontSize(10);
+-      pdf.setFont("helvetica", "bold");
+-      pdf.text("2. RFI STATUS OVERVIEW", startX, finalY);
+-      finalY += 10;
+-
+-      const safeRfis = Array.isArray(filteredRfis) ? filteredRfis : [];
+-      autoTable(pdf, {
+-        startY: finalY,
+-        theme: 'grid',
+-        styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', textColor: [0, 0, 0], lineColor: [0, 0, 0], lineWidth: 0.5 },
+-        headStyles: { fillColor: [241, 245, 249], textColor: [0, 0, 0], fontStyle: 'bold' },
+-        head: [["RFI No.", "Sent Date", "Customer Response", "Response Received", "Whiteboard Response", "Status"]],
+-        body: safeRfis.map((r: any) => [
+-          r?.rfiNo || "ΓÇö",
+-          r?.sentDate || "ΓÇö",
+-          cleanHtmlText(r?.customerResponse),
+-          r?.responseReceivedDate || "ΓÇö",
+-          cleanHtmlText(r?.wbtResponse),
+-          r?.status || "ΓÇö"
+-        ]),
+-      });
+-      finalY = (pdf as any).lastAutoTable.finalY + 20;
+-
+-      // 3. CHANGE ORDER AMOUNT
+-      pdf.setFontSize(10);
+-      pdf.setFont("helvetica", "bold");
+-      pdf.text("3. CHANGE ORDER AMOUNT ($) MONTHLY BREAKDOWN", startX, finalY);
+-      finalY += 10;
+-
+-      const safeCoRows = Array.isArray(filteredCoRows) ? filteredCoRows : [];
+-      autoTable(pdf, {
+-        startY: finalY,
+-        theme: 'grid',
+-        styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', textColor: [0, 0, 0], lineColor: [0, 0, 0], lineWidth: 0.5, halign: 'center' },
+-        headStyles: { fillColor: [241, 245, 249], textColor: [0, 0, 0], fontStyle: 'bold', halign: 'center' },
+-        columnStyles: { 0: { halign: 'left' } },
+-        head: [["Change Order", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "FY Total"]],
+-        body: safeCoRows.map((c: any) => [
+-          c?.changeOrder || "ΓÇö",
+-          c?.Jan || "ΓÇö", c?.Feb || "ΓÇö", c?.Mar || "ΓÇö", c?.Apr || "ΓÇö",
+-          c?.May || "ΓÇö", c?.Jun || "ΓÇö", c?.Jul || "ΓÇö", c?.Aug || "ΓÇö",
+-          c?.Sep || "ΓÇö", c?.Oct || "ΓÇö", c?.Nov || "ΓÇö", c?.Dec || "ΓÇö",
+-          c?.total || "ΓÇö"
+-        ]),
+-      });
+-
+-      pdf.save(`${project?.projectName || "Project"}_WPR_Report.pdf`);
+-      toast.update(toastId, { render: "PDF report exported successfully!", type: "success", isLoading: false, autoClose: 3000 });
+-    } catch (err: any) {
+-      console.error("Failed to export PDF", err);
+-      toast.update(toastId, { render: "Failed to export PDF: " + (err.message || "Unknown error"), type: "error", isLoading: false, autoClose: 5000 });
+-    } finally {
+-      setIsExportingPDF(false);
+-    }
++  // Export layout to PDF using jsPDF
++  const exportToPDF = () => {
++    const doc = new jsPDF("landscape", "pt", "a4");
++
++    doc.setFont("Helvetica", "bold");
++    doc.setFontSize(16);
++    doc.text(`WEEKLY WORK PROGRESS REPORT`, 40, 40);
++
++    doc.setFontSize(10);
++    doc.setFont("Helvetica", "normal");
++    doc.text(`Project Name: ${project?.projectName || project?.name || "ΓÇö"}`, 40, 60);
++    doc.text(`Customer: ${project?.fabricator?.fabName || "ΓÇö"}`, 40, 75);
++    doc.text(`Week Ending: ${weekEnding}`, 40, 90);
++    doc.text(`Circulated To: ${circulatedTo}`, 40, 105);
++
++    // Add Schedule Table
++    doc.setFont("Helvetica", "bold");
++    doc.text("1. Project Schedule / Milestones", 40, 130);
++    doc.autoTable({
++      startY: 140,
++      head: [["Phase", "Start Date", "IFA Sub Date", "BFA Recd Date", "IFC Sub Date", "COR Sub Date", "Comments"]],
++      body: filteredScheduleRows.map(s => [s.phase, s.startDate, s.ifaSubDate, s.bfaRecdDate, s.ifcSubDate, s.corSubDate, s.comments]),
++      theme: "grid",
++      styles: { fontSize: 8 },
++      headStyles: { fillColor: "#bbf7d0" }
++    });
++
++    // Add RFI Table
++    const rfiY = doc.previousAutoTable.finalY + 30;
++    doc.text("2. RFIs Overview", 40, rfiY);
++    doc.autoTable({
++      startY: rfiY + 10,
++      head: [["RFI No.", "Sent Date", "Customer Response", "Response Recd Date", "Whiteboard Response", "Status"]],
++      body: filteredRfis.map(r => [r.rfiNo, r.sentDate, r.customerResponse, r.responseReceivedDate, r.wbtResponse, r.status]),
++      theme: "grid",
++      styles: { fontSize: 8 },
++      headStyles: { fillColor: "#bbf7d0" }
++    });
++
++    // Add Change Orders Table
++    const coY = doc.previousAutoTable.finalY + 30;
++    let finalCoY = coY;
++    if (finalCoY > 500) {
++      doc.addPage();
++      finalCoY = 40;
++    }
++    doc.text("3. Change Orders Overview", 40, finalCoY);
++    doc.autoTable({
++      startY: finalCoY + 10,
++      head: [["Change Order", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "FY Total"]],
++      body: filteredCoRows.map(c => [
++        c.changeOrder, c.Jan, c.Feb, c.Mar, c.Apr, c.May, c.Jun, c.Jul, c.Aug, c.Sep, c.Oct, c.Nov, c.Dec, c.total
++      ]),
++      theme: "grid",
++      styles: { fontSize: 7, cellPadding: 2 },
++      headStyles: { fillColor: "#bbf7d0" }
++    });
++
++    // Add Coordination Drawings Table
++    const coordY = doc.previousAutoTable.finalY + 30;
++    let finalCoordY = coordY;
++    if (finalCoordY > 500) {
++      doc.addPage();
++      finalCoordY = 40;
++    }
++    doc.text("4. Coordination Drawings Status", 40, finalCoordY);
++    doc.autoTable({
++      startY: finalCoordY + 10,
++      head: [["Drawing Name", "Stage", "Status", "Date Created"]],
++      body: filteredCoordDrawings.map(cd => [cd.title, cd.stage, cd.status, cd.createdAt]),
++      theme: "grid",
++      styles: { fontSize: 8 },
++      headStyles: { fillColor: [107, 189, 69] }
++    });
++
++    doc.save(`${project?.projectName || "Project"}_WPR_Report.pdf`);
++    toast.success("PDF report exported successfully!");
+-  const exportToPDFRef = useRef(exportToPDF);
+-  useEffect(() => {
+-    exportToPDFRef.current = exportToPDF;
+-  }, [exportToPDF]);
+-
+-    <div className="w-full">
+-      {viewMode === "weeksTable" ? (
+-        <WprWeeksTable
+-          projectWeeks={projectWeeks}
+-          currentWeekLabel={projectWeeks.length > 0 ? projectWeeks[projectWeeks.length - 1].label : undefined}
+-          onSelectWeek={(label) => {
+-            handleWeekChange(label);
+-            setViewMode("reportView");
+-          }}
+-          onDownloadWeek={(label) => {
+-            handleWeekChange(label);
+-            setViewMode("reportView");
+-            // Use the ref to ensure we call the function with the LATEST filtered data
+-            setTimeout(() => {
+-              exportToPDFRef.current();
+-            }, 500);
+-          }}
+-        />
+-      ) : (
+-        <div className="space-y-8 p-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
+-          <WprToolbar
+-            canEdit={canEdit}
+-            saving={saving}
+-            selectedWeekLabel={selectedWeek}
+-            onBackToWeeks={() => setViewMode("weeksTable")}
+-            onSaveChanges={handleSaveChanges}
+-            onExportPDF={exportToPDF}
+-            exportingPDF={isExportingPDF}
+-            onPrint={handlePrint}
+-          />
+-          <div id="wpr-report-content" className="space-y-8 bg-white p-2">
+-            <div id="section-header">
+-              <WprHeader
+-                weekEnding={weekEnding}
+-                project={project}
+-                fabProjectManager={fabProjectManager}
+-                setFabProjectManager={setFabProjectManager}
+-                wbtCirculatedTo={wbtCirculatedTo}
+-                setWbtCirculatedTo={setWbtCirculatedTo}
+-                fabCirculatedTo={fabCirculatedTo}
+-                setFabCirculatedTo={setFabCirculatedTo}
+-                software={software}
+-                setSoftware={setSoftware}
+-                formNo={formNo}
+-                setFormNo={setFormNo}
+-                version={version}
+-                setVersion={setVersion}
+-                effDate={effDate}
+-                setEffDate={setEffDate}
+-              />
++    <div className="space-y-8 p-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
++
++      {/* ΓöÇΓöÇ ACTION TOOLBAR ΓöÇΓöÇ */}
++      <div className="flex flex-wrap items-center justify-between gap-4 bg-white shrink-0">
++        <div className="flex items-center gap-3">
++          <div className="w-2.5 h-6 bg-[#6bbd45] rounded-none" />
++          <h2 className="text-sm font-bold uppercase tracking-wider text-black">WPR Spreadsheet Control</h2>
++          {projectWeeks.length > 0 && (
++            <div className="flex items-center gap-2 ml-4">
++              <span className="text-xs font-bold uppercase tracking-wider text-black">Select Week:</span>
++              <select
++                value={selectedWeek}
++                onChange={(e) => handleWeekChange(e.target.value)}
++                className="px-3 py-1.5 bg-white border border-black rounded-none text-xs font-bold uppercase tracking-wider outline-none focus:border-[#6bbd45] transition-all cursor-pointer"
++              >
++                <option value="All">All Weeks</option>
++                {projectWeeks.map((w) => (
++                  <option key={w.label} value={w.label}>
++                    {w.label}
++                  </option>
++                ))}
++              </select>
+-            <div id="section-rfi">
+-              <WprRfiTable
+-                rfis={filteredRfis}
+-                canEdit={canEdit}
+-                activeCell={activeCell}
+-                editValue={editValue}
+-                setEditValue={setEditValue}
+-                inputRef={inputRef}
+-                onCellClick={handleCellClick}
+-                onCellSave={handleCellSave}
+-                onKeyDown={handleKeyDown}
+-                onAddRow={() => addRow("rfi")}
+-              />
+-            </div>
+-            <div id="section-schedule">
+-              <WprScheduleTable
+-                scheduleRows={filteredScheduleRows}
+-                canEdit={canEdit}
+-                activeCell={activeCell}
+-                editValue={editValue}
+-                setEditValue={setEditValue}
+-                inputRef={inputRef}
+-                onCellClick={handleCellClick}
+-                onCellSave={handleCellSave}
+-                onKeyDown={handleKeyDown}
+-                onAddRow={() => addRow("schedule")}
+-              />
+-            </div>
+-            <div id="section-co">
+-              <WprChangeOrderTable
+-                coRows={filteredCoRows}
+-                canEdit={canEdit}
+-                activeCell={activeCell}
+-                editValue={editValue}
+-                setEditValue={setEditValue}
+-                inputRef={inputRef}
+-                onCellClick={handleCellClick}
+-                onCellSave={handleCellSave}
+-                onKeyDown={handleKeyDown}
+-                onAddRow={() => addRow("co")}
+-              />
+-            </div>
++          )}
++        </div>
++        <div className="flex flex-wrap items-center gap-3">
++          <button
++            onClick={exportToPDF}
++            className="flex items-center gap-2 px-5 py-2 bg-red-50 text-black border-2 border-red-700/80 hover:bg-red-100 rounded-none text-sm font-bold uppercase tracking-tight shadow-sm transition-all cursor-pointer"
++          >
++            <Download className="w-3.5 h-3.5" />
++            PDF Export
++          </button>
++
++        </div>
++      </div>
++
++      {/* ΓöÇΓöÇ REPORT METADATA GRID (SPREADSHEET HEADER) ΓöÇΓöÇ */}
++      <div className="border border-black overflow-hidden mb-6 bg-white shadow-sm mt-4">
++        <table className="w-full border-collapse text-xs text-black">
++          <tbody>
++            {/* Header Row */}
++            <tr className="bg-[#eaf4fe] border-b border-black">
++              <td className="w-1/4 p-4 border-r border-black text-center bg-white align-middle">
++                <div className="flex items-center justify-center">
++                  <img src={Logo} alt="WBT Whiteboard Logo" className="h-12 w-auto object-contain mix-blend-multiply" />
++                </div>
++              </td>
++              <td colSpan="2" className="p-4 border-r border-black text-center text-lg font-bold bg-[#eaf4fe]">
++                Week Ending {weekEnding}
++              </td>
++              <td className="w-[30%] p-0 bg-[#eaf4fe] align-top">
++                <table className="w-full h-full border-collapse text-[10px]">
++                  <tbody>
++                    <tr>
++                      <td className="p-1.5 border-b border-r border-black bg-[#fef2cd] w-1/3">FORM NO</td>
++                      <td className="p-1.5 border-b border-black font-normal">WBT/PMO/WPR-001</td>
++                    </tr>
++                    <tr>
++                      <td className="p-1.5 border-b border-r border-black bg-[#fef2cd]">VERSION</td>
++                      <td className="p-1.5 border-b border-black font-normal">1.0</td>
++                    </tr>
++                    <tr>
++                      <td className="p-1.5 border-r border-black bg-[#fef2cd]">EFF DATE</td>
++                      <td className="p-1.5 font-normal">05/09/2024</td>
++                    </tr>
++                  </tbody>
++                </table>
++              </td>
++            </tr>
++
++            {/* Row 1: Customer */}
++            <tr className="border-b border-black">
++              <td className="p-2 border-r border-black bg-green-200 text-center font-bold">Customer</td>
++              <td colSpan="3" className="p-2 bg-white font-normal">
++                {project?.fabricator?.fabName || "ΓÇö"}
++              </td>
++            </tr>
++
++            {/* Row 2: Project Name | Fab PM */}
++            <tr className="border-b border-black">
++              <td className="p-2 border-r border-black bg-green-200 text-center font-bold">Project Name :</td>
++              <td className="p-2 border-r border-black bg-white font-normal">
++                {project?.projectName || project?.name || "ΓÇö"}
++              </td>
++              <td className="p-2 border-r border-black bg-green-200 text-center font-bold w-1/4">Fabricator Project Manager</td>
++              <td className="p-0 bg-white font-normal">
++                <input
++                  type="text"
++                  value={fabProjectManager}
++                  onChange={(e) => setFabProjectManager(e.target.value)}
++                  className="w-full h-full p-2 outline-none uppercase bg-transparent"
++                />
++              </td>
++            </tr>
++
++            {/* Row 3: WBT PM | Fab Report Circulated To */}
++            <tr className="border-b border-black">
++              <td className="p-2 border-r border-black bg-green-200 text-center font-bold">WBT Project Manager</td>
++              <td className="p-2 border-r border-black bg-white font-normal">
++                {project?.manager ? `${project.manager.firstName} ${project.manager.lastName}` : "ΓÇö"}
++              </td>
++              <td className="p-2 border-r border-black bg-green-200 text-center font-bold">Report Circulated to</td>
++              <td className="p-0 bg-white font-normal">
++                <input
++                  type="text"
++                  value={fabCirculatedTo}
++                  onChange={(e) => setFabCirculatedTo(e.target.value)}
++                  className="w-full h-full p-2 outline-none uppercase bg-transparent"
++                />
++              </td>
++            </tr>
++
++            {/* Row 4: WBT Report Circulated To | Software */}
++            <tr className="border-b border-black">
++              <td className="p-2 border-r border-black bg-green-200 text-center font-bold">Report Circulated to</td>
++              <td className="p-0 border-r border-black bg-white font-normal">
++                <input
++                  type="text"
++                  value={wbtCirculatedTo}
++                  onChange={(e) => setWbtCirculatedTo(e.target.value)}
++                  className="w-full h-full p-2 outline-none uppercase bg-transparent"
++                />
++              </td>
++              <td className="p-2 border-r border-black bg-green-200 text-center font-bold">Software</td>
++              <td className="p-0 bg-white font-normal">
++                <input
++                  type="text"
++                  value={software}
++                  onChange={(e) => setSoftware(e.target.value)}
++                  className="w-full h-full p-2 outline-none uppercase bg-transparent"
++                />
++              </td>
++            </tr>
++            {/* Spacer Line */}
++            <tr className="border-b border-black bg-white">
++              <td colSpan="4" className="h-6"></td>
++            </tr>
++            {/* Row 5: Dates */}
++            <tr className="border-b border-black">
++              <td colSpan="4" className="p-0">
++                <table className="w-full h-full border-collapse text-xs">
++                  <tbody>
++                    <tr>
++                      <td className="w-1/6 p-2 border-r border-black text-center font-bold">Project Awarded</td>
++                      <td className="w-1/6 p-2 border-r border-black bg-white font-normal">
++                        {project?.startDate ? new Date(project.startDate).toLocaleDateString() : "ΓÇö"}
++                      </td>
++                      <td className="w-1/6 p-2 border-r border-black text-center font-bold">Approval Date</td>
++                      <td className="w-1/6 p-2 bg-white font-normal border-r border-black">
++                        {project?.approvalDate ? new Date(project.approvalDate).toLocaleDateString() : "ΓÇö"}
++                      </td>
++                      <td className="w-1/6 p-2 border-r border-black text-center font-bold">Fab Released Date</td>
++                      <td className="w-1/6 p-2 bg-white font-normal">
++                        {project?.fabricationDate ? new Date(project.fabricationDate).toLocaleDateString() : "ΓÇö"}
++                      </td>
++                    </tr>
++                  </tbody>
++                </table>
++              </td>
++            </tr>
++          </tbody>
++        </table>
++      </div>
++
++      {/* ΓöÇΓöÇ 2. RFIs OVERVIEW TABLE ΓöÇΓöÇ */}
++      <div className="space-y-3">
++        <div className="flex justify-between items-center">
++          <div className="flex items-center gap-2">
++            <HelpCircle className="text-black w-5 h-5" />
++            <h3 className="text-sm font-bold uppercase tracking-wider text-black">2. RFI Status Overview</h3>
++          {canEdit && (
++            <button
++              onClick={() => addRow("rfi")}
++              className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded-none text-xs font-bold uppercase transition-all shadow-sm cursor-pointer"
++            >
++              <Plus className="w-3.5 h-3.5" />
++              Add Row
++            </button>
++          )}
+-      )}
+-    </div>
+-  );
+-};
+-
+-export default WorkProgressReport;
++
++        <div className="overflow-x-auto border border-black rounded-none bg-white shadow-sm custom-scrollbar max-w-full">
++          <table className="w-full text-left border-collapse min-w-[800px] text-xs">
++            <thead>
++              <tr className="bg-slate-100 border-b border-black">
++                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 w-24">RFI No.</th>
++                <th className="p-3 font-bold uppercase tracking-wider text-black border-r border-black/10 w-28">Sent Date</th>
++                <th className="p-3 font-bold uppercase tracki

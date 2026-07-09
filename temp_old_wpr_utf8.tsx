@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   FileSpreadsheet,
@@ -97,7 +97,7 @@ const WorkProgressReport = ({
   };
 
   const isWithinWeek = (dateStr, start, end) => {
-    if (!dateStr || dateStr === "—" || dateStr === "Waiting...") return false;
+    if (!dateStr || dateStr === "ΓÇö" || dateStr === "Waiting...") return false;
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return false;
     return d >= start && d <= end;
@@ -326,12 +326,12 @@ const WorkProgressReport = ({
       return {
         id: r.id || r._id,
         rfiNo: r.subject || r.serialNo || `RFI #${index + 1}`,
-        sentDate: r.date ? new Date(r.date).toLocaleDateString("en-US") : "—",
+        sentDate: r.date ? new Date(r.date).toLocaleDateString("en-US") : "ΓÇö",
         customerResponse: customerRep ? (extractText(customerRep) || "(no text)") : "Waiting...",
         responseReceivedDate: customerRep
           ? new Date(customerRep.createdAt || customerRep.date).toLocaleDateString("en-US")
-          : "—",
-        wbtResponse: wbtRep ? (extractText(wbtRep) || "Responded") : "—",
+          : "ΓÇö",
+        wbtResponse: wbtRep ? (extractText(wbtRep) || "Responded") : "ΓÇö",
         status: statusLabel,
         rfiresponse: r.rfiresponse
       };
@@ -340,7 +340,7 @@ const WorkProgressReport = ({
     setRawRfis(formattedRFIs);
   }, [rfiData]);
 
-  // Sync Schedule – one row per milestone (with stacked submittal entries), plus standalone submittals
+  // Sync Schedule ΓÇô one row per milestone (with stacked submittal entries), plus standalone submittals
   useEffect(() => {
     const processSchedule = async () => {
       // Hide connection design submittals
@@ -362,11 +362,11 @@ const WorkProgressReport = ({
       }));
 
       const linkedSubmittalIds = new Set();
-      const fmt = (d: any) => d ? new Date(d).toLocaleDateString("en-US") : "—";
-      const toEntry = (sub: any) => ({ subject: sub.subject || sub.serialNo || "—", date: fmt(sub.date || sub.createdAt) });
+      const fmt = (d: any) => d ? new Date(d).toLocaleDateString("en-US") : "ΓÇö";
+      const toEntry = (sub: any) => ({ subject: sub.subject || sub.serialNo || "ΓÇö", date: fmt(sub.date || sub.createdAt) });
       const cleanHtml = (str: any) => (str || "").replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
 
-      // ── Milestone rows ────────────────────────────────────────────────────────
+      // ΓöÇΓöÇ Milestone rows ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
       const milestoneRows = milestones.map((m: any) => {
         const mId = String(m.id || m._id);
 
@@ -398,7 +398,7 @@ const WorkProgressReport = ({
           const stage = String(s.stage || "").toUpperCase();
           const dateStr = s.createdAt || s.date || 0;
 
-          let bfaDate = "—";
+          let bfaDate = "ΓÇö";
           const resList = s.submittalsResponse || [];
           if (resList.length > 0) {
             const latest = [...resList].sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
@@ -418,39 +418,39 @@ const WorkProgressReport = ({
 
           return {
             id: s.id || s._id,
-            subject: s.subject || s.serialNo || "—",
-            ifaDate: ["IFA", "RIFA", "R-IFA"].includes(stage) ? fmt(dateStr) : "—",
+            subject: s.subject || s.serialNo || "ΓÇö",
+            ifaDate: stage === "IFA" ? fmt(dateStr) : "ΓÇö",
             bfaDate: bfaDate,
-            ifcDate: stage === "IFC" ? fmt(dateStr) : "—",
-            corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "—",
+            ifcDate: stage === "IFC" ? fmt(dateStr) : "ΓÇö",
+            corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "ΓÇö",
             status: currentStatus,
             date: dateStr
           };
         });
 
-        const finalBfaRecdDate = unifiedEntries.find((e: any) => e.bfaDate !== "—")?.bfaDate || "—";
+        const finalBfaRecdDate = unifiedEntries.find((e: any) => e.bfaDate !== "ΓÇö")?.bfaDate || "ΓÇö";
         const primarySub = subs.length > 0 ? [...subs].sort((a: any, b: any) => new Date(b.createdAt || b.date || 0).getTime() - new Date(a.createdAt || a.date || 0).getTime())[0] : null;
-        const submittalStatus = primarySub ? (primarySub.wbtStatus || primarySub.status || "PENDING") : "—";
+        const submittalStatus = primarySub ? (primarySub.wbtStatus || primarySub.status || "PENDING") : "ΓÇö";
 
         return {
           id: m.id || m._id,
           _type: "milestone",
           phase: m.subject || "Unnamed Phase",
-          startDate: m.date ? fmt(m.date) : (project?.startDate ? fmt(project.startDate) : "—"),
+          startDate: m.date ? fmt(m.date) : (project?.startDate ? fmt(project.startDate) : "ΓÇö"),
           unifiedEntries,
           bfaRecdDate: finalBfaRecdDate,
           submittalStatus,
           // flat dates kept for filtering/export
-          ifaSubDate: unifiedEntries.find((e: any) => e.ifaDate !== "—")?.ifaDate || "—",
-          ifcSubDate: unifiedEntries.find((e: any) => e.ifcDate !== "—")?.ifcDate || "—",
-          corSubDate: unifiedEntries.find((e: any) => e.corDate !== "—")?.corDate || "—",
-          comments: m.description ? cleanHtml(m.description) : (m.percentage ? `${m.percentage}% Completed` : "—"),
+          ifaSubDate: unifiedEntries.find((e: any) => e.ifaDate !== "ΓÇö")?.ifaDate || "ΓÇö",
+          ifcSubDate: unifiedEntries.find((e: any) => e.ifcDate !== "ΓÇö")?.ifcDate || "ΓÇö",
+          corSubDate: unifiedEntries.find((e: any) => e.corDate !== "ΓÇö")?.corDate || "ΓÇö",
+          comments: m.description ? cleanHtml(m.description) : (m.percentage ? `${m.percentage}% Completed` : "ΓÇö"),
           types: m.types || "ANCHOR_BOLT",
           subSubject: "",
         };
       });
 
-      // ── Standalone submittal rows (no milestone link of any kind) ─────────────
+      // ΓöÇΓöÇ Standalone submittal rows (no milestone link of any kind) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
       const standaloneRows = filteredSubmittalData
         .filter((sub: any) => {
           if (linkedSubmittalIds.has(sub.id || sub._id)) return false;
@@ -465,20 +465,20 @@ const WorkProgressReport = ({
           const stage = String(sub.stage || "").toUpperCase();
           const entry = toEntry(sub);
 
-          let finalBfaRecdDate = latestResponse ? fmt(latestResponse.createdAt || latestResponse.respondedAt) : "—";
+          let finalBfaRecdDate = latestResponse ? fmt(latestResponse.createdAt || latestResponse.respondedAt) : "ΓÇö";
           if (sub.bfaStatus === true && sub.status === "BFA_SENT" && bfaCache[sub.id || sub._id]) {
             const bfaData = bfaCache[sub.id || sub._id];
             const dateStr = bfaData.createdAt || bfaData.date;
             if (dateStr) finalBfaRecdDate = fmt(dateStr);
           }
-          const bfaEntries = finalBfaRecdDate !== "—" ? [{ subject: sub.subject || sub.serialNo || "—", date: finalBfaRecdDate }] : [];
+          const bfaEntries = finalBfaRecdDate !== "ΓÇö" ? [{ subject: sub.subject || sub.serialNo || "ΓÇö", date: finalBfaRecdDate }] : [];
           let currentStatus = sub.wbtStatus || sub.status || "PENDING";
           if (bfaCache[sub.id || sub._id]) {
             const bfaData = bfaCache[sub.id || sub._id];
             if (bfaData.status) currentStatus = bfaData.status;
           }
           const statusEntries = [{
-            subject: sub.subject || sub.serialNo || "—",
+            subject: sub.subject || sub.serialNo || "ΓÇö",
             status: currentStatus,
             date: sub.createdAt || sub.date || 0
           }];
@@ -486,11 +486,11 @@ const WorkProgressReport = ({
           const dateStr = sub.createdAt || sub.date || 0;
           const unifiedEntries = [{
             id: sub.id || sub._id,
-            subject: sub.subject || sub.serialNo || "—",
-            ifaDate: ["IFA", "RIFA", "R-IFA"].includes(stage) ? fmt(dateStr) : "—",
+            subject: sub.subject || sub.serialNo || "ΓÇö",
+            ifaDate: stage === "IFA" ? fmt(dateStr) : "ΓÇö",
             bfaDate: finalBfaRecdDate,
-            ifcDate: stage === "IFC" ? fmt(dateStr) : "—",
-            corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "—",
+            ifcDate: stage === "IFC" ? fmt(dateStr) : "ΓÇö",
+            corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "ΓÇö",
             status: currentStatus,
             date: dateStr
           }];
@@ -502,24 +502,24 @@ const WorkProgressReport = ({
             startDate: fmt(sub.date || sub.createdAt),
             unifiedEntries,
             bfaRecdDate: finalBfaRecdDate,
-            ifaSubDate: ["IFA", "RIFA", "R-IFA"].includes(stage) ? entry.date : "—",
-            ifcSubDate: stage === "IFC" ? entry.date : "—",
-            corSubDate: ["CO", "COR"].includes(stage) ? entry.date : "—",
+            ifaSubDate: stage === "IFA" ? entry.date : "ΓÇö",
+            ifcSubDate: stage === "IFC" ? entry.date : "ΓÇö",
+            corSubDate: ["CO", "COR"].includes(stage) ? entry.date : "ΓÇö",
             submittalStatus: sub.wbtStatus || sub.status || "PENDING",
             comments: latestResponse
-              ? cleanHtml(latestResponse.description || latestResponse.reason) || "—"
-              : "—",
+              ? cleanHtml(latestResponse.description || latestResponse.reason) || "ΓÇö"
+              : "ΓÇö",
             types: "ANCHOR_BOLT",
             subSubject: sub.subject || sub.serialNo || "",
           };
         });
 
-      // ── Merge rows that share the same Phase / Subject ────────────────────────
+      // ΓöÇΓöÇ Merge rows that share the same Phase / Subject ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
       // (e.g. two milestones both named "ANCHOR BOLT" collapse into one row)
       const sortByDate = (entries: any) =>
         [...entries].sort((a: any, b: any) => {
-          const da = a.date && a.date !== "—" ? new Date(a.date).getTime() : new Date(0).getTime();
-          const db = b.date && b.date !== "—" ? new Date(b.date).getTime() : new Date(0).getTime();
+          const da = a.date && a.date !== "ΓÇö" ? new Date(a.date).getTime() : new Date(0).getTime();
+          const db = b.date && b.date !== "ΓÇö" ? new Date(b.date).getTime() : new Date(0).getTime();
           return da - db;
         });
 
@@ -535,23 +535,23 @@ const WorkProgressReport = ({
           const base = mergeMap.get(key);
           base.unifiedEntries.push(...(row.unifiedEntries || []));
           // Keep earliest start date
-          if (row.startDate && row.startDate !== "—" &&
-            (base.startDate === "—" || new Date(row.startDate) < new Date(base.startDate))) {
+          if (row.startDate && row.startDate !== "ΓÇö" &&
+            (base.startDate === "ΓÇö" || new Date(row.startDate) < new Date(base.startDate))) {
             base.startDate = row.startDate;
           }
           // Keep latest BFA date
-          if (row.bfaRecdDate && row.bfaRecdDate !== "—") {
-            if (base.bfaRecdDate === "—" || new Date(row.bfaRecdDate) > new Date(base.bfaRecdDate)) {
+          if (row.bfaRecdDate && row.bfaRecdDate !== "ΓÇö") {
+            if (base.bfaRecdDate === "ΓÇö" || new Date(row.bfaRecdDate) > new Date(base.bfaRecdDate)) {
               base.bfaRecdDate = row.bfaRecdDate;
             }
           }
           // Keep most meaningful status
-          if (row.submittalStatus && row.submittalStatus !== "—") {
+          if (row.submittalStatus && row.submittalStatus !== "ΓÇö") {
             base.submittalStatus = row.submittalStatus;
           }
           // Append unique comments
-          if (row.comments && row.comments !== "—") {
-            base.comments = base.comments === "—"
+          if (row.comments && row.comments !== "ΓÇö") {
+            base.comments = base.comments === "ΓÇö"
               ? row.comments
               : base.comments.includes(row.comments)
                 ? base.comments
@@ -563,14 +563,12 @@ const WorkProgressReport = ({
       // Sort each entry list by date and update flat date fields
       const mergedRows = Array.from(mergeMap.values()).map((row: any) => {
         const sortedEntries = sortByDate(row.unifiedEntries || []);
-        const ifcSubDate = sortedEntries.find((e: any) => e.ifcDate !== "—")?.ifcDate || "—";
         return {
           ...row,
           unifiedEntries: sortedEntries,
-          ifaSubDate: sortedEntries.find((e: any) => e.ifaDate !== "—")?.ifaDate || "—",
-          ifcSubDate: ifcSubDate,
-          corSubDate: sortedEntries.find((e: any) => e.corDate !== "—")?.corDate || "—",
-          comments: ifcSubDate !== "—" ? "100% Complete" : row.comments,
+          ifaSubDate: sortedEntries.find((e: any) => e.ifaDate !== "ΓÇö")?.ifaDate || "ΓÇö",
+          ifcSubDate: sortedEntries.find((e: any) => e.ifcDate !== "ΓÇö")?.ifcDate || "ΓÇö",
+          corSubDate: sortedEntries.find((e: any) => e.corDate !== "ΓÇö")?.corDate || "ΓÇö",
         };
       });
 
@@ -671,7 +669,7 @@ const WorkProgressReport = ({
             createdAt: co.createdAt || co.date || new Date().toISOString(),
             changeOrder: co.changeOrderNumber ? `COR-${String(co.changeOrderNumber).padStart(3, "0")}` : "COR-New",
             ...monthlyBreakdown,
-            total: totalAmount > 0 ? `$${totalAmount.toLocaleString()}` : "—"
+            total: totalAmount > 0 ? `$${totalAmount.toLocaleString()}` : "ΓÇö"
           };
         });
 
@@ -691,7 +689,7 @@ const WorkProgressReport = ({
         title: cd.title || `Drawing #${index + 1}`,
         stage: cd.stage || "IFA",
         status: cd.status || "Pending",
-        createdAt: cd.createdAt ? new Date(cd.createdAt).toLocaleDateString("en-US") : "—"
+        createdAt: cd.createdAt ? new Date(cd.createdAt).toLocaleDateString("en-US") : "ΓÇö"
       }));
       setRawCoordDrawings(formattedDrawings);
     }
@@ -772,7 +770,7 @@ const WorkProgressReport = ({
             const val = newRow[m]?.replace(/[^0-9.]/g, "");
             if (val) sum += Number(val);
           });
-          newRow.total = sum > 0 ? `$${sum.toLocaleString()}` : "—";
+          newRow.total = sum > 0 ? `$${sum.toLocaleString()}` : "ΓÇö";
           return newRow;
         }
         return row;
@@ -851,9 +849,9 @@ const WorkProgressReport = ({
           projectId: projectId,
           subject: row.phase,
           description: row.comments,
-          date: row.startDate !== "—" ? new Date(row.startDate).toISOString() : new Date().toISOString(),
-          approvalDate: row.ifaSubDate !== "—" ? new Date(row.ifaSubDate).toISOString() : undefined,
-          CDApprovalDate: row.ifcSubDate !== "—" ? new Date(row.ifcSubDate).toISOString() : undefined,
+          date: row.startDate !== "ΓÇö" ? new Date(row.startDate).toISOString() : new Date().toISOString(),
+          approvalDate: row.ifaSubDate !== "ΓÇö" ? new Date(row.ifaSubDate).toISOString() : undefined,
+          CDApprovalDate: row.ifcSubDate !== "ΓÇö" ? new Date(row.ifcSubDate).toISOString() : undefined,
           types: row.types || "ANCHOR_BOLT",
           subSubject: row.subSubject || "string",
         };
@@ -877,7 +875,7 @@ const WorkProgressReport = ({
           formData.append("projectId", projectId);
           formData.append("subject", row.rfiNo);
           formData.append("description", "Created from Weekly Progress Report");
-          formData.append("date", row.sentDate !== "—" ? new Date(row.sentDate).toISOString() : new Date().toISOString());
+          formData.append("date", row.sentDate !== "ΓÇö" ? new Date(row.sentDate).toISOString() : new Date().toISOString());
           await Service.addRFI(formData, fabName, projName);
         }
       }
@@ -949,9 +947,9 @@ const WorkProgressReport = ({
         id: tempId,
         rfiNo: `RFI #${rawRfis.length + 1}`,
         sentDate: defaultDate,
-        customerResponse: "—",
-        responseReceivedDate: "—",
-        wbtResponse: "—",
+        customerResponse: "ΓÇö",
+        responseReceivedDate: "ΓÇö",
+        wbtResponse: "ΓÇö",
         status: "OPEN"
       }]);
     } else if (table === "schedule") {
@@ -959,11 +957,11 @@ const WorkProgressReport = ({
         id: tempId,
         phase: `New Phase #${rawScheduleRows.length + 1}`,
         startDate: defaultDate,
-        ifaSubDate: "—",
-        bfaRecdDate: "—",
-        ifcSubDate: "—",
-        corSubDate: "—",
-        comments: "—",
+        ifaSubDate: "ΓÇö",
+        bfaRecdDate: "ΓÇö",
+        ifcSubDate: "ΓÇö",
+        corSubDate: "ΓÇö",
+        comments: "ΓÇö",
         types: "ANCHOR_BOLT",
         subSubject: "string"
       }]);
@@ -973,7 +971,7 @@ const WorkProgressReport = ({
         changeOrder: `COR-${String(rawCoRows.length + 1).padStart(3, "0")}`,
         createdAt: activeWeekRange ? activeWeekRange.start.toISOString() : new Date().toISOString(),
         Jan: "", Feb: "", Mar: "", Apr: "", May: "", Jun: "", Jul: "", Aug: "", Sep: "", Oct: "", Nov: "", Dec: "",
-        total: "—"
+        total: "ΓÇö"
       }]);
     } else if (table === "coordDrawing") {
       setRawCoordDrawings([...rawCoordDrawings, {
@@ -986,7 +984,7 @@ const WorkProgressReport = ({
     }
   };
 
-  // Export spreadsheet using XLSX — mirrors the on-screen WPR component layout
+  // Export spreadsheet using XLSX ΓÇö mirrors the on-screen WPR component layout
   const exportToExcel = () => {
     try {
       const workbook = XLSX.utils.book_new();
@@ -994,20 +992,20 @@ const WorkProgressReport = ({
       const merges: XLSX.Range[] = [];
       const COL_COUNT = 8; // total columns we'll use (A-H)
 
-      // ─── Helper: push a row padded to COL_COUNT ───
+      // ΓöÇΓöÇΓöÇ Helper: push a row padded to COL_COUNT ΓöÇΓöÇΓöÇ
       const pushRow = (cells: any[]) => {
         while (cells.length < COL_COUNT) cells.push("");
         wsData.push(cells);
       };
 
-      // ─── Helper: merge cells (s=start, e=end, 0-indexed) ───
+      // ΓöÇΓöÇΓöÇ Helper: merge cells (s=start, e=end, 0-indexed) ΓöÇΓöÇΓöÇ
       const merge = (r: number, c1: number, r2: number, c2: number) => {
         merges.push({ s: { r, c: c1 }, e: { r: r2, c: c2 } });
       };
 
-      // ═══════════════════════════════════════════
+      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
       // SECTION: HEADER BLOCK
-      // ═══════════════════════════════════════════
+      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
       let row = 0;
 
       // Row 0: Title row
@@ -1027,7 +1025,7 @@ const WorkProgressReport = ({
       row++;
 
       // Row 3: Customer
-      pushRow(["Customer", "", project?.fabricator?.fabName || "—", "", "", "", "", ""]);
+      pushRow(["Customer", "", project?.fabricator?.fabName || "ΓÇö", "", "", "", "", ""]);
       merge(row, 0, row, 1);
       merge(row, 2, row, COL_COUNT - 1);
       row++;
@@ -1036,7 +1034,7 @@ const WorkProgressReport = ({
       const fabPMNames = project?.clientProjectManagers?.length > 0
         ? project.clientProjectManagers.map((pm: any) => `${pm.firstName || ""} ${pm.lastName || ""}`.trim()).join(", ")
         : fabProjectManager;
-      pushRow(["Project Name", "", project?.projectName || project?.name || "—", "", "Fabricator Project Manager", "", fabPMNames || "—", ""]);
+      pushRow(["Project Name", "", project?.projectName || project?.name || "ΓÇö", "", "Fabricator Project Manager", "", fabPMNames || "ΓÇö", ""]);
       merge(row, 0, row, 1);
       merge(row, 2, row, 3);
       merge(row, 4, row, 5);
@@ -1044,8 +1042,8 @@ const WorkProgressReport = ({
       row++;
 
       // Row 5: WBT PM | Report Circulated To
-      const wbtPM = project?.manager ? `${project.manager.firstName} ${project.manager.lastName}` : "—";
-      pushRow(["WBT Project Manager", "", wbtPM, "", "Report Circulated To", "", fabCirculatedTo || "—", ""]);
+      const wbtPM = project?.manager ? `${project.manager.firstName} ${project.manager.lastName}` : "ΓÇö";
+      pushRow(["WBT Project Manager", "", wbtPM, "", "Report Circulated To", "", fabCirculatedTo || "ΓÇö", ""]);
       merge(row, 0, row, 1);
       merge(row, 2, row, 3);
       merge(row, 4, row, 5);
@@ -1053,7 +1051,7 @@ const WorkProgressReport = ({
       row++;
 
       // Row 6: Report Circulated To | Software
-      pushRow(["Report Circulated To", "", wbtCirculatedTo || "—", "", "Software", "", software || "SDS2", ""]);
+      pushRow(["Report Circulated To", "", wbtCirculatedTo || "ΓÇö", "", "Software", "", software || "SDS2", ""]);
       merge(row, 0, row, 1);
       merge(row, 2, row, 3);
       merge(row, 4, row, 5);
@@ -1065,7 +1063,7 @@ const WorkProgressReport = ({
       row++;
 
       // Row 8: Project dates
-      const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "—";
+      const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "ΓÇö";
       pushRow(["Project Awarded", fmtDate(project?.startDate), "", "Approval Date", fmtDate(project?.approvalDate), "", "Fab Released Date", fmtDate(project?.fabricationDate)]);
       row++;
 
@@ -1073,9 +1071,9 @@ const WorkProgressReport = ({
       pushRow([]);
       row++;
 
-      // ═══════════════════════════════════════════
+      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
       // SECTION 1: PROJECT SCHEDULE / MILESTONES
-      // ═══════════════════════════════════════════
+      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
       pushRow(["1. PROJECT SCHEDULE / MILESTONES", "", "", "", "", "", "", ""]);
       merge(row, 0, row, COL_COUNT - 1);
       row++;
@@ -1088,13 +1086,13 @@ const WorkProgressReport = ({
       // Schedule data rows
       (filteredScheduleRows || []).forEach((s: any) => {
         pushRow([
-          s.phase || "—",
-          s.startDate || "—",
-          s.ifaSubDate || "—",
-          s.bfaRecdDate || "—",
-          s.ifcSubDate || "—",
-          s.corSubDate || "—",
-          s.comments || "—",
+          s.phase || "ΓÇö",
+          s.startDate || "ΓÇö",
+          s.ifaSubDate || "ΓÇö",
+          s.bfaRecdDate || "ΓÇö",
+          s.ifcSubDate || "ΓÇö",
+          s.corSubDate || "ΓÇö",
+          s.comments || "ΓÇö",
           ""
         ]);
         merge(row, 6, row, 7);
@@ -1105,9 +1103,9 @@ const WorkProgressReport = ({
       pushRow([]);
       row++;
 
-      // ═══════════════════════════════════════════
+      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
       // SECTION 2: RFI STATUS OVERVIEW
-      // ═══════════════════════════════════════════
+      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
       pushRow(["2. RFI STATUS OVERVIEW", "", "", "", "", "", "", ""]);
       merge(row, 0, row, COL_COUNT - 1);
       row++;
@@ -1120,17 +1118,17 @@ const WorkProgressReport = ({
 
       // RFI data rows
       (filteredRfis || []).forEach((r: any) => {
-        const custResp = r.customerResponse?.replace(/&NBSP;|&nbsp;/gi, ' ') || "—";
-        const wbtResp = r.wbtResponse?.replace(/&NBSP;|&nbsp;/gi, ' ') || "—";
+        const custResp = r.customerResponse?.replace(/&NBSP;|&nbsp;/gi, ' ') || "ΓÇö";
+        const wbtResp = r.wbtResponse?.replace(/&NBSP;|&nbsp;/gi, ' ') || "ΓÇö";
         pushRow([
-          r.rfiNo || "—",
-          r.sentDate || "—",
+          r.rfiNo || "ΓÇö",
+          r.sentDate || "ΓÇö",
           custResp,
           "",
-          r.responseReceivedDate || "—",
+          r.responseReceivedDate || "ΓÇö",
           wbtResp,
           "",
-          r.status || "—"
+          r.status || "ΓÇö"
         ]);
         merge(row, 2, row, 3);
         merge(row, 5, row, 6);
@@ -1141,9 +1139,9 @@ const WorkProgressReport = ({
       pushRow([]);
       row++;
 
-      // ═══════════════════════════════════════════
+      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
       // SECTION 3: CHANGE ORDER AMOUNT ($) MONTHLY BREAKDOWN
-      // ═══════════════════════════════════════════
+      // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
       pushRow(["3. CHANGE ORDER AMOUNT ($) MONTHLY BREAKDOWN", "", "", "", "", "", "", ""]);
       merge(row, 0, row, COL_COUNT - 1);
       row++;
@@ -1162,21 +1160,21 @@ const WorkProgressReport = ({
 
       (filteredCoRows || []).forEach((c: any) => {
         const coRow = [
-          c.changeOrder || "—",
-          c.Jan || "—", c.Feb || "—", c.Mar || "—", c.Apr || "—",
-          c.May || "—", c.Jun || "—", c.Jul || "—", c.Aug || "—",
-          c.Sep || "—", c.Oct || "—", c.Nov || "—", c.Dec || "—",
-          c.total || "—"
+          c.changeOrder || "ΓÇö",
+          c.Jan || "ΓÇö", c.Feb || "ΓÇö", c.Mar || "ΓÇö", c.Apr || "ΓÇö",
+          c.May || "ΓÇö", c.Jun || "ΓÇö", c.Jul || "ΓÇö", c.Aug || "ΓÇö",
+          c.Sep || "ΓÇö", c.Oct || "ΓÇö", c.Nov || "ΓÇö", c.Dec || "ΓÇö",
+          c.total || "ΓÇö"
         ];
         wsData.push(coRow);
         row++;
       });
 
-      // ─── Create the worksheet ───
+      // ΓöÇΓöÇΓöÇ Create the worksheet ΓöÇΓöÇΓöÇ
       const ws = XLSX.utils.aoa_to_sheet(wsData);
       ws["!merges"] = merges;
 
-      // ─── Column widths ───
+      // ΓöÇΓöÇΓöÇ Column widths ΓöÇΓöÇΓöÇ
       ws["!cols"] = [
         { wch: 22 }, // A
         { wch: 14 }, // B
@@ -1216,13 +1214,13 @@ const WorkProgressReport = ({
 
       // Helper to strip HTML and preserve line breaks
       const cleanHtmlText = (html: any) => {
-        if (!html) return "—";
+        if (!html) return "ΓÇö";
         let text = String(html).replace(/<br\s*[\/]?>/gi, '\n');
         text = text.replace(/<\/p>|<\/div>|<\/li>/gi, '\n');
-        text = text.replace(/<li>/gi, '• ');
+        text = text.replace(/<li>/gi, 'ΓÇó ');
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'text/html');
-        return (doc.body.textContent || "").trim().replace(/\n{3,}/g, '\n\n') || "—";
+        return (doc.body.textContent || "").trim().replace(/\n{3,}/g, '\n\n') || "ΓÇö";
       };
 
       // Helper to load Logo
@@ -1241,11 +1239,11 @@ const WorkProgressReport = ({
       const startX = 40;
       let finalY = 40;
 
-      const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "—";
+      const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "ΓÇö";
       const fabPMNames = project?.clientProjectManagers?.length > 0
         ? project.clientProjectManagers.map((pm: any) => `${pm.firstName || ""} ${pm.lastName || ""}`.trim()).join(", ")
         : fabProjectManager;
-      const wbtPM = project?.manager ? `${project.manager.firstName} ${project.manager.lastName}` : "—";
+      const wbtPM = project?.manager ? `${project.manager.firstName} ${project.manager.lastName}` : "ΓÇö";
 
       // Meta Table / Header Table
       autoTable(pdf, {
@@ -1269,23 +1267,23 @@ const WorkProgressReport = ({
           ],
           [
             { content: "CUSTOMER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
-            { content: project?.fabricator?.fabName || "—", colSpan: 6, styles: { valign: 'middle' } }
+            { content: project?.fabricator?.fabName || "ΓÇö", colSpan: 6, styles: { valign: 'middle' } }
           ],
           [
             { content: "PROJECT NAME :", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
-            { content: project?.projectName || project?.name || "—", colSpan: 2, styles: { valign: 'middle' } },
+            { content: project?.projectName || project?.name || "ΓÇö", colSpan: 2, styles: { valign: 'middle' } },
             { content: "FABRICATOR PROJECT MANAGER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
-            { content: fabPMNames || "—", colSpan: 2, styles: { valign: 'middle' } }
+            { content: fabPMNames || "ΓÇö", colSpan: 2, styles: { valign: 'middle' } }
           ],
           [
             { content: "WBT PROJECT MANAGER", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: wbtPM, colSpan: 2, styles: { valign: 'middle' } },
             { content: "REPORT CIRCULATED TO", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
-            { content: fabCirculatedTo || "—", colSpan: 2, styles: { valign: 'middle' } }
+            { content: fabCirculatedTo || "ΓÇö", colSpan: 2, styles: { valign: 'middle' } }
           ],
           [
             { content: "REPORT CIRCULATED TO", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
-            { content: wbtCirculatedTo || "—", colSpan: 2, styles: { valign: 'middle' } },
+            { content: wbtCirculatedTo || "ΓÇö", colSpan: 2, styles: { valign: 'middle' } },
             { content: "SOFTWARE", colSpan: 2, styles: { fontStyle: 'bold', fillColor: "#bbf7d0", halign: 'center', valign: 'middle' } },
             { content: software || "SDS2", colSpan: 2, styles: { valign: 'middle' } }
           ],
@@ -1337,12 +1335,12 @@ const WorkProgressReport = ({
         headStyles: { fillColor: [241, 245, 249], textColor: [0, 0, 0], fontStyle: 'bold' },
         head: [["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Comment"]],
         body: safeScheduleRows.map((s: any) => [
-          s?.phase || "—",
-          s?.startDate || "—",
-          s?.ifaSubDate || "—",
-          s?.bfaRecdDate || "—",
-          s?.ifcSubDate || "—",
-          s?.corSubDate || "—",
+          s?.phase || "ΓÇö",
+          s?.startDate || "ΓÇö",
+          s?.ifaSubDate || "ΓÇö",
+          s?.bfaRecdDate || "ΓÇö",
+          s?.ifcSubDate || "ΓÇö",
+          s?.corSubDate || "ΓÇö",
           cleanHtmlText(s?.comments)
         ]),
       });
@@ -1362,12 +1360,12 @@ const WorkProgressReport = ({
         headStyles: { fillColor: [241, 245, 249], textColor: [0, 0, 0], fontStyle: 'bold' },
         head: [["RFI No.", "Sent Date", "Customer Response", "Response Received", "Whiteboard Response", "Status"]],
         body: safeRfis.map((r: any) => [
-          r?.rfiNo || "—",
-          r?.sentDate || "—",
+          r?.rfiNo || "ΓÇö",
+          r?.sentDate || "ΓÇö",
           cleanHtmlText(r?.customerResponse),
-          r?.responseReceivedDate || "—",
+          r?.responseReceivedDate || "ΓÇö",
           cleanHtmlText(r?.wbtResponse),
-          r?.status || "—"
+          r?.status || "ΓÇö"
         ]),
       });
       finalY = (pdf as any).lastAutoTable.finalY + 20;
@@ -1387,11 +1385,11 @@ const WorkProgressReport = ({
         columnStyles: { 0: { halign: 'left' } },
         head: [["Change Order", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "FY Total"]],
         body: safeCoRows.map((c: any) => [
-          c?.changeOrder || "—",
-          c?.Jan || "—", c?.Feb || "—", c?.Mar || "—", c?.Apr || "—",
-          c?.May || "—", c?.Jun || "—", c?.Jul || "—", c?.Aug || "—",
-          c?.Sep || "—", c?.Oct || "—", c?.Nov || "—", c?.Dec || "—",
-          c?.total || "—"
+          c?.changeOrder || "ΓÇö",
+          c?.Jan || "ΓÇö", c?.Feb || "ΓÇö", c?.Mar || "ΓÇö", c?.Apr || "ΓÇö",
+          c?.May || "ΓÇö", c?.Jun || "ΓÇö", c?.Jul || "ΓÇö", c?.Aug || "ΓÇö",
+          c?.Sep || "ΓÇö", c?.Oct || "ΓÇö", c?.Nov || "ΓÇö", c?.Dec || "ΓÇö",
+          c?.total || "ΓÇö"
         ]),
       });
 
