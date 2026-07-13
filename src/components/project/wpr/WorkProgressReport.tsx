@@ -303,14 +303,22 @@ const WorkProgressReport = ({
 
       // Detect role from nested user object or responseState
       const isClientResponse = (res: any) => {
-        const role = (res.user?.role || res.userRole || res.createdByRole || "").toUpperCase();
-        if (role.startsWith("CLIENT")) return true;
+        const role = String(res.user?.role || res.userRole || res.createdByRole || "").toUpperCase();
+        if (role.includes("CLIENT")) return true;
+
+        const wbtStatusUpper = String(res.wbtStatus || "").toUpperCase();
+        if (wbtStatusUpper === "RECEIVED") return true;
 
         const responderId = res.userId || res.user?.id || res.user?._id;
         if (responderId) {
-          if (r.recepient_id === responderId || r.recipient_id === responderId) return true;
+          const responderIdStr = String(responderId).toLowerCase();
+          const recepId = String(r.recepient_id || r.recipient_id || r.recepients || "").toLowerCase();
+          if (recepId && recepId === responderIdStr) return true;
+
           const recipients = r.multipleRecipients || [];
-          if (recipients.some((rep: any) => (rep.id || rep._id) === responderId)) return true;
+          if (recipients.some((rep: any) => String(rep.id || rep._id || "").toLowerCase() === responderIdStr)) {
+            return true;
+          }
         }
         return false;
       };
