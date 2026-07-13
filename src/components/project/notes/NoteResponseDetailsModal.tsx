@@ -43,11 +43,13 @@ const NoteResponseDetailsModal: React.FC<NoteResponseDetailsModalProps> = ({
       let fabricatorName = "";
       let projectName = "";
       if (noteId) {
-        const noteDetails = await Service.GetTeamMeetingNotesById(noteId);
-        const projectId = noteDetails?.projectId || noteDetails?.data?.projectId;
-        if (projectId) {
-          const project = await Service.GetProjectById(projectId);
-          fabricatorName = project?.fabricator?.fabName || "";
+        const noteRes: any = await Service.GetTeamMeetingNotesById(noteId);
+        const note = noteRes?.data || noteRes;
+        const pid = note?.projectId || note?.project_id || note?.project || note?.projectId?._id || note?.projectId?.id;
+        if (pid) {
+          const projectRes: any = await Service.GetProjectById(typeof pid === 'object' ? (pid._id || pid.id) : pid);
+          const project = projectRes?.data || projectRes;
+          fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || project?.fabricator?.name || "";
           projectName = project?.projectName || project?.name || "";
         }
       }
