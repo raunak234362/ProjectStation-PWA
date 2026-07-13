@@ -424,7 +424,8 @@ const WorkProgressReport = ({
             ifcDate: stage === "IFC" ? fmt(dateStr) : "—",
             corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "—",
             status: currentStatus,
-            date: dateStr
+            date: dateStr,
+            notes: s.notes || ""
           };
         });
 
@@ -444,7 +445,12 @@ const WorkProgressReport = ({
           ifaSubDate: unifiedEntries.find((e: any) => e.ifaDate !== "—")?.ifaDate || "—",
           ifcSubDate: unifiedEntries.find((e: any) => e.ifcDate !== "—")?.ifcDate || "—",
           corSubDate: unifiedEntries.find((e: any) => e.corDate !== "—")?.corDate || "—",
-          comments: m.description ? cleanHtml(m.description) : (m.percentage ? `${m.percentage}% Completed` : "—"),
+          comments: (() => {
+            const subNotesList = subs
+              .map((sb: any) => sb.notes)
+              .filter((n: any) => typeof n === "string" && n.trim() !== "");
+            return subNotesList.length > 0 ? subNotesList.join(" | ") : "—";
+          })(),
           types: m.types || "ANCHOR_BOLT",
           subSubject: "",
         };
@@ -492,7 +498,8 @@ const WorkProgressReport = ({
             ifcDate: stage === "IFC" ? fmt(dateStr) : "—",
             corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "—",
             status: currentStatus,
-            date: dateStr
+            date: dateStr,
+            notes: sub.notes || ""
           }];
 
           return {
@@ -506,9 +513,7 @@ const WorkProgressReport = ({
             ifcSubDate: stage === "IFC" ? entry.date : "—",
             corSubDate: ["CO", "COR"].includes(stage) ? entry.date : "—",
             submittalStatus: sub.wbtStatus || sub.status || "PENDING",
-            comments: latestResponse
-              ? cleanHtml(latestResponse.description || latestResponse.reason) || "—"
-              : "—",
+            comments: typeof sub.notes === "string" ? sub.notes.trim() || "—" : "—",
             types: "ANCHOR_BOLT",
             subSubject: sub.subject || sub.serialNo || "",
           };

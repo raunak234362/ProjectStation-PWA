@@ -79,6 +79,10 @@ const AppContent = () => {
 
     // Fetch all employees
     const fetchAllEmployee = async () => {
+      const currentRole = (sessionStorage.getItem("userRole") || "").toUpperCase();
+      if (["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR", "CLIENT_ACCOUNTANT"].includes(currentRole)) {
+        return;
+      }
       try {
         const response = await Service.FetchAllEmployee();
         const data = response?.data?.employees || [];
@@ -101,6 +105,10 @@ const AppContent = () => {
     // };
     // Fetch all fabricator
     const fetchAllFabricator = async () => {
+      const currentRole = (sessionStorage.getItem("userRole") || "").toUpperCase();
+      if (["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR", "CLIENT_ACCOUNTANT"].includes(currentRole)) {
+        return;
+      }
       try {
         const response = await Service.GetAllFabricators();
         const data = response.data || [];
@@ -169,11 +177,13 @@ const AppContent = () => {
       }
     };
 
-    if (userType !== "CLIENT" && userType !== "CLIENT_ADMIN" && userType !== "CLIENT_ESTIMATOR") {
+    const normalizedUserType = (userType || "").toUpperCase();
+    const isClient = ["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR", "CLIENT_ACCOUNTANT"].includes(normalizedUserType);
 
+    if (!isClient) {
       fetchAllFabricator();
+      fetchAllEmployee();
     }
-    fetchAllEmployee();
     fetchNotifications();
     fetchInboxRFQ();
     // Cleanup socket on unmount

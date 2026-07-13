@@ -141,6 +141,10 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   // --- FETCH STAFF ONCE ---
   useEffect(() => {
     const loadStaff = async () => {
+      const currentRole = (sessionStorage.getItem("userRole") || "").toUpperCase();
+      const isClient = ["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR", "CLIENT_ACCOUNTANT"].includes(currentRole);
+      if (isClient) return;
+
       try {
         await Service.FetchEmployeeByRole("CLIENT");
       } catch (err) {

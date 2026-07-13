@@ -62,7 +62,7 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
             {scheduleRows.map((row) => (
               <tr
                 key={row.id}
-                className={`transition-all ${row._type === "milestone"
+                className={`border-b border-black/10 transition-all ${row._type === "milestone"
                   ? "bg-[#f0f7ed] hover:bg-[#e6f3e2]"
                   : "bg-white hover:bg-slate-50"
                   }`}
@@ -165,10 +165,9 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                   ) : row.unifiedEntries && row.unifiedEntries.length > 0 ? (
                     <div className="grid h-full" style={{ gridTemplateRows: `repeat(${row.unifiedEntries.length}, minmax(0, 1fr))` }}>
                       {row.unifiedEntries.map((entry: any, i: number) => {
-                        const showBFA = ["IFA", "RIFA"].includes(String(entry.stage || "").toUpperCase());
                         return (
                           <div key={i} className="flex flex-col justify-center p-3">
-                            {entry.bfaDate !== "—" && showBFA ? (
+                            {entry.bfaDate !== "—" ? (
                               <>
                                 <span className="text-[11px] font-bold text-blue-800 leading-tight">
                                   {entry.subject}
@@ -268,75 +267,14 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                 {/* Submittal Status (Comment) */}
                 <td className="p-0 align-top h-[1px]">
                   {(() => {
-                    const userRole = sessionStorage.getItem("userRole")?.toUpperCase();
-                    const isConnectionDesigner = userRole === "CONNECTION_DESIGNER" ||
-                                                 userRole === "CONNECTION_DESIGNER_ENGINEER" ||
-                                                 userRole === "CONNECTION_DESIGNER_ADMIN";
-
-                    const STATUS_LABELS: any = {
-                      WAITING_FOR_BFA: "Waiting for BFA",
-                      BFA_RECEIVED: "BFA RECEIVED",
-                      BFA_SENT: "BFA SENT",
-                      SUBMITTED_TO_EOR: "Submitted to EOR",
-                      RELEASE_FOR_FABRICATION: "Release for Fab",
-                      NOT_APPROVED: "Not Approved",
-                      REVISED_RESUBMITTAL: "Revised & Resubmitted",
-                      REVISED_RESUBMIT_FOR_FABRICATION: "Revised & Resub for Fab",
-                      PENDING: "Pending",
-                      COMPLETE: "BFA - Complete",
-                      COMPLETED: "BFA - Complete",
-                      PARTIAL: "BFA - Partial",
-                      SUCCESS: "BFA - Success",
-                    };
-                    const STATUS_COLORS: any = {
-                      WAITING_FOR_BFA: "bg-purple-100 text-purple-700 border-purple-200",
-                      BFA_RECEIVED: "bg-emerald-100 text-emerald-700 border-emerald-200",
-                      BFA_SENT: "bg-indigo-100 text-indigo-700 border-indigo-200",
-                      SUBMITTED_TO_EOR: "bg-blue-100 text-blue-700 border-blue-200",
-                      RELEASE_FOR_FABRICATION: "bg-green-100 text-green-700 border-green-200",
-                      NOT_APPROVED: "bg-red-100 text-red-700 border-red-200",
-                      REVISED_RESUBMITTAL: "bg-orange-100 text-orange-700 border-orange-200",
-                      REVISED_RESUBMIT_FOR_FABRICATION: "bg-orange-100 text-orange-700 border-orange-200",
-                      PENDING: "bg-yellow-100 text-yellow-700 border-yellow-200",
-                      COMPLETE: "bg-teal-100 text-teal-700 border-teal-200",
-                      COMPLETED: "bg-teal-100 text-teal-700 border-teal-200",
-                      PARTIAL: "bg-amber-100 text-amber-700 border-amber-200",
-                      SUCCESS: "bg-emerald-100 text-emerald-700 border-emerald-200",
-                    };
-
                     if (row.unifiedEntries && row.unifiedEntries.length > 0) {
-                      const allDone = row.unifiedEntries.every((entry: any) => {
-                        const st = String(entry.status || "—").toUpperCase();
-                        return entry.bfaDate !== "—" || ["COMPLETE", "COMPLETED", "SUCCESS", "BFA_RECEIVED", "RELEASE_FOR_FABRICATION"].includes(st);
-                      });
-
-                      if (allDone) {
-                        return (
-                          <div className="flex h-full items-center p-3">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-none text-[10px] font-black uppercase tracking-widest border bg-emerald-100 text-emerald-700 border-emerald-200 shrink-0">
-                              100% COMPLETE
-                            </span>
-                          </div>
-                        );
-                      }
-
                       return (
                         <div className="grid h-full" style={{ gridTemplateRows: `repeat(${row.unifiedEntries.length}, minmax(0, 1fr))` }}>
                           {row.unifiedEntries.map((entry: any, i: number) => {
-                            const key = String(entry.status || "—").replace(/\s+/g, "_").toUpperCase();
-                            const label = STATUS_LABELS[key] || String(entry.status || "—").replace(/_/g, " ");
-                            const color = STATUS_COLORS[key] || "bg-gray-100 text-gray-600 border-gray-200";
                             return (
                               <div key={i} className="flex flex-col justify-center p-3">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[11px] font-semibold text-blue-800">
-                                    {entry.subject}
-                                  </span>
-                                  {!(key === "WAITING_FOR_BFA" && isConnectionDesigner) && (
-                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color} shrink-0`}>
-                                      {label}
-                                    </span>
-                                  )}
+                                <div className="text-[11px] text-gray-700 font-normal break-words">
+                                  {entry.notes && typeof entry.notes === "string" && entry.notes.trim() !== "" ? entry.notes : "—"}
                                 </div>
                               </div>
                             );
@@ -345,18 +283,10 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                       );
                     }
 
-                    const key = String(row.submittalStatus || "—").replace(/\s+/g, "_").toUpperCase();
-                    const label = STATUS_LABELS[key] || String(row.submittalStatus || "—").replace(/_/g, " ");
-                    const color = STATUS_COLORS[key] || "bg-gray-100 text-gray-600 border-gray-200";
-                    if (row.submittalStatus && row.submittalStatus !== "—") {
-                      if (key === "WAITING_FOR_BFA" && isConnectionDesigner) {
-                        return <span className="block p-3 text-gray-400">—</span>;
-                      }
+                    if (row.comments && row.comments !== "—" && typeof row.comments === "string") {
                       return (
-                        <div className="p-3">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color}`}>
-                            {label}
-                          </span>
+                        <div className="p-3 text-[11px] text-gray-700 break-words font-normal">
+                          {row.comments}
                         </div>
                       );
                     }

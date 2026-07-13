@@ -52,12 +52,17 @@ const AllProjectNotes = ({
   useEffect(() => {
     const fetchAll = async () => {
       let combined: any[] = [];
-      try {
-        const res = await Service.FetchAllEmployee();
-        const d = res?.data?.employees || res?.employees || res || [];
-        combined = [...combined, ...(Array.isArray(d) ? d : [])];
-      } catch (e) {
-        console.error("Error fetching internal employees:", e);
+      const currentRole = (sessionStorage.getItem("userRole") || "").toUpperCase();
+      const isClient = ["CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR", "CLIENT_ACCOUNTANT"].includes(currentRole);
+
+      if (!isClient) {
+        try {
+          const res = await Service.FetchAllEmployee();
+          const d = res?.data?.employees || res?.employees || res || [];
+          combined = [...combined, ...(Array.isArray(d) ? d : [])];
+        } catch (e) {
+          console.error("Error fetching internal employees:", e);
+        }
       }
 
       const cdId = project?.connectionDesignerID || project?.connectionDesigner?.id || project?.connectionDesigner;
