@@ -288,21 +288,40 @@ const WorkProgressReport = ({
     rfiArray = rfiArray.filter(r => !(r.isConnectionDesign === true || String(r.isConnectionDesign).toLowerCase() === "true"));
 
     const formattedRFIs = rfiArray.map((r, index) => {
-      const responses = r.rfiresponse || [];
+      const flattenResponses = (list: any[]): any[] => {
+        const flat: any[] = [];
+        list.forEach((res) => {
+          flat.push(res);
+          if (res.childResponses && res.childResponses.length > 0) {
+            flat.push(...flattenResponses(res.childResponses));
+          }
+        });
+        return flat;
+      };
+
+      const responses = flattenResponses(r.rfiresponse || []);
 
       // Detect role from nested user object or responseState
-      const isClientResponse = (res) => {
+      const isClientResponse = (res: any) => {
         const role = (res.user?.role || res.userRole || res.createdByRole || "").toUpperCase();
-        return role === "CLIENT" || role === "CLIENT_ADMIN";
+        if (role.startsWith("CLIENT")) return true;
+
+        const responderId = res.userId || res.user?.id || res.user?._id;
+        if (responderId) {
+          if (r.recepient_id === responderId || r.recipient_id === responderId) return true;
+          const recipients = r.multipleRecipients || [];
+          if (recipients.some((rep: any) => (rep.id || rep._id) === responderId)) return true;
+        }
+        return false;
       };
 
       // Sort responses by date (oldest first) so we can separate Q & A
       const sorted = [...responses].sort(
-        (a, b) => new Date(a.createdAt || a.date || 0) - new Date(b.createdAt || b.date || 0)
+        (a, b) => new Date(a.createdAt || a.date || 0).getTime() - new Date(b.createdAt || b.date || 0).getTime()
       );
 
-      // Customer response = first SENT response from client, else latest non-wbt
-      const customerRep = sorted.find(res => isClientResponse(res))
+      // Customer response = latest response from client, else latest non-wbt
+      const customerRep = [...sorted].reverse().find(res => isClientResponse(res))
         || sorted.find(res => res.responseState === "SENT" && !isClientResponse(res));
 
       // WBT response = latest non-client response
