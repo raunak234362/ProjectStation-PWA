@@ -380,7 +380,9 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
           )}
 
           {/* BFA Manager */}
-          {!isConnectionDesigner && <BfaManager submittalId={submittal.id} />}
+          {!isConnectionDesigner && String(submittal.stage || "").toUpperCase() !== "IFC" && (
+            <BfaManager submittalId={submittal.id} />
+          )}
 
           {/* RESPONSES SECTION */}
           <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-6">
