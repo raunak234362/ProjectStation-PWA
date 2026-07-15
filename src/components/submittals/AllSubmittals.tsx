@@ -112,7 +112,12 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
       accessorKey: "sender",
       header: "Sender",
       cell: ({ row }) => {
-        const s = row.original.sender;
+        let s = row.original.approvedBy;
+        
+        if (row.original.isAproovedByAdmin && !s) {
+          s = row.original.sender;
+        }
+
         return (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs uppercase">
