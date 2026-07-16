@@ -43,7 +43,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
         try {
           setLoading(true);
           const response = await Service.GetRFIByProjectId(projectId);
-          const data = response?.data || [];
+          const data = Array.isArray(response) ? response : (response?.data || []);
           const normalized = data.map((item: any) => ({
             ...item,
             createdAt: item.createdAt || item.date || null,

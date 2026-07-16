@@ -175,7 +175,6 @@ const GetProjectById = ({
     try {
       const rolesForReceived = [
         "client",
-        "client_admin",
         "client_estimator",
         "connection_designer",
         "connection_designer_engineer",
