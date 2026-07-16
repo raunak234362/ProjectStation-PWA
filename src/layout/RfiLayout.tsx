@@ -32,7 +32,7 @@ const RfiLayout = ({ project, rfiData, onSuccess }: RfiLayoutProps) => {
         </div>
       )}
       <div className={`flex-1 min-h-0 px-8 pb-8 overflow-y-auto ${!showAddButton ? "pt-8" : ""}`}>
-        {activeTab === "allRFI" && <AllRFI rfiData={rfiData} />}
+        {activeTab === "allRFI" && <AllRFI rfiData={rfiData} projectId={project?.id || project?._id} />}
         {showAddButton && activeTab === "addRFI" && (
           <div>
             <AddRFI

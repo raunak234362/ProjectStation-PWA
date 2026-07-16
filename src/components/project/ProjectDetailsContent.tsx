@@ -465,7 +465,7 @@ const ProjectDetailsContent = ({
               </nav>
             </div>
             {rfiView === "list" ? (
-              <AllRFI rfiData={project.rfi || []} />
+              <AllRFI rfiData={project.rfi || []} projectId={id} />
             ) : (
               <AddRFI
                 project={project}
@@ -499,7 +499,7 @@ const ProjectDetailsContent = ({
               </nav>
             </div>
             {rfiView === "list" ? (
-              <AllRFI rfiData={project.rfi || []} />
+              <AllRFI rfiData={project.rfi || []} projectId={id} />
             ) : (
               <AddRFI
                 project={project}

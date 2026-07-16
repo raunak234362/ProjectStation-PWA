@@ -7,12 +7,14 @@ import GetRFIByID from "./GetRFIByID";
 import { Inbox, Search, Filter } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
 import { Suspense } from "react";
+import Service from "../../api/Service";
 
 interface AllRFIProps {
   rfiData?: RFIItem[];
+  projectId?: string;
 }
 
-const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
+const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
   const [rfis, setRFIs] = useState<RFIItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRfiID, setSelectedRfiID] = useState<string | null>(null);
@@ -36,15 +38,36 @@ const AllRFI = ({ rfiData = [] }: AllRFIProps) => {
   const [sentReceivedTab, setSentReceivedTab] = useState<"sent" | "received">("received");
 
   useEffect(() => {
-    if (rfiData) {
-      const normalized = rfiData.map((item: any) => ({
-        ...item,
-        createdAt: item.createdAt || item.date || null,
-      }));
-      setRFIs(normalized);
-      setLoading(false);
-    }
-  }, [rfiData]);
+    const fetchClientAdminRFIs = async () => {
+      if (userRoleUpper === "CLIENT_ADMIN" && projectId) {
+        try {
+          setLoading(true);
+          const response = await Service.GetRFIByProjectId(projectId);
+          const data = response?.data || [];
+          const normalized = data.map((item: any) => ({
+            ...item,
+            createdAt: item.createdAt || item.date || null,
+          }));
+          setRFIs(normalized);
+        } catch (error) {
+          console.error("Error fetching RFIs:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else if (rfiData) {
+        const normalized = rfiData.map((item: any) => ({
+          ...item,
+          createdAt: item.createdAt || item.date || null,
+        }));
+        setRFIs(normalized);
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    };
+
+    fetchClientAdminRFIs();
+  }, [rfiData, projectId, userRoleUpper]);
 
   const getStatusInfo = (item: any) => {
     const responses = item.rfiresponse || [];
