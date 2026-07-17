@@ -443,6 +443,10 @@ const WorkProgressReport = ({
             if (bfaData.status) currentStatus = bfaData.status;
           }
 
+          if (["IFC", "RIFC", "R-IFC"].includes(stage)) {
+            currentStatus = "100% COMPLETE";
+          }
+
           return {
             id: s.id || s._id,
             subject: s.subject || s.serialNo || "—",
@@ -473,10 +477,39 @@ const WorkProgressReport = ({
           ifcSubDate: unifiedEntries.find((e: any) => e.ifcDate !== "—")?.ifcDate || "—",
           corSubDate: unifiedEntries.find((e: any) => e.corDate !== "—")?.corDate || "—",
           comments: (() => {
-            const subNotesList = subs
-              .map((sb: any) => sb.notes)
-              .filter((n: any) => typeof n === "string" && n.trim() !== "");
-            return subNotesList.length > 0 ? subNotesList.join(" | ") : "—";
+            if (subs.length === 0) {
+              const flattenMilestoneResponses = (list: any): any[] => {
+                if (!Array.isArray(list)) return [];
+                const flat: any[] = [];
+                for (const res of list) {
+                  if (res) {
+                    flat.push(res);
+                    if (Array.isArray(res.childResponses)) {
+                      flat.push(...flattenMilestoneResponses(res.childResponses));
+                    }
+                  }
+                }
+                return flat;
+              };
+              const safeVersions = Array.isArray(m.versions) ? m.versions : (m.currentVersion ? [m.currentVersion] : []);
+              const allMilestoneResponses = safeVersions.flatMap((v: any) => flattenMilestoneResponses(v?.responses || []));
+              const sortedMilestoneResponses = [...allMilestoneResponses].sort(
+                (a: any, b: any) => new Date(b.createdAt || b.date || 0).getTime() - new Date(a.createdAt || a.date || 0).getTime()
+              );
+              const latestMilestoneResponse = sortedMilestoneResponses.length > 0 ? sortedMilestoneResponses[0] : null;
+              
+              if (latestMilestoneResponse) {
+                const desc = (typeof latestMilestoneResponse.description === "string" ? latestMilestoneResponse.description : "").replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
+                const words = desc.split(/\s+/).filter(Boolean);
+                return words.slice(0, 10).join(" ") + (words.length > 10 ? "..." : "");
+              }
+              return "—";
+            } else {
+              const subNotesList = subs
+                .map((sb: any) => sb.notes)
+                .filter((n: any) => typeof n === "string" && n.trim() !== "");
+              return subNotesList.length > 0 ? subNotesList.join(" | ") : "—";
+            }
           })(),
           types: m.types || "ANCHOR_BOLT",
           subSubject: "",
