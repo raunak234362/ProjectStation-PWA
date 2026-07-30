@@ -105,6 +105,11 @@ interface DataTableProps<T extends object> {
   disablePagination?: boolean;
   noBorder?: boolean;
   animateColumns?: boolean;
+
+  manualPagination?: boolean;
+  pageCount?: number;
+  pageIndex?: number;
+  onPageChange?: (pageIndex: number) => void;
 }
 
 /* -------------------- animated cell view -------------------- */
@@ -200,6 +205,11 @@ export default function DataTable<T extends object>({
   disablePagination = false,
   noBorder = false,
   animateColumns = true,
+
+  manualPagination,
+  pageCount,
+  pageIndex,
+  onPageChange,
 }: DataTableProps<T>) {
   const { isMobile } = useScreen();
 
@@ -208,6 +218,38 @@ export default function DataTable<T extends object>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
+
+  const [internalPagination, setInternalPagination] = useState({
+    pageIndex: pageIndex !== undefined ? pageIndex : 0,
+    pageSize: disablePagination ? 100000 : pageSizeOptions[0] || 10,
+  });
+
+  useEffect(() => {
+    if (pageIndex !== undefined) {
+      setInternalPagination((prev) => ({ ...prev, pageIndex }));
+    }
+  }, [pageIndex]);
+
+  const paginationState = useMemo(() => {
+    if (manualPagination) {
+      return {
+        pageIndex: pageIndex ?? 0,
+        pageSize: pageSizeOptions[0] || 10,
+      };
+    }
+    return internalPagination;
+  }, [manualPagination, pageIndex, internalPagination, pageSizeOptions]);
+
+  const handlePaginationChange = (updater: any) => {
+    const nextState = typeof updater === "function" ? updater(paginationState) : updater;
+    if (manualPagination) {
+      if (onPageChange) {
+        onPageChange(nextState.pageIndex);
+      }
+    } else {
+      setInternalPagination(nextState);
+    }
+  };
 
   const columns = useMemo(() => {
     const sNoCol: ExtendedColumnDef<T> = {
@@ -240,7 +282,11 @@ export default function DataTable<T extends object>({
       sorting,
       columnFilters,
       columnVisibility,
+      pagination: paginationState,
     },
+    onPaginationChange: handlePaginationChange,
+    manualPagination,
+    pageCount,
     initialState: {
       pagination: {
         pageSize: disablePagination ? 100000 : pageSizeOptions[0] || 10,

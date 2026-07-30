@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";
 import GetCDRFQByID from "../connectionDesigner/GetCDRFQByID";
 import { formatDate } from "../../utils/dateUtils";
 import { Search, X } from "lucide-react";
+import Service from "../../api/Service";
 
 const getRFQStatus = (row: any) => {
   const status = row.status?.toUpperCase()?.trim();
@@ -21,8 +22,13 @@ const getRFQStatus = (row: any) => {
   return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
 };
 
-const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
+const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
   const userRole = sessionStorage.getItem("userRole");
+
+  const [rfqList, setRfqList] = useState<RFQItem[]>(rfq || []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<"ALL" | "MTO" | "DETAILING" | "BOTH">("ALL");
@@ -42,10 +48,93 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     { label: "REVISE", value: "REVISE" },
   ];
 
+  const fetchRFQs = async () => {
+    try {
+      setLoading(true);
+      let response;
+      if (userRole === "CLIENT") {
+        response = await Service.RfqSent(currentPage, 25);
+      } else if (
+        userRole === "OPERATION_EXECUTIVE" ||
+        userRole === "DEPUTY_MANAGER" ||
+        userRole === "ESTIMATION_HEAD" ||
+        userRole === "ADMIN"
+      ) {
+        response = await Service.getAllRFQ(currentPage, 25);
+      } else if (
+        userRole === "CLIENT_ESTIMATOR" ||
+        userRole === "CLIENT_ADMIN" ||
+        userRole === "CONNECTION_DESIGNER_ENGINEER" ||
+        userRole === "CONNECTION_DESIGNER_ADMIN"
+      ) {
+        if (userRole === "CLIENT_ESTIMATOR") {
+          response = await Service.GetClientEstimatorRFQ();
+        } else if (userRole === "CLIENT_ADMIN") {
+          response = await Service.getAllRFQFab();
+        } else {
+          response = await Service.getConnectionEngineerQuotation();
+        }
+      } else {
+        response = await Service.RFQRecieved(currentPage, 25);
+      }
+
+      if (response) {
+        let list: RFQItem[] = [];
+        let totalP = 1;
+
+        if (Array.isArray(response)) {
+          list = response;
+          totalP = list.length === 25 ? currentPage + 1 : currentPage;
+        } else {
+          const resData = response.data || response;
+          const pagination = response.meta || response.pagination || resData?.meta || resData?.pagination;
+
+          if (Array.isArray(resData)) {
+            list = resData;
+          } else if (resData && Array.isArray(resData.data)) {
+            list = resData.data;
+          }
+
+          if (pagination) {
+            totalP = pagination.totalPages || pagination.totalPage || totalP;
+          } else {
+            totalP = list.length === 25 ? currentPage + 1 : currentPage;
+          }
+        }
+
+        setRfqList(list);
+        setTotalPages(totalP);
+      }
+    } catch (error) {
+      console.error("Error fetching RFQs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRFQs();
+  }, [currentPage]);
+
+  // Sync with prop updates if any
+  useEffect(() => {
+    if (rfq && rfq.length > 0) {
+      setRfqList(rfq);
+    }
+  }, [rfq]);
+
+  // Reset page when search or filter options change
+  useEffect(() => {
+    setCurrentPage(1);
+    if (currentPage === 1) {
+      fetchRFQs();
+    }
+  }, [searchQuery, selectedType, selectedMonth, selectedYear, selectedStatus]);
+
   const yearOptions = useMemo(() => {
     const years = Array.from(
       new Set(
-        (rfq || [])
+        (rfqList || [])
           .map((item: any) => {
             const date = new Date(item.estimationDate);
             return isNaN(date.getTime()) ? null : date.getFullYear().toString();
@@ -54,7 +143,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
       )
     ) as string[];
     return years.sort((a, b) => b.localeCompare(a));
-  }, [rfq]);
+  }, [rfqList]);
 
   const monthOptions = [
     { label: "January", value: "0" },
@@ -265,7 +354,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
 
 
   const filteredData = useMemo(() => {
-    let data = rfq || [];
+    let data = rfqList || [];
 
     // 1. Search filter
     if (searchQuery) {
@@ -317,7 +406,7 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
     }
 
     return data;
-  }, [rfq, searchQuery, selectedType, activeTab, selectedMonth, selectedYear, selectedStatus]);
+  }, [rfqList, searchQuery, selectedType, activeTab, selectedMonth, selectedYear, selectedStatus]);
 
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
 
@@ -433,12 +522,22 @@ const AllRFQ = ({ rfq }: { rfq: RFQItem[] }) => {
         </div>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredData}
-        onRowClick={(row: any) => setSelectedRfqId(row.id || row._id)}
-        pageSizeOptions={[25]}
-      />
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <span className="font-bold text-gray-500 uppercase tracking-widest text-xs">Loading Intelligence...</span>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          onRowClick={(row: any) => setSelectedRfqId(row.id || row._id)}
+          pageSizeOptions={[25]}
+          manualPagination={true}
+          pageCount={totalPages}
+          pageIndex={currentPage - 1}
+          onPageChange={(pageIdx) => setCurrentPage(pageIdx + 1)}
+        />
+      )}
 
       {selectedRfqId && (
         isConnectionDesigner ? (

@@ -394,9 +394,10 @@ class Service {
   }
 
   //Fetch All RFQ
-  static async getAllRFQ() {
+  static async getAllRFQ(page?: number, limit?: number) {
     try {
       const response = await api.get(`rfq/all`, {
+        params: { page, limit },
         headers: {
           "Content-Type": "application/json",
         },
@@ -424,9 +425,11 @@ class Service {
   }
 
   // api for sents :
-  static async RfqSent() {
+  static async RfqSent(page?: number, limit?: number) {
     try {
-      const response = await api.get(`rfq/sents`);
+      const response = await api.get(`rfq/sents`, {
+        params: { page, limit },
+      });
       console.log(" RFQ sents:", response.data);
       return response.data;
     } catch (error) {
@@ -435,9 +438,11 @@ class Service {
   }
 
   //api for recieved:
-  static async RFQRecieved() {
+  static async RFQRecieved(page?: number, limit?: number) {
     try {
-      const response = await api.get(`rfq/received`);
+      const response = await api.get(`rfq/received`, {
+        params: { page, limit },
+      });
 
       // console.log("  RFQ received:", response.data);
       return response.data;
