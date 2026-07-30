@@ -34,7 +34,7 @@ const getDownloadUrl = (
       return `${baseURL}/rfq/response/viewFile/${parentId}/${fileId}`;
     case "rfqFollowup":
     case "rfq/followup":
-      return `${baseURL}/rfq/followups/viewFile/${parentId}/${fileId}`;
+      return `${baseURL}/rfq/followUps/viewFile/${parentId}/${fileId}`;
     case "changeOrders":
       return `${baseURL}/changeOrder/viewFile/${parentId}/${fileId}`;
     case "changeOrder/response":

@@ -4,8 +4,15 @@ import { createPortal } from "react-dom";
 import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
 import {
-  Loader2, AlertCircle,
-  MessageSquare, User, Clock, Trash2, X, ChevronDown, ChevronUp
+  Loader2,
+  AlertCircle,
+  MessageSquare,
+  User,
+  Clock,
+  Trash2,
+  X,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import ResponseModal from "./ResponseModal";
 import DataTable from "../ui/table";
@@ -26,7 +33,7 @@ import { toast } from "react-toastify";
 
 const RFQResponseItem = ({
   response,
-  onReply
+  onReply,
 }: {
   response: any;
   onReply?: (parent: any) => void;
@@ -40,8 +47,9 @@ const RFQResponseItem = ({
     <div className="mb-6 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
       {/* Header */}
       <div
-        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${isOpen ? "bg-gray-50" : "bg-white"
-          } hover:bg-gray-50 ${isOpen ? "border-b border-gray-100" : ""}`}
+        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
+          isOpen ? "bg-gray-50" : "bg-white"
+        } hover:bg-gray-50 ${isOpen ? "border-b border-gray-100" : ""}`}
       >
         <div
           className="flex items-center gap-4 flex-1 cursor-pointer"
@@ -102,7 +110,11 @@ const RFQResponseItem = ({
             onClick={() => setIsOpen(!isOpen)}
             className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
           >
-            {isOpen ? <ChevronUp size={18} className="text-gray-500" /> : <ChevronDown size={18} className="text-gray-500" />}
+            {isOpen ? (
+              <ChevronUp size={18} className="text-gray-500" />
+            ) : (
+              <ChevronDown size={18} className="text-gray-500" />
+            )}
           </button>
         </div>
       </div>
@@ -110,8 +122,6 @@ const RFQResponseItem = ({
       {/* Content */}
       {isOpen && (
         <div className="p-6 bg-white animate-in slide-in-from-top-2 duration-300 space-y-6">
-
-
           {/* Main Message Section */}
           <div>
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
@@ -127,39 +137,41 @@ const RFQResponseItem = ({
           {(response.totalTonnageWithConnection ||
             response.totalTonnageWithoutConnection ||
             response.PageNumbers) && (
-              <div className="bg-green-50/40 p-4 rounded-xl border border-green-100">
-                <span className="text-[10px] font-black text-green-800 uppercase tracking-widest block mb-3">
-                  Quantification & Metrics
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
-                      Tonnage (With Connections)
-                    </span>
-                    <span className="text-xs font-black text-black">
-                      {response.totalTonnageWithConnection || "—"}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
-                      Tonnage (W/O Conn)
-                    </span>
-                    <span className="text-xs font-black text-black">
-                      {response.totalTonnageWithoutConnection || "—"}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
-                      Page Numbers
-                    </span>
-                    <div
-                      className="text-xs font-black text-black"
-                      dangerouslySetInnerHTML={{ __html: response.PageNumbers || "—" }}
-                    />
-                  </div>
+            <div className="bg-green-50/40 p-4 rounded-xl border border-green-100">
+              <span className="text-[10px] font-black text-green-800 uppercase tracking-widest block mb-3">
+                Quantification & Metrics
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Tonnage (With Connections)
+                  </span>
+                  <span className="text-xs font-black text-black">
+                    {response.totalTonnageWithConnection || "—"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Tonnage (W/O Conn)
+                  </span>
+                  <span className="text-xs font-black text-black">
+                    {response.totalTonnageWithoutConnection || "—"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Page Numbers
+                  </span>
+                  <div
+                    className="text-xs font-black text-black"
+                    dangerouslySetInnerHTML={{
+                      __html: response.PageNumbers || "—",
+                    }}
+                  />
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
           {/* Attachments Section */}
           {response.files && response.files.length > 0 && (
@@ -252,7 +264,6 @@ const RFQResponseItem = ({
   );
 };
 
-
 interface GetRfqByIDProps {
   id: string;
   onClose?: () => void;
@@ -284,8 +295,17 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
     useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<any | null>(null);
 
+  // Followup states
+  const [showFollowupForm, setShowFollowupForm] = useState(false);
+  const [followupDescription, setFollowupDescription] = useState("");
+  const [followupFiles, setFollowupFiles] = useState<File[]>([]);
+  const [isSubmittingFollowup, setIsSubmittingFollowup] = useState(false);
+  const [followups, setFollowups] = useState<any[]>([]);
+
   // Followups removed
-  const [selectedParentResponseId, setSelectedParentResponseId] = useState<string | null>(null);
+  const [selectedParentResponseId, setSelectedParentResponseId] = useState<
+    string | null
+  >(null);
 
   const dispatch = useDispatch();
 
@@ -299,7 +319,10 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
         }
         return true;
       })
-      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   }, [rfq?.responses, filterType]);
 
   console.log(rfq);
@@ -314,7 +337,10 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
         dispatch(updateRFQ(rfqData));
       }
 
-      // Followups logic removed
+      // followUps are included in the RFQ response directly
+      const rfqFollowUps = rfqData?.followUps ?? [];
+      console.log("[Followups] Setting followups state:", rfqFollowUps);
+      setFollowups(Array.isArray(rfqFollowUps) ? rfqFollowUps : []);
     } catch (err) {
       console.error("Error fetching RFQ:", err);
       if (!rfq) setError("Failed to load RFQ");
@@ -375,13 +401,15 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
     }
   };
 
-
   const handleStatusUpdate = async () => {
     if (!newStatus) {
       toast.error("Please select a status");
       return;
     }
-    if ((newStatus === "CLOSED" || newStatus === "RE_APPROVED") && !statusReason) {
+    if (
+      (newStatus === "CLOSED" || newStatus === "RE_APPROVED") &&
+      !statusReason
+    ) {
       toast.error("Please provide a reason");
       return;
     }
@@ -392,7 +420,11 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
         wbtStatus: newStatus,
         reason: statusReason,
       };
-      const fabricatorName = rfq?.fabricator?.fabName || rfq?.sender?.fabricator?.fabName || (rfq as any)?.fabricatorName || "";
+      const fabricatorName =
+        rfq?.fabricator?.fabName ||
+        rfq?.sender?.fabricator?.fabName ||
+        (rfq as any)?.fabricatorName ||
+        "";
       const rfqProjectName = rfq?.projectName || "";
       await Service.UpdateRFQById(id, payload, fabricatorName, rfqProjectName);
       toast.success("RFQ status updated successfully");
@@ -405,6 +437,48 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
       toast.error("Failed to update RFQ status");
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleAddFollowup = async () => {
+    if (!followupDescription.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+    console.log("[Followup] Submitting followup for RFQ ID:", id);
+
+    const formData = new FormData();
+    formData.append("description", followupDescription);
+    followupFiles.forEach((file) => {
+      formData.append("files", file);
+      console.log("[Followup] Appending file:", file.name);
+    });
+
+    try {
+      setIsSubmittingFollowup(true);
+      const fabricatorName =
+        rfq?.fabricator?.fabName ||
+        rfq?.sender?.fabricator?.fabName ||
+        (rfq as any)?.fabricatorName ||
+        "";
+      const rfqProjectName = rfq?.projectName || "";
+      const res = await Service.addRFQFollowups(
+        formData,
+        id,
+        fabricatorName,
+        rfqProjectName,
+      );
+      console.log("[Followup] Response:", res);
+      toast.success("Followup added successfully");
+      setFollowupDescription("");
+      setFollowupFiles([]);
+      setShowFollowupForm(false);
+      fetchRfq();
+    } catch (err) {
+      console.error("[Followup] Error adding followup:", err);
+      toast.error("Failed to add followup");
+    } finally {
+      setIsSubmittingFollowup(false);
     }
   };
 
@@ -440,9 +514,50 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
     userRole === "connection_designer" ||
     userRole === "connection_designer_engineer" ||
     userRole === "connection_designer_admin";
-  const isClientRole = ["client", "client_admin", "client_estimator", "client_accountant"].includes(userRole);
+  const isClientRole = [
+    "client",
+    "client_admin",
+    "client_estimator",
+    "client_accountant",
+  ].includes(userRole);
 
-
+  /* ---------------- FOLLOWUP COLUMNS ---------------- */
+  const followupColumns: ColumnDef<any>[] = [
+    {
+      accessorKey: "createdBy",
+      header: "Created By",
+      cell: ({ row }: any) => {
+        const cb = row.original.createdBy;
+        const name = cb
+          ? `${cb.firstName ?? ""} ${cb.lastName ?? ""}`.trim()
+          : "—";
+        return <span className="font-semibold text-xs sm:text-sm">{name}</span>;
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created On",
+      cell: ({ row }: any) => (
+        <span className="text-gray-500 text-xs font-semibold">
+          {formatDateTime(row.original.createdAt)}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "files",
+      header: "Files",
+      cell: ({ row }: any) => {
+        const count = row.original.files?.length ?? 0;
+        return count > 0 ? (
+          <span className="text-black font-semibold text-xs">
+            {count} file(s)
+          </span>
+        ) : (
+          <span className="text-gray-400 text-xs">—</span>
+        );
+      },
+    },
+  ];
 
   /* ---------------- QUOTATION COLUMNS ---------------- */
   const quotationColumns: ColumnDef<any>[] = [
@@ -456,16 +571,16 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
       ),
     },
 
-
     {
       accessorKey: "approvalStatus",
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${row.original.approvalStatus
-            ? "bg-gray-100 text-black border border-gray-200"
-            : "bg-gray-100 text-black border border-gray-200"
-            }`}
+          className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-tight  ${
+            row.original.approvalStatus
+              ? "bg-gray-100 text-black border border-gray-200"
+              : "bg-gray-100 text-black border border-gray-200"
+          }`}
         >
           {row.original.approvalStatus ? "Approved" : "Pending"}
         </span>
@@ -520,10 +635,16 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
               {(() => {
                 const wbtStatus = (rfq as any)?.wbtStatus;
                 const status = rfq?.status;
-                const currentStatus = (wbtStatus && wbtStatus !== "RECEIVED") ? wbtStatus : status;
+                const currentStatus =
+                  wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
 
                 if (currentStatus === "AWARDED") {
-                  const isMTO = !!(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.mtoStickModelEnabled);
+                  const isMTO = !!(
+                    rfq?.MTOManual ||
+                    rfq?.MTOStickModel ||
+                    rfq?.MTOValue ||
+                    (rfq as any)?.mtoStickModelEnabled
+                  );
                   return isMTO ? "SUBMITTED" : "AWARDED";
                 }
 
@@ -564,7 +685,6 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {/* ---------------- LEFT COLUMN — RFQ DETAILS ---------------- */}
             <div className="bg-zinc-50 border border-zinc-200/50 p-6 rounded-3xl shadow-sm space-y-8">
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Info label="Subject" value={rfq?.subject || ""} />
                 <Info label="Project Number" value={rfq?.projectNumber || ""} />
@@ -586,7 +706,9 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
               {/* Scopes */}
               <div className="space-y-3">
                 {/* Connection Design Scope - Only shown if at least one option is selected */}
-                {(rfq?.connectionDesign || rfq?.miscDesign || rfq?.customerDesign) && (
+                {(rfq?.connectionDesign ||
+                  rfq?.miscDesign ||
+                  rfq?.customerDesign) && (
                   <div className="space-y-4">
                     <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
                       Connection Design Scope
@@ -638,7 +760,10 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 )}
 
                 {/* Material Take-off - Only shown if at least one option is selected */}
-                {(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.MTOManualModel) && (
+                {(rfq?.MTOManual ||
+                  rfq?.MTOStickModel ||
+                  rfq?.MTOValue ||
+                  (rfq as any)?.MTOManualModel) && (
                   <div className="space-y-4">
                     <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
                       Material Take-off
@@ -650,7 +775,11 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                           <span>MTO - Manual</span>
                         </div>
                       )}
-                      {!!(rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.MTOManualModel) && (
+                      {!!(
+                        rfq?.MTOStickModel ||
+                        rfq?.MTOValue ||
+                        (rfq as any)?.MTOManualModel
+                      ) && (
                         <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
                           <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
                           <span>MTO - Stick Model</span>
@@ -658,12 +787,18 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                       )}
                     </div>
 
-                    {(rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || rfq?.MTOValue) && (
+                    {(rfq?.MTOStickModel ||
+                      (rfq as any)?.MTOManualModel ||
+                      rfq?.MTOValue) && (
                       <div className="mt-4 pl-4">
                         <div
                           className="prose prose-sm max-w-none text-sm font-medium text-gray-800 leading-relaxed rfq-description"
                           dangerouslySetInnerHTML={{
-                            __html: rfq?.MTOValue || rfq?.MTOStickModel || (rfq as any)?.MTOManualModel || "",
+                            __html:
+                              rfq?.MTOValue ||
+                              rfq?.MTOStickModel ||
+                              (rfq as any)?.MTOManualModel ||
+                              "",
                           }}
                         />
                       </div>
@@ -679,10 +814,16 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                   onClick={() => setIsDescOpen(!isDescOpen)}
                 >
                   <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
-                    {isDescOpen ? "Description" : "Click here to View the Description"}
+                    {isDescOpen
+                      ? "Description"
+                      : "Click here to View the Description"}
                   </h4>
                   <button className="p-1.5 rounded-full group-hover:bg-gray-100 transition-colors">
-                    {isDescOpen ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
+                    {isDescOpen ? (
+                      <ChevronUp size={20} className="text-gray-500" />
+                    ) : (
+                      <ChevronDown size={20} className="text-gray-500" />
+                    )}
                   </button>
                 </div>
 
@@ -747,6 +888,116 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 </div>
               </div>
 
+              {/* Followups */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center gap-4">
+                  <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
+                    Followups
+                  </h4>
+                  <Button
+                    onClick={() => setShowFollowupForm((v) => !v)}
+                    className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+                  >
+                    {showFollowupForm ? "Cancel" : "+ Add Followup"}
+                  </Button>
+                </div>
+
+                {showFollowupForm && (
+                  <div className="bg-white border border-green-100/50 rounded-2xl p-5 space-y-4 shadow-xs ml-4 animate-in slide-in-from-top-2 duration-300">
+                    <div>
+                      <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2">
+                        Description *
+                      </label>
+                      <textarea
+                        value={followupDescription}
+                        onChange={(e) => setFollowupDescription(e.target.value)}
+                        placeholder="Enter followup details..."
+                        rows={3}
+                        className="w-full px-4 py-3 border border-black/10 rounded-xl focus:ring-2 focus:ring-green-100 outline-none font-semibold text-sm transition-all resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2">
+                        Files (optional)
+                      </label>
+                      <input
+                        type="file"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          console.log(
+                            "[Followup] Files selected:",
+                            files.map((f) => f.name),
+                          );
+                          setFollowupFiles(files);
+                        }}
+                        className="w-full text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border file:border-gray-200 file:text-xs file:font-bold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 focus:outline-none"
+                      />
+                      {followupFiles.length > 0 && (
+                        <p className="text-xs text-gray-500 mt-1 font-semibold">
+                          {followupFiles.length} file(s) selected
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      onClick={handleAddFollowup}
+                      disabled={isSubmittingFollowup}
+                      className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black uppercase text-xs tracking-[0.2em] shadow-sm transition-all disabled:opacity-60"
+                    >
+                      {isSubmittingFollowup
+                        ? "Submitting..."
+                        : "Submit Followup"}
+                    </Button>
+                  </div>
+                )}
+
+                <div className="pl-4">
+                  {followups.length > 0 ? (
+                    <DataTable
+                      columns={followupColumns}
+                      data={followups}
+                      pageSizeOptions={[5, 10]}
+                      detailComponent={({
+                        row,
+                      }: {
+                        row: any;
+                        close: () => void;
+                      }) => (
+                        <div className="space-y-3 text-sm">
+                          <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                              Description
+                            </p>
+                            <div
+                              className="text-sm text-gray-800 leading-relaxed prose prose-sm max-w-none [&_*]:max-w-full"
+                              dangerouslySetInnerHTML={{
+                                __html: row.description || "—",
+                              }}
+                            />
+                          </div>
+                          {row.files && row.files.length > 0 && (
+                            <div className="pt-2">
+                              <RenderFiles
+                                files={row.files}
+                                table="rFQFollowUp"
+                                parentId={row.id}
+                                formatDate={formatDate}
+                                hideHeader
+                                noAccordion
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-400 italic font-semibold">
+                      No followups yet.
+                    </p>
+                  )}
+                </div>
+              </div>
+
               {userRole !== "client_admin" &&
                 userRole !== "client" &&
                 userRole !== "client_estimator" &&
@@ -779,16 +1030,16 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 {(userRole === "admin" ||
                   userRole === "deputy_manager" ||
                   userRole === "operation_executive") && (
-                    <Button
-                      onClick={() => {
-                        setSelectedParentResponseId(null);
-                        setShowResponseModal(true);
-                      }}
-                      className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-                    >
-                      + Add Response
-                    </Button>
-                  )}
+                  <Button
+                    onClick={() => {
+                      setSelectedParentResponseId(null);
+                      setShowResponseModal(true);
+                    }}
+                    className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+                  >
+                    + Add Response
+                  </Button>
+                )}
               </div>
               {showResponseModal && (
                 <ResponseModal
@@ -799,7 +1050,12 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                   }}
                   onSuccess={fetchRfq}
                   parentResponseId={selectedParentResponseId || undefined}
-                  fabricatorName={rfq?.fabricator?.fabName || rfq?.sender?.fabricator?.fabName || (rfq as any)?.fabricatorName || ""}
+                  fabricatorName={
+                    rfq?.fabricator?.fabName ||
+                    rfq?.sender?.fabricator?.fabName ||
+                    (rfq as any)?.fabricatorName ||
+                    ""
+                  }
                   rfqProjectName={rfq?.projectName || ""}
                 />
               )}
@@ -853,7 +1109,6 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 </div>
               )}
             </div>
-
           </div>
         </div>
         {showCDQuotationModal && (
@@ -870,7 +1125,12 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
             onClose={() => setSelectedResponse(null)}
             onSuccess={fetchRfq}
             rfqId={id}
-            fabricatorName={rfq?.fabricator?.fabName || rfq?.sender?.fabricator?.fabName || (rfq as any)?.fabricatorName || ""}
+            fabricatorName={
+              rfq?.fabricator?.fabName ||
+              rfq?.sender?.fabricator?.fabName ||
+              (rfq as any)?.fabricatorName ||
+              ""
+            }
             rfqProjectName={rfq?.projectName || ""}
           />
         )}
@@ -956,10 +1216,11 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteConfirmText !== "DELETE" || isDeleting}
-                  className={`flex-1 ${deleteConfirmText === "DELETE"
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-red-300 cursor-not-allowed"
-                    } text-white`}
+                  className={`flex-1 ${
+                    deleteConfirmText === "DELETE"
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-red-300 cursor-not-allowed"
+                  } text-white`}
                 >
                   {isDeleting ? "Deleting..." : "Confirm Delete"}
                 </Button>
@@ -1001,7 +1262,9 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-2">
-                    Reason for Change {(newStatus === "CLOSED" || newStatus === "RE_APPROVED") && "*"}
+                    Reason for Change{" "}
+                    {(newStatus === "CLOSED" || newStatus === "RE_APPROVED") &&
+                      "*"}
                   </label>
                   <textarea
                     value={statusReason}
@@ -1052,7 +1315,5 @@ const Info = ({ label, value }: { label: string; value: string | number }) => {
     </div>
   );
 };
-
-
 
 export default GetRFQByID;
