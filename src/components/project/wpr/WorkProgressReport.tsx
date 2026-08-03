@@ -103,6 +103,13 @@ const WorkProgressReport = ({
     return d >= start && d <= end;
   };
 
+  const isUpToWeek = (dateStr: any, end: Date) => {
+    if (!dateStr || dateStr === "—" || dateStr === "Waiting...") return false;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return false;
+    return d <= end;
+  };
+
   // Generate Available Weeks from Project Start Date to End Date / Today
   const projectWeeks = useMemo(() => {
     if (!project || !project.startDate) return [];
@@ -360,7 +367,8 @@ const WorkProgressReport = ({
           : "—",
         wbtResponse: wbtRep ? (extractText(wbtRep) || "Responded") : "—",
         status: statusLabel,
-        rfiresponse: r.rfiresponse
+        rfiresponse: r.rfiresponse,
+        createdAt: r.createdAt || r.date
       };
     });
 
@@ -770,31 +778,59 @@ const WorkProgressReport = ({
 
   const filteredRfis = useMemo(() => {
     if (!activeWeekRange) return rawRfis;
-    return rawRfis.filter(r =>
-      isWithinWeek(r.sentDate, activeWeekRange.start, activeWeekRange.end) ||
-      isWithinWeek(r.responseReceivedDate, activeWeekRange.start, activeWeekRange.end)
-    );
+    return rawRfis.filter(r => {
+      const hasSent = isUpToWeek(r.sentDate, activeWeekRange.end);
+      const hasResp = isUpToWeek(r.responseReceivedDate, activeWeekRange.end);
+      const hasCreated = isUpToWeek(r.createdAt, activeWeekRange.end);
+      const noDates = (!r.sentDate || r.sentDate === "—") && (!r.responseReceivedDate || r.responseReceivedDate === "—") && (!r.createdAt);
+      return hasSent || hasResp || hasCreated || noDates;
+    });
   }, [rawRfis, activeWeekRange]);
 
   const filteredScheduleRows = useMemo(() => {
     if (!activeWeekRange) return rawScheduleRows;
-    return rawScheduleRows.filter(s =>
-      isWithinWeek(s.startDate, activeWeekRange.start, activeWeekRange.end) ||
-      isWithinWeek(s.ifaSubDate, activeWeekRange.start, activeWeekRange.end) ||
-      isWithinWeek(s.bfaRecdDate, activeWeekRange.start, activeWeekRange.end) ||
-      isWithinWeek(s.ifcSubDate, activeWeekRange.start, activeWeekRange.end) ||
-      isWithinWeek(s.corSubDate, activeWeekRange.start, activeWeekRange.end)
-    );
+    return rawScheduleRows
+      .map(s => {
+        const filteredEntries = s.unifiedEntries
+          ? s.unifiedEntries.filter((e: any) => {
+              const entryDate = e.date || e.ifaDate || e.bfaDate || e.ifcDate || e.corDate;
+              return !entryDate || entryDate === "—" || isUpToWeek(entryDate, activeWeekRange.end);
+            })
+          : [];
+
+        const hasValidEntryDate = filteredEntries.length > 0;
+
+        const hasRowDate =
+          isUpToWeek(s.startDate, activeWeekRange.end) ||
+          isUpToWeek(s.ifaSubDate, activeWeekRange.end) ||
+          isUpToWeek(s.bfaRecdDate, activeWeekRange.end) ||
+          isUpToWeek(s.ifcSubDate, activeWeekRange.end) ||
+          isUpToWeek(s.corSubDate, activeWeekRange.end);
+
+        const hasUnspecifiedDates =
+          (!s.startDate || s.startDate === "—") &&
+          (!s.ifaSubDate || s.ifaSubDate === "—") &&
+          (!s.ifcSubDate || s.ifcSubDate === "—");
+
+        if (hasRowDate || hasValidEntryDate || hasUnspecifiedDates) {
+          return {
+            ...s,
+            unifiedEntries: filteredEntries
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
   }, [rawScheduleRows, activeWeekRange]);
 
   const filteredCoRows = useMemo(() => {
     if (!activeWeekRange) return rawCoRows;
-    return rawCoRows.filter(c => isWithinWeek(c.createdAt, activeWeekRange.start, activeWeekRange.end));
+    return rawCoRows.filter(c => isUpToWeek(c.createdAt, activeWeekRange.end));
   }, [rawCoRows, activeWeekRange]);
 
   const filteredCoordDrawings = useMemo(() => {
     if (!activeWeekRange) return rawCoordDrawings;
-    return rawCoordDrawings.filter(cd => isWithinWeek(cd.createdAt, activeWeekRange.start, activeWeekRange.end));
+    return rawCoordDrawings.filter(cd => isUpToWeek(cd.createdAt, activeWeekRange.end));
   }, [rawCoordDrawings, activeWeekRange]);
 
   // Handle cell double-click

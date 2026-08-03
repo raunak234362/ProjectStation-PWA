@@ -39,6 +39,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
         const res = await Service.GetRFQbyId(targetRfqId);
         const data = res?.data || res;
         if (data) {
+          delete data.responses;
           setRfqDetails(data);
         }
       } catch (err) {

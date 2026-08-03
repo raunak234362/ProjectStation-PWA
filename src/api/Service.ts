@@ -732,8 +732,20 @@ class Service {
     return response.data;
   }
   //RESPONSES
-  //response post request
+  // GET RFQ responses by ID
+  static async getRFQResponses(rfqId: string) {
+    try {
+      const response = await api.get(`rfq/${rfqId}/responses`);
+      console.log("RFQ responses fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfq responses", error);
+      throw error;
+    }
+  }
 
+ 
+  //response post request
   static async addResponse(formData: FormData, responseId: string, fabricatorName: string, rfqProjectName: string) {
     const response = await api.post(`rfq/${responseId}/responses?fabricatorName=${encodeURIComponent(fabricatorName)}&rfqProjectName=${encodeURIComponent(rfqProjectName)}`, formData, {
       headers: {

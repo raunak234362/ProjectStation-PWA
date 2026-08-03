@@ -16,7 +16,7 @@ const getRFQStatus = (row: any) => {
   if (wbtStatus === "REVISE" || status === "REVISE") return "REVISE";
   if (wbtStatus === "REJECTED" || status === "REJECTED") return "REJECTED";
   if (wbtStatus === "CLOSED" || status === "CLOSED") return "CLOSED";
-  if (responses.length > 0) return "WBT_SUBMITTED";
+  if (responses.length > 0 || row.latestResponseDate) return "WBT_SUBMITTED";
   if (status === "IN_REVIEW") return "IN_REVIEW";
 
   return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
@@ -283,14 +283,21 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
       id: "responseDate",
       header: "WBT Submitted Date",
       cell: ({ row }: any) => {
-        const responses = row.original.responses || [];
-        if (responses.length === 0) return <span className="text-gray-400">—</span>;
-        const latestResponse = [...responses].sort((a: any, b: any) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )[0];
+        const r = row.original as any;
+        const responses = r.responses || [];
+        let dateVal = r.latestResponseDate;
+        if (!dateVal && responses.length > 0) {
+          const latestResponse = [...responses].sort((a: any, b: any) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )[0];
+          dateVal = latestResponse?.createdAt;
+        }
+
+        if (!dateVal) return <span className="text-gray-400">—</span>;
+
         return (
           <span className="text-sm font-semibold text-primary">
-            {formatDate(latestResponse.createdAt)}
+            {formatDate(dateVal)}
           </span>
         );
       },

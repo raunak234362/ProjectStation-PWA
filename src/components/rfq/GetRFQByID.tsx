@@ -302,6 +302,8 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
   const [isSubmittingFollowup, setIsSubmittingFollowup] = useState(false);
   const [followups, setFollowups] = useState<any[]>([]);
 
+  const [responses, setResponses] = useState<any[]>([]);
+
   // Followups removed
   const [selectedParentResponseId, setSelectedParentResponseId] = useState<
     string | null
@@ -310,7 +312,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
   const dispatch = useDispatch();
 
   const topLevelResponses = useMemo(() => {
-    return (rfq?.responses || [])
+    return (responses || [])
       .filter((r: any) => {
         if (r.parentResponseId) return false;
         if (filterType) {
@@ -323,24 +325,61 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
-  }, [rfq?.responses, filterType]);
+  }, [responses, filterType]);
 
-  console.log(rfq);
+  const extractResponsesArray = (res: any): any[] => {
+    if (!res) return [];
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res.data)) return res.data;
+    if (Array.isArray(res.responses)) return res.responses;
+    if (Array.isArray(res.data?.responses)) return res.data.responses;
+    if (Array.isArray(res.data?.data)) return res.data.data;
+    if (typeof res === "object" && res !== null) {
+      const arrayVal = Object.values(res).find((v) => Array.isArray(v));
+      if (Array.isArray(arrayVal)) return arrayVal;
+    }
+    return [];
+  };
+
+  const fetchResponses = async () => {
+    try {
+      const cleanId = typeof id === "object" && id !== null ? (id as any).id || (id as any)._id : id;
+      if (!cleanId) return;
+      console.log("[GetRFQByID] Fetching responses independently for cleanId:", cleanId);
+      
+      const respRes = await Service.getRFQResponses(cleanId);
+      const fetchedResponses = extractResponsesArray(respRes);
+      console.log("[RFQ Responses] Fetched successfully:", fetchedResponses);
+      setResponses(fetchedResponses);
+    } catch (err) {
+      console.error("Error fetching RFQ responses independently:", err);
+      setResponses([]);
+    }
+  };
+
   const fetchRfq = async () => {
     try {
-      if (!rfq) setLoading(true);
-      const rfqRes = await Service.GetRFQbyId(id);
+      const cleanId = typeof id === "object" && id !== null ? (id as any).id || (id as any)._id : id;
+      if (!cleanId) return;
 
+      if (!rfq) setLoading(true);
+
+      const rfqRes = await Service.GetRFQbyId(cleanId);
       const rfqData = rfqRes?.data || rfqRes;
+      
       if (rfqData) {
+        // Explicitly remove responses from getById object to enforce decoupling
+        delete rfqData.responses;
         setRfq(rfqData);
         dispatch(updateRFQ(rfqData));
       }
 
       // followUps are included in the RFQ response directly
       const rfqFollowUps = rfqData?.followUps ?? [];
-      console.log("[Followups] Setting followups state:", rfqFollowUps);
       setFollowups(Array.isArray(rfqFollowUps) ? rfqFollowUps : []);
+      
+      // Also refresh responses alongside RFQ
+      fetchResponses();
     } catch (err) {
       console.error("Error fetching RFQ:", err);
       if (!rfq) setError("Failed to load RFQ");
@@ -357,17 +396,20 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
   };
 
   useEffect(() => {
-    if (id) fetchRfq();
+    if (id) {
+      fetchRfq();
+      fetchResponses();
+    }
   }, [id]);
 
   useEffect(() => {
-    if (selectedResponse && rfq?.responses) {
-      const updated = rfq.responses.find(
+    if (selectedResponse && responses.length > 0) {
+      const updated = responses.find(
         (r: any) => r.id === selectedResponse.id,
       );
       if (updated) setSelectedResponse(updated);
     }
-  }, [rfq?.responses]);
+  }, [responses]);
 
   const handleDelete = async () => {
     console.log(

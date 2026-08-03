@@ -293,6 +293,7 @@ export interface RFQItem {
   responses?: RfqResponse[];
   CDQuotas?: any[] | undefined;
   RFQDueDate?: string;
+  latestResponseDate?: string;
   CDDescription?: string;
   CDAttachments?: any[];
 }
