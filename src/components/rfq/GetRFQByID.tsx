@@ -243,6 +243,17 @@ const RFQResponseItem = ({
                             />
                           </div>
                         )}
+                        <div className="mt-4 flex justify-end">
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onReply?.(child);
+                            }}
+                            className="px-4 py-1.5 text-[10px] sm:text-xs font-bold bg-green-50 text-green-700 border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all uppercase tracking-tight shadow-sm cursor-pointer"
+                          >
+                            Reply to this
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}

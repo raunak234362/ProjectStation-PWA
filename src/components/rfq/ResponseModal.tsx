@@ -64,9 +64,16 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
   useEffect(() => {
     const fetchRfqDetails = async () => {
       try {
-        const res = await Service.GetRFQbyId(rfqId);
+        const [res, responsesRes] = await Promise.all([
+          Service.GetRFQbyId(rfqId),
+          Service.getRFQResponses(rfqId).catch(() => null)
+        ]);
+        
         const data = res?.data || res;
         if (data) {
+          // Attach responses from the separate endpoint if available
+          const responsesData = responsesRes?.data || responsesRes || [];
+          data.responses = Array.isArray(responsesData) ? responsesData : responsesData?.data || [];
           setRfqDetails(data);
         }
       } catch (error) {
@@ -695,13 +702,31 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                     defaultValue="OPEN"
                   >
                     <option value="">Please Select The status</option>
-                    <option value="CLOSED">CLOSED</option>
-                    {(rfqDetails?.MTOManual === true ||
-                      rfqDetails?.responses?.some((r: any) => r.type === "MTO")) ? (
-                      <option value="COMPLETED">COMPLETED</option>
-                    ) : (
-                      <option value="AWARDED">AWARDED</option>
-                    )}
+                    {(() => {
+                      if (parentResponseId) {
+                        const parent = rfqDetails?.responses?.find((r: any) => r.id === parentResponseId);
+                        if (parent?.type === "MTO") return <option value="COMPLETED">COMPLETED</option>;
+                        if (parent?.type === "DETAILING") return <option value="AWARDED">AWARDED</option>;
+                      }
+                      
+                      const hasMTO = rfqDetails?.MTOManual === true || rfqDetails?.responses?.some((r: any) => r.type === "MTO");
+                      const hasDetailing = rfqDetails?.responses?.some((r: any) => r.type === "DETAILING");
+                      
+                      if (hasMTO && hasDetailing) {
+                        return (
+                          <>
+                            <option value="COMPLETED">COMPLETED</option>
+                            <option value="AWARDED">AWARDED</option>
+                          </>
+                        );
+                      }
+                      
+                      return hasMTO ? (
+                        <option value="COMPLETED">COMPLETED</option>
+                      ) : (
+                        <option value="AWARDED">AWARDED</option>
+                      );
+                    })()}
                     <option value="REVISE">REVISE</option>              
                     <option value="REJECTED">REJECTED</option>
                     <option value="CLARIFICATION_REQUIRED">CLARIFICATION REQUIRED</option>

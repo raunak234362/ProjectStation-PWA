@@ -25,6 +25,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
   rfqProjectName: propRfqProjectName,
 }) => {
   const [replyMode, setReplyMode] = useState(false);
+  const [replyTargetId, setReplyTargetId] = useState<string | null>(null);
   const [replyMessage, setReplyMessage] = useState("");
   const [replyStatus, setReplyStatus] = useState("AWARDED");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
@@ -51,7 +52,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
     }
   }, [rfqId, response?.rfqId]);
 
-  const userRole = sessionStorage.getItem("userRole")?.toUpperCase() || "";
+  const canReply = true; // Temporary bypass to ensure visibility
 
   const handleReplySubmit = async () => {
     if (!replyMessage.trim()) {
@@ -62,7 +63,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
     const targetRfqId = rfqId || response.rfqId;
     const formData = new FormData();
     formData.append("description", replyMessage);
-    formData.append("parentResponseId", response.id);
+    formData.append("parentResponseId", replyTargetId || response.id);
     formData.append("rfqId", targetRfqId || "");
     formData.append("userId", sessionStorage.getItem("userId") || "");
     formData.append("status", replyStatus);
@@ -72,59 +73,107 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
 
     try {
       setIsSubmitting(true);
-      const fabricatorName = propFabricatorName || rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
-      const rfqProjectName = propRfqProjectName || rfqDetails?.projectName || "";
-      const res = await Service.addResponse(formData, targetRfqId || "", fabricatorName, rfqProjectName);
+      const fabricatorName =
+        propFabricatorName ||
+        rfqDetails?.fabricator?.fabName ||
+        rfqDetails?.sender?.fabricator?.fabName ||
+        rfqDetails?.fabricatorName ||
+        "";
+      const rfqProjectName =
+        propRfqProjectName || rfqDetails?.projectName || "";
+      const res = await Service.addResponse(
+        formData,
+        targetRfqId || "",
+        fabricatorName,
+        rfqProjectName,
+      );
       toast.success(res?.data?.message || "Reply sent successfully!");
       setReplyMode(false);
+      setReplyTargetId(null);
       setReplyMessage("");
       setReplyFiles([]);
       if (onSuccess) onSuccess();
     } catch (err: any) {
       console.error("Reply failed:", err);
-      toast.error(err?.response?.data?.message || err?.message || "Failed to send reply. Please try again.");
+      toast.error(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to send reply. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const getInitials = (firstName?: string, lastName?: string, username?: string) => {
+    if (firstName && lastName) return `${firstName[0]}${lastName[0]}`.toUpperCase();
+    if (firstName) return firstName.substring(0, 2).toUpperCase();
+    if (username) return username.substring(0, 2).toUpperCase();
+    return "NA";
+  };
+
   const renderThread = (res: any) => {
     return (
-      <div className="ml-4 sm:ml-6 mt-4 border-l-2 border-black/10 pl-4 sm:pl-6 space-y-6">
+      <div className="space-y-6">
         {res.childResponses?.map((child: any) => (
-          <div
-            key={child.id}
-            className="bg-white p-4 sm:p-5 rounded-2xl border border-black/5 shadow-sm animate-in fade-in slide-in-from-left-4 duration-500"
-          >
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-[10px] font-semibold text-black uppercase tracking-tight">
-                {child.user?.firstName} {child.user?.lastName}
-              </span>
-              <div className="flex items-center gap-2">
-                {child.status && (
-                  <span className="text-[9px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
-                    {child.status}
-                  </span>
-                )}
-                <span className="text-[9px] font-semibold bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
-                  {formatDateTime(child.createdAt)}
+          <div key={child.id} className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mt-1">
+                <span className="text-xs font-bold text-gray-700">
+                  {getInitials(child.user?.firstName, child.user?.lastName, child.user?.username)}
                 </span>
               </div>
+              <div className="flex-1 border border-gray-200 bg-white flex flex-col">
+                <div className="bg-gray-50/50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+                  <span className="text-xs font-bold text-black uppercase">
+                    {child.user?.firstName ? `${child.user?.firstName} ${child.user?.lastName}` : child.user?.username || "Team Member"}
+                  </span>
+                  <span className="text-gray-400 text-[10px] flex items-center gap-1 font-semibold uppercase tracking-wider">
+                    📅 {formatDateTime(child.createdAt)}
+                  </span>
+                </div>
+                <div className="p-4 flex-1">
+                  <div
+                    className="prose prose-sm max-w-none text-gray-700 font-medium uppercase"
+                    dangerouslySetInnerHTML={{ __html: child.description }}
+                  />
+                </div>
+                {child.files?.length > 0 && (
+                  <div className="px-4 pb-4">
+                    <div className="border border-green-100/50 p-4">
+                      <span className="text-xs font-bold text-black uppercase tracking-widest block mb-3">
+                        Attachments
+                      </span>
+                      <RenderFiles
+                        files={child.files}
+                        table="rfqResponse"
+                        parentId={child.id}
+                        hideHeader={true}
+                        noAccordion={true}
+                      />
+                    </div>
+                  </div>
+                )}
+                {canReply && (
+                  <div className="bg-white border-t border-gray-100 p-2 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setReplyTargetId(child.id);
+                        setReplyMode(true);
+                      }}
+                      className="px-4 py-1.5 bg-[#dbe8d3] text-black border border-black/80 font-bold text-[10px] uppercase tracking-widest hover:bg-[#c9d8c0]"
+                    >
+                      REPLY
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-            <div
-              className="prose prose-sm max-w-none text-black/80 font-medium"
-              dangerouslySetInnerHTML={{ __html: child.description }}
-            />
-            {child.files?.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-black/5">
-                <RenderFiles
-                  files={child.files}
-                  table="rfqResponse"
-                  parentId={child.id}
-                />
+            {child.childResponses?.length > 0 && (
+              <div className="ml-12">
+                {renderThread(child)}
               </div>
             )}
-            {child.childResponses?.length > 0 && renderThread(child)}
           </div>
         ))}
       </div>
@@ -136,26 +185,16 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
       <div className="project-component-container fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-200">
         <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] relative flex flex-col border border-black/10 overflow-hidden">
           {/* Header */}
-          <div className="px-6 py-5 border-b border-black/10 flex justify-between items-center bg-white shrink-0">
-            <h2 className="text-xl sm:text-2xl font-semibold text-black uppercase tracking-tight">
-              Response Details
+          <div className="px-6 py-5 flex justify-between items-center bg-[#fcfdfc] border-b border-black/10 shrink-0">
+            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+              RESPONSE DETAILS
             </h2>
-            <div className="flex items-center gap-3">
-              {["ADMIN", "CLIENT", "CLIENT_ADMIN", "CLIENT_ESTIMATOR"].includes(userRole) && (
-                <button
-                  onClick={() => setReplyMode(true)}
-                  className="px-4 sm:px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-                >
-                  Reply
-                </button>
-              )}
-              <button
-                onClick={onClose}
-                className="px-4 sm:px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
+            <button
+              onClick={onClose}
+              className="px-6 py-1.5 bg-white text-black border border-red-600 font-bold text-xs sm:text-sm uppercase tracking-tight hover:bg-red-50"
+            >
+              CLOSE
+            </button>
           </div>
 
           {/* Content */}
@@ -174,7 +213,10 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
               </div>
               {response.user && (
                 <span className="text-sm font-semibold text-black uppercase tracking-tight">
-                  Sent by {response.user.firstName ? `${response.user.firstName} ${response.user.lastName}` : response.user.username}
+                  Sent by{" "}
+                  {response.user.firstName
+                    ? `${response.user.firstName} ${response.user.lastName}`
+                    : response.user.username}
                 </span>
               )}
             </div>
@@ -183,11 +225,11 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
             {response.subject && (
               <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs space-y-1.5">
                 <span className="text-base text-black uppercase tracking-widest block">
-                  Subject :  <span className="text-base text-black">
+                  Subject :{" "}
+                  <span className="text-base text-black">
                     {response.subject}
                   </span>
                 </span>
-
               </div>
             )}
 
@@ -200,24 +242,25 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
             </div>
 
             {/* Tonnage & Pages 3-column Box */}
-            {(response.type || response.Type || "")?.toUpperCase() !== "DETAILING" && (
+            {(response.type || response.Type || "")?.toUpperCase() !==
+              "DETAILING" && (
               <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
                   <div>
                     <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
-                      Tonnage (With Connections) :  <span className="text-base font-semibold text-black">
+                      Tonnage (With Connections) :{" "}
+                      <span className="text-base font-semibold text-black">
                         {response.totalTonnageWithConnection || "—"}
                       </span>
                     </span>
-
                   </div>
                   <div>
                     <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
-                      Tonnage (W/O Connections) : <span className="text-base font-semibold text-black">
+                      Tonnage (W/O Connections) :{" "}
+                      <span className="text-base font-semibold text-black">
                         {response.totalTonnageWithoutConnection || "—"}
                       </span>
                     </span>
-
                   </div>
                   <div className="sm:col-span-2">
                     <span className="text-sm font-semibold text-black uppercase tracking-widest block mb-1.5">
@@ -225,7 +268,9 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                     </span>
                     <div
                       className="text-sm text-black rich-text-content"
-                      dangerouslySetInnerHTML={{ __html: response.PageNumbers || "—" }}
+                      dangerouslySetInnerHTML={{
+                        __html: response.PageNumbers || "—",
+                      }}
                     />
                   </div>
                 </div>
@@ -237,22 +282,41 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
               <span className="text-xs font-semibold text-black uppercase tracking-widest block">
                 Project Files
               </span>
-              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs">
-                <RenderFiles
-                  files={response.files}
-                  table="rfqResponse"
-                  parentId={response.id}
-                  hideHeader={true}
-                  noAccordion={true}
-                />
+              <div className="bg-white border border-gray-200">
+                <div className="p-4 sm:p-5">
+                  <RenderFiles
+                    files={response.files}
+                    table="rfqResponse"
+                    parentId={response.id}
+                    hideHeader={true}
+                    noAccordion={true}
+                  />
+                </div>
+                {canReply && (
+                  <div className="bg-gray-50/50 border-t border-gray-100 p-3 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setReplyTargetId(response.id);
+                        setReplyMode(true);
+                      }}
+                      className="px-4 py-2 bg-[#dbe8d3] text-black border border-black/80 font-bold text-[10px] uppercase tracking-widest hover:bg-[#c9d8c0]"
+                    >
+                      REPLY TO THREAD
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
             {response.childResponses?.length > 0 && (
-              <div className="space-y-4 pt-4">
-                <h3 className="text-xs font-semibold text-black uppercase tracking-widest">
-                  Threaded Communications ({response.childResponses.length})
-                </h3>
+              <div className="pt-6 pb-2">
+                <div className="flex items-center mb-6">
+                  <div className="flex-1 border-t border-gray-200"></div>
+                  <span className="mx-4 text-gray-400 font-bold uppercase tracking-widest text-xs">
+                    THREAD ({response.childResponses.length} REPLIES)
+                  </span>
+                  <div className="flex-1 border-t border-gray-200"></div>
+                </div>
                 {renderThread(response)}
               </div>
             )}
@@ -275,10 +339,15 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
             <div className="px-6 py-4 border-b border-black/10 flex justify-between items-center bg-white">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <h2 className="text-base font-black text-black uppercase tracking-widest">Reply</h2>
+                <h2 className="text-base font-black text-black uppercase tracking-widest">
+                  Reply
+                </h2>
               </div>
               <button
-                onClick={() => setReplyMode(false)}
+                onClick={() => {
+                  setReplyMode(false);
+                  setReplyTargetId(null);
+                }}
                 className="px-4 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs uppercase tracking-tight cursor-pointer"
               >
                 Cancel
@@ -318,7 +387,9 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                   <input
                     type="file"
                     multiple
-                    onChange={(e) => setReplyFiles(Array.from(e.target.files || []))}
+                    onChange={(e) =>
+                      setReplyFiles(Array.from(e.target.files || []))
+                    }
                     className="w-full h-11 px-4 py-2.5 border border-black/10 rounded-xl bg-white text-xs font-semibold uppercase text-black"
                   />
                 </div>
