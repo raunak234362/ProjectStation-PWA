@@ -59,6 +59,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     { label: "Misc Steel Design", price: "", weeks: "", selected: false },
   ]);
 
+  const [parentResponse, setParentResponse] = useState<any>(null);
   const [rfqDetails, setRfqDetails] = useState<any>(null);
 
   useEffect(() => {
@@ -84,6 +85,23 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
       fetchRfqDetails();
     }
   }, [rfqId]);
+
+  useEffect(() => {
+    const fetchParentResponse = async () => {
+      if (!parentResponseId) return;
+      try {
+        const res = await Service.getRFQResponseById(parentResponseId);
+        let data = res?.data || res;
+        if (Array.isArray(data)) {
+          data = data[0];
+        }
+        if (data) setParentResponse(data);
+      } catch (err) {
+        console.error("Error fetching parent response:", err);
+      }
+    };
+    fetchParentResponse();
+  }, [parentResponseId]);
 
   useEffect(() => {
     const fetchEstimations = async () => {
@@ -704,13 +722,13 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
                     <option value="">Please Select The status</option>
                     {(() => {
                       if (parentResponseId) {
-                        const parent = rfqDetails?.responses?.find((r: any) => r.id === parentResponseId);
-                        if (parent?.type === "MTO") return <option value="COMPLETED">COMPLETED</option>;
-                        if (parent?.type === "DETAILING") return <option value="AWARDED">AWARDED</option>;
+                        const pType = parentResponse?.type || parentResponse?.Type;
+                        if (pType === "MTO") return <option value="COMPLETED">COMPLETED</option>;
+                        if (pType === "DETAILING") return <option value="AWARDED">AWARDED</option>;
                       }
                       
-                      const hasMTO = rfqDetails?.MTOManual === true || rfqDetails?.responses?.some((r: any) => r.type === "MTO");
-                      const hasDetailing = rfqDetails?.responses?.some((r: any) => r.type === "DETAILING");
+                      const hasMTO = rfqDetails?.MTOManual === true || rfqDetails?.responses?.some((r: any) => r.type === "MTO" || r.Type === "MTO");
+                      const hasDetailing = rfqDetails?.responses?.some((r: any) => r.type === "DETAILING" || r.Type === "DETAILING");
                       
                       if (hasMTO && hasDetailing) {
                         return (

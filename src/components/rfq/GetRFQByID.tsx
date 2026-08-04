@@ -31,17 +31,137 @@ import { updateRFQ, deleteRFQ } from "../../store/rfqSlice";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { toast } from "react-toastify";
 
+const ThreadedChildResponse = ({
+  child,
+  onReply,
+  onSelect,
+  allResponses,
+}: {
+  child: any;
+  onReply?: (parent: any) => void;
+  onSelect?: (resp: any) => void;
+  allResponses: any[];
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const computedChildren = allResponses.filter(
+    (r: any) => r.parentResponseId === child.id
+  );
+  const childrenToRender = computedChildren.length > 0 ? computedChildren : (child.childResponses || []);
+  const hasChildren = childrenToRender.length > 0;
+
+  return (
+    <div className="relative">
+      {/* Visual Connector */}
+      <div className="absolute -left-[20px] sm:-left-[36px] top-6 w-5 sm:w-9 h-1 bg-green-100" />
+
+      <div className="p-6 rounded-2xl bg-gray-50/50 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
+              <User className="w-4 h-4 text-green-600" />
+            </div>
+            <span className="font-black text-sm text-black uppercase tracking-tight">
+              {child.user?.firstName
+                ? `${child.user.firstName} ${child.user.lastName}`
+                : child.user?.username || "Team Member"}
+            </span>
+          </div>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            {formatDateTime(child.createdAt)}
+          </span>
+        </div>
+        <div
+          className="text-sm text-gray-800 font-medium leading-relaxed prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{
+            __html: child.description,
+          }}
+        />
+        {child.files && child.files.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-gray-100/50">
+            <RenderFiles
+              files={child.files}
+              table="rfqResponse"
+              parentId={child.id}
+              hideHeader
+              noAccordion
+            />
+          </div>
+        )}
+        <div className="mt-4 flex justify-end gap-2">
+          {hasChildren && (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              className="px-4 py-1.5 text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700 border-2 border-blue-700/80 rounded-lg hover:bg-blue-100 transition-all uppercase tracking-tight shadow-sm cursor-pointer"
+            >
+              {isExpanded ? "Hide Thread" : `View Thread (${childrenToRender.length})`}
+            </Button>
+          )}
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect?.(child);
+            }}
+            className="px-4 py-1.5 text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700 border-2 border-blue-700/80 rounded-lg hover:bg-blue-100 transition-all uppercase tracking-tight shadow-sm cursor-pointer"
+          >
+            Open
+          </Button>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onReply?.(child);
+            }}
+            className="px-4 py-1.5 text-[10px] sm:text-xs font-bold bg-green-50 text-green-700 border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all uppercase tracking-tight shadow-sm cursor-pointer"
+          >
+            Reply to this
+          </Button>
+        </div>
+      </div>
+
+      {isExpanded && hasChildren && (
+        <div className="mt-6 space-y-6 ml-2 sm:ml-4 border-l-4 border-green-100 pl-4 sm:pl-8 animate-in slide-in-from-top-2 duration-200">
+          {[...childrenToRender]
+            .sort(
+              (a: any, b: any) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime(),
+            )
+            .map((grandChild: any) => (
+              <ThreadedChildResponse
+                key={grandChild.id}
+                child={grandChild}
+                onReply={onReply}
+                onSelect={onSelect}
+                allResponses={allResponses}
+              />
+            ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const RFQResponseItem = ({
   response,
   onReply,
+  onSelect,
+  allResponses,
 }: {
   response: any;
   onReply?: (parent: any) => void;
   onSelect?: (resp: any) => void;
+  allResponses: any[];
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const hasChildren =
-    response.childResponses && response.childResponses.length > 0;
+  const [isThreadOpen, setIsThreadOpen] = useState(false);
+  
+  const computedChildren = allResponses.filter(
+    (r: any) => r.parentResponseId === response.id
+  );
+  const childrenToRender = computedChildren.length > 0 ? computedChildren : (response.childResponses || []);
+  const hasChildren = childrenToRender.length > 0;
 
   return (
     <div className="mb-6 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
@@ -93,6 +213,21 @@ const RFQResponseItem = ({
               {response.wbtStatus || response.status || "OPEN"}
             </span>
           </div>
+
+          {hasChildren && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isOpen) setIsOpen(true);
+                setIsThreadOpen(!isThreadOpen);
+              }}
+              className="h-9 px-4 rounded-xl border border-black/10 bg-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 hover:text-blue-700 transition-all shadow-2xs"
+            >
+              {isThreadOpen ? "Hide Thread" : `View Thread (${childrenToRender.length})`}
+            </Button>
+          )}
 
           <Button
             variant="outline"
@@ -191,71 +326,29 @@ const RFQResponseItem = ({
           )}
 
           {/* Child Responses */}
-          {hasChildren && (
-            <div className="mt-8 space-y-4">
+          {hasChildren && isThreadOpen && (
+            <div className="mt-8 space-y-4 animate-in slide-in-from-top-2 duration-200">
               <div className="flex items-center gap-2 mb-4">
                 <MessageSquare className="w-5 h-5 text-green-600" />
                 <span className="text-xs font-black text-green-700 uppercase tracking-widest">
-                  Replies ({response.childResponses.length})
+                  Replies ({childrenToRender.length})
                 </span>
               </div>
               <div className="space-y-6 ml-2 sm:ml-4 border-l-4 border-green-100 pl-4 sm:pl-8">
-                {[...response.childResponses]
+                {[...childrenToRender]
                   .sort(
                     (a: any, b: any) =>
                       new Date(b.createdAt).getTime() -
                       new Date(a.createdAt).getTime(),
                   )
                   .map((child: any) => (
-                    <div key={child.id} className="relative">
-                      {/* Visual Connector */}
-                      <div className="absolute -left-[20px] sm:-left-[36px] top-6 w-5 sm:w-9 h-1 bg-green-100" />
-
-                      <div className="p-6 rounded-2xl bg-gray-50/50 border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
-                              <User className="w-4 h-4 text-green-600" />
-                            </div>
-                            <span className="font-black text-sm text-black uppercase tracking-tight">
-                              {child.user?.firstName
-                                ? `${child.user.firstName} ${child.user.lastName}`
-                                : child.user?.username || "Team Member"}
-                            </span>
-                          </div>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                            {formatDateTime(child.createdAt)}
-                          </span>
-                        </div>
-                        <div
-                          className="text-sm text-gray-800 font-medium leading-relaxed"
-                          dangerouslySetInnerHTML={{
-                            __html: child.description,
-                          }}
-                        />
-                        {child.files && child.files.length > 0 && (
-                          <div className="mt-4 pt-4 border-t border-gray-100/50">
-                            <RenderFiles
-                              files={child.files}
-                              table="rfqResponse"
-                              parentId={child.id}
-                              hideHeader
-                            />
-                          </div>
-                        )}
-                        <div className="mt-4 flex justify-end">
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onReply?.(child);
-                            }}
-                            className="px-4 py-1.5 text-[10px] sm:text-xs font-bold bg-green-50 text-green-700 border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all uppercase tracking-tight shadow-sm cursor-pointer"
-                          >
-                            Reply to this
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    <ThreadedChildResponse
+                      key={child.id}
+                      child={child}
+                      onReply={onReply}
+                      onSelect={onSelect}
+                      allResponses={allResponses}
+                    />
                   ))}
               </div>
             </div>
@@ -1120,6 +1213,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                       <RFQResponseItem
                         key={resp.id}
                         response={resp}
+                        allResponses={responses}
                         onSelect={(r) => setSelectedResponse(r)}
                         onReply={(parent) => {
                           setSelectedParentResponseId(parent.id);

@@ -744,6 +744,18 @@ class Service {
     }
   }
 
+  // GET single RFQ response by ID
+  static async getRFQResponseById(id: string) {
+    try {
+      const response = await api.get(`rfq/responses/${id}`);
+      console.log("RFQ response fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find rfq response", error);
+      throw error;
+    }
+  }
+
  
   //response post request
   static async addResponse(formData: FormData, responseId: string, fabricatorName: string, rfqProjectName: string) {

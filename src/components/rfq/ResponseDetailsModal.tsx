@@ -17,7 +17,7 @@ interface ResponseDetailsModalProps {
 }
 
 const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
-  response,
+  response: initialResponse,
   onClose,
   onSuccess,
   rfqId,
@@ -31,11 +31,43 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rfqDetails, setRfqDetails] = useState<any>(null);
+  const [localResponse, setLocalResponse] = useState<any>(initialResponse);
+
+  const [expandedThreads, setExpandedThreads] = useState<Record<string, boolean>>({});
+  const [history, setHistory] = useState<string[]>([initialResponse.id]);
+  const currentResponseId = history[history.length - 1];
+
+  const fetchResponseDetails = async (idToFetch: string) => {
+    try {
+      const res = await Service.getRFQResponseById(idToFetch);
+      let data = res?.data || res;
+      if (Array.isArray(data)) {
+        data = data[0];
+      }
+      if (data) {
+        setLocalResponse(data);
+      }
+    } catch (err) {
+      console.error("Error fetching fresh response details:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (currentResponseId) {
+      fetchResponseDetails(currentResponseId);
+    }
+  }, [currentResponseId]);
+
+  const handleBack = () => {
+    if (history.length > 1) {
+      setHistory((prev) => prev.slice(0, -1));
+    }
+  };
 
   useEffect(() => {
     const fetchRfq = async () => {
       try {
-        const targetRfqId = rfqId || response.rfqId;
+        const targetRfqId = rfqId || initialResponse.rfqId;
         if (!targetRfqId) return;
         const res = await Service.GetRFQbyId(targetRfqId);
         const data = res?.data || res;
@@ -47,10 +79,10 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
         console.error("Error fetching RFQ in response modal reply:", err);
       }
     };
-    if (rfqId || response?.rfqId) {
+    if (rfqId || localResponse?.rfqId) {
       fetchRfq();
     }
-  }, [rfqId, response?.rfqId]);
+  }, [rfqId, localResponse?.rfqId]);
 
   const canReply = true; // Temporary bypass to ensure visibility
 
@@ -60,10 +92,10 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
       return;
     }
 
-    const targetRfqId = rfqId || response.rfqId;
+    const targetRfqId = rfqId || localResponse.rfqId;
     const formData = new FormData();
     formData.append("description", replyMessage);
-    formData.append("parentResponseId", replyTargetId || response.id);
+    formData.append("parentResponseId", replyTargetId || localResponse.id);
     formData.append("rfqId", targetRfqId || "");
     formData.append("userId", sessionStorage.getItem("userId") || "");
     formData.append("status", replyStatus);
@@ -92,6 +124,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
       setReplyTargetId(null);
       setReplyMessage("");
       setReplyFiles([]);
+      await fetchResponseDetails(currentResponseId); // Refresh the threaded view instantly
       if (onSuccess) onSuccess();
     } catch (err: any) {
       console.error("Reply failed:", err);
@@ -155,7 +188,15 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                   </div>
                 )}
                 {canReply && (
-                  <div className="bg-white border-t border-gray-100 p-2 flex justify-end">
+                  <div className="bg-white border-t border-gray-100 p-2 flex justify-end gap-2">
+                    {child.childResponses?.length > 0 && (
+                      <button
+                        onClick={() => setExpandedThreads(prev => ({ ...prev, [child.id]: !prev[child.id] }))}
+                        className="px-4 py-1.5 bg-[#e2f1f8] text-black border border-black/80 font-bold text-[10px] uppercase tracking-widest hover:bg-[#c9e4f5]"
+                      >
+                        {expandedThreads[child.id] ? "HIDE THREAD" : `VIEW THREAD (${child.childResponses.length})`}
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         setReplyTargetId(child.id);
@@ -169,8 +210,8 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                 )}
               </div>
             </div>
-            {child.childResponses?.length > 0 && (
-              <div className="ml-12">
+            {child.childResponses?.length > 0 && expandedThreads[child.id] && (
+              <div className="ml-12 border-l-2 border-green-100/50 pl-4 animate-in slide-in-from-top-2 duration-200">
                 {renderThread(child)}
               </div>
             )}
@@ -186,9 +227,19 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
         <div className="bg-white shadow-2xl rounded-2xl md:rounded-3xl w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] relative flex flex-col border border-black/10 overflow-hidden">
           {/* Header */}
           <div className="px-6 py-5 flex justify-between items-center bg-[#fcfdfc] border-b border-black/10 shrink-0">
-            <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
-              RESPONSE DETAILS
-            </h2>
+            <div className="flex items-center gap-3">
+              {history.length > 1 && (
+                <button
+                  onClick={handleBack}
+                  className="px-3 py-1.5 bg-gray-100 text-black border border-black/20 font-bold text-xs uppercase tracking-tight hover:bg-gray-200"
+                >
+                  ← BACK
+                </button>
+              )}
+              <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                RESPONSE DETAILS
+              </h2>
+            </div>
             <button
               onClick={onClose}
               className="px-6 py-1.5 bg-white text-black border border-red-600 font-bold text-xs sm:text-sm uppercase tracking-tight hover:bg-red-50"
@@ -205,29 +256,29 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                 <span className="text-xs font-semibold text-black uppercase tracking-widest">
                   Main Message
                 </span>
-                {response.status && (
+                {localResponse.status && (
                   <span className="text-[10px] font-semibold bg-green-100 text-black px-3 py-0.5 rounded-md uppercase tracking-widest border border-gray-200 shadow-2xs">
-                    {response.status}
+                    {localResponse.status}
                   </span>
                 )}
               </div>
-              {response.user && (
+              {localResponse.user && (
                 <span className="text-sm font-semibold text-black uppercase tracking-tight">
                   Sent by{" "}
-                  {response.user.firstName
-                    ? `${response.user.firstName} ${response.user.lastName}`
-                    : response.user.username}
+                  {localResponse.user.firstName
+                    ? `${localResponse.user.firstName} ${localResponse.user.lastName}`
+                    : localResponse.user.username}
                 </span>
               )}
             </div>
 
             {/* Subject Box */}
-            {response.subject && (
+            {localResponse.subject && (
               <div className="bg-white p-4 sm:p-5 rounded-2xl border border-black/10 shadow-xs space-y-1.5">
                 <span className="text-base text-black uppercase tracking-widest block">
                   Subject :{" "}
                   <span className="text-base text-black">
-                    {response.subject}
+                    {localResponse.subject}
                   </span>
                 </span>
               </div>
@@ -237,12 +288,12 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
             <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
               <div
                 className="prose prose-base max-w-none text-black leading-relaxed rich-text-content"
-                dangerouslySetInnerHTML={{ __html: response.description }}
+                dangerouslySetInnerHTML={{ __html: localResponse.description }}
               />
             </div>
 
             {/* Tonnage & Pages 3-column Box */}
-            {(response.type || response.Type || "")?.toUpperCase() !==
+            {(localResponse.type || localResponse.Type || "")?.toUpperCase() !==
               "DETAILING" && (
               <div className="bg-white p-5 sm:p-6 rounded-2xl border border-black/10 shadow-xs">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
@@ -250,7 +301,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                     <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
                       Tonnage (With Connections) :{" "}
                       <span className="text-base font-semibold text-black">
-                        {response.totalTonnageWithConnection || "—"}
+                        {localResponse.totalTonnageWithConnection || "—"}
                       </span>
                     </span>
                   </div>
@@ -258,7 +309,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                     <span className="text-base font-semibold text-black uppercase tracking-widest block mb-1.5">
                       Tonnage (W/O Connections) :{" "}
                       <span className="text-base font-semibold text-black">
-                        {response.totalTonnageWithoutConnection || "—"}
+                        {localResponse.totalTonnageWithoutConnection || "—"}
                       </span>
                     </span>
                   </div>
@@ -269,7 +320,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                     <div
                       className="text-sm text-black rich-text-content"
                       dangerouslySetInnerHTML={{
-                        __html: response.PageNumbers || "—",
+                        __html: localResponse.PageNumbers || "—",
                       }}
                     />
                   </div>
@@ -285,9 +336,9 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
               <div className="bg-white border border-gray-200">
                 <div className="p-4 sm:p-5">
                   <RenderFiles
-                    files={response.files}
+                    files={localResponse.files}
                     table="rfqResponse"
-                    parentId={response.id}
+                    parentId={localResponse.id}
                     hideHeader={true}
                     noAccordion={true}
                   />
@@ -296,7 +347,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                   <div className="bg-gray-50/50 border-t border-gray-100 p-3 flex justify-end">
                     <button
                       onClick={() => {
-                        setReplyTargetId(response.id);
+                        setReplyTargetId(localResponse.id);
                         setReplyMode(true);
                       }}
                       className="px-4 py-2 bg-[#dbe8d3] text-black border border-black/80 font-bold text-[10px] uppercase tracking-widest hover:bg-[#c9d8c0]"
@@ -308,16 +359,16 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
               </div>
             </div>
 
-            {response.childResponses?.length > 0 && (
+            {localResponse.childResponses?.length > 0 && (
               <div className="pt-6 pb-2">
                 <div className="flex items-center mb-6">
                   <div className="flex-1 border-t border-gray-200"></div>
                   <span className="mx-4 text-gray-400 font-bold uppercase tracking-widest text-xs">
-                    THREAD ({response.childResponses.length} REPLIES)
+                    THREAD ({localResponse.childResponses.length} REPLIES)
                   </span>
                   <div className="flex-1 border-t border-gray-200"></div>
                 </div>
-                {renderThread(response)}
+                {renderThread(localResponse)}
               </div>
             )}
           </div>
@@ -325,7 +376,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
           {/* Footer */}
           <div className="px-6 py-5 border-t border-black/10 bg-white flex items-center shrink-0">
             <span className="text-xs text-black font-bold tracking-wide">
-              Submitted on: {formatDateTime(response.createdAt)}
+              Submitted on: {formatDateTime(localResponse.createdAt)}
             </span>
           </div>
         </div>
@@ -374,10 +425,22 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
                     onChange={(e) => setReplyStatus(e.target.value)}
                     className="w-full h-11 px-4 border border-black/10 rounded-xl bg-white focus:ring-2 focus:ring-green-100 outline-none font-semibold uppercase text-xs tracking-widest appearance-none cursor-pointer text-black"
                   >
-                    <option value="AWARDED">Awarded</option>
-                    <option value="REJECTED">Rejected</option>
-                    <option value="REVISE">Revise</option>
-                    <option value="CLOSED">CLOSED</option>
+                    <option value="">Select Status</option>
+                    {(() => {
+                      const tType = localResponse?.type || localResponse?.Type;
+                      return (
+                        <>
+                          {tType === "MTO" ? (
+                            <option value="COMPLETED">COMPLETED</option>
+                          ) : (
+                            <option value="AWARDED">AWARDED</option>
+                          )}
+                          <option value="REJECTED">Rejected</option>
+                          <option value="REVISE">Revise</option>
+                          <option value="CLOSED">CLOSED</option>
+                        </>
+                      );
+                    })()}
                   </select>
                 </div>
                 <div className="space-y-2">
