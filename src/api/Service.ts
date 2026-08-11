@@ -17,6 +17,22 @@ class Service {
     try {
       const response = await api.get(`user/me`);
       console.log("Signed In User detail-", response);
+      if (response?.data) {
+        const resData = response.data;
+        const fabId =
+          resData?.data?.FabricatorPointOfContacts?.[0]?.id ||
+          resData?.FabricatorPointOfContacts?.[0]?.id ||
+          resData?.data?.FabricatorPointOfContacts?.[0]?.fabricatorId ||
+          resData?.FabricatorPointOfContacts?.[0]?.fabricatorId ||
+          resData?.data?.user?.fabricatorID ||
+          resData?.user?.fabricatorID ||
+          resData?.data?.fabricatorID ||
+          resData?.fabricatorID;
+
+        if (fabId) {
+          sessionStorage.setItem("fabricatorID", fabId);
+        }
+      }
       return response.data;
     } catch (error) {
       //alert(error);
@@ -284,6 +300,21 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find fabricators", error);
+    }
+  }
+
+  // Fetch POC by Fabricator ID
+  static async GetFabricatorPOC(fabricatorId: string) {
+    try {
+      const response = await api.get(`fabricator/${fabricatorId}/poc`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(" Fabricator POC fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find fabricator pocs", error);
     }
   }
 
@@ -1281,14 +1312,34 @@ class Service {
   }
 
   // Get All Projects
-  static async GetAllProjects() {
+  static async GetAllProjects(
+    page?: any,
+    limit?: any,
+    search?: any,
+    managerName?: any,
+    fabricatorName?: any,
+    stage?: any,
+    startDate?: any,
+    endDate?: any
+  ) {
     try {
+      const params: any = {};
+      if (page !== undefined && page !== null && page !== "") params.page = page;
+      if (limit !== undefined && limit !== null && limit !== "") params.limit = limit;
+      if (search) params.search = search;
+      if (managerName && managerName !== "All Managers") params.managerName = managerName;
+      if (fabricatorName && fabricatorName !== "All Fabricators") params.fabricatorName = fabricatorName;
+      if (stage && stage !== "All Stages") params.stage = stage;
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+
       const response = await api.get(`project/projects`, {
+        params,
         headers: {
           "Content-Type": "application/json",
         },
       });
-      // console.log(response);
+      console.log(response);
       return response.data;
     } catch (error) {
       console.log(error);

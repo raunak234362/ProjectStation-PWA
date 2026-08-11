@@ -34,7 +34,7 @@ const CoResponseModal = ({
       const formData = new FormData();
 
       formData.append("CoId", CoId);
-      formData.append("description", data.description);
+      formData.append("description", (data.description || "").toUpperCase());
       formData.append("status", data.status);
       formData.append("userId", userId);
       formData.append("userRole", userRole);
@@ -99,8 +99,8 @@ const CoResponseModal = ({
           <textarea
             {...register("description", { required: true })}
             rows={4}
-            className="w-full border rounded-md p-3"
-            placeholder="Write your response..."
+            className="w-full border rounded-md p-3 uppercase"
+            placeholder="WRITE YOUR RESPONSE..."
           />
 
           {/* Status */}

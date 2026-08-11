@@ -45,6 +45,18 @@ const AppContent = () => {
         userDetail.connectionDesignerId,
       );
 
+      const fabId =
+        response?.data?.FabricatorPointOfContacts?.[0]?.id ||
+        response?.data?.data?.FabricatorPointOfContacts?.[0]?.id ||
+        response?.data?.FabricatorPointOfContacts?.[0]?.fabricatorId ||
+        response?.data?.data?.FabricatorPointOfContacts?.[0]?.fabricatorId ||
+        userDetail?.fabricatorID ||
+        userDetail?.fabricatorId;
+
+      if (fabId) {
+        sessionStorage.setItem("fabricatorID", fabId);
+      }
+
       const role = userDetail?.role || userDetail?.userRole;
       if (role) {
         sessionStorage.setItem("userRole", role);
