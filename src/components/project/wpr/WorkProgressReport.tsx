@@ -853,6 +853,64 @@ const WorkProgressReport = ({
     return rawCoRows.filter(c => isUpToWeek(c.createdAt, activeWeekRange.end));
   }, [rawCoRows, activeWeekRange]);
 
+  const displayCoRows = useMemo(() => {
+    if (!filteredCoRows || filteredCoRows.length === 0) {
+      return [{
+        id: "cor-summary",
+        changeOrder: "COR",
+        Jan: "—", Feb: "—", Mar: "—", Apr: "—", May: "—", Jun: "—",
+        Jul: "—", Aug: "—", Sep: "—", Oct: "—", Nov: "—", Dec: "—",
+        total: "—"
+      }];
+    }
+
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthTotals: Record<string, number> = {};
+    const monthHasSent: Record<string, boolean> = {};
+    let grandTotal = 0;
+
+    months.forEach(m => {
+      monthTotals[m] = 0;
+      monthHasSent[m] = false;
+    });
+
+    filteredCoRows.forEach(c => {
+      months.forEach(m => {
+        const valStr = c[m];
+        if (valStr && valStr !== "—") {
+          if (valStr === "Sent" || valStr === "SENT") {
+            monthHasSent[m] = true;
+          } else {
+            const num = Number(String(valStr).replace(/[^0-9.]/g, ""));
+            if (!isNaN(num) && num > 0) {
+              monthTotals[m] += num;
+              grandTotal += num;
+            }
+          }
+        }
+      });
+    });
+
+    const summaryRow: any = {
+      id: "cor-summary",
+      changeOrder: "COR"
+    };
+
+    months.forEach(m => {
+      if (monthTotals[m] > 0) {
+        summaryRow[m] = `$${monthTotals[m].toLocaleString()}`;
+      } else if (monthHasSent[m]) {
+        summaryRow[m] = "SENT";
+      } else {
+        summaryRow[m] = "—";
+      }
+    });
+
+    summaryRow.total = grandTotal > 0 ? `$${grandTotal.toLocaleString()}` : "—";
+
+    return [summaryRow];
+  }, [filteredCoRows]);
+
   const filteredCoordDrawings = useMemo(() => {
     if (!activeWeekRange) return rawCoordDrawings;
     return rawCoordDrawings.filter(cd => isUpToWeek(cd.createdAt, activeWeekRange.end));
@@ -926,7 +984,7 @@ const WorkProgressReport = ({
         : table === "schedule"
           ? filteredScheduleRows
           : table === "co"
-            ? filteredCoRows
+            ? displayCoRows
             : filteredCoordDrawings;
     const rowIndex = tableData.findIndex(row => row.id === rowId);
     if (rowIndex === -1) return;
@@ -1303,7 +1361,7 @@ const WorkProgressReport = ({
       wsData.push(coHeader);
       row++;
 
-      (filteredCoRows || []).forEach((c: any) => {
+      (displayCoRows || []).forEach((c: any) => {
         const coRow = [
           c.changeOrder || "—",
           c.Jan || "—", c.Feb || "—", c.Mar || "—", c.Apr || "—",
@@ -1576,7 +1634,7 @@ const WorkProgressReport = ({
       pdf.text("3. CHANGE ORDER AMOUNT ($) MONTHLY BREAKDOWN", startX, finalY);
       finalY += 10;
 
-      const safeCoRows = Array.isArray(filteredCoRows) ? filteredCoRows : [];
+      const safeCoRows = Array.isArray(displayCoRows) ? displayCoRows : [];
       autoTable(pdf, {
         startY: finalY,
         theme: 'grid',
@@ -1695,7 +1753,7 @@ const WorkProgressReport = ({
             </div>
             <div id="section-co">
               <WprChangeOrderTable
-                coRows={filteredCoRows}
+                coRows={displayCoRows}
                 canEdit={canEdit}
                 activeCell={activeCell}
                 editValue={editValue}
