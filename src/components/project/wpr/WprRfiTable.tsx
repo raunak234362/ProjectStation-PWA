@@ -32,7 +32,7 @@ const WprRfiTable: React.FC<WprRfiTableProps> = ({
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <HelpCircle className="text-black w-5 h-5" />
-          <h3 className="text-sm font-bold uppercase tracking-wider text-black">2. RFI Status Overview</h3>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-black">1. RFI Status Overview</h3>
         </div>
         {canEdit && (
           <button

@@ -401,6 +401,24 @@ const WorkProgressReport = ({
       const toEntry = (sub: any) => ({ subject: sub.subject || sub.serialNo || "—", date: fmt(sub.date || sub.createdAt) });
       const cleanHtml = (str: any) => (str || "").replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
 
+      const isIfa = (s: any) => {
+        const stage = String(s?.stage || "").toUpperCase();
+        const subject = String(s?.subject || s?.serialNo || "").toUpperCase();
+        return stage.includes("IFA") || subject.includes("IFA");
+      };
+
+      const isIfc = (s: any) => {
+        const stage = String(s?.stage || "").toUpperCase();
+        const subject = String(s?.subject || s?.serialNo || "").toUpperCase();
+        return stage.includes("IFC") || subject.includes("IFC");
+      };
+
+      const isCor = (s: any) => {
+        const stage = String(s?.stage || "").toUpperCase();
+        const subject = String(s?.subject || s?.serialNo || "").toUpperCase();
+        return stage.includes("COR") || stage === "CO" || subject.includes("COR") || subject.includes("CO ");
+      };
+
       // ── Milestone rows ────────────────────────────────────────────────────────
       const milestoneRows = milestones.map((m: any) => {
         const mId = String(m.id || m._id);
@@ -425,12 +443,11 @@ const WorkProgressReport = ({
         const subs = filteredSubmittalData.filter(belongsToMilestone);
         subs.forEach((s: any) => linkedSubmittalIds.add(s.id || s._id));
 
-        const ifaSubs = subs.filter((s: any) => String(s.stage || "").toUpperCase() === "IFA");
-        const ifcSubs = subs.filter((s: any) => String(s.stage || "").toUpperCase() === "IFC");
-        const corSubs = subs.filter((s: any) => ["CO", "COR"].includes(String(s.stage || "").toUpperCase()));
+        const ifaSubs = subs.filter((s: any) => isIfa(s));
+        const ifcSubs = subs.filter((s: any) => isIfc(s));
+        const corSubs = subs.filter((s: any) => isCor(s));
 
         const unifiedEntries = subs.map((s: any) => {
-          const stage = String(s.stage || "").toUpperCase();
           const dateStr = s.createdAt || s.date || 0;
 
           let bfaDate = "—";
@@ -451,17 +468,17 @@ const WorkProgressReport = ({
             if (bfaData.status) currentStatus = bfaData.status;
           }
 
-          if (["IFC", "RIFC", "R-IFC"].includes(stage)) {
+          if (isIfc(s)) {
             currentStatus = "100% COMPLETE";
           }
 
           return {
             id: s.id || s._id,
             subject: s.subject || s.serialNo || "—",
-            ifaDate: ["IFA", "RIFA", "R-IFA"].includes(stage) ? fmt(dateStr) : "—",
+            ifaDate: isIfa(s) ? fmt(dateStr) : "—",
             bfaDate: bfaDate,
-            ifcDate: stage === "IFC" ? fmt(dateStr) : "—",
-            corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "—",
+            ifcDate: isIfc(s) ? fmt(dateStr) : "—",
+            corDate: isCor(s) ? fmt(dateStr) : "—",
             status: currentStatus,
             date: dateStr,
             notes: s.notes || ""
@@ -536,7 +553,6 @@ const WorkProgressReport = ({
         .map((sub: any) => {
           const responses = sub.submittalsResponse || [];
           const latestResponse = responses.sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
-          const stage = String(sub.stage || "").toUpperCase();
           const entry = toEntry(sub);
 
           let finalBfaRecdDate = latestResponse ? fmt(latestResponse.createdAt || latestResponse.respondedAt) : "—";
@@ -551,6 +567,9 @@ const WorkProgressReport = ({
             const bfaData = bfaCache[sub.id || sub._id];
             if (bfaData.status) currentStatus = bfaData.status;
           }
+          if (isIfc(sub)) {
+            currentStatus = "100% COMPLETE";
+          }
           const statusEntries = [{
             subject: sub.subject || sub.serialNo || "—",
             status: currentStatus,
@@ -561,10 +580,10 @@ const WorkProgressReport = ({
           const unifiedEntries = [{
             id: sub.id || sub._id,
             subject: sub.subject || sub.serialNo || "—",
-            ifaDate: ["IFA", "RIFA", "R-IFA"].includes(stage) ? fmt(dateStr) : "—",
+            ifaDate: isIfa(sub) ? fmt(dateStr) : "—",
             bfaDate: finalBfaRecdDate,
-            ifcDate: stage === "IFC" ? fmt(dateStr) : "—",
-            corDate: ["CO", "COR"].includes(stage) ? fmt(dateStr) : "—",
+            ifcDate: isIfc(sub) ? fmt(dateStr) : "—",
+            corDate: isCor(sub) ? fmt(dateStr) : "—",
             status: currentStatus,
             date: dateStr,
             notes: sub.notes || ""
@@ -577,9 +596,9 @@ const WorkProgressReport = ({
             startDate: fmt(sub.date || sub.createdAt),
             unifiedEntries,
             bfaRecdDate: finalBfaRecdDate,
-            ifaSubDate: ["IFA", "RIFA", "R-IFA"].includes(stage) ? entry.date : "—",
-            ifcSubDate: stage === "IFC" ? entry.date : "—",
-            corSubDate: ["CO", "COR"].includes(stage) ? entry.date : "—",
+            ifaSubDate: isIfa(sub) ? entry.date : "—",
+            ifcSubDate: isIfc(sub) ? entry.date : "—",
+            corSubDate: isCor(sub) ? entry.date : "—",
             submittalStatus: sub.wbtStatus || sub.status || "PENDING",
             comments: typeof sub.notes === "string" ? sub.notes.trim() || "—" : "—",
             types: "ANCHOR_BOLT",
@@ -637,13 +656,19 @@ const WorkProgressReport = ({
       const mergedRows = Array.from(mergeMap.values()).map((row: any) => {
         const sortedEntries = sortByDate(row.unifiedEntries || []);
         const ifcSubDate = sortedEntries.find((e: any) => e.ifcDate !== "—")?.ifcDate || "—";
+        const hasSubNotes = row.comments && row.comments !== "—" && row.comments !== "100% Complete";
+        let finalComment = row.comments;
+        if (ifcSubDate !== "—") {
+          finalComment = hasSubNotes ? `100% Complete | ${row.comments}` : "100% Complete";
+        }
+
         return {
           ...row,
           unifiedEntries: sortedEntries,
           ifaSubDate: sortedEntries.find((e: any) => e.ifaDate !== "—")?.ifaDate || "—",
           ifcSubDate: ifcSubDate,
           corSubDate: sortedEntries.find((e: any) => e.corDate !== "—")?.corDate || "—",
-          comments: ifcSubDate !== "—" ? "100% Complete" : row.comments,
+          comments: finalComment,
         };
       });
 
@@ -1175,41 +1200,9 @@ const WorkProgressReport = ({
       row++;
 
       // ═══════════════════════════════════════════
-      // SECTION 1: PROJECT SCHEDULE / MILESTONES
+      // SECTION 1: RFI STATUS OVERVIEW
       // ═══════════════════════════════════════════
-      pushRow(["1. PROJECT SCHEDULE / MILESTONES", "", "", "", "", "", "", ""]);
-      merge(row, 0, row, COL_COUNT - 1);
-      row++;
-
-      // Schedule header
-      pushRow(["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Comment", ""]);
-      merge(row, 6, row, 7); // Comment spans 2 cols
-      row++;
-
-      // Schedule data rows
-      (filteredScheduleRows || []).forEach((s: any) => {
-        pushRow([
-          s.phase || "—",
-          s.startDate || "—",
-          s.ifaSubDate || "—",
-          s.bfaRecdDate || "—",
-          s.ifcSubDate || "—",
-          s.corSubDate || "—",
-          s.comments || "—",
-          ""
-        ]);
-        merge(row, 6, row, 7);
-        row++;
-      });
-
-      // Empty spacer
-      pushRow([]);
-      row++;
-
-      // ═══════════════════════════════════════════
-      // SECTION 2: RFI STATUS OVERVIEW
-      // ═══════════════════════════════════════════
-      pushRow(["2. RFI STATUS OVERVIEW", "", "", "", "", "", "", ""]);
+      pushRow(["1. RFI STATUS OVERVIEW", "", "", "", "", "", "", ""]);
       merge(row, 0, row, COL_COUNT - 1);
       row++;
 
@@ -1235,6 +1228,55 @@ const WorkProgressReport = ({
         ]);
         merge(row, 2, row, 3);
         merge(row, 5, row, 6);
+        row++;
+      });
+
+      // Empty spacer
+      pushRow([]);
+      row++;
+
+      // ═══════════════════════════════════════════
+      // SECTION 2: PROJECT SCHEDULE / MILESTONES
+      // ═══════════════════════════════════════════
+      pushRow(["2. PROJECT SCHEDULE / MILESTONES", "", "", "", "", "", "", ""]);
+      merge(row, 0, row, COL_COUNT - 1);
+      row++;
+
+      // Schedule header
+      pushRow(["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Comment", ""]);
+      merge(row, 6, row, 7); // Comment spans 2 cols
+      row++;
+
+      // Schedule data rows
+      (filteredScheduleRows || []).forEach((s: any) => {
+        let commentText = cleanHtmlText(s?.comments);
+        if (Array.isArray(s?.unifiedEntries)) {
+          const entryNotes = s.unifiedEntries
+            .map((e: any) => cleanHtmlText(e.notes))
+            .filter((n: any) => n !== "—" && n !== "" && !["Waiting for BFA", "BFA Received", "100% Complete"].includes(n));
+          
+          const uniqueEntryNotes = Array.from(new Set(entryNotes));
+          if (uniqueEntryNotes.length > 0) {
+            const notesStr = uniqueEntryNotes.join(" | ");
+            if (commentText === "—" || commentText === "") {
+              commentText = notesStr;
+            } else if (!commentText.includes(notesStr)) {
+              commentText = `${commentText} | ${notesStr}`;
+            }
+          }
+        }
+
+        pushRow([
+          s.phase || "—",
+          s.startDate || "—",
+          s.ifaSubDate || "—",
+          s.bfaRecdDate || "—",
+          s.ifcSubDate || "—",
+          s.corSubDate || "—",
+          commentText || "—",
+          ""
+        ]);
+        merge(row, 6, row, 7);
         row++;
       });
 
@@ -1424,35 +1466,10 @@ const WorkProgressReport = ({
       });
       finalY = (pdf as any).lastAutoTable.finalY + 20;
 
-      // 1. PROJECT SCHEDULE / MILESTONES
+      // 1. RFI STATUS OVERVIEW
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "bold");
-      pdf.text("1. PROJECT SCHEDULE / MILESTONES", startX, finalY);
-      finalY += 10;
-
-      const safeScheduleRows = Array.isArray(filteredScheduleRows) ? filteredScheduleRows : [];
-      autoTable(pdf, {
-        startY: finalY,
-        theme: 'grid',
-        styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', textColor: [0, 0, 0], lineColor: [0, 0, 0], lineWidth: 0.5 },
-        headStyles: { fillColor: [241, 245, 249], textColor: [0, 0, 0], fontStyle: 'bold' },
-        head: [["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Comment"]],
-        body: safeScheduleRows.map((s: any) => [
-          s?.phase || "—",
-          s?.startDate || "—",
-          s?.ifaSubDate || "—",
-          s?.bfaRecdDate || "—",
-          s?.ifcSubDate || "—",
-          s?.corSubDate || "—",
-          cleanHtmlText(s?.comments)
-        ]),
-      });
-      finalY = (pdf as any).lastAutoTable.finalY + 20;
-
-      // 2. RFI STATUS OVERVIEW
-      pdf.setFontSize(10);
-      pdf.setFont("helvetica", "bold");
-      pdf.text("2. RFI STATUS OVERVIEW", startX, finalY);
+      pdf.text("1. RFI STATUS OVERVIEW", startX, finalY);
       finalY += 10;
 
       const safeRfis = Array.isArray(filteredRfis) ? filteredRfis : [];
@@ -1470,6 +1487,86 @@ const WorkProgressReport = ({
           cleanHtmlText(r?.wbtResponse),
           r?.status || "—"
         ]),
+      });
+      finalY = (pdf as any).lastAutoTable.finalY + 20;
+
+      // 2. PROJECT SCHEDULE / MILESTONES
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("2. PROJECT SCHEDULE / MILESTONES", startX, finalY);
+      finalY += 10;
+
+      const safeScheduleRows = Array.isArray(filteredScheduleRows) ? filteredScheduleRows : [];
+      const pdfScheduleBody: any[] = [];
+
+      safeScheduleRows.forEach((s: any) => {
+        if (Array.isArray(s.unifiedEntries) && s.unifiedEntries.length > 0) {
+          s.unifiedEntries.forEach((entry: any) => {
+            const key = String(entry.status || "—").replace(/\s+/g, "_").toUpperCase();
+            const STATUS_LABELS: any = {
+              WAITING_FOR_BFA: "WAITING FOR BFA",
+              BFA_RECEIVED: "BFA RECEIVED",
+              BFA_SENT: "BFA SENT",
+              SUBMITTED_TO_EOR: "SUBMITTED TO EOR",
+              RELEASE_FOR_FABRICATION: "RELEASE FOR FAB",
+              NOT_APPROVED: "NOT APPROVED",
+              REVISED_RESUBMITTAL: "REVISED & RESUBMITTED",
+              REVISED_RESUBMIT_FOR_FABRICATION: "REVISED & RESUB FOR FAB",
+              PENDING: "PENDING",
+              COMPLETE: "BFA - COMPLETE",
+              COMPLETED: "BFA - COMPLETE",
+              PARTIAL: "BFA - PARTIAL",
+              SUCCESS: "BFA - SUCCESS",
+              SENT: "SENT",
+              "100%_COMPLETE": "100% COMPLETE",
+            };
+            const statusLabel = STATUS_LABELS[key] || (entry.status ? String(entry.status).replace(/_/g, " ") : "—");
+
+            const hasNote = entry.notes && typeof entry.notes === "string" && entry.notes !== "—" && entry.notes.trim() !== "" && !["Waiting for BFA", "BFA Received", "100% Complete"].includes(entry.notes);
+
+            let commentStr = statusLabel !== "—" ? statusLabel : "";
+            if (hasNote) {
+              const cleanedNote = cleanHtmlText(entry.notes);
+              commentStr = commentStr ? `${commentStr}\n${cleanedNote}` : cleanedNote;
+            }
+            if (!commentStr) commentStr = "—";
+
+            const ifaText = entry.ifaDate !== "—" ? `${entry.subject}\n${entry.ifaDate}` : "—";
+            const bfaText = entry.bfaDate !== "—" ? `${entry.subject}\n${entry.bfaDate}` : "—";
+            const ifcText = entry.ifcDate !== "—" ? `${entry.subject}\n${entry.ifcDate}` : "—";
+            const corText = entry.corDate !== "—" ? `${entry.subject}\n${entry.corDate}` : "—";
+
+            pdfScheduleBody.push([
+              s?.phase || "—",
+              s?.startDate || "—",
+              ifaText,
+              bfaText,
+              ifcText,
+              corText,
+              commentStr
+            ]);
+          });
+        } else {
+          let commentText = cleanHtmlText(s?.comments);
+          pdfScheduleBody.push([
+            s?.phase || "—",
+            s?.startDate || "—",
+            s?.ifaSubDate || "—",
+            s?.bfaRecdDate || "—",
+            s?.ifcSubDate || "—",
+            s?.corSubDate || "—",
+            commentText || "—"
+          ]);
+        }
+      });
+
+      autoTable(pdf, {
+        startY: finalY,
+        theme: 'grid',
+        styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', textColor: [0, 0, 0], lineColor: [0, 0, 0], lineWidth: 0.5 },
+        headStyles: { fillColor: [241, 245, 249], textColor: [0, 0, 0], fontStyle: 'bold' },
+        head: [["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Status & Comment"]],
+        body: pdfScheduleBody,
       });
       finalY = (pdf as any).lastAutoTable.finalY + 20;
 
