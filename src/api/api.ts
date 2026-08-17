@@ -48,8 +48,9 @@ instance.interceptors.response.use(
     // Global 401: Unauthorized session
     if (status === 401) {
       sessionStorage.clear();
-      if (window.location.pathname !== "/") {
-        window.location.href = "/";
+      if (window.location.pathname !== "/" && window.location.pathname !== "/login") {
+        const targetUrl = window.location.pathname + window.location.search;
+        window.location.href = `/?redirect=${encodeURIComponent(targetUrl)}`;
       }
     }
 

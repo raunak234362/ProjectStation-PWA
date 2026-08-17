@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import Service from "../../api/Service";
 import type { ChangeOrderItem } from "../../interface";
 import { AlertCircle, Loader2, History } from "lucide-react";
@@ -30,6 +31,7 @@ interface GetCOByIDProps {
 
 const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
   /* -------------------- STATE (ALL HOOKS AT TOP) -------------------- */
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [co, setCO] = useState<ChangeOrderItem | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +42,14 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
 
   const userRole = sessionStorage.getItem("userRole");
   console.log(id);
+
+  const effectiveProjectId =
+    projectId ||
+    (typeof co?.project === "string"
+      ? co.project
+      : (co?.project as any)?.id ||
+        (co as any)?.projectId ||
+        (co as any)?.project_id);
 
   const sortedVersions = useMemo(() => {
     if (!co?.versions) return [];
@@ -82,19 +92,20 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
   /* -------------------- FETCH CO -------------------- */
   const fetchCO = async () => {
     try {
-      if (!projectId) {
-        setError("Project ID is missing");
-        return;
-      }
-
       setLoading(true);
 
       const response = await Service.GetChangeOrderById(id);
-      console.log(response);
+      console.log("GetChangeOrderById response:", response);
 
-      setCO(response.data);
-      if (response.data?.currentVersionId) {
-        setViewingVersionId(response.data.currentVersionId);
+      const coData = response?.data?.data || response?.data || response;
+      if (!coData || typeof coData !== "object" || !coData.id) {
+        setError("Change Order not found");
+        return;
+      }
+
+      setCO(coData);
+      if (coData.currentVersionId) {
+        setViewingVersionId(coData.currentVersionId);
       }
     } catch (err) {
       console.error(err);
@@ -105,8 +116,16 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
   };
 
   useEffect(() => {
-    fetchCO();
-  }, [id, projectId]);
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      const targetUrl = window.location.pathname + window.location.search;
+      navigate(`/?redirect=${encodeURIComponent(targetUrl)}`);
+      return;
+    }
+    if (id) {
+      fetchCO();
+    }
+  }, [id, navigate]);
 
   /* -------------------- EARLY RETURNS -------------------- */
   if (loading || error || !co) {
@@ -380,7 +399,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
         {showResponseModal && (
           <CoResponseModal
             CoId={id}
-            projectId={projectId}
+            projectId={effectiveProjectId}
             currentVersionId={co.currentVersionId}
             onClose={() => setShowResponseModal(false)}
             onSuccess={fetchCO}
@@ -390,7 +409,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
         {selectedResponse && (
           <COResponseDetailsModal
             response={selectedResponse}
-            projectId={projectId}
+            projectId={effectiveProjectId}
             onClose={() => setSelectedResponse(null)}
             onSuccess={fetchCO}
           />
