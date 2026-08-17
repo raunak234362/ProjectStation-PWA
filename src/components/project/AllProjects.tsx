@@ -15,7 +15,7 @@ const AllProjects = () => {
 
   // Pagination and query filter states
   const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit] = useState<number>(10);
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [stage, setStage] = useState<string>("");
@@ -105,25 +105,7 @@ const AllProjects = () => {
     return projects.filter((p) => p.status === statusFilter);
   }, [projects, statusFilter]);
 
-  const stageOptions = React.useMemo(() => {
-    const stages = Array.from(new Set(projects.map((p) => p.stage).filter(Boolean)));
-    return stages.map((s) => ({ value: s as string, label: s as string }));
-  }, [projects]);
 
-  const pmOptions = React.useMemo(() => {
-    const pms = new Map();
-    projects.forEach((p) => {
-      if (p.clientProjectManagers) {
-        p.clientProjectManagers.forEach((m: any) => {
-          const fullName = `${m.firstName || ""} ${m.lastName || ""}`.trim();
-          if (fullName) {
-            pms.set(fullName, fullName);
-          }
-        });
-      }
-    });
-    return Array.from(pms.values()).map((name) => ({ value: name, label: name }));
-  }, [projects]);
 
   const handleRowClick = (row: any) => {
     const projectUniqueId = row.id || row._id || "";
