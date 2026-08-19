@@ -35,10 +35,27 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
     }));
   };
 
-  const renderExpandableNote = (noteText: string, noteKey: string, maxLength = 70) => {
-    if (!noteText || noteText.length <= maxLength) {
+  const cleanHtmlContent = (htmlStr: string) => {
+    if (!htmlStr) return "";
+    if (!/<[a-z][\s\S]*>/i.test(htmlStr)) return htmlStr.trim();
+
+    let text = htmlStr.replace(/<br\s*[\/]?>/gi, "\n");
+    text = text.replace(/<\/p>|<\/div>|<\/li>/gi, "\n");
+    text = text.replace(/<li>/gi, "• ");
+    text = text.replace(/&nbsp;/gi, " ");
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "text/html");
+    return (doc.body.textContent || "").trim().replace(/\n{3,}/g, "\n\n");
+  };
+
+  const renderExpandableNote = (rawNoteText: string, noteKey: string, maxLength = 70) => {
+    const noteText = cleanHtmlContent(rawNoteText);
+    if (!noteText || noteText === "—") return null;
+
+    if (noteText.length <= maxLength) {
       return (
-        <div className="text-[11px] text-gray-700 font-normal break-words leading-tight">
+        <div className="text-[11px] text-gray-700 font-normal break-words leading-tight whitespace-pre-line">
           {noteText}
         </div>
       );
@@ -46,7 +63,7 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
 
     const isExpanded = expandedNotes[noteKey];
     return (
-      <div className="text-[11px] text-gray-700 font-normal break-words leading-tight">
+      <div className="text-[11px] text-gray-700 font-normal break-words leading-tight whitespace-pre-line">
         <span>{isExpanded ? noteText : `${noteText.slice(0, maxLength)}... `}</span>
         <button
           type="button"
@@ -54,7 +71,7 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
             e.stopPropagation();
             toggleNote(noteKey);
           }}
-          className="text-[10px] font-bold text-blue-600 hover:text-blue-800 underline inline-block cursor-pointer focus:outline-none"
+          className="text-[10px] font-bold text-blue-600 hover:text-blue-800 underline inline-block cursor-pointer focus:outline-none ml-1"
         >
           {isExpanded ? "Show less" : "Read more"}
         </button>
@@ -147,7 +164,8 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                   const label = STATUS_LABELS[key] || String(entry.status || "—").replace(/_/g, " ");
                   const color = STATUS_COLORS[key] || "bg-gray-100 text-gray-600 border-gray-200";
                   
-                  const hasNote = entry.notes && typeof entry.notes === "string" && entry.notes !== "—" && entry.notes.trim() !== "" && !["Waiting for BFA", "BFA Received", "100% Complete"].includes(entry.notes);
+                  const cleanNote = cleanHtmlContent(entry.notes);
+                  const hasNote = cleanNote && cleanNote !== "—" && cleanNote.trim() !== "" && !["Waiting for BFA", "BFA Received", "100% Complete"].includes(cleanNote);
 
                   return (
                     <tr
@@ -340,24 +358,29 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                   <td className="px-2 py-1.5 border-r border-black/10 align-top text-gray-400">—</td>
 
                   <td className="px-2 py-1.5 align-top">
-                    {row.submittalStatus && row.submittalStatus !== "—" ? (
-                      key === "WAITING_FOR_BFA" && isConnectionDesigner ? (
-                        <span className="text-gray-400">—</span>
+                    {(() => {
+                      const cleanComment = cleanHtmlContent(row.comments);
+                      const hasComment = cleanComment && cleanComment !== "—" && cleanComment !== label;
+
+                      if (row.submittalStatus && row.submittalStatus !== "—") {
+                        if (key === "WAITING_FOR_BFA" && isConnectionDesigner) {
+                          return <span className="text-gray-400">—</span>;
+                        }
+                        return (
+                          <div className="flex flex-col gap-0.5">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color} w-fit`}>
+                              {label}
+                            </span>
+                            {hasComment && renderExpandableNote(row.comments, `comment-${row.id}`)}
+                          </div>
+                        );
+                      }
+                      return hasComment ? (
+                        renderExpandableNote(row.comments, `comment-${row.id}`)
                       ) : (
-                        <div className="flex flex-col gap-0.5">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-black uppercase tracking-widest border ${color} w-fit`}>
-                            {label}
-                          </span>
-                          {row.comments && row.comments !== "—" && row.comments !== label && (
-                            renderExpandableNote(row.comments, `comment-${row.id}`)
-                          )}
-                        </div>
-                      )
-                    ) : row.comments && row.comments !== "—" && typeof row.comments === "string" ? (
-                      renderExpandableNote(row.comments, `comment-${row.id}`)
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
+                        <span className="text-gray-400">—</span>
+                      );
+                    })()}
                   </td>
                 </tr>
               );

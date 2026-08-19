@@ -399,7 +399,17 @@ const WorkProgressReport = ({
       const linkedSubmittalIds = new Set();
       const fmt = (d: any) => d ? new Date(d).toLocaleDateString("en-US") : "—";
       const toEntry = (sub: any) => ({ subject: sub.subject || sub.serialNo || "—", date: fmt(sub.date || sub.createdAt) });
-      const cleanHtml = (str: any) => (str || "").replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
+      const cleanHtmlText = (html: any) => {
+        if (!html) return "";
+        if (!/<[a-z][\s\S]*>/i.test(String(html))) return String(html).trim();
+        let text = String(html).replace(/<br\s*[\/]?>/gi, '\n');
+        text = text.replace(/<\/p>|<\/div>|<\/li>/gi, '\n');
+        text = text.replace(/<li>/gi, '• ');
+        text = text.replace(/&nbsp;/gi, ' ');
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        return (doc.body.textContent || "").trim().replace(/\n{3,}/g, '\n\n');
+      };
 
       const isIfa = (s: any) => {
         const stage = String(s?.stage || "").toUpperCase();
@@ -481,7 +491,7 @@ const WorkProgressReport = ({
             corDate: isCor(s) ? fmt(dateStr) : "—",
             status: currentStatus,
             date: dateStr,
-            notes: s.notes || ""
+            notes: cleanHtmlText(s.notes || "")
           };
         });
 
@@ -524,15 +534,15 @@ const WorkProgressReport = ({
               const latestMilestoneResponse = sortedMilestoneResponses.length > 0 ? sortedMilestoneResponses[0] : null;
               
               if (latestMilestoneResponse) {
-                const desc = (typeof latestMilestoneResponse.description === "string" ? latestMilestoneResponse.description : "").replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
+                const desc = cleanHtmlText(latestMilestoneResponse.description);
                 const words = desc.split(/\s+/).filter(Boolean);
                 return words.slice(0, 10).join(" ") + (words.length > 10 ? "..." : "");
               }
               return "—";
             } else {
               const subNotesList = subs
-                .map((sb: any) => sb.notes)
-                .filter((n: any) => typeof n === "string" && n.trim() !== "");
+                .map((sb: any) => cleanHtmlText(sb.notes))
+                .filter((n: any) => typeof n === "string" && n.trim() !== "" && n !== "—");
               return subNotesList.length > 0 ? subNotesList.join(" | ") : "—";
             }
           })(),
@@ -586,7 +596,7 @@ const WorkProgressReport = ({
             corDate: isCor(sub) ? fmt(dateStr) : "—",
             status: currentStatus,
             date: dateStr,
-            notes: sub.notes || ""
+            notes: cleanHtmlText(sub.notes || "")
           }];
 
           return {
@@ -600,7 +610,7 @@ const WorkProgressReport = ({
             ifcSubDate: isIfc(sub) ? entry.date : "—",
             corSubDate: isCor(sub) ? entry.date : "—",
             submittalStatus: sub.wbtStatus || sub.status || "PENDING",
-            comments: typeof sub.notes === "string" ? sub.notes.trim() || "—" : "—",
+            comments: cleanHtmlText(sub.notes) || "—",
             types: "ANCHOR_BOLT",
             subSubject: sub.subject || sub.serialNo || "",
           };
