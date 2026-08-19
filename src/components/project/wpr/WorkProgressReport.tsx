@@ -1583,10 +1583,12 @@ const WorkProgressReport = ({
               PENDING: "PENDING",
               COMPLETE: "BFA - COMPLETE",
               COMPLETED: "BFA - COMPLETE",
+              CLOSED: "BFA - COMPLETE",
               PARTIAL: "BFA - PARTIAL",
               SUCCESS: "BFA - SUCCESS",
               SENT: "SENT",
               "100%_COMPLETE": "100% COMPLETE",
+              "100%_CLOSED": "100% COMPLETE",
             };
             const statusLabel = STATUS_LABELS[key] || (entry.status ? String(entry.status).replace(/_/g, " ") : "—");
 

@@ -124,7 +124,7 @@ const RFIResponseModal: React.FC<RFIResponseModalProps> = ({
                 >
                   <option value="">Select Status</option>
                   <option value="PARTIAL">Partial</option>
-                  <option value="COMPLETE">Complete</option>
+                  <option value="CLOSED">Closed</option>
                 </select>
               </div>
             )}

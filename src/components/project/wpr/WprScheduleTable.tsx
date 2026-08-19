@@ -129,10 +129,12 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                 PENDING: "PENDING",
                 COMPLETE: "BFA - COMPLETE",
                 COMPLETED: "BFA - COMPLETE",
+                CLOSED: "BFA - COMPLETE",
                 PARTIAL: "BFA - PARTIAL",
                 SUCCESS: "BFA - SUCCESS",
                 SENT: "SENT",
                 "100%_COMPLETE": "100% COMPLETE",
+                "100%_CLOSED": "100% COMPLETE",
               };
               const STATUS_COLORS: any = {
                 WAITING_FOR_BFA: "bg-purple-100 text-purple-700 border-purple-200",
@@ -146,10 +148,12 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                 PENDING: "bg-yellow-100 text-yellow-700 border-yellow-200",
                 COMPLETE: "bg-teal-100 text-teal-700 border-teal-200",
                 COMPLETED: "bg-teal-100 text-teal-700 border-teal-200",
+                CLOSED: "bg-teal-100 text-teal-700 border-teal-200",
                 PARTIAL: "bg-amber-100 text-amber-700 border-amber-200",
                 SUCCESS: "bg-emerald-100 text-emerald-700 border-emerald-200",
                 SENT: "bg-gray-100 text-gray-700 border-gray-200",
                 "100%_COMPLETE": "bg-emerald-100 text-emerald-700 border-emerald-200",
+                "100%_CLOSED": "bg-emerald-100 text-emerald-700 border-emerald-200",
               };
 
               const hasEntries = row.unifiedEntries && row.unifiedEntries.length > 0;
@@ -165,7 +169,7 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                   const color = STATUS_COLORS[key] || "bg-gray-100 text-gray-600 border-gray-200";
                   
                   const cleanNote = cleanHtmlContent(entry.notes);
-                  const hasNote = cleanNote && cleanNote !== "—" && cleanNote.trim() !== "" && !["Waiting for BFA", "BFA Received", "100% Complete"].includes(cleanNote);
+                  const hasNote = cleanNote && cleanNote !== "—" && cleanNote.trim() !== "" && !["Waiting for BFA", "BFA Received", "100% Complete", "100% COMPLETE"].includes(cleanNote);
 
                   return (
                     <tr

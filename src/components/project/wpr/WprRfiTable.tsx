@@ -166,7 +166,7 @@ const WprRfiTable: React.FC<WprRfiTableProps> = ({
                   {activeCell?.table === "rfi" && activeCell.rowId === row.id && activeCell.field === "status" ? (
                     <select
                       ref={inputRef}
-                      value={editValue}
+                      value={editValue === "COMPLETE" || editValue === "COMPLETED" ? "CLOSED" : editValue}
                       onChange={(e) => setEditValue(e.target.value)}
                       onBlur={onCellSave}
                       onKeyDown={onKeyDown}
@@ -174,19 +174,19 @@ const WprRfiTable: React.FC<WprRfiTableProps> = ({
                     >
                       <option value="OPEN">OPEN</option>
                       <option value="PARTIAL">PARTIAL</option>
-                      <option value="COMPLETE">COMPLETE</option>
+                      <option value="CLOSED">CLOSED</option>
                       <option value="PENDING">PENDING</option>
                       <option value="ANSWERED">ANSWERED</option>
                     </select>
                   ) : (
                     <span className={`px-2 py-1 rounded-none border border-black ${row.status === "OPEN" ? "bg-blue-50 text-blue-700" :
                       row.status === "PARTIAL" ? "bg-orange-50 text-orange-700" :
-                        row.status === "COMPLETE" ? "bg-green-50 text-green-700" :
+                        (row.status === "COMPLETE" || row.status === "COMPLETED" || row.status === "CLOSED") ? "bg-green-50 text-green-700" :
                           row.status === "PENDING" ? "bg-green-50 text-green-700" :
                             row.status === "ANSWERED" ? "bg-orange-50 text-orange-700" :
                               "bg-slate-50 text-slate-700"
                       }`}>
-                      {row.status}
+                      {row.status === "COMPLETE" || row.status === "COMPLETED" ? "CLOSED" : row.status}
                     </span>
                   )}
                 </td>

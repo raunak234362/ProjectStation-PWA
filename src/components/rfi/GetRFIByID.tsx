@@ -134,7 +134,8 @@ const GetRFIByID = ({ id, onClose }: GetRFIByIDProps) => {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.original.wbtStatus || row.original.status;
+        const rawStatus = row.original.wbtStatus || row.original.status;
+        const status = (rawStatus === "COMPLETE" || rawStatus === "COMPLETED") ? "CLOSED" : rawStatus;
         return status ? (
           <span
             className={`px-3 py-1.5 rounded-md text-sm uppercase font-bold tracking-tight bg-gray-100 text-black border border-gray-200`}

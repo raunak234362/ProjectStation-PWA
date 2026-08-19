@@ -97,7 +97,9 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
           case "PARTIAL":
             return { label: "PARTIAL", className: "bg-orange-100 text-black shadow-sm" };
           case "COMPLETE":
-            return { label: "COMPLETE", className: "bg-green-100 text-black shadow-sm" };
+          case "COMPLETED":
+          case "CLOSED":
+            return { label: "CLOSED", className: "bg-green-100 text-black shadow-sm" };
           default:
             return { label: statusStr, className: "bg-gray-100 text-black shadow-sm" };
         }
