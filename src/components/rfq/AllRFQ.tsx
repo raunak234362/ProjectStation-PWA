@@ -52,15 +52,18 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
     try {
       setLoading(true);
       let response;
+      const searchParam = searchQuery.trim() || undefined;
+      const statusParam = selectedStatus !== "ALL" ? selectedStatus : undefined;
+
       if (userRole === "CLIENT") {
-        response = await Service.RfqSent(currentPage, 25);
+        response = await Service.RfqSent(currentPage, 25, searchParam, statusParam);
       } else if (
         userRole === "OPERATION_EXECUTIVE" ||
         userRole === "DEPUTY_MANAGER" ||
         userRole === "ESTIMATION_HEAD" ||
         userRole === "ADMIN"
       ) {
-        response = await Service.getAllRFQ(currentPage, 25);
+        response = await Service.FetchAllRFQ(currentPage, 25, searchParam, statusParam);
       } else if (
         userRole === "CLIENT_ESTIMATOR" ||
         userRole === "CLIENT_ADMIN" ||
@@ -75,7 +78,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
           response = await Service.getConnectionEngineerQuotation();
         }
       } else {
-        response = await Service.RFQRecieved(currentPage, 25);
+        response = await Service.RFQRecieved(currentPage, 25, searchParam, statusParam);
       }
 
       if (response) {
@@ -125,8 +128,9 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
 
   // Reset page when search or filter options change
   useEffect(() => {
-    setCurrentPage(1);
-    if (currentPage === 1) {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    } else {
       fetchRFQs();
     }
   }, [searchQuery, selectedType, selectedMonth, selectedYear, selectedStatus]);

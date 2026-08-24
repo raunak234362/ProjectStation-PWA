@@ -424,20 +424,39 @@ class Service {
     }
   }
 
-  //Fetch All RFQ
-  static async getAllRFQ(page?: number, limit?: number) {
+  //Fetch all the RFQ
+  static async FetchAllRFQ(
+    page?: number,
+    limit: number = 10,
+    searchByProjectName?: string,
+    status?: string
+  ) {
     try {
       const response = await api.get(`rfq/all`, {
-        params: { page, limit },
+        params: {
+          page,
+          limit,
+          searchByProjectName: searchByProjectName || undefined,
+          status: status || undefined,
+        },
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(" All RFQ fetched:", response.data);
+      console.log(" All Data fetched:", response.data);
       return response.data;
     } catch (error) {
       console.error("cannot find rfqs", error);
     }
+  }
+
+  static async getAllRFQ(
+    page?: number,
+    limit: number = 10,
+    searchByProjectName?: string,
+    status?: string
+  ) {
+    return this.FetchAllRFQ(page, limit, searchByProjectName, status);
   }
 
   //Fetch RFQ by ID
@@ -456,10 +475,23 @@ class Service {
   }
 
   // api for sents :
-  static async RfqSent(page?: number, limit?: number) {
+  static async RfqSent(
+    page?: number,
+    limit: number = 10,
+    searchByProjectName?: string,
+    status?: string
+  ) {
     try {
       const response = await api.get(`rfq/sents`, {
-        params: { page, limit },
+        params: {
+          page,
+          limit,
+          searchByProjectName: searchByProjectName || undefined,
+          status: status || undefined,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
       console.log(" RFQ sents:", response.data);
       return response.data;
@@ -469,10 +501,23 @@ class Service {
   }
 
   //api for recieved:
-  static async RFQRecieved(page?: number, limit?: number) {
+  static async RFQRecieved(
+    page?: number,
+    limit: number = 10,
+    searchByProjectName?: string,
+    status?: string
+  ) {
     try {
       const response = await api.get(`rfq/received`, {
-        params: { page, limit },
+        params: {
+          page,
+          limit,
+          searchByProjectName: searchByProjectName || undefined,
+          status: status || undefined,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       // console.log("  RFQ received:", response.data);
