@@ -110,11 +110,12 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
         acc[desc].push({
           ...f,
           id: f.id, // Ensure we preserve the file id for nested too
-          uploadedAt: curr.uploadedAt || curr.createdAt || curr.date,
-          user: curr.user || curr.sender,
-          documentID: (table === 'submittals' || table === 'bfa') && parentId ? parentId : curr.id,
+          uploadedAt: f.uploadedAt || curr.uploadedAt || curr.createdAt || curr.date,
+          user: f.user || curr.user || curr.sender,
+          documentID: f.overrideDocumentID || ((table === 'submittals' || table === 'bfa') && parentId ? parentId : curr.id),
           versionId: (table === 'submittals' || table === 'bfa') ? curr.id : (f.versionId || versionId),
-          stage: curr.stage
+          stage: curr.stage,
+          overrideTable: f.overrideTable || undefined
         })
       })
     } else {
@@ -276,36 +277,40 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
               {expandedSections[description] && (
                 <div className="p-4 pt-0 border-t border-gray-50 animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="grid grid-cols-1 gap-2 mt-4">
-                    {filesArray.map((file: any, index: number) => (
-                      <div
-                        key={file.id || `file-${index}`}
-                        className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:bg-gray-50 hover:border-black/10 transition-all group/file"
-                      >
-                        <FileItem
-                          name={file.originalName || `File ${index + 1}`}
-                          onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
-                          className="flex-1 min-w-0"
-                        />
+                    {filesArray.length > 0 ? (
+                      filesArray.map((file: any, index: number) => (
+                        <div
+                          key={file.id || `file-${index}`}
+                          className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:bg-gray-50 hover:border-black/10 transition-all group/file"
+                        >
+                          <FileItem
+                            name={file.originalName || `File ${index + 1}`}
+                            onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
+                            className="flex-1 min-w-0"
+                          />
 
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={(e) => handleShare(e, file)}
-                            className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all"
-                            title="Share Link"
-                          >
-                            <Share2 size={16} />
-                          </button>
-                          <button
-                            onClick={(e) => handleDownload(e, file)}
-                            className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all"
-                            title="Download"
-                          >
-                            <Download size={16} />
-                          </button>
-                          <ChevronRight size={16} className="text-gray-300 ml-1" />
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={(e) => handleShare(e, file)}
+                              className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all"
+                              title="Share Link"
+                            >
+                              <Share2 size={16} />
+                            </button>
+                            <button
+                              onClick={(e) => handleDownload(e, file)}
+                              className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all"
+                              title="Download"
+                            >
+                              <Download size={16} />
+                            </button>
+                            <ChevronRight size={16} className="text-gray-300 ml-1" />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-xs text-gray-400 font-medium py-2 px-1">No files attached to this item</p>
+                    )}
                   </div>
                 </div>
               )}

@@ -88,19 +88,88 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
       return nameMatch && stageMatch && dateMatch;
     };
 
+    const getItemFiles = (item: any): any[] => {
+      if (!item) return [];
+      const extracted: any[] = [];
+
+      const addFiles = (f: any, meta: any = {}) => {
+        if (!f) return;
+        if (Array.isArray(f)) {
+          f.forEach((fileObj) => {
+            if (fileObj && typeof fileObj === "object") {
+              extracted.push({ ...fileObj, ...meta });
+            }
+          });
+        } else if (typeof f === "object") {
+          extracted.push({ ...f, ...meta });
+        }
+      };
+
+      // 1. Direct files / file
+      addFiles(item.files);
+      addFiles(item.file);
+
+      // 2. Submittal currentVersion & versions
+      if (item.currentVersion) {
+        addFiles(item.currentVersion.files);
+        addFiles(item.currentVersion.file);
+      }
+      if (Array.isArray(item.versions)) {
+        item.versions.forEach((v: any) => {
+          addFiles(v.files, { versionId: v.id });
+          addFiles(v.file, { versionId: v.id });
+        });
+      }
+
+      // 3. RFI responses / rfiresponse
+      const responses = item.responses || item.rfiresponse;
+      if (Array.isArray(responses)) {
+        const processResponses = (respList: any[]) => {
+          respList.forEach((resp: any) => {
+            const respMeta = {
+              overrideTable: "rFIResponse",
+              overrideDocumentID: resp.id,
+              uploadedAt: resp.createdAt || resp.date,
+              user: resp.user
+            };
+            addFiles(resp.files, respMeta);
+            addFiles(resp.file, respMeta);
+            if (Array.isArray(resp.childResponses)) {
+              processResponses(resp.childResponses);
+            }
+          });
+        };
+        processResponses(responses);
+      }
+
+      // Deduplicate by file id or url or stringified object
+      const seen = new Set();
+      const uniqueFiles: any[] = [];
+      extracted.forEach((fileObj) => {
+        const key = fileObj.id || fileObj.url || fileObj.path || JSON.stringify(fileObj);
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueFiles.push(fileObj);
+        }
+      });
+
+      return uniqueFiles;
+    };
+
     const filterFlatFiles = (files: any[]) => files.filter(f => matchesFilters(f));
+
     const filterNestedItems = (items: any[]) => {
       return items.map(item => {
-        // Submittals often have files in currentVersion.files
-        // Other items might have them in files array or a single file field
-        const itemFiles = (item.files && item.files.length > 0) 
-          ? item.files 
-          : (item.currentVersion?.files && item.currentVersion.files.length > 0)
-            ? item.currentVersion.files
-            : (item.file ? [item.file] : []);
-            
+        const itemFiles = getItemFiles(item);
         const filteredFiles = itemFiles.filter((f: any) => matchesFilters(f, item));
-        return filteredFiles.length > 0 ? { ...item, files: filteredFiles } : null;
+        const parentMatches = matchesFilters({}, item);
+
+        if (filteredFiles.length > 0) {
+          return { ...item, files: filteredFiles };
+        } else if (parentMatches) {
+          return { ...item, files: [] };
+        }
+        return null;
       }).filter(Boolean);
     };
 
@@ -118,27 +187,22 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
       rfis: filterNestedItems((data.rfi || []).map((rfi: any) => ({
         ...rfi,
         description: `RFI: ${rfi.subject}`,
-        files: rfi.files || [],
       }))),
       submittals: filterNestedItems((data.submittals || []).map((sub: any) => ({
         ...sub,
         description: `Submittal: ${sub.subject}`,
-        files: sub.currentVersion?.files || sub.files || [],
       }))),
       rfqs: filterNestedItems((data.rfq || []).map((rfq: any) => ({
         ...rfq,
         description: `RFQ: ${rfq.subject}`,
-        files: rfq.files || [],
       }))),
       coordinationDrawings: filterNestedItems((data.coordinationDrawings || []).map((cd: any) => ({
         ...cd,
         description: `Coordination Drawing: ${cd.title || cd.description || "No Description"}`,
-        files: cd.files || [],
       }))),
       progressReports: filterNestedItems((data.progressReports || []).map((pr: any) => ({
         ...pr,
         description: `Progress Report: ${pr.title || "No Title"}`,
-        files: pr.files || [],
       }))),
     };
   }, [data, searchQuery, selectedStage, selectedDate]);
