@@ -372,6 +372,36 @@ const WorkProgressReport = ({
       };
     });
 
+    const getRfiSortKey = (item: any) => {
+      const rfiStr =
+        item.rfiNo ||
+        item.rfiNumber ||
+        item.rfi_number ||
+        item.rfiCode ||
+        item.subject ||
+        "";
+      const match = String(rfiStr).match(/RFI\s*#?\s*(\d+)(.*)/i);
+      if (match) {
+        return { num: parseInt(match[1], 10), suffix: match[2] || "", raw: rfiStr };
+      }
+      const numMatch = String(rfiStr).match(/(\d+)/);
+      if (numMatch) {
+        return { num: parseInt(numMatch[1], 10), suffix: "", raw: rfiStr };
+      }
+      return { num: Number.MAX_SAFE_INTEGER, suffix: "", raw: rfiStr };
+    };
+
+    const compareRfisByNo = (a: any, b: any) => {
+      const keyA = getRfiSortKey(a);
+      const keyB = getRfiSortKey(b);
+      if (keyA.num !== keyB.num) {
+        return keyA.num - keyB.num;
+      }
+      return keyA.raw.localeCompare(keyB.raw, undefined, { numeric: true, sensitivity: "base" });
+    };
+
+    formattedRFIs.sort(compareRfisByNo);
+
     setRawRfis(formattedRFIs);
   }, [rfiData]);
 

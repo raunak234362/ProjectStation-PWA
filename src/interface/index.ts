@@ -620,6 +620,8 @@ export interface RFIItem {
   rfiresponse: RFIResponse[];
   date: string;
   isConnectionDesign?: boolean | string;
+  rfiNo?: string;
+  rfiNumber?: string;
 }
 
 export interface RFIResponseSchema {

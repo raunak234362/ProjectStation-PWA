@@ -114,6 +114,51 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
     }
   };
 
+  const getRfiNumber = (item: any, index?: number) => {
+    if (item?.rfiNo) return item.rfiNo;
+    if (item?.rfiNumber) return item.rfiNumber;
+    if (item?.rfi_number) return item.rfi_number;
+    if (item?.rfiCode) return item.rfiCode;
+
+    if (item?.subject) {
+      const match = item.subject.match(/^(RFI\s*#?\s*\d+[A-Z0-9._-]*)/i);
+      if (match) return match[1];
+    }
+
+    if (index !== undefined) {
+      return `RFI#${String(index + 1).padStart(3, "0")}`;
+    }
+    return "—";
+  };
+
+  const getRfiSortKey = (item: any) => {
+    const rfiStr =
+      item.rfiNo ||
+      item.rfiNumber ||
+      item.rfi_number ||
+      item.rfiCode ||
+      item.subject ||
+      "";
+    const match = String(rfiStr).match(/RFI\s*#?\s*(\d+)(.*)/i);
+    if (match) {
+      return { num: parseInt(match[1], 10), suffix: match[2] || "", raw: rfiStr };
+    }
+    const numMatch = String(rfiStr).match(/(\d+)/);
+    if (numMatch) {
+      return { num: parseInt(numMatch[1], 10), suffix: "", raw: rfiStr };
+    }
+    return { num: Number.MAX_SAFE_INTEGER, suffix: "", raw: rfiStr };
+  };
+
+  const compareRfisByNo = (a: any, b: any) => {
+    const keyA = getRfiSortKey(a);
+    const keyB = getRfiSortKey(b);
+    if (keyA.num !== keyB.num) {
+      return keyA.num - keyB.num;
+    }
+    return keyA.raw.localeCompare(keyB.raw, undefined, { numeric: true, sensitivity: "base" });
+  };
+
   // ✅ Define columns
   const columns: ColumnDef<RFIItem>[] = [
     {
@@ -251,9 +296,11 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
     return false;
   };
 
-  const filteredRfis = rfis.filter((rfi) => {
+  const filteredRfis = rfis.filter((rfi, idx) => {
+    const rfiNoStr = getRfiNumber(rfi, idx);
     // 1. Search Query Filter
     const searchMatch = rfi.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        rfiNoStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         rfi.sender?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         rfi.sender?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -302,7 +349,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
     }
 
     return true;
-  });
+  }).sort(compareRfisByNo);
 
   const getEmptyStateMessage = () => {
     if (isClient) {
@@ -384,7 +431,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by subject..."
+                placeholder="Search by RFI# or subject..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all text-black font-semibold placeholder-gray-400"
