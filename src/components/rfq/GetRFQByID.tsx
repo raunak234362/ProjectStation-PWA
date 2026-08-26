@@ -13,7 +13,10 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  Download,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import ResponseModal from "./ResponseModal";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -628,6 +631,469 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
     }
   };
 
+  const stripHtml = (html: string | null | undefined): string => {
+    if (!html) return "";
+    let text = String(html)
+      .replace(/<br\s*[\/]?>/gi, "\n")
+      .replace(/<\/p>|<\/div>|<\/li>/gi, "\n")
+      .replace(/<li>/gi, "• ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/<[^>]+>/g, "");
+    if (typeof DOMParser !== "undefined") {
+      try {
+        const doc = new DOMParser().parseFromString(text, "text/html");
+        text = doc.body.textContent || text;
+      } catch {
+        // fallback
+      }
+    }
+    return text.trim();
+  };
+
+  const getFileShareUrl = async (
+    table: string,
+    parentId: string | number,
+    fileId: string | number,
+    fileObj?: any
+  ): Promise<string> => {
+    if (fileObj?.shareUrl) return fileObj.shareUrl;
+    if (fileObj?.shareLink) return fileObj.shareLink;
+    if (fileObj?.url) return fileObj.url;
+
+    let mappedTable = table;
+    if (table === "rfqFollowup" || table === "rFQFollowUp" || table === "rfq/followup") {
+      mappedTable = "rFQFollowUp";
+    } else if (table === "rfqResponse" || table === "rFQResponse" || table === "rfq/response") {
+      mappedTable = "rFQResponse";
+    } else {
+      mappedTable = "rFQ";
+    }
+
+    try {
+      const res = await Service.createShareLink(mappedTable, String(parentId), String(fileId));
+      if (res?.shareUrl) {
+        return res.shareUrl;
+      }
+      if (res?.url) {
+        return res.url;
+      }
+    } catch (err) {
+      console.warn("Failed to generate share link via API:", err);
+    }
+
+    let baseURL = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
+    if (baseURL && baseURL.startsWith("/")) {
+      baseURL = `${window.location.origin}${baseURL}`;
+    } else if (baseURL && !baseURL.startsWith("http")) {
+      baseURL = `${window.location.origin}/${baseURL}`;
+    } else if (!baseURL) {
+      baseURL = window.location.origin;
+    }
+
+    return `${baseURL}/share/${mappedTable}/${parentId}/${fileId}`;
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!rfq) return;
+    const rfqData: any = rfq;
+
+    try {
+      const doc = new jsPDF();
+      const primaryColor: [number, number, number] = [107, 189, 69]; // #6bbd45 WBT Green
+      const textColor: [number, number, number] = [30, 30, 30];
+      const lightBg: [number, number, number] = [248, 250, 252];
+
+      let currentY = 15;
+
+      // Title Header Banner
+      doc.setFillColor(...primaryColor);
+      doc.rect(14, currentY, 182, 16, "F");
+
+      const projTitle = rfqData.projectName ? `RFQ - ${rfqData.projectName}` : "REQUEST FOR QUOTATION (RFQ)";
+
+      doc.setFontSize(11);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text(projTitle, 20, currentY + 11);
+
+      currentY += 22;
+
+      // Section: General Information
+      doc.setFontSize(11);
+      doc.setTextColor(...primaryColor);
+      doc.setFont("helvetica", "bold");
+      doc.text("GENERAL INFORMATION", 14, currentY);
+      currentY += 4;
+
+      const senderObj = rfqData.sender;
+      const senderName = senderObj
+        ? `${senderObj.firstName || ""} ${senderObj.middleName || ""} ${senderObj.lastName || ""}`.replace(/\s+/g, " ").trim() || senderObj.username || "—"
+        : "—";
+      const senderEmail = senderObj?.email || "—";
+
+      let recipientNames = "—";
+      if (rfqData.multipleRecipients && rfqData.multipleRecipients.length > 0) {
+        recipientNames = rfqData.multipleRecipients
+          .map((r: any) => {
+            const name = `${r.firstName || ""} ${r.lastName || ""}`.trim();
+            return name ? `${name} (${r.email || ""})` : r.email || "";
+          })
+          .filter(Boolean)
+          .join("\n");
+      } else if (rfqData.recipient) {
+        const name = `${rfqData.recipient.firstName || ""} ${rfqData.recipient.lastName || ""}`.trim();
+        recipientNames = name ? `${name} (${rfqData.recipient.email || ""})` : rfqData.recipient.email || "—";
+      }
+
+      const createdDateStr = formatDate(rfqData.createdAt) || "N/A";
+      const dueDateStr = formatDate(isCDRole ? rfqData.RFQDueDate : rfqData.estimationDate) || "N/A";
+
+      const basicInfoData = [
+        ["Subject:", rfqData.subject || "N/A", "Created At:", createdDateStr],
+        ["Project Name:", rfqData.projectName || "N/A", "Due Date:", dueDateStr],
+        ["Sender:", `${senderName}\n(${senderEmail})`, "Recipient(s):", recipientNames]
+      ];
+
+      autoTable(doc, {
+        body: basicInfoData,
+        startY: currentY,
+        theme: "grid",
+        headStyles: { fillColor: primaryColor },
+        styles: { fontSize: 8.5, cellPadding: 3, textColor: textColor },
+        columnStyles: {
+          0: { fontStyle: "bold", cellWidth: 28, fillColor: lightBg },
+          1: { cellWidth: 63 },
+          2: { fontStyle: "bold", cellWidth: 25, fillColor: lightBg },
+          3: { cellWidth: 66 }
+        }
+      });
+
+      currentY = (doc as any).lastAutoTable.finalY + 8;
+
+      // Section: Scope Details
+      const detailingScopes: string[] = [];
+      if (rfqData.detailingMain) detailingScopes.push("Detailing Main");
+      if (rfqData.detailingMisc) detailingScopes.push("Detailing Misc");
+
+      const connectionScopes: string[] = [];
+      if (rfqData.connectionDesign) connectionScopes.push("Main Design");
+      if (rfqData.miscDesign) connectionScopes.push("Misc Design");
+      if (rfqData.customerDesign) connectionScopes.push("Connection Design by WBT");
+
+      const mtoScopes: string[] = [];
+      if (rfqData.MTOManual) mtoScopes.push("MTO - Manual");
+      if (rfqData.MTOStickModel || rfqData.MTOValue || rfqData.MTOManualModel) mtoScopes.push("MTO - Stick Model");
+
+      const scopeRows: string[][] = [];
+      if (detailingScopes.length > 0) {
+        scopeRows.push(["Detailing Scope", detailingScopes.join(", ")]);
+      }
+      if (connectionScopes.length > 0) {
+        scopeRows.push(["Connection Design Scope", connectionScopes.join(", ")]);
+      }
+      if (mtoScopes.length > 0) {
+        scopeRows.push(["Material Take-off (MTO)", mtoScopes.join(", ")]);
+      }
+
+      if (scopeRows.length > 0) {
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text("SCOPE DETAILS", 14, currentY);
+        currentY += 4;
+
+        autoTable(doc, {
+          body: scopeRows,
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 8.5, cellPadding: 3, textColor: textColor },
+          columnStyles: {
+            0: { fontStyle: "bold", cellWidth: 48, fillColor: lightBg },
+            1: { cellWidth: 134 }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Description
+      const rawDesc = isCDRole ? rfqData.CDDescription : rfqData.description;
+      const cleanDesc = stripHtml(rawDesc);
+      if (cleanDesc && cleanDesc !== "No description provided" && cleanDesc !== "No CD description provided") {
+        if (currentY > 240) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text("DESCRIPTION", 14, currentY);
+        currentY += 4;
+
+        autoTable(doc, {
+          body: [[cleanDesc]],
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 8.5, cellPadding: 4, textColor: textColor },
+          columnStyles: {
+            0: { cellWidth: 182 }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: MTO Details & Notes if any
+      const mtoNote = stripHtml(rfqData.MTOValue || rfqData.MTOStickModel || rfqData.MTOManualModel);
+      if (mtoNote) {
+        if (currentY > 240) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text("MTO DETAILS & NOTES", 14, currentY);
+        currentY += 4;
+
+        autoTable(doc, {
+          body: [[mtoNote]],
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 8.5, cellPadding: 4, textColor: textColor },
+          columnStyles: {
+            0: { cellWidth: 182 }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Helper to format long URLs so autoTable wraps them inside table cells without overflow
+      const formatBreakableUrl = (url: string) => {
+        return url.replace(/([\/._\-\?&=])/g, "$1 ");
+      };
+
+      // Section: Main Attachments & Share Links
+      const attachments = isCDRole ? rfqData.CDAttachments : rfqData.files;
+      if (attachments && attachments.length > 0) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`ATTACHMENTS & SHARE LINKS (${attachments.length})`, 14, currentY);
+        currentY += 4;
+
+        const fileRows = await Promise.all(
+          attachments.map(async (file: any, idx: number) => {
+            const fileName = file.originalName || file.filename || `File ${idx + 1}`;
+            const shareUrl = await getFileShareUrl(
+              isCDRole ? "rfqCDAttachments" : "rFQ",
+              rfqData.id,
+              file.id,
+              file
+            );
+            return [
+              idx + 1,
+              { content: fileName, link: shareUrl },
+              { content: `Open File Link:\n(${formatBreakableUrl(shareUrl)})`, link: shareUrl }
+            ];
+          })
+        );
+
+        autoTable(doc, {
+          head: [["#", "File Name", "Share Link (Click to Open)"]],
+          body: fileRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 10, halign: "center" },
+            1: { cellWidth: 55, fontStyle: "bold", textColor: [0, 102, 204] },
+            2: { cellWidth: 117, textColor: [0, 102, 204] }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const rawCell: any = data.cell.raw;
+              if (rawCell && typeof rawCell === "object" && rawCell.link) {
+                data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: rawCell.link });
+              }
+            }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Followups
+      if (followups && followups.length > 0) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`FOLLOWUPS (${followups.length})`, 14, currentY);
+        currentY += 4;
+
+        const followupRows = await Promise.all(
+          followups.map(async (f: any, idx: number) => {
+            const cb = f.createdBy
+              ? `${f.createdBy.firstName || ""} ${f.createdBy.lastName || ""}`.trim() || f.createdBy.username || "—"
+              : "—";
+            const desc = stripHtml(f.description);
+            const createdOn = formatDateTime(f.createdAt);
+
+            let fileDetails = "—";
+            if (f.files && f.files.length > 0) {
+              const fileShareList = await Promise.all(
+                f.files.map(async (file: any) => {
+                  const name = file.originalName || file.filename || "File";
+                  const url = await getFileShareUrl("rFQFollowUp", f.id, file.id, file);
+                  return `${name}\nOpen Link: ${formatBreakableUrl(url)}`;
+                })
+              );
+              fileDetails = fileShareList.join("\n\n");
+            }
+
+            return [idx + 1, cb, createdOn, desc, fileDetails];
+          })
+        );
+
+        autoTable(doc, {
+          head: [["#", "Created By", "Date", "Description", "Files & Share Links"]],
+          body: followupRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 10, halign: "center" },
+            1: { cellWidth: 32 },
+            2: { cellWidth: 32 },
+            3: { cellWidth: 48 },
+            4: { cellWidth: 60, textColor: [0, 102, 204] }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const cellText = Array.isArray(data.cell.text) ? data.cell.text.join(" ") : String(data.cell.text || "");
+              const foundUrls = cellText.match(/https?:\/\/[^\s\n\)\"\']+/g);
+              if (foundUrls) {
+                foundUrls.forEach((urlWithSpaces) => {
+                  const cleanUrl = urlWithSpaces.replace(/\s+/g, "");
+                  data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: cleanUrl });
+                });
+              }
+            }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Responses
+      if (responses && responses.length > 0 && !isCDRole) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`RESPONSES (${responses.length})`, 14, currentY);
+        currentY += 4;
+
+        const flattenResponsesForPdf = async (resList: any[], indent = 0): Promise<any[]> => {
+          let rows: any[] = [];
+          for (const r of resList) {
+            const u = r.user;
+            const userName = u
+              ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Team Member"
+              : "Team Member";
+            const role = u?.role ? ` (${u.role.replace("_", " ")})` : "";
+            const prefix = indent > 0 ? "  ".repeat(indent) + "↳ " : "";
+            const userStr = `${prefix}${userName}${role}`;
+            const subj = r.subject || "No Subject";
+            const respStatus = r.wbtStatus || r.status || "OPEN";
+            const dateStr = formatDateTime(r.createdAt);
+            let desc = stripHtml(r.description);
+
+            if (r.files && r.files.length > 0) {
+              const fileShareList = await Promise.all(
+                r.files.map(async (file: any) => {
+                  const name = file.originalName || file.filename || "File";
+                  const url = await getFileShareUrl("rFQResponse", r.id, file.id, file);
+                  return `• ${name}\n  Open Link: ${formatBreakableUrl(url)}`;
+                })
+              );
+              desc += `\n\n[Attached Files]:\n${fileShareList.join("\n")}`;
+            }
+
+            rows.push([userStr, subj, respStatus, dateStr, desc]);
+
+            const children = responses.filter((child: any) => child.parentResponseId === r.id);
+            const childList = children.length > 0 ? children : (r.childResponses || []);
+            if (childList.length > 0) {
+              const childRows = await flattenResponsesForPdf(childList, indent + 1);
+              rows.push(...childRows);
+            }
+          }
+          return rows;
+        };
+
+        const topLevel = responses.filter((r: any) => !r.parentResponseId);
+        const responseRows = await flattenResponsesForPdf(topLevel.length > 0 ? topLevel : responses);
+
+        autoTable(doc, {
+          head: [["User", "Subject", "Status", "Date", "Description & Attached Files"]],
+          body: responseRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 38 },
+            1: { cellWidth: 26 },
+            2: { cellWidth: 18 },
+            3: { cellWidth: 28 },
+            4: { cellWidth: 72 }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const cellText = Array.isArray(data.cell.text) ? data.cell.text.join(" ") : String(data.cell.text || "");
+              const foundUrls = cellText.match(/https?:\/\/[^\s\n\)\"\']+/g);
+              if (foundUrls) {
+                foundUrls.forEach((urlWithSpaces) => {
+                  const cleanUrl = urlWithSpaces.replace(/\s+/g, "");
+                  data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: cleanUrl });
+                });
+              }
+            }
+          }
+        });
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Save Document
+      const safeProjectName = (rfqData.projectName || "RFQ_Document").replace(/[^a-zA-Z0-9_\-]/g, "_");
+      doc.save(`RFQ_${safeProjectName}_${rfqData.serialNo || id}.pdf`);
+      toast.success("RFQ PDF downloaded successfully!");
+    } catch (err) {
+      console.error("Failed to generate RFQ PDF:", err);
+      toast.error("Failed to generate PDF");
+    }
+  };
+
   if (loading || error || !rfq) {
     return createPortal(
       <div className="project-component-container fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
@@ -799,6 +1265,13 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
             </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={handleDownloadPDF}
+              className="px-4 sm:px-6 py-1.5 bg-green-600 text-white hover:bg-green-700 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer flex items-center gap-2 rounded-lg"
+            >
+              <Download size={16} />
+              Download PDF
+            </button>
             {userRole !== "client" &&
               userRole !== "client_admin" &&
               userRole !== "client_estimator" &&

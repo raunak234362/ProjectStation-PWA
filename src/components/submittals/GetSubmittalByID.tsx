@@ -8,9 +8,13 @@ import {
   ChevronUp,
   Clock,
   History,
+  Download,
 } from "lucide-react";
 import Button from "../fields/Button";
 import DataTable from "../ui/table";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { toast } from "react-toastify";
 
 import SubmittalResponseModal from "./SubmittalResponseModal";
 import SubmittalResponseDetailsModal from "./SubmittalResponseDetailsModal";
@@ -18,6 +22,35 @@ import UpdateSubmittalById from "./UpdateSubmittalById";
 import RenderFiles from "../ui/RenderFiles";
 import BfaManager from "./BfaManager";
 import { truncateWords } from "../../utils/stringUtils";
+
+const formatDate = (dateStr: any) => {
+  if (!dateStr) return "";
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
+const formatDateTime = (dateStr: any) => {
+  if (!dateStr) return "";
+  try {
+    return new Date(dateStr).toLocaleString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return dateStr;
+  }
+};
 
 const Info = ({ label, value }: any) => (
   <div className="mb-2">
@@ -229,6 +262,397 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
     },
   ];
 
+  const stripHtml = (html: string) => {
+    if (!html) return "";
+    let text = String(html)
+      .replace(/<br\s*[\/]?>/gi, "\n")
+      .replace(/<\/p>|<\/div>|<\/li>/gi, "\n")
+      .replace(/<li>/gi, "• ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/<[^>]+>/g, "");
+    if (typeof DOMParser !== "undefined") {
+      try {
+        const doc = new DOMParser().parseFromString(text, "text/html");
+        text = doc.body.textContent || text;
+      } catch {
+        // fallback
+      }
+    }
+    return text.trim();
+  };
+
+  const formatBreakableUrl = (url: string) => {
+    return url.replace(/([\/._\-\?&=])/g, "$1 ");
+  };
+
+  const getFileShareUrl = async (
+    table: string,
+    parentId: string | number,
+    fileId: string | number,
+    versionId?: string | number,
+    fileObj?: any
+  ): Promise<string> => {
+    if (fileObj?.shareUrl) return fileObj.shareUrl;
+    if (fileObj?.shareLink) return fileObj.shareLink;
+    if (fileObj?.url) return fileObj.url;
+
+    let mappedTable = table;
+    let effectiveParentId = String(parentId);
+
+    if (table === "submittals" || table === "submittal") {
+      mappedTable = "submittalVersion";
+      if (versionId) {
+        effectiveParentId = String(versionId);
+      }
+    } else if (table === "submittalsResponse" || table === "submittal/response") {
+      mappedTable = "submittalsResponse";
+    }
+
+    try {
+      const res = await Service.createShareLink(mappedTable, effectiveParentId, String(fileId));
+      if (res?.shareUrl) {
+        return res.shareUrl;
+      }
+      if (res?.url) {
+        return res.url;
+      }
+    } catch (err) {
+      console.warn("Failed to generate share link via API:", err);
+    }
+
+    let baseURL = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
+    if (baseURL && baseURL.startsWith("/")) {
+      baseURL = `${window.location.origin}${baseURL}`;
+    } else if (baseURL && !baseURL.startsWith("http")) {
+      baseURL = `${window.location.origin}/${baseURL}`;
+    } else if (!baseURL) {
+      baseURL = window.location.origin;
+    }
+
+    return `${baseURL}/share/${mappedTable}/${effectiveParentId}/${fileId}`;
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!submittal) return;
+    const subData: any = submittal;
+
+    try {
+      toast.info("Generating Submittal PDF...");
+      const doc = new jsPDF();
+      const primaryColor: [number, number, number] = [107, 189, 69]; // #6bbd45 WBT Green
+      const textColor: [number, number, number] = [30, 30, 30];
+      const lightBg: [number, number, number] = [248, 250, 252];
+
+      let currentY = 15;
+
+      const projectName = subData.project?.name || subData.projectName || "N/A";
+      const createdDateStr = formatDate(subData.createdAt || subData.date) || "N/A";
+      const stageName = subData.stage || "N/A";
+
+      const headerTitle = projectName && projectName !== "N/A"
+        ? `SUBMITTAL DETAILS - ${projectName}`
+        : "SUBMITTAL DETAILS";
+
+      // Title Header Banner
+      doc.setFillColor(...primaryColor);
+      doc.rect(14, currentY, 182, 16, "F");
+
+      doc.setFontSize(11);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text(headerTitle, 20, currentY + 11);
+
+      currentY += 22;
+
+      // Section: General Information
+      doc.setFontSize(11);
+      doc.setTextColor(...primaryColor);
+      doc.setFont("helvetica", "bold");
+      doc.text("GENERAL INFORMATION", 14, currentY);
+      currentY += 4;
+
+      const senderObj = subData.sender;
+      const senderName = senderObj
+        ? `${senderObj.firstName || ""} ${senderObj.middleName || ""} ${senderObj.lastName || ""}`.replace(/\s+/g, " ").trim() || senderObj.username || "—"
+        : "—";
+      const senderEmail = senderObj?.email || "—";
+
+      let recipientNames = "—";
+      if (subData.multipleRecipients && subData.multipleRecipients.length > 0) {
+        recipientNames = subData.multipleRecipients
+          .map((r: any) => {
+            const name = `${r.firstName || ""} ${r.lastName || ""}`.trim();
+            return name ? `${name} (${r.email || ""})` : r.email || "";
+          })
+          .filter(Boolean)
+          .join("\n");
+      } else if (subData.recepients || subData.recipient) {
+        const r = subData.recepients || subData.recipient;
+        const name = `${r.firstName || ""} ${r.lastName || ""}`.trim();
+        recipientNames = name ? `${name} (${r.email || ""})` : r.email || "—";
+      }
+
+      const basicInfoData = [
+        ["Subject:", subData.subject || "N/A", "Created At:", createdDateStr],
+        ["Project Name:", projectName, "Stage:", stageName],
+        ["Sender:", `${senderName}\n(${senderEmail})`, "Recipient(s):", recipientNames]
+      ];
+
+      autoTable(doc, {
+        body: basicInfoData,
+        startY: currentY,
+        theme: "grid",
+        headStyles: { fillColor: primaryColor },
+        styles: { fontSize: 8.5, cellPadding: 3, textColor: textColor },
+        columnStyles: {
+          0: { fontStyle: "bold", cellWidth: 28, fillColor: lightBg },
+          1: { cellWidth: 63 },
+          2: { fontStyle: "bold", cellWidth: 25, fillColor: lightBg },
+          3: { cellWidth: 66 }
+        }
+      });
+
+      currentY = (doc as any).lastAutoTable.finalY + 8;
+
+      // Section: Description
+      const rawDesc = subData.description || (sortedVersions.length === 1 && sortedVersions[0]?.description);
+      const cleanDesc = stripHtml(rawDesc);
+      if (cleanDesc && cleanDesc !== "No description provided") {
+        if (currentY > 240) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text("DESCRIPTION", 14, currentY);
+        currentY += 4;
+
+        autoTable(doc, {
+          body: [[cleanDesc]],
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 8.5, cellPadding: 4, textColor: textColor },
+          columnStyles: {
+            0: { cellWidth: 182 }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Attachments & Share Links
+      const currentVer = sortedVersions[0] || subData.currentVersion;
+      const attachments = currentVer?.files || currentVer?.file || subData.files || [];
+      const fileList = Array.isArray(attachments) ? attachments : (attachments ? [attachments] : []);
+
+      if (fileList.length > 0) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`ATTACHMENTS & SHARE LINKS (${fileList.length})`, 14, currentY);
+        currentY += 4;
+
+        const fileRows = await Promise.all(
+          fileList.map(async (file: any, idx: number) => {
+            const fileName = file.originalName || file.filename || `File ${idx + 1}`;
+            const shareUrl = await getFileShareUrl(
+              "submittals",
+              subData.id,
+              file.id,
+              currentVer?.id,
+              file
+            );
+            return [
+              idx + 1,
+              { content: fileName, link: shareUrl },
+              { content: `Open File Link:\n(${formatBreakableUrl(shareUrl)})`, link: shareUrl }
+            ];
+          })
+        );
+
+        autoTable(doc, {
+          head: [["#", "File Name", "Share Link (Click to Open)"]],
+          body: fileRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 10, halign: "center" },
+            1: { cellWidth: 55, fontStyle: "bold", textColor: [0, 102, 204] },
+            2: { cellWidth: 117, textColor: [0, 102, 204] }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const rawCell: any = data.cell.raw;
+              if (rawCell && typeof rawCell === "object" && rawCell.link) {
+                data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: rawCell.link });
+              }
+            }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Version History (if > 1 version)
+      if (hasMultipleVersions) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`VERSION HISTORY (${sortedVersions.length})`, 14, currentY);
+        currentY += 4;
+
+        const versionRows = await Promise.all(
+          sortedVersions.map(async (v: any, index: number) => {
+            const vNum = `v${sortedVersions.length - index}${v.id === subData.currentVersionId || index === 0 ? " (Current)" : ""}`;
+            const uploadedAt = formatDateTime(v.createdAt || v.updatedAt || v.date);
+            const uploader = v.user || v.sender;
+            const uploaderName = uploader
+              ? `${uploader.firstName || uploader.f_name || ""} ${uploader.lastName || uploader.l_name || ""}`.trim()
+              : "—";
+            const vDesc = stripHtml(v.description);
+
+            let vFileDetails = "—";
+            const vFiles = v.files || (v.file ? [v.file] : []);
+            if (vFiles.length > 0 && index === 0) {
+              const vShareList = await Promise.all(
+                vFiles.map(async (file: any) => {
+                  const name = file.originalName || file.filename || "File";
+                  const url = await getFileShareUrl("submittals", subData.id, file.id, v.id, file);
+                  return `${name}\nOpen Link: ${formatBreakableUrl(url)}`;
+                })
+              );
+              vFileDetails = vShareList.join("\n\n");
+            } else if (vFiles.length > 0) {
+              vFileDetails = `${vFiles.length} file(s) (Attachments in Current Version)`;
+            }
+
+            return [vNum, uploadedAt, uploaderName, vDesc, vFileDetails];
+          })
+        );
+
+        autoTable(doc, {
+          head: [["Version", "Date", "Uploaded By", "Description", "Files & Share Links"]],
+          body: versionRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 20, fontStyle: "bold" },
+            1: { cellWidth: 30 },
+            2: { cellWidth: 32 },
+            3: { cellWidth: 45 },
+            4: { cellWidth: 55, textColor: [0, 102, 204] }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const cellText = Array.isArray(data.cell.text) ? data.cell.text.join(" ") : String(data.cell.text || "");
+              const foundUrls = cellText.match(/https?:\/\/[^\s\n\)\"\']+/g);
+              if (foundUrls) {
+                foundUrls.forEach((urlWithSpaces) => {
+                  const cleanUrl = urlWithSpaces.replace(/\s+/g, "");
+                  data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: cleanUrl });
+                });
+              }
+            }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Responses
+      const responses = subData.submittalsResponse || subData.responses || [];
+      if (responses && responses.length > 0) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`RESPONSES (${responses.length})`, 14, currentY);
+        currentY += 4;
+
+        const responseRows = await Promise.all(
+          responses.map(async (r: any, idx: number) => {
+            const u = r.user || r.createdBy;
+            const userName = u
+              ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Team Member"
+              : "Team Member";
+            const dateStr = formatDateTime(r.createdAt);
+            let desc = stripHtml(r.description);
+
+            if (r.files && r.files.length > 0) {
+              const fileShareList = await Promise.all(
+                r.files.map(async (file: any) => {
+                  const name = file.originalName || file.filename || "File";
+                  const url = await getFileShareUrl("submittalsResponse", r.id, file.id, undefined, file);
+                  return `• ${name}\n  Open Link: ${formatBreakableUrl(url)}`;
+                })
+              );
+              desc += `\n\n[Attached Files]:\n${fileShareList.join("\n")}`;
+            }
+
+            return [idx + 1, userName, dateStr, desc];
+          })
+        );
+
+        autoTable(doc, {
+          head: [["#", "User", "Date", "Description & Attached Files"]],
+          body: responseRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 10, halign: "center" },
+            1: { cellWidth: 40 },
+            2: { cellWidth: 32 },
+            3: { cellWidth: 100 }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const cellText = Array.isArray(data.cell.text) ? data.cell.text.join(" ") : String(data.cell.text || "");
+              const foundUrls = cellText.match(/https?:\/\/[^\s\n\)\"\']+/g);
+              if (foundUrls) {
+                foundUrls.forEach((urlWithSpaces) => {
+                  const cleanUrl = urlWithSpaces.replace(/\s+/g, "");
+                  data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: cleanUrl });
+                });
+              }
+            }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Save Document
+      const safeProjectName = (projectName || "Submittal_Document").replace(/[^a-zA-Z0-9_\-]/g, "_");
+      doc.save(`Submittal_${safeProjectName}_${subData.serialNo || id}.pdf`);
+      toast.success("Submittal PDF downloaded successfully!");
+    } catch (err) {
+      console.error("Failed to generate Submittal PDF:", err);
+      toast.error("Failed to generate PDF");
+    }
+  };
+
   return createPortal(
     <div className="fixed inset-0 z-10001 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md project-component-container">
       <div className="bg-white dark:bg-slate-900 w-[95%] max-w-[90vw] h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
@@ -238,12 +662,21 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
             <span className="w-2 h-6 bg-[#6bbd45] rounded-full"></span>
             Submittal Details
           </h2>
-          <button
-            onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
-          >
-            CLOSE
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 px-4 py-1.5 bg-[#6bbd45] text-white rounded-lg hover:bg-[#5aa838] transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            >
+              <Download className="w-4 h-4" />
+              Download PDF
+            </button>
+            <button
+              onClick={onClose}
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            >
+              CLOSE
+            </button>
+          </div>
         </div>
 
         {/* Modal Content */}
