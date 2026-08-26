@@ -11,6 +11,8 @@ import { useDispatch } from "react-redux";
 import { login, setUserData } from "../../store/userSlice";
 import { connectSocket } from "../../socket";
 
+import { toast } from "react-toastify";
+
 const Login = () => {
   const { register, handleSubmit, formState: { isSubmitting } } = useForm<AuthInterface>();
   const navigate = useNavigate();
@@ -31,6 +33,12 @@ const Login = () => {
   }, [navigate, searchParams]);
 
   const Submit = async (data: AuthInterface) => {
+    if (data.username?.trim().toUpperCase() === "WBT005") {
+      toast.error("Please use Task Matrix");
+      alert("Please use Task Matrix");
+      return;
+    }
+
     try {
       const userLogin = await AuthService.login(data);
       // Check if OTP verification is required
