@@ -282,7 +282,11 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
   };
 
   const formatBreakableUrl = (url: string) => {
-    return url.replace(/([\/._\-\?&=])/g, "$1 ");
+    if (!url) return "";
+    return url.replace(/(https?:\/\/)|([\/._\-\?&=])/g, (_match, p1, p2) => {
+      if (p1) return p1;
+      return `${p2} `;
+    });
   };
 
   const getFileShareUrl = async (
@@ -597,19 +601,26 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
               : "Team Member";
             const dateStr = formatDateTime(r.createdAt);
             let desc = stripHtml(r.description);
+            const fileShareUrls: string[] = [];
 
             if (r.files && r.files.length > 0) {
               const fileShareList = await Promise.all(
                 r.files.map(async (file: any) => {
                   const name = file.originalName || file.filename || "File";
                   const url = await getFileShareUrl("submittalsResponse", r.id, file.id, undefined, file);
+                  if (url) fileShareUrls.push(url);
                   return `• ${name}\n  Open Link: ${formatBreakableUrl(url)}`;
                 })
               );
               desc += `\n\n[Attached Files]:\n${fileShareList.join("\n")}`;
             }
 
-            return [idx + 1, userName, dateStr, desc];
+            return [
+              idx + 1,
+              userName,
+              dateStr,
+              { content: desc, links: fileShareUrls }
+            ];
           })
         );
 
@@ -628,13 +639,26 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
           },
           didDrawCell: (data) => {
             if (data.section === "body") {
-              const cellText = Array.isArray(data.cell.text) ? data.cell.text.join(" ") : String(data.cell.text || "");
-              const foundUrls = cellText.match(/https?:\/\/[^\s\n\)\"\']+/g);
-              if (foundUrls) {
-                foundUrls.forEach((urlWithSpaces) => {
-                  const cleanUrl = urlWithSpaces.replace(/\s+/g, "");
-                  data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: cleanUrl });
-                });
+              const rawCell: any = data.cell.raw;
+              if (rawCell && typeof rawCell === "object") {
+                if (rawCell.link) {
+                  data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: rawCell.link });
+                } else if (rawCell.links && Array.isArray(rawCell.links)) {
+                  rawCell.links.forEach((linkUrl: string) => {
+                    if (linkUrl) {
+                      data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: linkUrl });
+                    }
+                  });
+                }
+              } else {
+                const cellText = Array.isArray(data.cell.text) ? data.cell.text.join(" ") : String(data.cell.text || "");
+                const foundUrls = cellText.match(/https?:\/\/[^\s\n\)\"\']+/g);
+                if (foundUrls) {
+                  foundUrls.forEach((urlWithSpaces) => {
+                    const cleanUrl = urlWithSpaces.replace(/\s+/g, "");
+                    data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: cleanUrl });
+                  });
+                }
               }
             }
           }
