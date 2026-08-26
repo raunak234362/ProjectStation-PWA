@@ -14,7 +14,11 @@ import { connectSocket } from "../../socket";
 import { toast } from "react-toastify";
 
 const Login = () => {
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm<AuthInterface>();
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<AuthInterface>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
@@ -22,7 +26,8 @@ const Login = () => {
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
-      const redirectUrl = searchParams.get("redirect") || sessionStorage.getItem("redirectUrl");
+      const redirectUrl =
+        searchParams.get("redirect") || sessionStorage.getItem("redirectUrl");
       if (redirectUrl) {
         sessionStorage.removeItem("redirectUrl");
         navigate(redirectUrl);
@@ -33,7 +38,7 @@ const Login = () => {
   }, [navigate, searchParams]);
 
   const Submit = async (data: AuthInterface) => {
-    if (data.username?.trim().toUpperCase() === "WBT005") {
+    if (data.username?.trim().toUpperCase() === "WBT-005") {
       toast.error("Please use Task Matrix");
       alert("Please use Task Matrix");
       return;
@@ -42,8 +47,12 @@ const Login = () => {
     try {
       const userLogin = await AuthService.login(data);
       // Check if OTP verification is required
-      if (userLogin?.requiresVerification || userLogin?.data?.requiresVerification) {
-        const challengeToken = userLogin?.challengeToken || userLogin?.data?.challengeToken;
+      if (
+        userLogin?.requiresVerification ||
+        userLogin?.data?.requiresVerification
+      ) {
+        const challengeToken =
+          userLogin?.challengeToken || userLogin?.data?.challengeToken;
         if (challengeToken) {
           sessionStorage.setItem("challengeToken", challengeToken);
           const redirectUrl = searchParams.get("redirect");
@@ -64,7 +73,12 @@ const Login = () => {
 
       sessionStorage.setItem("token", token);
       connectSocket(token);
-      const role = userDetail?.role || userDetail?.userRole || userLogin?.data?.role || userLogin?.data?.userRole || userLogin?.role;
+      const role =
+        userDetail?.role ||
+        userDetail?.userRole ||
+        userLogin?.data?.role ||
+        userLogin?.data?.userRole ||
+        userLogin?.role;
       if (role) {
         sessionStorage.setItem("userRole", role);
       } else {
@@ -76,14 +90,15 @@ const Login = () => {
         dispatch(setUserData(userDetail));
       }
 
-      const redirectUrl = searchParams.get("redirect") || sessionStorage.getItem("redirectUrl");
+      const redirectUrl =
+        searchParams.get("redirect") || sessionStorage.getItem("redirectUrl");
       if (redirectUrl) {
         sessionStorage.removeItem("redirectUrl");
         navigate(redirectUrl);
       } else {
         navigate("/dashboard");
       }
-      
+
       console.log("Login Successful:", userLogin);
     } catch (error: any) {
       console.error("Error While Logging in:", error);
@@ -112,7 +127,7 @@ const Login = () => {
   };
 
   return (
-    <div className="relative" style={{ textTransform: 'none' }}>
+    <div className="relative" style={{ textTransform: "none" }}>
       {/* Background blur */}
       <img
         src={Background}
@@ -124,21 +139,22 @@ const Login = () => {
         {/* Logo section */}
         <div className="flex items-center justify-center md:min-h-screen">
           <div className="flex items-center justify-center p-6 md:p-16 shadow-2xl shadow-green-950/20 bg-white/90 backdrop-blur-sm border-4 border-white rounded-[6px] mx-6 md:mx-20">
-            <img src={LOGO} alt="Logo" className="max-w-[220px] md:max-w-md w-full h-auto" />
+            <img
+              src={LOGO}
+              alt="Logo"
+              className="max-w-[220px] md:max-w-md w-full h-auto"
+            />
           </div>
         </div>
 
         {/* Login form */}
         <div className="flex items-center md:backdrop-blur-xl justify-center p-6 md:p-0">
           <div className="bg-white/95 h-fit w-full max-w-lg md:w-3/4 lg:w-2/3 rounded-[6px] border border-green-900/10 p-8 md:p-12 shadow-2xl shadow-green-950/20">
-
             {/* Welcome Message */}
             <div className="mb-8">
               <p className="text-center text-4xl md:text-5xl text-gray-700 font-light leading-tight">
                 Welcome to <br />
-                <span className=" text-green-700">
-                  Project Station
-                </span>
+                <span className=" text-green-700">Project Station</span>
               </p>
 
               <p className="text-center text-lg text-gray-500 mt-4">
@@ -175,13 +191,16 @@ const Login = () => {
               </div>
 
               <div className="mt-4">
-                <Button type="submit" disabled={isSubmitting} className="w-full text-xl text-black border border-black bg-green-50 hover:bg-green-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full text-xl text-black border border-black bg-green-50 hover:bg-green-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   {isSubmitting ? "Logging in..." : "Login"}
                 </Button>
               </div>
             </form>
           </div>
-
         </div>
       </div>
     </div>
