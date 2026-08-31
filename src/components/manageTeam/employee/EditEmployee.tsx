@@ -145,6 +145,10 @@ const EditEmployee = ({
         return acc;
       }, {});
 
+      if (dirtyData.username && typeof dirtyData.username === "string") {
+        dirtyData.username = dirtyData.username.toUpperCase();
+      }
+
       // If nothing changed, just close the modal
       if (Object.keys(dirtyData).length === 0) {
         onClose();
