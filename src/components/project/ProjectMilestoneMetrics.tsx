@@ -176,7 +176,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                     >
                       <div>
                         <h5 className="font-semibold text-gray-800 mb-1 line-clamp-1">
-                          {ms.subject}
+                          {ms.subject}{ms.subSubject ? ` - ${ms.subSubject}` : ""}
                         </h5>
                         <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
                           <span>Status:</span>

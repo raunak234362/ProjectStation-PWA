@@ -53,7 +53,10 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
       accessorKey: "subject",
       header: "Subject",
       cell: ({ row }) => (
-        <span className="font-bold text-black">{row.original.subject}</span>
+        <span className="font-bold text-black">
+          {row.original.subject}
+          {row.original.subSubject ? ` - ${row.original.subSubject}` : ""}
+        </span>
       ),
     },
     ...(isConnectionDesigner

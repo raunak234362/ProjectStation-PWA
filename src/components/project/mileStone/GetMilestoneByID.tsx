@@ -51,6 +51,7 @@ const InfoCard = ({
 interface Milestone {
   id: string | number;
   subject: string;
+  subSubject?: string;
   description: string;
   approvalDate: string;
   CDApprovalDate?: string;
@@ -345,7 +346,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
             </div>
             <div>
               <h2 className="text-xl font-bold text-black leading-tight">
-                {milestone.subject}
+                {milestone.subject}{milestone.subSubject ? ` - ${milestone.subSubject}` : ""}
               </h2>
             </div>
           </div>

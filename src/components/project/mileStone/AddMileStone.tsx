@@ -115,6 +115,12 @@ const AddMileStone = ({
             </p>
           )}
 
+          <Input
+            label="Sub Subject"
+            placeholder="Enter sub-subject..."
+            {...register("subSubject")}
+          />
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Description *

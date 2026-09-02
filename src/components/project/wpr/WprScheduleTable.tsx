@@ -196,7 +196,7 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                               className="w-full bg-white border border-black px-2 py-0.5 rounded-none font-bold uppercase text-xs text-black"
                             />
                           ) : (
-                            <span className="uppercase">{row.phase}</span>
+                            <span className="uppercase">{row.phase}{row.subSubject ? ` - ${row.subSubject}` : ""}</span>
                           )}
                         </td>
                       )}
@@ -333,7 +333,7 @@ const WprScheduleTable: React.FC<WprScheduleTableProps> = ({
                         className="w-full bg-white border border-black px-2 py-0.5 rounded-none font-bold uppercase text-xs text-black"
                       />
                     ) : (
-                      <span className="uppercase">{row.phase}</span>
+                      <span className="uppercase">{row.phase}{row.subSubject ? ` - ${row.subSubject}` : ""}</span>
                     )}
                   </td>
 

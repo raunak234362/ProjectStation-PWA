@@ -34,6 +34,7 @@ const EditMileStone = ({
   } = useForm({
     defaultValues: {
       subject: "",
+      subSubject: "",
       description: "",
       status: "ACTIVE",
       percentage: 0,
@@ -98,6 +99,7 @@ const EditMileStone = ({
       if (data) {
         reset({
           subject: data.subject || "",
+          subSubject: data.subSubject || "",
           description: data.description || "",
           status: data.status || "PENDING",
           percentage:
@@ -265,6 +267,8 @@ const EditMileStone = ({
               </p>
             )}
           </div>
+
+          <Input label="Sub Subject" {...register("subSubject")} />
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">

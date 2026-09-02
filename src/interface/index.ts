@@ -732,6 +732,7 @@ export interface ProjectMilestone {
   id: string;
   stage: string;
   subject: string;
+  subSubject?: string;
   name?: string;
   date: string;
   approvalDate?: string;

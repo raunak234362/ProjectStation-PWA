@@ -577,7 +577,7 @@ const WorkProgressReport = ({
             }
           })(),
           types: m.types || "ANCHOR_BOLT",
-          subSubject: "",
+          subSubject: m.subSubject || "",
         };
       });
 
