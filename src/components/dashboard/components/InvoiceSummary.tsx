@@ -79,6 +79,7 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           isMto = !!(
             matchedRfq.MTOManual ||
             matchedRfq.mtoStickModelEnabled ||
+            matchedRfq.isMTOStickModel ||
             matchedRfq.MTOStickModel ||
             matchedRfq.MTOValue ||
             (matchedRfq as any).MTOManualModel

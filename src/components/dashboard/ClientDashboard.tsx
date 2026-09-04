@@ -170,7 +170,7 @@ const ClientDashboard = () => {
         const rfqData = Array.isArray(sent) ? sent : sent?.data || [];
         setAllRFQs(rfqData);
 
-        const mtoRfqs = rfqData.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue);
+        const mtoRfqs = rfqData.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel || r.MTOValue);
         const detailingRfqs = rfqData.filter((r: any) => r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign);
 
         const totalProjects = projects.length;
@@ -462,7 +462,7 @@ const ClientDashboard = () => {
           onClose={() => setIsOngoingRfqModalOpen(false)}
           type="ALL_RFQ"
           data={allRFQs.filter(r => r.wbtStatus !== "AWARDED" && r.status !== "AWARDED").filter((r: any) => {
-            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue;
+            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel || r.MTOValue;
             if (rfqFilter === "DETAILING") return r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
             return true;
           })}
@@ -473,7 +473,7 @@ const ClientDashboard = () => {
           onClose={() => setIsRfqModalOpen(false)}
           type="PENDING_RFQ"
           data={pendingRFQs.filter((r: any) => {
-            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue;
+            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel || r.MTOValue;
             if (rfqFilter === "DETAILING") return r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
             return true;
           })}
@@ -484,7 +484,7 @@ const ClientDashboard = () => {
           onClose={() => setIsAllRfqModalOpen(false)}
           type="ALL_RFQ"
           data={allRFQs.filter((r: any) => {
-            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue;
+            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel || r.MTOValue;
             if (rfqFilter === "DETAILING") return r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
             return true;
           })}
@@ -495,7 +495,7 @@ const ClientDashboard = () => {
           onClose={() => setIsAwardedRfqModalOpen(false)}
           type="AWARDED_RFQ"
           data={allRFQs.filter(r => r.wbtStatus === "AWARDED" || r.status === "AWARDED" || r.status === "COMPLETED").filter((r: any) => {
-            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue;
+            if (rfqFilter === "MTO") return r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel || r.MTOValue;
             if (rfqFilter === "DETAILING") return r.detailingMain || r.detailingMisc || r.connectionDesign || r.customerDesign || r.miscDesign;
             return true;
           })}

@@ -507,7 +507,7 @@ const GetCDRFQByID = ({ id, onClose }: GetCDRFQByIDProps) => {
                 const currentStatus = (wbtStatus && wbtStatus !== "RECEIVED") ? wbtStatus : status;
                 
                 if (currentStatus === "AWARDED") {
-                  const isMTO = !!(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.mtoStickModelEnabled);
+                  const isMTO = !!(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.mtoStickModelEnabled || (rfq as any)?.isMTOStickModel);
                   return isMTO ? "SUBMITTED" : "AWARDED";
                 }
                 
@@ -622,7 +622,7 @@ const GetCDRFQByID = ({ id, onClose }: GetCDRFQByIDProps) => {
                 )}
 
                 {/* Material Take-off - Only shown if at least one option is selected */}
-                {(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.MTOManualModel) && (
+                {(rfq?.MTOManual || rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.mtoStickModelEnabled || (rfq as any)?.isMTOStickModel || (rfq as any)?.MTOManualModel) && (
                   <div className="space-y-4">
                     <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
                       Material Take-off
@@ -634,7 +634,7 @@ const GetCDRFQByID = ({ id, onClose }: GetCDRFQByIDProps) => {
                           <span>MTO - Manual</span>
                         </div>
                       )}
-                      {!!(rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.MTOManualModel) && (
+                      {!!(rfq?.MTOStickModel || rfq?.MTOValue || (rfq as any)?.mtoStickModelEnabled || (rfq as any)?.isMTOStickModel || (rfq as any)?.MTOManualModel) && (
                         <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
                           <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
                           <span>MTO - Stick Model</span>

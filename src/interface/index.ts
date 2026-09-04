@@ -288,6 +288,8 @@ export interface RFQItem {
   detailingMisc: boolean;
   MTOManual: boolean;
   MTOStickModel: string;
+  isMTOStickModel?: boolean;
+  mtoStickModelEnabled?: boolean;
   MTOValue?: string;
   files?: File[] | string[];
   responses?: RfqResponse[];
@@ -321,9 +323,10 @@ export interface RFQpayload {
   detailingMisc: boolean;
   MTOManual: boolean;
   MTOStickModel: string;
+  isMTOStickModel?: boolean;
+  mtoStickModelEnabled?: boolean;
   MTOManualModel?: string;
   MTOValue?: string;
-  mtoStickModelEnabled?: boolean;
   miscDesign: boolean;
   mainSteel?: boolean;
   mainSteelMiscAttachments?: boolean;

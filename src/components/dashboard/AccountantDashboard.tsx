@@ -130,6 +130,7 @@ const AccountantDashboard = () => {
           } else if (matchedRfq) {
             const isMto = isMtoValue(matchedRfq.MTOManual) ||
                           isMtoValue(matchedRfq.mtoStickModelEnabled) ||
+                          isMtoValue(matchedRfq.isMTOStickModel) ||
                           isMtoValue(matchedRfq.MTOStickModel) ||
                           isMtoValue(matchedRfq.MTOValue) ||
                           isMtoValue(matchedRfq.MTOManualModel);
@@ -386,6 +387,7 @@ const AccountantDashboard = () => {
           isMto = !!(
             matchedRfq.MTOManual ||
             matchedRfq.mtoStickModelEnabled ||
+            matchedRfq.isMTOStickModel ||
             matchedRfq.MTOStickModel ||
             matchedRfq.MTOValue ||
             matchedRfq.MTOManualModel

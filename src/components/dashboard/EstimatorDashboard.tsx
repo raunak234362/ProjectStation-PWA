@@ -131,7 +131,7 @@ const EstimatorDashboard = () => {
 
         // Filter upcoming MTOs using the backend's pending RFQs list
         const upcomingMTOs = pendingRfqs
-          .filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue)
+          .filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel || r.MTOValue)
           .sort((a: any, b: any) => {
             const dateA = a.estimationDate ? new Date(a.estimationDate).getTime() : Infinity;
             const dateB = b.estimationDate ? new Date(b.estimationDate).getTime() : Infinity;
@@ -169,10 +169,10 @@ const EstimatorDashboard = () => {
           }
         });
 
-        const mtoRfqs = rfqs.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel);
+        const mtoRfqs = rfqs.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel);
         const totalMTO = mtoRfqs.length;
         const awardedMTO = mtoRfqs.filter((r: any) => r.status === "AWARDED" || r.wbtStatus === "AWARDED").length;
-        const pendingMTO = pendingRfqs.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel || r.MTOValue).length;
+        const pendingMTO = pendingRfqs.filter((r: any) => r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel || r.MTOValue).length;
 
         setStats({
           totalRfqsSent,
@@ -186,7 +186,7 @@ const EstimatorDashboard = () => {
         });
 
       } catch (error) {
-        console.error("Failed to fetch Estimator Dashboard data:", error);
+        console.error("Failed to fetch EstimatorDashboard data:", error);
       } finally {
         setLoading(false);
       }
@@ -211,11 +211,11 @@ const EstimatorDashboard = () => {
         return !isPaid;
       }));
     } else if (type === "ALL_MTO") {
-      setModalData(allRFQs.filter((r) => r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel));
+      setModalData(allRFQs.filter((r) => r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel));
     } else if (type === "PENDING_MTO") {
-      setModalData(allRFQs.filter((r) => (r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel) && r.status !== "AWARDED" && r.wbtStatus !== "AWARDED"));
+      setModalData(allRFQs.filter((r) => (r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel) && r.status !== "AWARDED" && r.wbtStatus !== "AWARDED"));
     } else if (type === "COMPLETED_MTO") {
-      setModalData(allRFQs.filter((r) => (r.MTOManual || r.mtoStickModelEnabled || r.MTOStickModel) && (r.status === "AWARDED" || r.wbtStatus === "AWARDED")));
+      setModalData(allRFQs.filter((r) => (r.MTOManual || r.mtoStickModelEnabled || r.isMTOStickModel || r.MTOStickModel) && (r.status === "AWARDED" || r.wbtStatus === "AWARDED")));
     }
     setIsModalOpen(true);
   };

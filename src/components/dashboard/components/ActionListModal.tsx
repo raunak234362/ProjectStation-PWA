@@ -78,7 +78,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
     // Filter by RFQ Sub-tab (MTO vs Detailing) for Client Admin in PENDING_RFQ
     if (type === "PENDING_RFQ" && isClientAdmin) {
       result = result.filter((item) => {
-        const hasMTO = !!(item.MTOManual || item.mtoStickModelEnabled || item.MTOStickModel || item.MTOValue);
+        const hasMTO = !!(item.MTOManual || item.mtoStickModelEnabled || item.isMTOStickModel || item.MTOStickModel || item.MTOValue);
         const hasDetailing = !!(item.detailingMain || item.detailingMisc || item.connectionDesign || item.customerDesign || item.miscDesign);
 
         if (rfqSubTab === "MTO") {
@@ -173,7 +173,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
           const status = item.status;
           const wbtStatus = item.wbtStatus;
           if (wbtStatus === "AWARDED") {
-            const isMTO = !!(item.MTOManual || item.MTOStickModel || item.MTOValue || item.mtoStickModelEnabled);
+            const isMTO = !!(item.MTOManual || item.MTOStickModel || item.MTOValue || item.mtoStickModelEnabled || item.isMTOStickModel);
             val = isMTO ? "Submitted" : "Awarded";
           } else if (status === "IN_REVIEW") {
             val = "Estimation In Progress";
@@ -309,7 +309,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               let label = "";
 
               if (wbtStatus === "AWARDED") {
-                const isMTO = !!(row.original.MTOManual || row.original.MTOStickModel || row.original.MTOValue || row.original.mtoStickModelEnabled);
+                const isMTO = !!(row.original.MTOManual || row.original.MTOStickModel || row.original.MTOValue || row.original.mtoStickModelEnabled || row.original.isMTOStickModel);
                 label = isMTO ? "Submitted" : "Awarded";
               } else if (status === "IN_REVIEW") {
                 label = "Estimation In Progress";
@@ -482,7 +482,7 @@ const ActionListModal: React.FC<ActionListModalProps> = ({
               let label = "";
 
               if (wbtStatus === "AWARDED") {
-                const isMTO = !!(row.original.MTOManual || row.original.MTOStickModel || row.original.MTOValue || row.original.mtoStickModelEnabled);
+                const isMTO = !!(row.original.MTOManual || row.original.MTOStickModel || row.original.MTOValue || row.original.mtoStickModelEnabled || row.original.isMTOStickModel);
                 label = isMTO ? "Submitted" : "Awarded";
               } else if (status === "IN_REVIEW") {
                 label = "Estimation In Progress";

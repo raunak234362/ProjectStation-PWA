@@ -103,7 +103,7 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
                         detailingMain: d.detailingMain ?? false,
                         detailingMisc: d.detailingMisc ?? false,
                         MTOManual: d.MTOManual ?? false,
-                        mtoStickModelEnabled: d.mtoStickModelEnabled ?? false,
+                        mtoStickModelEnabled: d.mtoStickModelEnabled ?? d.isMTOStickModel ?? !!d.MTOStickModel,
                         MTOStickModel: d.MTOStickModel || ""
                     })
                     setFabricatorName(d.fabricator?.fabName || d.sender?.fabricator?.fabName || d.fabricatorName || "")
@@ -123,6 +123,9 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
         try {
             const payload: any = {
                 ...data,
+                isMTOStickModel: !!data.mtoStickModelEnabled,
+                mtoStickModelEnabled: !!data.mtoStickModelEnabled,
+                MTOStickModel: "",
                 bidPrice: data.bidPrice !== '' && data.bidPrice !== null && data.bidPrice !== undefined
                     ? String(data.bidPrice)
                     : '',
@@ -356,24 +359,6 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
                                     </label>
                                 </div>
                             </div>
-                            {mtoStickModelEnabled && (
-                                <div className="pt-4 border-t border-gray-50 space-y-2">
-                                    <label className="text-xs text-black uppercase tracking-widest">
-                                        MTO Stick Model Details
-                                    </label>
-                                    <Controller
-                                        name="MTOStickModel"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <RichTextEditor
-                                                value={field.value || ''}
-                                                onChange={field.onChange}
-                                                placeholder="Enter MTO stick model details..."
-                                            />
-                                        )}
-                                    />
-                                </div>
-                            )}
                         </div>
 
                     </form>

@@ -343,7 +343,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
         let label = "";
         if (val === "AWARDED") {
           const r = row.original as any;
-          const isMTO = !!(r.MTOManual || r.MTOStickModel || r.MTOValue || r.mtoStickModelEnabled);
+          const isMTO = !!(r.MTOManual || r.MTOStickModel || r.MTOValue || r.mtoStickModelEnabled || r.isMTOStickModel);
           label = isMTO ? "WBT Submitted" : "Awarded";
         } else if (val === "WBT_SUBMITTED") {
           label = "WBT Submitted";
@@ -380,7 +380,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
     if (selectedType !== "ALL") {
       data = data.filter(item => {
         const r = item as any;
-        const isMTO = isTrue(r.MTOManual) || (r.MTOStickModel && r.MTOStickModel !== "" && r.MTOStickModel !== "false") || (r.MTOValue && r.MTOValue !== "" && r.MTOValue !== "false") || isTrue(r.mtoStickModelEnabled);
+        const isMTO = isTrue(r.MTOManual) || (r.MTOStickModel && r.MTOStickModel !== "" && r.MTOStickModel !== "false") || (r.MTOValue && r.MTOValue !== "" && r.MTOValue !== "false") || isTrue(r.mtoStickModelEnabled) || isTrue(r.isMTOStickModel);
         const isDetailing = isTrue(r.detailingMain) || isTrue(r.detailingMisc) || isTrue(r.miscDesign) || isTrue(r.customerDesign) || isTrue(r.connectionDesign);
 
         if (selectedType === "MTO") return isMTO;

@@ -782,7 +782,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
 
       const mtoScopes: string[] = [];
       if (rfqData.MTOManual) mtoScopes.push("MTO - Manual");
-      if (rfqData.MTOStickModel || rfqData.MTOValue || rfqData.MTOManualModel) mtoScopes.push("MTO - Stick Model");
+      if (rfqData.MTOStickModel || rfqData.MTOValue || rfqData.MTOManualModel || rfqData.isMTOStickModel || rfqData.mtoStickModelEnabled) mtoScopes.push("MTO - Stick Model");
 
       const scopeRows: string[][] = [];
       if (detailingScopes.length > 0) {
@@ -1255,7 +1255,8 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                     rfq?.MTOManual ||
                     rfq?.MTOStickModel ||
                     rfq?.MTOValue ||
-                    (rfq as any)?.mtoStickModelEnabled
+                    (rfq as any)?.mtoStickModelEnabled ||
+                    (rfq as any)?.isMTOStickModel
                   );
                   return isMTO ? "SUBMITTED" : "AWARDED";
                 }
@@ -1382,6 +1383,8 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                 {(rfq?.MTOManual ||
                   rfq?.MTOStickModel ||
                   rfq?.MTOValue ||
+                  (rfq as any)?.mtoStickModelEnabled ||
+                  (rfq as any)?.isMTOStickModel ||
                   (rfq as any)?.MTOManualModel) && (
                   <div className="space-y-4">
                     <h4 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight border-l-4 border-[#6bbd45] pl-3">
@@ -1397,6 +1400,8 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
                       {!!(
                         rfq?.MTOStickModel ||
                         rfq?.MTOValue ||
+                        (rfq as any)?.mtoStickModelEnabled ||
+                        (rfq as any)?.isMTOStickModel ||
                         (rfq as any)?.MTOManualModel
                       ) && (
                         <div className="flex items-center gap-2.5 text-sm font-bold text-gray-800 uppercase tracking-wider">
