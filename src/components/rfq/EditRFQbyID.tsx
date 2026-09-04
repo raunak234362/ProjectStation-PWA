@@ -75,11 +75,8 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
         handleSubmit,
         control,
         reset,
-        watch,
         formState: { errors, isSubmitting }
     } = useForm<EditRFQFormValues>()
-
-    const mtoStickModelEnabled = watch('mtoStickModelEnabled')
 
     useEffect(() => {
         const fetchRFQ = async () => {
