@@ -1,8 +1,20 @@
+import { getCOTableRowSpan, isMergedCellValue } from "../../utils/coTableUtils";
+
 interface Props {
   rows: any[];
 }
 
 const CoTableView = ({ rows }: Props) => {
+  const renderCell = (row: any, rowIndex: number, field: string, className: string) => {
+    if (isMergedCellValue(row[field])) return null;
+
+    return (
+      <td rowSpan={getCOTableRowSpan(rows, rowIndex, field)} className={className}>
+        {row[field] ?? "—"}
+      </td>
+    );
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-md border overflow-hidden">
       <div className="overflow-x-auto">
@@ -25,28 +37,15 @@ const CoTableView = ({ rows }: Props) => {
               <tr key={r.id} className="hover:bg-gray-50">
                 <td className="px-4 py-3 text-gray-700">{i + 1}</td>
 
-                <td className="px-4 py-3 max-w-xs">
-                  <p className="line-clamp-2">{r.description}</p>
-                </td>
-
-                <td className="px-4 py-3">{r.referenceDoc}</td>
-                <td className="px-4 py-3">{r.elements}</td>
-
-                <td className="px-4 py-3 text-center font-medium">
-                  {r.QtyNo}
-                </td>
-
-                <td className="px-4 py-3 text-center">
-                  {r.hours}
-                </td>
-
-                <td className="px-4 py-3 text-right font-semibold">
-                  ${r.cost}
-                </td>
-
-                <td className="px-4 py-3 max-w-xs text-gray-700">
-                  {r.remarks || "—"}
-                </td>
+                {renderCell(r, i, "description", "px-4 py-3 max-w-xs")}
+                {renderCell(r, i, "referenceDoc", "px-4 py-3")}
+                {renderCell(r, i, "elements", "px-4 py-3")}
+                {renderCell(r, i, "QtyNo", "px-4 py-3 text-center font-medium")}
+                {renderCell(r, i, "hours", "px-4 py-3 text-center")}
+                {isMergedCellValue(r.cost)
+                  ? null
+                  : <td rowSpan={getCOTableRowSpan(rows, i, "cost")} className="px-4 py-3 text-right font-semibold">${r.cost ?? 0}</td>}
+                {renderCell(r, i, "remarks", "px-4 py-3 max-w-xs text-gray-700")}
               </tr>
             ))}
           </tbody>

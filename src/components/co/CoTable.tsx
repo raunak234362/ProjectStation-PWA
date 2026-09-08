@@ -4,6 +4,7 @@ import Button from "../fields/Button";
 import Input from "../fields/input";
 import Service from "../../api/Service";
 import { toast } from "react-toastify";
+import { normalizeCOTableRows } from "../../utils/coTableUtils";
 
 interface ChangeOrderTableProps {
   coId: string;
@@ -39,11 +40,17 @@ const CoTable = ({ coId }: ChangeOrderTableProps) => {
   const { fields, append, replace } = useFieldArray({ control, name: "rows" });
 
   const fetchTableRows = async () => {
-    if (!coId) return;
+    if (!coId) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const response = await Service.GetAllCOTableRows(coId);
-      const rows = response?.data || [];
+      const responseRows = Array.isArray(response)
+        ? response
+        : response?.data?.data || response?.data || [];
+      const rows = normalizeCOTableRows(responseRows);
       if (rows.length > 0) {
         replace(
           rows.map((r: any) => ({

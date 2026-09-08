@@ -1,11 +1,16 @@
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import CoTableView from "./CoTableView";
+import Service from "../../api/Service";
+import { isMergedCellValue } from "../../utils/coTableUtils";
 
 const CoTablePage = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const encodedData = params.get("coData");
   const id = params.get("id");
+  const [tableRows, setTableRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(Boolean(id));
 
   let co: any = null;
 
@@ -28,18 +33,48 @@ const CoTablePage = () => {
     }
   }
 
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchTableRows = async () => {
+      try {
+        const response = await Service.GetAllCOTableRows(id);
+        const rows = Array.isArray(response)
+          ? response
+          : response?.data?.data || response?.data || [];
+        setTableRows(Array.isArray(rows) ? rows : []);
+      } catch (error) {
+        console.error("Failed to fetch change order table:", error);
+        setTableRows([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTableRows();
+  }, [id]);
+
   if (!co) {
     return <div className="p-6 text-red-500">No Change Order data found</div>;
   }
 
-  const rows = co.CoRefersTo || co.changeOrderTables || [];
+  const rows = tableRows.length > 0
+    ? tableRows
+    : co.CoRefersTo || co.changeOrderTables || [];
 
-  const totalQty = rows.reduce((s: number, r: any) => s + (r.QtyNo || 0), 0);
-  const totalHours = rows.reduce((s: number, r: any) => s + (r.hours || 0), 0);
-  const totalCost = rows.reduce((s: number, r: any) => s + (r.cost || 0), 0);
+  const totalQty = rows.reduce((s: number, r: any) => s + (isMergedCellValue(r.QtyNo) ? 0 : Number(r.QtyNo) || 0), 0);
+  const totalHours = rows.reduce((s: number, r: any) => s + (isMergedCellValue(r.hours) ? 0 : Number(r.hours) || 0), 0);
+  const totalCost = rows.reduce((s: number, r: any) => s + (isMergedCellValue(r.cost) ? 0 : Number(r.cost) || 0), 0);
+
+  if (loading) {
+    return <div className="p-6 text-center text-green-600">Loading table data...</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="h-screen overflow-y-auto bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Header */}
