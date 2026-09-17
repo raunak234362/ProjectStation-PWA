@@ -20,6 +20,7 @@ const AllProjects = () => {
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [stage, setStage] = useState<string>("");
   const [managerName, setManagerName] = useState<string>("");
+  const [fabricatorName, setFabricatorName] = useState<string>("");
   const [meta, setMeta] = useState<{ total: number; page: number; limit: number; totalPages: number } | null>(null);
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
@@ -42,7 +43,7 @@ const AllProjects = () => {
         limit,
         debouncedSearch || undefined,
         managerName || undefined,
-        undefined, // fabricatorName
+        fabricatorName || undefined,
         stage || undefined
       );
 
@@ -87,7 +88,7 @@ const AllProjects = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, debouncedSearch, managerName, stage]);
+  }, [page, limit, debouncedSearch, stage, managerName, fabricatorName]);
 
   useEffect(() => {
     fetchProjects();
@@ -134,7 +135,7 @@ const AllProjects = () => {
               />
             </svg>
           </div>
-          <span className="font-black text-black group-hover:text-green-700 transition-colors">
+          <span className="text-sm  uppercase tracking-normal text-black group-hover:text-green-700 transition-colors">
             {row.original.name}
           </span>
         </div>
@@ -145,7 +146,7 @@ const AllProjects = () => {
       accessorKey: "stage",
       header: "Stage",
       cell: ({ row }: { row: any }) => (
-        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
+        <span className="px-2 py-0.5 text-sm uppercase tracking-normal rounded-md bg-gray-50 text-black border border-black/5">
           {row.original.stage || "—"}
         </span>
       ),
@@ -160,7 +161,7 @@ const AllProjects = () => {
         return (
           <div className="flex flex-col gap-1">
             {managers.map((m: any, idx: number) => (
-              <span key={idx} className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-700">
+              <span key={idx} className="text-sm uppercase tracking-normal text-gray-700">
                 {m.firstName} {m.lastName}
               </span>
             ))}
@@ -173,7 +174,7 @@ const AllProjects = () => {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }: { row: any }) => (
-        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
+        <span className="px-2 py-0.5 text-sm uppercase tracking-normal rounded-md bg-gray-50 text-black border border-black/5">
           {row.getValue("status") || "—"}
         </span>
       ),
@@ -185,6 +186,7 @@ const AllProjects = () => {
     setSearch("");
     setStage("");
     setManagerName("");
+    setFabricatorName("");
     setStatusFilter("ALL");
     setPage(1);
   };
@@ -192,117 +194,117 @@ const AllProjects = () => {
   return (
     <div className="space-y-4">
       {/* Top Filter and Search Bar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-2 px-2">
+      <div className="flex flex-col gap-4 mb-2 px-2">
         {/* Status Tabs */}
-        <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 overflow-x-auto max-w-full">
+        <div className="flex items-center gap-2 overflow-x-auto max-w-full">
           <button
             onClick={() => setStatusFilter("ALL")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 whitespace-nowrap ${
-              statusFilter === "ALL"
-                ? "bg-green-200/50 text-black shadow-sm border border-green-300"
-                : "text-gray-500 hover:text-gray-800 hover:bg-white"
+            className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
+              statusFilter === "ALL" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
             }`}
           >
-            Total
-            <span className={`text-xs px-1.5 py-0.5 rounded-md font-black ${
-              statusFilter === "ALL" ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
-            }`}>
-              {stats.total}
-            </span>
+            Total - {stats.total}
           </button>
           
           <button
             onClick={() => setStatusFilter("ACTIVE")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 whitespace-nowrap ${
-              statusFilter === "ACTIVE"
-                ? "bg-green-200/50 text-black shadow-sm border border-green-300"
-                : "text-gray-500 hover:text-gray-800 hover:bg-white"
+            className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
+              statusFilter === "ACTIVE" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
             }`}
           >
-            Active
-            <span className={`text-xs px-1.5 py-0.5 rounded-md font-black ${
-              statusFilter === "ACTIVE" ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
-            }`}>
-              {stats.active}
-            </span>
+            Active - {stats.active}
           </button>
           
           <button
             onClick={() => setStatusFilter("COMPLETE")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 whitespace-nowrap ${
-              statusFilter === "COMPLETE"
-                ? "bg-green-200/50 text-black shadow-sm border border-green-300"
-                : "text-gray-500 hover:text-gray-800 hover:bg-white"
+            className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
+              statusFilter === "COMPLETE" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
             }`}
           >
-            Completed
-            <span className={`text-xs px-1.5 py-0.5 rounded-md font-black ${
-              statusFilter === "COMPLETE" ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
-            }`}>
-              {stats.completed}
-            </span>
+            Completed - {stats.completed}
           </button>
           
           <button
             onClick={() => setStatusFilter("ONHOLD")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-200 whitespace-nowrap ${
-              statusFilter === "ONHOLD"
-                ? "bg-green-200/50 text-black shadow-sm border border-green-300"
-                : "text-gray-500 hover:text-gray-800 hover:bg-white"
+            className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
+              statusFilter === "ONHOLD" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
             }`}
           >
-            On Hold
-            <span className={`text-xs px-1.5 py-0.5 rounded-md font-black ${
-              statusFilter === "ONHOLD" ? "bg-green-300/50 text-green-800" : "bg-gray-200 text-gray-600"
-            }`}>
-              {stats.onHold}
-            </span>
+            On Hold - {stats.onHold}
           </button>
         </div>
 
-        {/* Server Search and Query Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[180px] flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search projects..."
-              className="w-full pl-8 pr-3 py-1.5 text-xs font-bold bg-white border border-gray-200 rounded-xl outline-none focus:border-green-500 transition-colors"
-            />
+        {/* Form Layout Filters */}
+        <div className="flex flex-wrap items-end gap-4 mt-2">
+          <div className="flex flex-col gap-1 flex-1 min-w-[200px] max-w-xs">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Search Project</label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name..."
+                className="w-full pl-8 pr-3 py-1.5 text-sm bg-white border border-gray-300 rounded outline-none focus:border-[#6bbd45] transition-colors"
+              />
+            </div>
           </div>
 
-          <select
-            value={stage}
-            onChange={(e) => {
-              setStage(e.target.value);
-              setPage(1);
-            }}
-            className="px-3 py-1.5 text-xs font-bold bg-white border border-gray-200 rounded-xl outline-none focus:border-green-500 transition-colors uppercase"
-          >
-            <option value="">All Stages</option>
-            <option value="IFA">IFA</option>
-            <option value="IFC">IFC</option>
-            <option value="BFA">BFA</option>
-            <option value="RELEASED">RELEASED</option>
-          </select>
+          <div className="flex flex-col gap-1 min-w-[150px]">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Manager</label>
+            <select
+              value={managerName}
+              onChange={(e) => {
+                setManagerName(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-1.5 text-sm bg-white border border-gray-300 rounded outline-none focus:border-[#6bbd45] transition-colors"
+            >
+              <option value="">All Managers</option>
+            </select>
+          </div>
 
-          <input
-            type="text"
-            value={managerName}
-            onChange={(e) => {
-              setManagerName(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Manager..."
-            className="w-32 px-3 py-1.5 text-xs font-bold bg-white border border-gray-200 rounded-xl outline-none focus:border-green-500 transition-colors"
-          />
+          <div className="flex flex-col gap-1 min-w-[150px]">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Fabricator</label>
+            <select
+              value={fabricatorName}
+              onChange={(e) => {
+                setFabricatorName(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-1.5 text-sm bg-white border border-gray-300 rounded outline-none focus:border-[#6bbd45] transition-colors"
+            >
+              <option value="">ALL FABRICATORS</option>
+            </select>
+          </div>
 
-          {(search || stage || managerName || statusFilter !== "ALL") && (
+          <div className="flex flex-col gap-1 min-w-[130px]">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Stage</label>
+            <select
+              value={stage}
+              onChange={(e) => {
+                setStage(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-1.5 text-sm bg-white border border-gray-300 rounded outline-none focus:border-[#6bbd45] transition-colors"
+            >
+              <option value="">All Stages</option>
+              <option value="IFA">IFA</option>
+              <option value="IFC">IFC</option>
+              <option value="BFA">BFA</option>
+              <option value="RELEASED">RELEASED</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center gap-2 mb-2 min-w-[120px]">
+            <input type="checkbox" id="overrun" className="w-4 h-4 border-gray-300 rounded text-[#6bbd45] focus:ring-[#6bbd45]" />
+            <label htmlFor="overrun" className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Overrun Only</label>
+          </div>
+
+          {(search || stage || managerName || fabricatorName || statusFilter !== "ALL") && (
             <button
               onClick={handleResetFilters}
-              className="px-2.5 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-xl flex items-center gap-1 transition-colors"
+              className="mb-1.5 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded flex items-center gap-1 transition-colors uppercase tracking-widest"
             >
               <X className="w-3.5 h-3.5" /> Clear
             </button>

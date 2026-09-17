@@ -21,7 +21,7 @@ const ProjectUpcomingMilestones: React.FC<ProjectUpcomingMilestonesProps> = ({
   return (
     <div className="bg-white rounded-[24px] border border-black/5 shadow-sm p-6 mt-6">
       <div className="flex justify-between items-center mb-6">
-        <h4 className="text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
+        <h4 className="text-lg font-semibold text-black uppercase tracking-tight flex items-center gap-2">
           <CalendarCheck className="w-5 h-5 text-green-600" />
           Milestones Pending Submittal
         </h4>

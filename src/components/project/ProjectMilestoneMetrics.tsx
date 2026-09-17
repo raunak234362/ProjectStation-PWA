@@ -141,7 +141,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
 
       {/* Milestone Approvals Section */}
       <div>
-        <h4 className="text-lg text-gray-800 mb-4 flex items-center gap-2 uppercase tracking-tight">
+        <h4 className="text-lg text-black font-semibold mb-4 flex items-center gap-2 uppercase tracking-tight mx-6">
           <CalendarCheck size={20} className="text-green-600" />
           Project Progress
         </h4>
