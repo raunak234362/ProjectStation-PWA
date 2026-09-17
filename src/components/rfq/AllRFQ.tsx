@@ -534,8 +534,8 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center min-h-[400px]">
-          <span className="font-bold text-gray-500 uppercase tracking-widest text-xs">Loading Intelligence...</span>
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <p className="text-green-500 font-black uppercase tracking-widest text-xs">Loading</p>
         </div>
       ) : (
         <DataTable

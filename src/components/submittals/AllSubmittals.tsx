@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Loader2, Inbox, FolderKanban, Search } from "lucide-react";
+import { Inbox, FolderKanban, Search } from "lucide-react";
 import Service from "../../api/Service";
 import GetSubmittalByID from "./GetSubmittalByID";
 
@@ -263,8 +263,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100">
-        <Loader2 className="w-8 h-8 animate-spin text-green-500 mb-4" />
-        <p className="text-black font-black uppercase tracking-widest text-xs">Loading...</p>
+        <p className="text-green-500 font-black uppercase tracking-widest text-xs">Loading</p>
       </div>
     );
   }

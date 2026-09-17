@@ -466,8 +466,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
       <div className="flex-1 min-h-0">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24">
-            <div className="w-8 h-8 rounded-full border-4 border-green-500 border-t-transparent animate-spin mb-4" />
-            <p className="text-black font-black uppercase tracking-widest text-xs">Loading...</p>
+            <p className="text-green-500 font-black uppercase tracking-widest text-xs">Loading</p>
           </div>
         ) : filteredRfis.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 py-32 bg-white rounded-3xl border border-dashed border-gray-100 italic text-gray-400">
