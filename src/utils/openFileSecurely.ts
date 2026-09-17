@@ -21,7 +21,10 @@ const getDownloadUrl = (
     case "rFIResponse":
       return `${baseURL}/rfi/response/viewfile/${parentId}/${fileId}`;
     case "submittals":
-      return `${baseURL}/submittal/${parentId}/versions/${versionId}/${fileId}`;
+    case "submittal":
+      return versionId
+        ? `${baseURL}/submittal/${parentId}/versions/${versionId}/${fileId}`
+        : `${baseURL}/submittal/viewfile/${parentId}/${fileId}`;
     case "submittalsResponse":
     case "submittal/response":
       return `${baseURL}/submittal/response/${parentId}/viewfile/${fileId}`;
@@ -158,15 +161,22 @@ export const shareFileSecurely = async (
 ) => {
   try {
     let response;
-    if (type === "submittals") {
+    if (type === "submittals" || type === "submittal") {
+      const effectiveParent = versionId ? String(versionId) : String(id);
       response = await Service.createShareLink(
         "submittalVersion",
-        String(versionId),
+        effectiveParent,
         String(fileId),
       );
     } else if (type === "bfa") {
       response = await Service.createShareLink(
         "bfa",
+        String(id),
+        String(fileId),
+      );
+    } else if (type === "submittalsResponse" || type === "submittal/response") {
+      response = await Service.createShareLink(
+        "submittalsResponse",
         String(id),
         String(fileId),
       );

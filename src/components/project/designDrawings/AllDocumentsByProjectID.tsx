@@ -57,6 +57,8 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
       ...(data.notes || []),
       ...(data.rfi || []),
       ...(data.submittals || []),
+      ...(data.bfa ? (Array.isArray(data.bfa) ? data.bfa : [data.bfa]) : []),
+      ...(data.bfas || []),
       ...(data.rfq || []),
       ...(data.coordinationDrawings || []),
       ...(data.progressReports || [])
@@ -73,10 +75,27 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
     if (!data) return null;
 
     const matchesFilters = (file: any, parent: any = {}) => {
-      const name = (file.originalName || file.name || "").toLowerCase();
-      const parentDesc = (parent.description || parent.subject || parent.title || "").toLowerCase();
-      const query = searchQuery.toLowerCase();
-      const nameMatch = !searchQuery || name.includes(query) || parentDesc.includes(query);
+      const query = searchQuery.trim().toLowerCase();
+      if (query) {
+        const name = (file.originalName || file.name || "").toLowerCase();
+        const parentDesc = (parent.description || parent.subject || parent.title || "").toLowerCase();
+        const responseReason = (file.responseReason || file.reason || "").toLowerCase();
+        const fileType = (file.fileType || file.type || "").toLowerCase();
+        const originType = (file.originType || file.fileCategory || "").toLowerCase();
+        const uploader = file.user
+          ? `${file.user.firstName || file.user.f_name || ""} ${file.user.lastName || file.user.l_name || ""}`.toLowerCase()
+          : "";
+
+        const matchesQuery =
+          name.includes(query) ||
+          parentDesc.includes(query) ||
+          responseReason.includes(query) ||
+          fileType.includes(query) ||
+          originType.includes(query) ||
+          uploader.includes(query);
+
+        if (!matchesQuery) return false;
+      }
 
       const stage = file.stage || parent.stage || "";
       const stageMatch = selectedStage === "All" || stage === selectedStage;
@@ -85,7 +104,7 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
       const fileDate = dateStr ? dateStr.split("T")[0] : "";
       const dateMatch = !selectedDate || fileDate === selectedDate;
 
-      return nameMatch && stageMatch && dateMatch;
+      return stageMatch && dateMatch;
     };
 
     const getItemFiles = (item: any): any[] => {
@@ -105,41 +124,208 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
         }
       };
 
-      // 1. Direct files / file
-      addFiles(item.files);
-      addFiles(item.file);
+      const isSubmittal =
+        item.serialNo?.startsWith("SUB") ||
+        item.submittalNumber != null ||
+        item.versions != null ||
+        item.submittalsResponse != null ||
+        item.submittalResponses != null;
 
-      // 2. Submittal currentVersion & versions
-      if (item.currentVersion) {
-        addFiles(item.currentVersion.files);
-        addFiles(item.currentVersion.file);
-      }
-      if (Array.isArray(item.versions)) {
-        item.versions.forEach((v: any) => {
-          addFiles(v.files, { versionId: v.id });
-          addFiles(v.file, { versionId: v.id });
-        });
-      }
+      const processBfaStructure = (bfaObj: any) => {
+        if (!bfaObj) return;
+        const bfaId = bfaObj.id || bfaObj._id || item.id;
+        const bfaSubject = bfaObj.subject || bfaObj.title || item.subject;
 
-      // 3. RFI responses / rfiresponse
-      const responses = item.responses || item.rfiresponse;
-      if (Array.isArray(responses)) {
-        const processResponses = (respList: any[]) => {
-          respList.forEach((resp: any) => {
-            const respMeta = {
-              overrideTable: "rFIResponse",
-              overrideDocumentID: resp.id,
-              uploadedAt: resp.createdAt || resp.date,
-              user: resp.user
+        if (Array.isArray(bfaObj.versions)) {
+          bfaObj.versions.forEach((bv: any, bIdx: number) => {
+            const vNum = bv.versionNumber || (bfaObj.versions.length - bIdx);
+            const bfaMeta = {
+              originType: "BFA",
+              fileCategory: "bfa",
+              fileType: "BFA File",
+              versionNumber: vNum,
+              overrideTable: "bfa",
+              table: "bfa",
+              documentID: bfaId,
+              overrideDocumentID: bfaId,
+              versionId: bv.id,
+              user: bv.user || bv.sender || bfaObj.user || item.user,
+              uploadedAt: bv.createdAt || bv.date || bfaObj.createdAt || item.createdAt,
+              stage: bv.stage || bfaObj.stage || item.stage,
+              bfaSubject,
             };
-            addFiles(resp.files, respMeta);
-            addFiles(resp.file, respMeta);
-            if (Array.isArray(resp.childResponses)) {
-              processResponses(resp.childResponses);
-            }
+            addFiles(bv.files, bfaMeta);
+            addFiles(bv.file, bfaMeta);
           });
-        };
-        processResponses(responses);
+        }
+        const directBfaFiles = bfaObj.files || bfaObj.file;
+        if (directBfaFiles) {
+          const bfaMeta = {
+            originType: "BFA",
+            fileCategory: "bfa",
+            fileType: "BFA File",
+            overrideTable: "bfa",
+            table: "bfa",
+            documentID: bfaId,
+            overrideDocumentID: bfaId,
+            user: bfaObj.user || bfaObj.sender || item.user,
+            uploadedAt: bfaObj.createdAt || bfaObj.date || item.createdAt,
+            stage: bfaObj.stage || item.stage,
+            bfaSubject,
+          };
+          addFiles(directBfaFiles, bfaMeta);
+        }
+      };
+
+      if (isSubmittal) {
+        // 1. Submittal currentVersion & versions
+        if (item.currentVersion) {
+          const v = item.currentVersion;
+          const vNum = v.versionNumber || (Array.isArray(item.versions) ? item.versions.length : 1);
+          const submittalMeta = {
+            originType: "SUBMITTAL",
+            fileCategory: "submittal",
+            fileType: `Submittal (v${vNum})`,
+            table: "submittals",
+            overrideTable: "submittals",
+            documentID: item.id,
+            overrideDocumentID: item.id,
+            versionId: v.id,
+            versionNumber: vNum,
+            uploadedAt: v.createdAt || item.createdAt || item.date,
+            user: v.user || v.sender || item.user || item.sender,
+            stage: v.stage || item.stage,
+          };
+          addFiles(v.files, submittalMeta);
+          addFiles(v.file, submittalMeta);
+        }
+
+        if (Array.isArray(item.versions)) {
+          item.versions.forEach((v: any, idx: number) => {
+            const vNum = v.versionNumber || (item.versions.length - idx);
+            const submittalMeta = {
+              originType: "SUBMITTAL",
+              fileCategory: "submittal",
+              fileType: `Submittal (v${vNum})`,
+              table: "submittals",
+              overrideTable: "submittals",
+              documentID: item.id,
+              overrideDocumentID: item.id,
+              versionId: v.id,
+              versionNumber: vNum,
+              uploadedAt: v.createdAt || item.createdAt || item.date,
+              user: v.user || v.sender || item.user || item.sender,
+              stage: v.stage || item.stage,
+            };
+            addFiles(v.files, submittalMeta);
+            addFiles(v.file, submittalMeta);
+          });
+        }
+
+        // 2. Direct files on submittal
+        if (item.files || item.file) {
+          const submittalMeta = {
+            originType: "SUBMITTAL",
+            fileCategory: "submittal",
+            fileType: "Submittal File",
+            table: "submittals",
+            overrideTable: "submittals",
+            documentID: item.id,
+            overrideDocumentID: item.id,
+            uploadedAt: item.createdAt || item.date,
+            user: item.user || item.sender,
+            stage: item.stage,
+          };
+          addFiles(item.files, submittalMeta);
+          addFiles(item.file, submittalMeta);
+        }
+
+        // 3. Submittal responses
+        const subResponses = item.submittalsResponse || item.submittalResponses || item.responses;
+        if (Array.isArray(subResponses)) {
+          const processSubResponses = (respList: any[]) => {
+            respList.forEach((resp: any) => {
+              const respMeta = {
+                originType: "RESPONSE",
+                fileCategory: "response",
+                fileType: "Response File",
+                responseReason: resp.reason || resp.description || resp.responseReason || "",
+                responseStatus: resp.status || resp.responseStatus || "",
+                user: resp.user || resp.sender,
+                uploadedAt: resp.createdAt || resp.date || resp.updatedAt,
+                overrideTable: "submittalsResponse",
+                table: "submittalsResponse",
+                documentID: resp.id,
+                overrideDocumentID: resp.id,
+                submittalId: item.id,
+                stage: resp.stage || item.stage,
+              };
+              addFiles(resp.files, respMeta);
+              addFiles(resp.file, respMeta);
+              if (Array.isArray(resp.childResponses)) {
+                processSubResponses(resp.childResponses);
+              }
+            });
+          };
+          processSubResponses(subResponses);
+        }
+
+        // 4. BFA files inside submittal
+        if (item.bfa) {
+          if (Array.isArray(item.bfa)) item.bfa.forEach(processBfaStructure);
+          else processBfaStructure(item.bfa);
+        }
+        if (Array.isArray(item.bfas)) item.bfas.forEach(processBfaStructure);
+        if (item.bfaFiles || item.bfa_files) {
+          const bfaMeta = {
+            originType: "BFA",
+            fileCategory: "bfa",
+            fileType: "BFA File",
+            overrideTable: "bfa",
+            table: "bfa",
+            documentID: item.bfa?.id || item.id,
+            overrideDocumentID: item.bfa?.id || item.id,
+            user: item.user || item.sender,
+            uploadedAt: item.createdAt || item.date,
+            stage: item.stage,
+          };
+          addFiles(item.bfaFiles || item.bfa_files, bfaMeta);
+        }
+      } else {
+        // Direct files / file for other documents
+        addFiles(item.files);
+        addFiles(item.file);
+
+        if (item.table === "bfa" || (item.versions && item.subject?.includes("BFA"))) {
+          processBfaStructure(item);
+        }
+
+        // RFI responses / rfiresponse
+        const responses = item.responses || item.rfiresponse;
+        if (Array.isArray(responses)) {
+          const processResponses = (respList: any[]) => {
+            respList.forEach((resp: any) => {
+              const respMeta = {
+                originType: "RESPONSE",
+                fileCategory: "response",
+                fileType: "Response File",
+                responseReason: resp.reason || resp.description || resp.responseReason || "",
+                responseStatus: resp.status || resp.responseStatus || "",
+                overrideTable: "rFIResponse",
+                overrideDocumentID: resp.id,
+                uploadedAt: resp.createdAt || resp.date,
+                user: resp.user,
+                stage: resp.stage || item.stage,
+              };
+              addFiles(resp.files, respMeta);
+              addFiles(resp.file, respMeta);
+              if (Array.isArray(resp.childResponses)) {
+                processResponses(resp.childResponses);
+              }
+            });
+          };
+          processResponses(responses);
+        }
       }
 
       // Deduplicate by file id or url or stringified object
@@ -173,6 +359,56 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
       }).filter(Boolean);
     };
 
+    // Dedicated BFA items from top-level data and submittals
+    const rawBfaList = Array.isArray(data.bfa)
+      ? data.bfa
+      : (data.bfa ? [data.bfa] : (Array.isArray(data.bfas) ? data.bfas : []));
+
+    const submittalBfas: any[] = [];
+    (data.submittals || []).forEach((sub: any) => {
+      if (sub.bfa) {
+        const bList = Array.isArray(sub.bfa) ? sub.bfa : [sub.bfa];
+        bList.forEach((b: any) => {
+          submittalBfas.push({
+            ...b,
+            id: b.id || sub.id,
+            subject: b.subject || `BFA: ${sub.subject || 'Submittal BFA'}`,
+            description: `BFA: ${b.subject || sub.subject || 'Back From Approval'}`,
+            stage: b.stage || sub.stage,
+            bfa: b,
+          });
+        });
+      } else if (Array.isArray(sub.bfas) && sub.bfas.length > 0) {
+        sub.bfas.forEach((b: any) => {
+          submittalBfas.push({
+            ...b,
+            id: b.id || sub.id,
+            subject: b.subject || `BFA: ${sub.subject || 'Submittal BFA'}`,
+            description: `BFA: ${b.subject || sub.subject || 'Back From Approval'}`,
+            stage: b.stage || sub.stage,
+            bfa: b,
+          });
+        });
+      } else if (sub.bfaFiles?.length > 0 || sub.bfa_files?.length > 0) {
+        submittalBfas.push({
+          id: sub.id,
+          subject: `BFA: ${sub.subject || 'Submittal BFA'}`,
+          description: `BFA: ${sub.subject || 'Back From Approval'}`,
+          stage: sub.stage,
+          bfaFiles: sub.bfaFiles || sub.bfa_files,
+        });
+      }
+    });
+
+    const allBfasMap = new Map<string, any>();
+    [...rawBfaList, ...submittalBfas].forEach((bfaItem: any) => {
+      const key = bfaItem.id || JSON.stringify(bfaItem);
+      if (!allBfasMap.has(key)) {
+        allBfasMap.set(key, bfaItem);
+      }
+    });
+    const allBfas = Array.from(allBfasMap.values());
+
     return {
       projectFiles: filterFlatFiles(data.project?.files || []),
       designDrawings: filterNestedItems(data.designDrawings || []),
@@ -188,9 +424,16 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
         ...rfi,
         description: `RFI: ${rfi.subject}`,
       }))),
-      submittals: filterNestedItems((data.submittals || []).map((sub: any) => ({
-        ...sub,
-        description: `Submittal: ${sub.subject}`,
+      submittals: filterNestedItems((data.submittals || []).map((sub: any) => {
+        const subTitle = sub.subject || sub.submittalNumber || sub.title || sub.serialNo || (sub.versionNumber ? `Submittal v${sub.versionNumber}` : 'Submittal Attachments');
+        return {
+          ...sub,
+          description: String(subTitle).toLowerCase().startsWith('submittal') ? subTitle : `Submittal: ${subTitle}`,
+        };
+      })),
+      bfas: filterNestedItems(allBfas.map((bfa: any) => ({
+        ...bfa,
+        description: bfa.description || `BFA: ${bfa.subject || 'Back From Approval'}`,
       }))),
       rfqs: filterNestedItems((data.rfq || []).map((rfq: any) => ({
         ...rfq,
@@ -216,15 +459,16 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
     );
   }
 
-  const { projectFiles, designDrawings, changeOrders, notes, rfis, submittals, rfqs, coordinationDrawings, progressReports } = processedData;
+  const { projectFiles, designDrawings, changeOrders, notes, rfis, submittals, bfas, rfqs, coordinationDrawings, progressReports } = processedData;
 
   const categories = [
-    { id: "All", label: "All Files", count: (projectFiles.length + designDrawings.length + changeOrders.length + rfis.length + submittals.length + notes.length + rfqs.length + coordinationDrawings.length + progressReports.length) },
+    { id: "All", label: "All Files", count: (projectFiles.length + designDrawings.length + changeOrders.length + rfis.length + submittals.length + bfas.length + notes.length + rfqs.length + coordinationDrawings.length + progressReports.length) },
     { id: "Project Documents", label: "Project Documents", count: projectFiles.length },
     { id: "Documents", label: "Design Drawings", count: designDrawings.length },
     { id: "Change Orders", label: "Change Orders", count: changeOrders.length },
     { id: "Requests for Information (RFI)", label: "RFI", count: rfis.length },
     { id: "Submittals", label: "Submittals", count: submittals.length },
+    { id: "BFA", label: "BFA", count: bfas.length },
     { id: "RFQ", label: "RFQ", count: rfqs.length },
     { id: "Coordination Drawings", label: "Coordination Drawings", count: coordinationDrawings.length },
     { id: "Progress Reports", label: "Progress Reports", count: progressReports.length },
@@ -376,6 +620,11 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
         {submittals.length > 0 && (selectedCategory === "All" || selectedCategory === "Submittals") && (
           <Section title="Submittals">
             <RenderFiles files={submittals} table="submittals" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
+          </Section>
+        )}
+        {bfas.length > 0 && (selectedCategory === "All" || selectedCategory === "BFA") && (
+          <Section title="Back From Approval (BFA)">
+            <RenderFiles files={bfas} table="bfa" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
           </Section>
         )}
         {rfqs.length > 0 && (selectedCategory === "All" || selectedCategory === "RFQ") && (
