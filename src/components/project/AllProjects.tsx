@@ -315,7 +315,7 @@ const AllProjects = () => {
         {loading && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-20 flex flex-col items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-green-500 mb-2" />
-            <p className="text-black font-black uppercase tracking-widest text-xs">Accessing intelligence...</p>
+            <p className="text-black font-black uppercase tracking-widest text-xs">Loading..</p>
           </div>
         )}
         <div className="flex-1 min-h-0">

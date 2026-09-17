@@ -264,7 +264,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
     return (
       <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100">
         <Loader2 className="w-8 h-8 animate-spin text-green-500 mb-4" />
-        <p className="text-black font-black uppercase tracking-widest text-xs">Accessing intelligence...</p>
+        <p className="text-black font-black uppercase tracking-widest text-xs">Loading...</p>
       </div>
     );
   }
