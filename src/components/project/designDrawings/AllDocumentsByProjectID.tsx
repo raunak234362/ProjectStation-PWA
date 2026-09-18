@@ -2,10 +2,10 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import Service from "../../../api/Service";
 import RenderFiles from "../../ui/RenderFiles";
-import { Loader2, ChevronDown, Filter, FileText, Layers, Search, Calendar, X } from "lucide-react";
+import { Loader2, ChevronDown, Filter, FileText, Layers, Search, Calendar, X, FolderOpen } from "lucide-react";
 import { useParams } from "react-router-dom";
 
-const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
+const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string, onAddClick?: () => void }) => {
   const { id } = useParams<{ id: string }>();
   const finalId = projectId || id;
   const [loading, setLoading] = useState(true);
@@ -19,6 +19,9 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
   
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
+  
+  // Modal State
+  const [activeCategoryModal, setActiveCategoryModal] = useState<string | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -461,19 +464,25 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
 
   const { projectFiles, designDrawings, changeOrders, notes, rfis, submittals, bfas, rfqs, coordinationDrawings, progressReports } = processedData;
 
+  const sections = [
+    { id: "Project Documents", title: "Project Documents", data: projectFiles, table: "project" },
+    { id: "Documents", title: "Design Drawings", data: designDrawings, table: "designDrawings" },
+    { id: "Change Orders", title: "Change Orders", data: changeOrders, table: "changeOrder" },
+    { id: "Requests for Information (RFI)", title: "RFI", data: rfis, table: "rFI" },
+    { id: "Submittals", title: "Submittals", data: submittals, table: "submittals" },
+    { id: "BFA", title: "Back From Approval (BFA)", data: bfas, table: "bfa" },
+    { id: "RFQ", title: "RFQ", data: rfqs, table: "rFQ" },
+    { id: "Coordination Drawings", title: "Coordination Drawings", data: coordinationDrawings, table: "coordinationDrawing" },
+    { id: "Progress Reports", title: "Progress Reports", data: progressReports, table: "projectProgressReport" },
+    { id: "Notes", title: "Notes", data: notes, table: "project" },
+  ];
+
   const categories = [
-    { id: "All", label: "All Files", count: (projectFiles.length + designDrawings.length + changeOrders.length + rfis.length + submittals.length + bfas.length + notes.length + rfqs.length + coordinationDrawings.length + progressReports.length) },
-    { id: "Project Documents", label: "Project Documents", count: projectFiles.length },
-    { id: "Documents", label: "Design Drawings", count: designDrawings.length },
-    { id: "Change Orders", label: "Change Orders", count: changeOrders.length },
-    { id: "Requests for Information (RFI)", label: "RFI", count: rfis.length },
-    { id: "Submittals", label: "Submittals", count: submittals.length },
-    { id: "BFA", label: "BFA", count: bfas.length },
-    { id: "RFQ", label: "RFQ", count: rfqs.length },
-    { id: "Coordination Drawings", label: "Coordination Drawings", count: coordinationDrawings.length },
-    { id: "Progress Reports", label: "Progress Reports", count: progressReports.length },
-    { id: "Notes", label: "Notes", count: notes.length },
+    { id: "All", label: "All Files", count: sections.reduce((acc, sec) => acc + sec.data.length, 0) },
+    ...sections.map(s => ({ id: s.id, label: s.title, count: s.data.length }))
   ].filter(cat => cat.id === "All" || cat.count > 0);
+  
+  const visibleSections = sections.filter(s => s.data.length > 0 && (selectedCategory === "All" || selectedCategory === s.id));
 
   const formatDate = (date: any) =>
     date
@@ -489,183 +498,144 @@ const AllDocumentsByProjectID = ({ projectId }: { projectId?: string }) => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Integrated Filters (RFQ Style) */}
-      <div className="mb-8 flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          {/* Search Bar */}
-          <div className="relative group max-w-xl flex-1 min-w-[300px]">
-            <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
-            <div className="relative bg-white border border-gray-100 rounded-xl flex items-center shadow-sm hover:border-green-200 transition-colors">
-              <Search className="ml-3 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="SEARCH FILE..."
-                className="flex-1 px-4 py-2 bg-transparent text-gray-800 placeholder-gray-400 focus:outline-none font-medium text-sm"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="p-1 px-3 text-gray-300 hover:text-gray-500 transition-colors"
-                >
-                  <X size={16} />
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Stage Select */}
-            <select
-              value={selectedStage}
-              onChange={(e) => setSelectedStage(e.target.value)}
-              className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
-            >
-              {availableStages.map((s) => (
-                <option key={s} value={s}>{s === "All" ? "ALL STAGES" : s}</option>
-              ))}
-            </select>
-
-            {/* Date Input */}
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
-            />
-
-            {/* Category Dropdown (Replacing previous complex header button) */}
-            <div className="relative" ref={categoryRef}>
-              <button
-                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-                className="flex items-center gap-2 bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none hover:bg-gray-50 transition-colors"
-              >
-                <Filter className="w-4 h-4 text-[#6bbd45]" />
-                {categories.find((c) => c.id === selectedCategory)?.label || "ALL FILES"}
-                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isCategoryOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {isCategoryOpen && (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-white border border-black/10 rounded-2xl shadow-xl z-50 overflow-hidden py-1 animate-in fade-in duration-200">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => {
-                        setSelectedCategory(cat.id);
-                        setIsCategoryOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors ${
-                        selectedCategory === cat.id
-                          ? "bg-green-50 text-green-700"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        {cat.id === "All" ? <Layers className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
-                        {cat.label}
-                      </div>
-                      <span className="text-sm bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-semibold">{cat.count}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            {/* Total Files Info */}
-            <span className="text-sm font-bold text-gray-500 bg-gray-100 px-4 py-2 rounded-xl border border-gray-200">
-              {categories.find(c => c.id === selectedCategory)?.count} FILES
-            </span>
-
-            {/* Reset Button */}
-            {(searchQuery || selectedStage !== "All" || selectedDate || selectedCategory !== "All") && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedStage("All");
-                  setSelectedDate("");
-                  setSelectedCategory("All");
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-bold hover:bg-red-600 hover:text-white transition-all shadow-sm"
-              >
-                <X size={16} strokeWidth={3} />
-                RESET
-              </button>
-            )}
-          </div>
+      {/* Actions Top Bar */}
+      {onAddClick && (
+        <div className="mb-6 flex justify-end">
+          <button
+            onClick={onAddClick}
+            className="px-4 py-1.5 border-2 border-[#6bbd45] bg-green-50 text-black rounded text-sm font-bold uppercase hover:bg-[#6bbd45] hover:text-white transition-colors shadow-sm"
+          >
+            + Add Drawing
+          </button>
         </div>
-      </div>
+      )}
 
-      {/* Sections */}
-      <div className="space-y-6">
-        {projectFiles.length > 0 && (selectedCategory === "All" || selectedCategory === "Project Documents") && (
-          <Section title="Project Documents">
-            <RenderFiles files={projectFiles} table="project" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {designDrawings.length > 0 && (selectedCategory === "All" || selectedCategory === "Documents") && (
-          <Section title="Documents">
-            <RenderFiles files={designDrawings} table="designDrawings" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {changeOrders.length > 0 && (selectedCategory === "All" || selectedCategory === "Change Orders") && (
-          <Section title="Change Orders">
-            <RenderFiles files={changeOrders} table="changeOrder" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {rfis.length > 0 && (selectedCategory === "All" || selectedCategory === "Requests for Information (RFI)") && (
-          <Section title="Requests for Information (RFI)">
-            <RenderFiles files={rfis} table="rFI" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {submittals.length > 0 && (selectedCategory === "All" || selectedCategory === "Submittals") && (
-          <Section title="Submittals">
-            <RenderFiles files={submittals} table="submittals" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {bfas.length > 0 && (selectedCategory === "All" || selectedCategory === "BFA") && (
-          <Section title="Back From Approval (BFA)">
-            <RenderFiles files={bfas} table="bfa" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {rfqs.length > 0 && (selectedCategory === "All" || selectedCategory === "RFQ") && (
-          <Section title="Request for Quotation (RFQ)">
-            <RenderFiles files={rfqs} table="rFQ" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {coordinationDrawings.length > 0 && (selectedCategory === "All" || selectedCategory === "Coordination Drawings") && (
-          <Section title="Coordination Drawings">
-            <RenderFiles files={coordinationDrawings} table="coordinationDrawing" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {progressReports.length > 0 && (selectedCategory === "All" || selectedCategory === "Progress Reports") && (
-          <Section title="Progress Reports">
-            <RenderFiles files={progressReports} table="projectProgressReport" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {notes.length > 0 && (selectedCategory === "All" || selectedCategory === "Notes") && (
-          <Section title="Notes">
-            <RenderFiles files={notes} table="project" parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
-          </Section>
-        )}
-        {Object.values(processedData).every(arr => arr.length === 0) && (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-2xl border border-dashed border-gray-200">
-            <Search className="w-12 h-12 mb-4 text-gray-200" />
-            <p className="text-sm font-semibold">No Data Found</p>
+      {/* Grid of Section Cards */}
+      {visibleSections.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {visibleSections.map(section => (
+            <button
+              key={section.id}
+              onClick={() => setActiveCategoryModal(section.id)}
+              className="w-full bg-white border border-black border-l-4 border-l-[#6bbd45] hover:border-[#6bbd45] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all flex items-center justify-between text-left group gap-3 cursor-pointer hover:scale-[1.02] hover:bg-green-50/50"
+            >
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="w-12 h-12 rounded-xl bg-green-50 text-[#6bbd45] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <FolderOpen size={24} />
+                </div>
+                <h3 className="text-lg font-semibold text-black uppercase tracking-tight transition-colors truncate">{section.title}</h3>
+              </div>
+              <p className="text-xs font-semibold text-gray-600 shrink-0 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">{section.data.length} FILES</p>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-2xl border border-dashed border-gray-200">
+          <Search className="w-12 h-12 mb-4 text-gray-200" />
+          <p className="text-sm font-semibold">No Data Found</p>
+        </div>
+      )}
 
+      {/* Modal for Active Category */}
+      {activeCategoryModal && (() => {
+        const activeSection = sections.find(s => s.id === activeCategoryModal);
+        if (!activeSection) return null;
+        return (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in p-4">
+            <div className="bg-[#f8f9fa] rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+              {/* Modal Header & Filters */}
+              <div className="bg-white border-b border-gray-100">
+                <div className="px-6 py-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-green-50 text-[#6bbd45] flex items-center justify-center">
+                      <FolderOpen size={20} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-black uppercase tracking-tight">{activeSection.title}</h3>
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      setActiveCategoryModal(null);
+                      setSearchQuery("");
+                      setSelectedStage("All");
+                      setSelectedDate("");
+                    }}
+                    className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm shrink-0"
+                  >
+                    CLOSE
+                  </button>
+                </div>
+                
+                {/* Modal Filters */}
+                <div className="px-6 pb-4 flex items-center gap-4 flex-wrap">
+                  {/* Search Bar */}
+                  <div className="relative group max-w-sm w-full flex-1">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+                    <div className="relative bg-white border border-gray-400 rounded-xl flex items-center shadow-sm hover:border-green-500 transition-colors h-10">
+                      <Search className="ml-3 w-4 h-4 text-gray-600" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="SEARCH FILE..."
+                        className="flex-1 px-3 py-1 bg-transparent text-black placeholder-gray-600 font-bold focus:outline-none text-sm"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery("")}
+                          className="p-1 px-3 text-gray-400 hover:text-gray-700 transition-colors"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Stage Select */}
+                  <select
+                    value={selectedStage}
+                    onChange={(e) => setSelectedStage(e.target.value)}
+                    className="bg-white border border-gray-400 px-3 py-1.5 h-10 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-green-500/20 text-black"
+                  >
+                    {availableStages.map((s) => (
+                      <option key={s} value={s}>{s === "All" ? "ALL STAGES" : s}</option>
+                    ))}
+                  </select>
+
+                  {/* Date Input */}
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="bg-white border border-gray-400 px-3 py-1.5 h-10 rounded-xl text-sm font-bold uppercase focus:outline-none focus:ring-2 focus:ring-green-500/20 text-black"
+                  />
+                  
+                  {/* Reset Button */}
+                  {(searchQuery || selectedStage !== "All" || selectedDate) && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery("");
+                        setSelectedStage("All");
+                        setSelectedDate("");
+                      }}
+                      className="flex items-center gap-1 px-4 py-1.5 h-10 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm font-bold hover:bg-red-600 hover:text-white transition-all shadow-sm shrink-0"
+                    >
+                      <X size={14} strokeWidth={3} />
+                      RESET
+                    </button>
+                  )}
+                </div>
+              </div>
+              {/* Modal Body */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <RenderFiles files={activeSection.data} table={activeSection.table} parentId={finalId || ""} hideHeader={true} formatDate={formatDate} />
+              </div>
+            </div>
           </div>
-        )}
-      </div>
+        );
+      })()}
     </div>
   );
 };
-
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <div className="space-y-4">
-    <h3 className="text-lg text-black font-black uppercase tracking-tight ml-1">{title}</h3>
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      {children}
-    </div>
-  </div>
-);
 
 export default AllDocumentsByProjectID;

@@ -12,34 +12,19 @@ const AllDocument = ({ projectId }: { projectId?: string }) => {
 
   return (
     <div className="space-y-4 mt-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-black text-black uppercase tracking-tight"></h2>
-        <div className="flex gap-2">
+      {view === "add" && (
+        <div className="flex justify-end items-center mb-4 -mt-4">
           <button
             onClick={() => setView("list")}
-            className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
-              view === "list"
-                ? "bg-green-50 text-[#4a8a1a] border-2 border-green-200 shadow-sm"
-                : "bg-white text-gray-400 border-2 border-gray-100 hover:border-gray-200 hover:text-gray-600"
-            }`}
+            className="px-4 py-1.5 border-2 border-[#6bbd45] bg-green-50 text-black rounded text-sm font-bold uppercase hover:bg-[#6bbd45] hover:text-white transition-colors"
           >
-            All Files
-          </button>
-          <button
-            onClick={() => setView("add")}
-            className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
-              view === "add"
-                ? "bg-green-50 text-[#4a8a1a] border-2 border-green-200 shadow-sm"
-                : "bg-white text-gray-400 border-2 border-gray-100 hover:border-gray-200 hover:text-gray-600"
-            }`}
-          >
-            + Add Drawing
+            Back to Files
           </button>
         </div>
-      </div>
+      )}
 
       {view === "list" ? (
-        <AllDocumentsByProjectID projectId={finalId as string} />
+        <AllDocumentsByProjectID projectId={finalId as string} onAddClick={() => setView("add")} />
       ) : (
         <AddDesignDrawing
           projectId={finalId as string}

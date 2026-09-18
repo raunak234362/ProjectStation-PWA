@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { ChangeOrderItem } from "../../interface";
-import { Loader2, Inbox } from "lucide-react";
+import { Loader2, Inbox, Search, X } from "lucide-react";
 import GetCOByID from "./GetCOByID";
 import { formatDate } from "../../utils/dateUtils";
 
@@ -13,8 +13,12 @@ interface AllCOProps {
 
 const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
   const [changeOrders, setChangeOrders] = useState<ChangeOrderItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
 
   const [loading, setLoading] = useState(true);
+
+  const statuses = ["All", ...Array.from(new Set(changeOrders.map(co => co.status).filter(Boolean))).sort()];
 
   console.log(changeOrderData);
 
@@ -76,7 +80,7 @@ const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
         const statusClass = status ? (map[status] ?? "") : "";
 
         return (
-          <span className={`px-2 py-1 text-xs rounded-full ${statusClass}`}>
+          <span className={`px-2 py-1 text-sm font-bold uppercase tracking-widest rounded-full ${statusClass}`}>
             {status ?? "—"}
           </span>
         );
@@ -112,16 +116,70 @@ const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
     );
   }
 
+  const filteredCOs = changeOrders.filter((co) => {
+    const q = searchQuery.toLowerCase();
+    const numMatch = !searchQuery || co.changeOrderNumber?.toLowerCase().includes(q);
+    const remarkMatch = !searchQuery || co.remarks?.toLowerCase().includes(q);
+    const searchMatch = numMatch || remarkMatch;
+
+    const statusMatch = statusFilter === "All" || co.status === statusFilter;
+
+    return searchMatch && statusMatch;
+  });
+
   // ✅ Render DataTable
   return (
-    <div className="bg-white p-2 rounded-2xl shadow-md">
+    <div className="bg-white rounded-3xl overflow-hidden flex flex-col pt-4">
+      {/* UI Consistent Filters */}
+      <div className="flex flex-wrap items-center gap-4 mt-4 mb-6 px-4">
+        {/* Search Bar */}
+        <div className="relative group flex-1 max-w-sm min-w-[200px]">
+          <div className="absolute -inset-1 from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+          <div className="relative bg-white border border-gray-400 rounded-xl flex items-center shadow-sm hover:border-green-500 transition-colors h-10">
+            <Search className="ml-3 w-4 h-4 text-gray-600" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="SEARCH CHANGE ORDERS..."
+              className="flex-1 px-3 py-1 bg-transparent text-black placeholder-gray-600 font-bold focus:outline-none text-sm uppercase"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="p-1 px-3 text-gray-400 hover:text-gray-700 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Status Select */}
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-white border border-gray-400 px-3 py-1.5 h-10 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-green-500/20 text-black uppercase"
+        >
+          {statuses.map((status) => (
+            <option key={status} value={status}>
+              {status === "All" ? "ALL STATUS" : String(status).replace(/_/g, " ")}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex-1 min-h-0">
       <DataTable
         columns={columns}
-        data={changeOrders}
+        data={filteredCOs}
         detailComponent={({ row, close }) => (
           <GetCOByID id={row.id} projectId={row.project} onClose={close} />
         )}
+        noBorder
+        disableMaxHeight={true}
       />
+      </div>
     </div>
   );
 };

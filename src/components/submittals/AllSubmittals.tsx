@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import DataTable from "../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Inbox, FolderKanban, Search } from "lucide-react";
+import { Inbox, FolderKanban, Search, X } from "lucide-react";
 import Service from "../../api/Service";
 import GetSubmittalByID from "./GetSubmittalByID";
 
@@ -120,10 +120,10 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
 
         return (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs uppercase">
+            <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center text-green-700 font-bold text-sm uppercase">
               {(s?.firstName?.[0] || "") + (s?.lastName?.[0] || "")}
             </div>
-            <span className="text-black font-medium">
+            <span className="text-black font-medium text-sm">
               {s ? `${s.firstName ?? ""} ${s.lastName ?? ""}`.trim() : "—"}
             </span>
           </div>
@@ -154,15 +154,15 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
         return (
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
-              <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[10px] uppercase">
+              <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm uppercase">
                 {(firstRecipient?.firstName?.[0] || "") + (firstRecipient?.lastName?.[0] || "")}
               </div>
-              <span className="text-black font-medium text-xs">
+              <span className="text-black font-medium text-sm">
                 {`${firstRecipient?.firstName ?? ""} ${firstRecipient?.lastName ?? ""}`.trim()}
               </span>
             </div>
             {remainingCount > 0 && (
-              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md">
+              <span className="text-sm font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md">
                 +{remainingCount} more
               </span>
             )}
@@ -175,7 +175,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
       accessorKey: "stage",
       header: "Stage",
       cell: ({ row }) => (
-        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+        <span className="px-2 py-0.5 text-sm font-bold uppercase tracking-widest rounded-md bg-blue-50 text-blue-700 border border-blue-200">
           {row.original.stage || "—"}
         </span>
       ),
@@ -235,7 +235,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
 
         return (
           <span
-            className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${getStatusStyles(key)}`}
+            className={`inline-flex items-center px-2.5 py-1 rounded-md text-sm font-black uppercase tracking-widest border ${getStatusStyles(key)}`}
           >
             {label}
           </span>
@@ -247,7 +247,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
       accessorKey: "createdAt",
       header: "Created",
       cell: ({ row }) => (
-        <span className="text-black/60 text-xs font-bold">
+        <span className="text-black/60 text-sm font-bold">
           {new Date(row.original.date).toLocaleDateString(undefined, {
             month: "short",
             day: "numeric",
@@ -336,26 +336,39 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
 
   return (
     <div className="bg-white rounded-3xl overflow-hidden flex flex-col pt-4">
-      <div className="mb-4 px-4 flex flex-col md:flex-row items-center gap-4">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search submittals..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all"
-          />
+      {/* UI Consistent Filters */}
+      <div className="flex flex-wrap items-center gap-4 mt-4 mb-6 px-4">
+        {/* Search Bar */}
+        <div className="relative group flex-1 max-w-sm min-w-[200px]">
+          <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+          <div className="relative bg-white border border-gray-400 rounded-xl flex items-center shadow-sm hover:border-green-500 transition-colors h-10">
+            <Search className="ml-3 w-4 h-4 text-gray-600" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="SEARCH SUBMITTALS..."
+              className="flex-1 px-3 py-1 bg-transparent text-black placeholder-gray-600 font-bold focus:outline-none text-sm uppercase"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="p-1 px-3 text-gray-400 hover:text-gray-700 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
         </div>
 
+        {/* Stage Select */}
         <select
           value={selectedStage}
           onChange={(e) => setSelectedStage(e.target.value)}
-          className="w-full md:w-auto px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all cursor-pointer outline-none appearance-none"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem', paddingRight: '2.5rem' }}
+          className="bg-white border border-gray-400 px-3 py-1.5 h-10 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-green-500/20 text-black uppercase"
         >
           {stages.map((stage) => (
-            <option key={stage} value={stage}>{stage === "All" ? "All Stages" : stage}</option>
+            <option key={stage} value={stage}>{stage === "All" ? "ALL STAGES" : stage}</option>
           ))}
         </select>
       </div>
@@ -367,6 +380,7 @@ const AllSubmittals = ({ submittalData, projectId }: AllSubmittalProps) => {
           onRowClick={(row) => setSelectedSubmittalId(row.id)}
           pageSizeOptions={[10]}
           noBorder
+          disableMaxHeight={true}
         />
       </div>
       {selectedSubmittalId && (

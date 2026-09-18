@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from 'react';
-import { Plus, Search, Compass, Loader2 } from 'lucide-react';
+import { Plus, Search, Compass, Loader2, X } from 'lucide-react';
 import Service from '../../../api/Service';
 import AddCoordinationDrawing from './AddCoordinationDrawing.tsx';
 import CoordinationDrawingDetails from './CoordinationDrawingDetails.tsx';
@@ -45,11 +45,11 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
       enableColumnFilter: true,
       cell: ({ row }) => (
         <div className="flex flex-col">
-          <span className="font-black text-black uppercase tracking-tight text-xs">
+          <span className="font-black text-black uppercase tracking-tight text-sm">
             {row.original.title}
           </span>
           {row.original.stage && (
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
+            <span className="text-sm text-gray-400 font-bold uppercase tracking-widest mt-0.5">
               {row.original.stage}
             </span>
           )}
@@ -68,7 +68,7 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
       ],
       cell: ({ row }) => (
         <div className="flex justify-center">
-          <div className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-black/20 bg-gray-50/50 text-black">
+          <div className="px-4 py-1 rounded-full text-sm font-black uppercase tracking-widest border border-black/20 bg-gray-50/50 text-black">
             {row.original.status || 'IN REVIEW'}
           </div>
         </div>
@@ -78,7 +78,7 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
       header: 'Date Created',
       accessorKey: 'createdAt',
       cell: ({ row }) => (
-        <div className="text-center text-[11px] text-black font-black uppercase tracking-tight">
+        <div className="text-center text-sm text-black font-black uppercase tracking-tight">
           {formatDateCustom(row.original.createdAt)}
         </div>
       ),
@@ -88,10 +88,10 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
       accessorKey: 'createdBy.firstName',
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg border border-black/10 bg-gray-50 flex items-center justify-center text-[10px] font-black uppercase text-black shrink-0">
+          <div className="w-8 h-8 rounded-lg border border-black/10 bg-gray-50 flex items-center justify-center text-sm font-black uppercase text-black shrink-0">
             {row.original.createdBy?.firstName?.[0] || 'A'}
           </div>
-          <span className="text-[10px] font-black text-black uppercase tracking-widest truncate max-w-[150px]">
+          <span className="text-sm font-black text-black uppercase tracking-widest truncate max-w-[150px]">
             {row.original.createdBy?.firstName} {row.original.createdBy?.lastName}
           </span>
         </div>
@@ -116,15 +116,26 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search drawings..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-black/5 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all w-64 shadow-sm"
-            />
+          <div className="relative group flex-1 max-w-sm min-w-[200px]">
+            <div className="absolute -inset-1  from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+            <div className="relative bg-white border border-gray-400 rounded-xl flex items-center shadow-sm hover:border-green-500 transition-colors h-10">
+              <Search className="ml-3 w-4 h-4 text-gray-600" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="SEARCH DRAWINGS..."
+                className="flex-1 px-3 py-1 bg-transparent text-black placeholder-gray-600 font-bold focus:outline-none text-sm uppercase w-full"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="p-1 px-3 text-gray-400 hover:text-gray-700 transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
           <button
             onClick={() => setIsAddModalOpen(true)}
@@ -150,6 +161,7 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
             data={filteredDrawings}
             onRowClick={(row) => setSelectedDrawingId(row.id)}
             pageSizeOptions={[10, 20, 50]}
+            disableMaxHeight={true}
           />
         )}
       </div>

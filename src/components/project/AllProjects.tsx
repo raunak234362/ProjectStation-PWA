@@ -120,7 +120,7 @@ const AllProjects = () => {
       header: () => <span className="pl-6">Project Name</span>,
       cell: ({ row }: { row: any }) => (
         <div className="flex items-center gap-4 pl-6">
-          <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0 border border-green-100">
+          {/* <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0 border border-green-100">
             <svg
               className="w-5 h-5 text-green-600"
               fill="none"
@@ -134,7 +134,7 @@ const AllProjects = () => {
                 d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
               />
             </svg>
-          </div>
+          </div> */}
           <span className="text-sm  uppercase tracking-normal text-black group-hover:text-green-700 transition-colors">
             {row.original.name}
           </span>
@@ -154,7 +154,7 @@ const AllProjects = () => {
     },
     ...(isConnectionDesigner ? [] : [{
       accessorKey: "clientProjectManagers",
-      header: "Client PM",
+      header: "Project Manager",
       cell: ({ row }: { row: any }) => {
         const managers = row.original.clientProjectManagers;
         if (!managers || managers.length === 0) return <span className="text-gray-400">—</span>;
@@ -234,79 +234,82 @@ const AllProjects = () => {
           </button>
         </div>
 
-        {/* Form Layout Filters */}
-        <div className="flex flex-wrap items-end gap-4 mt-2">
-          <div className="flex flex-col gap-1 flex-1 min-w-[200px] max-w-xs">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Search Project</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        {/* UI Consistent Filters */}
+        <div className="flex flex-wrap items-center gap-4 mt-4 mb-2">
+          {/* Search Bar */}
+          <div className="relative group flex-1 max-w-sm min-w-[200px]">
+            <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+            <div className="relative bg-white border border-gray-400 rounded-xl flex items-center shadow-sm hover:border-green-500 transition-colors h-10">
+              <Search className="ml-3 w-4 h-4 text-gray-600" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name..."
-                className="w-full pl-8 pr-3 py-1.5 text-sm bg-white border border-gray-300 rounded outline-none focus:border-[#6bbd45] transition-colors"
+                placeholder="SEARCH PROJECT..."
+                className="flex-1 px-3 py-1 bg-transparent text-black placeholder-gray-600 font-bold focus:outline-none text-sm"
               />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="p-1 px-3 text-gray-400 hover:text-gray-700 transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="flex flex-col gap-1 min-w-[150px]">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Manager</label>
-            <select
-              value={managerName}
-              onChange={(e) => {
-                setManagerName(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-1.5 text-sm bg-white border border-gray-300 rounded outline-none focus:border-[#6bbd45] transition-colors"
-            >
-              <option value="">All Managers</option>
-            </select>
-          </div>
+          {/* Stage Select */}
+          <select
+            value={stage}
+            onChange={(e) => {
+              setStage(e.target.value);
+              setPage(1);
+            }}
+            className="bg-white border border-gray-400 px-3 py-1.5 h-10 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-green-500/20 text-black uppercase"
+          >
+            <option value="">ALL STAGES</option>
+            <option value="IFA">IFA</option>
+            <option value="IFC">IFC</option>
+            <option value="BFA">BFA</option>
+            <option value="RELEASED">RELEASED</option>
+          </select>
 
-          <div className="flex flex-col gap-1 min-w-[150px]">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Fabricator</label>
-            <select
-              value={fabricatorName}
-              onChange={(e) => {
-                setFabricatorName(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-1.5 text-sm bg-white border border-gray-300 rounded outline-none focus:border-[#6bbd45] transition-colors"
-            >
-              <option value="">ALL FABRICATORS</option>
-            </select>
-          </div>
+          {/* Project Manager Select */}
+          <select
+            value={managerName}
+            onChange={(e) => {
+              setManagerName(e.target.value);
+              setPage(1);
+            }}
+            className="bg-white border border-gray-400 px-3 py-1.5 h-10 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-green-500/20 text-black uppercase min-w-[160px]"
+          >
+            <option value="">ALL MANAGERS</option>
+          </select>
 
-          <div className="flex flex-col gap-1 min-w-[130px]">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Stage</label>
-            <select
-              value={stage}
-              onChange={(e) => {
-                setStage(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-1.5 text-sm bg-white border border-gray-300 rounded outline-none focus:border-[#6bbd45] transition-colors"
-            >
-              <option value="">All Stages</option>
-              <option value="IFA">IFA</option>
-              <option value="IFC">IFC</option>
-              <option value="BFA">BFA</option>
-              <option value="RELEASED">RELEASED</option>
-            </select>
-          </div>
-          
-          <div className="flex items-center gap-2 mb-2 min-w-[120px]">
-            <input type="checkbox" id="overrun" className="w-4 h-4 border-gray-300 rounded text-[#6bbd45] focus:ring-[#6bbd45]" />
-            <label htmlFor="overrun" className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Overrun Only</label>
-          </div>
+          {/* Status Select */}
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value as any);
+              setPage(1);
+            }}
+            className="bg-white border border-gray-400 px-3 py-1.5 h-10 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-green-500/20 text-black uppercase min-w-[140px]"
+          >
+            <option value="ALL">ALL STATUS</option>
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="COMPLETE">COMPLETED</option>
+            <option value="ONHOLD">ON HOLD</option>
+          </select>
 
-          {(search || stage || managerName || fabricatorName || statusFilter !== "ALL") && (
+          {/* Reset Button */}
+          {(search || stage || managerName || statusFilter !== "ALL") && (
             <button
               onClick={handleResetFilters}
-              className="mb-1.5 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded flex items-center gap-1 transition-colors uppercase tracking-widest"
+              className="flex items-center gap-1 px-4 py-1.5 h-10 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm font-bold hover:bg-red-600 hover:text-white transition-all shadow-sm shrink-0"
             >
-              <X className="w-3.5 h-3.5" /> Clear
+              <X size={14} strokeWidth={3} />
+              RESET
             </button>
           )}
         </div>

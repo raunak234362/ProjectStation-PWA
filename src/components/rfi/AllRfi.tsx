@@ -177,7 +177,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
         const s = row.original.sender;
         return (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs uppercase">
+            <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center text-green-700 font-bold text-sm uppercase">
               {(s?.firstName?.[0] || "") + (s?.lastName?.[0] || "")}
             </div>
             <span className="text-black font-medium">
@@ -200,15 +200,15 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
         
         return (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs uppercase shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm uppercase shrink-0">
               {(r?.firstName?.[0] || "") + (r?.lastName?.[0] || "")}
             </div>
             <div className="flex flex-col">
-              <span className="text-black font-medium text-xs truncate max-w-[120px]">
+              <span className="text-black font-medium text-sm truncate max-w-[120px]">
                 {r ? `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() : "—"}
               </span>
               {additionalCount > 0 && (
-                <span className="text-[10px] font-bold text-gray-500">
+                <span className="text-xs font-bold text-gray-500">
                   +{additionalCount} more
                 </span>
               )}
@@ -226,7 +226,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
         const statusInfo = getStatusInfo(row.original);
         return (
           <span
-            className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border border-black ${statusInfo.className}`}
+            className={`px-3 py-1 text-sm font-black uppercase tracking-widest rounded-full border border-black ${statusInfo.className}`}
           >
             {statusInfo.label}
           </span>
@@ -241,7 +241,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
       cell: ({ row }) => {
         const responses = row.original.rfiresponse || [];
         if (responses.length === 0)
-          return <span className="text-gray-400 font-bold text-xs">—</span>;
+          return <span className="text-gray-400 font-bold text-sm">—</span>;
 
         const latestResponded = responses.reduce((latest, current) => {
           const currentTS = new Date(current.createdAt).getTime();
@@ -250,7 +250,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
         }, responses[0]);
 
         return (
-          <span className="text-black/60 text-xs font-bold">
+          <span className="text-black/60 text-sm font-bold">
             {formatDate(latestResponded?.createdAt)}
           </span>
         );
@@ -262,7 +262,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
       accessorKey: "createdAt",
       header: "Created On",
       cell: ({ row }) => (
-        <span className="text-black/60 text-xs font-bold">
+        <span className="text-black/60 text-sm font-bold">
           {formatDate(row.original.createdAt)}
         </span>
       ),
@@ -483,6 +483,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
             onRowClick={(row) => setSelectedRfiID(row.id)}
             pageSizeOptions={[10]}
             noBorder
+            disableMaxHeight={true}
           />
         )}
       </div>

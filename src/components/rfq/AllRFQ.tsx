@@ -173,7 +173,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
       header: "Project Name",
       cell: ({ row }) => (
         <div className="flex flex-col">
-          <span className="font-semibold text-gray-900">{row.original.projectName}</span>
+          <span className="font-semibold text-black">{row.original.projectName}</span>
           {/* <span className="text-[10px] text-primary font-semibold uppercase tracking-widest mt-0.5">
             RFQ #{row.original.projectNumber || 'N/A'}
           </span> */}
@@ -218,7 +218,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
       accessorKey: "fabricator",
       header: "Fabricator",
       cell: ({ row }) => (
-        <span className="text-sm font-semibold text-gray-600">
+        <span className="text-sm font-semibold text-black">
           {(row.original as any)?.fabricator?.fabName || "—"}
         </span>
       ),
@@ -243,7 +243,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
         const name = sender ? `${sender.firstName || ""} ${sender.lastName || ""}` : "—";
         return (
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-gray-700">{name}</span>
+            <span className="text-sm font-semibold text-black">{name}</span>
           </div>
         );
       },
@@ -264,7 +264,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
           dateVal = row.original.createdAt;
         }
         return (
-          <span className="text-sm font-semibold text-gray-600">
+          <span className="text-sm font-semibold text-black">
             {dateVal ? formatDate(dateVal) : "—"}
           </span>
         );
@@ -276,7 +276,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
       accessorKey: "estimationDate",
       header: "Due Date",
       cell: ({ row }: any) => (
-        <span className="text-sm font-bold text-gray-600">
+        <span className="text-sm font-bold text-black">
           {row.original.estimationDate ? formatDate(row.original.estimationDate) : "—"}
         </span>
       ),
@@ -300,7 +300,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
         if (!dateVal) return <span className="text-gray-400">—</span>;
 
         return (
-          <span className="text-sm font-semibold text-primary">
+          <span className="text-sm font-semibold text-black">
             {formatDate(dateVal)}
           </span>
         );
@@ -355,7 +355,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
           label = val?.replace("_", " ") || "—";
         }
         return (
-          <span className="px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-lg text-black">
+          <span className="px-3 py-1 text-[10px] md:text-sm  uppercase tracking-normal bg-[#b8ef9e] rounded-lg text-black">
             {label}
           </span>
         );
@@ -430,7 +430,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
           <div className="relative group max-w-xl flex-1 min-w-[300px]">
             <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
             <div className="relative bg-white border border-gray-100 rounded-xl flex items-center shadow-sm hover:border-green-200 transition-colors">
-              <Search className="ml-3 w-5 h-5 text-gray-400" />
+              <Search className="ml-3 w-5 h-5 text-gray-800" />
               <input
                 type="text"
                 value={searchQuery}

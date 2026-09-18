@@ -110,6 +110,7 @@ interface DataTableProps<T extends object> {
   pageCount?: number;
   pageIndex?: number;
   onPageChange?: (pageIndex: number) => void;
+  disableMaxHeight?: boolean;
 }
 
 /* -------------------- animated cell view -------------------- */
@@ -210,6 +211,7 @@ export default function DataTable<T extends object>({
   pageCount,
   pageIndex,
   onPageChange,
+  disableMaxHeight = false,
 }: DataTableProps<T>) {
   const { isMobile } = useScreen();
 
@@ -351,9 +353,9 @@ export default function DataTable<T extends object>({
         <div
           className={`w-full ${noBorder ? "" : "border border-black/5 dark:border-slate-800"} rounded-none overflow-hidden bg-white dark:bg-slate-900 shadow-sm transition-all duration-300`}
         >
-          <div className="max-h-[800px] overflow-y-auto overflow-x-auto custom-scrollbar">
+          <div className={`${disableMaxHeight ? "" : "max-h-[800px]"} overflow-y-auto overflow-x-auto custom-scrollbar`}>
             <table className="min-w-full table-fixed divide-y divide-black/5 dark:divide-slate-800">
-              <thead className="bg-[#f0f9eb] dark:bg-green-950/20 sticky top-0 z-10 backdrop-blur-sm border-b border-green-100/50">
+              <thead className="bg-primary/20  sticky top-0 z-10 backdrop-blur-sm border-b border-green-100/50">
                 {table.getHeaderGroups().map((hg) => (
                   <tr key={hg.id}>
                     {hg.headers.map((header) => (

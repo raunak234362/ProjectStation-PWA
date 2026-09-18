@@ -885,7 +885,7 @@ const GetProjectById = ({
                       Project Description
                     </h4>
                     <div
-                      className="text-gray-700 bg-white p-6 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none leading-relaxed"
+                      className="text-sm text-gray-700 bg-white p-6 rounded-2xl border border-black/5 shadow-sm prose prose-sm max-w-none leading-relaxed"
                       dangerouslySetInnerHTML={{
                         __html:
                           project.description || "No description available.",
@@ -1539,7 +1539,7 @@ const StatCard = ({
             {icon}
           </div>
           <div className="flex flex-col">
-            <p className="text-sm font-bold text-gray-700 uppercase tracking-tight leading-tight">
+            <p className="text-md font-bold text-black uppercase tracking-tight leading-tight">
               {label}
             </p>
             {description && (

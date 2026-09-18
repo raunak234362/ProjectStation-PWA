@@ -330,11 +330,6 @@ const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({
           );
         })}
 
-        {jobSummaries.length === 0 && (
-          <div className="col-span-full text-center py-10 text-gray-400 font-medium italic text-sm">
-            No invoice data found for the selected period.
-          </div>
-        )}
       </div>
     </div>
   );

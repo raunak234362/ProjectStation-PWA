@@ -604,15 +604,13 @@ const UpcomingSubmittals: React.FC<UpcomingSubmittalsProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="flex flex-col items-center justify-center py-16 px-4 text-center border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50/30"
               >
-                <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-100 mb-3">
+                <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-300 mb-3">
                   <Clock className="w-6 h-6 text-[#6bbd45]" />
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest">
                   No Upcoming Submittals Found
                 </h3>
-                <p className="text-xs text-gray-500 mt-1 max-w-xs">
-                  There are no submittals matching your search query or filters.
-                </p>
+                
               </motion.div>
             )
           ) : filteredInvoices.length > 0 ? (
