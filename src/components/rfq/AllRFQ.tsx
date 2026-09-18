@@ -34,7 +34,6 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
   const [selectedType, setSelectedType] = useState<"ALL" | "MTO" | "DETAILING" | "BOTH">("ALL");
   const [activeTab] = useState<"all" | "awarded">("all");
   const [selectedMonth, setSelectedMonth] = useState<string>("ALL");
-  const [selectedYear, setSelectedYear] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
 
   const statusOptions = [
@@ -133,21 +132,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
     } else {
       fetchRFQs();
     }
-  }, [searchQuery, selectedType, selectedMonth, selectedYear, selectedStatus]);
-
-  const yearOptions = useMemo(() => {
-    const years = Array.from(
-      new Set(
-        (rfqList || [])
-          .map((item: any) => {
-            const date = new Date(item.estimationDate);
-            return isNaN(date.getTime()) ? null : date.getFullYear().toString();
-          })
-          .filter(Boolean)
-      )
-    ) as string[];
-    return years.sort((a, b) => b.localeCompare(a));
-  }, [rfqList]);
+  }, [searchQuery, selectedType, selectedMonth, selectedStatus]);
 
   const monthOptions = [
     { label: "January", value: "0" },
@@ -403,21 +388,13 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
       });
     }
 
-    // 5. Year filter
-    if (selectedYear !== "ALL") {
-      data = data.filter(item => {
-        const date = new Date(item.estimationDate);
-        return !isNaN(date.getTime()) && date.getFullYear().toString() === selectedYear;
-      });
-    }
-
-    // 6. Status filter
+    // 5. Status filter
     if (selectedStatus !== "ALL") {
       data = data.filter(item => getRFQStatus(item) === selectedStatus);
     }
 
     return data;
-  }, [rfqList, searchQuery, selectedType, activeTab, selectedMonth, selectedYear, selectedStatus]);
+  }, [rfqList, searchQuery, selectedType, activeTab, selectedMonth, selectedStatus]);
 
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
 
@@ -425,9 +402,9 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
     <div className="bg-[#fcfdfc] min-h-[600px] animate-in fade-in duration-700">
       {/* Premium Header Controls */}
       <div className="mb-10 flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-6">
+        <div className="flex flex-wrap items-center gap-4">
           {/* Search Bar */}
-          <div className="relative group max-w-xl flex-1 min-w-[300px]">
+          <div className="relative group max-w-sm flex-1 min-w-[200px]">
             <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
             <div className="relative bg-white border border-gray-100 rounded-xl flex items-center shadow-sm hover:border-green-200 transition-colors">
               <Search className="ml-3 w-5 h-5 text-gray-800" />
@@ -449,46 +426,33 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Month Select */}
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
-            >
-              <option value="ALL">ALL MONTHS</option>
-              {monthOptions.map((m) => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
-            </select>
+          {/* Month Select */}
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
+          >
+            <option value="ALL">ALL MONTHS</option>
+            {monthOptions.map((m) => (
+              <option key={m.value} value={m.value}>{m.label}</option>
+            ))}
+          </select>
 
-            {/* Year Select */}
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20"
-            >
-              <option value="ALL">ALL YEARS</option>
-              {yearOptions.map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
+          {/* Status Select */}
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 uppercase w-[160px] truncate"
+          >
+            {statusOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
 
-            {/* Status Select */}
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="bg-white border border-black/10 px-4 py-2 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500/20 uppercase"
-            >
-              {statusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-
-            {/* Type Toggle */}
-            <div className="flex items-center gap-2">
+          {/* Type Toggle */}
+          <div className="flex items-center gap-2 ml-auto mr-6">
               {['ALL', 'MTO', 'DETAILING'].map((type) => (
                 <button
                   key={type}
@@ -529,7 +493,6 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
                 Awarded
               </button>
             </div> */}
-          </div>
         </div>
       </div>
 
@@ -547,6 +510,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
           pageCount={totalPages}
           pageIndex={currentPage - 1}
           onPageChange={(pageIdx) => setCurrentPage(pageIdx + 1)}
+          disableMaxHeight
         />
       )}
 
