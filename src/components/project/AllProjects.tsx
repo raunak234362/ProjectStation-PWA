@@ -106,6 +106,19 @@ const AllProjects = () => {
     return projects.filter((p) => p.status === statusFilter);
   }, [projects, statusFilter]);
 
+  const uniqueManagers = React.useMemo(() => {
+    const managers = new Set<string>();
+    projects.forEach(p => {
+      if (p.clientProjectManagers && Array.isArray(p.clientProjectManagers)) {
+        p.clientProjectManagers.forEach((m: any) => {
+          if (m.firstName || m.lastName) {
+            managers.add(`${m.firstName || ''} ${m.lastName || ''}`.trim());
+          }
+        });
+      }
+    });
+    return Array.from(managers).sort();
+  }, [projects]);
 
 
   const handleRowClick = (row: any) => {
@@ -157,11 +170,11 @@ const AllProjects = () => {
       header: "Project Manager",
       cell: ({ row }: { row: any }) => {
         const managers = row.original.clientProjectManagers;
-        if (!managers || managers.length === 0) return <span className="text-gray-400">—</span>;
+        if (!managers || managers.length === 0) return <span className="text-black">—</span>;
         return (
           <div className="flex flex-col gap-1">
             {managers.map((m: any, idx: number) => (
-              <span key={idx} className="text-sm uppercase tracking-normal text-gray-700">
+              <span key={idx} className="text-sm uppercase tracking-normal text-black">
                 {m.firstName} {m.lastName}
               </span>
             ))}
@@ -238,7 +251,7 @@ const AllProjects = () => {
         <div className="flex flex-wrap items-center gap-4 mt-4 mb-2">
           {/* Search Bar */}
           <div className="relative group flex-1 max-w-sm min-w-[200px]">
-            <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+            <div className="absolute -inset-1  from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
             <div className="relative bg-white border border-gray-400 rounded-xl flex items-center shadow-sm hover:border-green-500 transition-colors h-10">
               <Search className="ml-3 w-4 h-4 text-gray-600" />
               <input
@@ -285,6 +298,11 @@ const AllProjects = () => {
             className="bg-white border border-gray-400 px-3 py-1.5 h-10 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-green-500/20 text-black uppercase min-w-[160px]"
           >
             <option value="">ALL MANAGERS</option>
+            {uniqueManagers.map((manager, idx) => (
+              <option key={idx} value={manager}>
+                {manager}
+              </option>
+            ))}
           </select>
 
           {/* Status Select */}

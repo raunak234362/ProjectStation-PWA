@@ -379,7 +379,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             <section className="space-y-6">
               <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
                 <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-                <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                <h3 className="text-xl text-black font-semibold uppercase tracking-normal">
                   Project Details
                 </h3>
               </div>
@@ -389,7 +389,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 userRole !== "CLIENT_ESTIMATOR" && (
                   <>
                     <div className="space-y-2">
-                      <label className="block text-xs text-black font-black uppercase tracking-widest">
+                      <label className="block text-xs text-black font-semibold uppercase tracking-normal">
                         Fabricator Partner
                       </label>
                       <Controller
@@ -408,14 +408,14 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                         )}
                       />
                       {errors.fabricatorId && (
-                        <p className="text-[10px] text-rose-600 uppercase tracking-widest">
+                        <p className="text-[10px] text-rose-600 uppercase tracking-normal">
                           {errors.fabricatorId.message}
                         </p>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-xs text-black font-black uppercase tracking-widest">
+                      <label className="block text-xs text-black font-semibold uppercase tracking-normal">
                         Fabricator Contact
                       </label>
                       <Controller
@@ -434,7 +434,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                         )}
                       />
                       {errors.senderId && (
-                        <p className="text-[10px] text-rose-600 uppercase tracking-widest">
+                        <p className="text-[10px] text-rose-600 uppercase tracking-normal">
                           {errors.senderId.message}
                         </p>
                       )}
@@ -442,7 +442,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   </>
                 )}
               <div className="md:col-span-2 space-y-2">
-                <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                <label className="text-sm text-black font-semibold uppercase tracking-normal flex items-center gap-2">
                   <Layers size={14} className="text-black" />
                   Project Name <span className="text-rose-500">*</span>
                 </label>
@@ -451,7 +451,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   className="w-full bg-white border-black rounded-lg h-14 text-sm font-black"
                 />
                 {errors.projectName && (
-                  <p className="text-[10px] text-rose-600 uppercase tracking-widest">
+                  <p className="text-[10px] text-rose-600 uppercase tracking-normal">
                     {errors.projectName.message}
                   </p>
                 )}
@@ -459,7 +459,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
 
 
               <div className="md:col-span-2 space-y-2 w-full mt-4 h-full flex flex-col">
-                <label className="block text-sm text-black font-black uppercase tracking-widest">Project Scope & Detailed Description</label>
+                <label className="block text-sm text-black font-semibold uppercase tracking-normal">Project Scope & Detailed Description</label>
                 <div className="border border-black rounded-lg overflow-hidden bg-white flex-1 transition-all duration-500 ease-in-out">
                   <RichTextEditor value={description} onChange={setDescription} height={dynamicEditorHeight} />
                 </div>
@@ -475,7 +475,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             <section className="space-y-6">
               <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
               <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-              <h3 className="text-xl text-black font-black uppercase tracking-tight">
+              <h3 className="text-xl text-black font-semibold uppercase tracking-normal">
                 Select Estimation Type
               </h3>
             </div>
@@ -492,7 +492,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <div className={`p-4 rounded-full transition-colors ${isDetailing ? "bg-[#6bbd45] text-white" : "bg-white border border-black text-black"}`}>
                   <Layers size={32} />
                 </div>
-                <span className="font-black uppercase tracking-widest text-sm">Detailing Estimation</span>
+                <span className="font-semibold uppercase tracking-normal text-sm">Detailing Estimation</span>
               </button>
               <button
                 type="button"
@@ -506,7 +506,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 <div className={`p-4 rounded-full transition-colors ${isMTO ? "bg-[#6bbd45] text-white" : "bg-white border border-black text-black"}`}>
                   <Settings2 size={32} />
                 </div>
-                <span className="font-black uppercase tracking-widest text-sm">Material Take-off</span>
+                <span className="font-semibold uppercase tracking-normal text-sm">Material Take-off</span>
               </button>
             </div>
           </section>
@@ -518,7 +518,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
             <section className="space-y-6 animate-in fade-in zoom-in duration-300">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                  <h3 className="text-sm text-black font-semibold uppercase tracking-normal flex items-center gap-2">
                     <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
                     Connection Design Scope
                   </h3>
@@ -530,7 +530,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-sm text-black font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                  <h3 className="text-sm text-black font-semibold uppercase tracking-normal flex items-center gap-2">
                     <div className="w-1.5 h-6 bg-[#6bbd45] rounded-full" />
                     Detailing Scope
                   </h3>
@@ -548,7 +548,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <div className="space-y-6">
                 <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-                  <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                  <h3 className="text-xl text-black font-semibold uppercase tracking-normal">
                     Material Takeoff
                   </h3>
                 </div>
@@ -576,13 +576,13 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <section className="space-y-6 animate-in fade-in zoom-in duration-300">
                 <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-                  <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                  <h3 className="text-xl text-black font-semibold uppercase tracking-normal">
                     Project Requirements
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                    <label className="text-sm text-black font-semibold uppercase tracking-normal flex items-center gap-2">
                       <Calendar size={14} className="text-black" />
                       Due Date <span className="text-rose-500">*</span>
                     </label>
@@ -590,7 +590,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   </div>
                   {(isDetailing || watch("mtoStickModelEnabled")) && (
                     <div className="space-y-2 animate-in fade-in duration-300">
-                      <label className="block text-sm text-black font-black uppercase tracking-widest">Tools <span className="text-rose-500">*</span></label>
+                      <label className="block text-sm text-black font-semibold uppercase tracking-normal">Tools <span className="text-rose-500">*</span></label>
                       <Controller
                         name="tools"
                         control={control}
@@ -614,7 +614,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
                   )}
                   {isDetailing && (
                     <div className="space-y-2 animate-in fade-in duration-300">
-                      <label className="text-sm text-black font-black uppercase tracking-widest flex items-center gap-2">
+                      <label className="text-sm text-black font-semibold uppercase tracking-normal flex items-center gap-2">
                         <Percent size={14} className="text-black" />
                         Bid Price
                       </label>
@@ -628,7 +628,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <section className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
                 <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
                   <div className="w-2 h-8 bg-[#6bbd45] rounded-full" />
-                  <h3 className="text-xl text-black font-black uppercase tracking-tight">
+                  <h3 className="text-xl text-black font-semibold uppercase tracking-normal">
                     Design Drawings / Scope Sheet Attachments
                   </h3>
                 </div>
@@ -656,7 +656,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group relative px-22 py-4 w-full justify-center bg-green-50 text-black border-2 border-green-700/80 rounded-lg font-black text-sm uppercase tracking-[0.3em] hover:bg-green-100 transition-all duration-500 shadow-xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
+                className="group relative px-22 py-4 w-full justify-center bg-green-50 text-black border-2 border-green-700/80 rounded-lg font-black text-sm uppercase tracking-normal hover:bg-green-100 transition-all duration-500 shadow-xl active:scale-95 flex items-center gap-4 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

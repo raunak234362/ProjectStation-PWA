@@ -1491,8 +1491,8 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex justify-between border-b border-gray-100 md:text-md text-sm pb-1">
-    <span className="font-medium text-gray-700">{label}:</span>
-    <span className="text-gray-700">{value}</span>
+    <span className="font-medium text-black">{label}:</span>
+    <span className="text-black">{value}</span>
   </div>
 );
 
