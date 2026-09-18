@@ -38,9 +38,10 @@ const AddCoordinationDrawing = ({ projectId, onClose, onSuccess }: AddCoordinati
       let fabricatorName = "";
       let projectName = "";
       if (projectId) {
-        const project = await Service.GetProjectById(projectId);
+        const res = await Service.GetProjectById(projectId);
+        const project = res?.data || res;
         fabricatorName = project?.fabricator?.fabName || "";
-        projectName = project?.projectName || project?.name || "";
+        projectName = project?.name || project?.projectName || "";
       }
 
       await Service.createCoordinationDrawing(data, fabricatorName, projectName);
@@ -105,14 +106,13 @@ const AddCoordinationDrawing = ({ projectId, onClose, onSuccess }: AddCoordinati
 
           <div>
             <label className="block text-[11px] font-bold text-[#475569] uppercase tracking-widest mb-1.5">
-              Description <span className="text-blue-500">*</span>
+              Message <span className="text-blue-500">*</span>
             </label>
-            <div className="rounded-xl overflow-hidden border border-gray-200 focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500 transition-all">
+            <div className="rounded-xl border border-gray-200 overflow-hidden focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500 transition-all bg-white">
               <RichTextEditor
                 value={formData.message}
                 onChange={(val) => setFormData({ ...formData, message: val })}
-                height={200}
-                className="border-0"
+                placeholder="Enter drawing message..."
               />
             </div>
           </div>

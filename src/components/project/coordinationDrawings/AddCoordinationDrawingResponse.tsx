@@ -24,8 +24,8 @@ const AddCoordinationDrawingResponse = ({ drawingId, parentResponseId, onClose, 
     try {
       setLoading(true);
       const data = new FormData();
-      data.append('coordinationDrawingId', drawingId);
-      data.append('message', message);
+      data.append('drawingId', drawingId);
+      data.append('description', message);
       if (parentResponseId) data.append('parentResponseId', parentResponseId);
 
       
@@ -39,9 +39,10 @@ const AddCoordinationDrawingResponse = ({ drawingId, parentResponseId, onClose, 
         const drawing = await Service.getCoordinationDrawingById(drawingId);
         const projectId = drawing?.projectId || drawing?.data?.projectId;
         if (projectId) {
-          const project = await Service.GetProjectById(projectId);
+          const res = await Service.GetProjectById(projectId);
+          const project = res?.data || res;
           fabricatorName = project?.fabricator?.fabName || "";
-          projectName = project?.projectName || project?.name || "";
+          projectName = project?.name || project?.projectName || "";
         }
       }
 

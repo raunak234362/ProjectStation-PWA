@@ -51,6 +51,7 @@ import GetMilestoneByID from "./mileStone/GetMilestoneByID";
 import ProjectProgress from "./progressReports/ProjectProgress";
 import WorkProgressReport from "./wpr/WorkProgressReport";
 import CoordinationDrawings from "./coordinationDrawings/CoordinationDrawings";
+import AllDesignDrawings from "./designDrawings/AllDesignDrawings";
 
 
 const GetProjectById = ({
@@ -437,6 +438,7 @@ const GetProjectById = ({
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
     { key: "coordinationDrawings", label: "Coordination Drawings", icon: Compass },
+    { key: "designDrawings", label: "Design Drawings", icon: Compass },
     { key: "projectNotes", label: "Project Notes", icon: MessageSquare },
   ];
 
@@ -454,6 +456,7 @@ const GetProjectById = ({
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
     { key: "changeOrder", label: "Change Order", icon: FolderOpenDot },
     { key: "coordinationDrawings", label: "Coordination Drawings", icon: Compass },
+    { key: "designDrawings", label: "Design Drawings", icon: Compass },
   ];
 
   const defaultMobileTabs = [
@@ -471,6 +474,7 @@ const GetProjectById = ({
     { key: "submittals", label: "Submittals" },
     { key: "changeOrder", label: "Change Order" },
     { key: "coordinationDrawings", label: "Coordination Drawings" },
+    { key: "designDrawings", label: "Design Drawings" },
     { key: "otherTasks", label: "Other Tasks" },
   ];
 
@@ -1206,6 +1210,12 @@ const GetProjectById = ({
             {activeTab === "coordinationDrawings" && (
               <div className="space-y-4 h-full">
                 <CoordinationDrawings projectId={id} />
+              </div>
+            )}
+
+            {activeTab === "designDrawings" && (
+              <div className="space-y-4 h-full">
+                <AllDesignDrawings projectId={id} />
               </div>
             )}
 

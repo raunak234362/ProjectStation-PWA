@@ -28,6 +28,7 @@ const AllDocument = ({ projectId }: { projectId?: string }) => {
       ) : (
         <AddDesignDrawing
           projectId={finalId as string}
+          onClose={() => {}}
           onSuccess={() => setView("list")}
         />
       )}

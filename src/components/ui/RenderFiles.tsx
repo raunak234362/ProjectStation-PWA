@@ -206,6 +206,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     const isSubmittal = file.originType === 'SUBMITTAL' || file.fileCategory === 'submittal' || (table === 'submittals' && !file.originType && !file.fileCategory);
     const isResponse = file.originType === 'RESPONSE' || file.fileCategory === 'response' || file.overrideTable === 'submittalsResponse';
     const isBfa = file.originType === 'BFA' || file.fileCategory === 'bfa' || file.overrideTable === 'bfa';
+    const isCoordinationDrawing = file.originType === 'COORDINATION_DRAWING' || file.fileCategory === 'coordinationDrawing' || (table === 'coordinationDrawing' && !file.originType && !file.fileCategory);
 
     return (
       <div
@@ -229,6 +230,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
                   : `SUBMITTAL ${file.versionNumber ? `v${file.versionNumber}` : (file.versionId ? `v${file.versionId}` : 'v1')}`}
               </span>
             )}
+
 
             {/* RESPONSE BADGE */}
             {isResponse && (
@@ -357,11 +359,19 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
         f.overrideTable === 'bfa'
     );
 
+    const coordinationFiles = filesArray.filter(
+      (f: any) =>
+        f.originType === 'COORDINATION_DRAWING' ||
+        f.fileCategory === 'coordinationDrawing' ||
+        (table === 'coordinationDrawing' && !f.originType && !f.fileCategory && f.overrideTable !== 'coordinationDrawingResponse')
+    );
+
     const otherFiles = filesArray.filter(
       (f: any) =>
         !submittalFiles.includes(f) &&
         !responseFiles.includes(f) &&
-        !bfaFiles.includes(f)
+        !bfaFiles.includes(f) &&
+        !coordinationFiles.includes(f)
     );
 
     return (
@@ -377,6 +387,21 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
             </div>
             <div className="grid grid-cols-1 gap-2">
               {submittalFiles.map((file: any, idx: number) => renderFileRow(file, idx))}
+            </div>
+          </div>
+        )}
+
+        {coordinationFiles.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs font-black text-blue-900 uppercase tracking-wider bg-blue-50/80 px-3 py-1.5 rounded-lg border border-blue-100">
+              <span>📁</span>
+              <span>COORDINATION DRAWING FILES</span>
+              <span className="bg-blue-200/80 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                {coordinationFiles.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {coordinationFiles.map((file: any, idx: number) => renderFileRow(file, idx))}
             </div>
           </div>
         )}

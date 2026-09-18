@@ -25,6 +25,7 @@ const AllProjects = () => {
 
   const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
   const isConnectionDesigner = userRole === "connection_designer" || userRole === "connection_designer_admin";
+  const isClient = userRole === "client" || userRole === "client_admin" || userRole === "client_estimator";
 
   // Debounce search typing so input never loses focus or unmounts
   useEffect(() => {
@@ -209,43 +210,45 @@ const AllProjects = () => {
       {/* Top Filter and Search Bar */}
       <div className="flex flex-col gap-4 mb-2 px-2">
         {/* Status Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto max-w-full">
-          <button
-            onClick={() => setStatusFilter("ALL")}
-            className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
-              statusFilter === "ALL" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
-            }`}
-          >
-            Total - {stats.total}
-          </button>
-          
-          <button
-            onClick={() => setStatusFilter("ACTIVE")}
-            className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
-              statusFilter === "ACTIVE" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
-            }`}
-          >
-            Active - {stats.active}
-          </button>
-          
-          <button
-            onClick={() => setStatusFilter("COMPLETE")}
-            className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
-              statusFilter === "COMPLETE" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
-            }`}
-          >
-            Completed - {stats.completed}
-          </button>
-          
-          <button
-            onClick={() => setStatusFilter("ONHOLD")}
-            className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
-              statusFilter === "ONHOLD" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
-            }`}
-          >
-            On Hold - {stats.onHold}
-          </button>
-        </div>
+        {!isClient && (
+          <div className="flex items-center gap-2 overflow-x-auto max-w-full">
+            <button
+              onClick={() => setStatusFilter("ALL")}
+              className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
+                statusFilter === "ALL" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
+              }`}
+            >
+              Total - {stats.total}
+            </button>
+            
+            <button
+              onClick={() => setStatusFilter("ACTIVE")}
+              className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
+                statusFilter === "ACTIVE" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
+              }`}
+            >
+              Active - {stats.active}
+            </button>
+            
+            <button
+              onClick={() => setStatusFilter("COMPLETE")}
+              className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
+                statusFilter === "COMPLETE" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
+              }`}
+            >
+              Completed - {stats.completed}
+            </button>
+            
+            <button
+              onClick={() => setStatusFilter("ONHOLD")}
+              className={`flex items-center px-4 py-1.5 text-xs font-bold uppercase transition-colors whitespace-nowrap ${
+                statusFilter === "ONHOLD" ? "bg-[#386641] text-white" : "bg-[#6a994e] text-white hover:bg-[#386641]"
+              }`}
+            >
+              On Hold - {stats.onHold}
+            </button>
+          </div>
+        )}
 
         {/* UI Consistent Filters */}
         <div className="flex flex-wrap items-center gap-4 mt-4 mb-2">

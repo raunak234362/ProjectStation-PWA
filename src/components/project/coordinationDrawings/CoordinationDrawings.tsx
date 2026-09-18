@@ -108,43 +108,37 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
     <div className="flex flex-col h-full animate-in fade-in duration-500">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-black/5">
-            <Compass className="w-5 h-5 text-black" />
+        {/* Search Bar - Left */}
+        <div className="relative group w-full max-w-md">
+          <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
+          <div className="relative bg-white border border-gray-400 rounded-xl flex items-center shadow-sm hover:border-green-500 transition-colors h-10">
+            <Search className="ml-3 w-4 h-4 text-gray-600" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="SEARCH DRAWINGS..."
+              className="flex-1 px-3 py-1 bg-transparent text-black placeholder-gray-600 font-semibold focus:outline-none text-sm uppercase w-full"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="p-1 px-3 text-gray-400 hover:text-gray-700 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
-          <h2 className="text-lg font-black text-black uppercase tracking-tight">Coordination Drawings</h2>
         </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="relative group flex-1 max-w-sm min-w-[200px]">
-            <div className="absolute -inset-1  from-green-100 to-emerald-100 rounded-xl blur-sm opacity-25 group-hover:opacity-40 transition-all duration-1000"></div>
-            <div className="relative bg-white border border-gray-400 rounded-xl flex items-center shadow-sm hover:border-green-500 transition-colors h-10">
-              <Search className="ml-3 w-4 h-4 text-gray-600" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="SEARCH DRAWINGS..."
-                className="flex-1 px-3 py-1 bg-transparent text-black placeholder-gray-600 font-bold focus:outline-none text-sm uppercase w-full"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="p-1 px-3 text-gray-400 hover:text-gray-700 transition-colors"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          </div>
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-2 border-2 border-[#6bbd45] text-black bg-green-200/50 hover:bg-green-200/50 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Add Coordination Drawing
-          </button>
-        </div>
+
+        {/* Add Button - Right */}
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="flex items-center gap-2 px-6 py-2 border-2 border-[#6bbd45] text-black bg-green-200/50 hover:bg-green-300/50 rounded-xl text-sm font-semibold uppercase tracking-widest transition-all shadow-sm"
+        >
+          <Plus className="w-4 h-4" />
+          Add Coordination Drawing
+        </button>
       </div>
 
 
