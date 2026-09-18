@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import type { ChangeEvent } from "react";
+import { Loader2 } from "lucide-react";
 import Button from "../fields/Button";
 import Service from "../../api/Service";
 import RenderFiles from "../ui/RenderFiles";
@@ -11,12 +12,13 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
   const [replyMessage, setReplyMessage] = useState("");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [replyStatus, setReplyStatus] = useState("PENDING");
+  const [loading, setLoading] = useState(false);
   const userId = sessionStorage.getItem("userId") || "";
   const userRole = sessionStorage.getItem("userRole") || "";
   console.log(response);
 
   const handleReply = async () => {
-    if (!replyMessage.trim()) return;
+    if (!replyMessage.trim() || loading) return;
 
     const formData = new FormData();
     formData.append("CoId", response.CoId);
@@ -31,6 +33,7 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
     replyFiles.forEach((f) => formData.append("files", f));
 
     try {
+      setLoading(true);
       let fabricatorName = "";
       let projectName = "";
       if (projectId) {
@@ -63,6 +66,8 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
     } catch (error: any) {
       console.error(error);
       toast.error(error?.response?.data?.message || "Failed to send reply");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,7 +80,8 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
           </h2>
           <button
             onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            disabled={loading}
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Close
           </button>
@@ -99,6 +105,7 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
           value={replyMessage}
           onChange={(e) => setReplyMessage(e.target.value)}
           rows={3}
+          disabled={loading}
           className="w-full border rounded p-2"
           placeholder="Reply..."
         />
@@ -106,6 +113,7 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
         <select
           value={replyStatus}
           onChange={(e) => setReplyStatus(e.target.value)}
+          disabled={loading}
           className="w-full border rounded p-2"
         >
           {STATUS_OPTIONS.map((s) => (
@@ -118,6 +126,7 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
         <input
           type="file"
           multiple
+          disabled={loading}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setReplyFiles(e.target.files ? Array.from(e.target.files) : [])
           }
@@ -126,15 +135,18 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
         <div className="flex justify-end gap-3">
           <Button
             onClick={onClose}
+            disabled={loading}
             className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200"
           >
             Cancel
           </Button>
           <Button
-            className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
+            className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md flex items-center gap-2"
             onClick={handleReply}
+            disabled={loading || !replyMessage.trim()}
           >
-            Send Reply
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {loading ? "Sending..." : "Send Reply"}
           </Button>
         </div>
       </div>
