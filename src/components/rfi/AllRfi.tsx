@@ -431,7 +431,7 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by RFI# or subject..."
+                placeholder="SEARCH BY RFI"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/50 transition-all text-black font-semibold placeholder-gray-400"

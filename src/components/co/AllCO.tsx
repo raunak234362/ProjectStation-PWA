@@ -102,19 +102,7 @@ const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
     );
   }
 
-  if (!changeOrders.length) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-gray-700">
-        <Inbox className="w-10 h-10 mb-3 text-gray-400" />
-        <p className="text-lg font-medium">No Change Orders Available</p>
-        <p className="text-sm text-gray-400">
-          {userRole === "CLIENT"
-            ? "You haven’t created any Change Orders yet."
-            : "No Change Orders raised for this project now."}
-        </p>
-      </div>
-    );
-  }
+
 
   const filteredCOs = changeOrders.filter((co) => {
     const q = searchQuery.toLowerCase();
@@ -170,15 +158,32 @@ const AllCO = ({ changeOrderData = [] }: AllCOProps) => {
       </div>
 
       <div className="flex-1 min-h-0">
-      <DataTable
-        columns={columns}
-        data={filteredCOs}
-        detailComponent={({ row, close }) => (
-          <GetCOByID id={row.id} projectId={row.project} onClose={close} />
+        {!changeOrders.length ? (
+          <div className="flex flex-col items-center justify-center py-16 text-gray-700">
+            <Inbox className="w-10 h-10 mb-3 text-gray-400" />
+            <p className="text-lg font-medium">No Change Orders Available</p>
+            <p className="text-sm text-gray-400">
+              {userRole === "CLIENT"
+                ? "You haven’t created any Change Orders yet."
+                : "No Change Orders raised for this project now."}
+            </p>
+          </div>
+        ) : filteredCOs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4 py-40 bg-white rounded-3xl border border-dashed border-gray-100 italic text-gray-400">
+            <Search className="w-10 h-10 mb-3 text-gray-200" />
+            <p className="text-lg uppercase tracking-tight">no results found</p>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filteredCOs}
+            detailComponent={({ row, close }) => (
+              <GetCOByID id={row.id} projectId={row.project} onClose={close} />
+            )}
+            noBorder
+            disableMaxHeight={true}
+          />
         )}
-        noBorder
-        disableMaxHeight={true}
-      />
       </div>
     </div>
   );

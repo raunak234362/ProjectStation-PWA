@@ -42,32 +42,26 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
     {
       header: 'Drawing Name',
       accessorKey: 'title',
-      enableColumnFilter: true,
       cell: ({ row }) => (
-        <div className="flex flex-col">
-          <span className="font-black text-black uppercase tracking-tight text-sm">
-            {row.original.title}
-          </span>
-          {row.original.stage && (
-            <span className="text-sm text-gray-400 font-bold uppercase tracking-widest mt-0.5">
-              {row.original.stage}
-            </span>
-          )}
-        </div>
+        <span className="font-black text-black uppercase tracking-tight text-sm">
+          {row.original.title}
+        </span>
+      ),
+    },
+    {
+      header: 'Stage',
+      accessorKey: 'stage',
+      cell: ({ row }) => (
+        <span className="text-sm font-black text-black uppercase tracking-widest">
+          {row.original.stage || '—'}
+        </span>
       ),
     },
     {
       header: 'Status',
       accessorKey: 'status',
-      enableColumnFilter: true,
-      filterType: 'select',
-      filterOptions: [
-        { label: 'Pending', value: 'PENDING' },
-        { label: 'Approved', value: 'APPROVED' },
-        { label: 'Rejected', value: 'REJECTED' },
-      ],
       cell: ({ row }) => (
-        <div className="flex justify-center">
+        <div className="flex justify-start">
           <div className="px-4 py-1 rounded-full text-sm font-black uppercase tracking-widest border border-black/20 bg-gray-50/50 text-black">
             {row.original.status || 'IN REVIEW'}
           </div>
@@ -78,7 +72,7 @@ const CoordinationDrawings = ({ projectId }: { projectId: string }) => {
       header: 'Date Created',
       accessorKey: 'createdAt',
       cell: ({ row }) => (
-        <div className="text-center text-sm text-black font-black uppercase tracking-tight">
+        <div className="text-left text-sm text-black font-black uppercase tracking-tight">
           {formatDateCustom(row.original.createdAt)}
         </div>
       ),

@@ -538,40 +538,39 @@ const GetProjectById = ({
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-md overflow-y-auto project-component-container">
       <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-transparent dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-3 mb-3">
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2 xl:gap-4 pb-3 mb-3">
           <div>
-            <h2 className="text-xl md:text-2xl font-black text-black uppercase tracking-tight">
+            <h2 className="text-sm md:text-base xl:text-xl font-black text-black uppercase tracking-tight">
               {project.name}
             </h2>
-
           </div>
-          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-2 xl:gap-3 w-full xl:w-auto">
             {isClient && (
               <button
                 onClick={() => setIsWprListOpen(true)}
-                className="px-4 py-1.5 bg-green-200 text-black border border-green-600 font-bold text-sm uppercase tracking-tight rounded-lg hover:bg-green-600 transition-colors shadow-sm cursor-pointer"
+                className="px-2 py-1 md:px-3 md:py-1.5 xl:px-4 xl:py-1.5 bg-green-200 text-black border border-green-600 font-bold text-xs xl:text-sm uppercase tracking-tight rounded-lg hover:bg-green-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap"
               >
-                <Download className="inline w-4 h-4 mr-2" />Download WPR
+                <Download className="inline w-3 h-3 xl:w-4 xl:h-4 mr-1 xl:mr-2" />Download WPR
               </button>
             )}
             {project.projectNumber && (
-              <div className="inline-block px-4 py-1 bg-green-50 border-2 border-[#6bbd45] rounded-lg">
-                <span className="text-black font-bold text-sm tracking-tight">
+              <div className="inline-block px-2 py-1 md:px-3 md:py-1.5 xl:px-4 xl:py-1 bg-green-50 border-2 border-[#6bbd45] rounded-lg">
+                <span className="text-black font-bold text-xs xl:text-sm tracking-tight whitespace-nowrap">
                   Project No: {project.projectNumber}
                 </span>
               </div>
             )}
 
-            <span className="px-4 py-1.5 rounded-lg text-sm font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
+            <span className="px-2 py-1 md:px-3 md:py-1.5 xl:px-4 xl:py-1.5 rounded-lg text-xs xl:text-sm font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight whitespace-nowrap">
               {project.stage}
             </span>
-            <span className="px-4 py-1.5 rounded-lg text-sm font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight">
+            <span className="px-2 py-1 md:px-3 md:py-1.5 xl:px-4 xl:py-1.5 rounded-lg text-xs xl:text-sm font-bold bg-gray-50 text-black border-2 border-black/5 uppercase tracking-tight whitespace-nowrap">
               {project.status}
             </span>
             {userRole === "admin" && (
               <button
                 onClick={() => handleEditModel(project)}
-                className="px-6 py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+                className="px-3 py-1 md:px-4 md:py-1.5 xl:px-6 xl:py-1.5 bg-green-50 text-black border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all font-bold text-xs xl:text-sm uppercase tracking-tight shadow-sm whitespace-nowrap"
               >
                 Edit
               </button>
@@ -579,7 +578,7 @@ const GetProjectById = ({
             {close && (
               <button
                 onClick={close}
-                className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+                className="px-3 py-1 md:px-4 md:py-1.5 xl:px-6 xl:py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs xl:text-sm uppercase tracking-tight shadow-sm whitespace-nowrap"
               >
                 Close
               </button>
@@ -626,7 +625,7 @@ const GetProjectById = ({
                   >
                     <Icon className={`w-4 h-4 shrink-0 transition-colors duration-200 ${isActive ? "text-[#6bbd45]" : "text-gray-500 dark:text-gray-400"}`} />
                     {sidebarOpen && (
-                      <span className="truncate tracking-wide">{tab.label}</span>
+                      <span className="tracking-wide break-words whitespace-normal text-left">{tab.label}</span>
                     )}
                   </button>
                 );

@@ -470,7 +470,6 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
     { id: "Change Orders", title: "Change Orders", data: changeOrders, table: "changeOrder" },
     { id: "Requests for Information (RFI)", title: "RFI", data: rfis, table: "rFI" },
     { id: "Submittals", title: "Submittals", data: submittals, table: "submittals" },
-    { id: "BFA", title: "Back From Approval (BFA)", data: bfas, table: "bfa" },
     { id: "RFQ", title: "RFQ", data: rfqs, table: "rFQ" },
     { id: "Coordination Drawings", title: "Coordination Drawings", data: coordinationDrawings, table: "coordinationDrawing" },
     { id: "Progress Reports", title: "Progress Reports", data: progressReports, table: "projectProgressReport" },
@@ -480,9 +479,9 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
   const categories = [
     { id: "All", label: "All Files", count: sections.reduce((acc, sec) => acc + sec.data.length, 0) },
     ...sections.map(s => ({ id: s.id, label: s.title, count: s.data.length }))
-  ].filter(cat => cat.id === "All" || cat.count > 0);
+  ].filter(cat => cat.id === "All" || cat.count > 0 || cat.id === "Coordination Drawings");
   
-  const visibleSections = sections.filter(s => s.data.length > 0 && (selectedCategory === "All" || selectedCategory === s.id));
+  const visibleSections = sections.filter(s => (s.data.length > 0 || s.id === "Coordination Drawings") && (selectedCategory === "All" || selectedCategory === s.id));
 
   const formatDate = (date: any) =>
     date
@@ -512,7 +511,7 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
 
       {/* Grid of Section Cards */}
       {visibleSections.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
           {visibleSections.map(section => (
             <button
               key={section.id}
@@ -523,7 +522,7 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
                 <div className="w-12 h-12 rounded-xl bg-green-50 text-[#6bbd45] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   <FolderOpen size={24} />
                 </div>
-                <h3 className="text-lg font-semibold text-black uppercase tracking-tight transition-colors truncate">{section.title}</h3>
+                <h3 className="text-lg font-semibold text-black uppercase tracking-tight transition-colors break-words whitespace-normal leading-tight">{section.title}</h3>
               </div>
               <p className="text-xs font-semibold text-gray-600 shrink-0 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">{section.data.length} FILES</p>
             </button>
