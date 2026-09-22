@@ -66,18 +66,35 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
 
       if (!acc[desc]) acc[desc] = [];
       curr.files.forEach((f: any) => {
+        const isSubmittal = table === 'submittals' || table === 'submittal';
+        const docId = f.documentID || f.overrideDocumentID || (
+          isSubmittal
+            ? (f.submittalId || curr.submittalId || curr.submittalsId || parentId || curr.id)
+            : ((table === 'bfa' && parentId) ? parentId : curr.id || parentId)
+        );
+        const vId = f.versionId || (
+          isSubmittal
+            ? (curr.submittalId || curr.submittalsId ? curr.id : versionId)
+            : (table === 'bfa' ? curr.id : versionId)
+        );
+        const fType = f.fileType || (
+          isSubmittal
+            ? (curr.versionNumber ? `Submittal (v${curr.versionNumber})` : 'Submittal File')
+            : (table === 'bfa' ? 'BFA File' : undefined)
+        );
+
         acc[desc].push({
           ...f,
           id: f.id,
           uploadedAt: f.uploadedAt || curr.uploadedAt || curr.createdAt || curr.date,
           user: f.user || curr.user || curr.sender,
-          documentID: f.documentID || f.overrideDocumentID || (table === 'submittals' ? curr.id : ((table === 'bfa' && parentId) ? parentId : curr.id || parentId)),
-          versionId: f.versionId || (table === 'submittals' ? undefined : (table === 'bfa' ? curr.id : versionId)),
+          documentID: docId,
+          versionId: vId,
           stage: f.stage || curr.stage,
-          overrideTable: f.overrideTable || (table === 'submittals' ? 'submittals' : (table === 'bfa' ? 'bfa' : undefined)),
-          originType: f.originType || (table === 'submittals' ? 'SUBMITTAL' : (table === 'bfa' ? 'BFA' : undefined)),
-          fileCategory: f.fileCategory || (table === 'submittals' ? 'submittal' : (table === 'bfa' ? 'bfa' : undefined)),
-          fileType: f.fileType || (table === 'submittals' ? 'Submittal File' : (table === 'bfa' ? 'BFA File' : undefined)),
+          overrideTable: f.overrideTable || (isSubmittal ? 'submittals' : (table === 'bfa' ? 'bfa' : undefined)),
+          originType: f.originType || (isSubmittal ? 'SUBMITTAL' : (table === 'bfa' ? 'BFA' : undefined)),
+          fileCategory: f.fileCategory || (isSubmittal ? 'submittal' : (table === 'bfa' ? 'bfa' : undefined)),
+          fileType: fType,
           responseReason: f.responseReason,
           responseStatus: f.responseStatus,
         });
@@ -146,32 +163,53 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
         ? curr.description
         : (curr.subject || curr.title || 'Attachments');
       if (!acc[desc]) acc[desc] = [];
+      const isSubmittal = table === 'submittals' || table === 'submittal';
+      const docId = curr.documentID || curr.overrideDocumentID || (
+        isSubmittal
+          ? (curr.submittalId || curr.submittalsId || parentId || curr.id)
+          : parentId
+      );
+      const vId = curr.versionId || versionId;
       acc[desc].push({
         ...curr,
         id: curr.id,
-        documentID: curr.documentID || parentId,
-        versionId: curr.versionId || versionId,
+        documentID: docId,
+        versionId: vId,
         overrideTable: curr.overrideTable,
       });
     }
     return acc;
   }, {});
 
+  const getResolvedFileParams = (file: any) => {
+    const finalTable = file.overrideTable || file.table || table;
+    let finalParentId = file.documentID || parentId;
+    let finalVersionId = file.versionId || versionId;
+
+    if (finalTable === 'submittals' || finalTable === 'submittal') {
+      if (file.submittalId) {
+        finalParentId = file.submittalId;
+      } else if (finalVersionId && finalParentId === finalVersionId) {
+        if (parentId && parentId !== finalVersionId) {
+          finalParentId = parentId;
+        }
+      }
+    }
+
+    return { finalTable, finalParentId, finalVersionId };
+  };
+
   const handleShare = async (e: React.MouseEvent, file: any) => {
     e.preventDefault();
     e.stopPropagation();
-    const finalTable = file.overrideTable || file.table || table;
-    const finalParentId = file.documentID || parentId;
-    const finalVersionId = file.versionId || versionId;
+    const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
     await shareFileSecurely(finalTable, finalParentId, file.id, finalVersionId);
   };
 
   const handleDownload = async (e: React.MouseEvent, file: any) => {
     e.preventDefault();
     e.stopPropagation();
-    const finalTable = file.overrideTable || file.table || table;
-    const finalParentId = file.documentID || parentId;
-    const finalVersionId = file.versionId || versionId;
+    const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
     const fileName = file.originalName || file.name || "download";
     const result = await downloadFileSecurely(finalTable, finalParentId, file.id, fileName, finalVersionId);
     if (result && !result.success) {
@@ -184,9 +222,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
 
   const handleOpen = async (e: React.MouseEvent, file: any) => {
     e.preventDefault();
-    const finalTable = file.overrideTable || file.table || table;
-    const finalParentId = file.documentID || parentId;
-    const finalVersionId = file.versionId || versionId;
+    const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
     const result = await openFileSecurely(finalTable, finalParentId, file.id, finalVersionId);
     if (result && !result.success) {
       dispatch(showFileError({
