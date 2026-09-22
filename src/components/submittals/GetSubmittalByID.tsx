@@ -60,7 +60,7 @@ const Info = ({ label, value }: any) => (
 );
 
 // ── Version History Row ──────────────────────────────────────────────────────
-const VersionRow = ({ version, index, total, isCurrent }: any) => {
+const VersionRow = ({ version, index, total, isCurrent, submittalId }: any) => {
   const [open, setOpen] = useState(false);
 
   const uploadedAt = version.createdAt || version.updatedAt || version.date;
@@ -68,6 +68,27 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
   const uploaderName = uploader
     ? `${uploader.firstName || uploader.f_name || ""} ${uploader.lastName || uploader.l_name || ""}`.trim()
     : null;
+
+  const vNum = version.versionNumber || (total - index);
+  const effectiveSubmittalId = submittalId || version.submittalId || version.submittalsId;
+  const rawFiles = version.files || (version.file ? [version.file] : []);
+  const filesList = Array.isArray(rawFiles) ? rawFiles : [rawFiles];
+  const mappedFiles = filesList.map((f: any) => ({
+    ...f,
+    originType: "SUBMITTAL",
+    fileCategory: "submittal",
+    fileType: `Submittal (v${vNum})`,
+    table: "submittals",
+    overrideTable: "submittals",
+    documentID: effectiveSubmittalId,
+    overrideDocumentID: effectiveSubmittalId,
+    submittalId: effectiveSubmittalId,
+    versionId: version.id,
+    versionNumber: vNum,
+    uploadedAt: uploadedAt,
+    user: uploader,
+    stage: version.stage,
+  }));
 
   return (
     <div
@@ -134,16 +155,22 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
           )}
 
           {/* Attached files for this version */}
-          {(version.files?.length > 0 || version.file) && (
+          {mappedFiles.length > 0 && (
             <div className="pt-1">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                 Attachments
               </p>
               {isCurrent ? (
                 <RenderFiles
-                  files={[version]}
+                  files={[
+                    {
+                      ...version,
+                      id: effectiveSubmittalId,
+                      files: mappedFiles,
+                    },
+                  ]}
                   table="submittals"
-                  parentId={version.submittalId || version.submittalsId}
+                  parentId={effectiveSubmittalId}
                   versionId={version.id}
                   hideHeader
                 />
@@ -156,7 +183,7 @@ const VersionRow = ({ version, index, total, isCurrent }: any) => {
           )}
 
           {/* Nothing to show */}
-          {!version.description && !version.files?.length && !version.file && (
+          {!version.description && mappedFiles.length === 0 && (
             <p className="pt-3 text-xs text-gray-400 italic">
               No details available for this version.
             </p>
@@ -793,17 +820,83 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                 )}
 
               {/* Single Version File Display */}
-              {!hasMultipleVersions && sortedVersions.length === 1 && (
-                <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5 mt-6">
-                  <RenderFiles
-                    files={sortedVersions}
-                    table="submittals"
-                    parentId={submittal.id}
-                    versionId={sortedVersions[0]?.id}
-                    hideHeader
-                  />
-                </div>
-              )}
+              {!hasMultipleVersions && sortedVersions.length === 1 && (() => {
+                const singleVer = sortedVersions[0];
+                const vNum = singleVer.versionNumber || 1;
+                const rawFiles = singleVer.files || (singleVer.file ? [singleVer.file] : []);
+                const filesList = Array.isArray(rawFiles) ? rawFiles : [rawFiles];
+                const mappedFiles = filesList.map((f: any) => ({
+                  ...f,
+                  originType: "SUBMITTAL",
+                  fileCategory: "submittal",
+                  fileType: `Submittal (v${vNum})`,
+                  table: "submittals",
+                  overrideTable: "submittals",
+                  documentID: submittal.id,
+                  overrideDocumentID: submittal.id,
+                  submittalId: submittal.id,
+                  versionId: singleVer.id,
+                  versionNumber: vNum,
+                  uploadedAt: singleVer.createdAt || submittal.createdAt || submittal.date,
+                  user: singleVer.user || singleVer.sender || submittal.sender,
+                  stage: singleVer.stage || submittal.stage,
+                }));
+
+                return mappedFiles.length > 0 ? (
+                  <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5 mt-6">
+                    <RenderFiles
+                      files={[
+                        {
+                          ...submittal,
+                          description: submittal.subject || singleVer.description || "Attachments",
+                          files: mappedFiles,
+                        },
+                      ]}
+                      table="submittals"
+                      parentId={submittal.id}
+                      versionId={singleVer.id}
+                      hideHeader
+                    />
+                  </div>
+                ) : null;
+              })()}
+
+              {/* Direct Files on Submittal (if no versions) */}
+              {!hasMultipleVersions && sortedVersions.length === 0 && (submittal.files?.length > 0 || submittal.file) && (() => {
+                const rawFiles = submittal.files || (submittal.file ? [submittal.file] : []);
+                const filesList = Array.isArray(rawFiles) ? rawFiles : [rawFiles];
+                const mappedFiles = filesList.map((f: any) => ({
+                  ...f,
+                  originType: "SUBMITTAL",
+                  fileCategory: "submittal",
+                  fileType: "Submittal File",
+                  table: "submittals",
+                  overrideTable: "submittals",
+                  documentID: submittal.id,
+                  overrideDocumentID: submittal.id,
+                  submittalId: submittal.id,
+                  uploadedAt: submittal.createdAt || submittal.date,
+                  user: submittal.user || submittal.sender,
+                  stage: submittal.stage,
+                }));
+
+                return mappedFiles.length > 0 ? (
+                  <div className="bg-gray-100 p-6 rounded-xl shadow-none border border-gray-100 space-y-5 mt-6">
+                    <RenderFiles
+                      files={[
+                        {
+                          ...submittal,
+                          description: submittal.subject || "Attachments",
+                          files: mappedFiles,
+                        },
+                      ]}
+                      table="submittals"
+                      parentId={submittal.id}
+                      hideHeader
+                    />
+                  </div>
+                ) : null;
+              })()}
             </div>
           </div>
 
@@ -830,6 +923,7 @@ const GetSubmittalByID = ({ id, onClose }: any) => {
                     isCurrent={
                       version.id === submittal.currentVersionId || index === 0
                     }
+                    submittalId={submittal?.id}
                   />
                 ))}
               </div>
