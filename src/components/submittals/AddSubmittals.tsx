@@ -127,7 +127,6 @@ const AddSubmittal: React.FC<{
       onSuccess?.();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to create Submittal");
     }
   };
 

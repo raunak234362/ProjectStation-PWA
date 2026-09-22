@@ -70,7 +70,6 @@ const SubmittalResponseModal = ({
       toast.success("Submittal response added successfully");
       onSuccess();
     } catch (err) {
-      toast.error("Submittal response failed");
       console.error("Submittal response failed:", err);
     }
   };

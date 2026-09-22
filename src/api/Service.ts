@@ -2124,6 +2124,7 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot add submittal", error);
+      throw error;
     }
   }
 
@@ -2228,6 +2229,7 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot add submittal response", error);
+      throw error;
     }
   }
   static async GetSubmittalResponsebyId(subId: string) {
