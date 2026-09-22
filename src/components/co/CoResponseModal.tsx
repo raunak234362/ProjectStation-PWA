@@ -26,9 +26,17 @@ const CoResponseModal = ({
     register,
     handleSubmit,
     control,
-    formState: { errors },
-  } = useForm<CoResponsePayload>();
+    watch,
+    formState: { errors, isSubmitted },
+  } = useForm<CoResponsePayload>({
+    mode: "onChange",
+  });
   console.log(CoId);
+
+  const selectedStatus = watch("status");
+  const selectedDescription = watch("description");
+  const isStatusInvalid = !!errors.status || (isSubmitted && !selectedStatus);
+  const isDescriptionInvalid = !!errors.description || (isSubmitted && !selectedDescription?.trim());
 
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
@@ -138,16 +146,17 @@ const CoResponseModal = ({
                 required: "Please enter your response message",
               })}
               rows={4}
-              className={`w-full border rounded-md p-3 uppercase focus:outline-none transition-colors ${
-                errors.description
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-gray-300 focus:border-black"
+              className={`w-full border rounded-md p-3 uppercase focus:outline-none transition-all ${
+                isDescriptionInvalid
+                  ? "border-2 border-red-500 bg-red-50/50 focus:border-red-600 focus:ring-2 focus:ring-red-200"
+                  : "border-gray-300 bg-white focus:border-black"
               }`}
               placeholder="WRITE YOUR RESPONSE..."
             />
-            {errors.description && (
-              <p className="text-red-500 text-xs mt-1 font-semibold">
-                {errors.description.message}
+            {isDescriptionInvalid && (
+              <p className="text-red-500 text-xs mt-1 font-semibold flex items-center gap-1">
+                <span>⚠</span>
+                {errors.description?.message || "Please enter your response message"}
               </p>
             )}
           </div>
@@ -158,20 +167,21 @@ const CoResponseModal = ({
               {...register("status", {
                 required: "Please select a status",
               })}
-              className={`w-full border rounded-md p-2 bg-white focus:outline-none transition-colors ${
-                errors.status
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-gray-300 focus:border-black"
+              className={`w-full rounded-md p-2 focus:outline-none transition-all ${
+                isStatusInvalid
+                  ? "border-2 border-red-500 bg-red-50 text-red-600 font-semibold focus:border-red-600 focus:ring-2 focus:ring-red-200"
+                  : "border border-gray-300 bg-white text-black focus:border-black"
               }`}
             >
-              <option value="">Select Status</option>
-              <option value="PENDING">Pending</option>
-              <option value="APPROVED">Approved</option>
-              <option value="REJECTED">Rejected</option>
+              <option value="" className="text-red-600 font-semibold">Select Status</option>
+              <option value="PENDING" className="text-black font-normal">Pending</option>
+              <option value="APPROVED" className="text-black font-normal">Approved</option>
+              <option value="REJECTED" className="text-black font-normal">Rejected</option>
             </select>
-            {errors.status && (
-              <p className="text-red-500 text-xs mt-1 font-semibold">
-                {errors.status.message}
+            {isStatusInvalid && (
+              <p className="text-red-500 text-xs mt-1 font-semibold flex items-center gap-1">
+                <span>⚠</span>
+                {errors.status?.message || "Please select a status"}
               </p>
             )}
           </div>
