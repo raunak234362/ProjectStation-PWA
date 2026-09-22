@@ -22,13 +22,30 @@ const CoResponseModal = ({
   currentVersionId,
   projectId,
 }: Props) => {
-  const { register, handleSubmit, control } = useForm<CoResponsePayload>();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<CoResponsePayload>();
   console.log(CoId);
 
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
+
   const onSubmit = async (data: CoResponsePayload) => {
     if (loading) return;
+
+    if (!data.status) {
+      toast.error("Please select a status");
+      return;
+    }
+
+    if (!data.description || !data.description.trim()) {
+      toast.error("Please enter a response message");
+      return;
+    }
+
     try {
       setLoading(true);
       const userId = sessionStorage.getItem("userId") || "";
@@ -88,6 +105,15 @@ const CoResponseModal = ({
     }
   };
 
+  const onError = (formErrors: any) => {
+    if (formErrors.status) {
+      toast.error(formErrors.status.message || "Please select a status");
+    }
+    if (formErrors.description) {
+      toast.error(formErrors.description.message || "Please enter a response message");
+    }
+  };
+
   return (
     <div className="project-component-container fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl relative">
@@ -104,25 +130,51 @@ const CoResponseModal = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-4 mt-4">
           {/* Description */}
-          <textarea
-            {...register("description", { required: true })}
-            rows={4}
-            className="w-full border rounded-md p-3 uppercase"
-            placeholder="WRITE YOUR RESPONSE..."
-          />
+          <div>
+            <textarea
+              {...register("description", {
+                required: "Please enter your response message",
+              })}
+              rows={4}
+              className={`w-full border rounded-md p-3 uppercase focus:outline-none transition-colors ${
+                errors.description
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-gray-300 focus:border-black"
+              }`}
+              placeholder="WRITE YOUR RESPONSE..."
+            />
+            {errors.description && (
+              <p className="text-red-500 text-xs mt-1 font-semibold">
+                {errors.description.message}
+              </p>
+            )}
+          </div>
 
           {/* Status */}
-          <select
-            {...register("status", { required: true })}
-            className="w-full border rounded-md p-2"
-          >
-            <option value="">Select Status</option>
-            <option value="PENDING">Pending</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
-          </select>
+          <div>
+            <select
+              {...register("status", {
+                required: "Please select a status",
+              })}
+              className={`w-full border rounded-md p-2 bg-white focus:outline-none transition-colors ${
+                errors.status
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-gray-300 focus:border-black"
+              }`}
+            >
+              <option value="">Select Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+            {errors.status && (
+              <p className="text-red-500 text-xs mt-1 font-semibold">
+                {errors.status.message}
+              </p>
+            )}
+          </div>
 
           {/* Files */}
           <Controller
