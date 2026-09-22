@@ -91,17 +91,18 @@ const CoResponseModal = ({
   return (
     <div className="project-component-container fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-lg p-6 rounded-xl relative">
-        <button
-          onClick={onClose}
-          disabled={loading}
-          className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Close
-        </button>
-
-        <h2 className="text-xl font-semibold text-black">
-          Add CO Response
-        </h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-black text-black uppercase tracking-tight">
+            Add CO Response
+          </h2>
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Close
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
           {/* Description */}
@@ -131,9 +132,6 @@ const CoResponseModal = ({
           />
 
           <div className="flex justify-end gap-3">
-            <Button onClick={onClose} disabled={loading} type="button">
-              Cancel
-            </Button>
             <Button
               type="submit"
               disabled={loading}
