@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import Service from "../../../api/Service";
 import RenderFiles from "../../ui/RenderFiles";
-import { Loader2, ChevronDown, Filter, FileText, Layers, Search, Calendar, X, FolderOpen } from "lucide-react";
+import { Loader2 ,Search, X, FolderOpen } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string, onAddClick?: () => void }) => {
@@ -12,12 +12,12 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
   const [data, setData] = useState<any>(null);
   
   // Filters State
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStage, setSelectedStage] = useState("All");
   const [selectedDate, setSelectedDate] = useState("");
   
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [, setIsCategoryOpen] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
   
   // Modal State
@@ -462,7 +462,7 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
     );
   }
 
-  const { projectFiles, designDrawings, changeOrders, notes, rfis, submittals, bfas, rfqs, coordinationDrawings, progressReports } = processedData;
+  const { projectFiles, designDrawings, changeOrders, notes, rfis, submittals, rfqs, coordinationDrawings, progressReports } = processedData;
 
   const sections = [
     { id: "Project Documents", title: "Project Documents", data: projectFiles, table: "project" },
@@ -476,10 +476,6 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
     { id: "Notes", title: "Notes", data: notes, table: "project" },
   ];
 
-  const categories = [
-    { id: "All", label: "All Files", count: sections.reduce((acc, sec) => acc + sec.data.length, 0) },
-    ...sections.map(s => ({ id: s.id, label: s.title, count: s.data.length }))
-  ].filter(cat => cat.id === "All" || cat.count > 0 || cat.id === "Coordination Drawings");
   
   const visibleSections = sections.filter(s => (s.data.length > 0 || s.id === "Coordination Drawings") && (selectedCategory === "All" || selectedCategory === s.id));
 

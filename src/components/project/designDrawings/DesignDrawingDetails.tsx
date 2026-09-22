@@ -9,7 +9,7 @@ interface DesignDrawingDetailsProps {
   onUpdate: () => void;
 }
 
-const DesignDrawingDetails = ({ id, onUpdate }: DesignDrawingDetailsProps) => {
+const DesignDrawingDetails = ({ id }: DesignDrawingDetailsProps) => {
   const [drawing, setDrawing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

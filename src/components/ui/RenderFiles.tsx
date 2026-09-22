@@ -206,7 +206,6 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     const isSubmittal = file.originType === 'SUBMITTAL' || file.fileCategory === 'submittal' || (table === 'submittals' && !file.originType && !file.fileCategory);
     const isResponse = file.originType === 'RESPONSE' || file.fileCategory === 'response' || file.overrideTable === 'submittalsResponse';
     const isBfa = file.originType === 'BFA' || file.fileCategory === 'bfa' || file.overrideTable === 'bfa';
-    const isCoordinationDrawing = file.originType === 'COORDINATION_DRAWING' || file.fileCategory === 'coordinationDrawing' || (table === 'coordinationDrawing' && !file.originType && !file.fileCategory);
 
     return (
       <div

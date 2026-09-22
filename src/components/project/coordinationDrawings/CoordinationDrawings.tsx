@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from 'react';
-import { Plus, Search, Compass, Loader2, X } from 'lucide-react';
+import { Plus, Search, Loader2, X } from 'lucide-react';
 import Service from '../../../api/Service';
 import AddCoordinationDrawing from './AddCoordinationDrawing.tsx';
 import CoordinationDrawingDetails from './CoordinationDrawingDetails.tsx';

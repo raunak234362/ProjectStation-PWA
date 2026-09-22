@@ -3,7 +3,7 @@ import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { DesignDrawing } from "../../../interface";
 import Service from "../../../api/Service";
-import { Loader2, Inbox, Plus, Compass, Search, X } from "lucide-react";
+import { Loader2, Plus, Search, X } from "lucide-react";
 import DesignDrawingDetails from "./DesignDrawingDetails";
 import AddDesignDrawing from "./AddDesignDrawing";
 import { formatDate } from "../../../utils/dateUtils";
