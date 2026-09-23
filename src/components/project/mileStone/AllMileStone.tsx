@@ -65,7 +65,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
             accessorKey: "CDApprovalDate",
             header: "CD Approval Date",
             cell: ({ row }: any) => (
-              <span className="text-black/60 text-xs font-bold">
+              <span className="text-black text-sm font-bold">
                 {row.original.CDApprovalDate
                   ? formatDate(row.original.CDApprovalDate)
                   : "—"}
@@ -76,7 +76,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
             accessorKey: "CDTargetDate",
             header: "CD Target Date",
             cell: ({ row }: any) => (
-              <span className="text-black/60 text-xs font-bold">
+              <span className="text-black text-sm font-bold">
                 {row.original.CDTargetDate
                   ? formatDate(row.original.CDTargetDate)
                   : "—"}
@@ -89,7 +89,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
             accessorKey: "approvalDate",
             header: "Approval Date",
             cell: ({ row }: any) => (
-              <span className="text-black/60 text-xs font-bold">
+              <span className="text-black text-sm font-bold">
                 {formatDate(row.original.approvalDate)}
               </span>
             ),
@@ -99,7 +99,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
+        <span className="px-2 py-0.5 text-[10px] md:text-sm font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
           {row.original.status || "—"}
         </span>
       ),
@@ -108,7 +108,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
       accessorKey: "stage",
       header: "Stage",
       cell: ({ row }) => (
-        <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
+        <span className="px-2 py-0.5 text-[10px] md:text-sm font-bold uppercase tracking-widest rounded-md bg-gray-50 text-black border border-black/5">
           {row.original.stage || "—"}
         </span>
       ),

@@ -20,7 +20,9 @@ const MilestoneLayout = ({ project, onUpdate }: MilestoneLayoutProps) => {
   return (
     <div className="w-full h-full overflow-hidden flex flex-col bg-white project-component-container">
       <div className="px-8 py-6 flex flex-row items-center justify-start gap-4">
-        <button onClick={() => setActiveTab("allMilestones")} className={btnClass("allMilestones")}>All Milestones</button>
+        {userRole !== "connection_designer_admin" && userRole !== "connection_designer_engineer" && (
+          <button onClick={() => setActiveTab("allMilestones")} className={btnClass("allMilestones")}>All Milestones</button>
+        )}
         {userRole !== "client" && userRole !== "client_admin" && userRole !== "connection_designer_engineer" && userRole !== "connection_designer_admin" && (
           <button onClick={() => setActiveTab("addMilestone")} className={btnClass("addMilestone")}>Add Milestone</button>
         )}

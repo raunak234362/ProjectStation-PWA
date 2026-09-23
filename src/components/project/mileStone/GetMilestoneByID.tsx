@@ -38,7 +38,7 @@ const InfoCard = ({
   bg: string;
 }) => (
   <div className="flex flex-col gap-1">
-    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+    <span className="text-sm font-semibold text-black uppercase tracking-wider">
       {label}
     </span>
     <div className="flex items-center gap-2 mt-1">
@@ -418,11 +418,11 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
               bg="bg-purple-50"
             />
             <div className="flex flex-col gap-1">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <span className="text-sm font-semibold text-black uppercase tracking-wider">
                 Status
               </span>
               <div
-                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} w-fit mt-1`}
+                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold border-2 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} w-fit mt-1`}
               >
                 {statusConfig.label}
               </div>
@@ -435,7 +435,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
               bg="bg-green-50"
             />
             <div className="flex flex-col gap-1 w-full col-span-1 md:col-span-2 lg:col-span-1">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <span className="text-sm font-semibold text-black uppercase tracking-wider">
                 Progress
               </span>
               <div className="mt-2 w-full">
@@ -493,7 +493,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
 
                   return (
                     <div className="flex flex-col gap-1 w-full">
-                      <div className="flex justify-between items-center text-xs font-bold text-gray-700 mb-1">
+                      <div className="flex justify-between items-center text-sm font-bold text-black mb-1">
                         <span>{finalProgress}%</span>
                       </div>
                       <div className="w-full bg-red-500 rounded-full h-2.5 relative overflow-hidden">
@@ -521,7 +521,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
           {milestone?.versions && milestone.versions.length > 0 && (
             <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200/50">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest flex items-center gap-2">
+                <h3 className="text-sm font-bold text-black uppercase tracking-widest flex items-center gap-2">
                   <Clock className="w-4 h-4 text-green-600" /> Version History
                 </h3>
                 <span className="text-xs font-bold bg-gray-200 text-gray-600 px-3 py-1 rounded-md">
@@ -561,7 +561,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                             >
                               V{v.versionNumber} {isCurrent && "· Current"}
                             </span>
-                            <span className="text-[10px] text-gray-400 font-semibold flex items-center gap-1">
+                            <span className="text-[10px] text-gray-600 font-semibold flex items-center gap-1">
                               {formatDateTime(v.createdAt)}
                             </span>
                           </div>
@@ -584,7 +584,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                               />
                             </div>
                             <div>
-                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-1">
+                              <p className="text-sm font-bold text-black uppercase tracking-widest mb-2 mt-1">
                                 Approval Date
                               </p>
                               <p className="text-sm text-gray-700 ">
@@ -647,7 +647,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
             {/* Responses */}
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-widest">
+                <h3 className="text-sm font-bold text-black flex items-center gap-2 uppercase tracking-normal border-l-4 border-[#6bbd45] pl-3">
                   Communication
                 </h3>
                 <Button
