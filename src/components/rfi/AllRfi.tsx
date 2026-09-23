@@ -35,7 +35,11 @@ const AllRFI = ({ rfiData = [], projectId }: AllRFIProps) => {
   const isWBTStaff = !isClient && !isConnectionDesigner;
 
   const [activeSubTab, setActiveSubTab] = useState<"general" | "cd">("general");
-  const [sentReceivedTab, setSentReceivedTab] = useState<"sent" | "received">("received");
+  const [sentReceivedTab, setSentReceivedTab] = useState<"sent" | "received">(
+    userRoleUpper === "CONNECTION_DESIGNER_ADMIN" || userRoleUpper === "CONNECTION_DESIGNER_ENGINEER"
+      ? "sent"
+      : "received"
+  );
 
   useEffect(() => {
     const fetchClientAdminRFIs = async () => {
