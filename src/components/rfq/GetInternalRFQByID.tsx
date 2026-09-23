@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
-import Service from "../../api/Service";
 import type { RFQItem } from "../../interface";
 import {
   Loader2, AlertCircle,
@@ -23,6 +22,7 @@ import { updateRFQ, deleteRFQ } from "../../store/rfqSlice";
 
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { toast } from "react-toastify";
+import { rfqService } from "../../api/Service1";
 
 const RFQResponseItem = ({
   response,
@@ -291,7 +291,7 @@ const GetInternalRFQByID = ({ id, onClose }: GetInternalRFQByIDProps) => {
   const fetchRfq = async () => {
     try {
       if (!rfq) setLoading(true);
-      const rfqRes = await Service.GetInternalRFQByID(id);
+      const rfqRes = await rfqService.GetInternalRFQByID(id);
 
       const rfqData = rfqRes?.data || rfqRes;
       if (rfqData) {
@@ -343,7 +343,7 @@ const GetInternalRFQByID = ({ id, onClose }: GetInternalRFQByIDProps) => {
     try {
       setIsDeleting(true);
       console.log("Calling Service.DeleteRFQById...");
-      const res = await Service.DeleteRFQById(id);
+      const res = await rfqService.DeleteRFQById(id);
       console.log("Service.DeleteRFQById response:", res);
       dispatch(deleteRFQ(id));
       toast.success("RFQ deleted successfully");
@@ -379,7 +379,7 @@ const GetInternalRFQByID = ({ id, onClose }: GetInternalRFQByIDProps) => {
       };
       const fabricatorName = rfq?.fabricator?.fabName || rfq?.sender?.fabricator?.fabName || (rfq as any)?.fabricatorName || "";
       const rfqProjectName = rfq?.projectName || "";
-      await Service.UpdateRFQById(id, payload, fabricatorName, rfqProjectName);
+      await rfqService.UpdateRFQById(id, payload, fabricatorName, rfqProjectName);
       toast.success("RFQ status updated successfully");
       setShowStatusModal(false);
       setNewStatus("");

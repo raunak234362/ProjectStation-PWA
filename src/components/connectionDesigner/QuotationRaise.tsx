@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import Input from "../fields/input";
+import { rfqService } from "../../api/Service1";
 
 interface ConnectionDesigner {
   id: string;
@@ -36,7 +37,7 @@ const QuotationRaise = ({
   useEffect(() => {
     const fetchRfq = async () => {
       try {
-        const res = await Service.GetRFQbyId(rfqId);
+        const res = await rfqService.GetRFQbyId(rfqId);
         if (res?.data) {
           setRfqDetails(res.data);
         }
@@ -61,7 +62,7 @@ const QuotationRaise = ({
           try {
             const parsed = JSON.parse(cd.state);
             parsedState = Array.isArray(parsed) ? parsed : [];
-          } catch (e) {
+          } catch {
             parsedState = [];
           }
         }
@@ -69,7 +70,7 @@ const QuotationRaise = ({
       });
       setConnectionDesigners(parsedData);
       setFilteredDesigners(parsedData);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load connection designers");
     }
   };
@@ -117,11 +118,11 @@ const QuotationRaise = ({
       };
       const fabricatorName = rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
       const rfqProjectName = rfqDetails?.projectName || "";
-      await Service.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
+      await rfqService.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
       toast.success("Quotation raised successfully!");
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch{
       toast.error("Failed to raise quotation");
     }
   };

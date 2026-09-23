@@ -1,4 +1,5 @@
 
+import connectionDesignerService from "./services/cd.service";
 import employeeService from "./services/employee.service";
 import fabricatorService from "./services/fabricator.service";
 import rfqService from "./services/rfq.service";
@@ -8,7 +9,8 @@ class Service1 { }
 const services: any[] =[
     employeeService,
     fabricatorService,
-    rfqService
+    rfqService,
+    connectionDesignerService
 ]
 
 services.forEach(service => {
@@ -22,7 +24,8 @@ services.forEach(service => {
 export {
 employeeService,
 fabricatorService,
-rfqService
+rfqService,
+connectionDesignerService
 }
 
 export default Service1

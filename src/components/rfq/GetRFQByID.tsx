@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
@@ -33,6 +34,7 @@ import { updateRFQ, deleteRFQ } from "../../store/rfqSlice";
 
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import { toast } from "react-toastify";
+import { rfqService } from "../../api/Service1";
 
 const ThreadedChildResponse = ({
   child,
@@ -454,7 +456,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
       if (!cleanId) return;
       console.log("[GetRFQByID] Fetching responses independently for cleanId:", cleanId);
       
-      const respRes = await Service.getRFQResponses(cleanId);
+      const respRes = await rfqService.getRFQResponses(cleanId);
       const fetchedResponses = extractResponsesArray(respRes);
       console.log("[RFQ Responses] Fetched successfully:", fetchedResponses);
       setResponses(fetchedResponses);
@@ -471,7 +473,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
 
       if (!rfq) setLoading(true);
 
-      const rfqRes = await Service.GetRFQbyId(cleanId);
+      const rfqRes = await rfqService.GetRFQbyId(cleanId);
       const rfqData = rfqRes?.data || rfqRes;
       
       if (rfqData) {
@@ -533,7 +535,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
     try {
       setIsDeleting(true);
       console.log("Calling Service.DeleteRFQById...");
-      const res = await Service.DeleteRFQById(id);
+      const res = await rfqService.DeleteRFQById(id);
       console.log("Service.DeleteRFQById response:", res);
       dispatch(deleteRFQ(id));
       toast.success("RFQ deleted successfully");
@@ -575,7 +577,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
         (rfq as any)?.fabricatorName ||
         "";
       const rfqProjectName = rfq?.projectName || "";
-      await Service.UpdateRFQById(id, payload, fabricatorName, rfqProjectName);
+      await rfqService.UpdateRFQById(id, payload, fabricatorName, rfqProjectName);
       toast.success("RFQ status updated successfully");
       setShowStatusModal(false);
       setNewStatus("");
@@ -611,7 +613,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
         (rfq as any)?.fabricatorName ||
         "";
       const rfqProjectName = rfq?.projectName || "";
-      const res = await Service.addRFQFollowups(
+      const res = await rfqService.addRFQFollowups(
         formData,
         id,
         fabricatorName,
@@ -1014,7 +1016,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
         currentY += 4;
 
         const flattenResponsesForPdf = async (resList: any[], indent = 0): Promise<any[]> => {
-          let rows: any[] = [];
+          const rows: any[] = [];
           for (const r of resList) {
             const u = r.user;
             const userName = u
@@ -1096,7 +1098,7 @@ const GetRFQByID = ({ id, onClose, filterType }: GetRfqByIDProps) => {
 
   if (loading || error || !rfq) {
     return createPortal(
-      <div className="project-component-container fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="project-component-container fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
         <div className="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
           {loading ? (
             <>

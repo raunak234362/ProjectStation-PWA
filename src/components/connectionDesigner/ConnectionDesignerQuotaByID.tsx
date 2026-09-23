@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Service from "../../api/Service";
 import {
     Loader2,
     AlertCircle,
@@ -15,6 +14,7 @@ import { toast } from "react-toastify";
 import RenderFiles from "../ui/RenderFiles";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import RichTextEditor from "../fields/RichTextEditor";
+import { connectionDesignerService } from "../../api/Service1";
 
 interface Props {
     id: string;
@@ -53,7 +53,7 @@ const ConnectionDesignerQuotaByID = ({ id, close, onSuccess }: Props) => {
     const fetchReplies = async (quotationId: string) => {
         try {
             setLoadingReplies(true);
-            const res = await Service.getCDQuotaResponsesByQuotaId(quotationId);
+            const res = await connectionDesignerService.getCDQuotaResponsesByQuotaId(quotationId);
             const data = res?.data || res || [];
             setReplies(data);
         } catch (err) {
@@ -72,7 +72,7 @@ const ConnectionDesignerQuotaByID = ({ id, close, onSuccess }: Props) => {
         try {
             setLoading(true);
             setError(null);
-            const res = await Service.GetConnectionDesignerQuotaByID(id);
+            const res = await connectionDesignerService.GetConnectionDesignerQuotaByID(id);
 
             const data = res?.data || res;
             if (data) {
@@ -230,7 +230,7 @@ const ConnectionDesignerQuotaByID = ({ id, close, onSuccess }: Props) => {
                 });
             }
 
-            await Service.addCDQuotaResponse(formData);
+            await connectionDesignerService.addCDQuotaResponse(formData);
             toast.success("Reply sent successfully!");
             setReplyMessage("");
             setReplyFiles([]);

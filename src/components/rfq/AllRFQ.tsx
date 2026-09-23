@@ -6,6 +6,7 @@ import GetCDRFQByID from "../connectionDesigner/GetCDRFQByID";
 import { formatDate } from "../../utils/dateUtils";
 import { Search, X } from "lucide-react";
 import Service from "../../api/Service";
+import { connectionDesignerService, rfqService } from "../../api/Service1";
 
 const getRFQStatus = (row: any) => {
   const status = row.status?.toUpperCase()?.trim();
@@ -70,11 +71,11 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
         userRole === "CONNECTION_DESIGNER_ADMIN"
       ) {
         if (userRole === "CLIENT_ESTIMATOR") {
-          response = await Service.GetClientEstimatorRFQ();
+          response = await rfqService.GetClientEstimatorRFQ();
         } else if (userRole === "CLIENT_ADMIN") {
-          response = await Service.getAllRFQFab();
+          response = await rfqService.getAllRFQFab();
         } else {
-          response = await Service.getConnectionEngineerQuotation();
+          response = await connectionDesignerService.getConnectionEngineerQuotation();
         }
       } else {
         response = await Service.RFQRecieved(currentPage, 25, searchParam, statusParam);

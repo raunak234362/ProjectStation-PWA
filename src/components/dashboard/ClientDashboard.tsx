@@ -41,10 +41,7 @@ const ClientDashboard = () => {
   const isClientRole = userRole === "client";
   const isClientAdmin = userRole === "client_admin";
   const isClientEstimator = userRole === "client_estimator";
-
-
-
-  // Data State
+    // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
     null,
   );
@@ -87,6 +84,10 @@ const ClientDashboard = () => {
   );
 
   const dispatch = useDispatch();
+
+
+
+
 
   // Effect to handle modal open/close state in Redux
   useEffect(() => {
@@ -151,7 +152,7 @@ const ClientDashboard = () => {
       try {
         const [sent, , allInvoices, pendingCOsData] = await Promise.all(
           [
-            isClientEstimator ? Service.GetClientEstimatorRFQ() : (isClientAdmin ? Service.getAllRFQFab() : Service.RfqSent()),
+            isClientEstimator ? rfqService.GetClientEstimatorRFQ() : (isClientAdmin ? rfqService.getAllRFQFab() : Service.RfqSent()),
             Service.SubmittalRecieved(),
             isClientAdmin ? Service.getFabricatorAllInvoice() : Service.GetAllInvoiceByClient(),
             isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(),
@@ -256,7 +257,7 @@ const ClientDashboard = () => {
     try {
       let response;
       if (isClientAdmin) {
-        response = await Service.ClientAdminPendingRFQs();
+        response = await rfqService.ClientAdminPendingRFQs();
       } else {
         response = await Service.GetClientPendingRFQ();
       }
@@ -308,6 +309,10 @@ const ClientDashboard = () => {
 
   if (userRole === "client_estimator") {
     return <EstimatorDashboard />;
+  }
+
+  if (userRole === "client_accountant") {
+    return <AccountantDashboard />;
   }
 
   if (userRole === "client_accountant") {

@@ -1,11 +1,11 @@
 import { Loader2 } from "lucide-react";
 import { formatDateTime } from "../../utils/dateUtils";
 import React, { useState, useEffect } from "react";
-import Service from "../../api/Service";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import RenderFiles from "../ui/RenderFiles";
 import { toast } from "react-toastify";
+import { rfqService } from "../../api/Service1";
 
 interface ResponseDetailsModalProps {
   response: any;
@@ -39,7 +39,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
 
   const fetchResponseDetails = async (idToFetch: string) => {
     try {
-      const res = await Service.getRFQResponseById(idToFetch);
+      const res = await rfqService.getRFQResponseById(idToFetch);
       let data = res?.data || res;
       if (Array.isArray(data)) {
         data = data[0];
@@ -69,7 +69,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
       try {
         const targetRfqId = rfqId || initialResponse.rfqId;
         if (!targetRfqId) return;
-        const res = await Service.GetRFQbyId(targetRfqId);
+        const res = await rfqService.GetRFQbyId(targetRfqId);
         const data = res?.data || res;
         if (data) {
           delete data.responses;
@@ -113,7 +113,7 @@ const ResponseDetailsModal: React.FC<ResponseDetailsModalProps> = ({
         "";
       const rfqProjectName =
         propRfqProjectName || rfqDetails?.projectName || "";
-      const res = await Service.addResponse(
+      const res = await rfqService.addResponse(
         formData,
         targetRfqId || "",
         fabricatorName,

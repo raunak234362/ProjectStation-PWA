@@ -8,6 +8,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { numberToWords } from "../../utils/numberToWords";
 import { generateInvoiceNumber } from "../../utils/stringUtils";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
+import { rfqService } from "../../api/Service1";
 
 export interface AccountInfo {
   abaRoutingNumber: string;
@@ -246,7 +247,7 @@ const AddInvoice = ({
 
       if (project.rfqId) {
         try {
-          const rfqRes = await Service.GetRFQbyId(project.rfqId);
+          const rfqRes = await rfqService.GetRFQbyId(project.rfqId);
           const rfq = rfqRes.data;
 
           if (rfq && rfq.sender) {

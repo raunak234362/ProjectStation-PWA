@@ -6,6 +6,7 @@ import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
 import DashboardSkeleton from "./components/DashboardSkeleton";
 import type { DashboardStats } from "./WBTDashboard";
 import { Loader2 } from "lucide-react";
+import { rfqService } from "../../api/Service1";
 
 // Lazy load components
 const ProjectStats = lazy(() => import("./components/ProjectStats"));
@@ -235,7 +236,7 @@ const ConnectionDesignerDashboard = () => {
 
     const fetchPendingRFQs = async () => {
         try {
-            const response = isClientRole ? await Service.GetClientPendingRFQ() : await Service.ClientAdminPendingRFQs();
+            const response = isClientRole ? await Service.GetClientPendingRFQ() : await rfqService.ClientAdminPendingRFQs();
             console.log(response);
 
             setPendingRFQs(Array.isArray(response) ? response : response?.data || []);

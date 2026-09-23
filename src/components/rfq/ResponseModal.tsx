@@ -12,6 +12,7 @@ import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import Select from "../fields/Select";
 import { formatDate } from "../../utils/dateUtils";
+import { rfqService } from "../../api/Service1";
 
 interface ResponseModalProps {
   rfqId: string;
@@ -66,8 +67,8 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     const fetchRfqDetails = async () => {
       try {
         const [res, responsesRes] = await Promise.all([
-          Service.GetRFQbyId(rfqId),
-          Service.getRFQResponses(rfqId).catch(() => null)
+          rfqService.GetRFQbyId(rfqId),
+          rfqService.getRFQResponses(rfqId).catch(() => null)
         ]);
         
         const data = res?.data || res;
@@ -90,7 +91,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     const fetchParentResponse = async () => {
       if (!parentResponseId) return;
       try {
-        const res = await Service.getRFQResponseById(parentResponseId);
+        const res = await rfqService.getRFQResponseById(parentResponseId);
         let data = res?.data || res;
         if (Array.isArray(data)) {
           data = data[0];
@@ -490,7 +491,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 
       const fabricatorName = propFabricatorName || rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
       const rfqProjectName = propRfqProjectName || rfqDetails?.projectName || "";
-      const res = await Service.addResponse(formData, rfqId, fabricatorName, rfqProjectName);
+      const res = await rfqService.addResponse(formData, rfqId, fabricatorName, rfqProjectName);
       toast.success(res?.data?.message || "Response added successfully!");
       reset();
       setFiles([]);

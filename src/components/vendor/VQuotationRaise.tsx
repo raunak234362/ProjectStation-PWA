@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
   import Service from "../../api/Service";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { rfqService } from "../../api/Service1";
 
 interface ConnectionDesigner {
   id: string;
@@ -43,7 +43,7 @@ const VQuotationRaise = ({
   useEffect(() => {
     const fetchRfq = async () => {
       try {
-        const res = await Service.GetRFQbyId(rfqId);
+        const res = await rfqService.GetRFQbyId(rfqId);
         if (res?.data) {
           setRfqDetails(res.data);
         }
@@ -136,7 +136,7 @@ const VQuotationRaise = ({
 
       const fabricatorName = rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
       const rfqProjectName = rfqDetails?.projectName || "";
-      const response = await Service.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
+      const response = await rfqService.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
       console.log("Quotation raised successfully:", response);
 
       toast.success("Quotation raised successfully!");

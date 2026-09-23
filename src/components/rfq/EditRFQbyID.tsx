@@ -6,8 +6,8 @@ import ReactSelect from 'react-select'
 
 import Input from '../fields/input'
 import SectionTitle from '../ui/SectionTitle'
-import Service from '../../api/Service'
 import RichTextEditor from '../fields/RichTextEditor'
+import { rfqService } from '../../api/Service1'
 
 interface EditRFQByIDProps {
     id: string;
@@ -81,7 +81,7 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
     useEffect(() => {
         const fetchRFQ = async () => {
             try {
-                const res = await Service.GetRFQbyId(id)
+                const res = await rfqService.GetRFQbyId(id)
                 const d = res?.data || res
                 if (d) {
                     reset({
@@ -133,7 +133,7 @@ const EditRFQByID = ({ id, onSuccess, onCancel }: EditRFQByIDProps) => {
                 payload.status = payload.wbtStatus;
             }
 
-            await Service.UpdateRFQById(id, payload, fabricatorName, data.projectName || "")
+            await rfqService.UpdateRFQById(id, payload, fabricatorName, data.projectName || "")
             toast.success('RFQ updated successfully')
             onSuccess?.()
         } catch (error) {

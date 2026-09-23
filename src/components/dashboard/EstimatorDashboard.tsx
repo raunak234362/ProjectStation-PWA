@@ -16,6 +16,7 @@ import GetRFQByID from "../rfq/GetRFQByID";
 import GetInvoiceById from "../invoices/GetInvoiceById";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import InvoiceSummary from "./components/InvoiceSummary";
+import { rfqService } from "../../api/Service1";
 
 interface StatCardProps {
   label: string | React.ReactNode;
@@ -91,22 +92,22 @@ const EstimatorDashboard = () => {
         // Using getAllRFQFab, getFabricatorAllInvoice and GetAllProjects
         const role = sessionStorage.getItem("userRole")?.toUpperCase();
 
-        let rfqService;
+        let rfqSer;
         let pendingRfqService;
         let dashboardDataService = null;
         if (role === "CLIENT_ESTIMATOR") {
-          rfqService = Service.GetClientEstimatorRFQ();
-          dashboardDataService = Service.GetClientEstimatorDashboardData();
+          rfqSer = rfqService.GetClientEstimatorRFQ();
+          dashboardDataService = rfqService.GetClientEstimatorDashboardData();
         } else if (role === "CLIENT_ADMIN") {
-          rfqService = Service.getAllRFQFab();
-          pendingRfqService = Service.ClientAdminPendingRFQs();
+          rfqSer = rfqService.getAllRFQFab();
+          pendingRfqService = rfqService.ClientAdminPendingRFQs();
         } else {
-          rfqService = Service.RfqSent();
+          rfqSer = Service.RfqSent();
           pendingRfqService = Service.GetClientPendingRFQ();
         }
 
         const [rfqRes, pendingRfqRes, invoiceRes, projectRes, dashboardRes] = await Promise.all([
-          rfqService,
+          rfqSer,
           pendingRfqService,
           role === "CLIENT_ESTIMATOR" ? Service.GetAllInvoiceByClient() : Service.getFabricatorAllInvoice(),
           Service.GetAllProjects(),

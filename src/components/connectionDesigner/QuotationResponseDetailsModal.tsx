@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState, useEffect } from "react";
 import {
   FileText,
@@ -10,11 +10,11 @@ import {
 } from "lucide-react";
 import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
-import Service from "../../api/Service";
 import { toast } from "react-toastify";
 import RenderFiles from "../ui/RenderFiles";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
 import RichTextEditor from "../fields/RichTextEditor";
+import { connectionDesignerService } from "../../api/Service1";
 
 interface Props {
   quotation: any;
@@ -53,7 +53,7 @@ const QuotationResponseDetailsModal = ({
   const fetchReplies = async () => {
     try {
       setLoadingReplies(true);
-      const res = await Service.getCDQuotaResponsesByQuotaId(quotation.id);
+      const res = await connectionDesignerService.getCDQuotaResponsesByQuotaId(quotation.id);
       const data = res?.data || res || [];
       setReplies(data);
     } catch (err) {
@@ -205,7 +205,7 @@ const QuotationResponseDetailsModal = ({
         });
       }
 
-      await Service.addCDQuotaResponse(formData);
+      await connectionDesignerService.addCDQuotaResponse(formData);
       toast.success("Reply sent successfully!");
       setReplyMessage("");
       setReplyFiles([]);

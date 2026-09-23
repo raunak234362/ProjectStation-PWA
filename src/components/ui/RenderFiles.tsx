@@ -2,11 +2,7 @@ import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 import { showFileError } from "../../store/uiSlice"
 import { FileText, Share2, Download, ChevronRight, Plus, ChevronDown, Clock } from 'lucide-react'
-import {
-  openFileSecurely,
-  downloadFileSecurely,
-  shareFileSecurely
-} from '../../utils/openFileSecurely'
+import downloadShareService from '../../api/services/downloadShare.service'
 import Button from '../fields/Button'
 import FileItem from './FileItem'
 
@@ -206,7 +202,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     e.preventDefault();
     e.stopPropagation();
     const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
-    await shareFileSecurely(finalTable, finalParentId, file.id, finalVersionId);
+    await downloadShareService.shareFile(finalTable, finalParentId, file.id, finalVersionId);
   };
 
   const handleDownload = async (e: React.MouseEvent, file: any) => {
@@ -214,11 +210,11 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
     e.stopPropagation();
     const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
     const fileName = file.originalName || file.name || "download";
-    const result = await downloadFileSecurely(finalTable, finalParentId, file.id, fileName, finalVersionId);
+    const result = await downloadShareService.downloadFile(finalTable, finalParentId, file.id, fileName, finalVersionId);
     if (result && !result.success) {
       dispatch(showFileError({
         reason: result.error || "Unable to download file",
-        retryAction: () => downloadFileSecurely(finalTable, finalParentId, file.id, fileName, finalVersionId)
+        retryAction: () => downloadShareService.downloadFile(finalTable, finalParentId, file.id, fileName, finalVersionId)
       }));
     }
   };
@@ -226,11 +222,11 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
   const handleOpen = async (e: React.MouseEvent, file: any) => {
     e.preventDefault();
     const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
-    const result = await openFileSecurely(finalTable, finalParentId, file.id, finalVersionId);
+    const result = await downloadShareService.openFile(finalTable, finalParentId, file.id, finalVersionId);
     if (result && !result.success) {
       dispatch(showFileError({
         reason: result.error || "Unable to open file",
-        retryAction: () => openFileSecurely(finalTable, finalParentId, file.id, finalVersionId)
+        retryAction: () => downloadShareService.openFile(finalTable, finalParentId, file.id, finalVersionId)
       }));
     }
   };
