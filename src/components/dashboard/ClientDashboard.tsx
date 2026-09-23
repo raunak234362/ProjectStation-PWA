@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, Suspense, lazy } from "react";
 import { useNavigate } from "react-router-dom";
 import Service from "../../api/Service";
@@ -30,6 +31,7 @@ const GetMilestoneByID = lazy(
 
 import EstimatorDashboard from "./EstimatorDashboard";
 import AccountantDashboard from "./AccountantDashboard";
+import { rfqService } from "../../api/Service1";
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
@@ -40,13 +42,7 @@ const ClientDashboard = () => {
   const isClientAdmin = userRole === "client_admin";
   const isClientEstimator = userRole === "client_estimator";
 
-  if (userRole === "client_estimator") {
-    return <EstimatorDashboard />;
-  }
 
-  if (userRole === "client_accountant") {
-    return <AccountantDashboard />;
-  }
 
   // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
@@ -210,7 +206,7 @@ const ClientDashboard = () => {
     try {
       let response;
       if (isClientEstimator) {
-        response = await Service.GetClientEstimatorDashboardData();
+        response = await rfqService.GetClientEstimatorDashboardData();
       } else if (isClientRole) {
         response = await Service.GetClientDashboardData();
       } else {
@@ -310,7 +306,13 @@ const ClientDashboard = () => {
     }
   };
 
+  if (userRole === "client_estimator") {
+    return <EstimatorDashboard />;
+  }
 
+  if (userRole === "client_accountant") {
+    return <AccountantDashboard />;
+  }
 
   if (loading) {
     return <DashboardSkeleton />;

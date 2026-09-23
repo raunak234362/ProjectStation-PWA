@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import api from "../api";
 
 class rfqService {
@@ -74,6 +75,16 @@ class rfqService {
       console.error("cannot find rfqs for Client Admin", error);
     }
   }
+   // Client Estimator DashboardData
+ static async GetClientEstimatorDashboardData(){
+   try {
+     const response = await api.get(`dashBoardData/clientEstimator`);
+      console.log(" All RFQ fetched by Client Estimator:", response.data);
+      return response.data;
+  } catch  {
+    toast.error("error fetching dashboard data")
+  }
+ }
 }
 
 export default rfqService;
