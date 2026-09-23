@@ -11,6 +11,7 @@ import Service from "../../api/Service";
 import { setRFQData, addEstimation } from "../../store/rfqSlice";
 import type { RFQItem, Fabricator } from "../../interface";
 import RichTextEditor from "../fields/RichTextEditor";
+import { rfqService } from "../../api/Service1";
 
 const EstimationStatusOptions = [
   { label: "Pending", value: "PENDING" },
@@ -57,9 +58,9 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
         try {
           let rfqDetail;
           if (userType === "CLIENT" || userType === "CLIENT_ADMIN") {
-            rfqDetail = await Service.RfqSent();
+            rfqDetail = await rfqService.RfqSent();
           } else {
-            rfqDetail = await Service.RFQRecieved();
+            rfqDetail = await rfqService.RFQRecieved();
           }
           if (rfqDetail?.data) {
             dispatch(setRFQData(rfqDetail.data));
@@ -98,7 +99,6 @@ const AddEstimation: React.FC<AddEstimationProps> = ({
     // Auto-fill all fields from selected RFQ
     setValue("projectName", rfq.projectName || "");
     setValue("description", rfq.description || "");
-    // @ts-ignore
     setValue("fabricatorId", String(rfq.fabricatorId || ""));
     setValue("tools", rfq.tools || "");
     if (rfq.estimationDate) {

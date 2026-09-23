@@ -122,7 +122,7 @@ const ConnectionDesignerDashboard = () => {
 
                 const [sent, received, allInvoices, pendingCOsData] = await Promise.all(
                     [
-                        Service.RfqSent(),
+                        rfqService.RfqSent(),
                         Service.SubmittalRecieved(),
                         isConnectionDesigner ? Promise.resolve([]) : Service.GetAllInvoiceClient(),
                         isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(), // Updated

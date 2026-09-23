@@ -16,6 +16,7 @@ import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
 import RichTextEditor from "../fields/RichTextEditor";
 import { addRFQ } from "../../store/rfqSlice";
+import { rfqService } from "../../api/Service1";
 
 
 const STATES: Record<string, string[]> = {
@@ -64,8 +65,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   // const staffData = useSelector((state: any) => state.userInfo.staffData);
 
   // const userType =
-  typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
-
   const {
     register,
     handleSubmit,
@@ -324,7 +323,7 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
       }
       const rfqProjectName = data.projectName || "";
 
-      const response = await Service.addRFQ(formData, fabricatorName, rfqProjectName);
+      const response = await rfqService.addRFQ(formData, fabricatorName, rfqProjectName);
       const createdRFQ = response.data?.newRfq || response.data || response.rfq || response;
 
       if (createdRFQ && !createdRFQ.error) {

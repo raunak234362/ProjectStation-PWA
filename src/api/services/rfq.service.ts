@@ -2,8 +2,8 @@ import api from "../api";
 
 class rfqService {
   //Add new RFQ
-  static async addRFQ(formData: FormData) {
-    const response = await api.post(`rfq`, formData, {
+  static async addRFQ(formData: FormData, fabricatorName: string, rfqProjectName: string) {
+    const response = await api.post(`rfq?fabricatorName=${encodeURIComponent(fabricatorName)}&rfqProjectName=${encodeURIComponent(rfqProjectName)}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -58,6 +58,8 @@ class rfqService {
       console.error("cannot find rfq", error);
     }
   }
+
+
 
     //getting Internal RFQ by ID
   static async GetInternalRFQByID(rfqId: string) {
@@ -159,9 +161,24 @@ class rfqService {
   }
 
   // api for sents :
-  static async RfqSent() {
+  static async RfqSent(
+    page?: number,
+    limit: number = 10,
+    searchByProjectName?: string,
+    status?: string
+  ) {
     try {
-      const response = await api.get(`rfq/sents`);
+      const response = await api.get(`rfq/sents`, {
+        params: {
+          page,
+          limit,
+          searchByProjectName: searchByProjectName || undefined,
+          status: status || undefined,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       console.log(" RFQ sents:", response.data);
       return response.data;
     } catch (error) {
@@ -170,9 +187,24 @@ class rfqService {
   }
 
   //api for recieved:
-  static async RFQRecieved() {
+  static async RFQRecieved(
+    page?: number,
+    limit: number = 10,
+    searchByProjectName?: string,
+    status?: string
+  ) {
     try {
-      const response = await api.get(`rfq/received`);
+      const response = await api.get(`rfq/received`, {
+        params: {
+          page,
+          limit,
+          searchByProjectName: searchByProjectName || undefined,
+          status: status || undefined,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       // console.log("  RFQ received:", response.data);
       return response.data;
@@ -180,6 +212,8 @@ class rfqService {
       console.error("cannot find rfqs", error);
     }
   }
+
+
 
   //get all rfq for fabricator
   static async getAllRFQFab() {

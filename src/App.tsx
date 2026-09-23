@@ -178,14 +178,14 @@ const AppContent = () => {
         } else if (userType === "CLIENT_ADMIN") {
           rfqDetail = await rfqService.getAllRFQFab();
         } else if (userType === "CLIENT") {
-          rfqDetail = await Service.RfqSent();
+          rfqDetail = await rfqService.RfqSent();
         } else if (
           userType === "OPERATION_EXECUTIVE" ||
           userType === "DEPUTY_MANAGER" ||
           userType === "ESTIMATION_HEAD" ||
           userType === "ADMIN"
         ) {
-          rfqDetail = await Service.getAllRFQ();
+          rfqDetail = await rfqService.getAllRFQ();
         } else if (
           userType === "CONNECTION_DESIGNER_ENGINEER" ||
           userType === "CONNECTION_DESIGNER_ADMIN"
@@ -195,7 +195,7 @@ const AppContent = () => {
             rfqDetail = await connectionDesignerService.getConnectionEngineerQuotation();
           }
         } else {
-          rfqDetail = await Service.RFQRecieved();
+          rfqDetail = await rfqService.RFQRecieved();
         }
         // setRfq(rfqDetail.data);
         console.log("Raw RFQ Response:", rfqDetail);

@@ -102,7 +102,7 @@ const EstimatorDashboard = () => {
           rfqSer = rfqService.getAllRFQFab();
           pendingRfqService = rfqService.ClientAdminPendingRFQs();
         } else {
-          rfqSer = Service.RfqSent();
+          rfqSer = rfqService.RfqSent();
           pendingRfqService = Service.GetClientPendingRFQ();
         }
 

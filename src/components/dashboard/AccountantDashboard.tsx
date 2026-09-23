@@ -11,6 +11,7 @@ import Service from "../../api/Service";
 import GetInvoiceById from "../invoices/GetInvoiceById";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import { formatDate } from "../../utils/dateUtils";
+import { rfqService } from "../../api/Service1";
 
 interface StatCardProps {
   label: string | React.ReactNode;
@@ -78,7 +79,7 @@ const AccountantDashboard = () => {
         const [invoiceRes, projectRes, rfqRes] = await Promise.all([
           Service.getFabricatorAllInvoice(),
           Service.GetAllProjects().catch(() => ({ data: [] })),
-          Service.RfqSent().catch(() => ({ data: [] }))
+          rfqService.RfqSent().catch(() => ({ data: [] }))
         ]);
 
         const fetchedInvoices = Array.isArray(invoiceRes?.data) ? invoiceRes.data : Array.isArray(invoiceRes) ? invoiceRes : [];

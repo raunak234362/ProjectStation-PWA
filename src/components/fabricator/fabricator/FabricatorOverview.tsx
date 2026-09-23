@@ -5,6 +5,7 @@ import { type ProjectData, type RFQItem } from "../../../interface";
 import FabricatorStatsCards from "./components/FabricatorStatsCards";
 import RFQComparisonChart from "./components/RFQComparisonChart";
 import { motion } from "motion/react";
+import { rfqService } from "../../../api/Service1";
 
 const FabricatorOverview = () => {
     const [projects, setProjects] = useState<ProjectData[]>([]);
@@ -18,7 +19,7 @@ const FabricatorOverview = () => {
                 setLoading(true);
                 const [allProjectsResponse, rfqReceived] = await Promise.all([
                     Service.GetAllProjects(),
-                    Service.RFQRecieved()
+                    rfqService.RFQRecieved()
                 ]);
 
                 setProjects(Array.isArray(allProjectsResponse) ? allProjectsResponse : allProjectsResponse?.data || []);

@@ -152,7 +152,7 @@ const ClientDashboard = () => {
       try {
         const [sent, , allInvoices, pendingCOsData] = await Promise.all(
           [
-            isClientEstimator ? rfqService.GetClientEstimatorRFQ() : (isClientAdmin ? rfqService.getAllRFQFab() : Service.RfqSent()),
+            isClientEstimator ? rfqService.GetClientEstimatorRFQ() : (isClientAdmin ? rfqService.getAllRFQFab() : rfqService.RfqSent()),
             Service.SubmittalRecieved(),
             isClientAdmin ? Service.getFabricatorAllInvoice() : Service.GetAllInvoiceByClient(),
             isClientRole ? Service.GetClientCO() : Service.ClientAdminPendingCOs(),

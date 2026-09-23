@@ -5,7 +5,6 @@ import GetRFQByID from "./GetRFQByID";
 import GetCDRFQByID from "../connectionDesigner/GetCDRFQByID";
 import { formatDate } from "../../utils/dateUtils";
 import { Search, X } from "lucide-react";
-import Service from "../../api/Service";
 import { connectionDesignerService, rfqService } from "../../api/Service1";
 
 const getRFQStatus = (row: any) => {
@@ -56,14 +55,14 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
       const statusParam = selectedStatus !== "ALL" ? selectedStatus : undefined;
 
       if (userRole === "CLIENT") {
-        response = await Service.RfqSent(currentPage, 25, searchParam, statusParam);
+        response = await rfqService.RfqSent(currentPage, 25, searchParam, statusParam);
       } else if (
         userRole === "OPERATION_EXECUTIVE" ||
         userRole === "DEPUTY_MANAGER" ||
         userRole === "ESTIMATION_HEAD" ||
         userRole === "ADMIN"
       ) {
-        response = await Service.FetchAllRFQ(currentPage, 25, searchParam, statusParam);
+        response = await rfqService.FetchAllRFQ(currentPage, 25, searchParam, statusParam);
       } else if (
         userRole === "CLIENT_ESTIMATOR" ||
         userRole === "CLIENT_ADMIN" ||
@@ -78,7 +77,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
           response = await connectionDesignerService.getConnectionEngineerQuotation();
         }
       } else {
-        response = await Service.RFQRecieved(currentPage, 25, searchParam, statusParam);
+        response = await rfqService.RFQRecieved(currentPage, 25, searchParam, statusParam);
       }
 
       if (response) {
