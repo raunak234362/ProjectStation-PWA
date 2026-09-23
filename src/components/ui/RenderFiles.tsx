@@ -182,7 +182,10 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
   }, {});
 
   const getResolvedFileParams = (file: any) => {
-    const finalTable = file.overrideTable || file.table || table;
+    let finalTable = file.overrideTable || file.table || table;
+    if (table === 'changeOrders' || table === 'changeOrder') {
+      finalTable = table;
+    }
     let finalParentId = file.documentID || parentId;
     let finalVersionId = file.versionId || versionId;
 
@@ -239,9 +242,10 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
       : '';
     const fileDate = file.uploadedAt || file.createdAt || file.date;
 
-    const isSubmittal = file.originType === 'SUBMITTAL' || file.fileCategory === 'submittal' || (table === 'submittals' && !file.originType && !file.fileCategory);
-    const isResponse = file.originType === 'RESPONSE' || file.fileCategory === 'response' || file.overrideTable === 'submittalsResponse';
-    const isBfa = file.originType === 'BFA' || file.fileCategory === 'bfa' || file.overrideTable === 'bfa';
+    const isCO = table === 'changeOrders' || table === 'changeOrder';
+    const isSubmittal = !isCO && (file.originType === 'SUBMITTAL' || file.fileCategory === 'submittal' || (table === 'submittals' && !file.originType && !file.fileCategory));
+    const isResponse = !isCO && (file.originType === 'RESPONSE' || file.fileCategory === 'response' || file.overrideTable === 'submittalsResponse');
+    const isBfa = !isCO && (file.originType === 'BFA' || file.fileCategory === 'bfa' || file.overrideTable === 'bfa');
 
     return (
       <div
@@ -357,9 +361,11 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
   };
 
   const renderFileList = (filesArray: any[]) => {
+    const isCOCard = table === 'changeOrders' || table === 'changeOrder';
     const isSubmittalCard =
-      table === 'submittals' ||
-      filesArray.some((f: any) => f.originType || f.fileCategory || f.overrideTable === 'submittalsResponse' || f.overrideTable === 'bfa');
+      !isCOCard &&
+      (table === 'submittals' ||
+      filesArray.some((f: any) => f.originType || f.fileCategory || f.overrideTable === 'submittalsResponse' || f.overrideTable === 'bfa'));
 
     if (!isSubmittalCard) {
       return (

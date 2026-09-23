@@ -2360,6 +2360,22 @@ class Service {
     }
   }
 
+  // Get change order response by response id
+  static async GetChangeOrderResponseByResponseId(id: string) {
+    try {
+      const response = await api.get(`changeOrder/responses/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("CO response fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find CO response", error);
+      throw error;
+    }
+  }
+
   //update Co
   static async EditCoById(id: string, data: FormData, fabricatorName: string, projectName: string) {
     try {
