@@ -20,8 +20,9 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
   const handleReply = async () => {
     if (!replyMessage.trim() || loading) return;
 
+    const coId = response.CoId || response.coId || response.changeOrderId || "";
     const formData = new FormData();
-    formData.append("CoId", response.CoId);
+    formData.append("CoId", coId);
     formData.append("description", replyMessage);
     formData.append("status", replyStatus);
     formData.append("userId", userId);
@@ -42,7 +43,7 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
         fabricatorName = project?.fabricator?.fabName || project?.fabricatorName || "";
         projectName = project?.projectName || project?.name || "";
       } else {
-        const coDetails = await Service.GetChangeOrderById(response.CoId);
+        const coDetails = await Service.GetChangeOrderById(coId);
         const coObj = coDetails?.data || coDetails;
         const projectObj = coObj?.project;
         if (projectObj) {
@@ -71,13 +72,28 @@ const COResponseDetailsModal = ({ response, onClose, onSuccess, projectId }: any
     }
   };
 
+  const senderUser = response?.user;
+  const senderName = senderUser
+    ? [senderUser.firstName, senderUser.middleName, senderUser.lastName].filter(Boolean).join(" ").trim() ||
+      [senderUser.firstName, senderUser.lastName].filter(Boolean).join(" ").trim() ||
+      senderUser.username ||
+      senderUser.name
+    : response?.userName || response?.username || (response?.createdByRole === "CLIENT" ? "Client" : response?.createdByRole ? "WBT Team" : "");
+
   return (
     <div className="project-component-container fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-[#fafffb] p-8 w-full max-w-lg rounded-3xl shadow-2xl relative space-y-4 border border-green-100/50">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-black text-black uppercase tracking-tight">
-            Response Details
-          </h2>
+          <div>
+            <h2 className="text-xl font-black text-black uppercase tracking-tight">
+              Response Details
+            </h2>
+            {senderName && (
+              <p className="text-xs text-gray-500 font-medium mt-1">
+                From: <span className="text-black font-semibold">{senderName}</span>
+              </p>
+            )}
+          </div>
           <button
             onClick={onClose}
             disabled={loading}

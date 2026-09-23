@@ -2329,6 +2329,22 @@ class Service {
     }
   }
 
+  // Get CO responses by CO ID (GET /changeOrder/{coId}/responses)
+  static async GetChangeOrderResponseById(id: string) {
+    try {
+      const response = await api.get(`changeOrder/${id}/responses`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("CO responses fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find CO responses", error);
+      throw error;
+    }
+  }
+
   // Get change order by iD
   static async GetChangeOrderById(id: string) {
     try {
