@@ -560,7 +560,7 @@ class Service {
       console.log(" All RFQ fetched by Client Estimator:", response.data);
       return response.data;
   } catch (error) {
-    
+    console.log(error)
   }
  }
 
