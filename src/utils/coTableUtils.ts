@@ -1,5 +1,5 @@
 export const isMergedCellValue = (value: unknown) => {
-  if (value === -999998 || value === "-999998") return true;
+  if (value === 0 || value === "0") return true;
   return typeof value === "string" && value.trim().toUpperCase() === "_MERGED_UP_";
 };
 
