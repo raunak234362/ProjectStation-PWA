@@ -718,9 +718,11 @@ const WorkProgressReport = ({
     processSchedule();
   }, [milestones, submittalData, project]);
 
-  // Sync Change Orders Month-by-month
+  // Sync Change Orders Month-by-month with Latest Version Pricing
   useEffect(() => {
-    const fetchCOs = async () => {
+    let isCancelled = false;
+
+    const processChangeOrders = async () => {
       try {
         let rawCOs: any[] = [];
         if (projectId && typeof projectId === "string" && !projectId.startsWith("temp-")) {
@@ -732,50 +734,162 @@ const WorkProgressReport = ({
 
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+        // Helper to sum numeric cost
+        const parseCost = (val: any) => {
+          if (val === undefined || val === null) return 0;
+          if (val === "_MERGED_LEFT_" || val === "_MERGED_UP_" || val === -999999 || val === -999998) return 0;
+          if (typeof val === "string") {
+            const cleaned = val.replace(/[^0-9.-]/g, "");
+            return parseFloat(cleaned) || 0;
+          }
+          return Number(val) || 0;
+        };
+
+        // Helper to extract rows from any object
+        const extractRows = (obj: any) => {
+          if (!obj) return null;
+          if (Array.isArray(obj.changeOrderTables) && obj.changeOrderTables.length > 0) return obj.changeOrderTables;
+          if (Array.isArray(obj.CoRefersTo) && obj.CoRefersTo.length > 0) return obj.CoRefersTo;
+          if (Array.isArray(obj.rows) && obj.rows.length > 0) return obj.rows;
+          if (Array.isArray(obj.tables) && obj.tables.length > 0) return obj.tables;
+          return null;
+        };
+
+        // Helper to resolve the latest version
+        const getLatestVersionInfo = (coObj: any) => {
+          if (!coObj) return { version: null, versionLabel: "" };
+
+          const versions = Array.isArray(coObj.versions) ? coObj.versions : [];
+          if (versions.length > 0) {
+            const sorted = [...versions].sort((a: any, b: any) => {
+              const numA = parseFloat(a.versionNumber || a.version || 0);
+              const numB = parseFloat(b.versionNumber || b.version || 0);
+              if (numA && numB && numA !== numB) return numB - numA;
+              const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              return dateB - dateA;
+            });
+
+            let selected = sorted[0];
+            if (coObj.currentVersionId) {
+              const match = versions.find((v: any) => String(v.id || v._id) === String(coObj.currentVersionId));
+              if (match) selected = match;
+            }
+
+            const vNum = selected?.versionNumber || selected?.version;
+            const versionLabel = vNum ? `v${vNum}` : (versions.length > 1 ? `v${versions.length}` : "");
+            return { version: selected, versionLabel };
+          }
+
+          if (coObj.currentVersion && typeof coObj.currentVersion === "object") {
+            const vNum = coObj.currentVersion.versionNumber || coObj.currentVersion.version;
+            return {
+              version: coObj.currentVersion,
+              versionLabel: vNum ? `v${vNum}` : ""
+            };
+          }
+
+          return { version: coObj, versionLabel: "" };
+        };
+
+        // Fetch full details and table rows for each Change Order
+        const coDetailsMap: any = {};
+        await Promise.all(rawCOs.map(async (co: any) => {
+          const coId = co.id || co._id;
+          if (!coId) return;
+
+          let fullCO = co;
+          try {
+            const getCOFn = (Service as any).GetChangeOrderByID || (Service as any).GetChangeOrderById;
+            if (getCOFn) {
+              const res = await getCOFn(coId);
+              const fetched = res?.data?.data || res?.data || res;
+              if (fetched && typeof fetched === "object") {
+                fullCO = { ...co, ...fetched };
+              }
+            }
+          } catch (err) {
+            console.warn(`Could not fetch full CO for ${coId}:`, err);
+          }
+
+          const { version: latestVer, versionLabel: vLabel } = getLatestVersionInfo(fullCO);
+
+          // Extract rows from latest version, then root fullCO
+          let rows = extractRows(latestVer) || extractRows(fullCO);
+
+          // If still no rows found, fetch live table rows from GetAllCOTableRows API
+          if (!rows || rows.length === 0) {
+            try {
+              if (typeof (Service as any).GetAllCOTableRows === "function") {
+                const resTable = await (Service as any).GetAllCOTableRows(coId);
+                const data = resTable?.data || (Array.isArray(resTable) ? resTable : []);
+                if (Array.isArray(data) && data.length > 0) {
+                  rows = data;
+                }
+              }
+            } catch (err) {
+              console.warn(`Could not fetch table rows for ${coId}:`, err);
+            }
+          }
+
+          coDetailsMap[coId] = {
+            fullCO,
+            latestVersion: latestVer,
+            versionLabel: vLabel,
+            rows: rows || []
+          };
+        }));
+
+        if (isCancelled) return;
+
         const rows = rawCOs.map((co: any) => {
+          const coId = co.id || co._id;
+          const details = coDetailsMap[coId] || {};
+          const fullCO = details.fullCO || co;
+          const latestVersion = details.latestVersion || fullCO;
+          const versionLabel = details.versionLabel || "";
+          const rowsData = details.rows || extractRows(latestVersion) || extractRows(fullCO);
+
           let totalAmount = 0;
           const monthlyBreakdown: any = {};
           months.forEach(m => monthlyBreakdown[m] = "");
 
-          let currentVersion = co.currentVersion || null;
-          if (!currentVersion && co.versions && Array.isArray(co.versions) && co.versions.length > 0) {
-            currentVersion = co.versions.find((v: any) => v.id === co.currentVersionId) || 
-              [...co.versions].sort(
-                (a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-              )[0];
-          }
-          
-          let latestRefersTo = currentVersion?.changeOrderTables || currentVersion?.CoRefersTo || co.changeOrderTables;
-          
-          // If we have to fall back to the main CoRefersTo array (which often contains items across ALL versions in the list API)
-          if (!latestRefersTo || latestRefersTo.length === 0) {
-            if (Array.isArray(co.CoRefersTo)) {
-              const targetVersionId = currentVersion?.id || co.currentVersionId;
-              if (targetVersionId) {
-                const hasVersionIds = co.CoRefersTo.some((item: any) => item.changeOrderVersionId);
-                if (hasVersionIds) {
-                  latestRefersTo = co.CoRefersTo.filter((item: any) => item.changeOrderVersionId === targetVersionId);
-                } else {
-                  latestRefersTo = co.CoRefersTo;
-                }
-              } else {
-                latestRefersTo = co.CoRefersTo;
-              }
-            } else {
-              latestRefersTo = [];
-            }
-          }
-
-          if (Array.isArray(latestRefersTo) && latestRefersTo.length > 0) {
+          if (Array.isArray(rowsData) && rowsData.length > 0) {
             const monthSums: any = {};
             let hasAnyAmount = false;
 
-            latestRefersTo.forEach((item: any) => {
-              const itemDate = item.createdAt ? new Date(item.createdAt) : (co.createdAt ? new Date(co.createdAt) : null);
-              if (itemDate) {
+            rowsData.forEach((item: any) => {
+              const itemDateRaw =
+                item.createdAt ||
+                item.date ||
+                latestVersion?.createdAt ||
+                latestVersion?.date ||
+                fullCO.createdAt ||
+                fullCO.sentOn ||
+                fullCO.date;
+              const itemDate = itemDateRaw ? new Date(itemDateRaw) : null;
+              let costVal = parseCost(item.cost ?? item.totalCost ?? item.amount ?? item.price);
+
+              // Fallback: if cost is 0 but hours are present, calculate with coPerHourPrice if available
+              if (costVal === 0 && Number(item.hours) > 0) {
+                const coHourlyPrice = Number(project?.fabricator?.COPerHourPrice || project?.COPerHourPrice || 0);
+                if (coHourlyPrice > 0) {
+                  costVal = Number(item.hours) * coHourlyPrice;
+                }
+              }
+
+              if (itemDate && !isNaN(itemDate.getTime())) {
                 const mIdx = itemDate.getMonth();
                 const mName = months[mIdx];
-                monthSums[mName] = (monthSums[mName] || 0) + (Number(item.cost) || 0);
+                monthSums[mName] = (monthSums[mName] || 0) + costVal;
+              } else {
+                const coDateRaw = latestVersion?.createdAt || fullCO.createdAt || fullCO.sentOn || fullCO.date;
+                const coDate = coDateRaw ? new Date(coDateRaw) : null;
+                if (coDate && !isNaN(coDate.getTime())) {
+                  const mIdx = coDate.getMonth();
+                  const mName = months[mIdx];
+                  monthSums[mName] = (monthSums[mName] || 0) + costVal;
+                }
               }
             });
 
@@ -787,17 +901,50 @@ const WorkProgressReport = ({
               }
             });
 
+            // Check if latest version has direct totalCost if rows summed to 0
             if (!hasAnyAmount) {
-              const fallbackMonthIdx = co.createdAt ? new Date(co.createdAt).getMonth() : -1;
-              if (fallbackMonthIdx >= 0) {
-                monthlyBreakdown[months[fallbackMonthIdx]] = "SENT";
+              const directCost = parseCost(
+                latestVersion?.totalCost ??
+                latestVersion?.amount ??
+                latestVersion?.cost ??
+                latestVersion?.price ??
+                fullCO.totalCost ??
+                fullCO.amount
+              );
+
+              if (directCost > 0) {
+                totalAmount = directCost;
+                const fallbackDateRaw = latestVersion?.createdAt || fullCO.createdAt || fullCO.sentOn || fullCO.date;
+                const fallbackDate = fallbackDateRaw ? new Date(fallbackDateRaw) : null;
+                const fallbackMonthIdx = fallbackDate && !isNaN(fallbackDate.getTime()) ? fallbackDate.getMonth() : -1;
+                if (fallbackMonthIdx >= 0) {
+                  monthlyBreakdown[months[fallbackMonthIdx]] = `$${directCost.toLocaleString()}`;
+                }
+              } else {
+                const fallbackDateRaw = latestVersion?.createdAt || fullCO.createdAt || fullCO.sentOn || fullCO.date;
+                const fallbackDate = fallbackDateRaw ? new Date(fallbackDateRaw) : null;
+                const fallbackMonthIdx = fallbackDate && !isNaN(fallbackDate.getTime()) ? fallbackDate.getMonth() : -1;
+                if (fallbackMonthIdx >= 0) {
+                  monthlyBreakdown[months[fallbackMonthIdx]] = "SENT";
+                }
               }
             }
           } else {
-            const amount = Number(co.totalCost) || Number(co.amount) || 0;
+            // If no rows at all, check direct amount on latest version first, then root CO
+            const amount = parseCost(
+              latestVersion?.totalCost ??
+              latestVersion?.amount ??
+              latestVersion?.cost ??
+              latestVersion?.price ??
+              fullCO.totalCost ??
+              fullCO.amount ??
+              fullCO.cost ??
+              fullCO.price
+            );
             totalAmount = amount;
-            const coDate = co.createdAt || co.date ? new Date(co.createdAt || co.date) : null;
-            const coMonthIndex = coDate ? coDate.getMonth() : -1;
+            const coDateRaw = latestVersion?.createdAt || fullCO.createdAt || fullCO.sentOn || fullCO.date;
+            const coDate = coDateRaw ? new Date(coDateRaw) : null;
+            const coMonthIndex = coDate && !isNaN(coDate.getTime()) ? coDate.getMonth() : -1;
 
             if (coMonthIndex >= 0) {
               monthlyBreakdown[months[coMonthIndex]] = amount > 0 ? `$${amount.toLocaleString()}` : "SENT";
@@ -805,9 +952,14 @@ const WorkProgressReport = ({
           }
 
           return {
-            id: co.id || co._id,
-            createdAt: co.createdAt || co.date || new Date().toISOString(),
-            changeOrder: co.changeOrderNumber ? `COR-${String(co.changeOrderNumber).padStart(3, "0")}` : "COR-New",
+            id: coId,
+            versionLabel,
+            createdAt: latestVersion?.createdAt || fullCO.createdAt || fullCO.sentOn || fullCO.date || new Date().toISOString(),
+            changeOrder: co.changeOrderNumber
+              ? (String(co.changeOrderNumber).toUpperCase().startsWith("COR-")
+                  ? co.changeOrderNumber
+                  : `COR-${String(co.changeOrderNumber).padStart(3, "0")}`)
+              : "COR-New",
             ...monthlyBreakdown,
             total: totalAmount > 0 ? `$${totalAmount.toLocaleString()}` : "—"
           };
@@ -818,7 +970,12 @@ const WorkProgressReport = ({
         console.error("Error fetching change orders:", e);
       }
     };
-    fetchCOs();
+
+    processChangeOrders();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [projectId, changeOrderData, project]);
 
   // Sync Coordination Drawings
@@ -894,7 +1051,8 @@ const WorkProgressReport = ({
   }, [rawCoRows, activeWeekRange]);
 
   const displayCoRows = useMemo(() => {
-    if (!filteredCoRows || filteredCoRows.length === 0) {
+    const sourceRows = filteredCoRows && filteredCoRows.length > 0 ? filteredCoRows : rawCoRows;
+    if (!sourceRows || sourceRows.length === 0) {
       return [{
         id: "cor-summary",
         changeOrder: "COR",
@@ -914,7 +1072,7 @@ const WorkProgressReport = ({
       monthHasSent[m] = false;
     });
 
-    filteredCoRows.forEach(c => {
+    sourceRows.forEach(c => {
       months.forEach(m => {
         const valStr = c[m];
         if (valStr && valStr !== "—") {
@@ -949,7 +1107,7 @@ const WorkProgressReport = ({
     summaryRow.total = grandTotal > 0 ? `$${grandTotal.toLocaleString()}` : "—";
 
     return [summaryRow];
-  }, [filteredCoRows]);
+  }, [filteredCoRows, rawCoRows]);
 
   const filteredCoordDrawings = useMemo(() => {
     if (!activeWeekRange) return rawCoordDrawings;
