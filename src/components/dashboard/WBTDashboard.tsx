@@ -38,6 +38,7 @@ const DashboardNotifications = lazy(
 );
 
 import DashboardSkeleton from "./components/DashboardSkeleton";
+import { rfqService } from "../../api/Service1";
 
 const WBTDashboard = () => {
   const navigate = useNavigate();
@@ -120,8 +121,8 @@ const WBTDashboard = () => {
           dashboardData,
           tasksRes,
         ] = await Promise.all([
-          Service.RfqSent(),
-          Service.RFQRecieved(),
+          rfqService.RfqSent(),
+          rfqService.RFQRecieved(),
           isClient
             ? Service.DashboardMilestone()
             : Service.GetPendingSubmittal(),

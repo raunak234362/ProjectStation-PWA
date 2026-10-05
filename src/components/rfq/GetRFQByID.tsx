@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -20,6 +21,344 @@ import { openFileSecurely } from "../../utils/openFileSecurely";
 import { useDispatch } from "react-redux";
 import { deleteRFQ, updateRFQ } from "../../store/rfqSlice";
 import { toast } from "react-toastify";
+import { rfqService } from "../../api/Service1";
+
+const ThreadedChildResponse = ({
+  child,
+  onReply,
+  onSelect,
+  allResponses,
+}: {
+  child: any;
+  onReply?: (parent: any) => void;
+  onSelect?: (resp: any) => void;
+  allResponses: any[];
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const computedChildren = allResponses.filter(
+    (r: any) => r.parentResponseId === child.id
+  );
+  const childrenToRender = computedChildren.length > 0 ? computedChildren : (child.childResponses || []);
+  const hasChildren = childrenToRender.length > 0;
+
+  return (
+    <div className="relative">
+      {/* Visual Connector */}
+      <div className="absolute -left-[20px] sm:-left-[36px] top-6 w-5 sm:w-9 h-1 bg-green-100" />
+
+      <div className="p-6 rounded-2xl bg-gray-50/50 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
+              <User className="w-4 h-4 text-green-600" />
+            </div>
+            <span className="font-black text-sm text-black uppercase tracking-tight">
+              {child.user?.firstName
+                ? `${child.user.firstName} ${child.user.lastName}`
+                : child.user?.username || "Team Member"}
+            </span>
+          </div>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            {formatDateTime(child.createdAt)}
+          </span>
+        </div>
+        <div
+          className="text-sm text-gray-800 font-medium leading-relaxed prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{
+            __html: child.description,
+          }}
+        />
+        {child.files && child.files.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-gray-100/50">
+            <RenderFiles
+              files={child.files}
+              table="rfqResponse"
+              parentId={child.id}
+              hideHeader
+              noAccordion
+            />
+          </div>
+        )}
+        <div className="mt-4 flex justify-end gap-2">
+          {hasChildren && (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              className="px-4 py-1.5 text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700 border-2 border-blue-700/80 rounded-lg hover:bg-blue-100 transition-all uppercase tracking-tight shadow-sm cursor-pointer"
+            >
+              {isExpanded ? "Hide Thread" : `View Thread (${childrenToRender.length})`}
+            </Button>
+          )}
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect?.(child);
+            }}
+            className="px-4 py-1.5 text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700 border-2 border-blue-700/80 rounded-lg hover:bg-blue-100 transition-all uppercase tracking-tight shadow-sm cursor-pointer"
+          >
+            Open
+          </Button>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onReply?.(child);
+            }}
+            className="px-4 py-1.5 text-[10px] sm:text-xs font-bold bg-green-50 text-green-700 border-2 border-green-700/80 rounded-lg hover:bg-green-100 transition-all uppercase tracking-tight shadow-sm cursor-pointer"
+          >
+            Reply to this
+          </Button>
+        </div>
+      </div>
+
+      {isExpanded && hasChildren && (
+        <div className="mt-6 space-y-6 ml-2 sm:ml-4 border-l-4 border-green-100 pl-4 sm:pl-8 animate-in slide-in-from-top-2 duration-200">
+          {[...childrenToRender]
+            .sort(
+              (a: any, b: any) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime(),
+            )
+            .map((grandChild: any) => (
+              <ThreadedChildResponse
+                key={grandChild.id}
+                child={grandChild}
+                onReply={onReply}
+                onSelect={onSelect}
+                allResponses={allResponses}
+              />
+            ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const RFQResponseItem = ({
+  response,
+  onReply,
+  onSelect,
+  allResponses,
+}: {
+  response: any;
+  onReply?: (parent: any) => void;
+  onSelect?: (resp: any) => void;
+  allResponses: any[];
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isThreadOpen, setIsThreadOpen] = useState(false);
+  
+  const computedChildren = allResponses.filter(
+    (r: any) => r.parentResponseId === response.id
+  );
+  const childrenToRender = computedChildren.length > 0 ? computedChildren : (response.childResponses || []);
+  const hasChildren = childrenToRender.length > 0;
+
+  return (
+    <div className="mb-6 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
+      {/* Header */}
+      <div
+        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
+          isOpen ? "bg-gray-50" : "bg-white"
+        } hover:bg-gray-50 ${isOpen ? "border-b border-gray-100" : ""}`}
+      >
+        <div
+          className="flex items-center gap-4 flex-1 cursor-pointer"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center border border-green-100 shrink-0">
+            <User className="w-6 h-6 text-green-600" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <span className="font-black text-black uppercase tracking-tight text-base">
+                {response.subject || "No Subject"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap text-gray-500 text-[11px]">
+              <span className="font-bold text-gray-700 uppercase tracking-widest">
+                {response.user?.firstName
+                  ? `${response.user.firstName} ${response.user.lastName}`
+                  : response.user?.username || "Team Member"}
+              </span>
+              {response.user?.role && (
+                <span className="px-2 py-0.5 rounded bg-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200">
+                  {response.user.role.replace("_", " ")}
+                </span>
+              )}
+              <span className="text-gray-300">|</span>
+              <Clock className="w-3.5 h-3.5 text-gray-400" />
+              <span className="font-bold text-gray-400 uppercase tracking-widest">
+                {formatDateTime(response.createdAt)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0 justify-end flex-wrap w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
+          <div className="flex items-center gap-2 mr-2">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              STATUS
+            </span>
+            <span className="text-xs font-black text-black uppercase tracking-tight">
+              {response.wbtStatus || response.status || "OPEN"}
+            </span>
+          </div>
+
+          {hasChildren && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isOpen) setIsOpen(true);
+                setIsThreadOpen(!isThreadOpen);
+              }}
+              className="h-9 px-4 rounded-xl border border-black/10 bg-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 hover:text-blue-700 transition-all shadow-2xs"
+            >
+              {isThreadOpen ? "Hide Thread" : `View Thread (${childrenToRender.length})`}
+            </Button>
+          )}
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onReply?.(response);
+            }}
+            className="h-9 px-4 rounded-xl border border-black/10 bg-white font-black text-[10px] uppercase tracking-widest hover:bg-green-50 hover:text-green-700 transition-all shadow-2xs"
+          >
+            Reply
+          </Button>
+
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            {isOpen ? (
+              <ChevronUp size={18} className="text-gray-500" />
+            ) : (
+              <ChevronDown size={18} className="text-gray-500" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      {isOpen && (
+        <div className="p-6 bg-white animate-in slide-in-from-top-2 duration-300 space-y-6">
+          {/* Main Message Section */}
+          <div>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
+              Message Description
+            </span>
+            <div
+              className="prose prose-sm max-w-none text-black font-semibold text-base leading-relaxed bg-gray-50/50 p-4 rounded-xl border border-gray-100"
+              dangerouslySetInnerHTML={{ __html: response.description }}
+            />
+          </div>
+
+          {/* Quantification & Metrics Header Section */}
+          {(response.totalTonnageWithConnection ||
+            response.totalTonnageWithoutConnection ||
+            response.PageNumbers) && (
+            <div className="bg-green-50/40 p-4 rounded-xl border border-green-100">
+              <span className="text-[10px] font-black text-green-800 uppercase tracking-widest block mb-3">
+                Quantification & Metrics
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Tonnage (With Connections)
+                  </span>
+                  <span className="text-xs font-black text-black">
+                    {response.totalTonnageWithConnection || "—"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Tonnage (W/O Conn)
+                  </span>
+                  <span className="text-xs font-black text-black">
+                    {response.totalTonnageWithoutConnection || "—"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Page Numbers
+                  </span>
+                  <div
+                    className="text-xs font-black text-black"
+                    dangerouslySetInnerHTML={{
+                      __html: response.PageNumbers || "—",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Attachments Section */}
+          {response.files && response.files.length > 0 && (
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
+                Attached Files
+              </span>
+              <div className="pt-2 border-t border-dashed border-gray-100">
+                <RenderFiles
+                  files={response.files}
+                  table="rfqResponse"
+                  parentId={response.id}
+                  hideHeader
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Child Responses */}
+          {hasChildren && isThreadOpen && (
+            <div className="mt-8 space-y-4 animate-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center gap-2 mb-4">
+                <MessageSquare className="w-5 h-5 text-green-600" />
+                <span className="text-xs font-black text-green-700 uppercase tracking-widest">
+                  Replies ({childrenToRender.length})
+                </span>
+              </div>
+              <div className="space-y-6 ml-2 sm:ml-4 border-l-4 border-green-100 pl-4 sm:pl-8">
+                {[...childrenToRender]
+                  .sort(
+                    (a: any, b: any) =>
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime(),
+                  )
+                  .map((child: any) => (
+                    <ThreadedChildResponse
+                      key={child.id}
+                      child={child}
+                      onReply={onReply}
+                      onSelect={onSelect}
+                      allResponses={allResponses}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8 flex justify-end">
+            <Button
+              onClick={() => onReply?.(response)}
+              className="h-9 px-6 rounded-xl bg-green-100 text-black text-[11px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-sm"
+            >
+              Reply
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface GetRfqByIDProps {
   id: string;
@@ -57,12 +396,58 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
   const dispatch = useDispatch();
 
-  console.log(rfq);
+  const topLevelResponses = useMemo(() => {
+    return (responses || [])
+      .filter((r: any) => {
+        if (r.parentResponseId) return false;
+        if (filterType) {
+          const type = (r.type || r.Type || "").toUpperCase();
+          return type === filterType.toUpperCase();
+        }
+        return true;
+      })
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+  }, [responses, filterType]);
+
+  const extractResponsesArray = (res: any): any[] => {
+    if (!res) return [];
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res.data)) return res.data;
+    if (Array.isArray(res.responses)) return res.responses;
+    if (Array.isArray(res.data?.responses)) return res.data.responses;
+    if (Array.isArray(res.data?.data)) return res.data.data;
+    if (typeof res === "object" && res !== null) {
+      const arrayVal = Object.values(res).find((v) => Array.isArray(v));
+      if (Array.isArray(arrayVal)) return arrayVal;
+    }
+    return [];
+  };
+
+  const fetchResponses = async () => {
+    try {
+      const cleanId = typeof id === "object" && id !== null ? (id as any).id || (id as any)._id : id;
+      if (!cleanId) return;
+      console.log("[GetRFQByID] Fetching responses independently for cleanId:", cleanId);
+      
+      const respRes = await rfqService.getRFQResponses(cleanId);
+      const fetchedResponses = extractResponsesArray(respRes);
+      console.log("[RFQ Responses] Fetched successfully:", fetchedResponses);
+      setResponses(fetchedResponses);
+    } catch (err) {
+      console.error("Error fetching RFQ responses independently:", err);
+      setResponses([]);
+    }
+  };
+
   const fetchRfq = async () => {
     try {
       if (!rfq) setLoading(true);
       const rfqRes = await Service.GetRFQbyId(id);
 
+      const rfqRes = await rfqService.GetRFQbyId(cleanId);
       const rfqData = rfqRes?.data || rfqRes;
       if (rfqData) {
         setRfq(rfqData);
@@ -107,7 +492,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     try {
       setIsDeleting(true);
       console.log("Calling Service.DeleteRFQById...");
-      const res = await Service.DeleteRFQById(id);
+      const res = await rfqService.DeleteRFQById(id);
       console.log("Service.DeleteRFQById response:", res);
       dispatch(deleteRFQ(id));
       toast.success("RFQ deleted successfully");
@@ -121,6 +506,45 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
       setIsDeleting(false);
       setShowDeleteModal(false);
       setDeleteConfirmText("");
+    }
+  };
+
+  const handleStatusUpdate = async () => {
+    if (!newStatus) {
+      toast.error("Please select a status");
+      return;
+    }
+    if (
+      (newStatus === "CLOSED" || newStatus === "RE_APPROVED") &&
+      !statusReason
+    ) {
+      toast.error("Please provide a reason");
+      return;
+    }
+
+    try {
+      setIsUpdatingStatus(true);
+      const payload = {
+        wbtStatus: newStatus,
+        reason: statusReason,
+      };
+      const fabricatorName =
+        rfq?.fabricator?.fabName ||
+        rfq?.sender?.fabricator?.fabName ||
+        (rfq as any)?.fabricatorName ||
+        "";
+      const rfqProjectName = rfq?.projectName || "";
+      await rfqService.UpdateRFQById(id, payload, fabricatorName, rfqProjectName);
+      toast.success("RFQ status updated successfully");
+      setShowStatusModal(false);
+      setNewStatus("");
+      setStatusReason("");
+      fetchRfq(); // Refresh data
+    } catch (err) {
+      console.error("Status update failed:", err);
+      toast.error("Failed to update RFQ status");
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -142,7 +566,18 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
     try {
       setIsSubmittingFollowup(true);
-      const res = await Service.addRFQFollowups(formData, id);
+      const fabricatorName =
+        rfq?.fabricator?.fabName ||
+        rfq?.sender?.fabricator?.fabName ||
+        (rfq as any)?.fabricatorName ||
+        "";
+      const rfqProjectName = rfq?.projectName || "";
+      const res = await rfqService.addRFQFollowups(
+        formData,
+        id,
+        fabricatorName,
+        rfqProjectName,
+      );
       console.log("[Followup] Response:", res);
       toast.success("Followup added successfully");
       setFollowupDescription("");
@@ -168,17 +603,424 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
     }
 
     try {
-      setIsUpdatingStatus(true);
-      const payload = {
-        wbtStatus: newStatus,
-        reason: statusReason,
+      const res = await Service.createShareLink(mappedTable, String(parentId), String(fileId));
+      if (res?.shareUrl) {
+        return res.shareUrl;
+      }
+      if (res?.url) {
+        return res.url;
+      }
+    } catch (err) {
+      console.warn("Failed to generate share link via API:", err);
+    }
+
+    let baseURL = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
+    if (baseURL && baseURL.startsWith("/")) {
+      baseURL = `${window.location.origin}${baseURL}`;
+    } else if (baseURL && !baseURL.startsWith("http")) {
+      baseURL = `${window.location.origin}/${baseURL}`;
+    } else if (!baseURL) {
+      baseURL = window.location.origin;
+    }
+
+    return `${baseURL}/share/${mappedTable}/${parentId}/${fileId}`;
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!rfq) return;
+    const rfqData: any = rfq;
+
+    try {
+      const doc = new jsPDF();
+      const primaryColor: [number, number, number] = [107, 189, 69]; // #6bbd45 WBT Green
+      const textColor: [number, number, number] = [30, 30, 30];
+      const lightBg: [number, number, number] = [248, 250, 252];
+
+      let currentY = 15;
+
+      // Title Header Banner
+      doc.setFillColor(...primaryColor);
+      doc.rect(14, currentY, 182, 16, "F");
+
+      const projTitle = rfqData.projectName ? `RFQ - ${rfqData.projectName}` : "REQUEST FOR QUOTATION (RFQ)";
+
+      doc.setFontSize(11);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text(projTitle, 20, currentY + 11);
+
+      currentY += 22;
+
+      // Section: General Information
+      doc.setFontSize(11);
+      doc.setTextColor(...primaryColor);
+      doc.setFont("helvetica", "bold");
+      doc.text("GENERAL INFORMATION", 14, currentY);
+      currentY += 4;
+
+      const senderObj = rfqData.sender;
+      const senderName = senderObj
+        ? `${senderObj.firstName || ""} ${senderObj.middleName || ""} ${senderObj.lastName || ""}`.replace(/\s+/g, " ").trim() || senderObj.username || "—"
+        : "—";
+      const senderEmail = senderObj?.email || "—";
+
+      let recipientNames = "—";
+      if (rfqData.multipleRecipients && rfqData.multipleRecipients.length > 0) {
+        recipientNames = rfqData.multipleRecipients
+          .map((r: any) => {
+            const name = `${r.firstName || ""} ${r.lastName || ""}`.trim();
+            return name ? `${name} (${r.email || ""})` : r.email || "";
+          })
+          .filter(Boolean)
+          .join("\n");
+      } else if (rfqData.recipient) {
+        const name = `${rfqData.recipient.firstName || ""} ${rfqData.recipient.lastName || ""}`.trim();
+        recipientNames = name ? `${name} (${rfqData.recipient.email || ""})` : rfqData.recipient.email || "—";
+      }
+
+      const createdDateStr = formatDate(rfqData.createdAt) || "N/A";
+      const dueDateStr = formatDate(isCDRole ? rfqData.RFQDueDate : rfqData.estimationDate) || "N/A";
+
+      const basicInfoData = [
+        ["Subject:", rfqData.subject || "N/A", "Created At:", createdDateStr],
+        ["Project Name:", rfqData.projectName || "N/A", "Due Date:", dueDateStr],
+        ["Sender:", `${senderName}\n(${senderEmail})`, "Recipient(s):", recipientNames]
+      ];
+
+      autoTable(doc, {
+        body: basicInfoData,
+        startY: currentY,
+        theme: "grid",
+        headStyles: { fillColor: primaryColor },
+        styles: { fontSize: 8.5, cellPadding: 3, textColor: textColor },
+        columnStyles: {
+          0: { fontStyle: "bold", cellWidth: 28, fillColor: lightBg },
+          1: { cellWidth: 63 },
+          2: { fontStyle: "bold", cellWidth: 25, fillColor: lightBg },
+          3: { cellWidth: 66 }
+        }
+      });
+
+      currentY = (doc as any).lastAutoTable.finalY + 8;
+
+      // Section: Scope Details
+      const detailingScopes: string[] = [];
+      if (rfqData.detailingMain) detailingScopes.push("Detailing Main");
+      if (rfqData.detailingMisc) detailingScopes.push("Detailing Misc");
+
+      const connectionScopes: string[] = [];
+      if (rfqData.connectionDesign) connectionScopes.push("Main Design");
+      if (rfqData.miscDesign) connectionScopes.push("Misc Design");
+      if (rfqData.customerDesign) connectionScopes.push("Connection Design by WBT");
+
+      const mtoScopes: string[] = [];
+      if (rfqData.MTOManual) mtoScopes.push("MTO - Manual");
+      if (rfqData.MTOStickModel || rfqData.MTOValue || rfqData.MTOManualModel || rfqData.isMTOStickModel || rfqData.mtoStickModelEnabled) mtoScopes.push("MTO - Stick Model");
+
+      const scopeRows: string[][] = [];
+      if (detailingScopes.length > 0) {
+        scopeRows.push(["Detailing Scope", detailingScopes.join(", ")]);
+      }
+      if (connectionScopes.length > 0) {
+        scopeRows.push(["Connection Design Scope", connectionScopes.join(", ")]);
+      }
+      if (mtoScopes.length > 0) {
+        scopeRows.push(["Material Take-off (MTO)", mtoScopes.join(", ")]);
+      }
+
+      if (scopeRows.length > 0) {
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text("SCOPE DETAILS", 14, currentY);
+        currentY += 4;
+
+        autoTable(doc, {
+          body: scopeRows,
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 8.5, cellPadding: 3, textColor: textColor },
+          columnStyles: {
+            0: { fontStyle: "bold", cellWidth: 48, fillColor: lightBg },
+            1: { cellWidth: 134 }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Description
+      const rawDesc = isCDRole ? rfqData.CDDescription : rfqData.description;
+      const cleanDesc = stripHtml(rawDesc);
+      if (cleanDesc && cleanDesc !== "No description provided" && cleanDesc !== "No CD description provided") {
+        if (currentY > 240) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text("DESCRIPTION", 14, currentY);
+        currentY += 4;
+
+        autoTable(doc, {
+          body: [[cleanDesc]],
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 8.5, cellPadding: 4, textColor: textColor },
+          columnStyles: {
+            0: { cellWidth: 182 }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: MTO Details & Notes if any
+      const mtoNote = stripHtml(rfqData.MTOValue || rfqData.MTOStickModel || rfqData.MTOManualModel);
+      if (mtoNote) {
+        if (currentY > 240) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text("MTO DETAILS & NOTES", 14, currentY);
+        currentY += 4;
+
+        autoTable(doc, {
+          body: [[mtoNote]],
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 8.5, cellPadding: 4, textColor: textColor },
+          columnStyles: {
+            0: { cellWidth: 182 }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Helper to format long URLs so autoTable wraps them inside table cells without overflow
+      const formatBreakableUrl = (url: string) => {
+        return url.replace(/([\/._\-\?&=])/g, "$1 ");
       };
-      await Service.UpdateRFQById(id, payload);
-      toast.success("RFQ status updated successfully");
-      setShowStatusModal(false);
-      setNewStatus("");
-      setStatusReason("");
-      fetchRfq(); // Refresh data
+
+      // Section: Main Attachments & Share Links
+      const attachments = isCDRole ? rfqData.CDAttachments : rfqData.files;
+      if (attachments && attachments.length > 0) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`ATTACHMENTS & SHARE LINKS (${attachments.length})`, 14, currentY);
+        currentY += 4;
+
+        const fileRows = await Promise.all(
+          attachments.map(async (file: any, idx: number) => {
+            const fileName = file.originalName || file.filename || `File ${idx + 1}`;
+            const shareUrl = await getFileShareUrl(
+              isCDRole ? "rfqCDAttachments" : "rFQ",
+              rfqData.id,
+              file.id,
+              file
+            );
+            return [
+              idx + 1,
+              { content: fileName, link: shareUrl },
+              { content: `Open File Link:\n(${formatBreakableUrl(shareUrl)})`, link: shareUrl }
+            ];
+          })
+        );
+
+        autoTable(doc, {
+          head: [["#", "File Name", "Share Link (Click to Open)"]],
+          body: fileRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 10, halign: "center" },
+            1: { cellWidth: 55, fontStyle: "bold", textColor: [0, 102, 204] },
+            2: { cellWidth: 117, textColor: [0, 102, 204] }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const rawCell: any = data.cell.raw;
+              if (rawCell && typeof rawCell === "object" && rawCell.link) {
+                data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: rawCell.link });
+              }
+            }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Followups
+      if (followups && followups.length > 0) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`FOLLOWUPS (${followups.length})`, 14, currentY);
+        currentY += 4;
+
+        const followupRows = await Promise.all(
+          followups.map(async (f: any, idx: number) => {
+            const cb = f.createdBy
+              ? `${f.createdBy.firstName || ""} ${f.createdBy.lastName || ""}`.trim() || f.createdBy.username || "—"
+              : "—";
+            const desc = stripHtml(f.description);
+            const createdOn = formatDateTime(f.createdAt);
+
+            let fileDetails = "—";
+            if (f.files && f.files.length > 0) {
+              const fileShareList = await Promise.all(
+                f.files.map(async (file: any) => {
+                  const name = file.originalName || file.filename || "File";
+                  const url = await getFileShareUrl("rFQFollowUp", f.id, file.id, file);
+                  return `${name}\nOpen Link: ${formatBreakableUrl(url)}`;
+                })
+              );
+              fileDetails = fileShareList.join("\n\n");
+            }
+
+            return [idx + 1, cb, createdOn, desc, fileDetails];
+          })
+        );
+
+        autoTable(doc, {
+          head: [["#", "Created By", "Date", "Description", "Files & Share Links"]],
+          body: followupRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 10, halign: "center" },
+            1: { cellWidth: 32 },
+            2: { cellWidth: 32 },
+            3: { cellWidth: 48 },
+            4: { cellWidth: 60, textColor: [0, 102, 204] }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const cellText = Array.isArray(data.cell.text) ? data.cell.text.join(" ") : String(data.cell.text || "");
+              const foundUrls = cellText.match(/https?:\/\/[^\s\n\)\"\']+/g);
+              if (foundUrls) {
+                foundUrls.forEach((urlWithSpaces) => {
+                  const cleanUrl = urlWithSpaces.replace(/\s+/g, "");
+                  data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: cleanUrl });
+                });
+              }
+            }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Section: Responses
+      if (responses && responses.length > 0 && !isCDRole) {
+        if (currentY > 220) {
+          doc.addPage();
+          currentY = 15;
+        }
+
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(`RESPONSES (${responses.length})`, 14, currentY);
+        currentY += 4;
+
+        const flattenResponsesForPdf = async (resList: any[], indent = 0): Promise<any[]> => {
+          const rows: any[] = [];
+          for (const r of resList) {
+            const u = r.user;
+            const userName = u
+              ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Team Member"
+              : "Team Member";
+            const role = u?.role ? ` (${u.role.replace("_", " ")})` : "";
+            const prefix = indent > 0 ? "  ".repeat(indent) + "↳ " : "";
+            const userStr = `${prefix}${userName}${role}`;
+            const subj = r.subject || "No Subject";
+            const respStatus = r.wbtStatus || r.status || "OPEN";
+            const dateStr = formatDateTime(r.createdAt);
+            let desc = stripHtml(r.description);
+
+            if (r.files && r.files.length > 0) {
+              const fileShareList = await Promise.all(
+                r.files.map(async (file: any) => {
+                  const name = file.originalName || file.filename || "File";
+                  const url = await getFileShareUrl("rFQResponse", r.id, file.id, file);
+                  return `• ${name}\n  Open Link: ${formatBreakableUrl(url)}`;
+                })
+              );
+              desc += `\n\n[Attached Files]:\n${fileShareList.join("\n")}`;
+            }
+
+            rows.push([userStr, subj, respStatus, dateStr, desc]);
+
+            const children = responses.filter((child: any) => child.parentResponseId === r.id);
+            const childList = children.length > 0 ? children : (r.childResponses || []);
+            if (childList.length > 0) {
+              const childRows = await flattenResponsesForPdf(childList, indent + 1);
+              rows.push(...childRows);
+            }
+          }
+          return rows;
+        };
+
+        const topLevel = responses.filter((r: any) => !r.parentResponseId);
+        const responseRows = await flattenResponsesForPdf(topLevel.length > 0 ? topLevel : responses);
+
+        autoTable(doc, {
+          head: [["User", "Subject", "Status", "Date", "Description & Attached Files"]],
+          body: responseRows,
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, textColor: textColor, overflow: "linebreak" },
+          columnStyles: {
+            0: { cellWidth: 38 },
+            1: { cellWidth: 26 },
+            2: { cellWidth: 18 },
+            3: { cellWidth: 28 },
+            4: { cellWidth: 72 }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body") {
+              const cellText = Array.isArray(data.cell.text) ? data.cell.text.join(" ") : String(data.cell.text || "");
+              const foundUrls = cellText.match(/https?:\/\/[^\s\n\)\"\']+/g);
+              if (foundUrls) {
+                foundUrls.forEach((urlWithSpaces) => {
+                  const cleanUrl = urlWithSpaces.replace(/\s+/g, "");
+                  data.doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: cleanUrl });
+                });
+              }
+            }
+          }
+        });
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      }
+
+      // Save Document
+      const safeProjectName = (rfqData.projectName || "RFQ_Document").replace(/[^a-zA-Z0-9_\-]/g, "_");
+      doc.save(`RFQ_${safeProjectName}_${rfqData.serialNo || id}.pdf`);
+      toast.success("RFQ PDF downloaded successfully!");
     } catch (err) {
       console.error("Status update failed:", err);
       toast.error("Failed to update RFQ status");
@@ -189,7 +1031,7 @@ const GetRFQByID = ({ id, onClose }: GetRfqByIDProps) => {
 
   if (loading || error || !rfq) {
     return createPortal(
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
+      <div className="project-component-container fixed inset-0 z-9999 flex items-center justify-center p-2 bg-black/60 backdrop-blur-md">
         <div className="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
           {loading ? (
             <>

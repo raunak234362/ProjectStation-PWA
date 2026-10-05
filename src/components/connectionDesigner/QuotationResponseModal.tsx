@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
-import Service from "../../api/Service";
-import { X } from "lucide-react";
 import type { Quotation } from "../../interface";
 import { toast } from "react-toastify";
+import RichTextEditor from "../fields/RichTextEditor";
+import { connectionDesignerService } from "../../api/Service1";
 
 interface Props {
   rfqId: string;
@@ -39,11 +39,11 @@ const QuotationResponseModal = ({ rfqId, onClose, onSuccess }: Props) => {
       if (data.approvalDate) formData.append("approvalDate", data.approvalDate);
       if (files?.length) files.forEach((file) => formData.append("files", file));
 
-      await Service.addConnectionDesignerQuotation(formData);
+      await connectionDesignerService.addConnectionDesignerQuotation(formData);
       toast.success("Quotation submitted successfully!");
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch {
       toast.error("Failed to submit quotation");
     } finally {
       setLoading(false);

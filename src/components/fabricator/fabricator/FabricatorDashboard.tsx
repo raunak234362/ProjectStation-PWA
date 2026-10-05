@@ -21,6 +21,7 @@ import DataTable from "../../ui/table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { cn } from "../../../lib/utils";
 import React, { Suspense, lazy } from "react";
+import { rfqService } from "../../../api/Service1";
 
 const ProjectDetailsModal = lazy(() => import("../../dashboard/components/ProjectDetailsModal"));
 
@@ -62,7 +63,7 @@ const FabricatorDashboard = ({ fabricator }: FabricatorDashboardProps) => {
         // Fetch RFQs using the rfqIds present in the projects as requested
         const rfqIds = Array.from(new Set(fabProjects.map((p: any) => p.rfqId).filter(Boolean)));
         const detailedRfqsResponse = await Promise.all(
-          rfqIds.map((id: any) => Service.FetchRFQByID(id))
+          rfqIds.map((id: any) => rfqService.FetchRFQByID(id))
         );
         const fabRfqs = detailedRfqsResponse
           .map((res: any) => res?.data || res)

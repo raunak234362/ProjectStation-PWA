@@ -15,7 +15,41 @@ import Select from "../fields/Select";
 import Toggle from "../fields/Toggle";
 import RichTextEditor from "../fields/RichTextEditor";
 import { addRFQ } from "../../store/rfqSlice";
-import { motion } from "motion/react";
+import { rfqService } from "../../api/Service1";
+
+
+const STATES: Record<string, string[]> = {
+  "USA": [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+    "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ],
+  "US": [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+    "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ],
+  "UNITED STATES": [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+    "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ],
+  "CANADA": [
+    "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan",
+    "Northwest Territories", "Nunavut", "Yukon"
+  ],
+  "INDIA": [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+  ]
+};
 
 interface AddRFQProps {
   onSuccess?: () => void;
@@ -30,8 +64,6 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
   // const staffData = useSelector((state: any) => state.userInfo.staffData);
 
   // const userType =
-  typeof window !== "undefined" ? sessionStorage.getItem("userType") : null;
-
   const {
     register,
     handleSubmit,
@@ -166,8 +198,21 @@ const AddRFQ: React.FC<AddRFQProps> = ({ onSuccess }) => {
         }
       }
 
-      const response = await Service.addRFQ(formData);
-      const createdRFQ = response.data || response.rfq || response;
+      const targetFabricatorId = payload.fabricatorId;
+      const selectedFab = fabricators?.find(
+        (f) => String(f.id) === String(targetFabricatorId),
+      );
+      let fabricatorName = selectedFab?.fabName || "";
+      if (!fabricatorName) {
+        fabricatorName = userDetail?.FabricatorPointOfContacts?.[0]?.fabricator?.fabName || 
+                         userDetail?.FabricatorPointOfContacts?.[0]?.fabName || 
+                         userDetail?.fabricator?.fabName || 
+                         "";
+      }
+      const rfqProjectName = data.projectName || "";
+
+      const response = await rfqService.addRFQ(formData, fabricatorName, rfqProjectName);
+      const createdRFQ = response.data?.newRfq || response.data || response.rfq || response;
 
       if (createdRFQ) {
         // Enrich with form data for immediate display in the table

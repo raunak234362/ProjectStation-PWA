@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { X } from "lucide-react";
-import Service from "../../api/Service";
+  import Service from "../../api/Service";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { rfqService } from "../../api/Service1";
 
 interface ConnectionDesigner {
   id: string;
@@ -39,6 +38,23 @@ const VQuotationRaise = ({
     ConnectionDesigner[]
   >([]);
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
+  const [rfqDetails, setRfqDetails] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchRfq = async () => {
+      try {
+        const res = await rfqService.GetRFQbyId(rfqId);
+        if (res?.data) {
+          setRfqDetails(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching RFQ in VQuotationRaise:", err);
+      }
+    };
+    if (rfqId) {
+      fetchRfq();
+    }
+  }, [rfqId]);
 
   // Fetch all Connection Designers
   const fetchCD = async () => {
@@ -118,7 +134,9 @@ const VQuotationRaise = ({
 
       console.log("📦 Final Payload:", payload);
 
-      const response = await Service.UpdateRFQById(rfqId, payload);
+      const fabricatorName = rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
+      const rfqProjectName = rfqDetails?.projectName || "";
+      const response = await rfqService.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
       console.log("Quotation raised successfully:", response);
 
       toast.success("Quotation raised successfully!");

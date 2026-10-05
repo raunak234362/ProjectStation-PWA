@@ -12,6 +12,7 @@ import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import Select from "../fields/Select";
 import { formatDate } from "../../utils/dateUtils";
+import { rfqService } from "../../api/Service1";
 
 interface ResponseModalProps {
   rfqId: string;
@@ -44,6 +45,50 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
     { label: "Main Steel Design", price: "", weeks: "", selected: false },
     { label: "Misc Steel Design", price: "", weeks: "", selected: false },
   ]);
+
+  const [parentResponse, setParentResponse] = useState<any>(null);
+  const [rfqDetails, setRfqDetails] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchRfqDetails = async () => {
+      try {
+        const [res, responsesRes] = await Promise.all([
+          rfqService.GetRFQbyId(rfqId),
+          rfqService.getRFQResponses(rfqId).catch(() => null)
+        ]);
+        
+        const data = res?.data || res;
+        if (data) {
+          // Attach responses from the separate endpoint if available
+          const responsesData = responsesRes?.data || responsesRes || [];
+          data.responses = Array.isArray(responsesData) ? responsesData : responsesData?.data || [];
+          setRfqDetails(data);
+        }
+      } catch (error) {
+        console.error("Error fetching RFQ details in response modal:", error);
+      }
+    };
+    if (rfqId) {
+      fetchRfqDetails();
+    }
+  }, [rfqId]);
+
+  useEffect(() => {
+    const fetchParentResponse = async () => {
+      if (!parentResponseId) return;
+      try {
+        const res = await rfqService.getRFQResponseById(parentResponseId);
+        let data = res?.data || res;
+        if (Array.isArray(data)) {
+          data = data[0];
+        }
+        if (data) setParentResponse(data);
+      } catch (err) {
+        console.error("Error fetching parent response:", err);
+      }
+    };
+    fetchParentResponse();
+  }, [parentResponseId]);
 
   useEffect(() => {
     const fetchEstimations = async () => {
@@ -406,8 +451,10 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         files.forEach((file) => formData.append("files", file));
       }
 
-      await Service.addResponse(formData, rfqId);
-      toast.success("Response added successfully!");
+      const fabricatorName = propFabricatorName || rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
+      const rfqProjectName = propRfqProjectName || rfqDetails?.projectName || "";
+      const res = await rfqService.addResponse(formData, rfqId, fabricatorName, rfqProjectName);
+      toast.success(res?.data?.message || "Response added successfully!");
       reset();
       setFiles([]);
       onSuccess();

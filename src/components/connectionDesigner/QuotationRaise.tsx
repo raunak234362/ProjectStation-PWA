@@ -3,7 +3,8 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { X } from "lucide-react";
+
+import Input from "../fields/input";
 
 interface ConnectionDesigner {
   id: string;
@@ -30,6 +31,23 @@ const QuotationRaise = ({
   const [connectionDesigners, setConnectionDesigners] = useState<ConnectionDesigner[]>([]);
   const [filteredDesigners, setFilteredDesigners] = useState<ConnectionDesigner[]>([]);
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
+  const [rfqDetails, setRfqDetails] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchRfq = async () => {
+      try {
+        const res = await Service.GetRFQbyId(rfqId);
+        if (res?.data) {
+          setRfqDetails(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching RFQ in QuotationRaise:", err);
+      }
+    };
+    if (rfqId) {
+      fetchRfq();
+    }
+  }, [rfqId]);
 
   const fetchCD = async () => {
     try {
@@ -43,7 +61,7 @@ const QuotationRaise = ({
           try {
             const parsed = JSON.parse(cd.state);
             parsedState = Array.isArray(parsed) ? parsed : [];
-          } catch (e) {
+          } catch {
             parsedState = [];
           }
         }
@@ -51,7 +69,7 @@ const QuotationRaise = ({
       });
       setConnectionDesigners(parsedData);
       setFilteredDesigners(parsedData);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load connection designers");
     }
   };
@@ -94,11 +112,13 @@ const QuotationRaise = ({
         ConnectionDesignerIds: data.ConnectionDesignerIds?.map((cd: any) => cd.value) || [],
         connectionEngineerIds: data.EngineerIds?.map((eng: any) => eng.value) || [],
       };
-      await Service.UpdateRFQById(rfqId, payload);
+      const fabricatorName = rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
+      const rfqProjectName = rfqDetails?.projectName || "";
+      await Service.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
       toast.success("Quotation raised successfully!");
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch{
       toast.error("Failed to raise quotation");
     }
   };

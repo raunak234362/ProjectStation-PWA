@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, Suspense, lazy } from "react";
 import { useNavigate } from "react-router-dom";
 import Service from "../../api/Service";
@@ -26,11 +27,19 @@ const GetMilestoneByID = lazy(
   () => import("../project/mileStone/GetMilestoneByID"),
 );
 
+import EstimatorDashboard from "./EstimatorDashboard";
+import AccountantDashboard from "./AccountantDashboard";
+import { rfqService } from "../../api/Service1";
+
 const ClientDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
-  // Data State
+  const userRole = sessionStorage.getItem("userRole")?.toLowerCase();
+  const isClientRole = userRole === "client";
+  const isClientAdmin = userRole === "client_admin";
+  const isClientEstimator = userRole === "client_estimator";
+    // Data State
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
     null,
   );
@@ -64,6 +73,10 @@ const ClientDashboard = () => {
   );
 
   const dispatch = useDispatch();
+
+
+
+
 
   // Effect to handle modal open/close state in Redux
   useEffect(() => {
@@ -116,7 +129,7 @@ const ClientDashboard = () => {
       try {
         const [sent, received, allInvoices, pendingCOsData] = await Promise.all(
           [
-            Service.RfqSent(),
+            isClientEstimator ? rfqService.GetClientEstimatorRFQ() : (isClientAdmin ? rfqService.getAllRFQFab() : rfqService.RfqSent()),
             Service.SubmittalRecieved(),
             Service.InvoiceDashboardData(),
             Service.ClientAdminPendingCOs(), // Updated
@@ -164,7 +177,15 @@ const ClientDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await Service.DashboardData();
+      let response;
+      if (isClientEstimator) {
+        response = await rfqService.GetClientEstimatorDashboardData();
+      } else if (isClientRole) {
+        response = await Service.GetClientDashboardData();
+      } else {
+        response = await Service.DashboardData();
+      }
+      console.log("Dashboard client Data", response);
       setDashboardStats(response?.data || response || null);
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
@@ -206,10 +227,14 @@ const ClientDashboard = () => {
 
   const fetchPendingRFQs = async () => {
     try {
-      const response = await Service.ClientAdminPendingRFQs();
-      console.log(response);
-
-      setPendingRFQs(response?.data || []);
+      let response;
+      if (isClientAdmin) {
+        response = await rfqService.ClientAdminPendingRFQs();
+      } else {
+        response = await Service.GetClientPendingRFQ();
+      }
+      const data = Array.isArray(response) ? response : response?.data || [];
+      setPendingRFQs(data);
     } catch (error) {
       console.error("Failed to fetch RFQs", error);
     }
@@ -245,6 +270,18 @@ const ClientDashboard = () => {
       setIsCoModalOpen(true);
     }
   };
+
+  if (userRole === "client_estimator") {
+    return <EstimatorDashboard />;
+  }
+
+  if (userRole === "client_accountant") {
+    return <AccountantDashboard />;
+  }
+
+  if (userRole === "client_accountant") {
+    return <AccountantDashboard />;
+  }
 
   if (loading) {
     return <DashboardSkeleton />;

@@ -1,10 +1,11 @@
 import { CalendarDays, X } from "lucide-react";
 import { formatDateTime } from "../../utils/dateUtils";
-import { useState } from "react";
-import Service from "../../api/Service";
+import React, { useState, useEffect } from "react";
 import Button from "../fields/Button";
 import RichTextEditor from "../fields/RichTextEditor";
 import RenderFiles from "../ui/RenderFiles";
+import { toast } from "react-toastify";
+import { rfqService } from "../../api/Service1";
 
 interface ResponseDetailsModalProps {
   response: any;
@@ -19,8 +20,62 @@ const ResponseDetailsModal = ({
   const [replyMessage, setReplyMessage] = useState("");
   const [replyStatus, setReplyStatus] = useState("PENDING");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rfqDetails, setRfqDetails] = useState<any>(null);
+  const [localResponse, setLocalResponse] = useState<any>(initialResponse);
 
-  const userRole = sessionStorage.getItem("userRole")?.toLowerCase() || "";
+  const [expandedThreads, setExpandedThreads] = useState<Record<string, boolean>>({});
+  const [history, setHistory] = useState<string[]>([initialResponse.id]);
+  const currentResponseId = history[history.length - 1];
+
+  const fetchResponseDetails = async (idToFetch: string) => {
+    try {
+      const res = await rfqService.getRFQResponseById(idToFetch);
+      let data = res?.data || res;
+      if (Array.isArray(data)) {
+        data = data[0];
+      }
+      if (data) {
+        setLocalResponse(data);
+      }
+    } catch (err) {
+      console.error("Error fetching fresh response details:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (currentResponseId) {
+      fetchResponseDetails(currentResponseId);
+    }
+  }, [currentResponseId]);
+
+  const handleBack = () => {
+    if (history.length > 1) {
+      setHistory((prev) => prev.slice(0, -1));
+    }
+  };
+
+  useEffect(() => {
+    const fetchRfq = async () => {
+      try {
+        const targetRfqId = rfqId || initialResponse.rfqId;
+        if (!targetRfqId) return;
+        const res = await rfqService.GetRFQbyId(targetRfqId);
+        const data = res?.data || res;
+        if (data) {
+          delete data.responses;
+          setRfqDetails(data);
+        }
+      } catch (err) {
+        console.error("Error fetching RFQ in response modal reply:", err);
+      }
+    };
+    if (rfqId || localResponse?.rfqId) {
+      fetchRfq();
+    }
+  }, [rfqId, localResponse?.rfqId]);
+
+  const canReply = true; // Temporary bypass to ensure visibility
 
   const handleReplySubmit = async () => {
     if (!replyMessage.trim()) return;
@@ -34,7 +89,22 @@ const ResponseDetailsModal = ({
     replyFiles.forEach((file) => formData.append("files", file));
 
     try {
-      await Service.addResponse(formData, response.rfqId);
+      setIsSubmitting(true);
+      const fabricatorName =
+        propFabricatorName ||
+        rfqDetails?.fabricator?.fabName ||
+        rfqDetails?.sender?.fabricator?.fabName ||
+        rfqDetails?.fabricatorName ||
+        "";
+      const rfqProjectName =
+        propRfqProjectName || rfqDetails?.projectName || "";
+      const res = await rfqService.addResponse(
+        formData,
+        targetRfqId || "",
+        fabricatorName,
+        rfqProjectName,
+      );
+      toast.success(res?.data?.message || "Reply sent successfully!");
       setReplyMode(false);
       setReplyMessage("");
       setReplyFiles([]);

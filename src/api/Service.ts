@@ -371,221 +371,6 @@ class Service {
     }
   }
 
-  //Add new RFQ
-  static async addRFQ(formData: FormData) {
-    const response = await api.post(`rfq`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    return response.data;
-  }
-
-  //Fetch All RFQ
-  static async getAllRFQ() {
-    try {
-      const response = await api.get(`rfq/all`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All RFQ fetched:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfqs", error);
-    }
-  }
-
-  //Fetch RFQ by ID
-  static async FetchRFQByID(rfqId: string) {
-    try {
-      const response = await api.get(`rfq/${rfqId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(" All Data fetched by RFQ id:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfqs", error);
-    }
-  }
-
-  // api for sents :
-  static async RfqSent() {
-    try {
-      const response = await api.get(`rfq/sents`);
-      console.log(" RFQ sents:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfqs", error);
-    }
-  }
-
-  //api for recieved:
-  static async RFQRecieved() {
-    try {
-      const response = await api.get(`rfq/received`);
-
-      // console.log("  RFQ received:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfqs", error);
-    }
-  }
-
-  // Client Admin Pending RFQs (Received)
-  static async ClientAdminPendingRFQs() {
-    try {
-      // Assuming existing dashboard logic uses 'received' and filters it locally.
-      // We'll use a specific endpoint if available, but for now mimicking the likely pattern or reusing received if auth handles it.
-      // Given the pattern, let's try `rfq/received/clientAdmin`
-      const response = await api.get(`rfq/pending/clientAdmin`);
-      console.log("Client Admin RFQ received:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfqs for Client Admin", error);
-    }
-  }
-  //getting rfqbyID
-
-  static async GetRFQbyId(rfqId: string) {
-    try {
-      const response = await api.get(`rfq/getById/${rfqId}`);
-      console.log(" All rfq fetched by rfq ID:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot find rfq", error);
-    }
-  }
-
-  // Update RFQ by ID
-  static async UpdateRFQById(rfqId: string, data: any) {
-    try {
-      const response = await api.put(`rfq/update/${rfqId}`, data);
-      console.log("RFQ updated:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot update rfq", error);
-    }
-  }
-  //rfq for route for adding the connection engineers
-
-  static async getConnectionEngineerQuotation() {
-    try {
-      const response = await api.get(`rfq/connectionEngineers`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("Connection Engineer :", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot get connection engineer", error);
-    }
-  }
-
-  // Add Connection Designer Quotation Response
-  static async addConnectionDesignerQuotation(formData: FormData) {
-    try {
-      const response = await api.post(`rfq/connectionDesignerQuota`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("Connection Designer Quotation added:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot add connection designer quotation", error);
-      throw error;
-    }
-  }
-
-  // Get all quotations for an RFQ
-  static async getQuotationsByRFQ(rfqId: string) {
-    try {
-      const response = await api.get(
-        `connectionDesignerQuota/${rfqId}/quotations`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
-      console.log("Quotations fetched for RFQ:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot get quotations", error);
-    }
-  }
-
-  // Add reply to quotation response
-  static async addQuotationReply(formData: FormData, quotationId: string) {
-    try {
-      const response = await api.post(
-        `connectionDesignerQuota/${quotationId}/replies`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        },
-      );
-      console.log("Quotation reply added:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot add quotation reply", error);
-      throw error;
-    }
-  }
-
-  //Delete RFQ by ID
-  static async DeleteRFQById(rfqId: string) {
-    const response = await api.delete(`rfq/${rfqId}`);
-    console.log("RFQ deleted:", response.data);
-    return response.data;
-  }
-  //RESPONSES
-  //response post request
-
-  static async addResponse(formData: FormData, responseId: string) {
-    const response = await api.post(`rfq/${responseId}/responses`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    return response.data;
-  }
-
-  //rfq followups:
-  static async addRFQFollowups(formData: FormData, rfqId: string) {
-    try {
-      const response = await api.post(`rfq/${rfqId}/followups`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("RFQ followups added:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot add RFQ followups", error);
-    }
-  }
-
-  //rfq file
-
-  static async viewRfqFile(Id: string, fileId: string) {
-    try {
-      const response = await api.get(`rfq/followups/viewFile/${Id}/${fileId}`);
-      console.log("RFQ file fetched:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("cannot fetch RFQ file", error);
-    }
-  }
-
 
   //Add Vendor
   static async AddVendor(data: FormData | any) {
@@ -1890,6 +1675,22 @@ class Service {
     }
   }
 
+  // Get CO responses by CO ID (GET /changeOrder/{coId}/responses)
+  static async GetChangeOrderResponseById(id: string) {
+    try {
+      const response = await api.get(`changeOrder/${id}/responses`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("CO responses fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find CO responses", error);
+      throw error;
+    }
+  }
+
   // Get change order by iD
   static async GetChangeOrderById(id: string) {
     try {
@@ -1902,6 +1703,22 @@ class Service {
       return response.data;
     } catch (error) {
       console.error("cannot find CO", error);
+    }
+  }
+
+  // Get change order response by response id
+  static async GetChangeOrderResponseByResponseId(id: string) {
+    try {
+      const response = await api.get(`changeOrder/responses/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("CO response fetched by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("cannot find CO response", error);
+      throw error;
     }
   }
 

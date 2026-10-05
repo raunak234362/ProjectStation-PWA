@@ -1,10 +1,8 @@
-import React from 'react'
-import { FileText, Share2, Download, ChevronRight, Plus } from 'lucide-react'
-import {
-  openFileSecurely,
-  downloadFileSecurely,
-  shareFileSecurely
-} from '../../utils/openFileSecurely'
+import React, { useState } from "react"
+import { useDispatch } from "react-redux"
+import { showFileError } from "../../store/uiSlice"
+import { FileText, Share2, Download, ChevronRight, Plus, ChevronDown, Clock } from 'lucide-react'
+import downloadShareService from '../../api/services/downloadShare.service'
 import Button from '../fields/Button'
 
 interface RenderFilesProps {
@@ -57,29 +55,332 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
       if (!acc[desc]) acc[desc] = []
       acc[desc].push({
         ...curr,
-        documentID: parentId, // Use passed parentId for flat files
-        versionId: curr.versionId || versionId
-      })
+        id: curr.id,
+        documentID: docId,
+        versionId: vId,
+        overrideTable: curr.overrideTable,
+      });
     }
-    return acc
-  }, {})
+    return acc;
+  }, {});
+
+  const getResolvedFileParams = (file: any) => {
+    let finalTable = file.overrideTable || file.table || table;
+    if (table === 'changeOrders' || table === 'changeOrder') {
+      finalTable = table;
+    }
+    let finalParentId = file.documentID || parentId;
+    let finalVersionId = file.versionId || versionId;
+
+    if (finalTable === 'submittals' || finalTable === 'submittal') {
+      if (file.submittalId) {
+        finalParentId = file.submittalId;
+      } else if (finalVersionId && finalParentId === finalVersionId) {
+        if (parentId && parentId !== finalVersionId) {
+          finalParentId = parentId;
+        }
+      }
+    }
+
+    return { finalTable, finalParentId, finalVersionId };
+  };
 
   const handleShare = async (e: React.MouseEvent, file: any) => {
-    e.preventDefault()
-    e.stopPropagation()
-    await shareFileSecurely(table, file.documentID, file.id, file.versionId || versionId)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
+    await downloadShareService.shareFile(finalTable, finalParentId, file.id, finalVersionId);
+  };
 
   const handleDownload = async (e: React.MouseEvent, file: any) => {
-    e.preventDefault()
-    e.stopPropagation()
-    await downloadFileSecurely(table, file.documentID, file.id, file.originalName, file.versionId || versionId)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
+    const fileName = file.originalName || file.name || "download";
+    const result = await downloadShareService.downloadFile(finalTable, finalParentId, file.id, fileName, finalVersionId);
+    if (result && !result.success) {
+      dispatch(showFileError({
+        reason: result.error || "Unable to download file",
+        retryAction: () => downloadShareService.downloadFile(finalTable, finalParentId, file.id, fileName, finalVersionId)
+      }));
+    }
+  };
 
-  const handleOpen = (e: React.MouseEvent, file: any) => {
-    e.preventDefault()
-    openFileSecurely(table, file.documentID, file.id, file.versionId || versionId)
-  }
+  const handleOpen = async (e: React.MouseEvent, file: any) => {
+    e.preventDefault();
+    const { finalTable, finalParentId, finalVersionId } = getResolvedFileParams(file);
+    const result = await downloadShareService.openFile(finalTable, finalParentId, file.id, finalVersionId);
+    if (result && !result.success) {
+      dispatch(showFileError({
+        reason: result.error || "Unable to open file",
+        retryAction: () => downloadShareService.openFile(finalTable, finalParentId, file.id, finalVersionId)
+      }));
+    }
+  };
+
+  const renderFileRow = (file: any, index: number) => {
+    const fileUploader = file.user || file.sender;
+    const fileUploaderName = fileUploader
+      ? `${fileUploader.firstName || fileUploader.f_name || ''} ${fileUploader.lastName || fileUploader.l_name || ''}`.trim()
+      : '';
+    const fileDate = file.uploadedAt || file.createdAt || file.date;
+
+    const isCO = table === 'changeOrders' || table === 'changeOrder';
+    const isSubmittal = !isCO && (file.originType === 'SUBMITTAL' || file.fileCategory === 'submittal' || (table === 'submittals' && !file.originType && !file.fileCategory));
+    const isResponse = !isCO && (file.originType === 'RESPONSE' || file.fileCategory === 'response' || file.overrideTable === 'submittalsResponse');
+    const isBfa = !isCO && (file.originType === 'BFA' || file.fileCategory === 'bfa' || file.overrideTable === 'bfa');
+
+    return (
+      <div
+        key={file.id || `file-${index}`}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:bg-gray-50/80 hover:border-black/10 transition-all group/file shadow-xs"
+      >
+        <div className="flex-1 min-w-0 space-y-1.5">
+          <FileItem
+            name={file.originalName || file.name || `File ${index + 1}`}
+            onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
+            className="w-full"
+          />
+
+          {/* Badges & Meta Row */}
+          <div className="flex flex-wrap items-center gap-2 pl-1">
+            {/* SUBMITTAL BADGE */}
+            {isSubmittal && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200">
+                {file.fileType && file.fileType.toLowerCase().includes('submittal')
+                  ? file.fileType.toUpperCase()
+                  : `SUBMITTAL ${file.versionNumber ? `v${file.versionNumber}` : (file.versionId ? `v${file.versionId}` : 'v1')}`}
+              </span>
+            )}
+
+
+            {/* RESPONSE BADGE */}
+            {isResponse && (
+              <>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200">
+                  RESPONSE FILE
+                </span>
+                {file.responseReason && (
+                  <span
+                    className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100/70 text-purple-800 border border-purple-200/60 max-w-xs truncate"
+                    title={file.responseReason}
+                  >
+                    Reason: {file.responseReason}
+                  </span>
+                )}
+                {file.responseStatus && (
+                  <span
+                    className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                      file.responseStatus === 'APPROVED'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : file.responseStatus === 'REJECTED'
+                        ? 'bg-red-50 text-red-700 border border-red-200'
+                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                    }`}
+                  >
+                    {file.responseStatus.replace(/_/g, ' ')}
+                  </span>
+                )}
+              </>
+            )}
+
+            {/* BFA BADGE */}
+            {isBfa && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                BFA FILE {file.versionNumber ? `v${file.versionNumber}` : ''}
+              </span>
+            )}
+
+            {/* Stage */}
+            {file.stage && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-200">
+                {file.stage}
+              </span>
+            )}
+
+            {/* Date */}
+            {fileDate && (
+              <span className="flex items-center gap-1 text-[10px] text-gray-400 font-medium whitespace-nowrap">
+                <Clock size={11} />
+                {formatDate ? formatDate(fileDate) : new Date(fileDate).toLocaleString()}
+              </span>
+            )}
+
+            {/* Uploader */}
+            {fileUploaderName && (
+              <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                by <span className="font-semibold text-gray-600">{fileUploaderName}</span>
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-1 shrink-0 self-end sm:self-center">
+          <button
+            onClick={(e) => handleShare(e, file)}
+            className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all border border-transparent hover:border-gray-200 shadow-xs"
+            title="Share Link"
+          >
+            <Share2 size={16} />
+          </button>
+          <button
+            onClick={(e) => handleDownload(e, file)}
+            className="p-2 text-gray-400 hover:text-black hover:bg-white rounded-lg transition-all border border-transparent hover:border-gray-200 shadow-xs"
+            title="Download"
+          >
+            <Download size={16} />
+          </button>
+          <button
+            onClick={(e) => handleOpen(e, file)}
+            className="p-2 text-gray-300 hover:text-black transition-colors"
+            title="Open File"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderFileList = (filesArray: any[]) => {
+    const isCOCard = table === 'changeOrders' || table === 'changeOrder';
+    const isSubmittalCard =
+      !isCOCard &&
+      (table === 'submittals' ||
+      filesArray.some((f: any) => f.originType || f.fileCategory || f.overrideTable === 'submittalsResponse' || f.overrideTable === 'bfa'));
+
+    if (!isSubmittalCard) {
+      return (
+        <div className="grid grid-cols-1 gap-2 mt-4">
+          {filesArray.length > 0 ? (
+            filesArray.map((file: any, index: number) => renderFileRow(file, index))
+          ) : (
+            <p className="text-xs text-gray-400 font-medium py-2 px-1">No files attached to this item</p>
+          )}
+        </div>
+      );
+    }
+
+    const submittalFiles = filesArray.filter(
+      (f: any) =>
+        f.originType === 'SUBMITTAL' ||
+        f.fileCategory === 'submittal' ||
+        (!f.originType && !f.fileCategory && table === 'submittals' && f.overrideTable !== 'submittalsResponse' && f.overrideTable !== 'bfa')
+    );
+
+    const responseFiles = filesArray.filter(
+      (f: any) =>
+        f.originType === 'RESPONSE' ||
+        f.fileCategory === 'response' ||
+        f.overrideTable === 'submittalsResponse'
+    );
+
+    const bfaFiles = filesArray.filter(
+      (f: any) =>
+        f.originType === 'BFA' ||
+        f.fileCategory === 'bfa' ||
+        f.overrideTable === 'bfa'
+    );
+
+    const coordinationFiles = filesArray.filter(
+      (f: any) =>
+        f.originType === 'COORDINATION_DRAWING' ||
+        f.fileCategory === 'coordinationDrawing' ||
+        (table === 'coordinationDrawing' && !f.originType && !f.fileCategory && f.overrideTable !== 'coordinationDrawingResponse')
+    );
+
+    const otherFiles = filesArray.filter(
+      (f: any) =>
+        !submittalFiles.includes(f) &&
+        !responseFiles.includes(f) &&
+        !bfaFiles.includes(f) &&
+        !coordinationFiles.includes(f)
+    );
+
+    return (
+      <div className="space-y-4 mt-4">
+        {submittalFiles.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs font-black text-blue-900 uppercase tracking-wider bg-blue-50/80 px-3 py-1.5 rounded-lg border border-blue-100">
+              <span>📁</span>
+              <span>SUBMITTAL FILES</span>
+              <span className="bg-blue-200/80 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                {submittalFiles.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {submittalFiles.map((file: any, idx: number) => renderFileRow(file, idx))}
+            </div>
+          </div>
+        )}
+
+        {coordinationFiles.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs font-black text-blue-900 uppercase tracking-wider bg-blue-50/80 px-3 py-1.5 rounded-lg border border-blue-100">
+              <span>📁</span>
+              <span>COORDINATION DRAWING FILES</span>
+              <span className="bg-blue-200/80 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                {coordinationFiles.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {coordinationFiles.map((file: any, idx: number) => renderFileRow(file, idx))}
+            </div>
+          </div>
+        )}
+
+        {responseFiles.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs font-black text-purple-900 uppercase tracking-wider bg-purple-50/80 px-3 py-1.5 rounded-lg border border-purple-100">
+              <span>💬</span>
+              <span>RESPONSE FILES</span>
+              <span className="bg-purple-200/80 text-purple-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                {responseFiles.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {responseFiles.map((file: any, idx: number) => renderFileRow(file, idx))}
+            </div>
+          </div>
+        )}
+
+        {bfaFiles.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs font-black text-emerald-900 uppercase tracking-wider bg-emerald-50/80 px-3 py-1.5 rounded-lg border border-emerald-100">
+              <span>📥</span>
+              <span>BFA FILES</span>
+              <span className="bg-emerald-200/80 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                {bfaFiles.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {bfaFiles.map((file: any, idx: number) => renderFileRow(file, idx))}
+            </div>
+          </div>
+        )}
+
+        {otherFiles.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs font-black text-gray-700 uppercase tracking-wider bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+              <span>📄</span>
+              <span>OTHER FILES</span>
+              <span className="bg-gray-200 text-gray-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                {otherFiles.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {otherFiles.map((file: any, idx: number) => renderFileRow(file, idx))}
+            </div>
+          </div>
+        )}
+
+        {filesArray.length === 0 && (
+          <p className="text-xs text-gray-400 font-medium py-2 px-1">No files attached to this item</p>
+        )}
+      </div>
+    );
+  };
 
   // Step 3: Render grouped sections
   return (

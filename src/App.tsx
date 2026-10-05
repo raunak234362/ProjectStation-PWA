@@ -12,6 +12,10 @@ import { setProjectData } from "./store/projectSlice";
 import { setNotifications } from "./store/notificationSlice";
 import useNotifications from "./hooks/useNotifications";
 import NotificationReceiver from "./util/NotificationReceiver";
+import DownloadErrorModal from "./components/ui/DownloadErrorModal";
+import { hideFileError } from "./store/uiSlice";
+import GlobalDetailView from "./components/ui/GlobalDetailView";
+import { connectionDesignerService, rfqService } from "./api/Service1";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -68,6 +72,19 @@ const AppContent = () => {
 
     // Fetch all employees
     const fetchAllEmployee = async () => {
+      const currentRole = (
+        sessionStorage.getItem("userRole") || ""
+      ).toUpperCase();
+      if (
+        [
+          "CLIENT",
+          "CLIENT_ADMIN",
+          "CLIENT_ESTIMATOR",
+          "CLIENT_ACCOUNTANT",
+        ].includes(currentRole)
+      ) {
+        return;
+      }
       try {
         const response = await Service.FetchAllEmployee();
         const data = response?.data?.employees || [];
@@ -90,6 +107,19 @@ const AppContent = () => {
     // };
     // Fetch all fabricator
     const fetchAllFabricator = async () => {
+      const currentRole = (
+        sessionStorage.getItem("userRole") || ""
+      ).toUpperCase();
+      if (
+        [
+          "CLIENT",
+          "CLIENT_ADMIN",
+          "CLIENT_ESTIMATOR",
+          "CLIENT_ACCOUNTANT",
+        ].includes(currentRole)
+      ) {
+        return;
+      }
       try {
         const response = await Service.GetAllFabricators();
         const data = response.data || [];
@@ -114,8 +144,12 @@ const AppContent = () => {
     const fetchInboxRFQ = async () => {
       try {
         let rfqDetail;
-        if (userType === "CLIENT" || userType === "CLIENT_ADMIN") {
-          rfqDetail = await Service.RfqSent();
+        if (userType === "CLIENT_ESTIMATOR") {
+          rfqDetail = await rfqService.GetClientEstimatorRFQ();
+        } else if (userType === "CLIENT_ADMIN") {
+          rfqDetail = await rfqService.getAllRFQFab();
+        } else if (userType === "CLIENT") {
+          rfqDetail = await rfqService.RfqSent();
         } else if (
           userType === "OPERATION_EXECUTIVE" ||
           userType === "DEPUTY_MANAGER" ||
@@ -123,14 +157,17 @@ const AppContent = () => {
           userType === "ESTIMATION_HEAD" ||
           userType === "ADMIN"
         ) {
-          rfqDetail = await Service.getAllRFQ();
-        } else if (userType === "CONNECTION_DESIGNER_ENGINEER") {
+          rfqDetail = await rfqService.getAllRFQ();
+        } else if (
+          userType === "CONNECTION_DESIGNER_ENGINEER" ||
+          userType === "CONNECTION_DESIGNER_ADMIN"
+        ) {
           const designerId = sessionStorage.getItem("connectionDesignerId");
           if (designerId) {
-            rfqDetail = await Service.getConnectionEngineerQuotation();
+            rfqDetail = await connectionDesignerService.getConnectionEngineerQuotation();
           }
         } else {
-          rfqDetail = await Service.RFQRecieved();
+          rfqDetail = await rfqService.RFQRecieved();
         }
         // setRfq(rfqDetail.data);
         console.log("Raw RFQ Response:", rfqDetail);
@@ -146,7 +183,15 @@ const AppContent = () => {
       }
     };
 
-    if (userType !== "CLIENT" && userType !== "CLIENT_ADMIN") {
+    const normalizedUserType = (userType || "").toUpperCase();
+    const isClient = [
+      "CLIENT",
+      "CLIENT_ADMIN",
+      "CLIENT_ESTIMATOR",
+      "CLIENT_ACCOUNTANT",
+    ].includes(normalizedUserType);
+
+    if (!isClient) {
       fetchAllFabricator();
     }
     fetchAllEmployee();
@@ -163,7 +208,33 @@ const AppContent = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={1000} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        limit={3}
+        toastStyle={{
+          backgroundColor: "#ffffff",
+          color: "#000000",
+          borderRadius: "8px",
+          border: "1px solid rgba(0, 0, 0, 0.05)",
+          borderLeft: "5px solid #6bbd45",
+          fontWeight: "900",
+          textTransform: "uppercase",
+          fontSize: "11px",
+          letterSpacing: "0.05em",
+          boxShadow:
+            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+        }}
+        style={{ zIndex: 999999 }}
+      />
       <NotificationReceiver />
 
       <Layout />

@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import {
   FileText,
   Calendar,
@@ -9,9 +9,10 @@ import {
 } from "lucide-react";
 import Button from "../fields/Button";
 import MultipleFileUpload from "../fields/MultipleFileUpload";
-import Service from "../../api/Service";
 import { toast } from "react-toastify";
 import { formatDate, formatDateTime } from "../../utils/dateUtils";
+import RichTextEditor from "../fields/RichTextEditor";
+import { connectionDesignerService } from "../../api/Service1";
 
 interface Props {
   quotation: any;
@@ -35,6 +36,139 @@ const QuotationResponseDetailsModal = ({
     userRole === "DEPUTY_MANAGER" ||
     userRole === "OPERATION_EXECUTIVE";
 
+  const isCDRole =
+    userRoleLower === "connection_designer" ||
+    userRoleLower === "connection_designer_engineer" ||
+    userRoleLower === "connection_designer_admin";
+
+  const fetchReplies = async () => {
+    try {
+      setLoadingReplies(true);
+      const res = await connectionDesignerService.getCDQuotaResponsesByQuotaId(quotation.id);
+      const data = res?.data || res || [];
+      setReplies(data);
+    } catch (err) {
+      console.error("Error fetching replies:", err);
+    } finally {
+      setLoadingReplies(false);
+    }
+  };
+
+  useEffect(() => {
+    if (quotation?.id) {
+      fetchReplies();
+      setMainSteelPriceInput(quotation.mainSteelPrice || "0");
+      setMiscSteelPriceInput(quotation.miscSteelPrice || "0");
+    }
+  }, [quotation?.id]);
+
+  const buildTree = (list: any[]) => {
+    const map: { [key: string]: any } = {};
+    const roots: any[] = [];
+    list.forEach((item) => {
+      map[item.id] = { ...item, childResponses: [] };
+    });
+    list.forEach((item) => {
+      const mappedItem = map[item.id];
+      if (item.parentId && map[item.parentId]) {
+        map[item.parentId].childResponses.push(mappedItem);
+      } else {
+        roots.push(mappedItem);
+      }
+    });
+    const sortTree = (nodes: any[]) => {
+      nodes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      nodes.forEach(node => {
+        if (node.childResponses) sortTree(node.childResponses);
+      });
+    };
+    sortTree(roots);
+    return roots;
+  };
+
+  const renderThread = (res: any) => {
+    return (
+      <div className="ml-4 sm:ml-6 mt-4 border-l-2 border-black/10 pl-4 sm:pl-6 space-y-6">
+        {res.childResponses?.map((child: any) => (
+          <div
+            key={child.id}
+            className="bg-white p-4 sm:p-5 rounded-2xl border border-black/5 shadow-sm animate-in fade-in slide-in-from-left-4 duration-500"
+          >
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-[10px] font-semibold text-black uppercase tracking-tight">
+                {child.userRole?.replace("_", " ") || "User"}
+              </span>
+              <div className="flex items-center gap-2">
+                {child.status && (
+                  <span className="text-[9px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">
+                    {child.status}
+                  </span>
+                )}
+                <span className="text-[9px] font-semibold bg-gray-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                  {formatDateTime(child.createdAt)}
+                </span>
+              </div>
+            </div>
+            <div
+              className="prose prose-sm max-w-none text-black/80 font-medium rich-text-content"
+              dangerouslySetInnerHTML={{ __html: child.description || child.message }}
+            />
+            
+            {/* Display prices if any */}
+            {(child.mainSteelPrice > 0 || child.miscSteelPrice > 0) && (
+              <div className="flex flex-wrap gap-2 mt-3 text-xs">
+                {child.mainSteelPrice > 0 && (
+                  <span className="px-2 py-1 rounded-md bg-gray-100 text-gray-700 font-bold uppercase tracking-wider">
+                    Main Steel: ${child.mainSteelPrice}
+                  </span>
+                )}
+                {child.miscSteelPrice > 0 && (
+                  <span className="px-2 py-1 rounded-md bg-gray-100 text-gray-700 font-bold uppercase tracking-wider">
+                    Misc Steel: ${child.miscSteelPrice}
+                  </span>
+                )}
+                <span className="px-2 py-1 rounded-md bg-green-50 text-green-700 border border-green-100 font-bold uppercase tracking-wider">
+                  Total Bid: ${(parseFloat(child.mainSteelPrice || "0") + parseFloat(child.miscSteelPrice || "0")).toFixed(2)}
+                </span>
+              </div>
+            )}
+
+            {child.files && child.files.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-black/5">
+                <RenderFiles
+                  files={child.files}
+                  table="CDQuotaResponse"
+                  parentId={child.id}
+                  hideHeader
+                />
+              </div>
+            )}
+            
+            {/* Reply action inside thread */}
+            {(isAdmin || isCDRole) && (
+              <div className="mt-2 flex justify-end">
+                <button
+                  onClick={() => {
+                    setSelectedParentId(child.id);
+                    setMainSteelPriceInput(child.mainSteelPrice || quotation.mainSteelPrice || "0");
+                    setMiscSteelPriceInput(child.miscSteelPrice || quotation.miscSteelPrice || "0");
+                    setReplyStatus(child.status || "IN_REVIEW");
+                    setReplyMode(true);
+                  }}
+                  className="px-3 py-1 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100 rounded-md hover:bg-blue-100 transition-all uppercase tracking-wider cursor-pointer"
+                >
+                  Reply to this
+                </button>
+              </div>
+            )}
+
+            {child.childResponses?.length > 0 && renderThread(child)}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const handleReplySubmit = async () => {
     if (!replyMessage.trim()) {
       toast.error("Please enter a reply message");
@@ -57,7 +191,7 @@ const QuotationResponseDetailsModal = ({
         });
       }
 
-      await Service.addQuotationReply(formData, quotation.id);
+      await connectionDesignerService.addCDQuotaResponse(formData);
       toast.success("Reply sent successfully!");
       setReplyMessage("");
       setReplyFiles([]);

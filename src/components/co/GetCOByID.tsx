@@ -35,29 +35,105 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
   const [co, setCO] = useState<ChangeOrderItem | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [responses, setResponses] = useState<any[]>([]);
+  const [loadingResponses, setLoadingResponses] = useState(false);
+
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
 
   const userRole = sessionStorage.getItem("userRole");
   console.log(id);
 
-  /* -------------------- SAFE DERIVED VALUES -------------------- */
-  const encodedCO = useMemo(() => {
-    if (!co) return "";
-    return encodeURIComponent(JSON.stringify(co));
-  }, [co]);
+  const effectiveProjectId =
+    projectId ||
+    (typeof co?.project === "string"
+      ? co.project
+      : (co?.project as any)?.id ||
+      (co as any)?.projectId ||
+      (co as any)?.project_id);
 
-  const responses = useMemo(() => {
-    try {
-      if (!co?.coResponses) return [];
-      return Array.isArray(co.coResponses)
-        ? co.coResponses
-        : JSON.parse(co.coResponses);
-    } catch (err) {
-      console.error("Failed to parse CO responses", err);
-      return [];
+  const sortedVersions = useMemo(() => {
+    if (!co?.versions) return [];
+    return [...co.versions].sort(
+      (a, b) =>
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
+  }, [co?.versions]);
+
+  const isClientRole = userRole === "CLIENT" || userRole === "CLIENT_ADMIN";
+  const hasMultipleVersions = sortedVersions.length > 1 && !isClientRole;
+
+  const currentVersion = useMemo(() => {
+    if (!co) return null;
+    const targetId = viewingVersionId || co.currentVersionId;
+    return (
+      co.versions?.find((v) => v.id === targetId) ||
+      sortedVersions[0] ||
+      co
+    );
+  }, [co, sortedVersions, viewingVersionId]);
+
+  const isViewingCurrent = useMemo(() => {
+    return currentVersion?.id === co?.currentVersionId || (!co?.versions?.length);
+  }, [currentVersion, co]);
+
+  /* -------------------- EXTRACT RESPONSES HELPER -------------------- */
+  const extractResponsesArray = (res: any): any[] => {
+    if (!res) return [];
+    if (typeof res === "string") {
+      try {
+        const parsed = JSON.parse(res);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {
+        return [];
+      }
     }
-  }, [co?.coResponses]);
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res.data)) return res.data;
+    if (Array.isArray(res.responses)) return res.responses;
+    if (Array.isArray(res.data?.responses)) return res.data.responses;
+    if (Array.isArray(res.data?.data)) return res.data.data;
+    if (typeof res === "object" && res !== null) {
+      const arrayVal = Object.values(res).find((v) => Array.isArray(v));
+      if (Array.isArray(arrayVal)) return arrayVal as any[];
+
+      // In case res is an object with numerical keys: { 0: { id: "..." }, status: "success" }
+      const items = Object.values(res).filter(
+        (v: any) => v && typeof v === "object" && (v.id || v.CoId || v.description)
+      );
+      if (items.length > 0) return items;
+    }
+    return [];
+  };
+
+  /* -------------------- FETCH CO RESPONSES -------------------- */
+  const fetchCOResponses = async (targetCoId: string, fallbackCoResponses?: any) => {
+    if (!targetCoId) return;
+    try {
+      setLoadingResponses(true);
+      console.log("[GetCOByID] Fetching responses for changeOrderId:", targetCoId);
+      const res = await Service.GetChangeOrderResponseById(targetCoId);
+      const fetched = extractResponsesArray(res);
+      console.log("[GetCOByID] Responses fetched successfully:", fetched);
+      setResponses(fetched);
+    } catch (err) {
+      console.error("Failed to fetch CO responses:", err);
+      // Fallback to coResponses in Change Order if available
+      const rawFallback = fallbackCoResponses ?? co?.coResponses;
+      if (rawFallback) {
+        try {
+          const fallback = Array.isArray(rawFallback)
+            ? rawFallback
+            : JSON.parse(rawFallback);
+          setResponses(fallback || []);
+        } catch {
+          setResponses([]);
+        }
+      }
+    } finally {
+      setLoadingResponses(false);
+    }
+  };
 
   /* -------------------- FETCH CO -------------------- */
   const fetchCO = async () => {
@@ -72,7 +148,20 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
       const response = await Service.GetChangeOrderById(id);
       console.log(response);
 
-      setCO(response.data);
+      const coData = response?.data?.data || response?.data || response;
+      if (!coData || typeof coData !== "object" || !coData.id) {
+        setError("Change Order not found");
+        return;
+      }
+
+      setCO(coData);
+      if (coData.currentVersionId) {
+        setViewingVersionId(coData.currentVersionId);
+      }
+
+      // Technique: Once change order is fetched, fetch the responses using the resolved changeOrderId
+      const changeOrderId = coData.id || id;
+      await fetchCOResponses(changeOrderId, coData.coResponses);
     } catch (err) {
       console.error(err);
       setError("Failed to load Change Order");
@@ -82,8 +171,23 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
   };
 
   useEffect(() => {
-    fetchCO();
-  }, [id, projectId]);
+    if (selectedResponse && responses.length > 0) {
+      const updated = responses.find((r: any) => r.id === selectedResponse.id);
+      if (updated) setSelectedResponse(updated);
+    }
+  }, [responses]);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      const targetUrl = window.location.pathname + window.location.search;
+      navigate(`/?redirect=${encodeURIComponent(targetUrl)}`);
+      return;
+    }
+    if (id) {
+      fetchCO();
+    }
+  }, [id, navigate]);
 
   /* -------------------- EARLY RETURNS -------------------- */
   if (loading || error || !co) {
@@ -116,13 +220,33 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
   /* -------------------- RESPONSE TABLE COLUMNS -------------------- */
   const responseColumns: ColumnDef<any>[] = [
     {
-      accessorKey: "createdByRole",
+      id: "from",
       header: "From",
-      cell: ({ row }) => (
-        <span className="font-medium text-sm">
-          {row.original.createdByRole === "CLIENT" ? "Client" : "WBT Team"}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const u = row.original.user;
+        const fullName = u
+          ? [u.firstName, u.middleName, u.lastName].filter(Boolean).join(" ").trim() ||
+          [u.firstName, u.lastName].filter(Boolean).join(" ").trim() ||
+          u.username ||
+          u.name
+          : null;
+
+        const role = row.original.createdByRole || row.original.userRole;
+        const roleFallback =
+          role === "CLIENT" || role === "CLIENT_ADMIN"
+            ? "Client"
+            : role
+              ? "WBT Team"
+              : "—";
+
+        const displayName = fullName || row.original.username || row.original.userName || roleFallback;
+
+        return (
+          <span className="font-medium text-sm text-black">
+            {displayName}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "reason",
@@ -275,7 +399,12 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
                 )}
               </div>
 
-              {responses.length > 0 ? (
+              {loadingResponses ? (
+                <div className="flex items-center justify-center py-8 text-gray-500 gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin text-green-600" />
+                  <span className="text-sm font-medium">Loading responses...</span>
+                </div>
+              ) : responses.length > 0 ? (
                 <DataTable
                   columns={responseColumns}
                   data={responses}
@@ -292,7 +421,9 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
         {/* ================= MODALS ================= */}
         {showResponseModal && (
           <CoResponseModal
-            CoId={id}
+            CoId={co?.id || id}
+            projectId={effectiveProjectId}
+            currentVersionId={co.currentVersionId}
             onClose={() => setShowResponseModal(false)}
             onSuccess={fetchCO}
           />
