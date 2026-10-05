@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import type { RFQItem } from "../../interface";
 import GetRFQByID from "./GetRFQByID";

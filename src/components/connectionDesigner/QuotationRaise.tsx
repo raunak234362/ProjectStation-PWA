@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import Input from "../fields/input";
+import { rfqService } from "../../api/Service1";
+import { X } from "lucide-react";
 
 interface ConnectionDesigner {
   id: string;
@@ -36,7 +38,7 @@ const QuotationRaise = ({
   useEffect(() => {
     const fetchRfq = async () => {
       try {
-        const res = await Service.GetRFQbyId(rfqId);
+        const res = await rfqService.GetRFQbyId(rfqId);
         if (res?.data) {
           setRfqDetails(res.data);
         }
@@ -114,7 +116,7 @@ const QuotationRaise = ({
       };
       const fabricatorName = rfqDetails?.fabricator?.fabName || rfqDetails?.sender?.fabricator?.fabName || rfqDetails?.fabricatorName || "";
       const rfqProjectName = rfqDetails?.projectName || "";
-      await Service.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
+      await rfqService.UpdateRFQById(rfqId, payload, fabricatorName, rfqProjectName);
       toast.success("Quotation raised successfully!");
       onSuccess();
       onClose();

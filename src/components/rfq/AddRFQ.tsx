@@ -16,6 +16,7 @@ import Toggle from "../fields/Toggle";
 import RichTextEditor from "../fields/RichTextEditor";
 import { addRFQ } from "../../store/rfqSlice";
 import { rfqService } from "../../api/Service1";
+import { motion } from "motion/react";
 
 
 const STATES: Record<string, string[]> = {

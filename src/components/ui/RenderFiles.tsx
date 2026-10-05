@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 import { showFileError } from "../../store/uiSlice"
-import { FileText, Share2, Download, ChevronRight, Plus, ChevronDown, Clock } from 'lucide-react'
+import { FileText, Share2, Download, ChevronRight, Plus, ChevronDown, Clock, File } from 'lucide-react'
 import downloadShareService from '../../api/services/downloadShare.service'
 import Button from '../fields/Button'
 
@@ -136,7 +136,7 @@ const RenderFiles: React.FC<RenderFilesProps> = ({
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:bg-gray-50/80 hover:border-black/10 transition-all group/file shadow-xs"
       >
         <div className="flex-1 min-w-0 space-y-1.5">
-          <FileItem
+          <File
             name={file.originalName || file.name || `File ${index + 1}`}
             onClick={(e: React.MouseEvent) => handleOpen(e as any, file)}
             className="w-full"
