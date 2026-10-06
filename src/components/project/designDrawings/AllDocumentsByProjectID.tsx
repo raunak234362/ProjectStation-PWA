@@ -493,17 +493,7 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Actions Top Bar */}
-      {onAddClick && (
-        <div className="mb-6 flex justify-end">
-          <button
-            onClick={onAddClick}
-            className="px-4 py-1.5 border-2 border-[#6bbd45] bg-green-50 text-black rounded text-sm font-bold uppercase hover:bg-[#6bbd45] hover:text-white transition-colors shadow-sm"
-          >
-            + Add Drawing
-          </button>
-        </div>
-      )}
+      {/* Actions Top Bar Removed */}
 
       {/* Grid of Section Cards */}
       {visibleSections.length > 0 ? (
