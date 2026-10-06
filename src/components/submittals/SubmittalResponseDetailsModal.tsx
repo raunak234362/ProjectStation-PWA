@@ -106,8 +106,8 @@ const SubmittalResponseDetailsModal = ({
               {response.user?.firstName?.trim() || "User"}{" "}
               {response.user?.lastName?.trim() || ""}
             </span>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              <CalendarDays size={12} />
+            <div className="flex items-center gap-2 text-sm font text-gray-700 uppercase tracking-normal">
+          
               {formatDateTime(response.createdAt)}
             </div>
           </div>
@@ -133,7 +133,7 @@ const SubmittalResponseDetailsModal = ({
           {/* 🔥 CHILD RESPONSES THREAD */}
           {response.childResponses?.length > 0 && (
             <div className="mt-4 space-y-4 border-t pt-4 h-[70vh] overflow-y-auto">
-              <h4 className="text-sm font-semibold text-gray-700">History</h4>
+              <h4 className="text-sm font-semibold text-black">Replies</h4>
 
               {response.childResponses.map((child: any) => (
                 <div
@@ -141,7 +141,7 @@ const SubmittalResponseDetailsModal = ({
                   className="bg-gray-50 p-3 rounded border text-sm"
                 >
                   <div className="flex justify-between text-sm text-gray-700 mb-1">
-                    <span className="font-medium text-gray-700">
+                    <span className="font-sm text-gray-700">
                       {child.user?.firstName?.trim() || "User"}{" "}
                       {child.user?.lastName?.trim() || ""}
                     </span>
