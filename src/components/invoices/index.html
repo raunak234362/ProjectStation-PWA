@@ -1,0 +1,588 @@
+<html>
+  <head>
+    <title>Invoice_${invoice.invoiceNumber || "NA"}</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap");
+
+      /* Page setup */
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      /* Base */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: white;
+        font-family: "Roboto", Arial, sans-serif;
+        color: #000;
+      }
+
+      /* Print page */
+      .print-page {
+        width: 210mm;
+        min-height: 297mm;
+        height: auto;
+        padding: 15mm;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+
+        background: white;
+        position: relative;
+
+        margin: 0;
+        box-shadow: none;
+
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .print-page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      /* Force print colors/backgrounds */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Print-specific styles */
+      @media print {
+        @page {
+          size: A4;
+          margin: 0;
+        }
+
+        html,
+        body {
+          background: white !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+
+        .print-page {
+          box-shadow: none !important;
+          margin: 0 !important;
+
+          page-break-after: always !important;
+          break-after: page !important;
+
+          width: 100% !important;
+          min-height: 297mm !important;
+
+          padding: 15mm !important;
+          box-sizing: border-box !important;
+
+          display: flex !important;
+          flex-direction: column !important;
+
+          background: white !important;
+          position: relative !important;
+        }
+
+        .print-page:last-child {
+          page-break-after: auto !important;
+          break-after: auto !important;
+        }
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-center;
+        margin-bottom: 20px;
+      }
+
+      .company-name {
+        font-family: serif;
+        color: #6bbd45;
+        font-size: 28px;
+        font-weight: 500;
+        margin: 8px 0 0;
+        line-height: 1;
+      }
+
+      .logo {
+        height: 100px;
+        object-fit: contain;
+      }
+
+      .divider-green {
+        height: 1px;
+        background: #6bbd45;
+        width: 100%;
+        margin-bottom: 8px;
+      }
+
+      /* Invoice details */
+      .details-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        font-size: 12px;
+        margin-bottom: 8px;
+        line-height: 1.2;
+      }
+
+      .billing-details {
+        width: 50%;
+      }
+
+      .meta-details {
+        width: 220px;
+        text-align: left;
+      }
+
+      .section-title {
+        font-weight: bold;
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .grid-details {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 4px 0;
+        text-align: left;
+      }
+
+      .label {
+        color: #000;
+        font-weight: bold;
+      }
+
+      .value {
+        font-weight: normal;
+      }
+
+      .meta-grid {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 8px 0;
+        text-align: left;
+      }
+
+      /* Invoice table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 32px;
+        border: 1px solid #6bbd45;
+      }
+
+      thead {
+        background: #6bbd45;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+      }
+
+      th {
+        padding: 8px 8px;
+        text-align: center;
+        text-transform: uppercase;
+        border-right: 1px solid rgba(255, 255, 255, 0.8);
+      }
+
+      th:last-child {
+        border-right: none;
+      }
+
+      tbody {
+        font-size: 12px;
+      }
+
+      /* Invoice summary */
+      .total-row {
+        font-weight: bold;
+        border-top: 2px solid #6bbd45;
+        border-bottom: 1px solid #6bbd45;
+      }
+
+      .gst-row {
+        font-size: 11px;
+        font-weight: bold;
+        border-bottom: 1px solid #6bbd45;
+      }
+
+      .value-row {
+        font-weight: bold;
+        font-size: 13px;
+        border-bottom: 1px solid #6bbd45;
+      }
+
+      /* Instructions */
+      .instructions {
+        margin-bottom: 12px;
+      }
+
+      .instr-title {
+        color: #6bbd45;
+        font-weight: bold;
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      .instr-box {
+        border: 1px solid rgba(107, 189, 69, 0.25);
+        background: rgba(107, 189, 69, 0.04);
+        border-radius: 8px;
+        padding: 8px;
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      .instr-text {
+        font-size: 12px;
+      }
+
+      /* Signature */
+      .signature-area {
+        margin-top: auto;
+        padding-bottom: 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .thank-you {
+        color: #6bbd45;
+        font-weight: bold;
+        font-size: 13px;
+        font-style: italic;
+        margin-bottom: 32px;
+        align-self: center;
+      }
+
+      .sig-box {
+        text-align: center;
+        width: 220px;
+      }
+
+      .sig-company {
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 40px;
+      }
+
+      .sig-line {
+        border-top: 1px solid #000;
+        padding-top: 5px;
+        font-size: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      /* Footer */
+      .footer {
+        border-top: 0;
+        padding-top: 32px;
+        margin-top: 48px;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+
+        font-size: 11px;
+        color: #666;
+      }
+
+      .footer-green {
+        color: #6bbd45;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      /* Bank information */
+      .bank-grid {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 40px 0;
+
+        font-size: 14px;
+        margin-bottom: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Page 1 -->
+    <div class="print-page">
+      <div class="header">
+        <h1 class="company-name">Whiteboard Technologies LLC</h1>
+        <img src="${logoDataUrl}" class="logo" />
+      </div>
+      <div class="divider-green"></div>
+
+      <div class="details-container">
+        <div class="billing-details">
+          <div class="section-title">Details of Receiver (Billed to)</div>
+          <div class="grid-details">
+            <span class="label">Name:</span
+            ><span class="value">${invoice.fabricator?.fabName || "—"}</span>
+            <span class="label">Contact Name:</span
+            ><span class="value">${invoice.contactName || "—"}</span>
+            <span class="label">Address:</span>
+            <span class="value" style="line-height: 1.2">
+              ${invoice.pointOfContact?.[0]?.address || invoice.address ||
+              invoice.client?.address ||
+              invoice.fabricator?.branches?.[0]?.address || "—"}<br />
+              ${invoice.pointOfContact?.[0]?.city || invoice.city ||
+              invoice.client?.city || invoice.fabricator?.branches?.[0]?.city ||
+              ""}${invoice.pointOfContact?.[0]?.city || invoice.city ||
+              invoice.client?.city || invoice.fabricator?.branches?.[0]?.city ?
+              ", " : ""}${invoice.pointOfContact?.[0]?.state || invoice.state ||
+              invoice.stateCode || invoice.client?.state ||
+              invoice.fabricator?.branches?.[0]?.state ||
+              ""}${invoice.pointOfContact?.[0]?.zipCode || invoice.zipCode ||
+              invoice.client?.zipCode ||
+              invoice.fabricator?.branches?.[0]?.zipCode ? `
+              ${invoice.pointOfContact?.[0]?.zipCode || invoice.zipCode ||
+              invoice.client?.zipCode ||
+              invoice.fabricator?.branches?.[0]?.zipCode}` : ""}<br />
+              ${invoice.pointOfContact?.[0]?.country || invoice.country ||
+              invoice.client?.country ||
+              invoice.fabricator?.branches?.[0]?.country || ""}<br />
+              ${invoice.pointOfContact?.[0]?.phone || invoice.phone ||
+              invoice.client?.phone || invoice.fabricator?.branches?.[0]?.phone
+              || ""}
+            </span>
+            <span class="label">Country/State /Code:</span><br />
+            <span class="label">GSTIN / UNIQUE ID:</span
+            ><span class="value">${invoice.GSTIN || "-"}</span>
+          </div>
+        </div>
+        <div class="meta-details">
+          <div style="margin-bottom: 10px; font-weight: bold">
+            Original for Recipient
+          </div>
+          <div class="meta-grid">
+            <span class="label">Invoice No:</span
+            ><span class="value">${invoice.invoiceNumber || "—"}</span>
+            <span class="label">Invoice Date:</span
+            ><span class="value">${formatDateStr(invoice.invoiceDate)}</span>
+            <span class="label">Date of Supply:</span
+            ><span class="value">${formatDateStr(invoice.dateOfSupply)}</span>
+            <span class="label">Place of Supply:</span
+            ><span class="value">${invoice.placeOfSupply || "USA"}</span>
+            <span class="label">Job Name:</span
+            ><span class="value" style="font-weight: bold"
+              >${invoice.jobName}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 10%">SL #</th>
+            <th style="text-align: center; width: 50%">
+              DESCRIPTION OF ENGINEERING<br />SERVICES
+            </th>
+            <th style="">SAC</th>
+            <th style="width: 20%;">RATE (USD)</th>
+            <th style="">TOTAL</th>
+            <th style="">UNIT</th>
+            <th style="width: 10%;">TOTAL (USD)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsHtml} ${Array.from({ length: Math.max(0, 3 -
+          (invoice.invoiceItems?.length || 0)) }, () => '
+          <tr style="height: 28px; border-bottom: 1px solid #000">
+            <td colspan="7">&nbsp;</td>
+          </tr>
+          ').join("")}
+          <tr class="total-row">
+            <td
+              colspan="5"
+              style="padding: 10px 15px; text-transform: bold; text-align: left"
+            >
+              Total
+            </td>
+            <td
+              colspan="2"
+              style="padding: 10px; text-align: right; font-size: 15px"
+            >
+              $ ${invoice.totalInvoiceValue?.toFixed(0) || "0"}
+            </td>
+          </tr>
+          <tr class="gst-row">
+            <td colspan="4" style="border: none"></td>
+            <td style="text-align: center; padding: 5px">IGST</td>
+            <td style="text-align: center; padding: 5px">Rate</td>
+            <td style="text-align: center; padding: 5px">Amount</td>
+          </tr>
+          <tr class="gst-row" style="font-weight: normal">
+            <td colspan="4" style="border: none"></td>
+            <td style="text-align: center; padding: 5px">IGST</td>
+            <td style="text-align: center; padding: 5px">-</td>
+            <td style="text-align: center; padding: 5px">-</td>
+          </tr>
+          <tr class="gst-row">
+            <td colspan="4" style="border: none"></td>
+            <td colspan="2" style="text-align: center; padding: 5px">
+              Total GST
+            </td>
+            <td style="text-align: center; padding: 5px">-</td>
+          </tr>
+          <tr class="value-row">
+            <td colspan="6" style="padding: 8px; text-align: left">
+              Total Invoice Value (in Figures)
+            </td>
+            <td style="padding: 8px; text-align: right">
+              $ ${invoice.totalInvoiceValue?.toFixed(2) || "0.00"}
+            </td>
+          </tr>
+          <tr>
+            <td
+              colspan="7"
+              style="
+                padding: 8px;
+                border-bottom: 1.5px solid #6bbd45;
+                font-weight: bold;
+              "
+            >
+              Total Invoice Value (in Words):
+              <span style="text-transform: uppercase; margin-left: 10px"
+                >${invoice.totalInvoiceValueInWords || "—"}</span
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="instructions">
+        <div class="instr-title">Instructions</div>
+        <div class="instr-box">
+          Consulting Proforma Invoice for Steel Detailing of ${invoice.jobName}
+          - ${invoice.fabricator?.fabName} P.O.
+          #${invoice.project?.projectNumber || invoice.project?.projectCode ||
+          ""}
+        </div>
+        <div class="instr-text">
+          All payments to be made to
+          <span style="font-weight: bold; text-transform: uppercase"
+            >Whiteboard Technologies LLC</span
+          >
+          in ${invoice.currencyType || "USD"} Dollars via Wire Transfers within
+          15 days.
+        </div>
+      </div>
+
+      <div class="signature-area">
+        <div class="thank-you">Thank you for your business!</div>
+        <div class="sig-box">
+          <div class="sig-company">For Whiteboard Technologies Pvt Ltd</div>
+          <div style="height: 60px"></div>
+          <div class="sig-line">Authorised signatory</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div>
+          <p style="margin-bottom: 5px">
+            For any questions please contact Raj:
+          </p>
+          <p><span class="footer-green">Tel:</span> USA: +1 612.605.5833</p>
+          <p><span class="footer-green">Email:</span> raj@whiteboardtec.com</p>
+        </div>
+        <div style="text-align: right">
+          <p>
+            <span style="visibility: hidden">Tel:</span> INDIA: +1 770.256.6888
+          </p>
+          <p><span class="footer-green">Web:</span> www.whiteboardtec.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 2 -->
+    <div class="print-page">
+      <div class="header">
+        <h1 class="company-name">Whiteboard Technologies LLC</h1>
+        <img src="${logoDataUrl}" class="logo" />
+      </div>
+      <div class="divider-green"></div>
+
+      <p style="font-size: 14px; margin-bottom: 40px; line-height: 1.5">
+        Please initiate the ACH/Wire Transfer in
+        <span style="font-weight: bold; text-decoration: underline">USD</span>
+        currency from your local Bank with the following information:
+      </p>
+
+      <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 30px">
+        ACH / Domestic Wire instructions:
+      </h3>
+
+      ${bankInfo ? `
+      <div class="bank-grid">
+        <span class="label">ABA/Routing number:</span
+        ><span class="value">${bankInfo.abaRoutingNumber || "—"}</span>
+        <span class="label">Account number:</span
+        ><span class="value">${bankInfo.accountNumber || "—"}</span>
+        <span class="label">Account type:</span
+        ><span class="value">${bankInfo.accountType || "—"}</span>
+        <span class="label">Recipient / beneficiary information*:</span
+        ><span class="value" style="text-transform: uppercase"
+          >${bankInfo.accountName || "Whiteboard Technologies LLC."}</span
+        >
+        <span class="label">Beneficiary address:</span
+        ><span class="value">${bankInfo.beneficiaryAddress || "—"}</span>
+        <span class="label">Bank information:</span
+        ><span class="value">${bankInfo.bankName || "—"}</span>
+        <span class="label">Bank Address:</span
+        ><span class="value">${bankInfo.bankAddress || "—"}</span>
+      </div>
+      ` : `
+      <div
+        style="
+          background: #fef2f2;
+          border: 1px solid #fee2e2;
+          color: #991b1b;
+          padding: 30px;
+          text-align: center;
+          border-radius: 4px;
+          font-weight: bold;
+        "
+      >
+        No bank account information attached to this invoice.
+      </div>
+      ` }
+
+      <p
+        style="
+          font-size: 11px;
+          color: #666;
+          font-style: italic;
+          margin-top: 20px;
+        "
+      >
+        *Use this name as the recipient's name of the wire.
+      </p>
+
+      <div class="footer" style="margin-top: auto">
+        <div>
+          <p style="margin-bottom: 5px">
+            For any questions please contact Raj:
+          </p>
+          <p><span class="footer-green">Tel:</span> USA: +1 612.605.5833</p>
+          <p><span class="footer-green">Email:</span> raj@whiteboardtec.com</p>
+        </div>
+        <div style="text-align: right">
+          <p>
+            <span style="visibility: hidden">Tel:</span> INDIA: +1 770.256.6888
+          </p>
+          <p><span class="footer-green">Web:</span> www.whiteboardtec.com</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
