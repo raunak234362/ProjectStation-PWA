@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+
 import { formatDateTime } from "../../utils/dateUtils";
 import { useState, type ChangeEvent } from "react";
 import Button from "../fields/Button";
@@ -17,11 +17,13 @@ const STATUS_OPTIONS = [
 interface SubmittalResponseDetailsModalProps {
   response: any;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 const SubmittalResponseDetailsModal = ({
   response,
   onClose,
+  onSuccess,
 }: SubmittalResponseDetailsModalProps) => {
   const [replyMode, setReplyMode] = useState(false);
   const [replyMessage, setReplyMessage] = useState("");
@@ -68,7 +70,14 @@ const SubmittalResponseDetailsModal = ({
       }
 
       await Service.addSubmittalResponse(formData, fabricatorName, projectName);
-      onClose(); // close to refresh parent
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose(); // close to refresh parent
+      }
+      setReplyMode(false);
+      setReplyMessage("");
+      setReplyFiles([]);
     } catch (err) {
       console.error("Failed to send submittal reply:", err);
     }
@@ -172,7 +181,10 @@ const SubmittalResponseDetailsModal = ({
 
           {/* Reply Form */}
           {replyMode && (
-            <div className="pt-4 space-y-4 border-t">
+            <div className="absolute inset-0 bg-[#fafffb] z-50 p-8 flex flex-col space-y-4 rounded-3xl overflow-y-auto border border-gray-100">
+              <h3 className="text-lg font-black text-black uppercase tracking-tight mb-2">
+                Add Reply
+              </h3>
               {/* Message */}
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">
@@ -210,7 +222,7 @@ const SubmittalResponseDetailsModal = ({
               />
 
               {/* Actions */}
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-3 mt-auto pt-4">
                 <Button
                   onClick={() => setReplyMode(false)}
                   className="px-4 py-2 bg-gray-100 text-black rounded-lg font-bold uppercase tracking-tight hover:bg-gray-200 transition-all border border-gray-200"
@@ -218,7 +230,7 @@ const SubmittalResponseDetailsModal = ({
                   Cancel
                 </Button>
                 <Button
-                  className="px-6 py-2 rounded-lg font-bold bg-primary/20 text-black uppercase tracking-tight border border-black shadow-md"
+                  className="px-6 py-2 rounded-lg font-bold bg-[#6bbd45]/20 text-black uppercase tracking-tight border border-black shadow-md"
                   onClick={handleReplySubmit}
                 >
                   Send Reply
