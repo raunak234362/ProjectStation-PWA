@@ -5,7 +5,7 @@ import RenderFiles from "../../ui/RenderFiles";
 import { Loader2 ,Search, X, FolderOpen } from "lucide-react";
 import { useParams } from "react-router-dom";
 
-const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string, onAddClick?: () => void }) => {
+const AllDocumentsByProjectID = ({ projectId }: { projectId?: string, onAddClick?: () => void }) => {
   const { id } = useParams<{ id: string }>();
   const finalId = projectId || id;
   const [loading, setLoading] = useState(true);
@@ -423,10 +423,27 @@ const AllDocumentsByProjectID = ({ projectId, onAddClick }: { projectId?: string
         ...note,
         description: `Note (${note.stage})`,
       }))),
-      rfis: filterNestedItems((data.rfi || []).map((rfi: any) => ({
-        ...rfi,
-        description: `RFI: ${rfi.subject}`,
-      }))),
+      rfis: filterNestedItems([...(data.rfi || [])]
+        .sort((a: any, b: any) => {
+          const numA = parseInt(String(a.rfiNumber || a.serialNo || '').replace(/\D/g, '')) || 0;
+          const numB = parseInt(String(b.rfiNumber || b.serialNo || '').replace(/\D/g, '')) || 0;
+          return numB - numA;
+        })
+        .map((rfi: any) => {
+          let desc = rfi.subject || "Unknown RFI";
+          const hasRfiText = desc.toLowerCase().includes("rfi");
+          
+          if (rfi.rfiNumber && !desc.includes(String(rfi.rfiNumber))) {
+             desc = `RFI#${rfi.rfiNumber} - ${desc}`;
+          } else if (!hasRfiText) {
+             desc = `RFI: ${desc}`;
+          }
+          
+          return {
+            ...rfi,
+            description: desc,
+          };
+      })),
       submittals: filterNestedItems((data.submittals || []).map((sub: any) => {
         const subTitle = sub.subject || sub.submittalNumber || sub.title || sub.serialNo || (sub.versionNumber ? `Submittal v${sub.versionNumber}` : 'Submittal Attachments');
         return {
