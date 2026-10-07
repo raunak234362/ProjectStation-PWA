@@ -1061,52 +1061,7 @@ const WorkProgressReport = ({
         total: "—"
       }];
     }
-
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const monthTotals: Record<string, number> = {};
-    const monthHasSent: Record<string, boolean> = {};
-    let grandTotal = 0;
-
-    months.forEach(m => {
-      monthTotals[m] = 0;
-      monthHasSent[m] = false;
-    });
-
-    sourceRows.forEach(c => {
-      months.forEach(m => {
-        const valStr = c[m];
-        if (valStr && valStr !== "—") {
-          if (valStr === "Sent" || valStr === "SENT") {
-            monthHasSent[m] = true;
-          } else {
-            const num = Number(String(valStr).replace(/[^0-9.]/g, ""));
-            if (!isNaN(num) && num > 0) {
-              monthTotals[m] += num;
-              grandTotal += num;
-            }
-          }
-        }
-      });
-    });
-
-    const summaryRow: any = {
-      id: "cor-summary",
-      changeOrder: "COR"
-    };
-
-    months.forEach(m => {
-      if (monthTotals[m] > 0) {
-        summaryRow[m] = `$${monthTotals[m].toLocaleString()}`;
-      } else if (monthHasSent[m]) {
-        summaryRow[m] = "SENT";
-      } else {
-        summaryRow[m] = "—";
-      }
-    });
-
-    summaryRow.total = grandTotal > 0 ? `$${grandTotal.toLocaleString()}` : "—";
-
-    return [summaryRow];
+    return sourceRows;
   }, [filteredCoRows, rawCoRows]);
 
   const filteredCoordDrawings = useMemo(() => {
