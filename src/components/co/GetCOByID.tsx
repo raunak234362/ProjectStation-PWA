@@ -3,12 +3,16 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import Service from "../../api/Service";
 import type { ChangeOrderItem } from "../../interface";
-import { AlertCircle, Loader2, History } from "lucide-react";
+import { AlertCircle, Loader2, History, Download } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { toast } from "react-toastify";
 import RenderFiles from "../ui/RenderFiles";
 import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../ui/table";
 import CoResponseModal from "./CoResponseModal";
 import COResponseDetailsModal from "./CoResponseDetailsModal";
+import { getCOTableRowSpan, isMergedCellValue } from "../../utils/coTableUtils";
 
 /* -------------------- Small UI Helper -------------------- */
 const Info = ({ label, value }: { label: string; value: React.ReactNode }) => (
@@ -42,6 +46,7 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
   const [viewingVersionId, setViewingVersionId] = useState<string | null>(null);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   const userRole = sessionStorage.getItem("userRole");
   console.log(id);
@@ -214,6 +219,233 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
     );
   }
 
+  const handleDownloadPDF = () => {
+    if (exportingPdf) return;
+
+    try {
+      setExportingPdf(true);
+      toast.info("Generating Change Order PDF...");
+
+      const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+      const primaryColor: [number, number, number] = [107, 189, 69];
+      const textColor: [number, number, number] = [30, 30, 30];
+      const lightBg: [number, number, number] = [248, 250, 252];
+      const left = 14;
+      const contentWidth = 269;
+      let currentY = 15;
+
+      const cleanText = (value: unknown) => {
+        if (value === undefined || value === null || value === "") return "—";
+        const html = String(value)
+          .replace(/<br\s*\/?>/gi, "\n")
+          .replace(/<\/(p|div|li)>/gi, "\n")
+          .replace(/&nbsp;/gi, " ");
+        const parsed = new DOMParser().parseFromString(html, "text/html");
+        return (parsed.body.textContent || "").trim() || "—";
+      };
+      const formatDate = (value?: string) => value
+        ? new Date(value).toLocaleString()
+        : "—";
+      const addSection = (title: string) => {
+        if (currentY > 180) {
+          doc.addPage();
+          currentY = 15;
+        }
+        doc.setFontSize(11);
+        doc.setTextColor(...primaryColor);
+        doc.setFont("helvetica", "bold");
+        doc.text(title.toUpperCase(), left, currentY);
+        currentY += 4;
+      };
+      const runTable = (options: Parameters<typeof autoTable>[1]) => {
+        autoTable(doc, options);
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+      };
+
+      const projectName = (co as any).Project?.name || (co as any).project?.name || (co as any).projectName || "—";
+      const corNumber = `COR-${co.changeOrderNumber?.slice(-3) || "—"}`;
+      const sender = (co as any).senders || (co as any).sender;
+      const recipient = (co as any).Recipients || co.recipients || (co as any).recipient;
+      const personName = (person: any) => person
+        ? [person.firstName, person.middleName, person.lastName].filter(Boolean).join(" ").trim() || person.username || "—"
+        : "—";
+      const status = co.isAproovedByAdmin === true
+        ? "Approved"
+        : co.isAproovedByAdmin === false
+          ? "Rejected"
+          : "Pending";
+      const description = currentVersion?.description || co.description;
+      const remarks = currentVersion?.remarks || co.remarks;
+      const tableRows = currentVersion?.changeOrderTables || currentVersion?.CoRefersTo || co.CoRefersTo || co.changeOrderTables || [];
+      const filesValue = currentVersion?.files || (currentVersion as any)?.file || co.files || [];
+      const files = Array.isArray(filesValue) ? filesValue : filesValue ? [filesValue] : [];
+      const flattenResponses = (items: any[]): any[] => items.flatMap((item) => [
+        item,
+        ...(Array.isArray(item.childResponses) ? flattenResponses(item.childResponses) : []),
+      ]);
+      const coResponses = flattenResponses(responses);
+
+      doc.setFillColor(...primaryColor);
+      doc.rect(left, currentY, contentWidth, 16, "F");
+      doc.setFontSize(14);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text(`CHANGE ORDER DETAILS - ${projectName}`, left + 6, currentY + 10, { maxWidth: contentWidth - 12 });
+      currentY += 22;
+
+      addSection("General Information");
+      runTable({
+        body: [
+          ["COR No.", corNumber, "Created At", formatDate(co.createdAt || co.date)],
+          ["Project", projectName, "Status", status],
+          ["Sender", personName(sender), "Recipient", personName(recipient)],
+          ["Version", String(currentVersion?.versionNumber || "—"), "Version Date", formatDate(currentVersion?.createdAt)],
+        ],
+        startY: currentY,
+        theme: "grid",
+        styles: { fontSize: 9, cellPadding: 3, textColor },
+        columnStyles: {
+          0: { cellWidth: 28, fontStyle: "bold", fillColor: lightBg },
+          1: { cellWidth: 107 },
+          2: { cellWidth: 28, fontStyle: "bold", fillColor: lightBg },
+          3: { cellWidth: 106 },
+        },
+      });
+
+      if (remarks && cleanText(remarks) !== "—") {
+        addSection("Remarks");
+        runTable({
+          body: [[cleanText(remarks)]],
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 9, cellPadding: 4, textColor },
+        });
+      }
+
+      if (description && cleanText(description) !== "—") {
+        addSection("Description");
+        runTable({
+          body: [[cleanText(description)]],
+          startY: currentY,
+          theme: "grid",
+          styles: { fontSize: 9, cellPadding: 4, textColor },
+        });
+      }
+
+      if (Array.isArray(tableRows) && tableRows.length > 0) {
+        addSection("Change Order Reference Table");
+        const fields = [
+          { title: "#", field: "index" },
+          { title: "Description", field: "description" },
+          { title: "Reference", field: "referenceDoc" },
+          { title: "Elements", field: "elements" },
+          { title: "Qty", field: "QtyNo" },
+          { title: "Hours", field: "hours" },
+          { title: "Cost ($)", field: "cost" },
+          { title: "Remarks", field: "remarks" },
+        ];
+        const remainingRowSpans = Array(fields.length).fill(0);
+        const body = tableRows.map((row: any, rowIndex: number) => {
+          const cells: any[] = [];
+          fields.forEach(({ field }, columnIndex) => {
+            if (remainingRowSpans[columnIndex] > 0) {
+              remainingRowSpans[columnIndex] -= 1;
+              return;
+            }
+            if (field === "index") {
+              cells.push(String(rowIndex + 1));
+              return;
+            }
+            const value = row[field];
+            if (isMergedCellValue(value)) {
+              cells.push("");
+              return;
+            }
+            const rowSpan = getCOTableRowSpan(tableRows, rowIndex, field);
+            if (rowSpan > 1) remainingRowSpans[columnIndex] = rowSpan - 1;
+            cells.push({
+              content: field === "cost" ? `$${value ?? 0}` : cleanText(value),
+              rowSpan,
+            });
+          });
+          return cells;
+        });
+        runTable({
+          startY: currentY,
+          head: [fields.map(({ title }) => title)],
+          body,
+          theme: "grid",
+          headStyles: { fillColor: lightBg, textColor, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, overflow: "linebreak", valign: "middle", textColor },
+          columnStyles: {
+            0: { cellWidth: 10, halign: "center" },
+            1: { cellWidth: 68 },
+            2: { cellWidth: 43 },
+            3: { cellWidth: 45 },
+            4: { cellWidth: 18, halign: "center" },
+            5: { cellWidth: 20, halign: "center" },
+            6: { cellWidth: 24, halign: "right" },
+            7: { cellWidth: 41 },
+          },
+        });
+      }
+
+      if (files.length > 0) {
+        addSection(`Attachments (${files.length})`);
+        runTable({
+          head: [["#", "File Name", "Link"]],
+          body: files.map((file: any, index: number) => [
+            String(index + 1),
+            file.originalName || file.filename || file.name || `File ${index + 1}`,
+            file.url || file.link || "—",
+          ]),
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, overflow: "linebreak", textColor },
+          columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 90 }, 2: { cellWidth: 167 } },
+        });
+      }
+
+      if (coResponses.length > 0) {
+        addSection(`Responses (${coResponses.length})`);
+        runTable({
+          head: [["#", "From", "Date", "Status", "Response"]],
+          body: coResponses.map((response: any, index: number) => {
+            const user = response.user || response.createdBy;
+            const role = String(response.createdByRole || response.userRole || "").toUpperCase();
+            const from = role.includes("CLIENT")
+              ? "Client"
+              : personName(user) !== "—"
+                ? personName(user)
+                : "WBT Team";
+            return [
+              String(index + 1),
+              from,
+              formatDate(response.createdAt || response.date),
+              response.status || response.Status || response.wbtStatus || "—",
+              cleanText(response.description || response.reason),
+            ];
+          }),
+          startY: currentY,
+          theme: "grid",
+          headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8, cellPadding: 3, overflow: "linebreak", textColor },
+          columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 45 }, 2: { cellWidth: 42 }, 3: { cellWidth: 30 }, 4: { cellWidth: 140 } },
+        });
+      }
+
+      const safeCorNumber = corNumber.replace(/[^\w.-]+/g, "_");
+      doc.save(`${safeCorNumber}_Change_Order.pdf`);
+      toast.success("Change Order PDF downloaded successfully!");
+    } catch (err) {
+      console.error("Failed to generate Change Order PDF:", err);
+      toast.error("Failed to generate Change Order PDF");
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
   /* -------------------- RESPONSE TABLE COLUMNS -------------------- */
   const responseColumns: ColumnDef<any>[] = [
     {
@@ -311,12 +543,23 @@ const GetCOByID = ({ id, projectId, onClose }: GetCOByIDProps) => {
             <span className="w-2 h-6 bg-[#6bbd45] rounded-full"></span>
             Change Order Details
           </h2>
-          <button
-            onClick={onClose}
-            className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
-          >
-            CLOSE
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleDownloadPDF}
+              disabled={exportingPdf}
+              className="flex items-center gap-2 px-4 py-1.5 bg-[#6bbd45] text-white rounded-lg hover:bg-[#5aa838] transition-all font-bold text-sm uppercase tracking-tight shadow-sm disabled:cursor-wait disabled:opacity-60"
+            >
+              {exportingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {exportingPdf ? "Generating PDF..." : "Download PDF"}
+            </button>
+            <button
+              onClick={onClose}
+              className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm"
+            >
+              CLOSE
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-white space-y-6">
