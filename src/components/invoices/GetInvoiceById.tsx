@@ -256,7 +256,7 @@ const GetInvoiceById = ({
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(...ink);
-      const instructions = `Consulting Proforma Invoice for Steel Detailing of ${invoice.jobName || "—"} - ${invoice.fabricator?.fabName || "—"} P.O. #${invoice.project?.projectNumber || invoice.project?.projectCode || "—"}`;
+      const instructions = `Consulting Proforma Invoice for Steel Detailing of ${invoice.jobName || "—"} - ${invoice.fabricator?.fabName || "—"} P.O. #${invoice?.PONumber || "—"}`;
       doc.text(doc.splitTextToSize(instructions, width), left, y);
       y += 9;
       doc.text("All payments to be made to Whiteboard Technologies LLC in the invoice currency via wire transfer within 15 days.", left, y, { maxWidth: width });
@@ -643,7 +643,7 @@ const GetInvoiceById = ({
           .sig-company {
             font-size: 12px;
             font-weight: bold;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
           }
 
           .sig-line {
@@ -853,7 +853,8 @@ const GetInvoiceById = ({
             <div class="thank-you">Thank you for your business!</div>
             <div class="sig-box">
               <div class="sig-company">For Whiteboard Technologies Pvt Ltd</div>
-              <div style="height: 60px"></div>
+              <img src="https://res.cloudinary.com/dp7yxzrgw/image/upload/v1791467591/rajSignature_ftfqml.png" alt="Raj signature" style="display: block; width: 190px; height: auto; margin: 0 auto 8px; object-fit: contain;" />
+              <div style="height: 16px"></div>
               <div class="sig-line">Authorised signatory</div>
             </div>
           </div>
@@ -1276,7 +1277,7 @@ const GetInvoiceById = ({
               <p className="text-xs text-gray-700 leading-relaxed border border-green-500/20 p-2 mb-1 rounded-lg bg-green-50/30">
                 Consulting Proforma Invoice for Steel Detailing of{" "}
                 {invoice.jobName} - {invoice.fabricator?.fabName} P.O. #{" "}
-                {invoice.project?.projectNumber || invoice.project?.projectCode || ""}
+                {invoice?.PONumber || ""}
               </p>
               <p className="text-xs text-black">
                 All payments to be made to{" "}
@@ -1291,9 +1292,14 @@ const GetInvoiceById = ({
                 Thank you for your business!
               </p>
               <div className="text-center w-[280px]">
-                <p className="text-[12px] font-bold text-gray-900 mb-10">
+                <p className="text-[12px] font-bold text-gray-900 mb-2">
                   For Whiteboard Technologies Pvt Ltd
                 </p>
+                <img
+                  src="https://res.cloudinary.com/dp7yxzrgw/image/upload/v1791467591/rajSignature_ftfqml.png"
+                  alt="Raj signature"
+                  className="mx-auto h-18 object-contain mb-2"
+                />
                 <div className="border-t border-[#6bbd45]/20 w-full pt-1">
                   <p className="text-[10px] font-bold text-black uppercase tracking-wider">
                     Authorised signatory
