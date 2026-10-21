@@ -228,7 +228,7 @@ const InvoiceWireTransfer: React.FC<InvoiceWireTransferProps> = ({ invoiceId }) 
               handleResetForm();
               setShowAddModal(true);
             }}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#6bbd45]/20 border border-black font-black text-black rounded-xl text-xs uppercase shadow-sm hover:bg-[#6bbd45]/40 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
+            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#6bbd45]/20 border border-black font-black text-black rounded-xl text-sm uppercase shadow-sm hover:bg-[#6bbd45]/40 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
           >
             <Plus className="w-4 h-4" /> Notify Wire Transfer
           </button>

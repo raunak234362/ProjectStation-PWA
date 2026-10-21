@@ -26,25 +26,25 @@ const StatCard: React.FC<StatCardProps> = ({
   value,
   icon: Icon,
   onClick,
-  iconPadding = "p-3",
+  iconPadding = "p-2 sm:p-2.5",
   valueSize = "text-2xl",
 }) => (
   <div
     onClick={onClick}
-    className="p-6 rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-8 border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50"
+    className="p-3.5 sm:p-4 xl:p-5 rounded-xl xl:rounded-2xl flex items-center justify-between group transition-all duration-300 cursor-pointer bg-white relative overflow-hidden border border-black border-l-6 sm:border-l-8 border-l-[#6bbd45] shadow-sm hover:shadow-md hover:bg-gray-50 min-w-0"
   >
-    <div className="flex items-center gap-4 z-10">
-      <div className={`${iconPadding} rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black`}>
-        <Icon size={24} strokeWidth={2.5} />
+    <div className="flex items-center gap-3 sm:gap-3.5 z-10 min-w-0 flex-1">
+      <div className={`${iconPadding} rounded-lg xl:rounded-xl bg-gray-50 group-hover:bg-[#f4f6f8] transition-colors text-black shrink-0 flex items-center justify-center`}>
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" strokeWidth={2.5} />
       </div>
-      <div className="flex flex-col">
-        <span className="font-bold text-black uppercase tracking-widest text-xs md:text-sm">
+      <div className="flex flex-col min-w-0 flex-1">
+        <span className="font-bold text-black uppercase tracking-wide text-sm truncate">
           {label}
         </span>
       </div>
     </div>
-    <div className="z-10 text-right">
-      <span className={`${valueSize} font-semibold text-black tracking-tighter`}>
+    <div className="z-10 text-right shrink-0 pl-2 sm:pl-3">
+      <span className={`${valueSize} font-bold text-black tracking-tight`}>
         {value}
       </span>
     </div>
@@ -189,8 +189,10 @@ const AccountantDashboard = () => {
     {
       accessorKey: "projectName",
       header: "Project Name",
+      size: 220,
+      minSize: 140,
       cell: ({ row }) => (
-        <span className="font-bold text-gray-500 uppercase">
+        <span className="font-bold text-gray-500 uppercase text-sm truncate block" title={row.original.projectName}>
           {row.original.projectName || "—"}
         </span>
       ),
@@ -198,8 +200,10 @@ const AccountantDashboard = () => {
     {
       accessorKey: "invoiceNumber",
       header: "Invoicename",
+      size: 160,
+      minSize: 110,
       cell: ({ row }) => (
-        <span className="font-black text-black uppercase">
+        <span className="font-black text-black uppercase text-sm truncate block" title={row.original.invoiceNumber || row.original.jobName}>
           {row.original.invoiceNumber || row.original.jobName || "—"}
         </span>
       ),
@@ -207,11 +211,13 @@ const AccountantDashboard = () => {
     {
       id: "type",
       header: "Type(MTO/Detailing)",
+      size: 160,
+      minSize: 120,
       cell: ({ row }) => {
         const type = row.original.type;
         const bg = type === "MTO" ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-purple-50 text-purple-700 border-purple-200";
         return (
-          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${bg}`}>
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border ${bg} whitespace-nowrap inline-block`}>
             {type}
           </span>
         );
@@ -220,8 +226,10 @@ const AccountantDashboard = () => {
     {
       accessorKey: "invoiceDate",
       header: "Invoice Date",
+      size: 130,
+      minSize: 95,
       cell: ({ row }) => (
-        <span className="font-bold text-gray-500 uppercase">
+        <span className="font-bold text-gray-500 uppercase text-sm whitespace-nowrap block">
           {formatDate(row.original.invoiceDate)}
         </span>
       ),
@@ -229,6 +237,8 @@ const AccountantDashboard = () => {
     {
       id: "dueDate",
       header: "Due Date",
+      size: 130,
+      minSize: 95,
       cell: ({ row }) => {
         let date = row.original.dueDate;
         const terms = row.original.paymenTDueDate ?? row.original.fabricator?.paymenTDueDate;
@@ -248,7 +258,7 @@ const AccountantDashboard = () => {
         const isOverdue = !!(date && new Date(date).getTime() < Date.now() && !row.original.isPaid);
 
         return (
-          <span className={`font-bold ${isOverdue ? "text-red-500" : "text-gray-500"} uppercase`}>
+          <span className={`font-bold ${isOverdue ? "text-red-500" : "text-gray-500"} uppercase text-sm whitespace-nowrap block`}>
             {formatDate(date)}
           </span>
         );
@@ -257,10 +267,12 @@ const AccountantDashboard = () => {
     {
       accessorKey: "paymentStatus",
       header: "status",
+      size: 110,
+      minSize: 85,
       cell: ({ row }) => {
         if (row.original.isPaid) {
           return (
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-50 text-green-700 border border-green-200">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-green-50 text-green-700 border border-green-200 whitespace-nowrap inline-block">
               Paid
             </span>
           );
@@ -284,14 +296,14 @@ const AccountantDashboard = () => {
 
         if (isOverdue) {
           return (
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-50 text-red-700 border border-red-200">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-red-50 text-red-700 border border-red-200 whitespace-nowrap inline-block">
               Overdue
             </span>
           );
         }
 
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-yellow-50 text-yellow-700 border border-yellow-200">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-yellow-50 text-yellow-700 border border-yellow-200 whitespace-nowrap inline-block">
             Pending
           </span>
         );
@@ -439,68 +451,66 @@ const AccountantDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col w-full p-4 md:p-6 space-y-8 bg-white min-h-full animate-in fade-in duration-500">
+    <div className="flex flex-col w-full p-3 sm:p-4 xl:p-6 space-y-4 sm:space-y-6 xl:space-y-8 bg-white min-h-full animate-in fade-in duration-500">
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 xl:gap-6 w-full">
         {/* Detailing Project Invoice Summary */}
-        <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
-          <span className="text-lg font-semibold text-black uppercase tracking-widest">
-            Detailing Project invoice summary
-          </span>
-          <div className="flex flex-col gap-6 w-full mt-4">
+        <div className="bg-white rounded-xl xl:rounded-2xl shadow-sm border border-green-500/20 p-3 sm:p-4 xl:p-5 flex flex-col justify-between">
+          <div className="flex items-center min-h-[1.75rem] xl:min-h-[2.25rem]">
+            <h2 className="text-sm sm:text-base xl:text-lg font-bold text-black uppercase tracking-wide truncate">
+              Detailing Project invoice summary
+            </h2>
+          </div>
+          <div className="flex flex-col gap-2.5 sm:gap-3 xl:gap-4 2xl:gap-5 w-full mt-2.5 sm:mt-3 xl:mt-4">
             <StatCard
               onClick={() => setActiveModalType("DETAILING_ALL")}
               icon={FileText}
               label="Total Invoices"
               value={stats.detailingTotal}
-              iconPadding="p-1"
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5 xl:gap-3 2xl:gap-4">
               <StatCard
                 onClick={() => setActiveModalType("DETAILING_PENDING")}
                 icon={Clock}
                 label="pending"
                 value={stats.detailingPending}
-                iconPadding="p-1"
               />
               <StatCard
                 onClick={() => setActiveModalType("DETAILING_COMPLETED")}
                 icon={CheckCircle2}
                 label="completed"
                 value={stats.detailingCompleted}
-                iconPadding="p-1"
               />
             </div>
           </div>
         </div>
 
         {/* Material Takeoff Invoice Summary */}
-        <div className="bg-white rounded-2xl shadow-sm border border-green-500/20 p-3">
-          <span className="text-lg font-semibold text-black uppercase tracking-widest">
-            Material Takeoff(MTO) Invoice summary
-          </span>
-          <div className="flex flex-col gap-6 w-full mt-4">
+        <div className="bg-white rounded-xl xl:rounded-2xl shadow-sm border border-green-500/20 p-3 sm:p-4 xl:p-5 flex flex-col justify-between">
+          <div className="flex items-center min-h-[1.75rem] xl:min-h-[2.25rem]">
+            <h2 className="text-sm sm:text-base xl:text-lg font-bold text-black uppercase tracking-wide truncate">
+              Material Takeoff(MTO) Invoice summary
+            </h2>
+          </div>
+          <div className="flex flex-col gap-2.5 sm:gap-3 xl:gap-4 2xl:gap-5 w-full mt-2.5 sm:mt-3 xl:mt-4">
             <StatCard
               onClick={() => setActiveModalType("MTO_ALL")}
               icon={FileText}
               label="Total Invoices"
               value={stats.mtoTotal}
-              iconPadding="p-1"
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5 xl:gap-3 2xl:gap-4">
               <StatCard
                 onClick={() => setActiveModalType("MTO_PENDING")}
                 icon={Clock}
                 label="pending"
                 value={stats.mtoPending}
-                iconPadding="p-1"
               />
               <StatCard
                 onClick={() => setActiveModalType("MTO_COMPLETED")}
                 icon={CheckCircle2}
                 label="completed"
                 value={stats.mtoCompleted}
-                iconPadding="p-1"
               />
             </div>
           </div>
@@ -508,15 +518,15 @@ const AccountantDashboard = () => {
       </div>
 
       {/* Invoices List Table */}
-      <div className="bg-white rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-auto min-h-[110px]">
-        <div className="p-4 px-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
+      <div className="bg-white rounded-2xl xl:rounded-3xl border border-green-500/20 shadow-sm overflow-hidden flex flex-col h-auto min-h-[110px]">
+        <div className="p-3 sm:p-4 xl:px-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
           <div>
-            <h2 className="text-lg font-black text-black uppercase tracking-widest">
+            <h2 className="text-sm sm:text-base xl:text-lg font-black text-black uppercase tracking-wider xl:tracking-widest">
               upcoming invoices
             </h2>
           </div>
         </div>
-        <div className="flex-1 p-4">
+        <div className="flex-1 p-2 sm:p-3 xl:p-4">
           <DataTable
             columns={columns}
             data={invoices}
@@ -534,27 +544,27 @@ const AccountantDashboard = () => {
 
       {/* Stats Detail Modal (Grouped job summary cards format) */}
       {activeModalType && createPortal(
-        <div className="project-component-container fixed inset-0 z-1000 flex items-center justify-center p-2 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
+        <div className="project-component-container fixed inset-0 z-1000 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white w-[98%] max-w-[95vw] h-[95vh] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
-              <div className="flex items-center gap-6">
-                <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
-                  <FileText size={24} className="text-[#6bbd45]" />
+            <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-4 sm:gap-6">
+                <h3 className="text-base sm:text-xl font-black text-black flex items-center gap-2 tracking-tight">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#6bbd45]" />
                   {getModalTitle()}
                 </h3>
               </div>
               <button
                 onClick={() => setActiveModalType(null)}
-                className="px-6 py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-sm uppercase tracking-tight shadow-sm cursor-pointer"
+                className="px-4 sm:px-6 py-1 sm:py-1.5 bg-red-50 text-black border-2 border-red-700/80 rounded-lg hover:bg-red-100 transition-all font-bold text-xs sm:text-sm uppercase tracking-tight shadow-sm cursor-pointer"
               >
                 Close
               </button>
             </div>
             {/* Modal Content */}
-            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-gray-50/50">
               {modalJobSummaries.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {modalJobSummaries.map((job) => {
                     const blockTotal = Math.max(job.totalRaised, job.bidPrice || 0);
                     const paidPercent = blockTotal > 0 ? (job.paid / blockTotal) * 100 : 0;
@@ -563,7 +573,7 @@ const AccountantDashboard = () => {
                     return (
                       <div
                         key={job.jobName}
-                        className="bg-white p-6 rounded-2xl border border-black flex flex-col gap-4 hover:shadow-md transition-shadow justify-between"
+                        className="bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-black flex flex-col gap-4 hover:shadow-md transition-shadow justify-between"
                       >
                         <div className="flex justify-between items-start gap-4">
                           <div className="flex-1">
