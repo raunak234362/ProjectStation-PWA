@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   Loader2,
-  Calendar,
   Trash2,
   ChevronDown,
   ChevronUp,
@@ -31,6 +30,46 @@ interface WireTransfer {
   files?: { id: string; originalName?: string; fileName?: string }[];
   invoices?: any[];
 }
+
+const formatTransferDateTime = (dateVal?: string, createdAtVal?: string) => {
+  const dateSource = dateVal || createdAtVal;
+  if (!dateSource) return "";
+
+  try {
+    let dateObj: Date;
+    if (typeof dateSource === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateSource)) {
+      const [year, month, day] = dateSource.split("-").map(Number);
+      dateObj = new Date(year, month - 1, day);
+    } else {
+      dateObj = new Date(dateSource);
+    }
+
+    const dateFormatted = new Intl.DateTimeFormat("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Kolkata",
+    }).format(dateObj);
+
+    const timeSource = createdAtVal || (dateVal && dateVal.includes("T") && !dateVal.endsWith("T00:00:00.000Z") ? dateVal : null);
+    let timeFormatted = "";
+    if (timeSource) {
+      timeFormatted = new Intl.DateTimeFormat("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Kolkata",
+      }).format(new Date(timeSource));
+    }
+
+    if (timeFormatted) {
+      return `${dateFormatted}, ${timeFormatted} IST`;
+    }
+    return `${dateFormatted} IST`;
+  } catch {
+    return dateVal || createdAtVal || "";
+  }
+};
 
 const WireTransferPage = () => {
   const [notes, setNotes] = useState<WireTransfer[]>([]);
@@ -90,10 +129,10 @@ const WireTransferPage = () => {
       <div className="border-b border-black/5 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4"> 
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center justify-center gap-2 px-6 py-2.5 bg-[#6bbd45]/50 border border-black font-black text-black rounded-xl text-xs uppercase shadow-md hover:bg-[#59a83a] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
+          className="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary/20 border-2 border-primary font-semibold text-black rounded-xl text-xs uppercase shadow-md hover:bg-[#59a83a] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
         >
           <Upload className="w-4 h-4" />
-          Upload Wire Transfer information
+          Upload Wire Transfer
         </button>
       </div>
 
@@ -108,7 +147,7 @@ const WireTransferPage = () => {
         <div className="grid grid-cols-1 gap-6">
           {notes.map((note: WireTransfer) => {
             const displayId = note.id || note._id || "";
-            const displaySubject = note.subject || "Untitled Wire Transfer";
+            const displaySubject = note.subject || note.description || "Untitled Wire Transfer";
             const isExpanded = expandedId === displayId;
 
             return (
@@ -128,38 +167,22 @@ const WireTransferPage = () => {
                 >
                   <div className="flex-1 min-w-0 pr-4">
                     <div className="flex flex-wrap gap-2 mb-2">
-                      {note.date && (
-                        <span className="text-[10px] font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded tracking-widest whitespace-nowrap uppercase border border-blue-200">
-                          Transfer Date: {new Intl.DateTimeFormat("en-IN", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          }).format(new Date(note.date))}
+                      {(note.date || note.createdAt) && (
+                        <span className="text-xs font-black bg-blue-50 text-blue-700 px-2 py-0.5 rounded whitespace-nowrap uppercase border border-blue-200">
+                          Transfer Date: {formatTransferDateTime(note.date, note.createdAt)}
                         </span>
                       )}
                     </div>
-                    <div className="text-sm font-black text-black truncate pr-4 uppercase tracking-tight mb-2">
+                    <div className="text-sm font-black text-black truncate pr-4 uppercase tracking-tight">
                       {displaySubject}
                     </div>
-                    <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                      {note.createdBy && (
+                    {note.createdBy && (note.createdBy.firstName || note.createdBy.lastName) && (
+                      <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">
                         <span className="flex items-center gap-1.5 bg-gray-100 px-2 py-0.5 rounded-full text-gray-600">
                           {note.createdBy.firstName} {note.createdBy.lastName}
                         </span>
-                      )}
-                      {note.createdAt && (
-                        <span className="flex items-center gap-1">
-                          <Calendar size={10} />
-                          {new Intl.DateTimeFormat("en-IN", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }).format(new Date(note.createdAt))}
-                        </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0 ml-3">
@@ -187,34 +210,21 @@ const WireTransferPage = () => {
                 </button>
 
                 {isExpanded && (
-                  <div className="px-5 pb-5 space-y-6 border-t border-gray-100 pt-5 bg-white">
-                    {/* Content */}
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                        Wire Transfer Details
-                      </p>
-                      <div
-                        className="text-gray-700 bg-gray-50/50 p-4 rounded-xl border border-gray-100 font-medium text-sm rich-text-content"
-                        dangerouslySetInnerHTML={{
-                          __html: note.description || "No details provided.",
-                        }}
+                  <div className="px-5 pb-5 border-t border-gray-100 bg-white">
+                    {/* Files / Attachments */}
+                    {note.files && note.files.length > 0 ? (
+                      <RenderFiles
+                        files={note.files}
+                        table="invoiceWireTransfer"
+                        parentId={displayId}
+                        hideHeader={true}
+                        noAccordion={true}
+                        formatDate={formatDateTime}
                       />
-                    </div>
-
-                    {/* Files */}
-                    {note.files && note.files.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                          Receipts / Attachments
-                        </p>
-                        <RenderFiles
-                          files={note.files}
-                          table="invoiceWireTransfer"
-                          parentId={displayId}
-                          hideHeader
-                          formatDate={formatDateTime}
-                        />
-                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide py-4">
+                        No attachments found.
+                      </p>
                     )}
                   </div>
                 )}
@@ -247,6 +257,7 @@ interface AddWireTransferModalProps {
 
 const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps) => {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [subject, setSubject] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -264,7 +275,6 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Removed invoice requirement since it is now optional
 
     setError(null);
     setSubmitting(true);
@@ -272,6 +282,11 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
     try {
       const formData = new FormData();
       formData.append("date", date);
+      
+      const trimmedSubject = subject.trim();
+      if (trimmedSubject) {
+        formData.append("subject", trimmedSubject);
+      }
       
       files.forEach((file) => formData.append("files", file));
 
@@ -312,9 +327,9 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
           onSubmit={handleSubmit}
           className="flex-1 overflow-y-auto p-6 space-y-5"
         >
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-black text-black uppercase mb-1.5">
                 Transfer Date <span className="text-red-500">*</span>
               </label>
               <input
@@ -325,17 +340,30 @@ const AddWireTransferModal = ({ onClose, onSuccess }: AddWireTransferModalProps)
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all font-bold"
               />
             </div>
+
+            <div>
+              <label className="block text-xs font-black text-black uppercase mb-1.5">
+                Subject
+              </label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Enter wire transfer subject..."
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6bbd45]/40 focus:border-[#6bbd45] transition-all font-semibold"
+              />
+            </div>
           </div>
 
           {/* Attachments */}
           <div>
-            <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1.5">
+            <label className="block text-xs font-black text-black uppercase mb-1.5">
               Receipt / Attachments
             </label>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-xl text-sm text-gray-500 hover:border-[#6bbd45] hover:text-[#6bbd45] transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 border border-dashed border-gray-500 rounded-xl text-sm text-black hover:border-[#6bbd45] hover:text-[#6bbd45] transition-colors cursor-pointer"
             >
               <Paperclip size={14} />
               Attach files

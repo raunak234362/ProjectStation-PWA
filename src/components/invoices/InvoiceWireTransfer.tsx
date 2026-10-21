@@ -459,6 +459,7 @@ const InvoiceWireTransfer: React.FC<InvoiceWireTransferProps> = ({ invoiceId }) 
                       table="invoiceWireTransfer"
                       parentId={selectedTransfer.id || selectedTransfer._id || ""}
                       hideHeader={true}
+                      noAccordion={true}
                     />
                   ) : (
                     <p className="text-gray-400 italic">No receipt document attached</p>
