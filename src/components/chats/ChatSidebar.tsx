@@ -26,6 +26,7 @@ interface Props {
   onAddGroupClick: () => void;
   setRecentChats: React.Dispatch<React.SetStateAction<ChatItem[]>>;
   refreshKey: number;
+  projectName?: string;
 }
 
 const ChatSidebar: React.FC<Props> = ({
@@ -37,7 +38,10 @@ const ChatSidebar: React.FC<Props> = ({
   onAddGroupClick,
   setRecentChats,
   refreshKey,
+  projectName,
 }) => {
+  const normalizedProjectName = projectName?.trim().toLocaleLowerCase();
+
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -75,7 +79,13 @@ const ChatSidebar: React.FC<Props> = ({
               updatedAt: fallbackTimestamp,
             };
           })
-          .filter((chat): chat is ChatItem => Boolean(chat))
+          .filter(
+            (chat): chat is ChatItem =>
+              chat !== null &&
+              (!normalizedProjectName ||
+                chat.group.name.trim().toLocaleLowerCase() ===
+                  normalizedProjectName),
+          )
           .sort(
             (a, b) =>
               new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -88,7 +98,7 @@ const ChatSidebar: React.FC<Props> = ({
     };
 
     fetchChats();
-  }, [setRecentChats, refreshKey]);
+  }, [setRecentChats, refreshKey, normalizedProjectName]);
 
   const selectChat = (chat: ChatItem) => {
     setActiveChat(chat);

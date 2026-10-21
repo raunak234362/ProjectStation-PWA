@@ -22,6 +22,27 @@ const getRFQStatus = (row: any) => {
   return wbtStatus && wbtStatus !== "RECEIVED" ? wbtStatus : status;
 };
 
+const isTrue = (value: unknown) =>
+  value === true ||
+  (typeof value === "string" && value.trim().toLowerCase() === "true");
+
+const hasMTOValue = (value: unknown) => {
+  if (typeof value === "string") {
+    const normalizedValue = value.trim().toLowerCase();
+    return normalizedValue !== "" && normalizedValue !== "false";
+  }
+
+  return value === true || (typeof value === "number" && value !== 0);
+};
+
+const isMTORequest = (rfq: RFQItem) =>
+  isTrue(rfq.MTOManual) ||
+  hasMTOValue(rfq.MTOStickModel) ||
+  hasMTOValue(rfq.MTOValue) ||
+  isTrue(rfq.mtoStickModelEnabled) ||
+  isTrue(rfq.isMTOStickModel) ||
+  hasMTOValue(rfq.MTOManualModel);
+
 const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
   const userRole = sessionStorage.getItem("userRole");
 
@@ -148,8 +169,6 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
     { label: "November", value: "10" },
     { label: "December", value: "11" },
   ];
-
-  const isTrue = (val: any) => val === true || val === "true";
 
   // Premium styled columns
   const columns: ExtendedColumnDef<RFQItem>[] = [
@@ -327,9 +346,7 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
         const val = getValue() as string;
         let label = "";
         if (val === "AWARDED") {
-          const r = row.original as any;
-          const isMTO = !!(r.MTOManual || r.MTOStickModel || r.MTOValue || r.mtoStickModelEnabled || r.isMTOStickModel);
-          label = isMTO ? "WBT Submitted" : "Awarded";
+          label = isMTORequest(row.original) ? "WBT Submitted" : "Awarded";
         } else if (val === "WBT_SUBMITTED") {
           label = "WBT Submitted";
         } else if (val === "IN_REVIEW") {
@@ -364,9 +381,8 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
     // 2. Type filter
     if (selectedType !== "ALL") {
       data = data.filter(item => {
-        const r = item as any;
-        const isMTO = isTrue(r.MTOManual) || (r.MTOStickModel && r.MTOStickModel !== "" && r.MTOStickModel !== "false") || (r.MTOValue && r.MTOValue !== "" && r.MTOValue !== "false") || isTrue(r.mtoStickModelEnabled) || isTrue(r.isMTOStickModel);
-        const isDetailing = isTrue(r.detailingMain) || isTrue(r.detailingMisc) || isTrue(r.miscDesign) || isTrue(r.customerDesign) || isTrue(r.connectionDesign);
+        const isMTO = isMTORequest(item);
+        const isDetailing = isTrue(item.detailingMain) || isTrue(item.detailingMisc) || isTrue(item.miscDesign) || isTrue(item.customerDesign) || isTrue(item.connectionDesign);
 
         if (selectedType === "MTO") return isMTO;
         if (selectedType === "DETAILING") return isDetailing;
@@ -526,4 +542,3 @@ const AllRFQ = ({ rfq }: { rfq?: RFQItem[] }) => {
 };
 
 export default AllRFQ;
-
