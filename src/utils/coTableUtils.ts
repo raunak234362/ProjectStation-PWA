@@ -1,6 +1,10 @@
 export const isMergedCellValue = (value: unknown) => {
   if (value === 0 || value === "0") return true;
-  return typeof value === "string" && value.trim().toUpperCase() === "_MERGED_UP_";
+  if (typeof value === "number") return value === -999999 || value === -999998;
+  if (typeof value !== "string") return false;
+
+  const normalized = value.trim().toUpperCase();
+  return normalized === "_MERGED_LEFT_" || normalized === "_MERGED_UP_" || normalized === "-999999" || normalized === "-999998";
 };
 
 export const getCOTableRowSpan = (rows: any[], rowIndex: number, field: string) => {
