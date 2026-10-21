@@ -3,6 +3,7 @@ import Service from "../../api/Service";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import GetInvoiceById from "./GetInvoiceById";
 import { formatDate } from "../../utils/dateUtils";
+import { Loader2 } from "lucide-react";
 
 
 const AllInvoices = () => {
@@ -154,8 +155,9 @@ const AllInvoices = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+      <div className="flex flex-col items-center justify-center py-12 text-gray-700">
+        <Loader2 className="w-6 h-6 animate-spin mb-2" />
+        Loading Invoice...
       </div>
     );
   }
@@ -211,4 +213,3 @@ const AllInvoices = () => {
 };
 
 export default AllInvoices;
-

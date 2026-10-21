@@ -3,7 +3,7 @@ import Service from "../../../api/Service";
 import InvoiceStatsCards from "./InvoiceStatsCards";
 
 import AllInvoiceList from "./AllInvoiceList";
-import { Calendar, Filter, ChevronDown } from "lucide-react";
+import { Calendar, Filter, ChevronDown, Loader2 } from "lucide-react";
 
 interface InvoiceDashboardProps {
   navigateToCreate: () => void;
@@ -86,8 +86,9 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+  <div className="flex flex-col items-center justify-center py-12 text-gray-700">
+        <Loader2 className="w-6 h-6 animate-spin mb-2" />
+        Loading Invoice...
       </div>
     );
   }
