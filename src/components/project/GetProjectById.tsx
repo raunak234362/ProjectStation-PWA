@@ -434,7 +434,7 @@ const GetProjectById = ({
     { key: "overview", label: "Overview", icon: ClipboardList },
     // { key: "analytics", label: "Analytics", icon: TrendingUp },
     { key: "files", label: "Files", icon: FileText },
-    // { key: "chat", label: "Chat", icon: MessageSquare },
+    { key: "chat", label: "Chat", icon: MessageSquare },
     // { key: "milestones", label: "Milestones", icon: FileText },
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },

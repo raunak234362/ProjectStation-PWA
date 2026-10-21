@@ -2760,7 +2760,24 @@ class Service {
         ? `share/${mappedTable}/${parentId}/versions/${versionId}/${fileId}`
         : `share/${mappedTable}/${parentId}/${fileId}`;
       const response = await api.post(url);
-      return response.data;
+      const data = response.data;
+      if (typeof data?.shareUrl === "string") {
+        const shareUrl = data.shareUrl.trim();
+        const apiBaseUrl = new URL(
+          api.defaults.baseURL || window.location.origin,
+          window.location.origin,
+        );
+        const absoluteShareUrl = /^https?:\/\//i.test(shareUrl)
+          ? shareUrl
+          : shareUrl.startsWith("//")
+            ? `${apiBaseUrl.protocol}${shareUrl}`
+            : shareUrl.startsWith("/")
+              ? new URL(shareUrl, apiBaseUrl.origin).toString()
+              : new URL(`${apiBaseUrl.protocol}//${shareUrl}`).toString();
+
+        return { ...data, shareUrl: absoluteShareUrl };
+      }
+      return data;
     } catch (error) {
       console.error("Error creating share link:", error);
       throw error;
