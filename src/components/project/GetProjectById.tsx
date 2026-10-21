@@ -52,6 +52,7 @@ import ProjectProgress from "./progressReports/ProjectProgress";
 import WorkProgressReport from "./wpr/WorkProgressReport";
 import CoordinationDrawings from "./coordinationDrawings/CoordinationDrawings";
 import AllDesignDrawings from "./designDrawings/AllDesignDrawings";
+import Chats from "../chats/Chats";
 
 
 const GetProjectById = ({
@@ -433,6 +434,7 @@ const GetProjectById = ({
     { key: "overview", label: "Overview", icon: ClipboardList },
     // { key: "analytics", label: "Analytics", icon: TrendingUp },
     { key: "files", label: "Files", icon: FileText },
+    // { key: "chat", label: "Chat", icon: MessageSquare },
     // { key: "milestones", label: "Milestones", icon: FileText },
     { key: "rfi", label: "RFI", icon: FolderOpenDot },
     { key: "submittals", label: "Submittals", icon: FolderOpenDot },
@@ -448,6 +450,7 @@ const GetProjectById = ({
     { key: "analytics", label: "Analytics", icon: TrendingUp },
     { key: "teamsAnalytics", label: "Teams Analytics", icon: Activity },
     { key: "files", label: "Files", icon: FileText },
+    { key: "chat", label: "Chat", icon: MessageSquare },
     { key: "wbs", label: "WBS", icon: FileText },
     { key: "milestones", label: "Milestones", icon: FileText },
     { key: "notes", label: "Notes", icon: FolderOpenDot },
@@ -464,6 +467,7 @@ const GetProjectById = ({
     { key: "analytics", label: "Analytics" },
     { key: "teamsAnalytics", label: "Teams Analytics" },
     { key: "files", label: "Files" },
+    { key: "chat", label: "Chat" },
     { key: "wbs", label: "WBS" },
     { key: "milestones", label: "Milestones" },
     { key: "team", label: "Team" },
@@ -1138,6 +1142,9 @@ const GetProjectById = ({
               <div className="space-y-4">
                 <AllDocument projectId={id} />
               </div>
+            )}
+            {activeTab === "chat" && (
+              <Chats key={id} projectName={project.name} />
             )}
             {activeTab === "milestones" && (
               <MilestoneLayout project={project} onUpdate={fetchProject} />

@@ -290,6 +290,7 @@ export interface RFQItem {
   MTOStickModel: string;
   isMTOStickModel?: boolean;
   mtoStickModelEnabled?: boolean;
+  MTOManualModel?: string;
   MTOValue?: string;
   files?: File[] | string[];
   responses?: RfqResponse[];
