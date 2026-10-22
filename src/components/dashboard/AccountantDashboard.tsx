@@ -458,7 +458,7 @@ const AccountantDashboard = () => {
         <div className="bg-white rounded-xl xl:rounded-2xl shadow-sm border border-green-500/20 p-3 sm:p-4 xl:p-5 flex flex-col justify-between">
           <div className="flex items-center min-h-[1.75rem] xl:min-h-[2.25rem]">
             <h2 className="text-sm sm:text-base xl:text-lg font-bold text-black uppercase tracking-wide truncate">
-              Detailing Project invoice summary
+              Project invoice summary
             </h2>
           </div>
           <div className="flex flex-col gap-2.5 sm:gap-3 xl:gap-4 2xl:gap-5 w-full mt-2.5 sm:mt-3 xl:mt-4">
@@ -478,7 +478,7 @@ const AccountantDashboard = () => {
               <StatCard
                 onClick={() => setActiveModalType("DETAILING_COMPLETED")}
                 icon={CheckCircle2}
-                label="completed"
+                label="paid"
                 value={stats.detailingCompleted}
               />
             </div>
@@ -509,7 +509,7 @@ const AccountantDashboard = () => {
               <StatCard
                 onClick={() => setActiveModalType("MTO_COMPLETED")}
                 icon={CheckCircle2}
-                label="completed"
+                label="paid"
                 value={stats.mtoCompleted}
               />
             </div>
@@ -522,7 +522,7 @@ const AccountantDashboard = () => {
         <div className="p-3 sm:p-4 xl:px-6 border-b border-green-500/20 bg-gray-50 flex justify-between items-center">
           <div>
             <h2 className="text-sm sm:text-base xl:text-lg font-black text-black uppercase tracking-wider xl:tracking-widest">
-              upcoming invoices
+              Received invoices
             </h2>
           </div>
         </div>
