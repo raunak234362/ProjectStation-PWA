@@ -1087,7 +1087,7 @@ const GetProjectById = ({
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-500 font-medium">
-                        Approval Date
+                        Submission Date
                       </span>
                       <span className="text-slate-800 ">
                         {formatDate(project.approvalDate)}

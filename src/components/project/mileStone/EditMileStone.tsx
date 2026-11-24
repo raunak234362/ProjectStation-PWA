@@ -28,7 +28,8 @@ const EditMileStone = ({
     register,
     handleSubmit,
     control,
-
+    watch,
+    setValue,
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -122,6 +123,35 @@ const EditMileStone = ({
     fetchData();
   }, [milestoneId, initialData, reset]);
 
+  const watchedApprovalDate = watch("approvalDate");
+  const watchedDate = watch("date");
+  const watchedStatus = watch("status");
+
+  useEffect(() => {
+    if (watchedStatus === "APPROVED" || watchedStatus === "COMPLETED") {
+      setValue("percentage", 100);
+      return;
+    }
+
+    if (watchedApprovalDate) {
+      const approvalDateObj = new Date(watchedApprovalDate);
+      const startDateRaw = watchedDate || initialData?.startDate || initialData?.date || initialData?.createdAt;
+      const startDateObj = startDateRaw ? new Date(startDateRaw) : new Date();
+
+      if (!isNaN(approvalDateObj.getTime()) && !isNaN(startDateObj.getTime())) {
+        const totalDuration = approvalDateObj.getTime() - startDateObj.getTime();
+        const elapsed = Date.now() - startDateObj.getTime();
+        let calc = 0;
+        if (totalDuration > 0) {
+          calc = Math.min(100, Math.max(0, Math.round((elapsed / totalDuration) * 100)));
+        } else if (Date.now() >= approvalDateObj.getTime()) {
+          calc = 100;
+        }
+        setValue("percentage", calc);
+      }
+    }
+  }, [watchedApprovalDate, watchedDate, watchedStatus, initialData, setValue]);
+
   const handleDelete = () => {
     toast.info(
       ({ closeToast }) => (
@@ -174,9 +204,29 @@ const EditMileStone = ({
 
   const onSubmit = async (data: any) => {
     try {
+      let finalPercentage = Number(data.percentage) || 0;
+      if (data.status === "APPROVED" || data.status === "COMPLETED") {
+        finalPercentage = 100;
+      } else if (data.approvalDate) {
+        const approvalDateObj = new Date(data.approvalDate);
+        const startDateRaw = data.date || initialData?.startDate || initialData?.date || initialData?.createdAt;
+        const startDateObj = startDateRaw ? new Date(startDateRaw) : new Date();
+
+        if (!isNaN(approvalDateObj.getTime()) && !isNaN(startDateObj.getTime())) {
+          const totalDuration = approvalDateObj.getTime() - startDateObj.getTime();
+          const elapsed = Date.now() - startDateObj.getTime();
+          if (totalDuration > 0) {
+            finalPercentage = Math.min(100, Math.max(0, Math.round((elapsed / totalDuration) * 100)));
+          } else if (Date.now() >= approvalDateObj.getTime()) {
+            finalPercentage = 100;
+          }
+        }
+      }
+
       const payload = {
         ...data,
-        percentage: Number(data.percentage),
+        percentage: finalPercentage,
+        completeionPercentage: finalPercentage,
         approvalDate: data.approvalDate
           ? new Date(data.approvalDate).toISOString()
           : null,
@@ -191,6 +241,16 @@ const EditMileStone = ({
       } else {
         await Service.EditExistingMilestoneByID(milestoneId, payload);
       }
+
+      // Sync completion percentage on the backend
+      try {
+        await Service.UpdateCompletionPercentById(milestoneId, {
+          completeionPercentage: finalPercentage,
+        });
+      } catch (err) {
+        console.error("Failed to update completeionPercentage:", err);
+      }
+
       toast.success("Milestone updated successfully!");
       if (onSuccess) onSuccess();
       onClose();
@@ -357,18 +417,18 @@ const EditMileStone = ({
               type="date"
               {...register("date")}
             />
-            {/* <Input
-              label="Percentage (%)"
+            <Input
+              label="Completion Percentage (%)"
               type="number"
               {...register("percentage")}
-            /> */}
+            />
             <Input
-              label="Approval Date"
+              label="Submission Date"
               type="date"
               {...register("approvalDate")}
             />
             <Input
-              label="CD Approval Date"
+              label="CD Submission Date"
               type="date"
               {...register("CDApprovalDate")}
             />

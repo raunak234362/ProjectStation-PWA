@@ -55,12 +55,40 @@ const ProjectUpcomingMilestones: React.FC<ProjectUpcomingMilestonesProps> = ({
               taskProgress = Math.round((completedCount / totalTasks) * 100);
             }
 
-            const finalProgress = 
-              ms.completeionPercentage || 
-              ms.completionPercentage || 
-              taskProgress || 
-              ms.percentage || 
-              0;
+            const startDateRaw = ms.startDate || ms.StartDate || ms.date || ms.createdAt;
+            const start = startDateRaw ? new Date(startDateRaw) : null;
+            const approvalDateRaw = ms.approvalDate || ms.ApprovalDate;
+            const approval = approvalDateRaw ? new Date(approvalDateRaw) : null;
+
+            let timeProgress = 0;
+            if (start && approval && !isNaN(start.getTime()) && !isNaN(approval.getTime())) {
+              const totalDuration = approval.getTime() - start.getTime();
+              const elapsed = Date.now() - start.getTime();
+
+              if (totalDuration > 0) {
+                timeProgress = Math.min(
+                  100,
+                  Math.max(0, Math.round((elapsed / totalDuration) * 100)),
+                );
+              } else if (Date.now() >= approval.getTime()) {
+                timeProgress = 100;
+              }
+            } else if (approval && !isNaN(approval.getTime())) {
+              if (Date.now() >= approval.getTime()) {
+                timeProgress = 100;
+              }
+            }
+
+            const isCompleted = ms.status === "APPROVED" || ms.status === "COMPLETED";
+            const finalProgress = isCompleted
+              ? 100
+              : (approval && !isNaN(approval.getTime()))
+              ? timeProgress
+              : (ms.completeionPercentage || 
+                ms.completionPercentage || 
+                taskProgress || 
+                ms.percentage || 
+                0);
 
             return (
               <div
@@ -84,7 +112,7 @@ const ProjectUpcomingMilestones: React.FC<ProjectUpcomingMilestonesProps> = ({
                 </div>
                 <div className="text-right ml-4">
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                    Approval Date
+                    Submission Date
                   </p>
                   <p className="text-xs font-black text-black whitespace-nowrap">
                     {formatDate(ms.approvalDate)}

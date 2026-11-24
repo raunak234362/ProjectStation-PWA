@@ -396,7 +396,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <InfoCard
               icon={<Calendar className="w-5 h-5" />}
-              label="Approval Date"
+              label="Submission Date"
               value={formatDate(milestone.approvalDate)}
               color="text-blue-600"
               bg="bg-blue-50"
@@ -404,7 +404,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
             {!isClient && (
               <InfoCard
                 icon={<Calendar className="w-5 h-5" />}
-                label="CD Approval Date"
+                label="CD Submission Date"
                 value={formatDate(milestone.CDApprovalDate)}
                 color="text-blue-600"
                 bg="bg-blue-50"
@@ -461,7 +461,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                   }
 
                   let timeProgress = 0;
-                  const start = new Date(milestone.startDate || milestone.date || 0); // Using date as fallback if StartDate is missing
+                  const start = new Date(milestone.startDate || milestone.date || milestone.createdAt || 0); // Using date as fallback if StartDate is missing
                   const approval = new Date(milestone.approvalDate);
 
                   if (!isNaN(start.getTime()) && !isNaN(approval.getTime())) {
@@ -473,23 +473,36 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                         100,
                         Math.max(0, Math.round((elapsed / totalDuration) * 100)),
                       );
-                    } else if (Date.now() > approval.getTime()) {
+                    } else if (Date.now() >= approval.getTime()) {
+                      timeProgress = 100;
+                    }
+                  } else if (!isNaN(approval.getTime())) {
+                    if (Date.now() >= approval.getTime()) {
                       timeProgress = 100;
                     }
                   }
+
+                  const isCompleted = milestone.status === "APPROVED" || milestone.status === "COMPLETED";
 
                   const overallCompletion =
                     milestone.completeionPercentage ??
                     milestone.completionPercentage ??
                     milestone.percentage;
 
-                  const finalProgress =
-                    (overallCompletion !== undefined &&
+                  let finalProgress = 0;
+                  if (isCompleted) {
+                    finalProgress = 100;
+                  } else if (!isNaN(approval.getTime())) {
+                    finalProgress = timeProgress;
+                  } else {
+                    finalProgress =
+                      overallCompletion !== undefined &&
                       overallCompletion !== null &&
                       overallCompletion !== "" &&
-                      Number(overallCompletion) !== 0)
-                      ? Number(overallCompletion)
-                      : taskProgress;
+                      Number(overallCompletion) !== 0
+                        ? Number(overallCompletion)
+                        : taskProgress;
+                  }
 
                   return (
                     <div className="flex flex-col gap-1 w-full">
@@ -585,7 +598,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                             </div>
                             <div>
                               <p className="text-sm font-bold text-black uppercase tracking-widest mb-2 mt-1">
-                                Approval Date
+                                Submission Date
                               </p>
                               <p className="text-sm text-gray-700 ">
                                 {formatDate(v.approvalDate)}

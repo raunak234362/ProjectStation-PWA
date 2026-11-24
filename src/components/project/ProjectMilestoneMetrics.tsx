@@ -73,10 +73,12 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
 
       // Time Progress calculation
       let timeProgress = 0;
-      const start = new Date(ms.startDate || ms.StartDate);
-      const approval = new Date(ms.approvalDate || ms.ApprovalDate);
+      const startDateRaw = ms.startDate || ms.StartDate || ms.date || ms.createdAt;
+      const start = startDateRaw ? new Date(startDateRaw) : null;
+      const approvalDateRaw = ms.approvalDate || ms.ApprovalDate;
+      const approval = approvalDateRaw ? new Date(approvalDateRaw) : null;
 
-      if (!isNaN(start.getTime()) && !isNaN(approval.getTime())) {
+      if (start && approval && !isNaN(start.getTime()) && !isNaN(approval.getTime())) {
         const totalDuration = approval.getTime() - start.getTime();
         const elapsed = Date.now() - start.getTime();
 
@@ -85,19 +87,35 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
             100,
             Math.max(0, Math.round((elapsed / totalDuration) * 100)),
           );
-        } else if (Date.now() > approval.getTime()) {
+        } else if (Date.now() >= approval.getTime()) {
+          timeProgress = 100;
+        }
+      } else if (approval && !isNaN(approval.getTime())) {
+        if (Date.now() >= approval.getTime()) {
           timeProgress = 100;
         }
       }
 
-      const finalProgress =
-        (ms.completeionPercentage !== undefined && ms.completeionPercentage !== null && ms.completeionPercentage !== "")
-          ? Number(ms.completeionPercentage)
-          : (ms.completionPercentage !== undefined && ms.completionPercentage !== null && ms.completionPercentage !== "")
-          ? Number(ms.completionPercentage)
-          : (ms.percentage !== undefined && ms.percentage !== null && ms.percentage !== "")
-          ? Number(ms.percentage)
-          : taskProgress;
+      const isCompleted = ms.status === "APPROVED" || ms.status === "COMPLETED";
+
+      let finalProgress = 0;
+      if (isCompleted) {
+        finalProgress = 100;
+      } else if (approval && !isNaN(approval.getTime())) {
+        // Active milestone with date: calculate based on time elapsed
+        finalProgress = timeProgress;
+      } else {
+        const manualProgress =
+          ms.completeionPercentage !== undefined && ms.completeionPercentage !== null && ms.completeionPercentage !== ""
+            ? Number(ms.completeionPercentage)
+            : ms.completionPercentage !== undefined && ms.completionPercentage !== null && ms.completionPercentage !== ""
+            ? Number(ms.completionPercentage)
+            : ms.percentage !== undefined && ms.percentage !== null && ms.percentage !== ""
+            ? Number(ms.percentage)
+            : undefined;
+
+        finalProgress = manualProgress !== undefined ? manualProgress : taskProgress;
+      }
 
       return {
         ...ms,
@@ -212,10 +230,12 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                               : " text-green-900"
                               }`}
                           >
-                            {ms.completeionPercentage ||
-                              ms.completionPercentage ||
-                              ms.taskPercentage ||
-                              ms.percentage}
+                            {ms.progress ??
+                              ms.completeionPercentage ??
+                              ms.completionPercentage ??
+                              ms.percentage ??
+                              ms.taskPercentage ??
+                              0}
                             %
                           </span>
                           {userRole !== "client" &&
@@ -243,7 +263,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                         <div
                           className="absolute top-0 left-0 h-2 rounded-full bg-teal-500 transition-all duration-500"
                           style={{
-                            width: `${ms.completeionPercentage || ms.completionPercentage || ms.taskPercentage || ms.percentage || 0}%`,
+                            width: `${ms.progress ?? (ms.completeionPercentage || ms.completionPercentage || ms.percentage || ms.taskPercentage || 0)}%`,
                           }}
                         ></div>
                       </div>
@@ -251,7 +271,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
 
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-gray-500 uppercase text-xs font-semibold">
-                            Approval Date
+                            Submission Date
                           </span>
                           <span className="font-bold text-gray-700">
                             {formatDate(ms.approvalDate)}
@@ -261,7 +281,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                         {userRole !== "client" && userRole !== "client_admin" && (
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 uppercase text-xs font-semibold">
-                              CD Approval Date
+                              CD Submission Date
                             </span>
                             <span className="font-bold text-gray-700">
                               {formatDate(ms.CDApprovalDate)}

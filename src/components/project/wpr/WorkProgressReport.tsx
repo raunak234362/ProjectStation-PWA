@@ -1403,7 +1403,7 @@ const WorkProgressReport = ({
 
       // Row 8: Project dates
       const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "—";
-      pushRow(["Project Awarded", fmtDate(project?.startDate), "", "Approval Date", fmtDate(project?.approvalDate), "", "Fab Released Date", fmtDate(project?.fabricationDate)]);
+      pushRow(["Project Awarded", fmtDate(project?.startDate), "", "Submission Date", fmtDate(project?.approvalDate), "", "Fab Released Date", fmtDate(project?.fabricationDate)]);
       row++;
 
       // Row 9: Empty spacer
