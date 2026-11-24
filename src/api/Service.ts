@@ -2638,7 +2638,7 @@ class Service {
   // gET aLL cLIENT iNVOICE
   static async GetAllInvoiceByClient() {
     try {
-      const response = await api.get(`invoice/client/all`);
+      const response = await api.get(`invoice/AllInvoices`);
       console.log("All Client Invoice fetched:", response.data);
       return response.data;
     } catch (error) {

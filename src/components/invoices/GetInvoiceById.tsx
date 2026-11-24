@@ -5,8 +5,21 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Service from "../../api/Service";
 import logo from "../../assets/logo.png";
+import { numberToWords } from "../../utils/numberToWords";
 import { useDispatch } from "react-redux";
 import { incrementModalCount, decrementModalCount } from "../../store/uiSlice";
+
+const formatInvoiceTotalInWords = (invoice: Record<string, any>): string => {
+  const currencyCode = String(invoice.currencyType || "USD").toUpperCase();
+  const totalValue = Number(invoice.totalInvoiceValue);
+  const words = Number.isFinite(totalValue)
+    ? numberToWords(totalValue, currencyCode)
+    : String(invoice.totalInvoiceValueInWords || "");
+  if (!words) return "—";
+
+  const amountWords = words.replace(/\s+(?:Dollars|Rupees)\b/gi, "").trim();
+  return `${currencyCode} ${amountWords} Only`.toUpperCase();
+};
 
 const loadImageAsDataUrl = async (imageUrl: string): Promise<string> => {
   const response = await fetch(imageUrl);
@@ -29,11 +42,12 @@ const downloadInvoicePdfInBrowser = async (
   invoice: Record<string, any>,
 ): Promise<void> => {
   const totalValue = Number(invoice.totalInvoiceValue);
+  const currencySymbol = String(invoice.currencyType).toUpperCase() === "CAD" ? "CA$" : "$";
   const replacements: Record<string, string> = {
-    '$ ${invoice.totalInvoiceValue?.toFixed(0) || "0"}': `$ ${Number.isFinite(totalValue) ? totalValue.toFixed(0) : "0"}`,
-    '$ ${invoice.totalInvoiceValue?.toFixed(2) || "0.00"}': `$ ${Number.isFinite(totalValue) ? totalValue.toFixed(2) : "0.00"}`,
-    '${invoice.totalInvoiceValueInWords || "—"}': String(invoice.totalInvoiceValueInWords || "—"),
-    '${INVOICE.TOTALINVOICEVALUEINWORDS || "—"}': String(invoice.totalInvoiceValueInWords || "—"),
+    '$ ${invoice.totalInvoiceValue?.toFixed(0) || "0"}': `${currencySymbol} ${Number.isFinite(totalValue) ? totalValue.toFixed(0) : "0"}`,
+    '$ ${invoice.totalInvoiceValue?.toFixed(2) || "0.00"}': `${currencySymbol} ${Number.isFinite(totalValue) ? totalValue.toFixed(2) : "0.00"}`,
+    '${invoice.totalInvoiceValueInWords || "—"}': formatInvoiceTotalInWords(invoice),
+    '${INVOICE.TOTALINVOICEVALUEINWORDS || "—"}': formatInvoiceTotalInWords(invoice),
   };
   const resolvedHtml = Object.entries(replacements).reduce(
     (content, [placeholder, value]) => content.replaceAll(placeholder, value),
@@ -98,6 +112,9 @@ const GetInvoiceById = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const isCadCurrency = String(invoice?.currencyType).toUpperCase() === "CAD";
+  const currencySymbol = isCadCurrency ? "CA$" : "$";
+  const currencyCode = isCadCurrency ? "CAD" : "USD";
 
   const dispatch = useDispatch();
 
@@ -210,7 +227,7 @@ const GetInvoiceById = ({
       ]);
       autoTable(doc, {
         startY: y,
-        head: [["SL #", "Description of Engineering Services", "SAC", "Unit", "Rate (USD)", "Total", "Total (USD)"]],
+        head: [["SL #", "Description of Engineering Services", "SAC", "Unit", `Rate (${currencyCode})`, "Total", `Total (${currencyCode})`]],
         body: itemRows.length ? itemRows : [["—", "No invoice items", "—", "—", "—", "—", "—"]],
         theme: "grid",
         headStyles: { fillColor: green, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 7 },
@@ -231,11 +248,11 @@ const GetInvoiceById = ({
       autoTable(doc, {
         startY: y,
         body: [
-          ["Total", `$ ${invoice.totalInvoiceValue?.toFixed?.(0) || "0"}`],
+          ["Total", `${currencySymbol} ${invoice.totalInvoiceValue?.toFixed?.(0) || "0"}`],
           ["IGST", "—"],
           ["Total GST", "—"],
-          ["Total Invoice Value (in Figures)", `$ ${invoice.totalInvoiceValue?.toFixed?.(2) || "0.00"}`],
-          ["Total Invoice Value (in Words)", invoice.totalInvoiceValueInWords || "—"],
+          [`Total Invoice Value (in ${currencyCode})`, `${currencySymbol} ${invoice.totalInvoiceValue?.toFixed?.(2) || "0.00"}`],
+          ["Total Invoice Value (in Words)", formatInvoiceTotalInWords(invoice)],
         ],
         theme: "grid",
         styles: { font: "helvetica", fontSize: 8, cellPadding: 2.5, textColor: ink },
@@ -762,9 +779,9 @@ const GetInvoiceById = ({
                 </th>
                 <th style="">SAC</th>
                 <th style="">UNIT</th>
-                <th style="width: 20%;">RATE (USD)</th>
+                <th style="width: 20%;">RATE (${currencyCode})</th>
                 <th style="">TOTAL</th>
-                <th style="width: 10%;">TOTAL (USD)</th>
+                <th style="width: 10%;">TOTAL (${currencyCode})</th>
               </tr>
             </thead>
             <tbody>
@@ -783,7 +800,7 @@ const GetInvoiceById = ({
                   colspan="2"
                   style="padding: 10px; text-align: right; font-size: 15px"
                 >
-                  $ ${invoice.totalInvoiceValue?.toFixed(0) || "0"}
+                  ${currencySymbol} ${invoice.totalInvoiceValue?.toFixed(0) || "0"}
                 </td>
               </tr>
               <tr class="gst-row">
@@ -807,10 +824,10 @@ const GetInvoiceById = ({
               </tr>
               <tr class="value-row">
                 <td colspan="5" style="padding: 8px; text-align: left">
-                  Total Invoice Value (in Figures)
+                  Total Invoice Value (in ${currencyCode})
                 </td>
                 <td colspan="2" style="padding: 8px; text-align: right; white-space: nowrap">
-                  $ ${invoice.totalInvoiceValue?.toFixed(2) || "0.00"}
+                  ${currencySymbol} ${invoice.totalInvoiceValue?.toFixed(2) || "0.00"}
                 </td>
               </tr>
               <tr>
@@ -824,7 +841,7 @@ const GetInvoiceById = ({
                 >
                   Total Invoice Value (in Words):
                   <span style="text-transform: uppercase; margin-left: 10px"
-                    >${invoice.totalInvoiceValueInWords || "—"}</span
+                    >${formatInvoiceTotalInWords(invoice)}</span
                   >
                 </td>
               </tr>
@@ -844,7 +861,7 @@ const GetInvoiceById = ({
               <span style="font-weight: bold; text-transform: uppercase"
                 >Whiteboard Technologies LLC</span
               >
-              in ${invoice.currencyType || "USD"} Dollars via Wire Transfers within
+              in ${currencyCode} via Wire Transfers within
               15 days.
             </div>
           </div>
@@ -886,7 +903,7 @@ const GetInvoiceById = ({
 
           <p style="font-size: 14px; margin-bottom: 40px; line-height: 1.5">
             Please initiate the ACH/Wire Transfer in
-            <span style="font-weight: bold; text-decoration: underline">USD</span>
+            <span style="font-weight: bold; text-decoration: underline">${currencyCode}</span>
             currency from your local Bank with the following information:
           </p>
 
@@ -1158,13 +1175,13 @@ const GetInvoiceById = ({
                       Unit
                     </th>
                     <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px]  text-[11px] uppercase whitespace-nowrap">
-                      Rate (USD)
+                      Rate ({currencyCode})
                     </th>
                     <th className="py-2 px-3 border-r border-gray-300 text-center w-[90px]  text-[11px] uppercase whitespace-nowrap">
                       Total
                     </th>
                     <th className="py-2 px-3 text-center w-[110px]  text-[11px] uppercase whitespace-nowrap">
-                      Total (USD)
+                      Total ({currencyCode})
                     </th>
                   </tr>
                 </thead>
@@ -1219,7 +1236,7 @@ const GetInvoiceById = ({
                       Total
                     </td>
                     <td colSpan={2} className="px-3 text-right font-semibold">
-                      $ {invoice.totalInvoiceValue?.toFixed(0) || "0000"}
+                      {currencySymbol} {invoice.totalInvoiceValue?.toFixed(0) || "0000"}
                     </td>
                   </tr>
 
@@ -1246,10 +1263,10 @@ const GetInvoiceById = ({
 
                   <tr className=" h-7 text-[13px] border-b border-black">
                     <td colSpan={5} className="px-3 text-left">
-                      Total Invoice Value (in Figures)
+                      Total Invoice Value (in {currencyCode})
                     </td>
                     <td colSpan={2} className="px-3 text-right text-sm whitespace-nowrap">
-                      $ {invoice.totalInvoiceValue?.toFixed(2) || "0000.00"}
+                      {currencySymbol} {invoice.totalInvoiceValue?.toFixed(2) || "0000.00"}
                     </td>
                   </tr>
 
@@ -1260,7 +1277,7 @@ const GetInvoiceById = ({
                           Total Invoice Value (in Words):
                         </span>
                         <span className=" uppercase tracking-tight text-gray-700">
-                          {invoice.totalInvoiceValueInWords || "—"}
+                          {formatInvoiceTotalInWords(invoice)}
                         </span>
                       </div>
                     </td>
@@ -1282,7 +1299,7 @@ const GetInvoiceById = ({
               <p className="text-xs text-black">
                 All payments to be made to{" "}
                 <span className=" uppercase">Whiteboard Technologies LLC</span>{" "}
-                in {invoice?.currencyType} Dollars via Wire Transfers within 15 days.
+                in {currencyCode} via Wire Transfers within 15 days.
               </p>
             </div>
 
