@@ -2,6 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
 import { formatDate } from "../../../utils/dateUtils";
+import { formatInvoiceCurrency } from "../../../utils/currencyUtils";
 
 interface PendingListProps {
   invoices: any[];
@@ -116,10 +117,7 @@ const PendingInvoiceList: React.FC<PendingListProps> = ({ invoices }) => {
         const currency = row.original.currencyType || "USD";
         return (
           <span className="font-semibold text-gray-800">
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: currency,
-            }).format(amount)}
+            {formatInvoiceCurrency(amount, currency)}
           </span>
         );
       },

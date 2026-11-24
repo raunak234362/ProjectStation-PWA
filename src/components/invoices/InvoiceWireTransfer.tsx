@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import Service from "../../api/Service";
 import RenderFiles from "../ui/RenderFiles";
 import { formatDate } from "../../utils/dateUtils";
+import { formatInvoiceCurrency } from "../../utils/currencyUtils";
 
 interface InvoiceWireTransferProps {
   invoiceId?: string;
@@ -536,7 +537,7 @@ const InvoiceWireTransfer: React.FC<InvoiceWireTransferProps> = ({ invoiceId }) 
                     <option value="">-- No linked invoice --</option>
                     {invoices.map((inv) => (
                       <option key={inv.id || inv._id} value={inv.id || inv._id}>
-                        {inv.customerName || "Customer"} - {inv.jobName} (Inv #{inv.invoiceNumber}) [${inv.totalInvoiceValue}]
+                        {inv.customerName || "Customer"} - {inv.jobName} (Inv #{inv.invoiceNumber}) [{formatInvoiceCurrency(Number(inv.totalInvoiceValue), inv.currencyType)}]
                       </option>
                     ))}
                   </select>

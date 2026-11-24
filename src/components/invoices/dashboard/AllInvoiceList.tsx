@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import DataTable, { type ExtendedColumnDef } from "../../ui/table";
 import GetInvoiceById from "../GetInvoiceById";
 import { formatDate } from "../../../utils/dateUtils";
+import { formatInvoiceCurrency } from "../../../utils/currencyUtils";
 
 interface AllListProps {
   invoices: any[];
@@ -216,10 +217,7 @@ const AllInvoiceList: React.FC<AllListProps> = ({ invoices }) => {
         const currency = row.original.currencyType || "USD";
         return (
           <span className="font-bold text-gray-900 text-sm whitespace-nowrap">
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: currency,
-            }).format(amount)}
+            {formatInvoiceCurrency(amount, currency)}
           </span>
         );
       },

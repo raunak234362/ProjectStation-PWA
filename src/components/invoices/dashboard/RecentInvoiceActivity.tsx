@@ -1,5 +1,6 @@
 import React from "react";
 import { CheckCircle, Clock, FilePlus } from "lucide-react";
+import { formatInvoiceCurrency } from "../../../utils/currencyUtils";
 
 
 interface RecentActivityProps {
@@ -26,10 +27,7 @@ const RecentInvoiceActivity: React.FC<RecentActivityProps> = ({ invoices }) => {
         const amount = parseFloat(inv.totalInvoiceValue);
         const formattedAmount = isNaN(amount)
           ? ""
-          : new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(amount);
+          : formatInvoiceCurrency(amount, inv.currencyType);
         const date = new Date(
           inv.updatedAt || inv.createdAt || inv.invoiceDate,
         );

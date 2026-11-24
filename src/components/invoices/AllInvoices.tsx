@@ -3,6 +3,7 @@ import Service from "../../api/Service";
 import DataTable, { type ExtendedColumnDef } from "../ui/table";
 import GetInvoiceById from "./GetInvoiceById";
 import { formatDate } from "../../utils/dateUtils";
+import { formatInvoiceCurrency } from "../../utils/currencyUtils";
 import { Loader2 } from "lucide-react";
 
 
@@ -121,10 +122,7 @@ const AllInvoices = () => {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("totalInvoiceValue"));
         const currency = row.original.currencyType || "USD";
-        return new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: currency,
-        }).format(amount);
+        return formatInvoiceCurrency(amount, currency);
       },
     },
     {

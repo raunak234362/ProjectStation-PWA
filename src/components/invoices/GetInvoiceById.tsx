@@ -42,7 +42,7 @@ const downloadInvoicePdfInBrowser = async (
   invoice: Record<string, any>,
 ): Promise<void> => {
   const totalValue = Number(invoice.totalInvoiceValue);
-  const currencySymbol = String(invoice.currencyType).toUpperCase() === "CAD" ? "CA$" : "$";
+  const currencySymbol = String(invoice.currencyType).toUpperCase() === "CAD" ? "CAD" : "$";
   const replacements: Record<string, string> = {
     '$ ${invoice.totalInvoiceValue?.toFixed(0) || "0"}': `${currencySymbol} ${Number.isFinite(totalValue) ? totalValue.toFixed(0) : "0"}`,
     '$ ${invoice.totalInvoiceValue?.toFixed(2) || "0.00"}': `${currencySymbol} ${Number.isFinite(totalValue) ? totalValue.toFixed(2) : "0.00"}`,
@@ -113,7 +113,7 @@ const GetInvoiceById = ({
   const [error, setError] = useState<string | null>(null);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const isCadCurrency = String(invoice?.currencyType).toUpperCase() === "CAD";
-  const currencySymbol = isCadCurrency ? "CA$" : "$";
+  const currencySymbol = isCadCurrency ? "CAD" : "$";
   const currencyCode = isCadCurrency ? "CAD" : "USD";
 
   const dispatch = useDispatch();
