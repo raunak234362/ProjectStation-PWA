@@ -63,7 +63,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
       ? [
           {
             accessorKey: "CDApprovalDate",
-            header: "CD Submission Date",
+            header: "CD Submittal Date",
             cell: ({ row }: any) => (
               <span className="text-black text-sm font-bold">
                 {row.original.CDApprovalDate
@@ -87,7 +87,7 @@ const AllMileStone = ({ project, onUpdate }: AllMileStoneProps) => {
       : [
           {
             accessorKey: "approvalDate",
-            header: "Submission Date",
+            header: "Submittal Date",
             cell: ({ row }: any) => (
               <span className="text-black text-sm font-bold">
                 {formatDate(row.original.approvalDate)}

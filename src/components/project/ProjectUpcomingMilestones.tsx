@@ -112,7 +112,7 @@ const ProjectUpcomingMilestones: React.FC<ProjectUpcomingMilestonesProps> = ({
                 </div>
                 <div className="text-right ml-4">
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                    Submission Date
+                    Submittal Date
                   </p>
                   <p className="text-xs font-black text-black whitespace-nowrap">
                     {formatDate(ms.approvalDate)}

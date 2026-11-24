@@ -353,7 +353,7 @@ const ConnectionDesignerQuotaByID = ({ id, close, onSuccess }: Props) => {
                     {/* Approval Date */}
                     {quotation.approvalDate && (
                         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <p className="text-sm text-gray-600 mb-1">Submission Date</p>
+                            <p className="text-sm text-gray-600 mb-1">Submittal Date</p>
                             <p className="font-semibold text-gray-800">
                                 {formatDate(quotation.approvalDate)}
                             </p>

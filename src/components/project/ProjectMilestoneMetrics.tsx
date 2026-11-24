@@ -271,7 +271,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
 
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-gray-500 uppercase text-xs font-semibold">
-                            Submission Date
+                            Submittal Date
                           </span>
                           <span className="font-bold text-gray-700">
                             {formatDate(ms.approvalDate)}
@@ -281,7 +281,7 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                         {userRole !== "client" && userRole !== "client_admin" && (
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 uppercase text-xs font-semibold">
-                              CD Submission Date
+                              CD Submittal Date
                             </span>
                             <span className="font-bold text-gray-700">
                               {formatDate(ms.CDApprovalDate)}

@@ -423,12 +423,12 @@ const EditMileStone = ({
               {...register("percentage")}
             />
             <Input
-              label="Submission Date"
+              label="Submittal Date"
               type="date"
               {...register("approvalDate")}
             />
             <Input
-              label="CD Submission Date"
+              label="CD Submittal Date"
               type="date"
               {...register("CDApprovalDate")}
             />

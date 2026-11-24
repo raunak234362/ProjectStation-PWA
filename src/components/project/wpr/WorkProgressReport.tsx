@@ -1403,7 +1403,7 @@ const WorkProgressReport = ({
 
       // Row 8: Project dates
       const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString() : "—";
-      pushRow(["Project Awarded", fmtDate(project?.startDate), "", "Submission Date", fmtDate(project?.approvalDate), "", "Fab Released Date", fmtDate(project?.fabricationDate)]);
+      pushRow(["Project Awarded", fmtDate(project?.startDate), "", "Submittal Date", fmtDate(project?.approvalDate), "", "Fab Released Date", fmtDate(project?.fabricationDate)]);
       row++;
 
       // Row 9: Empty spacer
@@ -1454,7 +1454,7 @@ const WorkProgressReport = ({
       row++;
 
       // Schedule header
-      pushRow(["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Comment", ""]);
+      pushRow(["Phase / Subject", "Start Date", "IFA - Submittal Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submittal Date", "Comment", ""]);
       merge(row, 6, row, 7); // Comment spans 2 cols
       row++;
 
@@ -1778,7 +1778,7 @@ const WorkProgressReport = ({
         theme: 'grid',
         styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', textColor: [0, 0, 0], lineColor: [0, 0, 0], lineWidth: 0.5 },
         headStyles: { fillColor: [241, 245, 249], textColor: [0, 0, 0], fontStyle: 'bold' },
-        head: [["Phase / Subject", "Start Date", "IFA - Submission Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submission Date", "Status & Comment"]],
+        head: [["Phase / Subject", "Start Date", "IFA - Submittal Date", "BFA - Recd Date", "IFC - Sub Date", "COR Drawing Submittal Date", "Status & Comment"]],
         body: pdfScheduleBody,
       });
       finalY = (pdf as any).lastAutoTable.finalY + 20;

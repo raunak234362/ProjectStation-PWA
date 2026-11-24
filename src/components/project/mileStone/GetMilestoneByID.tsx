@@ -396,7 +396,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <InfoCard
               icon={<Calendar className="w-5 h-5" />}
-              label="Submission Date"
+              label="Submittal Date"
               value={formatDate(milestone.approvalDate)}
               color="text-blue-600"
               bg="bg-blue-50"
@@ -404,7 +404,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
             {!isClient && (
               <InfoCard
                 icon={<Calendar className="w-5 h-5" />}
-                label="CD Submission Date"
+                label="CD Submittal Date"
                 value={formatDate(milestone.CDApprovalDate)}
                 color="text-blue-600"
                 bg="bg-blue-50"
@@ -598,7 +598,7 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
                             </div>
                             <div>
                               <p className="text-sm font-bold text-black uppercase tracking-widest mb-2 mt-1">
-                                Submission Date
+                                Submittal Date
                               </p>
                               <p className="text-sm text-gray-700 ">
                                 {formatDate(v.approvalDate)}

@@ -147,7 +147,7 @@ const AddMileStone = ({
           <div className="grid grid-cols-2 gap-4">
          
             <Input
-              label="Submission Date"
+              label="Submittal Date"
               type="date"
               {...register("approvalDate")}
             />
