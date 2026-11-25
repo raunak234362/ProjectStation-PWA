@@ -63,11 +63,31 @@ export function isMilestoneSubmittedStatus(status?: string | null): boolean {
 
 const COMPLETED_TASK_STATUSES = new Set([
   "COMPLETE",
-  "VALIDATE_COMPLETE",
-  "COMPLETE_OTHER",
-  "USER_FAULT",
   "COMPLETED",
+  "VALIDATE_COMPLETE",
+  "VALIDATE_COMPLETED",
 ]);
+
+const EXCLUDED_TASK_STATUSES = new Set([
+  "USER_FAULT",
+  "COMPLETE_OTHER",
+  "ABSENT",
+  "WRONG_ALLOCATION",
+  "IN_REVIEW",
+  "IN REVIEW",
+  "IN-REVIEW",
+]);
+
+function isExcludedFromCompletion(task: any): boolean {
+  const status = String(task?.status || "").trim().toUpperCase();
+  const title = String(task?.name || task?.title || "").trim().toUpperCase();
+  return (
+    EXCLUDED_TASK_STATUSES.has(status) ||
+    title.includes("ABSENT") ||
+    title.includes("WRONG ALLOCATION") ||
+    title.includes("WRONG_ALLOCATION")
+  );
+}
 
 function isValidDateInput(value: unknown): value is DateInput {
   if (value === null || value === undefined || value === "") return false;
@@ -79,6 +99,28 @@ export interface MilestoneScheduleResolution extends TaskScheduleResult {
   taskProgress: number;
   isSubmitted: boolean;
   hasValidScheduleDates: boolean;
+}
+
+function pickPositiveProgressValue(...values: unknown[]): number | null {
+  for (const v of values) {
+    if (v === undefined || v === null || v === "") continue;
+    const num = typeof v === "number" ? v : parseFloat(String(v).trim());
+    if (Number.isFinite(num) && num > 0 && num < 100) {
+      return num;
+    }
+  }
+  return null;
+}
+
+function pickAnyPositiveProgressValue(...values: unknown[]): number | null {
+  for (const v of values) {
+    if (v === undefined || v === null || v === "") continue;
+    const num = typeof v === "number" ? v : parseFloat(String(v).trim());
+    if (Number.isFinite(num) && num > 0) {
+      return num;
+    }
+  }
+  return null;
 }
 
 /**
@@ -93,8 +135,10 @@ export function resolveMilestoneSchedule(
   const tasks = milestone?.Tasks || milestone?.tasks || [];
   let taskProgress = 0;
   if (Array.isArray(tasks) && tasks.length > 0) {
-    const completedCount = tasks.filter((t: any) =>
-      COMPLETED_TASK_STATUSES.has(String(t?.status || "").toUpperCase()),
+    const completedCount = tasks.filter(
+      (t: any) =>
+        !isExcludedFromCompletion(t) &&
+        COMPLETED_TASK_STATUSES.has(String(t?.status || "").trim().toUpperCase()),
     ).length;
     taskProgress = Math.round((completedCount / tasks.length) * 100);
   }
@@ -110,63 +154,89 @@ export function resolveMilestoneSchedule(
     milestone?.createdAt;
   const approvalRaw = milestone?.approvalDate ?? milestone?.ApprovalDate;
 
-  if (isValidDateInput(startRaw) && isValidDateInput(approvalRaw)) {
-    const schedule = calculateTaskSchedule({
-      createdAt: startRaw,
-      approvalDate: approvalRaw,
-      isSubmitted,
-      currentDate,
-    });
-    return {
-      ...schedule,
-      taskProgress,
-      isSubmitted,
-      hasValidScheduleDates: true,
-    };
-  }
+  const hasValidDates =
+    isValidDateInput(startRaw) && isValidDateInput(approvalRaw);
 
   if (isSubmitted) {
+    const schedule = hasValidDates
+      ? calculateTaskSchedule({
+          createdAt: startRaw,
+          approvalDate: approvalRaw,
+          isSubmitted: true,
+          currentDate,
+        })
+      : {
+          totalDays: 1,
+          elapsedDays: 0,
+        };
+
     return {
-      totalDays: 1,
-      elapsedDays: 0,
+      totalDays: schedule.totalDays,
+      elapsedDays: schedule.elapsedDays,
       plusDays: 0,
       scheduleLabel: "Completed",
       taskPercent: 100,
       isOverdue: false,
       taskProgress,
       isSubmitted: true,
-      hasValidScheduleDates: false,
+      hasValidScheduleDates: hasValidDates,
     };
   }
 
-  // Without a valid submittal date, fall back to stored percentage or task progress, capped at 80%
-  const rawManual =
-    milestone?.completeionPercentage ??
-    milestone?.completionPercentage ??
-    milestone?.percentage;
-  const parsedManual =
-    rawManual !== undefined &&
-    rawManual !== null &&
-    rawManual !== "" &&
-    Number(rawManual) > 0
-      ? Number(rawManual)
-      : null;
+  const schedule = hasValidDates
+    ? calculateTaskSchedule({
+        createdAt: startRaw,
+        approvalDate: approvalRaw,
+        isSubmitted: false,
+        currentDate,
+      })
+    : {
+        totalDays: 1,
+        elapsedDays: 0,
+        plusDays: 0,
+        scheduleLabel: "On Schedule",
+        taskPercent: 0,
+        isOverdue: false,
+      };
 
-  const fallbackPercent = Math.min(
-    OVERDUE_PROGRESS_CAP,
-    Math.max(0, Math.round(parsedManual ?? taskProgress)),
+  // Match TaskMatrix field priority while skipping 0/empty values and stale 100% on active milestones:
+  // 1. completeionPercentage / completionPercentage (> 0 and < 100)
+  // 2. taskProgress (> 0)
+  // 3. percentage (> 0 and < 100)
+  // 4. Time-based schedule progress (0-80%)
+  // 5. Fallback for any stored value (e.g. 100 when no dates exist), capped at 80%
+  const explicitCompletion = pickPositiveProgressValue(
+    milestone?.completeionPercentage,
+    milestone?.completionPercentage,
+  );
+  const explicitPercentage = pickPositiveProgressValue(milestone?.percentage);
+  const anyStored = pickAnyPositiveProgressValue(
+    milestone?.completeionPercentage,
+    milestone?.completionPercentage,
+    milestone?.percentage,
   );
 
+  let resolvedPercent: number;
+  if (explicitCompletion !== null) {
+    resolvedPercent = Math.min(OVERDUE_PROGRESS_CAP, Math.round(explicitCompletion));
+  } else if (taskProgress > 0) {
+    resolvedPercent = Math.min(OVERDUE_PROGRESS_CAP, taskProgress);
+  } else if (explicitPercentage !== null) {
+    resolvedPercent = Math.min(OVERDUE_PROGRESS_CAP, Math.round(explicitPercentage));
+  } else if (hasValidDates) {
+    resolvedPercent = schedule.taskPercent;
+  } else if (anyStored !== null) {
+    resolvedPercent = Math.min(OVERDUE_PROGRESS_CAP, Math.round(anyStored));
+  } else {
+    resolvedPercent = 0;
+  }
+
   return {
-    totalDays: 1,
-    elapsedDays: 0,
-    plusDays: 0,
-    scheduleLabel: "On Schedule",
-    taskPercent: fallbackPercent,
-    isOverdue: false,
+    ...schedule,
+    taskPercent: resolvedPercent,
     taskProgress,
     isSubmitted: false,
-    hasValidScheduleDates: false,
+    hasValidScheduleDates: hasValidDates,
   };
 }
 

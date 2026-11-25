@@ -35,7 +35,7 @@ const EditMileStone = ({
     watch,
     setValue,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, dirtyFields },
   } = useForm({
     defaultValues: {
       subject: "",
@@ -102,13 +102,20 @@ const EditMileStone = ({
       }
 
       if (data) {
+        const storedPct =
+          Number(data.completeionPercentage) > 0
+            ? Number(data.completeionPercentage)
+            : Number(data.completionPercentage) > 0
+              ? Number(data.completionPercentage)
+              : Number(data.percentage) > 0
+                ? Number(data.percentage)
+                : 0;
         reset({
           subject: data.subject || "",
           subSubject: data.subSubject || "",
           description: data.description || "",
           status: data.status || "PENDING",
-          percentage:
-            data.percentage !== undefined ? Number(data.percentage) : 0,
+          percentage: storedPct !== undefined && storedPct !== null ? Number(storedPct) : 0,
           approvalDate: data.approvalDate
             ? new Date(data.approvalDate).toISOString().split("T")[0]
             : "",
@@ -138,7 +145,13 @@ const EditMileStone = ({
       return;
     }
 
-    if (watchedApprovalDate) {
+    // Only auto-recalculate percentage when the user actually modifies date or status
+    const dateOrStatusChanged =
+      Boolean(dirtyFields.approvalDate) ||
+      Boolean(dirtyFields.date) ||
+      Boolean(dirtyFields.status);
+
+    if (dateOrStatusChanged && watchedApprovalDate) {
       const approvalDateObj = new Date(watchedApprovalDate);
       const startDateRaw =
         watchedDate ||
@@ -156,7 +169,16 @@ const EditMileStone = ({
         setValue("percentage", taskPercent);
       }
     }
-  }, [watchedApprovalDate, watchedDate, watchedStatus, initialData, setValue]);
+  }, [
+    watchedApprovalDate,
+    watchedDate,
+    watchedStatus,
+    dirtyFields.approvalDate,
+    dirtyFields.date,
+    dirtyFields.status,
+    initialData,
+    setValue,
+  ]);
 
   const handleDelete = () => {
     toast.info(
@@ -214,7 +236,11 @@ const EditMileStone = ({
       let finalPercentage = Math.min(80, Math.max(0, Number(data.percentage) || 0));
       if (submitted) {
         finalPercentage = 100;
-      } else if (data.approvalDate) {
+      } else if (
+        (dirtyFields.approvalDate || dirtyFields.date) &&
+        !dirtyFields.percentage &&
+        data.approvalDate
+      ) {
         const approvalDateObj = new Date(data.approvalDate);
         const startDateRaw =
           data.date ||
