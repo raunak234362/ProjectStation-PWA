@@ -4,7 +4,16 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  build: {
+    sourcemap: false,
+  },
+  esbuild:
+    mode === "production"
+      ? {
+          drop: ["console", "debugger"],
+        }
+      : undefined,
   plugins: [
     react(),
     tailwindcss(),
@@ -82,4 +91,4 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-});
+}));

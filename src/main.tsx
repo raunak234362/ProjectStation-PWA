@@ -5,8 +5,13 @@ import { Provider } from "react-redux";
 import store from "./store/store";
 import routes from "./routes/routes";
 import { ThemeProvider } from "./context/ThemeContext";
+import { disableDevToolsInProduction } from "./utils/disableDevTools";
 
 import { Suspense } from "react";
+
+if (import.meta.env.PROD) {
+  disableDevToolsInProduction();
+}
 
 // Define the router configuration
 const router = createBrowserRouter(routes);
