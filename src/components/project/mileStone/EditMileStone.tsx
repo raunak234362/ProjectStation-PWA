@@ -7,6 +7,10 @@ import Input from "../../fields/input";
 import Button from "../../fields/Button";
 import RichTextEditor from "../../fields/RichTextEditor";
 import Service from "../../../api/Service";
+import {
+  calculateTaskSchedule,
+  isMilestoneSubmittedStatus,
+} from "../../../utils/calculateTaskSchedule";
 
 export interface EditMileStoneProps {
   milestoneId: string;
@@ -128,26 +132,28 @@ const EditMileStone = ({
   const watchedStatus = watch("status");
 
   useEffect(() => {
-    if (watchedStatus === "APPROVED" || watchedStatus === "COMPLETED") {
+    const submitted = isMilestoneSubmittedStatus(watchedStatus);
+    if (submitted) {
       setValue("percentage", 100);
       return;
     }
 
     if (watchedApprovalDate) {
       const approvalDateObj = new Date(watchedApprovalDate);
-      const startDateRaw = watchedDate || initialData?.startDate || initialData?.date || initialData?.createdAt;
+      const startDateRaw =
+        watchedDate ||
+        initialData?.startDate ||
+        initialData?.date ||
+        initialData?.createdAt;
       const startDateObj = startDateRaw ? new Date(startDateRaw) : new Date();
 
       if (!isNaN(approvalDateObj.getTime()) && !isNaN(startDateObj.getTime())) {
-        const totalDuration = approvalDateObj.getTime() - startDateObj.getTime();
-        const elapsed = Date.now() - startDateObj.getTime();
-        let calc = 0;
-        if (totalDuration > 0) {
-          calc = Math.min(100, Math.max(0, Math.round((elapsed / totalDuration) * 100)));
-        } else if (Date.now() >= approvalDateObj.getTime()) {
-          calc = 100;
-        }
-        setValue("percentage", calc);
+        const { taskPercent } = calculateTaskSchedule({
+          createdAt: startDateObj,
+          approvalDate: approvalDateObj,
+          isSubmitted: false,
+        });
+        setValue("percentage", taskPercent);
       }
     }
   }, [watchedApprovalDate, watchedDate, watchedStatus, initialData, setValue]);
@@ -204,22 +210,25 @@ const EditMileStone = ({
 
   const onSubmit = async (data: any) => {
     try {
-      let finalPercentage = Number(data.percentage) || 0;
-      if (data.status === "APPROVED" || data.status === "COMPLETED") {
+      const submitted = isMilestoneSubmittedStatus(data.status);
+      let finalPercentage = Math.min(80, Math.max(0, Number(data.percentage) || 0));
+      if (submitted) {
         finalPercentage = 100;
       } else if (data.approvalDate) {
         const approvalDateObj = new Date(data.approvalDate);
-        const startDateRaw = data.date || initialData?.startDate || initialData?.date || initialData?.createdAt;
+        const startDateRaw =
+          data.date ||
+          initialData?.startDate ||
+          initialData?.date ||
+          initialData?.createdAt;
         const startDateObj = startDateRaw ? new Date(startDateRaw) : new Date();
 
         if (!isNaN(approvalDateObj.getTime()) && !isNaN(startDateObj.getTime())) {
-          const totalDuration = approvalDateObj.getTime() - startDateObj.getTime();
-          const elapsed = Date.now() - startDateObj.getTime();
-          if (totalDuration > 0) {
-            finalPercentage = Math.min(100, Math.max(0, Math.round((elapsed / totalDuration) * 100)));
-          } else if (Date.now() >= approvalDateObj.getTime()) {
-            finalPercentage = 100;
-          }
+          finalPercentage = calculateTaskSchedule({
+            createdAt: startDateObj,
+            approvalDate: approvalDateObj,
+            isSubmitted: false,
+          }).taskPercent;
         }
       }
 

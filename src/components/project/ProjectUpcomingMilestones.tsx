@@ -1,6 +1,10 @@
 import React from "react";
 import { CalendarCheck, ArrowRight } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
+import {
+  isMilestoneSubmittedStatus,
+  resolveMilestoneSchedule,
+} from "../../utils/calculateTaskSchedule";
 
 interface ProjectUpcomingMilestonesProps {
   milestones: any[];
@@ -13,9 +17,9 @@ const ProjectUpcomingMilestones: React.FC<ProjectUpcomingMilestonesProps> = ({
   onViewAll,
   onMilestoneClick,
 }) => {
-  // Filter for pending milestones (not approved or completed)
+  // Filter for pending milestones (not submitted/approved/completed)
   const upcomingMilestones = milestones.filter(
-    (ms) => ms.status !== "APPROVED" && ms.status !== "COMPLETED",
+    (ms) => !Boolean(ms.isSubmitted) && !isMilestoneSubmittedStatus(ms.status),
   );
 
   return (
@@ -38,57 +42,8 @@ const ProjectUpcomingMilestones: React.FC<ProjectUpcomingMilestonesProps> = ({
       <div className="space-y-3">
         {upcomingMilestones.length > 0 ? (
           upcomingMilestones.slice(0, 5).map((ms, index) => {
-            const msTasks = ms.Tasks || ms.tasks || [];
-            const totalTasks = msTasks.length;
-            let taskProgress = 0;
-            if (totalTasks > 0) {
-              const completedStatuses = [
-                "COMPLETE",
-                "VALIDATE_COMPLETE",
-                "COMPLETE_OTHER",
-                "USER_FAULT",
-                "COMPLETED",
-              ];
-              const completedCount = msTasks.filter((t: any) =>
-                completedStatuses.includes(t.status),
-              ).length;
-              taskProgress = Math.round((completedCount / totalTasks) * 100);
-            }
-
-            const startDateRaw = ms.startDate || ms.StartDate || ms.date || ms.createdAt;
-            const start = startDateRaw ? new Date(startDateRaw) : null;
-            const approvalDateRaw = ms.approvalDate || ms.ApprovalDate;
-            const approval = approvalDateRaw ? new Date(approvalDateRaw) : null;
-
-            let timeProgress = 0;
-            if (start && approval && !isNaN(start.getTime()) && !isNaN(approval.getTime())) {
-              const totalDuration = approval.getTime() - start.getTime();
-              const elapsed = Date.now() - start.getTime();
-
-              if (totalDuration > 0) {
-                timeProgress = Math.min(
-                  100,
-                  Math.max(0, Math.round((elapsed / totalDuration) * 100)),
-                );
-              } else if (Date.now() >= approval.getTime()) {
-                timeProgress = 100;
-              }
-            } else if (approval && !isNaN(approval.getTime())) {
-              if (Date.now() >= approval.getTime()) {
-                timeProgress = 100;
-              }
-            }
-
-            const isCompleted = ms.status === "APPROVED" || ms.status === "COMPLETED";
-            const finalProgress = isCompleted
-              ? 100
-              : (approval && !isNaN(approval.getTime()))
-              ? timeProgress
-              : (ms.completeionPercentage || 
-                ms.completionPercentage || 
-                taskProgress || 
-                ms.percentage || 
-                0);
+            const schedule = resolveMilestoneSchedule(ms);
+            const finalProgress = schedule.taskPercent;
 
             return (
               <div
@@ -105,9 +60,18 @@ const ProjectUpcomingMilestones: React.FC<ProjectUpcomingMilestonesProps> = ({
                       {ms.stage || "PENDING"}
                     </span>
                     <span className="text-[10px] text-gray-400">•</span>
-                    <span className="text-[10px] text-gray-500 font-bold">
+                    <span
+                      className={`text-[10px] font-bold ${
+                        schedule.isOverdue ? "text-red-600" : "text-gray-500"
+                      }`}
+                    >
                       {finalProgress}% Complete
                     </span>
+                    {schedule.isOverdue && (
+                      <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-red-50 text-red-700 border border-red-200">
+                        {schedule.scheduleLabel}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="text-right ml-4">

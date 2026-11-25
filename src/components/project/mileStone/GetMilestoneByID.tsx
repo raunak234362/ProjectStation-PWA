@@ -23,6 +23,8 @@ import { formatDateTime } from "../../../utils/dateUtils";
 import AddSubmittal from "../../submittals/AddSubmittals";
 import { useDispatch } from "react-redux";
 import { setMilestonesForProject } from "../../../store/milestoneSlice";
+import { resolveMilestoneSchedule } from "../../../utils/calculateTaskSchedule";
+import TaskScheduleProgress from "../TaskScheduleProgress";
 
 const InfoCard = ({
   icon,
@@ -440,90 +442,12 @@ const GetMilestoneByID: React.FC<GetMilestoneByIDProps> = ({
               </span>
               <div className="mt-2 w-full">
                 {(() => {
-                  const msTasks = milestone.Tasks || milestone.tasks || [];
-                  const totalTasks = msTasks.length;
-                  let taskProgress = 0;
-
-                  if (totalTasks > 0) {
-                    const completedStatuses = [
-                      "COMPLETE",
-                      "VALIDATE_COMPLETE",
-                      "COMPLETE_OTHER",
-                      "USER_FAULT",
-                      "COMPLETED",
-                    ];
-                    const completedCount = msTasks.filter((t) =>
-                      completedStatuses.includes(t.status),
-                    ).length;
-                    taskProgress = Math.round(
-                      (completedCount / totalTasks) * 100,
-                    );
-                  }
-
-                  let timeProgress = 0;
-                  const start = new Date(milestone.startDate || milestone.date || milestone.createdAt || 0); // Using date as fallback if StartDate is missing
-                  const approval = new Date(milestone.approvalDate);
-
-                  if (!isNaN(start.getTime()) && !isNaN(approval.getTime())) {
-                    const totalDuration = approval.getTime() - start.getTime();
-                    const elapsed = Date.now() - start.getTime();
-
-                    if (totalDuration > 0) {
-                      timeProgress = Math.min(
-                        100,
-                        Math.max(0, Math.round((elapsed / totalDuration) * 100)),
-                      );
-                    } else if (Date.now() >= approval.getTime()) {
-                      timeProgress = 100;
-                    }
-                  } else if (!isNaN(approval.getTime())) {
-                    if (Date.now() >= approval.getTime()) {
-                      timeProgress = 100;
-                    }
-                  }
-
-                  const isCompleted = milestone.status === "APPROVED" || milestone.status === "COMPLETED";
-
-                  const overallCompletion =
-                    milestone.completeionPercentage ??
-                    milestone.completionPercentage ??
-                    milestone.percentage;
-
-                  let finalProgress = 0;
-                  if (isCompleted) {
-                    finalProgress = 100;
-                  } else if (!isNaN(approval.getTime())) {
-                    finalProgress = timeProgress;
-                  } else {
-                    finalProgress =
-                      overallCompletion !== undefined &&
-                      overallCompletion !== null &&
-                      overallCompletion !== "" &&
-                      Number(overallCompletion) !== 0
-                        ? Number(overallCompletion)
-                        : taskProgress;
-                  }
-
+                  const schedule = resolveMilestoneSchedule(milestone);
                   return (
-                    <div className="flex flex-col gap-1 w-full">
-                      <div className="flex justify-between items-center text-sm font-bold text-black mb-1">
-                        <span>{finalProgress}%</span>
-                      </div>
-                      <div className="w-full bg-red-500 rounded-full h-2.5 relative overflow-hidden">
-                        {/* Time Progress (background shadow layer) */}
-                        <div
-                          className="absolute top-0 left-0 h-2.5 bg-gray-400 opacity-40 transition-all duration-500"
-                          style={{ width: `${timeProgress}%` }}
-                        ></div>
-                        {/* Task Completion (real progress) */}
-                        <div
-                          className="absolute top-0 left-0 h-2.5 rounded-full bg-teal-500 transition-all duration-500"
-                          style={{
-                            width: `${Math.min(100, Math.max(0, finalProgress))}%`,
-                          }}
-                        ></div>
-                      </div>
-                    </div>
+                    <TaskScheduleProgress
+                      schedule={schedule}
+                      showDayCounts={schedule.hasValidScheduleDates}
+                    />
                   );
                 })()}
               </div>

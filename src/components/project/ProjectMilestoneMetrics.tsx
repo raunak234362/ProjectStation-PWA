@@ -6,6 +6,7 @@ import { formatDate } from "../../utils/dateUtils";
 import Service from "../../api/Service";
 import UpdateCompletionPer from "./mileStone/UpdateCompletionPer";
 import GetMilestoneByID from "./mileStone/GetMilestoneByID";
+import { resolveMilestoneSchedule } from "../../utils/calculateTaskSchedule";
 
 interface ProjectMilestoneMetricsProps {
   projectId: string;
@@ -54,74 +55,17 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
 
   const milestoneStats = useMemo(() => {
     return milestones.map((ms: any) => {
-      const msTasks = ms.Tasks || ms.tasks || [];
-      const totalTasks = msTasks.length;
-      let taskProgress = 0;
-      if (totalTasks > 0) {
-        const completedStatuses = [
-          "COMPLETE",
-          "VALIDATE_COMPLETE",
-          "COMPLETE_OTHER",
-          "USER_FAULT",
-          "COMPLETED",
-        ];
-        const completedCount = msTasks.filter((t: any) =>
-          completedStatuses.includes(t.status),
-        ).length;
-        taskProgress = Math.round((completedCount / totalTasks) * 100);
-      }
-
-      // Time Progress calculation
-      let timeProgress = 0;
-      const startDateRaw = ms.startDate || ms.StartDate || ms.date || ms.createdAt;
-      const start = startDateRaw ? new Date(startDateRaw) : null;
-      const approvalDateRaw = ms.approvalDate || ms.ApprovalDate;
-      const approval = approvalDateRaw ? new Date(approvalDateRaw) : null;
-
-      if (start && approval && !isNaN(start.getTime()) && !isNaN(approval.getTime())) {
-        const totalDuration = approval.getTime() - start.getTime();
-        const elapsed = Date.now() - start.getTime();
-
-        if (totalDuration > 0) {
-          timeProgress = Math.min(
-            100,
-            Math.max(0, Math.round((elapsed / totalDuration) * 100)),
-          );
-        } else if (Date.now() >= approval.getTime()) {
-          timeProgress = 100;
-        }
-      } else if (approval && !isNaN(approval.getTime())) {
-        if (Date.now() >= approval.getTime()) {
-          timeProgress = 100;
-        }
-      }
-
-      const isCompleted = ms.status === "APPROVED" || ms.status === "COMPLETED";
-
-      let finalProgress = 0;
-      if (isCompleted) {
-        finalProgress = 100;
-      } else if (approval && !isNaN(approval.getTime())) {
-        // Active milestone with date: calculate based on time elapsed
-        finalProgress = timeProgress;
-      } else {
-        const manualProgress =
-          ms.completeionPercentage !== undefined && ms.completeionPercentage !== null && ms.completeionPercentage !== ""
-            ? Number(ms.completeionPercentage)
-            : ms.completionPercentage !== undefined && ms.completionPercentage !== null && ms.completionPercentage !== ""
-            ? Number(ms.completionPercentage)
-            : ms.percentage !== undefined && ms.percentage !== null && ms.percentage !== ""
-            ? Number(ms.percentage)
-            : undefined;
-
-        finalProgress = manualProgress !== undefined ? manualProgress : taskProgress;
-      }
+      const schedule = resolveMilestoneSchedule(ms);
 
       return {
         ...ms,
-        progress: finalProgress,
-        taskPercentage: taskProgress,
-        timePercent: timeProgress,
+        progress: schedule.taskPercent,
+        taskPercentage: schedule.taskProgress,
+        timePercent: schedule.taskPercent,
+        plusDays: schedule.plusDays,
+        scheduleLabel: schedule.scheduleLabel,
+        isOverdue: schedule.isOverdue,
+        isSubmitted: schedule.isSubmitted,
       };
     });
   }, [milestones]);
@@ -223,47 +167,57 @@ const ProjectMilestoneMetrics: React.FC<ProjectMilestoneMetricsProps> = ({
                         </div> */}
                         <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
                           <span>Completion Percentage :</span>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${ms.status === "APPROVED" ||
-                              ms.status === "COMPLETED"
-                              ? " text-green-700"
-                              : " text-green-900"
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-md uppercase font-bold tracking-widest ${
+                                ms.isSubmitted
+                                  ? "text-emerald-700"
+                                  : ms.isOverdue
+                                    ? "text-red-700"
+                                    : "text-green-900"
                               }`}
-                          >
-                            {ms.progress ??
-                              ms.completeionPercentage ??
-                              ms.completionPercentage ??
-                              ms.percentage ??
-                              ms.taskPercentage ??
-                              0}
-                            %
-                          </span>
-                          {userRole !== "client" &&
-                            userRole !== "client_admin" && userRole !== "connection_designer_admin" && userRole !== "connection_designer_engineer" && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedMilestoneId(ms.id || ms._id);
-                                  setIsUpdateModalOpen(true);
-                                }}
-                                className="ml-2 text-gray-400 hover:text-blue-600"
-                              >
-                                <Pencil />
-                              </button>
+                            >
+                              {ms.progress ?? 0}%
+                            </span>
+                            {ms.isOverdue && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-red-50 text-red-700 border border-red-200">
+                                {ms.scheduleLabel}
+                              </span>
                             )}
+                            {userRole !== "client" &&
+                              userRole !== "client_admin" &&
+                              userRole !== "connection_designer_admin" &&
+                              userRole !== "connection_designer_engineer" && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedMilestoneId(ms.id || ms._id);
+                                    setIsUpdateModalOpen(true);
+                                  }}
+                                  className="ml-1 text-gray-400 hover:text-blue-600"
+                                >
+                                  <Pencil />
+                                </button>
+                              )}
+                          </div>
                         </div>
                       </div>
-                      <div className="w-full bg-red-500 rounded-full h-2 relative overflow-hidden">
-                        {/* Time Progress (background shadow layer) */}
+                      <div
+                        className={`w-full rounded-full h-2 relative overflow-hidden ${
+                          ms.isOverdue ? "bg-red-100" : "bg-gray-200"
+                        }`}
+                      >
+                        {/* Task / Schedule Completion */}
                         <div
-                          className="absolute top-0 left-0 h-2 bg-gray-400 opacity-40 transition-all duration-500"
-                          style={{ width: `${ms.timePercent}%` }}
-                        ></div>
-                        {/* Task Completion (real progress) */}
-                        <div
-                          className="absolute top-0 left-0 h-2 rounded-full bg-teal-500 transition-all duration-500"
+                          className={`absolute top-0 left-0 h-2 rounded-full transition-all duration-500 ${
+                            ms.isSubmitted
+                              ? "bg-emerald-500"
+                              : ms.isOverdue
+                                ? "bg-amber-500"
+                                : "bg-teal-500"
+                          }`}
                           style={{
-                            width: `${ms.progress ?? (ms.completeionPercentage || ms.completionPercentage || ms.percentage || ms.taskPercentage || 0)}%`,
+                            width: `${ms.progress ?? 0}%`,
                           }}
                         ></div>
                       </div>
